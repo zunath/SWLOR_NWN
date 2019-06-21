@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
-            MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => RegisterPerkLevels(message.Self));
+            MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => RegisterCreaturePerks(message.Self));
         }
 
         /// <summary>
@@ -68,48 +68,50 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Processes all feats which are linked to perks.
+        /// Runs validation checks to ensure activator can use a perk feat.
+        /// Activation will fail if any of the following are true:
+        ///     - Target is invalid
+        ///     - Activator is a ship
+        ///     - Feat is not a perk feat
+        ///     - Cooldown has not passed
         /// </summary>
-        private static void OnModuleUseFeat()
+        /// <param name="activator">The creature activating a perk feat.</param>
+        /// <param name="target">The target of the perk feat.</param>
+        /// <param name="featID">The ID number of the feat being used.</param>
+        /// <returns>true if able to use perk feat on target, false otherwise.</returns>
+        public static bool CanUsePerkFeat(NWCreature activator, NWObject target, int featID)
         {
-            // Activator is the creature who used the feat.
-            // Target is who the activator selected to use this feat on.
-            NWPlayer activator = Object.OBJECT_SELF;
-            NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
-
-            // Retrieve the perk's feat information from the DB.
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
             var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
 
             // There's no matching feat in the DB for this ability. Exit early.
-            if (perkFeat == null) return;
-            
+            if (perkFeat == null) return false;
+
             // Retrieve the perk information.
-            Data.Entity.Perk perk = DataService.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
+            Data.Entity.Perk perk = DataService.SingleOrDefault<Data.Entity.Perk>(x => x.ID == perkFeat.PerkID);
 
             // No perk could be found. Exit early.
-            if (perk == null) return;
-            
+            if (perk == null) return false;
+
             // Check to see if we are a spaceship.  Spaceships can't use abilities...
             if (activator.GetLocalInt("IS_SHIP") > 0 || activator.GetLocalInt("IS_GUNNER") > 0)
             {
                 activator.SendMessage("You cannot use that ability while piloting a ship.");
-                return;
+                return false;
             }
-            
+
             // Retrieve the perk-specific handler logic.
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
-            
+
             // Get the creature's perk level.
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
-            
+
             // If player is disabling an existing stance, remove that effect.
             if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
                 // Can't process NPC stances at the moment. Need to do some more refactoring before this is possible.
                 // todo: handle NPC stances.
-                if (!activator.IsPlayer) return;
-
+                if (!activator.IsPlayer) return false;
+                
                 PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
                                                                                                x.PlayerID == activator.GlobalID);
 
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (CustomEffectService.RemoveStance(activator))
                     {
-                        return;
+                        return false;
                     }
                 }
             }
@@ -126,13 +128,13 @@ namespace SWLOR.Game.Server.Service
             if (creaturePerkLevel <= 0)
             {
                 activator.SendMessage("You do not meet the prerequisites to use this ability.");
-                return;
+                return false;
             }
 
             // Verify that this hostile action meets PVP sanctuary restriction rules. 
             if (handler.IsHostile() && target.IsPlayer)
             {
-                if (!PVPSanctuaryService.IsPVPAttackAllowed(activator, target.Object)) return;
+                if (!PVPSanctuaryService.IsPVPAttackAllowed(activator.Object, target.Object)) return false;
             }
 
             // Activator and target must be in the same area and within line of sight.
@@ -140,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                     _.LineOfSightObject(activator.Object, target.Object) == FALSE)
             {
                 activator.SendMessage("You cannot see your target.");
-                return;
+                return false;
             }
 
             // Run this perk's specific checks on whether the activator may use this perk on the target.
@@ -148,7 +150,7 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(canCast))
             {
                 activator.SendMessage(canCast);
-                return;
+                return false;
             }
 
             // Calculate the FP cost to use this ability. Verify activator has sufficient FP.
@@ -157,14 +159,14 @@ namespace SWLOR.Game.Server.Service
             if (currentFP < fpCost)
             {
                 activator.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + currentFP + ")");
-                return;
+                return false;
             }
 
             // Verify activator isn't busy or dead.
             if (activator.IsBusy || activator.CurrentHP <= 0)
             {
                 activator.SendMessage("You are too busy to activate that ability.");
-                return;
+                return false;
             }
 
             // If we're executing a concentration ability, check and see if the activator currently has this ability
@@ -179,7 +181,8 @@ namespace SWLOR.Game.Server.Service
                     // It's active. Time to disable it.
                     EndConcentrationEffect(activator);
                     activator.SendMessage("Concentration ability '" + perk.Name + "' deactivated.");
-                    return;
+                    SendAOEMessage(activator, activator.Name + " deactivates concentration ability '" + perk.Name + "'.");
+                    return false;
                 }
             }
 
@@ -193,8 +196,35 @@ namespace SWLOR.Game.Server.Service
             {
                 string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
                 activator.SendMessage("That ability can be used in " + timeToWait + ".");
-                return;
+                return false;
             }
+
+            // Passed all checks. Return true.
+            return true;
+        }
+
+
+        /// <summary>
+        /// Processes all feats which are linked to perks.
+        /// </summary>
+        private static void OnModuleUseFeat()
+        {
+            // Activator is the creature who used the feat.
+            // Target is who the activator selected to use this feat on.
+            NWCreature activator = Object.OBJECT_SELF;
+            NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
+            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+
+            // Ensure this perk feat can be activated.
+            if (!CanUsePerkFeat(activator, target, featID)) return;
+
+            // Retrieve information necessary for activation of perk feat.
+            var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
+            Data.Entity.Perk perk = DataService.SingleOrDefault<Data.Entity.Perk>(x => x.ID == perkFeat.PerkID);
+            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
+            var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
+
+            SendAOEMessage(activator, activator.Name + " readies " + perk.Name + ".");
 
             // Force Abilities (aka Spells)
             if (perk.ExecutionTypeID == PerkExecutionType.ForceAbility)
@@ -290,7 +320,8 @@ namespace SWLOR.Game.Server.Service
                 // Creatures are assumed to always use the highest perk level available.
                 int perkID = creature.GetLocalInt("ACTIVE_CONCENTRATION_PERK_ID");
                 int tier = creature.GetLocalInt("PERK_LEVEL_" + perkID);
-                return new ConcentrationEffect((PerkType) perkID, tier);
+                PerkType type = perkID <= 0 ? PerkType.Unknown : (PerkType) perkID;
+                return new ConcentrationEffect(type, tier);
             }
 
         }
@@ -532,9 +563,14 @@ namespace SWLOR.Game.Server.Service
 
             // Mark player as busy. Busy players can't take other actions (crafting, harvesting, etc.)
             activator.IsBusy = true;
+            
+            // Non-players can't be interrupted via movement.
+            if(!activator.IsPlayer)
+            {
+                // Begin the check for spell interruption. If the activator moves, the spell will be canceled.
+                CheckForSpellInterruption(activator, uuid, activator.Position);
+            }
 
-            // Begin the check for spell interruption. If the player moves, the spell will be canceled.
-            CheckForSpellInterruption(activator, uuid, activator.Position);
             activator.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
             // If there's a casting delay, display a timing bar on-screen.
@@ -618,28 +654,30 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
-        private static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
+        private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
         {
             var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == spellFeatID);
-            int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
+            int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString();
-            pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
-            pc.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
-            pc.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
-            pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
+            activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
+            activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
+            activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
+            activator.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
+            SendAOEMessage(activator, activator.Name + " readies weapon skill '" + entity.Name + "'.");
 
-            ApplyCooldown(pc, cooldownCategory, ability, perkFeat.PerkLevelUnlocked, 0.0f);
+            ApplyCooldown(activator, cooldownCategory, ability, perkFeat.PerkLevelUnlocked, 0.0f);
 
             // Player must attack within 30 seconds after queueing or else it wears off.
             _.DelayCommand(30f, () =>
             {
-                if (pc.GetLocalString("ACTIVE_WEAPON_SKILL_UUID") == queueUUID)
+                if (activator.GetLocalString("ACTIVE_WEAPON_SKILL_UUID") == queueUUID)
                 {
-                    pc.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
-                    pc.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
-                    pc.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
-                    pc.SendMessage("Your weapon skill '" + entity.Name + "' is no longer queued.");
+                    activator.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
+                    activator.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
+                    activator.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
+                    activator.SendMessage("Your weapon skill '" + entity.Name + "' is no longer queued.");
+                    SendAOEMessage(activator, activator.Name + " no longer has weapon skill '" + entity.Name + "' readied.");
                 }
             });
         }
@@ -901,10 +939,13 @@ namespace SWLOR.Game.Server.Service
         /// Looks at the creature's feats and if any of them are Perks, stores the highest
         /// level as a local variable on the creature. This variable is later used when the
         /// creature actually uses the feat.
+        /// Also registers all of the available PerkFeats (highest tier) on the creature's Data.
+        /// This data is also used in the AI to make decisions quicker.
         /// </summary>
         /// <param name="self">The creature whose perks we're registering.</param>
-        private static void RegisterPerkLevels(NWCreature self)
+        private static void RegisterCreaturePerks(NWCreature self)
         {
+            var perkFeatCache = new Dictionary<int, AIPerkDetails>();
             var featIDs = new List<int>();
 
             // Add all feats the creature has to the list.
@@ -915,6 +956,7 @@ namespace SWLOR.Game.Server.Service
                 featIDs.Add(featID);
             }
 
+            bool hasPerkFeat = false;
             // Retrieve perk feat information for only those feats registered as a perk.
             var perkFeats = DataService.Where<PerkFeat>(x => featIDs.Contains(x.FeatID));
 
@@ -924,9 +966,45 @@ namespace SWLOR.Game.Server.Service
                 int level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
                 if (level >= perkFeat.PerkLevelUnlocked) continue;
 
+                var perk = DataService.Get<Data.Entity.Perk>(perkFeat.PerkID);
                 self.SetLocalInt("PERK_LEVEL_" + perkFeat.PerkID, perkFeat.PerkLevelUnlocked);
+                perkFeatCache[perkFeat.PerkID] = new AIPerkDetails(perkFeat.FeatID, perk.ExecutionTypeID);
+                hasPerkFeat = true;
+            }
+
+            // If a builder sets a perk feat but forgets to set the FP, do it automatically.
+            if(hasPerkFeat && self.GetLocalInt("MAX_FP") <= 0)
+            {
+                int fp = 50;
+                fp += (self.IntelligenceModifier + self.WisdomModifier + self.CharismaModifier) * 5;
+                SetMaxFP(self, fp);
+                SetCurrentFP(self, fp);
+            }
+
+            if (hasPerkFeat)
+            {
+                // Store a new dictionary containing PerkID and FeatID onto the creature's data.
+                // This is later used in the AI processing for decision making.
+                self.Data["PERK_FEATS"] = perkFeatCache;
             }
         }
 
+        /// <summary>
+        /// Sends a message to all nearby creatures within 10 meters.
+        /// </summary>
+        /// <param name="sender">The sender of the message. Used when determining distance.</param>
+        /// <param name="message">The message to send to all nearby creatures.</param>
+        private static void SendAOEMessage(NWCreature sender, string message)
+        {
+            const float MaxDistance = 10.0f;
+            int nth = 1;
+            NWCreature nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, sender, nth);
+            while (nearby.IsValid && GetDistanceBetween(sender, nearby) <= MaxDistance)
+            {
+                nearby.SendMessage(message);
+                nth++;
+                nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, sender, nth);
+            }
+        }
     }
 }

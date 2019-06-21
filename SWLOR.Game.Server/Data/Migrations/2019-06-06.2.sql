@@ -1375,7 +1375,7 @@ WHERE ID IN (
 -- This will get bumped to 1 in the ModuleMigrationService
 ALTER TABLE dbo.ServerConfiguration
 ADD ModuleVersion INT NOT NULL DEFAULT 0
-
+GO
 
 -- Refund all weapon proficiency perks. Then disable them from being purchased.
 EXEC dbo.ADM_RefundPlayerPerk @PerkID = 38

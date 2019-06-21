@@ -12,9 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using Object = NWN.Object;
@@ -45,6 +47,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
+            MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => RegisterPerkLevels(message.Self));
         }
 
         /// <summary>
@@ -893,5 +896,37 @@ namespace SWLOR.Game.Server.Service
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
             }
         }
+
+        /// <summary>
+        /// Looks at the creature's feats and if any of them are Perks, stores the highest
+        /// level as a local variable on the creature. This variable is later used when the
+        /// creature actually uses the feat.
+        /// </summary>
+        /// <param name="self">The creature whose perks we're registering.</param>
+        private static void RegisterPerkLevels(NWCreature self)
+        {
+            var featIDs = new List<int>();
+
+            // Add all feats the creature has to the list.
+            int featCount = NWNXCreature.GetFeatCount(self);
+            for (int x = 0; x <= featCount - 1; x++)
+            {
+                int featID = NWNXCreature.GetFeatByIndex(self, x);
+                featIDs.Add(featID);
+            }
+
+            // Retrieve perk feat information for only those feats registered as a perk.
+            var perkFeats = DataService.Where<PerkFeat>(x => featIDs.Contains(x.FeatID));
+
+            // Mark the highest perk level on the creature.
+            foreach (var perkFeat in perkFeats)
+            {
+                int level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
+                if (level >= perkFeat.PerkLevelUnlocked) continue;
+
+                self.SetLocalInt("PERK_LEVEL_" + perkFeat.PerkID, perkFeat.PerkLevelUnlocked);
+            }
+        }
+
     }
 }

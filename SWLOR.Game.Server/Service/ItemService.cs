@@ -15,6 +15,7 @@ using System.Linq;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
+using SWLOR.Game.Server.Event.Module;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -867,7 +868,7 @@ namespace SWLOR.Game.Server.Service
                 int type = item.BaseItemType;
 
                 // Check for explicit override.
-                if (item.AssociatedSkillType > 0) return (SkillType)item.AssociatedSkillType;
+                if (item.AssociatedSkillType > 0) return item.AssociatedSkillType;
 
                 // Armor has to specifically be set on the item in order to count.
                 // Look for an item type property first.

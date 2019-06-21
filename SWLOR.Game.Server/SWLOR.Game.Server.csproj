@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIFlags.cs" />
-    <Compile Include="AI\DarkForceUser.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="AppCache.cs" />
@@ -1158,7 +1157,6 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
-    <Compile Include="Placeable\Test.cs" />
     <Compile Include="Service\Cached2DAService.cs" />
     <Compile Include="Service\GuildService.cs" />
     <Compile Include="Service\ModuleMigrationService.cs" />
@@ -1366,6 +1364,7 @@
     <Compile Include="Trigger\SpaceEncounter.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AbilityResistanceResult.cs" />
+    <Compile Include="ValueObject\AIPerkDetails.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />

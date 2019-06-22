@@ -1413,6 +1413,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-06-07.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-09.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-10.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-06-22.1.sql" />
     <Content Include="Data\Scripts\WipeUserData.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-15.1.sql" />

@@ -304,7 +304,6 @@ namespace SWLOR.Game.Server.Conversation
             var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
                                                                            x.QuestID == questID);
             if (pcStatus == null) return;
-            var quest = DataService.Get<Quest>(questID);
             var state = DataService.Get<QuestState>(pcStatus.CurrentQuestStateID);
             
             // Quest is calling for collecting items. Run that method.
@@ -313,9 +312,14 @@ namespace SWLOR.Game.Server.Conversation
                 QuestService.RequestItemsFromPC(player, GetDialogTarget(), questID);
             }
             // All other quest types
+            else if(QuestService.CanPlayerCompleteQuest(player, questID))
+            {
+                QuestService.CompleteQuest(player, GetDialogTarget(), questID, null);
+            }
+            // Missing a requirement.
             else
             {
-                // todo implement
+                player.SendMessage(ColorTokenService.Red("One or more task is incomplete. Refer to your journal for more information."));
             }
 
         }

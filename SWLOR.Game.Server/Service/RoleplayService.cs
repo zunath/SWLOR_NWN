@@ -68,8 +68,6 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DataService.Get<Player>(sender.GlobalID);
             dbPlayer.RoleplayPoints++;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
-
-            Console.WriteLine("RP Points = " + dbPlayer.RoleplayPoints);
         }
 
         private static void OnModuleHeartbeat()

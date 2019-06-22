@@ -80,24 +80,28 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Gives GP to a player for a given guild.
-        /// If the amount is less than 1, nothing will happen.
-        /// If the amount is greater than 1000, the amount will be set to 1000.
+        /// If the baseAmount is less than 1, nothing will happen.
+        /// If the baseAmount is greater than 1000, the baseAmount will be set to 1000.
         /// If the player ranks up, a message will be sent to him/her and an OnPlayerGuildRankUp event will be published.
         /// </summary>
         /// <param name="player">The player to give GP.</param>
         /// <param name="guild">The guild this GP will apply to.</param>
-        /// <param name="amount">The amount of GP to grant.</param>
-        public static void GiveGuildPoints(NWPlayer player, GuildType guild, int amount)
+        /// <param name="baseAmount">The baseAmount of GP to grant.</param>
+        public static void GiveGuildPoints(NWPlayer player, GuildType guild, int baseAmount)
         {
-            if (amount <= 0) return;
+            if (baseAmount <= 0) return;
 
-            // Clamp max GP amount
-            if (amount > 1000)
-                amount = 1000;
+            // Clamp max GP baseAmount
+            if (baseAmount > 1000)
+                baseAmount = 1000;
+
+            // Grant a bonus based on the player's guild relations perk rank. Always offset by 1 so we don't end up with multiplication by zero.
+            int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations) + 1;
+            baseAmount *= perkBonus;
 
             var dbGuild = DataService.Get<Guild>((int) guild);
             var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int) guild && x.PlayerID == player.GlobalID);
-            pcGP.Points += amount;
+            pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
             int maxRank = RankProgression.Keys.Max();
@@ -106,7 +110,7 @@ namespace SWLOR.Game.Server.Service
                 pcGP.Points = maxGP-1;
 
             // Notify player how much GP they earned.
-            player.SendMessage("You earned " + amount + " " + dbGuild.Name + " guild points.");
+            player.SendMessage("You earned " + baseAmount + " " + dbGuild.Name + " guild points.");
 
             // Are we able to rank up?
             bool didRankUp = false;
@@ -207,7 +211,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Calculate the amount of GP to give a player for completing a task.
+        /// Calculate the baseAmount of GP to give a player for completing a task.
         /// Amount is adjusted by the player's rank with the guild.
         /// </summary>
         /// <param name="player">The player to calculate GP for.</param>

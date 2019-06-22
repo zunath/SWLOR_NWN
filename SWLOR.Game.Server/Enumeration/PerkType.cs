@@ -40,7 +40,7 @@
         EvadeBlasterFire = 35,
         Dodge = 36,
         Expertise = 37,
-        // 38 is free
+        GuildRelations = 38,
         ImprovedCriticalVibroblades = 39,
         ImprovedCriticalFinesseVibroblades = 40,
         ImprovedCriticalBatons = 41,

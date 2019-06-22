@@ -1,0 +1,23 @@
+﻿
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+)
+
+DELETE FROM dbo.PerkLevelQuestRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+)
+
+DELETE FROM dbo.PCPerkRefund
+WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+
+DELETE FROM dbo.Perk
+WHERE ID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)

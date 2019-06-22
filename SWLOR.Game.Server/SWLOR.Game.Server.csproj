@@ -1084,6 +1084,7 @@
     <Compile Include="Perk\OneHanded\Battlemage.cs" />
     <Compile Include="Perk\TwoHanded\Cleave.cs" />
     <Compile Include="Perk\OneHanded\Knockdown.cs" />
+    <Compile Include="Perk\TwoHanded\Skewer.cs" />
     <Compile Include="Perk\Weaponsmith\CraftingModInstallationWeapons.cs" />
     <Compile Include="Perk\Engineering\LightsaberBlueprints.cs" />
     <Compile Include="Perk\Weaponsmith\ForceModInstallationWeapons.cs" />
@@ -1414,6 +1415,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-06-09.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-10.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-22.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-06-22.2.sql" />
     <Content Include="Data\Scripts\WipeUserData.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-15.1.sql" />

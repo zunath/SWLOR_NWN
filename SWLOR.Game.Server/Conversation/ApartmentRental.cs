@@ -114,6 +114,10 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
+            
+            // Issue#895: GAME: DMs purchasing apartments can crash the server
+            if (player.IsDM || player.IsDMPossessed) { return; }
+            
             AddResponseToPage("MainPage", ColorTokenService.Green("Lease New Apartment"));
             int count = 1;
             foreach (var apartment in bases)

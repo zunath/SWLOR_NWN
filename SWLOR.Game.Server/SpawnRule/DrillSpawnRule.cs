@@ -45,6 +45,18 @@ namespace SWLOR.Game.Server.SpawnRule
                 case 3:
                     target.Name = ColorTokenService.Orange(target.Name);
                     break;
+                case 4:
+                    target.Name = ColorTokenService.LightPurple(target.Name);
+                    break;
+                case 5:
+                    target.Name = ColorTokenService.Yellow(target.Name);
+                    break;
+                case 6:
+                    target.Name = ColorTokenService.Red(target.Name);
+                    break;
+                case 7:
+                    target.Name = ColorTokenService.Cyan(target.Name);
+                    break;
             }
         }
     }

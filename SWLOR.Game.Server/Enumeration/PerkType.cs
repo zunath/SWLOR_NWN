@@ -115,7 +115,8 @@
         ForceModInstallationArmors = 110,
         CraftingModInstallationArmors = 111,
         SpecialModInstallationArmors = 112,
-        // 113-122 are free
+        Skewer = 113,
+        // 114-122 are free
         SneakAttack = 123,
         ArmorBlueprints = 124,
         Battlemage = 125,

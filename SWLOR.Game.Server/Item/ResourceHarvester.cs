@@ -76,6 +76,18 @@ namespace SWLOR.Game.Server.Item
                     case 3:
                         resource.Name = ColorTokenService.Orange(resource.Name);
                         break;
+                    case 4:
+                        resource.Name = ColorTokenService.LightPurple(resource.Name);
+                        break;
+                    case 5:
+                        resource.Name = ColorTokenService.Yellow(resource.Name);
+                        break;
+                    case 6:
+                        resource.Name = ColorTokenService.Red(resource.Name);
+                        break;
+                    case 7:
+                        resource.Name = ColorTokenService.Cyan(resource.Name);
+                        break;
                 }
             }
 

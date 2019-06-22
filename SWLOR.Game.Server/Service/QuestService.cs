@@ -879,5 +879,47 @@ namespace SWLOR.Game.Server.Service
             return state.JournalStateID;
         }
 
+        /// <summary>
+        /// Determines whether a player has finished all requirements for a quest.
+        /// Requirements:
+        ///     - Player must be on the last quest state
+        ///     - Player must have no remaining kill targets
+        ///     - Player must have no remaining required items
+        ///     - Player must have no remaining required key items
+        /// </summary>
+        /// <param name="player">The player we're checking</param>
+        /// <param name="questID">The ID number of the quest.</param>
+        /// <returns>true if player can complete a quest, false otherwise.</returns>
+        public static bool CanPlayerCompleteQuest(NWPlayer player, int questID)
+        {
+            // Has the player even accepted this quest?
+            var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            if (pcStatus == null) return false;
+
+            // Is the player on the final state of this quest?
+            var finalState = DataService.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
+            if (pcStatus.CurrentQuestStateID != finalState.ID) return false;
+
+            // Are there any remaining kill targets for this quest and player?
+            var killTargetCount = DataService.Where<PCQuestKillTargetProgress>(x => x.PlayerID == player.GlobalID && 
+                                                                                x.PCQuestStatusID == pcStatus.ID).Count;
+            if (killTargetCount > 0) return false;
+
+            // Are there any remaining item requirements?
+            var itemCount = DataService.Where<PCQuestItemProgress>(x => x.PlayerID == player.GlobalID &&
+                                                                        x.PCQuestStatusID == pcStatus.ID).Count;
+            if (itemCount > 0) return false;
+
+            // Are there any remaining key item requirements?
+            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestID == questID &&
+                                                                                x.QuestStateID == finalState.ID)
+                .Select(s => s.KeyItemID).ToArray();
+            bool hasAllKeyItems = KeyItemService.PlayerHasAllKeyItems(player, requiredKeyItems);
+            if (!hasAllKeyItems) return false;
+
+            // Met all requirements. We can complete this quest.
+            return true;
+        }
+
     }
 }

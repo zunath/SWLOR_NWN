@@ -8,6 +8,7 @@
         ForceAbility = 3,
         CombatAbility = 4,
         EquipmentBased = 5,
-        Stance = 6
+        Stance = 6,
+        ConcentrationAbility = 7
     }
 }

@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Gives Roleplay XP to a target player.", CommandPermissionType.DM)]
     public class GiveRPXP: IChatCommand
     {
+        private const int MaxAmount = 10000;
+
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsPlayer)
@@ -31,19 +33,19 @@ namespace SWLOR.Game.Server.ChatCommand
             // Missing an amount argument?
             if (args.Length <= 0)
             {
-                return "Please specify an amount of RP XP to give. Valid range: 1-2000";
+                return "Please specify an amount of RP XP to give. Valid range: 1-" + MaxAmount;
             }
 
             // Can't parse the amount?
             if(!int.TryParse(args[0], out int amount))
             {
-                return "Please specify a valid amount between 1 and 2000.";
+                return "Please specify a valid amount between 1 and " + MaxAmount + ".";
             }
 
             // Amount is outside of our allowed range?
-            if (amount < 1 || amount > 2000)
+            if (amount < 1 || amount > MaxAmount)
             {
-                return "Please specify a valid amount between 1 and 2000.";
+                return "Please specify a valid amount between 1 and " + MaxAmount + ".";
             }
 
             return null;

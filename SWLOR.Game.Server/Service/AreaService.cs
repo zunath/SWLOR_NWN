@@ -8,8 +8,9 @@ using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using Object = NWN.Object;
@@ -265,7 +266,7 @@ namespace SWLOR.Game.Server.Service
                 instanceRule.OnSpawn(instance);
             }
 
-            MessageHub.Instance.Publish(new AreaInstanceCreatedMessage(instance));
+            MessageHub.Instance.Publish(new OnAreaInstanceCreated(instance));
             return instance;
         }
 
@@ -278,7 +279,7 @@ namespace SWLOR.Game.Server.Service
                 AppCache.AreaSpawns.Remove(area);
             }
 
-            MessageHub.Instance.Publish(new AreaInstanceDestroyedMessage(area));
+            MessageHub.Instance.Publish(new OnAreaInstanceDestroyed(area));
             _.DestroyArea(area);
 
         }

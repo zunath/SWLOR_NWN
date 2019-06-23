@@ -2,19 +2,19 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
-
+using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Event.Area;
-using SWLOR.Game.Server.Event.Feat;
-using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -25,9 +25,9 @@ namespace SWLOR.Game.Server.Service
     {
         private const string IPWeaponPenaltyTag = "SKILL_PENALTY_WEAPON_ITEM_PROPERTY";
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
-        
+
         public static int SkillCap => 500;
-        
+
         public static void SubscribeEvents()
         {
             // Area Events
@@ -45,13 +45,131 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
         }
 
+        private static Dictionary<int, int> _skillXPRequirements;
+
+        public static Dictionary<int, int> SkillXPRequirements
+        {
+            get
+            {
+                if (_skillXPRequirements == null)
+                {
+                    _skillXPRequirements = new Dictionary<int, int>
+                    {
+                        { 0, 550 },
+                        { 1, 825 },
+                        { 2, 1100 },
+                        { 3, 1375 },
+                        { 4, 1650 },
+                        { 5, 1925 },
+                        { 6, 2200 },
+                        { 7, 2420 },
+                        { 8, 2640 },
+                        { 9, 2860 },
+                        { 10, 3080 },
+                        { 11, 4200 },
+                        { 12, 4480 },
+                        { 13, 4760 },
+                        { 14, 5040 },
+                        { 15, 5320 },
+                        { 16, 5600 },
+                        { 17, 5880 },
+                        { 18, 6160 },
+                        { 19, 6440 },
+                        { 20, 6720 },
+                        { 21, 8500 },
+                        { 22, 8670 },
+                        { 23, 8840 },
+                        { 24, 9010 },
+                        { 25, 9180 },
+                        { 26, 9350 },
+                        { 27, 9520 },
+                        { 28, 9690 },
+                        { 29, 9860 },
+                        { 30, 10030 },
+                        { 31, 10200 },
+                        { 32, 10370 },
+                        { 33, 10540 },
+                        { 34, 10710 },
+                        { 35, 10880 },
+                        { 36, 11050 },
+                        { 37, 11220 },
+                        { 38, 11390 },
+                        { 39, 11560 },
+                        { 40, 11730 },
+                        { 41, 14000 },
+                        { 42, 14200 },
+                        { 43, 14400 },
+                        { 44, 14600 },
+                        { 45, 14800 },
+                        { 46, 15000 },
+                        { 47, 15200 },
+                        { 48, 15400 },
+                        { 49, 16000 },
+                        { 50, 18400 },
+                        { 51, 24960 },
+                        { 52, 27840 },
+                        { 53, 30720 },
+                        { 54, 33600 },
+                        { 55, 36480 },
+                        { 56, 39360 },
+                        { 57, 42240 },
+                        { 58, 45120 },
+                        { 59, 48000 },
+                        { 60, 51600 },
+                        { 61, 55200 },
+                        { 62, 58800 },
+                        { 63, 62400 },
+                        { 64, 66000 },
+                        { 65, 69600 },
+                        { 66, 73200 },
+                        { 67, 76800 },
+                        { 68, 81600 },
+                        { 69, 86400 },
+                        { 70, 91200 },
+                        { 71, 108000 },
+                        { 72, 113400 },
+                        { 73, 118800 },
+                        { 74, 120150 },
+                        { 75, 121500 },
+                        { 76, 122850 },
+                        { 77, 124200 },
+                        { 78, 125550 },
+                        { 79, 126900 },
+                        { 80, 128250 },
+                        { 81, 144000 },
+                        { 82, 145500 },
+                        { 83, 147000 },
+                        { 84, 148500 },
+                        { 85, 150000 },
+                        { 86, 151500 },
+                        { 87, 153000 },
+                        { 88, 154500 },
+                        { 89, 156000 },
+                        { 90, 159000 },
+                        { 91, 216000 },
+                        { 92, 220000 },
+                        { 93, 224000 },
+                        { 94, 228000 },
+                        { 95, 232000 },
+                        { 96, 236000 },
+                        { 97, 240000 },
+                        { 98, 260000 },
+                        { 99, 280000 },
+                        { 100, 400000 }
+                    };
+                }
+
+                return _skillXPRequirements;
+            }
+        }
+
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
         {
             int skillID = (int)skillType;
             if (!player.IsPlayer) return;
             if (skillID <= 0) return;
 
-            List<NWPlayer> members = player.PartyMembers.ToList();
+            List<NWCreature> members = player.PartyMembers.ToList();
 
             int nth = 1;
             NWCreature creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
@@ -74,7 +192,7 @@ namespace SWLOR.Game.Server.Service
                 creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
-        
+
         /// <summary>
         /// Gives XP towards a specific player's skill. XP bonuses granted by residency and DM bonuses can be enabled or disabled.
         /// Penalties can also be enabled or disabled.
@@ -124,7 +242,7 @@ namespace SWLOR.Game.Server.Service
 
 
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
-            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+            int req = SkillXPRequirements[pcSkill.Rank];
             int maxRank = skill.MaxRank;
             int originalRank = pcSkill.Rank;
             float xpBonusModifier = player.XPBonus * 0.01f;
@@ -142,11 +260,11 @@ namespace SWLOR.Game.Server.Service
 
             // Characters can receive permanent XP bonuses from DMs. If this skill XP distribution
             // shouldn't grant that bonus, it can be disabled with the enableDMBonus flag.
-            if(enableDMBonus)
+            if (enableDMBonus)
             {
                 xp = xp + (int)(xp * xpBonusModifier);
             }
-            
+
             // Run the skill decay rules.
             // If the method returns false, that means all skills are locked.
             // So we can't give the player any XP.
@@ -161,14 +279,14 @@ namespace SWLOR.Game.Server.Service
 
             // Skill is at cap and player would level up.
             // Reduce XP to required amount minus 1 XP
-            if (pcSkill.Rank >= maxRank && pcSkill.XP > req.XP)
+            if (pcSkill.Rank >= maxRank && pcSkill.XP > req)
             {
-                pcSkill.XP = req.XP - 1;
+                pcSkill.XP = req - 1;
             }
 
-            while (pcSkill.XP >= req.XP)
+            while (pcSkill.XP >= req)
             {
-                pcSkill.XP = pcSkill.XP - req.XP;
+                pcSkill.XP = pcSkill.XP - req;
 
                 if (player.TotalSPAcquired < SkillCap && skill.ContributesToSkillCap)
                 {
@@ -178,7 +296,7 @@ namespace SWLOR.Game.Server.Service
 
                 pcSkill.Rank++;
                 oPC.FloatingText("Your " + skill.Name + " skill level increased to rank " + pcSkill.Rank + "!");
-                req = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+                req = SkillXPRequirements[pcSkill.Rank];
 
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
@@ -190,7 +308,7 @@ namespace SWLOR.Game.Server.Service
                     ApplyEquipmentPenalties(oPC, item);
                 }
 
-                MessageHub.Instance.Publish(new SkillGainedMessage(oPC, skillID));
+                MessageHub.Instance.Publish(new OnSkillGained(oPC, skillID));
             }
 
             DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
@@ -459,14 +577,14 @@ namespace SWLOR.Game.Server.Service
             PlayerStatService.ApplyStatChanges(oPC, null);
             ApplyWeaponPenalties(oPC, oItem);
             ApplyEquipmentPenalties(oPC, oItem);
-        
+
         }
 
         private static void OnModuleUnequipItem()
-        {    
+        {
             NWPlayer oPC = _.GetPCItemLastUnequippedBy();
             if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
-            
+
             NWItem oItem = _.GetPCItemLastUnequipped();
             HandleGlovesUnequipEvent();
             PlayerStatService.ApplyStatChanges(oPC, oItem);
@@ -579,8 +697,8 @@ namespace SWLOR.Game.Server.Service
             var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
             var totalXPs = pcSkills.Select(s =>
             {
-                var reqXP = DataService.Where<SkillXPRequirement>(x => x.SkillID == s.SkillID && (x.Rank < s.Rank || x.Rank == 0 && s.XP > 0));
-                var totalXP = reqXP.Sum(x => x.XP);
+                var reqXP = SkillXPRequirements.Where(x => (x.Key < s.Rank || x.Key == 0 && s.XP > 0));
+                var totalXP = reqXP.Sum(x => x.Value);
                 return new { s.SkillID, TotalSkillXP = totalXP };
             }).ToList();
 
@@ -637,19 +755,19 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
-                    List<SkillXPRequirement> reqs = DataService.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
+                    var reqs = SkillXPRequirements.Where(x => x.Key <= decaySkill.Rank).OrderBy(o => o.Key).ToList();
 
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
                     int newDecaySkillRank = 0;
-                    foreach (SkillXPRequirement req in reqs)
+                    foreach (var req in reqs)
                     {
-                        if (totalDecaySkillXP >= req.XP)
+                        if (totalDecaySkillXP >= req.Value)
                         {
-                            totalDecaySkillXP = totalDecaySkillXP - req.XP;
+                            totalDecaySkillXP = totalDecaySkillXP - req.Value;
                             newDecaySkillRank++;
                         }
-                        else if (totalDecaySkillXP < req.XP)
+                        else if (totalDecaySkillXP < req.Value)
                         {
                             break;
                         }
@@ -669,7 +787,7 @@ namespace SWLOR.Game.Server.Service
                     XP = decaySkill.XP
                 };
                 DataService.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
-                MessageHub.Instance.Publish(new SkillDecayedMessage(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
+                MessageHub.Instance.Publish(new OnSkillDecayed(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 
             PlayerStatService.ApplyStatChanges(oPC, null);
@@ -833,32 +951,89 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyEquipmentPenalties(NWPlayer oPC, NWItem oItem)
+        private static Dictionary<int, StoredItemPropertyDetail> BuildImmunityItemPropertiesContainer()
         {
-            SkillType skill = ItemService.GetSkillTypeForItem(oItem);
+            return new Dictionary<int, StoredItemPropertyDetail>
+            {
+                {IP_CONST_DAMAGETYPE_ACID, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_ACID")},
+                {(int) CustomItemPropertyDamageType.Ballistic, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_BALLISTIC")},
+                {IP_CONST_DAMAGETYPE_BLUDGEONING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_BLUDGEONING")},
+                {(int) CustomItemPropertyDamageType.Bullet, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_BULLET")},
+                {IP_CONST_DAMAGETYPE_COLD, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_COLD")},
+                {IP_CONST_DAMAGETYPE_DIVINE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_DIVINE")},
+                {IP_CONST_DAMAGETYPE_ELECTRICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_ELECTRICAL")},
+                {(int) CustomItemPropertyDamageType.Energy, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_ENERGY")},
+                {IP_CONST_DAMAGETYPE_FIRE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_FIRE")},
+                {IP_CONST_DAMAGETYPE_MAGICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_MAGICAL")},
+                {IP_CONST_DAMAGETYPE_NEGATIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_NEGATIVE")},
+                {IP_CONST_DAMAGETYPE_PIERCING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_PIERCING")},
+                {IP_CONST_DAMAGETYPE_POSITIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_POSITIVE")},
+                {IP_CONST_DAMAGETYPE_SLASHING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SLASHING")},
+                {IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SONIC")},
+            };
+        }
+
+        private static Dictionary<int, StoredItemPropertyDetail> BuildDamageResistanceItemPropertiesContainer()
+        {
+            return new Dictionary<int, StoredItemPropertyDetail>
+            {
+                { IP_CONST_DAMAGETYPE_ACID, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_ACID")},
+                { (int)CustomItemPropertyDamageType.Ballistic, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_BALLISTIC")},
+                { IP_CONST_DAMAGETYPE_BLUDGEONING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_BLUDGEONING")},
+                { (int)CustomItemPropertyDamageType.Bullet, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_BULLET")},
+                { IP_CONST_DAMAGETYPE_COLD, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_COLD")},
+                { IP_CONST_DAMAGETYPE_DIVINE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_DIVINE")},
+                { IP_CONST_DAMAGETYPE_ELECTRICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_ELECTRICAL")},
+                { (int)CustomItemPropertyDamageType.Energy, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_ENERGY")},
+                { IP_CONST_DAMAGETYPE_FIRE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_FIRE")},
+                { IP_CONST_DAMAGETYPE_MAGICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_MAGICAL")},
+                { IP_CONST_DAMAGETYPE_NEGATIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_NEGATIVE")},
+                { IP_CONST_DAMAGETYPE_PIERCING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_PIERCING")},
+                { IP_CONST_DAMAGETYPE_POSITIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_POSITIVE")},
+                { IP_CONST_DAMAGETYPE_SLASHING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SLASHING")},
+                { IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SONIC")},
+            };
+
+        }
+
+
+        /// <summary>
+        /// Adjusts stats on an item if the player's skill rank is lower than the recommended level on the item.
+        /// These penalties should be removed with the RemoveEquipmentPenalties method.
+        /// </summary>
+        /// <param name="player">The player whose skill rank we're checking</param>
+        /// <param name="item">The item whose stats will be adjusted.</param>
+        private static void ApplyEquipmentPenalties(NWPlayer player, NWItem item)
+        {
+            // Identify whether this item has a skill type. If it doesn't, exit early.
+            SkillType skill = ItemService.GetSkillTypeForItem(item);
             if (skill == SkillType.Unknown) return;
 
-            int rank = GetPCSkillRank(oPC, skill);
-            int delta = oItem.RecommendedLevel - rank;
+            // Determine the delta between player's skill and the item's recommended level.
+            int rank = GetPCSkillRank(player, skill);
+            int delta = item.RecommendedLevel - rank;
+
+            // Player meets or exceeds recommended level. Exit early.
             if (delta <= 0) return;
 
-            int str = 0;
-            int dex = 0;
-            int con = 0;
-            int wis = 0;
-            int @int = 0;
-            int cha = 0;
-            int ab = 0;
-            int eb = 0;
+            List<ItemProperty> ipsToApply = new List<ItemProperty>();
 
-            foreach (var ip in oItem.ItemProperties)
+            // Attributes
+            int str = 0, dex = 0, con = 0, wis = 0, @int = 0, cha = 0;
+            // Attack Bonus / Enhancement Bonus
+            int ab = 0, eb = 0;
+            var immunities = BuildImmunityItemPropertiesContainer();
+            var resistances = BuildDamageResistanceItemPropertiesContainer();
+
+            foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
+                int subType = _.GetItemPropertySubType(ip);
                 int value = _.GetItemPropertyCostTableValue(ip);
+
                 if (type == ITEM_PROPERTY_ABILITY_BONUS)
                 {
-                    int abilityType = _.GetItemPropertySubType(ip);
-                    switch (abilityType)
+                    switch (subType)
                     {
                         case ABILITY_STRENGTH: str += value; break;
                         case ABILITY_CONSTITUTION: con += value; break;
@@ -870,8 +1045,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (type == ITEM_PROPERTY_DECREASED_ABILITY_SCORE)
                 {
-                    int abilityType = _.GetItemPropertySubType(ip);
-                    switch (abilityType)
+                    switch (subType)
                     {
                         case ABILITY_STRENGTH: str -= value; break;
                         case ABILITY_CONSTITUTION: con -= value; break;
@@ -898,9 +1072,71 @@ namespace SWLOR.Game.Server.Service
                 {
                     eb -= value;
                 }
+                else if (type == ITEM_PROPERTY_IMMUNITY_DAMAGE_TYPE)
+                {
+                    var immunity = immunities[subType];
+                    immunity.Amount += value;
+
+                    // Mark the original value as a local variable on the item.
+                    item.SetLocalInt(immunity.VariableName, immunity.Amount);
+
+                    // Calculate the new value (minimum of 1).
+                    int newImmunity = 1 + delta / 5;
+                    if (newImmunity > immunity.Amount) newImmunity = immunity.Amount;
+
+                    // We have the amount but we need to find the corresponding ID in the 2DA.
+                    // Check our cached 2DA data for this value.
+                    int costTableID = Cached2DAService.ImmunityCosts.Single(x => x.Value == newImmunity).Key;
+
+                    // Unpack the IP and adjust its value.
+                    var unpacked = NWNXItemProperty.UnpackIP(ip);
+                    unpacked.CostTableValue = costTableID;
+
+                    // Add it to the list for later application. We don't want to do this right now, for fear of an infinite loop.
+                    var packed = NWNXItemProperty.PackIP(unpacked);
+                    ipsToApply.Add(packed);
+
+                    // Remove this version of the item property.
+                    RemoveItemProperty(item, ip);
+                }
+                else if (type == ITEM_PROPERTY_DAMAGE_RESISTANCE)
+                {
+                    // Damage Resistance is an all-or-nothing property.
+                    // If player's skill doesn't meet minimum, we strip it entirely.
+                    var resistance = resistances[subType];
+                    resistance.Amount += value;
+
+                    // Mark the original value as a local variable on the item.
+                    item.SetLocalInt(resistance.VariableName, resistance.Amount);
+
+                    // Remove the item property.
+                    RemoveItemProperty(item, ip);
+                }
+                else if (type == ITEM_PROPERTY_DAMAGE_REDUCTION)
+                {
+                    item.SetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID", subType);
+                    item.SetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID", value);
+
+                    // +1's ID is 0 so we don't need to offset by 1 here.
+                    int newPlus = subType - (delta / 3);
+                    if (newPlus < 0) newPlus = 0;
+
+                    // Reduce soak amount.
+                    int newDR = value - (delta / 5);
+                    if (newDR < 1) newDR = 1;
+
+                    // Add the modified item property to the list for later application.
+                    ItemProperty newIP = _.ItemPropertyDamageReduction(newPlus, newDR);
+                    ipsToApply.Add(newIP);
+
+                    RemoveItemProperty(item, ip);
+                }
             }
 
             // Apply penalties only if total value is greater than 0. Penalties don't scale.
+
+            // Ability scores, AB, and EB receive an additional item property which reduces stats.
+            // The original property is left unaffected.
             if (str > 0)
             {
                 int newStr = 1 + delta / 5;
@@ -908,7 +1144,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_STRENGTH, newStr);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (dex > 0)
             {
@@ -917,7 +1153,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_DEXTERITY, newDex);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (con > 0)
             {
@@ -926,7 +1162,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CONSTITUTION, newCon);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (@int > 0)
             {
@@ -935,7 +1171,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_INTELLIGENCE, newInt);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (wis > 0)
             {
@@ -944,7 +1180,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_WISDOM, newWis);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (cha > 0)
             {
@@ -953,7 +1189,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CHARISMA, newCha);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (ab > 0)
             {
@@ -962,7 +1198,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyAttackPenalty(newAB);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (eb > 0)
             {
@@ -971,20 +1207,83 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyEnhancementPenalty(newEB);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
 
+            // Apply all item properties that are waiting.
+            foreach (var ip in ipsToApply)
+            {
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            }
         }
 
-        private static void RemoveEquipmentPenalties(NWItem oItem)
+        /// <summary>
+        /// Removes temporary item properties which have been tagged as penalties.
+        /// </summary>
+        /// <param name="item">The item to remove penalties from.</param>
+        private static void RemoveEquipmentPenalties(NWItem item)
         {
-            foreach (var ip in oItem.ItemProperties)
+            var ipsToApply = new List<ItemProperty>();
+            var immunities = BuildImmunityItemPropertiesContainer();
+            var resistances = BuildDamageResistanceItemPropertiesContainer();
+
+            foreach (var ip in item.ItemProperties)
             {
+                int type = _.GetItemPropertyType(ip);
+                // Remove any temporary item properties with a matching penalty tag.
                 string tag = _.GetItemPropertyTag(ip);
                 if (tag == IPEquipmentPenaltyTag)
                 {
-                    _.RemoveItemProperty(oItem.Object, ip);
+                    _.RemoveItemProperty(item, ip);
                 }
+                // Immunity properties get their value set back to original.
+                else if (type == ITEM_PROPERTY_IMMUNITY_DAMAGE_TYPE)
+                {
+                    // Take the existing IP, modify it, then put it in the list for later addition to the item.
+                    // We can't directly modify the item property on the item, so we use this as a workaround.
+                    int subType = _.GetItemPropertySubType(ip);
+                    string varName = immunities[subType].VariableName;
+                    int costTableID = item.GetLocalInt(varName);
+
+                    // Unpack the IP, modify the value back to original, then add it to the list to be applied later.
+                    // Remove this version of the IP.
+                    var unpacked = NWNXItemProperty.UnpackIP(ip);
+                    unpacked.CostTableValue = costTableID;
+                    var packed = NWNXItemProperty.PackIP(unpacked);
+                    ipsToApply.Add(packed);
+
+                    _.RemoveItemProperty(item, ip);
+                }
+                else if (type == ITEM_PROPERTY_DAMAGE_REDUCTION)
+                {
+                    int plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
+                    int amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
+
+                    ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
+                    ipsToApply.Add(newIP);
+
+                    _.RemoveItemProperty(item, ip);
+                }
+            }
+
+            // Re-add resistance item properties to the item.
+            foreach (var resistance in resistances)
+            {
+                string varName = resistance.Value.VariableName;
+                int costTableID = item.GetLocalInt(varName);
+                if (costTableID > 0)
+                {
+                    ItemProperty ip = ItemPropertyDamageResistance(resistance.Key, costTableID);
+                    ipsToApply.Add(ip);
+                }
+
+                item.DeleteLocalInt(varName);
+            }
+
+            // Reapply the item properties with the original values now.
+            foreach (var ip in ipsToApply)
+            {
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
         }
 

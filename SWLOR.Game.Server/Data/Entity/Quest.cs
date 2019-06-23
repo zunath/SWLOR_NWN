@@ -39,5 +39,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string OnAdvanceArgs { get; set; }
         public string OnCompleteArgs { get; set; }
         public string OnKillTargetArgs { get; set; }
+        public int? RewardGuildID { get; set; }
+        public int RewardGuildPoints { get; set; }
     }
 }

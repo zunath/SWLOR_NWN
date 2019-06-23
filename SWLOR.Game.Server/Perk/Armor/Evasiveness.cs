@@ -10,38 +10,36 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Evasiveness;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWItem armor = oPC.Chest;
-            return armor.CustomItemType == CustomItemType.LightArmor;
+            if (armor.CustomItemType != CustomItemType.LightArmor)
+                return "You must be equipped with light armor to use that ability.";
+
+            return string.Empty;
         }
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You must be equipped with light armor to use that combat ability.";
-        }
-
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int concealment;
             float length;
@@ -73,38 +71,43 @@ namespace SWLOR.Game.Server.Perk.Armor
             }
 
             Effect effect = _.EffectConcealment(concealment);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_DUR_AURA_CYAN);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, player.Object);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, creature.Object);
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
         public bool IsHostile()
         {
             return false;
+        }
+
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
+        {
+            
         }
     }
 }

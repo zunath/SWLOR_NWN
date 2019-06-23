@@ -6,9 +6,10 @@ using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessCustomEffects());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessCustomEffects());
         }
 
         public static void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level, string data)
@@ -239,60 +240,68 @@ namespace SWLOR.Game.Server.Service
             return (CustomEffectType) stanceEffect.CustomEffectID;
         }
 
-        public static bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true)
+        public static bool RemoveStance(NWCreature creature, PCCustomEffect stanceEffect = null, bool sendMessage = true)
         {
+            // Can't process NPC stances at the moment. Need to do some more refactoring before this is possible.
+            // todo: handle NPC stances.
+            if (!creature.IsPlayer) return false;
+
             if (stanceEffect == null)
-                stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID &&
+                stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == creature.GlobalID &&
                                                                                 x.StancePerkID != null);
             if (stanceEffect == null) return false;
             
             if(sendMessage)
-                player.SendMessage("You return to your normal stance.");
+                creature.SendMessage("You return to your normal stance.");
             
             int effectiveLevel = stanceEffect.EffectiveLevel;
             string data = stanceEffect.Data;
             DataService.SubmitDataChange(stanceEffect, DatabaseActionType.Delete);
             ICustomEffectHandler handler = GetCustomEffectHandler(stanceEffect.CustomEffectID);
-            handler?.WearOff(player, player, effectiveLevel, data);
+            handler?.WearOff(creature, creature, effectiveLevel, data);
             
             return true;
         }
 
-        public static void ApplyStance(NWPlayer player, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data)
+        public static void ApplyStance(NWCreature creature, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data)
         {
-            var pcStanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID &&
+            // Can't process NPC stances at the moment. Need to do some more refactoring before this is possible.
+            // todo: handle NPC stances.
+            if (!creature.IsPlayer) return;
+
+            var pcStanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == creature.GlobalID &&
                                                                                   x.StancePerkID != null);
             int customEffectID = (int) customEffect;
             
             // Player selected to cancel their stance. Cancel it and end.
             if (pcStanceEffect != null && pcStanceEffect.CustomEffectID == customEffectID && pcStanceEffect.EffectiveLevel == effectiveLevel)
             {
-                RemoveStance(player, pcStanceEffect);
+                RemoveStance(creature, pcStanceEffect);
                 return;
             }
             // Otherwise remove existing stance
             else if (pcStanceEffect != null)
             {
-                RemoveStance(player, pcStanceEffect, false);
+                RemoveStance(creature, pcStanceEffect, false);
             }
 
             // Player selected to switch stances
             pcStanceEffect = new PCCustomEffect
             {
-                PlayerID = player.GlobalID,
+                PlayerID = creature.GlobalID,
                 Ticks = -1,
                 CustomEffectID = customEffectID,
-                CasterNWNObjectID = _.ObjectToString(player),
+                CasterNWNObjectID = _.ObjectToString(creature),
                 EffectiveLevel = effectiveLevel,
                 StancePerkID = (int)perkType
             };
             DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Insert);
             ICustomEffectHandler handler = GetCustomEffectHandler(customEffect);
             if (string.IsNullOrWhiteSpace(data))
-                data = handler.Apply(player, player, effectiveLevel);
+                data = handler.Apply(creature, creature, effectiveLevel);
             
             if (!string.IsNullOrWhiteSpace(handler.StartMessage))
-                player.SendMessage(handler.StartMessage);
+                creature.SendMessage(handler.StartMessage);
 
             if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
             pcStanceEffect.Data = data;

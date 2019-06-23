@@ -11,87 +11,96 @@ namespace SWLOR.Game.Server.Mod
 {
     public class AbilityScoreMod: IModHandler
     {
-        public int ModTypeID => 1;
-
-        private Tuple<int, int> GetExistingIPInfo(NWItem item, int abilityType)
+        private class ParsedData
         {
-            Tuple<int, int> result = new Tuple<int, int>(0, 0);
-            foreach (var ip in item.ItemProperties)
-            {
-                int type = _.GetItemPropertyType(ip);
-                if (type == _.ITEM_PROPERTY_ABILITY_BONUS)
-                {
-                    int currentAbilityType = _.GetItemPropertySubType(ip);
-                    if (currentAbilityType == abilityType)
-                    {
-                        int currentValue = _.GetItemPropertyCostTableValue(ip);
-                        result = new Tuple<int, int>(abilityType, currentValue);
-                        break;
-                    }
-                }
-            }
-
-            return result;
+            public string TypeName { get; set; }
+            public int Amount { get; set; }
+            public int CurrentValue { get; set; }
+            public string Description { get; set; }
         }
 
-        private Tuple<int, int, string> ParseData(params string[] data)
+        public int ModTypeID => 1;
+        private const int MaxValue = 51;
+        
+        private ParsedData ParseData(NWItem target, params string[] data)
         {
-            string strType = data[0];
-            int amount = Convert.ToInt32(data[1]);
-            int type = -1;
+            ParsedData result = new ParsedData();
 
-            switch (strType)
+            // STR, DEX, CON, INT, WIS, or CHA
+            result.TypeName = data[0];
+            int tier = Convert.ToInt32(data[1]);
+
+            // Tier 1 = +3, Tier 2 = +6, Tier 3 = +9, etc.
+            // Recall that 1 point of STR is equivalent to +3 from an item's bonus.
+            result.Amount = tier * 3; 
+            
+            switch (result.TypeName)
             {
                 case "STR":
-                    type = _.ABILITY_STRENGTH;
+                    result.CurrentValue = target.StrengthBonus;
                     break;
                 case "CON":
-                    type = _.ABILITY_CONSTITUTION;
+                    result.CurrentValue = target.ConstitutionBonus;
                     break;
                 case "DEX":
-                    type = _.ABILITY_DEXTERITY;
+                    result.CurrentValue = target.DexterityBonus;
                     break;
                 case "WIS":
-                    type = _.ABILITY_WISDOM;
+                    result.CurrentValue = target.WisdomBonus;
                     break;
                 case "INT":
-                    type = _.ABILITY_INTELLIGENCE;
+                    result.CurrentValue = target.IntelligenceBonus;
                     break;
                 case "CHA":
-                    type = _.ABILITY_CHARISMA;
+                    result.CurrentValue = target.CharismaBonus;
                     break;
             }
 
-            return new Tuple<int, int, string>(type, amount, strType + " +" + amount);
+            result.Description = result.TypeName + " +" + result.Amount;
+            return result;
         }
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            var parsed = ParseData(args);
-            var info = GetExistingIPInfo(target, parsed.Item1);
-            return info.Item2 >= 12 ? "You cannot improve that item's stat any further." : null;
+            var data = ParseData(target, args);
+            return data.CurrentValue >= MaxValue ? "You cannot improve that item's stat any further." : null;
         }
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            var data = ParseData(args);
-            if (data.Item1 < 0) return;
-
-            var existingValues = GetExistingIPInfo(target, data.Item1);
-            int newValue = data.Item2 + existingValues.Item2;
-            if (newValue > 12) newValue = 12;
+            var data = ParseData(target, args);
             
-            ItemProperty ip = _.ItemPropertyAbilityBonus(data.Item1, newValue);
-            ip = _.TagItemProperty(ip, "RUNE_IP");
+            int newValue = data.CurrentValue + data.Amount;
+            if (newValue > MaxValue) newValue = MaxValue;
 
-            BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            switch (data.TypeName)
+            {
+                case "STR":
+                    target.StrengthBonus = newValue;
+                    break;
+                case "CON":
+                    target.ConstitutionBonus = newValue;
+                    break;
+                case "DEX":
+                    target.DexterityBonus = newValue;
+                    break;
+                case "WIS":
+                    target.WisdomBonus = newValue;
+                    break;
+                case "INT":
+                    target.IntelligenceBonus = newValue;
+                    break;
+                case "CHA":
+                    target.CharismaBonus = newValue;
+                    break;
+            }
+            
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            var data = ParseData(args);
-            if (data.Item1 < 0) return "Invalid";
-            return data.Item3;
+            var data = ParseData(target, args);
+            return data.Description;
         }
     }
 }

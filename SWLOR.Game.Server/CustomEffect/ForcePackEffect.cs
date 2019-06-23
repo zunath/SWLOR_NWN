@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             if (currentTick % interval != 0) return;
 
-            AbilityService.RestoreFP(oTarget.Object, amount);
+            AbilityService.RestorePlayerFP(oTarget.Object, amount);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)

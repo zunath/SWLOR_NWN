@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
             int amount = _.GetItemPropertyCostTableValue(sourceIP);
             ItemProperty prop = null;
             string sourceTag = string.Empty;
+            int attackBonus = 0;
 
             // A note about the sourceTags:
             // It's not currently possible to create custom item properties on items. To get around this,
@@ -24,6 +25,8 @@ namespace SWLOR.Game.Server.Service
             // the crafted item.
             // This is a really roundabout way to do it, but it's the only option for now. Hopefully a feature to
             // directly add the item properties comes in to NWNX in the future.
+            // 2019-06-12: Directly modifying item properties is possible now but I'm not going to do a refactor until later.
+            //             Anyone interested in working on this let me know and I can point you in the right direction. - Z
             for (int x = 1; x <= amount; x++)
             {
                 switch (bonusType)
@@ -57,8 +60,8 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.HarvestingUp:
                         product.HarvestingBonus += amount;
                         break;
-                    case ComponentBonusType.CastingSpeedUp:
-                        product.CastingSpeed += amount;
+                    case ComponentBonusType.CooldownRecoveryUp:
+                        product.CooldownRecovery += amount;
                         break;
                     case ComponentBonusType.ArmorsmithUp:
                         product.CraftBonusArmorsmith += amount;
@@ -87,15 +90,6 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.EnmityDown:
                         product.EnmityRate -= amount;
                         break;
-                    case ComponentBonusType.DarkPotencyUp:
-                        product.DarkPotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.LightPotencyUp:
-                        product.LightPotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.MindPotencyUp:
-                        product.MindPotencyBonus += amount;
-                        break;
                     case ComponentBonusType.LuckUp:
                         product.LuckBonus += amount;
                         break;
@@ -123,12 +117,6 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.DamageUp:
                         product.DamageBonus += amount;
                         break;
-                    case ComponentBonusType.DarkPotencyDown:
-                        product.DarkPotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.LightPotencyDown:
-                        product.LightPotencyBonus -= amount;
-                        break;
                     case ComponentBonusType.StructureBonusUp:
                         product.StructureBonus += amount;
                         break;
@@ -151,7 +139,7 @@ namespace SWLOR.Game.Server.Service
                         product.CharismaBonus += amount;
                         break;
                     case ComponentBonusType.AttackBonusUp:
-                        prop = _.ItemPropertyAttackBonus(amount);
+                        attackBonus += amount;
                         break;
                     case ComponentBonusType.DurationUp:
                         product.DurationBonus += amount;
@@ -161,57 +149,6 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case ComponentBonusType.ScavengingUp:
                         product.ScavengingBonus += amount;
-                        break;
-                    case ComponentBonusType.MindPotencyDown:
-                        product.MindPotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ElectricalPotencyUp:
-                        product.ElectricalPotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.ElectricalPotencyDown:
-                        product.ElectricalPotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ForcePotencyUp:
-                        product.ForcePotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.ForcePotencyDown:
-                        product.ForcePotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ForceAccuracyUp:
-                        product.ForceAccuracyBonus += amount;
-                        break;
-                    case ComponentBonusType.ForceAccuracyDown:
-                        product.ForceAccuracyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ForceDefenseUp:
-                        product.ForceDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.ForceDefenseDown:
-                        product.ForceDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.ElectricalDefenseUp:
-                        product.ElectricalDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.ElectricalDefenseDown:
-                        product.ElectricalDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.MindDefenseUp:
-                        product.MindDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.MindDefenseDown:
-                        product.MindDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.LightDefenseUp:
-                        product.LightDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.LightDefenseDown:
-                        product.LightDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.DarkDefenseUp:
-                        product.DarkDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.DarkDefenseDown:
-                        product.DarkDefenseBonus -= amount;
                         break;
                     case ComponentBonusType.PilotingUp:
                         product.PilotingBonus += amount;
@@ -229,7 +166,29 @@ namespace SWLOR.Game.Server.Service
 
                 BiowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
             }
+            
+            // Attack bonus is aggregated into one item property, ensuring that the amount doesn't go over 20.
+            if (attackBonus > 0)
+            {
+                // Look for existing properties, get the value and add it. Then remove that item property.
+                foreach (var ip in product.ItemProperties)
+                {
+                    if (_.GetItemPropertyType(ip) == _.ITEM_PROPERTY_ATTACK_BONUS)
+                    {
+                        amount = _.GetItemPropertyCostTableValue(ip);
+                        attackBonus += amount;
 
+                        _.RemoveItemProperty(product, ip);
+                    }
+                }
+
+                // Clamp bonus to 20.
+                if (attackBonus > 20) attackBonus = 20;
+
+                // Time to add the new item property.
+                prop = _.ItemPropertyAttackBonus(attackBonus);
+                BiowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
         }
     }
 }

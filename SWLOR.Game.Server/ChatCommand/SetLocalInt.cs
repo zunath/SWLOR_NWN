@@ -27,12 +27,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
-            foreach (var arg in args)
-            {
-                user.SendMessage(arg); // todo debug
-            }
-
-
             if (args.Length < 2)
             {
                 return "Missing arguments. Format should be: /SetLocalInt Variable_Name <VALUE>. Example: /SetLocalInt MY_VARIABLE 69";

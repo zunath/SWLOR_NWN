@@ -1,0 +1,113 @@
+{
+  "__data_type": "UTS ",
+  "Active": {
+    "type": "byte",
+    "value": 1
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Continuous": {
+    "type": "byte",
+    "value": 1
+  },
+  "Elevation": {
+    "type": "float",
+    "value": 1.0
+  },
+  "Hours": {
+    "type": "dword",
+    "value": 0
+  },
+  "Interval": {
+    "type": "dword",
+    "value": 25000
+  },
+  "IntervalVrtn": {
+    "type": "dword",
+    "value": 5000
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "BazzarNoises"
+    }
+  },
+  "Looping": {
+    "type": "byte",
+    "value": 0
+  },
+  "MaxDistance": {
+    "type": "float",
+    "value": 10.0
+  },
+  "MinDistance": {
+    "type": "float",
+    "value": 1.0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 13
+  },
+  "PitchVariation": {
+    "type": "float",
+    "value": 0.1000000014901161
+  },
+  "Positional": {
+    "type": "byte",
+    "value": 0
+  },
+  "Priority": {
+    "type": "byte",
+    "value": 19
+  },
+  "Random": {
+    "type": "byte",
+    "value": 0
+  },
+  "RandomPosition": {
+    "type": "byte",
+    "value": 0
+  },
+  "RandomRangeX": {
+    "type": "float",
+    "value": 0.0
+  },
+  "RandomRangeY": {
+    "type": "float",
+    "value": 0.0
+  },
+  "Sounds": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Sound": {
+          "type": "resref",
+          "value": "al_pl_bazarwalla"
+        }
+      }
+    ]
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "BazzarNoises"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "night_bazzarnois"
+  },
+  "Times": {
+    "type": "byte",
+    "value": 3
+  },
+  "Volume": {
+    "type": "byte",
+    "value": 49
+  },
+  "VolumeVrtn": {
+    "type": "byte",
+    "value": 0
+  }
+}

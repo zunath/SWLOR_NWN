@@ -18,5 +18,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int CurrentQuestStateID { get; set; }
         public DateTime? CompletionDate { get; set; }
         public int? SelectedItemRewardID { get; set; }
+        public int TimesCompleted { get; set; }
     }
 }

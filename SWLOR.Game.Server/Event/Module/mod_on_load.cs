@@ -4,8 +4,8 @@ using System.Reflection;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
@@ -165,6 +165,7 @@ namespace NWN.Scripts
 
             NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, _.CREATURE_SIZE_MEDIUM);
             NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, _.CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(_.BASE_ITEM_LONGSWORD, _.CREATURE_SIZE_MEDIUM);
         }
 
 

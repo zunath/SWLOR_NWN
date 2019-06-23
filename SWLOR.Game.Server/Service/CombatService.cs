@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
@@ -38,9 +40,9 @@ namespace SWLOR.Game.Server.Service
                 HandleWeaponStatBonuses();
                 HandleEvadeOrDeflectBlasterFire();
                 HandleApplySneakAttackDamage();
-                HandleBattlemagePerk();
             }
 
+            HandleDamageImmunity();
             HandleAbsorptionFieldEffect();
             HandleRecoveryBlast();
             HandleTranquilizerEffect();
@@ -99,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                 !target.RightHand.IsValid && !target.LeftHand.IsValid))
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
-                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
+                perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.EvadeBlasterFire);
                 modifier = target.DexterityModifier;
                 action = "evade";
             }
@@ -109,7 +111,7 @@ namespace SWLOR.Game.Server.Service
                       targetWeapon.GetLocalInt("LIGHTSABER") == TRUE))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
-                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
+                perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);
                 modifier = target.CharismaModifier;
                 action = "deflect";
             }
@@ -166,52 +168,66 @@ namespace SWLOR.Game.Server.Service
                 target.SendMessage(ColorTokenService.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
             }
         }
-
-        private static void HandleBattlemagePerk()
+        
+        private static void HandleDamageImmunity()
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
-            if (data.Base <= 0) return;
+            if (data.Total <= 0) return;
 
-            NWObject target = Object.OBJECT_SELF;
-            if (!data.Damager.IsPlayer || !target.IsNPC) return;
-            if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
+            NWCreature target = Object.OBJECT_SELF;
+            NWItem shield = target.LeftHand;
+            var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target);
+            double reduction = 0.0f;
 
-            NWPlayer player = data.Damager.Object;
-            NWItem weapon = _.GetLastWeaponUsed(player.Object);
-            if (weapon.CustomItemType != CustomItemType.Baton) return;
-            if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
+            // Shield damage reduction and absorb energy are calculated here. They don't stack, so the one
+            // with the highest reduction will take precedence.
 
-            int perkRank = PerkService.GetPCPerkLevel(player, PerkType.Battlemage);
-
-            int restoreAmount = 0;
-            bool metRoll = RandomService.Random(100) + 1 <= 50;
-
-            switch (perkRank)
+            // Calculate shield damage reduction.
+            if (ItemService.ShieldBaseItemTypes.Contains(shield.BaseItemType))
             {
-                case 1 when metRoll:
-                    restoreAmount = 1;
-                    break;
-                case 2:
-                    restoreAmount = 1;
-                    break;
-                case 3:
-                    restoreAmount = 1;
-                    if (metRoll) restoreAmount++;
-                    break;
-                case 4:
-                    restoreAmount = 2;
-                    break;
-                case 5:
-                    restoreAmount = 2;
-                    if (metRoll) restoreAmount++;
-                    break;
-                case 6:
-                    restoreAmount = 3;
-                    break;
+                // Apply damage scaling based on shield presence
+                int perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.ShieldProficiency);
+                float perkBonus = 0.02f * perkLevel;
+
+                // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
+                reduction = (0.1 + 0.01 * shield.AC / 3) + perkBonus;
+            }
+            // Calculate Absorb Energy concentration effect reduction.
+            if (concentrationEffect.Type == PerkType.AbsorbEnergy)
+            {
+                double perkReduction = concentrationEffect.Tier * 0.1;
+                if (perkReduction > reduction)
+                {
+                    reduction = perkReduction;
+                    // Calculate and award force XP based on total damage reduced.
+                    int xp = (int)(data.Total * reduction);
+                    if (xp < 5) xp = 5;
+
+                    SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
+                }
             }
 
-            if (restoreAmount > 0)
-                AbilityService.RestoreFP(player, restoreAmount);
+            // No reduction found. Bail out early.
+            if (reduction <= 0.0f) return;
+
+            target.SendMessage("Damage reduced by " + (int)(reduction * 100) + "%");
+            reduction = 1.0f - reduction;
+
+            data.Bludgeoning = (int)(data.Bludgeoning * reduction);
+            data.Pierce = (int)(data.Pierce * reduction);
+            data.Slash = (int)(data.Slash * reduction);
+            data.Magical = (int)(data.Magical * reduction);
+            data.Acid = (int)(data.Acid * reduction);
+            data.Cold = (int)(data.Cold * reduction);
+            data.Divine = (int)(data.Divine * reduction);
+            data.Electrical = (int)(data.Electrical * reduction);
+            data.Fire = (int)(data.Fire * reduction);
+            data.Negative = (int)(data.Negative * reduction);
+            data.Positive = (int)(data.Positive * reduction);
+            data.Sonic = (int)(data.Sonic * reduction);
+            data.Base = (int)(data.Base * reduction);
+
+            NWNXDamage.SetDamageEventData(data);
         }
 
         private static void HandleApplySneakAttackDamage()
@@ -278,7 +294,7 @@ namespace SWLOR.Game.Server.Service
 
             if (absorbed < 1) absorbed = 1;
 
-            AbilityService.RestoreFP(player, absorbed);
+            AbilityService.RestorePlayerFP(player, absorbed);
         }
 
         private static void HandleRecoveryBlast()
@@ -359,305 +375,132 @@ namespace SWLOR.Game.Server.Service
             NWNXDamage.SetDamageEventData(data);
         }
 
-        private static int CalculateForceAccuracy(
-            NWCreature caster, 
-            NWCreature target,
-            ForceAbilityType abilityType)
+        /// <summary>
+        /// Calculates ability resistance for an ability.
+        /// The attacker and defender's skills, ability modifiers, and balance affinity will be
+        /// used to make this determination.
+        /// </summary>
+        /// <param name="attacker">The creature using the ability.</param>
+        /// <param name="defender">The creature being targeted by the ability.</param>
+        /// <param name="skill">The skill used for this ability.</param>
+        /// <param name="balanceType">The force balance type to use for this ability.</param>
+        /// <param name="sendRollMessage">If true, the roll message will be sent. Otherwise it won't be.</param>
+        /// <returns>Data regarding the ability resistance roll</returns>
+        public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {
-            EffectiveItemStats casterItemStats = caster.IsPlayer ? 
-                PlayerStatService.GetPlayerItemEffectiveStats(caster.Object) : 
-                null;
-            float casterPrimary;
-            float casterSecondary;
-            float casterItemAccuracy = casterItemStats?.ForceAccuracy ?? 0;
-
-            EffectiveItemStats targetItemStats = target.IsPlayer ? 
-                PlayerStatService.GetPlayerItemEffectiveStats(target.Object) : 
-                null;
-            float targetPrimary;
-            float targetSecondary;
-            float targetItemDefense = targetItemStats?.ForceDefense ?? 0;
-
-            switch (abilityType)
+            int abilityScoreType;
+            switch (skill)
             {
-                case ForceAbilityType.Electrical:
-                    casterPrimary = caster.Intelligence;
-                    casterSecondary = caster.Wisdom;
-                    targetPrimary = target.Intelligence;
-                    targetSecondary = target.Wisdom;
-                    targetItemDefense = targetItemDefense + targetItemStats?.ElectricalDefense ?? 0;
+                case SkillType.ForceAlter:
+                    abilityScoreType = ABILITY_INTELLIGENCE;
                     break;
-                case ForceAbilityType.Dark:
-                    casterPrimary = caster.Intelligence;
-                    casterSecondary = caster.Wisdom;
-                    targetPrimary = target.Wisdom;
-                    targetSecondary = target.Intelligence;
-                    targetItemDefense = targetItemDefense + targetItemStats?.DarkDefense ?? 0;
+                case SkillType.ForceControl:
+                    abilityScoreType = ABILITY_WISDOM;
                     break;
-                case ForceAbilityType.Mind:
-                    casterPrimary = caster.Wisdom;
-                    casterSecondary = caster.Intelligence;
-                    targetPrimary = target.Wisdom;
-                    targetSecondary = target.Intelligence;
-                    targetItemDefense = targetItemDefense + targetItemStats?.MindDefense ?? 0;
-                    break;
-                case ForceAbilityType.Light:
-                    casterPrimary = caster.Wisdom;
-                    casterSecondary = caster.Intelligence;
-                    targetPrimary = target.Intelligence;
-                    targetSecondary = target.Wisdom;
-                    targetItemDefense = targetItemDefense + targetItemStats?.ElectricalDefense ?? 0;
+                case SkillType.ForceSense:
+                    abilityScoreType = ABILITY_CHARISMA;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(abilityType), abilityType, null);
+                    throw new ArgumentException("Invalid skill type called for " + nameof(CalculateAbilityResistance) + ", value '" + skill + "' not supported.");
             }
 
-            // Calculate accuracy based on the caster's primary and secondary stats. Add modifiers for overall item accuracy.
-            float baseAccuracy = caster.Charisma * 0.25f + casterPrimary * 0.75f + casterSecondary * 0.5f + casterItemAccuracy * 0.15f;
 
-            // Calculate defense based on target's primary and secondary stats. Add modifiers for specific defense types.
-            float baseDefense = target.Charisma * 0.25f + targetPrimary * 0.75f + targetSecondary * 0.5f + targetItemDefense * 0.15f;
+            AbilityResistanceResult result = new AbilityResistanceResult();
 
-            // Temp defense increases whenever a hostile force ability is used. This is primarily a deterrant towards spamming the same ability over and over.
-            string expiration = target.GetLocalString("TEMP_FORCE_DEFENSE_" + (int) abilityType);
-            if(DateTime.TryParse(expiration, out var unused))
+            int attackerSkill = SkillService.GetPCSkillRank(attacker.Object, skill);
+            int attackerAbility = _.GetAbilityModifier(abilityScoreType, attacker);
+
+            int defenderSkill = SkillService.GetPCSkillRank(defender.Object, skill);
+            int defenderAbility = _.GetAbilityModifier(abilityScoreType, defender);
+
+            // If the defender is equipped with a lightsaber, we check their lightsaber skill
+            if (defender.RightHand.CustomItemType == CustomItemType.Lightsaber ||
+                defender.LeftHand.CustomItemType == CustomItemType.Lightsaber)
             {
-                int tempDefense = target.GetLocalInt("TEMP_FORCE_DEFENSE_" + (int)abilityType);
-                baseDefense += tempDefense;
+                int lightsaberSkill = SkillService.GetPCSkillRank(defender.Object, SkillType.Lightsaber);
+                if (lightsaberSkill > defenderSkill)
+                    defenderSkill = lightsaberSkill;
             }
 
+            // If the defender's martial arts skill is greater than the current skill they're using, we'll use that instead.
+            int defenderMASkill = SkillService.GetPCSkillRank(defender.Object, SkillType.MartialArts);
+            if (defenderMASkill > defenderSkill)
+                defenderSkill = defenderMASkill;
 
-            float delta = baseAccuracy - baseDefense;
-            float finalAccuracy = delta < 0 ?
-                75 + (float)Math.Floor(delta / 2.0f) :
-                75 + delta;
+            int attackerAffinity = 0; 
+            int defenderAffinity = 0;
 
-            // Accuracy cannot go above 95% or below 0%
-            if (finalAccuracy > 95)
-                finalAccuracy = 95;
-            else if (finalAccuracy < 0)
-                finalAccuracy = 0;
+            // Only check affinity if ability has a force balance type.
+            if (balanceType == ForceBalanceType.Dark || balanceType == ForceBalanceType.Light)
+            {
+                attackerAffinity = GetBalanceAffinity(attacker.Object, balanceType);
+                defenderAffinity = GetBalanceAffinity(defender.Object, balanceType);
+            }
 
-            return (int)finalAccuracy;
+            float attackerCR = attacker.IsPlayer ? 0f : attacker.ChallengeRating * 5f;
+            float defenderCR = defender.IsPlayer ? 0f : defender.ChallengeRating * 5f;
+
+            float attackerTotal = attackerSkill + attackerAbility + attackerAffinity + attackerCR;
+            float defenderTotal = defenderSkill + defenderAbility + defenderAffinity + defenderCR;
+            float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
+
+            //Console.WriteLine("attackerCR = " + attackerCR);
+            //Console.WriteLine("defenderCR = " + defenderCR);
+            //Console.WriteLine("attackerSkill = " + attackerSkill);
+            //Console.WriteLine("attackerAbility = " + attackerAbility);
+            //Console.WriteLine("attackerAffinity = " + attackerAffinity);
+            //Console.WriteLine("defenderSkill = " + defenderSkill);
+            //Console.WriteLine("defenderAbility = " + defenderAbility);
+            //Console.WriteLine("defenderAffinity = " + defenderAffinity);
+            //Console.WriteLine("attackerTotal = " + attackerTotal);
+            //Console.WriteLine("defenderTotal = " + defenderTotal);
+            //Console.WriteLine("divisor = " + divisor);
+
+            result.DC = (int) (attackerTotal / divisor * 100);
+            result.Roll = RandomService.D100(1);
+
+            if (sendRollMessage)
+            {
+                string resisted = result.IsResisted ? ColorTokenService.Red(" [RESISTED " + Math.Abs(result.Delta) + "%]") : string.Empty;
+                string message = ColorTokenService.SavingThrow("Roll: " + result.Roll + " VS " + result.DC + " DC") + resisted;
+                attacker.SendMessage(message);
+                defender.SendMessage(message);
+            }
+
+            return result;
         }
 
-        public static void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
+        private static int GetBalanceAffinity(NWPlayer player, ForceBalanceType balanceType)
         {
-            if (amount <= 0) amount = 1;
-            string variable = "TEMP_FORCE_DEFENSE_" + (int) forceAbility;
-            int tempDefense = target.GetLocalInt(variable) + amount;
-            string tempDateExpires = target.GetLocalString(variable);
-            DateTime expirationDate = DateTime.UtcNow;
-            if (!string.IsNullOrWhiteSpace(tempDateExpires))
+            if (!player.IsPlayer) return 0;
+
+            var perkIDs = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID)
+                .Select(s => new {s.PerkID, s.PerkLevel});
+
+            int balance = 0;
+            foreach (var perkID in perkIDs)
             {
-                expirationDate = DateTime.Parse(tempDateExpires);
-            }
-
-            expirationDate = expirationDate.AddSeconds(length);
-            target.SetLocalString(variable, expirationDate.ToString(CultureInfo.InvariantCulture));
-            target.SetLocalInt(variable, tempDefense);
-        }
-
-        public static ForceResistanceResult CalculateResistanceRating(
-            NWCreature caster,
-            NWCreature target,
-            ForceAbilityType forceAbility)
-        {
-            int accuracy = CalculateForceAccuracy(caster, target, forceAbility);
-            ForceResistanceResult result = new ForceResistanceResult();
-
-            // Do four checks to see if the attacker overcomes the defender's
-            // resistance.  The more checks you succeed, the lower the resistance. 
-            int successes = 0;
-            
-            if (RandomService.D100(1) <= accuracy)
-            {
-                successes++;
-
-                if (RandomService.D100(1) <= accuracy)
+                var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID.PerkID);
+                if (perk.ForceBalance == ForceBalanceType.Universal) continue;
+                var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID.PerkID && x.Level <= perkID.PerkLevel);
+                foreach (var perkLevel in perkLevels)
                 {
-                    successes++;
+                    int adjustment = perkLevel.Price / 2;
+                    if (adjustment < 1) adjustment = 1;
 
-                    if (RandomService.D100(1) <= accuracy)
+                    if (perk.ForceBalance == balanceType)
                     {
-                        successes++;
-
-                        if (RandomService.D100(1) <= accuracy)
-                        {
-                            successes++;
-                        }
+                        balance += adjustment;
+                    }
+                    else
+                    {
+                        balance -= adjustment;
                     }
                 }
+                
             }
 
-            switch (successes)
-            {
-                case 0:
-                    result.Amount = 0f;
-                    result.Type = ResistanceType.Full;
-                    break;
-                case 1:
-                    result.Amount = 0.125f;
-                    result.Type = ResistanceType.Eighth;
-                    break;
-                case 2:
-                    result.Amount = 0.25f;
-                    result.Type = ResistanceType.Fourth;
-                    break;
-                case 3:
-                    result.Amount = 0.5f;
-                    result.Type = ResistanceType.Half;
-                    break;
-                case 4:
-                    result.Amount = 1.0f;
-                    result.Type = ResistanceType.Zero;
-                    break;
-            }
-
-            return result;
+            return balance;
         }
-
-        public static int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
-        {
-            if (!caster.IsPlayer) return 0;
-            EffectiveItemStats itemStats = PlayerStatService.GetPlayerItemEffectiveStats(caster.Object);
-            
-            int itemBonus = itemStats.ForcePotency;
-            switch (abilityType)
-            {
-                case ForceAbilityType.Electrical:
-                    itemBonus += itemStats.ElectricalPotency;
-                    break;
-                case ForceAbilityType.Mind:
-                    itemBonus += itemStats.MindPotency;
-                    break;
-                case ForceAbilityType.Light:
-                    itemBonus += itemStats.LightPotency;
-                    break;
-                case ForceAbilityType.Dark:
-                    itemBonus += itemStats.DarkPotency;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(abilityType), abilityType, null);
-            }
-
-            return itemBonus;
-        }
-
-        public static ForceDamageResult CalculateForceDamage(
-            NWCreature caster,
-            NWCreature target,
-            ForceAbilityType abilityType,
-            int basePotency,
-            float tier1Modifier,
-            float tier2Modifier,
-            float tier3Modifier,
-            float tier4Modifier)
-        {
-            ForceResistanceResult resistance = CalculateResistanceRating(caster, target, abilityType);
-            int itemBonus = CalculateItemPotencyBonus(caster, abilityType);
-
-            int casterPrimary = 0;
-            int casterSecondary = 0;
-            int targetPrimary = 0;
-            int targetSecondary = 0;
-            switch (abilityType)
-            {
-                case ForceAbilityType.Electrical:
-                    casterPrimary = caster.Intelligence;
-                    casterSecondary = caster.Wisdom;
-                    targetPrimary = target.Intelligence;
-                    targetSecondary = target.Wisdom;
-                    break;
-                case ForceAbilityType.Mind:
-                    casterPrimary = caster.Wisdom;
-                    casterSecondary = caster.Intelligence;
-                    targetPrimary = target.Wisdom;
-                    targetSecondary = target.Intelligence;
-                    break;
-                case ForceAbilityType.Light:
-                    casterPrimary = caster.Wisdom;
-                    casterSecondary = caster.Intelligence;
-                    targetPrimary = target.Intelligence;
-                    targetSecondary = target.Wisdom;
-                    break;
-                case ForceAbilityType.Dark:
-                    casterPrimary = caster.Intelligence;
-                    casterSecondary = caster.Wisdom;
-                    targetPrimary = target.Wisdom;
-                    targetSecondary = target.Intelligence;
-                    break;
-            }
-
-            // Calculate delta between caster's primary/secondary stats and target's primary and secondary stats
-            int delta = (int)((casterPrimary + casterSecondary * 0.5f) - (targetPrimary + targetSecondary * 0.5f));
-
-            float multiplier;
-            // Not every ability will have tiers 2-4. Default to the next lowest one if it's missing.
-            if (delta <= 49 || tier2Modifier <= 0.0f)
-            {
-                multiplier = tier1Modifier;
-            }
-            else if (delta <= 99 || tier3Modifier <= 0.0f)
-            {
-                multiplier = tier2Modifier;
-            }
-            else if (delta <= 199 || tier4Modifier <= 0.0f) 
-            {
-                multiplier = tier3Modifier;
-            }
-            else
-            {
-                multiplier = tier4Modifier;
-            }
-
-            //caster.SendMessage("casterPrimary = " + casterPrimary + ", casterSecondary = " + casterSecondary + ", targetPrimary = " + targetPrimary + ", targetSecondary = " + targetSecondary);
-            //caster.SendMessage("itemBonus = " + itemBonus + ", basePotency = " + basePotency + ", delta = " + delta + ", multiplier = " + multiplier + ", resistanceMultiplier = " + resistanceMultiplier);
-
-            // Combine everything together to get the damage result.
-            int damage = (int)((itemBonus + basePotency + (delta * multiplier)) * resistance.Amount);
-
-            if (damage > 0)
-                damage += RandomService.D8(1);
-
-            if (damage <= 1)
-                damage = 1;
-
-            ForceDamageResult result = new ForceDamageResult
-            {
-                Damage = damage,
-                Resistance = resistance,
-                ItemBonus = itemBonus
-            };
-
-            // If this ability was resisted in any way, notify the caster.
-            if (resistance.Type != ResistanceType.Zero)
-            {
-                string name = GetForceResistanceName(resistance.Type);
-                caster.SendMessage("Your force ability was resisted. " + name);
-            }
-
-            return result;
-        }
-
-        private static string GetForceResistanceName(ResistanceType type)
-        {
-            switch (type)
-            {
-                case ResistanceType.Zero:
-                    return string.Empty;
-                case ResistanceType.Half:
-                    return "(1/2)";
-                case ResistanceType.Fourth:
-                    return "(1/4)";
-                case ResistanceType.Eighth:
-                    return "(1/8)";
-                case ResistanceType.Full:
-                    return "(Fully Resisted)";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
-
     }
 }

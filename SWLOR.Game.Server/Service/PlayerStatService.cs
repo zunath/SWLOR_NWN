@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PlayerStatService
     {
-        public const float PrimaryIncrease = 0.2f;
-        public const float SecondaryIncrease = 0.1f;
-        public const float TertiaryIncrease = 0.05f;
-        private const int MaxAttributeBonus = 70;
+        public const float PrimaryIncrease = 0.1f;
+        public const float SecondaryIncrease = 0.05f;
+        public const float TertiaryIncrease = 0.025f;
+        private const int MaxAttributeBonus = 35;
         
         public static void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
         {
@@ -88,20 +88,20 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
 
             // Apply item bonuses
-            strBonus += itemBonuses.Strength;
-            dexBonus += itemBonuses.Dexterity;
-            conBonus += itemBonuses.Constitution;
-            wisBonus += itemBonuses.Wisdom;
-            intBonus += itemBonuses.Intelligence;
-            chaBonus += itemBonuses.Charisma;
+            strBonus += itemBonuses.Strength / 3;
+            dexBonus += itemBonuses.Dexterity / 3;
+            conBonus += itemBonuses.Constitution / 3;
+            wisBonus += itemBonuses.Wisdom / 3;
+            intBonus += itemBonuses.Intelligence / 3;
+            chaBonus += itemBonuses.Charisma / 3;
 
             // Check final caps
-            if (strBonus > 100) strBonus = 100;
-            if (dexBonus > 100) dexBonus = 100;
-            if (conBonus > 100) conBonus = 100;
-            if (intBonus > 100) intBonus = 100;
-            if (wisBonus > 100) wisBonus = 100;
-            if (chaBonus > 100) chaBonus = 100;
+            if (strBonus > 55) strBonus = 55;
+            if (dexBonus > 55) dexBonus = 55;
+            if (conBonus > 55) conBonus = 55;
+            if (intBonus > 55) intBonus = 55;
+            if (wisBonus > 55) wisBonus = 55;
+            if (chaBonus > 55) chaBonus = 55;
 
             // Apply attributes
             NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
@@ -112,16 +112,13 @@ namespace SWLOR.Game.Server.Service
             NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
 
             // Apply AC
-
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcAC"))
             {
                 int ac = EffectiveArmorClass(itemBonuses, player);
                 NWNXCreature.SetBaseAC(player, ac);
             }
 
-
             // Apply BAB
-
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcBAB"))
             {
                 int bab = CalculateBAB(player, ignoreItem, itemBonuses);
@@ -129,7 +126,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Apply HP
-
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcHP"))
             {
                 int hp = EffectiveMaxHitPoints(player, itemBonuses);
@@ -154,8 +150,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-
-
             if (player.CurrentHP > player.MaxHP)
             {
                 int amount = player.CurrentHP - player.MaxHP;
@@ -175,6 +169,12 @@ namespace SWLOR.Game.Server.Service
 
                 DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
             }
+
+            // Attempt a refresh of the character sheet UI in a second.
+            _.DelayCommand(1.0f, () =>
+            {
+                NWNXPlayer.UpdateCharacterSheet(player);
+            });
         }
 
 
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
             int hp = 25 + player.ConstitutionModifier * 5;
             float effectPercentBonus = CustomEffectService.CalculateEffectHPBonusPercent(player);
             
-            hp += PerkService.GetPCPerkLevel(player, PerkType.Health) * 5;
+            hp += PerkService.GetCreaturePerkLevel(player, PerkType.Health) * 5;
             hp += stats.HP;
             hp = hp + (int)(hp * effectPercentBonus);
 
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         {
             int fp = 20;
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            fp += PerkService.GetPCPerkLevel(player, PerkType.FP) * 5;
+            fp += PerkService.GetCreaturePerkLevel(player, PerkType.FP) * 5;
             fp += stats.FP;
 
             if (fp < 0) fp = 0;
@@ -226,7 +226,29 @@ namespace SWLOR.Game.Server.Service
 
         private static int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
         {
-            int baseAC = stats.AC + CustomEffectService.CalculateEffectAC(player);
+            int baseAC = stats.AC / 3 + CustomEffectService.CalculateEffectAC(player);
+
+            // Calculate AC bonus granted by skill ranks.
+            // Only chest armor is checked for this bonus.
+            CustomItemType armorType = player.Chest.CustomItemType;
+            int skillRank = 0;
+            switch (armorType)
+            {
+                case CustomItemType.LightArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.LightArmor);
+                    break;
+                case CustomItemType.HeavyArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.HeavyArmor);
+                    break;
+                case CustomItemType.ForceArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceArmor);
+                    break;
+            }
+
+            // +1 AC per 20 skill ranks, while wearing the appropriate armor.
+            int skillACBonus = skillRank / 20;
+            baseAC += skillACBonus;
+
             int totalAC = _.GetAC(player) - baseAC;
             
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
@@ -234,12 +256,12 @@ namespace SWLOR.Game.Server.Service
             if (stance == CustomEffectType.ShieldOath)
             {
                 int bonus = (int) (totalAC * 0.2f);
-                baseAC = baseAC + bonus;
+                baseAC += bonus;
             }
             else if (stance == CustomEffectType.PrecisionTargeting)
             {
                 int penalty = (int)(totalAC * 0.3f);
-                baseAC = baseAC - penalty;
+                baseAC -= penalty;
             }
 
             if (baseAC < 0) baseAC = 0;
@@ -285,28 +307,14 @@ namespace SWLOR.Game.Server.Service
 
                         using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))
                         {
-                            // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
-                            if (item.CastingSpeed > 0)
+                            // Only scale cooldown recovery if it's a bonus. Penalties remain regardless of skill level difference.
+                            if (item.CooldownRecovery > 0)
                             {
-                                stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank, 1);
+                                stats.CooldownRecovery += CalculateAdjustedValue(item.CooldownRecovery, item.RecommendedLevel, rank, 1);
                             }
-                            else stats.CastingSpeed += item.CastingSpeed;
+                            else stats.CooldownRecovery += item.CooldownRecovery;
 
                             stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
-                            
-                            stats.ForcePotency += CalculateAdjustedValue(item.ForcePotencyBonus, item.RecommendedLevel, rank, 0);
-                            stats.ForceDefense += CalculateAdjustedValue(item.ForceDefenseBonus, item.RecommendedLevel, rank, 0);
-                            stats.ForceAccuracy += CalculateAdjustedValue(item.ForceAccuracyBonus, item.RecommendedLevel, rank, 0);
-                            
-                            stats.ElectricalPotency += CalculateAdjustedValue(item.ElectricalPotencyBonus, item.RecommendedLevel, rank, 0);
-                            stats.MindPotency += CalculateAdjustedValue(item.MindPotencyBonus, item.RecommendedLevel, rank, 0);
-                            stats.LightPotency += CalculateAdjustedValue(item.LightPotencyBonus, item.RecommendedLevel, rank, 0);
-                            stats.DarkPotency += CalculateAdjustedValue(item.DarkPotencyBonus, item.RecommendedLevel, rank, 0);
-                            
-                            stats.ElectricalDefense += CalculateAdjustedValue(item.ElectricalDefenseBonus, item.RecommendedLevel, rank, 0);
-                            stats.MindDefense += CalculateAdjustedValue(item.MindDefenseBonus, item.RecommendedLevel, rank, 0);
-                            stats.LightDefense += CalculateAdjustedValue(item.LightDefenseBonus, item.RecommendedLevel, rank, 0);
-                            stats.DarkDefense += CalculateAdjustedValue(item.DarkDefenseBonus, item.RecommendedLevel, rank, 0);
                             
                             stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
                             stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
@@ -335,25 +343,26 @@ namespace SWLOR.Game.Server.Service
 
                         }
 
-
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcBAB"))
                         {
                             // Calculate base attack bonus
-                            int itemLevel = item.RecommendedLevel;
-                            int delta = itemLevel - rank;
-                            int itemBAB = item.BaseAttackBonus;
-                            if (delta >= 1) itemBAB--;
-                            if (delta > 0) itemBAB = itemBAB - delta / 5;
+                            if (ItemService.WeaponBaseItemTypes.Contains(item.BaseItemType))
+                            {
+                                int itemLevel = item.RecommendedLevel;
+                                int delta = itemLevel - rank;
+                                int itemBAB = item.BaseAttackBonus;
+                                if (delta >= 1) itemBAB--;
+                                if (delta > 0) itemBAB = itemBAB - delta / 5;
 
-                            if (itemBAB <= 0) itemBAB = 0;
-                            stats.BAB += itemBAB;
-
+                                if (itemBAB <= 0) itemBAB = 0;
+                                stats.BAB += itemBAB;
+                            }
                         }
 
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcAC"))
                         {
                             // Calculate AC
-                            if (ACBaseItemTypes.Contains(item.BaseItemType))
+                            if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
                             {
                                 int skillRankToUse;
                                 if (item.CustomItemType == CustomItemType.HeavyArmor)
@@ -385,10 +394,10 @@ namespace SWLOR.Game.Server.Service
                 using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::FinalAdjustments"))
                 {
                     // Final casting speed adjustments
-                    if (stats.CastingSpeed < -99)
-                        stats.CastingSpeed = -99;
-                    else if (stats.CastingSpeed > 99)
-                        stats.CastingSpeed = 99;
+                    if (stats.CooldownRecovery < -99)
+                        stats.CooldownRecovery = -99;
+                    else if (stats.CooldownRecovery > 99)
+                        stats.CooldownRecovery = 99;
 
                     // Final enmity adjustments
                     if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
@@ -507,81 +516,32 @@ namespace SWLOR.Game.Server.Service
             int backgroundBAB = 0;
             BackgroundType background = (BackgroundType)oPC.Class1;
             bool receivesBackgroundBonus = false;
-
-            // Apply increased BAB if player is using a weapon for which they have a proficiency.
-            PerkType proficiencyPerk = PerkType.Unknown;
-            SkillType proficiencySkill = SkillType.Unknown;
+            
             switch (weapon.CustomItemType)
             {
-                case CustomItemType.Vibroblade:
-                    proficiencyPerk = PerkType.VibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    break;
                 case CustomItemType.FinesseVibroblade:
-                    proficiencyPerk = PerkType.FinesseVibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
                     receivesBackgroundBonus = background == BackgroundType.Duelist;
                     break;
                 case CustomItemType.Baton:
-                    proficiencyPerk = PerkType.BatonProficiency;
-                    proficiencySkill = SkillType.OneHanded;
                     receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
                     break;
                 case CustomItemType.HeavyVibroblade:
-                    proficiencyPerk = PerkType.HeavyVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
                     receivesBackgroundBonus = background == BackgroundType.Soldier;
                     break;
-                case CustomItemType.Saberstaff:
-                    proficiencyPerk = PerkType.SaberstaffProficiency;
-                    proficiencySkill = SkillType.Lightsaber;
-                    break;
-                case CustomItemType.Polearm:
-                    proficiencyPerk = PerkType.PolearmProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
-                    break;
                 case CustomItemType.TwinBlade:
-                    proficiencyPerk = PerkType.TwinVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwinBlades;
                     receivesBackgroundBonus = background == BackgroundType.Berserker;
                     break;
                 case CustomItemType.MartialArtWeapon:
-                    proficiencyPerk = PerkType.MartialArtsProficiency;
-                    proficiencySkill = SkillType.MartialArts;
                     receivesBackgroundBonus = background == BackgroundType.TerasKasi;
                     break;
                 case CustomItemType.BlasterPistol:
-                    proficiencyPerk = PerkType.BlasterPistolProficiency;
-                    proficiencySkill = SkillType.Firearms;
                     receivesBackgroundBonus = background == BackgroundType.Smuggler;
                     break;
                 case CustomItemType.BlasterRifle:
-                    proficiencyPerk = PerkType.BlasterRifleProficiency;
-                    proficiencySkill = SkillType.Firearms;
                     receivesBackgroundBonus = background == BackgroundType.Sharpshooter || background == BackgroundType.Mandalorian;
                     break;
-                case CustomItemType.Throwing:
-                    proficiencyPerk = PerkType.ThrowingProficiency;
-                    proficiencySkill = SkillType.Throwing;
-                    break;
-                case CustomItemType.Lightsaber:
-                    proficiencyPerk = PerkType.LightsaberProficiency;
-                    proficiencySkill = SkillType.Lightsaber;
-                    break;
             }
-
-            if (weapon.GetLocalInt("LIGHTSABER") == TRUE)
-            {
-                proficiencyPerk = PerkType.LightsaberProficiency;
-                proficiencySkill = SkillType.Lightsaber;
-            }
-
-            if (proficiencyPerk != PerkType.Unknown &&
-                proficiencySkill != SkillType.Unknown)
-            {
-                perkBAB += PerkService.GetPCPerkLevel(oPC, proficiencyPerk);
-            }
-
+            
             if (receivesBackgroundBonus)
             {
                 backgroundBAB = background == BackgroundType.Mandalorian ? 1 : 2;

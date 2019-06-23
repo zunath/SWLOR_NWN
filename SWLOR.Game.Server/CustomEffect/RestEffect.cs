@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
+            AbilityService.EndConcentrationEffect(oCaster);
+
             NWPlayer player = oTarget.Object;
             int restTick = oTarget.GetLocalInt("REST_TICK") + 1;
 
@@ -88,20 +90,20 @@ namespace SWLOR.Game.Server.CustomEffect
         private int CalculateAmount(NWPlayer player)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Rest);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Rest);
             int amount;
             switch (perkLevel)
             {
                 default:
-                    amount = 2;
+                    amount = 6;
                     break;
                 case 4:
                 case 5:
                 case 6:
-                    amount = 3;
+                    amount = 10;
                     break;
                 case 7:
-                    amount = 4;
+                    amount = 14;
                     break;
             }
             amount += effectiveStats.Rest;
@@ -109,12 +111,12 @@ namespace SWLOR.Game.Server.CustomEffect
             return amount;
         }
         
-        public static bool CanRest(NWPlayer oPC)
+        public static bool CanRest(NWCreature creature)
         {
-            bool canRest = !oPC.IsInCombat;
+            bool canRest = !creature.IsInCombat;
 
-            NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.PartyMembers)
+            NWArea pcArea = creature.Area;
+            foreach (NWCreature member in creature.PartyMembers)
             {
                 if (!member.Area.Equals(pcArea)) continue;
 

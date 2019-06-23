@@ -7,8 +7,6 @@ Website: http://starwarsnwn.com/
 
 Discord: https://discord.gg/MyQAM6m
 
-Trello: https://trello.com/b/ZaHbq0M3/development
-
 # Project Description
 
 This project contains the C# source code used on the Star Wars: Legends of the Old Republic server. 
@@ -35,26 +33,12 @@ Refer to the quick start guide below and be sure to post any issues on our forum
 
 8.) Open the project you just cloned.
 
-# Hosting Dependencies
+# Hosting a Server
 
-1.) Neverwinter Nights: Enhanced Edition Server Files
-
-2.) Linux OS
-
-3.) NWNX + the following plugins: Chat, Creature, Events, Mono, Object, Player
-
-4.) Mono framework
-
-5.) Microsoft SQL Server 2017
-
-# Using Docker
-
-I highly recommend using Docker to speed up development time. You can read about how to use it for NWN:EE here: https://hub.docker.com/r/nwnxee/nwserver/
-
-It'll take care of hosting dependencies #1-#4. You only need to set up the SQL Server database at that point.
+Please refer to this guide for hosting a server: https://github.com/zunath/SWLOR_NWN/wiki/Server-Set-Up-(Windows)
 
 # Getting Help
 
-If you need help with anything related to Star Wars: Legends of the Old Republic please feel free to contact us on our Discord.
+If you need help with anything related to Star Wars: Legends of the Old Republic please feel free to contact us on our Discord here: https://discord.gg/MyQAM6m
 
 For NWNX and Docker related issues please look for help in the NWNX Discord channel here: https://discord.gg/m2hJPDE

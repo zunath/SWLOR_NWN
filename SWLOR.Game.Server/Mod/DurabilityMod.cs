@@ -9,11 +9,12 @@ namespace SWLOR.Game.Server.Mod
     public class DurabilityMod: IModHandler
     {
         public int ModTypeID => 19;
+        private const int MaxValue = 100;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             var maxDurability = DurabilityService.GetMaxDurability(target);
-            if (maxDurability >= 100)
+            if (maxDurability >= MaxValue)
                 return "You cannot improve that item's maximum durability any further.";
 
             return null;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Mod
 
             int value = Convert.ToInt32(args[0]);
             float newValue = maxDurability + value;
-            if (newValue > 100) newValue = 100;
+            if (newValue > MaxValue) newValue = MaxValue;
             maxDurability = newValue;
             curDurability += value;
 

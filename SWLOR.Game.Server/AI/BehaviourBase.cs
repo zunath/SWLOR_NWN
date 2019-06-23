@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -33,11 +37,16 @@ namespace SWLOR.Game.Server.AI
         private const float DefaultAggroRange = 10.0f;
         private const float DefaultLinkRange = 12.0f;
 
+        /// <summary>
+        /// Retrieves the AI flags set on the creature. Typically set in the SpawnService.
+        /// </summary>
+        /// <param name="self">The creature to retrieve the flags from.</param>
+        /// <returns>The AIFlags object stored on the creature.</returns>
         private AIFlags GetAIFlags(NWCreature self)
         {
             return (AIFlags)self.GetLocalInt("AI_FLAGS");
         }
-
+        
         public virtual void OnBlocked(NWCreature self)
         {
             NWObject door = (GetBlockingDoor());
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.AI
             AttackHighestEnmity(self);
             EquipBestWeapon(self);
             ProcessNearbyCreatures(self);
+            ProcessPerkFeats(self);
 
             OnAIProcessing(self);
         }
@@ -331,6 +341,46 @@ namespace SWLOR.Game.Server.AI
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
+            }
+        }
+
+        private static void ProcessPerkFeats(NWCreature self)
+        {
+            // Bail early if any of the following is true:
+            //      - Creature has a weapon skill queued.
+            //      - Creature does not have a PerkFeat cache.
+            //      - There are no perk feats in the cache.
+            //      - Creature has no target.
+
+            if (self.GetLocalInt("ACTIVE_WEAPON_SKILL") > 0) return;
+            if (!self.Data.ContainsKey("PERK_FEATS")) return;
+
+            Dictionary<int, AIPerkDetails> cache = self.Data["PERK_FEATS"];
+            if (cache.Count <= 0) return;
+
+            NWObject target = _.GetAttackTarget(self);
+            if (!target.IsValid) return;
+
+            // Pull back whatever concentration effect is currently active, if any.
+            var concentration = AbilityService.GetActiveConcentrationEffect(self);
+
+            // Exclude any concentration effects, if necessary, then randomize potential feats to use.
+            var randomizedFeatIDs = concentration.Type == PerkType.Unknown 
+                ? cache.Values // No concentration exclusions
+                : cache.Values.Where(x => x.ExecutionType != PerkExecutionType.ConcentrationAbility); // Exclude concentration abilities
+            randomizedFeatIDs = randomizedFeatIDs.OrderBy(o => RandomService.Random());
+
+            foreach (var perkDetails in randomizedFeatIDs)
+            {
+                // Move to next feat if this creature cannot use this one.
+                if (!AbilityService.CanUsePerkFeat(self, target, perkDetails.FeatID)) continue;
+                
+                self.AssignCommand(() =>
+                {
+                    _.ActionUseFeat(perkDetails.FeatID, target);
+                });
+
+                break;
             }
         }
 

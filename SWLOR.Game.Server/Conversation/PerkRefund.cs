@@ -2,9 +2,9 @@
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service;
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var handler = PerkService.GetPerkHandler(perk.ID);
             handler.OnRemoved(player);
-            MessageHub.Instance.Publish(new PerkRefundedMessage(player, pcPerk.PerkID));
+            MessageHub.Instance.Publish(new OnPerkRefunded(player, pcPerk.PerkID));
         }
 
         private bool IsGrantedByBackground(PerkType perkType)

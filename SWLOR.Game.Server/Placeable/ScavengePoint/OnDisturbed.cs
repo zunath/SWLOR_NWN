@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                     {
                         _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
 
-                        int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.SeedPicker);
+                        int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.SeedPicker);
                         if (RandomService.Random(100) + 1 <= perkLevel * 10)
                         {
                             _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);

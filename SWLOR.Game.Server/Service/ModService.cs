@@ -52,6 +52,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static bool IsModHandlerRegistered(int modTypeID)
+        {
+            return _modHandlers.ContainsKey(modTypeID);
+        }
+
         public static IModHandler GetModHandler(int modTypeID)
         {
             if (!_modHandlers.ContainsKey(modTypeID))

@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         public bool Run(params object[] args)
         {
             _player = (NWPlayer) args[0];
-            _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
             int xp = 100; // Always grant at least this much XP to player.
 
             // Remove the immobilization effect
@@ -33,6 +32,18 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 }
             }
 
+            // Check for a fuel cell in the player's inventory again. If it doesn't exist, we exit early with an error message.
+            NWItem fuel = _.GetItemPossessedBy(_player, "ass_power");
+            if (!fuel.IsValid)
+            {
+                _player.SendMessage(ColorTokenService.Red("A 'Reassembly Fuel Cell' was not found in your inventory. Reassembly failed."));
+                return false;
+            }
+
+            // Otherwise the fuel cell was found. Destroy it and continue on with the process.
+            fuel.Destroy();
+
+            _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
             string serializedSalvageItem = (string)args[1];
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
@@ -41,27 +52,13 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             
             // Create an item with no bonuses every time.
             _.CreateItemOnObject(_componentType.ReassembledResref, _player);
-
-            // First check is for attack bonuses
-            foreach (var prop in item.ItemProperties)
-            {
-                int propTypeID = _.GetItemPropertyType(prop);
-                if (propTypeID == _.ITEM_PROPERTY_ATTACK_BONUS)
-                {
-                    // Get the amount of Attack Bonus
-                    int amount = _.GetItemPropertyCostTableValue(prop);
-
-                    xp += ProcessProperty(amount, 3, ComponentBonusType.AttackBonusUp);
-                }
-            }
-
+            
             // Now check specific custom properties which are stored as local variables on the item.
-            xp += ProcessProperty(item.CustomAC, 3, ComponentBonusType.ACUp);
             xp += ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
             xp += ProcessProperty(item.PilotingBonus, 3, ComponentBonusType.PilotingUp);
             xp += ProcessProperty(item.ScanningBonus, 3, ComponentBonusType.ScanningUp);
             xp += ProcessProperty(item.ScavengingBonus, 3, ComponentBonusType.ScavengingUp);
-            xp += ProcessProperty(item.CastingSpeed, 3, ComponentBonusType.CastingSpeedUp);
+            xp += ProcessProperty(item.CooldownRecovery, 3, ComponentBonusType.CooldownRecoveryUp);
             xp += ProcessProperty(item.CraftBonusArmorsmith, 3, ComponentBonusType.ArmorsmithUp);
             xp += ProcessProperty(item.CraftBonusWeaponsmith, 3, ComponentBonusType.WeaponsmithUp);
             xp += ProcessProperty(item.CraftBonusCooking, 3, ComponentBonusType.CookingUp);
@@ -70,18 +67,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             xp += ProcessProperty(item.HPBonus, 5, ComponentBonusType.HPUp, 0.5f);
             xp += ProcessProperty(item.FPBonus, 5, ComponentBonusType.FPUp, 0.5f);
             xp += ProcessProperty(item.EnmityRate, 3, ComponentBonusType.EnmityUp);
-            xp += ProcessProperty(item.ForcePotencyBonus, 3, ComponentBonusType.ForcePotencyUp);
-            xp += ProcessProperty(item.ForceAccuracyBonus, 3, ComponentBonusType.ForceAccuracyUp);
-            xp += ProcessProperty(item.ForceDefenseBonus, 3, ComponentBonusType.ForceDefenseUp);
-            xp += ProcessProperty(item.ElectricalPotencyBonus, 3, ComponentBonusType.ElectricalPotencyUp);
-            xp += ProcessProperty(item.MindPotencyBonus, 3, ComponentBonusType.MindPotencyUp);
-            xp += ProcessProperty(item.LightPotencyBonus, 3, ComponentBonusType.LightPotencyUp);
-            xp += ProcessProperty(item.DarkPotencyBonus, 3, ComponentBonusType.DarkPotencyUp);
-            xp += ProcessProperty(item.ElectricalDefenseBonus, 3, ComponentBonusType.ElectricalDefenseUp);
-            xp += ProcessProperty(item.MindDefenseBonus, 3, ComponentBonusType.MindDefenseUp);
-            xp += ProcessProperty(item.LightDefenseBonus, 3, ComponentBonusType.LightDefenseUp);
-            xp += ProcessProperty(item.DarkDefenseBonus, 3, ComponentBonusType.DarkDefenseUp);
-
+            
             xp += ProcessProperty(item.LuckBonus, 3, ComponentBonusType.LuckUp);
             xp += ProcessProperty(item.MeditateBonus, 3, ComponentBonusType.MeditateUp);
             xp += ProcessProperty(item.RestBonus, 3, ComponentBonusType.RestUp);
@@ -110,7 +96,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         {
             string resref = _componentType.ReassembledResref;
             int penalty = 0;
-            int luck = PerkService.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
+            int luck = PerkService.GetCreaturePerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
             int xp = 0;
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked

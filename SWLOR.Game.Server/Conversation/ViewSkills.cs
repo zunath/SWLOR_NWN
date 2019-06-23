@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
             PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
+            int req = SkillService.SkillXPRequirements[pcSkill.Rank];
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
+        private string CreateSkillDetailsHeader(PCSkill pcSkill, int req)
         {
             Player player = DataService.Get<Player>(pcSkill.PlayerID);
             Skill skill = SkillService.GetSkill(pcSkill.SkillID);
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Conversation
             return
                     ColorTokenService.Green("Skill: ") + skill.Name + "\n" +
                     ColorTokenService.Green("Rank: ") + title + "\n" +
-                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req.XP, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
+                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
                     rpXP +
                     primary +
                     secondary +

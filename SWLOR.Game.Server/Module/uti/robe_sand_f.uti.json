@@ -1,0 +1,173 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 198
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 109
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 101
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 102
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 85
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 63
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 30
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 63
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 109
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 101
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 102
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 85
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 63
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 19
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 3
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 2
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 2
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 3
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Robe Sand Female"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 11
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 11
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 5
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "Robe_Sand_Female"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "robe_sand_f"
+  }
+}

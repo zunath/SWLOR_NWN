@@ -1,0 +1,151 @@
+{
+  "__data_type": "UTE ",
+  "Active": {
+    "type": "byte",
+    "value": 1
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "CreatureList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Appearance": {
+          "type": "int",
+          "value": 968
+        },
+        "CR": {
+          "type": "float",
+          "value": 14.0
+        },
+        "ResRef": {
+          "type": "resref",
+          "value": "pirate_corvette1"
+        },
+        "SingleSpawn": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Appearance": {
+          "type": "int",
+          "value": 898
+        },
+        "CR": {
+          "type": "float",
+          "value": 14.0
+        },
+        "ResRef": {
+          "type": "resref",
+          "value": "pirate_fighter_2"
+        },
+        "SingleSpawn": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Appearance": {
+          "type": "int",
+          "value": 897
+        },
+        "CR": {
+          "type": "float",
+          "value": 15.0
+        },
+        "ResRef": {
+          "type": "resref",
+          "value": "pirate_fighter_1"
+        },
+        "SingleSpawn": {
+          "type": "byte",
+          "value": 0
+        }
+      }
+    ]
+  },
+  "Difficulty": {
+    "type": "int",
+    "value": 0
+  },
+  "DifficultyIndex": {
+    "type": "int",
+    "value": 1
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "PirateCorvetteFighters"
+    }
+  },
+  "MaxCreatures": {
+    "type": "int",
+    "value": 4
+  },
+  "OnEntered": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnExhausted": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnExit": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUserDefined": {
+    "type": "resref",
+    "value": ""
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 0
+  },
+  "PlayerOnly": {
+    "type": "byte",
+    "value": 1
+  },
+  "RecCreatures": {
+    "type": "int",
+    "value": 1
+  },
+  "Reset": {
+    "type": "byte",
+    "value": 1
+  },
+  "ResetTime": {
+    "type": "int",
+    "value": 300
+  },
+  "Respawns": {
+    "type": "int",
+    "value": -1
+  },
+  "SpawnOption": {
+    "type": "int",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "PirateCorvetteFighters"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "piratecorvettefi"
+  }
+}

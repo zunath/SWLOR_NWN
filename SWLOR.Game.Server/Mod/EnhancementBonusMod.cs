@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Mod
     public class EnhancementBonusMod : IModHandler
     {
         public int ModTypeID => 24;
+        private const int MaxValue = 20;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
                 return "This mod can only be applied to weapons.";
 
             int existingEnhancementBonus = GetExistingEnhancementBonus(target);
-            if (existingEnhancementBonus >= 20) return "You cannot improve that item's enhancement bonus any further.";
+            if (existingEnhancementBonus >= MaxValue) return "You cannot improve that item's enhancement bonus any further.";
 
             return null;
         }
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Mod
             int additionalEnhancementBonus = Convert.ToInt32(args[0]);
             int existingEnhancementBonus = GetExistingEnhancementBonus(target);
             int newValue = existingEnhancementBonus + additionalEnhancementBonus;
-            if (newValue > 20) newValue = 20;
+            if (newValue > MaxValue) newValue = MaxValue;
 
             ItemProperty ip = _.ItemPropertyEnhancementBonus(newValue);
             ip = _.TagItemProperty(ip, "RUNE_IP");

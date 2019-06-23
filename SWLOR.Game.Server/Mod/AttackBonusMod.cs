@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Mod
     public class AttackBonusMod: IModHandler
     {
         public int ModTypeID => 3;
+        private const int MaxValue = 20;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
                 return "This mod can only be applied to weapons.";
 
             int existingAB = GetExistingAB(target);
-            if (existingAB >= 20) return "You cannot improve that item's attack bonus any further.";
+            if (existingAB >= MaxValue) return "You cannot improve that item's attack bonus any further.";
 
             return null;
         }
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Mod
             int additionalAB = Convert.ToInt32(args[0]);
             int existingAB = GetExistingAB(target);
             int newValue = existingAB + additionalAB;
-            if (newValue > 20) newValue = 20;
+            if (newValue > MaxValue) newValue = MaxValue;
 
             ItemProperty ip = _.ItemPropertyAttackBonus(newValue);
             ip = _.TagItemProperty(ip, "RUNE_IP");
@@ -46,16 +47,18 @@ namespace SWLOR.Game.Server.Mod
 
         private int GetExistingAB(NWItem item)
         {
+            int currentAB = 0;
             foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
                 if (type == _.ITEM_PROPERTY_ATTACK_BONUS)
                 {
-                    return _.GetItemPropertyCostTableValue(ip);
+                    int bonus =  _.GetItemPropertyCostTableValue(ip);
+                    if (bonus > currentAB) currentAB = bonus;
                 }
             }
 
-            return 0;
+            return currentAB;
         }
     }
 }

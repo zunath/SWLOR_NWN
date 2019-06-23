@@ -21,9 +21,9 @@
         Cooking = 16,
         Medicine = 17,
         Mirialan = 18,
-        ForceCombat = 19,
-        ForceSupport = 20,
-        ForceUtility = 21,
+        ForceAlter = 19,
+        ForceControl = 20,
+        ForceSense = 21,
         Engineering = 22,
         Farming = 23,
         Scavenging = 24,
@@ -39,6 +39,7 @@
         Mandoa = 34,
         Huttese = 35,
         Piloting = 36,
-        MonCalamarian = 37
+        MonCalamarian = 37,
+        Ugnaught = 38
     }
 }

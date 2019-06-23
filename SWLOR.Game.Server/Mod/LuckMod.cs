@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class LuckMod: IModHandler
     {
         public int ModTypeID => 21;
+        private const int MaxValue = 5;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.LuckBonus >= 5)
+            if (target.LuckBonus >= MaxValue)
                 return "You cannot improve that item's luck bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.LuckBonus + value;
-            if (newValue > 5) newValue = 5;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.LuckBonus = newValue;
         }
 

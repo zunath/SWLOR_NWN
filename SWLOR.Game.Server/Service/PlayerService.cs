@@ -10,6 +10,7 @@ using static NWN._;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
@@ -492,7 +493,7 @@ namespace SWLOR.Game.Server.Service
         private static void HandleRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
-            int rate = 20;
+            int rate = 5;
             int amount = entity.HPRegenerationAmount;
 
             if (entity.RegenerationTick <= 0)
@@ -510,7 +511,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
                     {
-                        int sturdinessLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Sturdiness);
+                        int sturdinessLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Sturdiness);
                         if (sturdinessLevel > 0)
                         {
                             amount += sturdinessLevel + 1;
@@ -526,7 +527,7 @@ namespace SWLOR.Game.Server.Service
         private static void HandleFPRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.CurrentFPTick = entity.CurrentFPTick - 1;
-            int rate = 20;
+            int rate = 5;
             int amount = 1;
 
             if (entity.CurrentFPTick <= 0)
@@ -544,14 +545,14 @@ namespace SWLOR.Game.Server.Service
 
                     if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {
-                        int clarityLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Clarity);
+                        int clarityLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Clarity);
                         if (clarityLevel > 0)
                         {
                             amount += clarityLevel + 1;
                         }
                     }
 
-                    entity = AbilityService.RestoreFP(oPC, amount, entity);
+                    entity = AbilityService.RestorePlayerFP(oPC, amount, entity);
                 }
 
                 entity.CurrentFPTick = rate;

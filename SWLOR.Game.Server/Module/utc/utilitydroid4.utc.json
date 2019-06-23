@@ -1,0 +1,571 @@
+{
+  "__data_type": "UTC ",
+  "Appearance_Type": {
+    "type": "word",
+    "value": 2180
+  },
+  "BodyBag": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cha": {
+    "type": "byte",
+    "value": 4
+  },
+  "ChallengeRating": {
+    "type": "float",
+    "value": 0.125
+  },
+  "ClassList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 63
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 5
+        }
+      }
+    ]
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Con": {
+    "type": "byte",
+    "value": 24
+  },
+  "Conversation": {
+    "type": "resref",
+    "value": ""
+  },
+  "CRAdjust": {
+    "type": "int",
+    "value": -3
+  },
+  "CurrentHitPoints": {
+    "type": "short",
+    "value": 25
+  },
+  "DecayTime": {
+    "type": "dword",
+    "value": 5000
+  },
+  "Deity": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "These small droids are widespread. The term \"utility droid\" is used for many different models that varied widely in form and function. Some of them are at times referred as \"astromech droids.\" \n\nSome models are used for advanced applied physics functions such as starship repair, astrogating, and even computer slicing and programming. Others perform more menial tasks such as janitorial duties and waste disposal.\n\nAlmost all are under one meter tall. They are equipped either with wheeled legs or small repulsorlift generators for movement, and painted the colours of their owner or simply left unadorned."
+    }
+  },
+  "Dex": {
+    "type": "byte",
+    "value": 4
+  },
+  "Disarmable": {
+    "type": "byte",
+    "value": 0
+  },
+  "Equip_ItemList": {
+    "type": "list",
+    "value": []
+  },
+  "FactionID": {
+    "type": "word",
+    "value": 2
+  },
+  "FeatList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 6
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 391
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1089
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 28
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 106
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
+        }
+      }
+    ]
+  },
+  "FirstName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Utility Droid"
+    }
+  },
+  "fortbonus": {
+    "type": "short",
+    "value": 0
+  },
+  "Gender": {
+    "type": "byte",
+    "value": 4
+  },
+  "GoodEvil": {
+    "type": "byte",
+    "value": 50
+  },
+  "HitPoints": {
+    "type": "short",
+    "value": 25
+  },
+  "Int": {
+    "type": "byte",
+    "value": 4
+  },
+  "Interruptable": {
+    "type": "byte",
+    "value": 1
+  },
+  "IsImmortal": {
+    "type": "byte",
+    "value": 1
+  },
+  "IsPC": {
+    "type": "byte",
+    "value": 0
+  },
+  "LastName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "LawfulChaotic": {
+    "type": "byte",
+    "value": 50
+  },
+  "Lootable": {
+    "type": "byte",
+    "value": 0
+  },
+  "MaxHitPoints": {
+    "type": "short",
+    "value": 60
+  },
+  "NaturalAC": {
+    "type": "byte",
+    "value": 0
+  },
+  "NoPermDeath": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 45
+  },
+  "PerceptionRange": {
+    "type": "byte",
+    "value": 8
+  },
+  "Phenotype": {
+    "type": "int",
+    "value": 0
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 589
+  },
+  "Race": {
+    "type": "byte",
+    "value": 150
+  },
+  "refbonus": {
+    "type": "short",
+    "value": 0
+  },
+  "ScriptAttacked": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptDamaged": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptDeath": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptDialogue": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptDisturbed": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptEndRound": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptOnBlocked": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptOnNotice": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptRested": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptSpawn": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptSpellAt": {
+    "type": "resref",
+    "value": ""
+  },
+  "ScriptUserDefine": {
+    "type": "resref",
+    "value": ""
+  },
+  "SkillList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
+      }
+    ]
+  },
+  "SoundSetFile": {
+    "type": "word",
+    "value": 910
+  },
+  "SpecAbilityList": {
+    "type": "list",
+    "value": []
+  },
+  "StartingPackage": {
+    "type": "byte",
+    "value": 154
+  },
+  "Str": {
+    "type": "byte",
+    "value": 10
+  },
+  "Subrace": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "UtilityDroid4"
+  },
+  "Tail_New": {
+    "type": "dword",
+    "value": 0
+  },
+  "TemplateList": {
+    "type": "list",
+    "value": []
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "utilitydroid4"
+  },
+  "WalkRate": {
+    "type": "int",
+    "value": 7
+  },
+  "willbonus": {
+    "type": "short",
+    "value": 0
+  },
+  "Wings_New": {
+    "type": "dword",
+    "value": 0
+  },
+  "Wis": {
+    "type": "byte",
+    "value": 4
+  }
+}

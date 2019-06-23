@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
@@ -13,6 +12,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -35,11 +36,11 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
-            MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
-            MessageHub.Instance.Subscribe<SkillGainedMessage>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
-            MessageHub.Instance.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            MessageHub.Instance.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
+            MessageHub.Instance.Subscribe<OnSkillDecayed>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
+            MessageHub.Instance.Subscribe<OnSkillGained>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
+            MessageHub.Instance.Subscribe<OnPerkUpgraded>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            MessageHub.Instance.Subscribe<OnPerkRefunded>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            MessageHub.Instance.Subscribe<OnQuestCompleted>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -148,7 +149,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Filter on equipment-based execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                bool matchesExecutionType = perk.ExecutionTypeID == (int)executionType;
+                bool matchesExecutionType = perk.ExecutionTypeID == executionType;
                 if (!matchesExecutionType) return false;
 
                 // Filter out any perks the PC doesn't meet the requirements for.
@@ -231,15 +232,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static int GetPCPerkLevel(NWPlayer player, PerkType perkType)
+        public static int GetCreaturePerkLevel(NWCreature creature, PerkType perkType)
         {
-            return GetPCPerkLevel(player, (int)perkType);
+            return GetCreaturePerkLevel(creature, (int)perkType);
         }
 
-        public static int GetPCPerkLevel(NWPlayer player, int perkTypeID)
+        public static int GetCreaturePerkLevel(NWCreature creature, int perkTypeID)
         {
-            if (!player.IsPlayer) return -1;
-            return GetPCEffectivePerkLevel(player, perkTypeID);
+            if (creature.IsPlayer)
+            {
+                NWPlayer player = creature.Object;
+                return GetPCEffectivePerkLevel(player, perkTypeID);
+            }
+            else
+            {
+                return creature.GetLocalInt("PERK_LEVEL_" + perkTypeID);
+            }
         }
 
         private static void OnHitCastSpell()
@@ -254,7 +262,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Only pull back perks which have a Shield On Hit execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                if (perk.ExecutionTypeID != (int)PerkExecutionType.ShieldOnHit)
+                if (perk.ExecutionTypeID != PerkExecutionType.ShieldOnHit)
                     return false;
 
                 // If player's effective level is zero, it's not in effect.
@@ -271,10 +279,10 @@ namespace SWLOR.Game.Server.Service
                     var perk = GetPerkByID(pcPerk.PerkID);
                     if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
                     var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
-                    int featID = perkFeat == null ? -1 : perkFeat.FeatID;
+                    int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
 
                     var handler = GetPerkHandler(pcPerk.PerkID);
-                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, featID);
+                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, spellTier);
                 }
             }
         }
@@ -319,6 +327,9 @@ namespace SWLOR.Game.Server.Service
                         return false;
                 }
 
+                // Note: We do not filter out missing specialization requirements. This is because we want to show
+                // the player what's available should they decide to swap specializations.
+
                 return true;
             }).ToList();
         }
@@ -338,47 +349,80 @@ namespace SWLOR.Game.Server.Service
             return levels.FirstOrDefault(lvl => lvl.Level == findLevel);
         }
 
+        /// <summary>
+        /// Checks whether a player can upgrade a perk to the next level.
+        /// </summary>
+        /// <param name="player">The player upgrading.</param>
+        /// <param name="perkID">The perk that's being upgraded.</param>
+        /// <returns>true if the perk can be upgraded, false otherwise.</returns>
         public static bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
+            // Retrieve database records.
             var dbPlayer = DataService.Get<Player>(player.GlobalID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
             var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
-
+            
+            // Identify the max number of ranks for this perk.
             int rank = 0;
             if (pcPerk != null)
             {
                 rank = pcPerk.PerkLevel;
             }
             int maxRank = perkLevels.Count;
+
+            // If there's no more levels in this perk, exit early and return false.
             if (rank + 1 > maxRank) return false;
 
+            // Get the next perk level.
             PerkLevel level = FindPerkLevel(perkLevels, rank + 1);
             if (level == null) return false;
 
+            // If the player doesn't have enough SP to purchase this rank, exit early and return false.
             if (dbPlayer.UnallocatedSP < level.Price) return false;
 
+            // Retrieve skill and quest requirements for this perk.
             var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.ID).ToList();
-
             var questRequirements = DataService.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.ID).ToList();
 
+            // Cycle through the skill requirements
             foreach (var req in skillRequirements)
             {
                 PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID &&
                                                              x.SkillID == req.SkillID);
 
+                // Player has not completed this required quest. Exit early and return false.
                 if (pcSkill.Rank < req.RequiredRank) return false;
             }
 
+            // Cycle through the quest requirements.
             foreach (var req in questRequirements)
             {
                 var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID &&
                                                                x.QuestID == req.RequiredQuestID &&
                                                                x.CompletionDate != null);
+
+                // Player has not completed this required quest. Exit early and return false.
                 if (pcQuest == null) return false;
             }
+
+            // If this perk level requires a specialization, confirm the player has the required specialization.
+            if (level.SpecializationID > 0)
+            {
+                if (level.SpecializationID != (int)dbPlayer.SpecializationID)
+                    return false;
+            }
+
+            // All requirements have been met. Return true.
             return true;
         }
 
+        /// <summary>
+        /// Performs a perk purchase for a player. This handles deducting SP, inserting perk records,
+        /// and adjusting hotbar slots as necessary. 
+        /// </summary>
+        /// <param name="oPC">The player receiving the perk upgrade.</param>
+        /// <param name="perkID">The ID number of the perk.</param>
+        /// <param name="freeUpgrade">If true, no SP will be deducted. Otherwise, SP will be deducted from player.</param>
         public static void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
             var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
@@ -459,14 +503,20 @@ namespace SWLOR.Game.Server.Service
 
                 var handler = GetPerkHandler(perkID);
                 handler.OnPurchased(oPC, pcPerk.PerkLevel);
-                MessageHub.Instance.Publish(new PerkUpgradedMessage(oPC, perkID));
+                MessageHub.Instance.Publish(new OnPerkUpgraded(oPC, perkID));
             }
             else
             {
                 oPC.FloatingText(ColorTokenService.Red("You cannot purchase the perk at this time."));
             }
         }
-
+        /// <summary>
+        /// Performs a perk purchase for a player. This handles deducting SP, inserting perk records,
+        /// and adjusting hotbar slots as necessary. 
+        /// </summary>
+        /// <param name="player">The player receiving the upgrade.</param>
+        /// <param name="perkType">The type of perk to upgrade.</param>
+        /// <param name="freeUpgrade">If true, no SP will be deducted. Otherwise, SP will be deducted from player.</param>
         public static void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false)
         {
             DoPerkUpgrade(player, (int)perkType, freeUpgrade);

@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class CookingMod : IModHandler
     {
         public int ModTypeID => 14;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CraftBonusCooking >= 30)
+            if (target.CraftBonusCooking >= MaxValue)
                 return "You cannot improve that item's cooking bonus any further.";
 
             return null;
@@ -18,9 +19,10 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.CraftBonusCooking + value;
-            if (newValue > 30) newValue = 30;
+            int tier = Convert.ToInt32(args[0]);
+            int amount = tier * 3;
+            int newValue = target.CraftBonusCooking + amount;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.CraftBonusCooking = newValue;
         }
 

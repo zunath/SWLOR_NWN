@@ -12,41 +12,39 @@ namespace SWLOR.Game.Server.Perk.Blaster
     {
         public PerkType PerkType => PerkType.MassTranquilizer;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            return oPC.RightHand.CustomItemType == CustomItemType.BlasterRifle;
-        }
+            if (oPC.RightHand.CustomItemType != CustomItemType.BlasterRifle)
+                return "Must be equipped with a blaster rifle to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "Must be equipped with a blaster rifle to use that ability.";
+            return string.Empty;
         }
-
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int massLevel = PerkService.GetPCPerkLevel(player, PerkType.MassTranquilizer);
-            int tranqLevel = PerkService.GetPCPerkLevel(player, PerkType.Tranquilizer);
-            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+            int massLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.MassTranquilizer);
+            int tranqLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.Tranquilizer);
+            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             float duration;
             float range = 5 * massLevel;
             
@@ -91,20 +89,31 @@ namespace SWLOR.Game.Server.Perk.Blaster
             if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
-                player.SendMessage("Lucky shot!");
+                creature.SendMessage("Lucky shot!");
             }
 
-            // Apply to the target.
-            if (!RemoveExistingEffect(target, duration))
+
+            // Check if Mind Shield is on target.
+            var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
+            if (concentrationEffect.Type == PerkType.MindShield)
             {
-                target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
-
-                Effect effect = _.EffectDazed();
-                effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
-                effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
-
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+                creature.SendMessage("Your target is immune to tranquilization effects.");
             }
+            else
+            {
+                // Apply to the target.
+                if (!RemoveExistingEffect(target, duration))
+                {
+                    target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
+
+                    Effect effect = _.EffectDazed();
+                    effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+                    effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
+
+                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+                }
+            }
+
 
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
@@ -116,10 +125,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 // Check distance. Exit loop if we're too far.
                 if (distance > range) break;
 
+                concentrationEffect = AbilityService.GetActiveConcentrationEffect(nearest);
+
                 // If this creature isn't hostile to the attacking player or if this creature is already tranquilized, move to the next one.
-                if (_.GetIsReactionTypeHostile(nearest, player) == FALSE ||
+                if (_.GetIsReactionTypeHostile(nearest, creature) == FALSE ||
                     nearest.Object == target.Object ||
-                    RemoveExistingEffect(nearest, duration))
+                    RemoveExistingEffect(nearest, duration) ||
+                    concentrationEffect.Type == PerkType.MindShield)
                 {
                     current++;
                     nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
@@ -148,29 +160,34 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
         public bool IsHostile()
         {
             return false;
+        }
+
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
+        {
+            
         }
     }
 }

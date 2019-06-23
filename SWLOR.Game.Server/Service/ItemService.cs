@@ -15,6 +15,7 @@ using System.Linq;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
+using SWLOR.Game.Server.Event.Module;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -212,7 +213,18 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CustomAC > 0)
             {
-                description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + "\n";
+                if (ShieldBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("Damage Immunity: " + (10 + examinedItem.CustomAC / 3) + "\n");
+                }
+                else if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + " (/3)\n";
+                }
+                else
+                {
+                    description += ColorTokenService.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + " (/3)\n";
+                }
             }
             if (examinedItem.HPBonus > 0)
             {
@@ -228,35 +240,35 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.StrengthBonus > 0)
             {
-                description += ColorTokenService.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + "\n";
+                description += ColorTokenService.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + " (/3)\n";
             }
             if (examinedItem.DexterityBonus > 0)
             {
-                description += ColorTokenService.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + "\n";
+                description += ColorTokenService.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + " (/3)\n";
             }
             if (examinedItem.ConstitutionBonus > 0)
             {
-                description += ColorTokenService.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + "\n";
+                description += ColorTokenService.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + " (/3)\n";
             }
             if (examinedItem.WisdomBonus > 0)
             {
-                description += ColorTokenService.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + "\n";
+                description += ColorTokenService.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + " (/3)\n";
             }
             if (examinedItem.IntelligenceBonus > 0)
             {
-                description += ColorTokenService.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + "\n";
+                description += ColorTokenService.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + " (/3)\n";
             }
             if (examinedItem.CharismaBonus > 0)
             {
-                description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + "\n";
+                description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + " (/3)\n";
             }
-            if (examinedItem.CastingSpeed > 0)
+            if (examinedItem.CooldownRecovery > 0)
             {
-                description += ColorTokenService.Orange("Activation Speed: +") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Cooldown Recovery: +") + examinedItem.CooldownRecovery + "%\n";
             }
-            else if (examinedItem.CastingSpeed < 0)
+            else if (examinedItem.CooldownRecovery < 0)
             {
-                description += ColorTokenService.Orange("Activation Penalty: -") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Cooldown Recovery: -") + examinedItem.CooldownRecovery + "%\n";
             }
             if (examinedItem.HarvestingBonus > 0)
             {
@@ -264,23 +276,23 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CraftBonusArmorsmith > 0)
             {
-                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + "\n";
+                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + " (/8)\n";
             }
             if (examinedItem.CraftBonusEngineering > 0)
             {
-                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + "\n";
+                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + " (/8)\n";
             }
             if (examinedItem.CraftBonusFabrication > 0)
             {
-                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + "\n";
+                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + " (/8)\n";
             }
             if (examinedItem.CraftBonusWeaponsmith > 0)
             {
-                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + "\n";
+                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + " (/8)\n";
             }
             if (examinedItem.CraftBonusCooking > 0)
             {
-                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + "\n";
+                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + " (/8)\n";
             }
             if (examinedItem.CraftTierLevel > 0)
             {
@@ -289,50 +301,6 @@ namespace SWLOR.Game.Server.Service
             if (examinedItem.EnmityRate != 0)
             {
                 description += ColorTokenService.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
-            }
-            if (examinedItem.ForcePotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Potency Bonus: ") + examinedItem.ForcePotencyBonus + "\n";
-            }
-            if (examinedItem.ForceAccuracyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Accuracy Bonus: ") + examinedItem.ForceAccuracyBonus + "\n";
-            }
-            if (examinedItem.ForceDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Defense Bonus: ") + examinedItem.ForceDefenseBonus + "\n";
-            }
-            if (examinedItem.ElectricalPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Electrical Potency Bonus: ") + examinedItem.ElectricalPotencyBonus + "\n";
-            }
-            if (examinedItem.MindPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Mind Potency Bonus: ") + examinedItem.MindPotencyBonus + "\n";
-            }
-            if (examinedItem.LightPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Light Potency Bonus: ") + examinedItem.LightPotencyBonus + "\n";
-            }
-            if (examinedItem.DarkPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Dark Potency Bonus: ") + examinedItem.DarkPotencyBonus + "\n";
-            }
-            if (examinedItem.ElectricalDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Electrical Defense Bonus: ") + examinedItem.ElectricalDefenseBonus + "\n";
-            }
-            if (examinedItem.MindDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Mind Defense Bonus: ") + examinedItem.MindDefenseBonus + "\n";
-            }
-            if (examinedItem.LightDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Light Defense Bonus: ") + examinedItem.LightDefenseBonus + "\n";
-            }
-            if (examinedItem.DarkDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Dark Defense Bonus: ") + examinedItem.DarkDefenseBonus + "\n";
             }
             if (examinedItem.LuckBonus > 0)
             {
@@ -366,9 +334,20 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
             }
+            if (examinedItem.PilotingBonus > 0)
+            {
+                description += ColorTokenService.Orange("Piloting Bonus: ") + examinedItem.PilotingBonus + "\n";
+            }
             if (examinedItem.BaseAttackBonus > 0)
             {
-                description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
+                if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
+                }
+                else
+                {
+                    description += ColorTokenService.Red("Base Attack Bonus (ignored due to item type): ") + examinedItem.BaseAttackBonus + "\n";
+                }
             }
             if (examinedItem.SneakAttackBonus > 0)
             {
@@ -376,7 +355,14 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.DamageBonus > 0)
             {
-                description += ColorTokenService.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
+                if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
+                }
+                else
+                {
+                    description += ColorTokenService.Red("Damage Bonus (ignored due to item type): ") + examinedItem.DamageBonus + "\n";
+                }
             }
             if (examinedItem.CustomItemType != CustomItemType.None)
             {
@@ -384,20 +370,45 @@ namespace SWLOR.Game.Server.Service
                 description += ColorTokenService.Orange("Item Type: ") + itemTypeProper + "\n";
             }
 
+            // Check for properties that can only be applied to limited things, and flag them here.
+            // Attack bonus, damage, base attack bonus: weapons only
+            // AC - armor items only.
+            ItemProperty ip = _.GetFirstItemProperty(examinedItem);
+            while (_.GetIsItemPropertyValid(ip) == TRUE)
+            {
+                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
+                {
+                    switch (_.GetItemPropertySubType(ip))
+                    {
+                        case (int)ComponentBonusType.ACUp:
+                        {
+                            description += ColorTokenService.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
+                            break;
+                        }
+                        case (int)ComponentBonusType.DamageUp:
+                        case (int)ComponentBonusType.AttackBonusUp:
+                        case (int)ComponentBonusType.BaseAttackBonusUp:
+                        {
+                            description += ColorTokenService.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
+                            break;
+                        }
+                    }
+                }
+
+                ip = _.GetNextItemProperty(examinedItem);
+            }
+
             return existingDescription + "\n" + description;
         }
 
-
         public static HashSet<int> ArmorBaseItemTypes = new HashSet<int>()
         {
-            BASE_ITEM_AMULET,
             BASE_ITEM_ARMOR,
-            BASE_ITEM_BRACER,
-            BASE_ITEM_BELT,
-            BASE_ITEM_BOOTS,
-            BASE_ITEM_CLOAK,
-            BASE_ITEM_GLOVES,
-            BASE_ITEM_HELMET,
+            BASE_ITEM_HELMET
+        };
+
+        public static HashSet<int> ShieldBaseItemTypes = new HashSet<int>()
+        {
             BASE_ITEM_LARGESHIELD,
             BASE_ITEM_SMALLSHIELD,
             BASE_ITEM_TOWERSHIELD
@@ -857,7 +868,7 @@ namespace SWLOR.Game.Server.Service
                 int type = item.BaseItemType;
 
                 // Check for explicit override.
-                if (item.AssociatedSkillType > 0) return (SkillType)item.AssociatedSkillType;
+                if (item.AssociatedSkillType > 0) return item.AssociatedSkillType;
 
                 // Armor has to specifically be set on the item in order to count.
                 // Look for an item type property first.

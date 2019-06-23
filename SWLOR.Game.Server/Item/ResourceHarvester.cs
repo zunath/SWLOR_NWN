@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                harvestingTime = BaseHarvestingTime - BaseHarvestingTime * (PerkService.GetPCPerkLevel(player, PerkType.SpeedyHarvester) * 0.1f);
+                harvestingTime = BaseHarvestingTime - BaseHarvestingTime * (PerkService.GetCreaturePerkLevel(player, PerkType.SpeedyHarvester) * 0.1f);
 
             }
             return harvestingTime;

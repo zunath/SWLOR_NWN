@@ -1399,10 +1399,34 @@
     <Compile Include="ValueObject\Skill\PlayerSkillPointTracker.cs" />
     <Compile Include="ValueObject\Skill\PlayerSkillRegistration.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Module\are\**\*.*" />
+    <Content Include="Module\dlg\**\*.*" />
+    <Content Include="Module\fac\**\*.*" />
+    <Content Include="Module\gic\**\*.*" />
+    <Content Include="Module\git\**\*.*" />
+    <Content Include="Module\ifo\**\*.*" />
+    <Content Include="Module\itp\**\*.*" />
+    <Content Include="Module\jrl\**\*.*" />
+    <Content Include="Module\ncs\**\*.*" />
+    <Content Include="Module\nss\**\*.*" />
+    <Content Include="Module\utc\**\*.*" />
+    <Content Include="Module\utd\**\*.*" />
+    <Content Include="Module\ute\**\*.*" />
+    <Content Include="Module\uti\**\*.*" />
+    <Content Include="Module\utm\**\*.*" />
+    <Content Include="Module\utp\**\*.*" />
+    <Content Include="Module\uts\**\*.*" />
+    <Content Include="Module\utt\**\*.*" />
+    <Content Include="Module\utw\**\*.*" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Module\UnpackModule.cmd" />
     <None Include="packages.config" />
     <None Include="ServerFiles\docker-linux-startSWLOR.sh" />
     <None Include="ServerFiles\docker-windows-startSWLOR.cmd" />
@@ -1419,14 +1443,15 @@
     <Content Include="Data\Scripts\WipeUserData.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-15.1.sql" />
-    <Content Include="ServerFiles\Star Wars LOR.mod" />
+    <Content Include="Module\nwn_erf.exe" />
+    <Content Include="Module\nwn_gff.exe" />
+    <Content Include="Module\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />
     <Content Include="ServerFiles\Reference\HairColors.jpg" />
     <Content Include="ServerFiles\Reference\MetalColors.jpg" />
     <Content Include="ServerFiles\Reference\SkinColors.jpg" />
     <Content Include="ServerFiles\Reference\TattooColors.jpg" />
-    <Content Include="ServerFiles\Star Wars LOR - Builder Module.mod" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

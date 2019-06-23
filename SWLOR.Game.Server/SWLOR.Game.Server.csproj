@@ -1399,7 +1399,6 @@
     <Compile Include="ValueObject\Skill\PlayerSkillPointTracker.cs" />
     <Compile Include="ValueObject\Skill\PlayerSkillRegistration.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Module\are\**\*.*" />
     <Content Include="Module\dlg\**\*.*" />
@@ -1421,11 +1420,11 @@
     <Content Include="Module\utt\**\*.*" />
     <Content Include="Module\utw\**\*.*" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Module\PackModule.cmd" />
     <None Include="Module\UnpackModule.cmd" />
     <None Include="packages.config" />
     <None Include="ServerFiles\docker-linux-startSWLOR.sh" />

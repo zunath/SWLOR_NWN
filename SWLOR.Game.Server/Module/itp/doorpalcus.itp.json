@@ -1,0 +1,1612 @@
+{
+  "__data_type": "ITP ",
+  "MAIN": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 0
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jump to Creature"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_jumpto"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6688
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 1
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bulkhead Door - Pattern"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bulkhead Door - Pattern (Heavy)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bulkhead Door - Strong"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Metal Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Metal Door - Dirty"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reinforced Wooden Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_spik001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riveted Metal Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid012"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6689
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 2
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bulkhead Door - Secured"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rough Metal Door - Secured"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid008"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6690
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 3
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6691
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 4
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Strengthened Wooden Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Glass Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Glass Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Panel Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Panel Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Panel Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Panel Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Plank Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Plank Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Plank Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Plank Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Plank Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plan011"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6692
+              }
+            }
+          ]
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 6687
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ID": {
+          "type": "byte",
+          "value": 5
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 6734
+        }
+      },
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 10
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 111808
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 6
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bay Door - Large (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_bay04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bay Door - Large (Red)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_bay01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bay Door - Narrow (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_bay03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bay Door - Wide (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_bay02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Elevator Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_elev"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Elevator Door - Gate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_oldelev"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Elevator Door - Wide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_elev2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Evil Metal Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_evil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eyeball Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_eye"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Panel (Narrow/Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Panel (Narrow/Old)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Panel (Narrow/White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage6"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Panel (Wide/Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Panel (Wide/Old)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Panel (Wide/White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Garage Door - Ridged"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_garage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gate - Spiked"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_gate01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Interlocking bars"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_bars"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Locked Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "locked_door"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manhole"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_hole1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Manhole - Large"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_hole3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Metal Jail Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_jailm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rainbow Lights Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_lights"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rotating Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_rotate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rusted Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_skull"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Small Spaceship 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_sship1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Small Spaceship 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_sship2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slid005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 6"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_ship6"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spaceship 7"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_ship7"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Strong Metal Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_strmetl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Web Pattern Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_webpat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "White Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_white"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6736
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 9
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - Banding Pattern"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - Sacking"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - Woven"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - Woven Dirty"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - Woven Light"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth6"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cloth - Woven Light Dirty"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_cloth4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gas-Sealed Glass Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_gas"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gas-Sealed Glass Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_gas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panelled Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_glassp1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panelled Door - /w Windows"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_glassp5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panelled Door - Double"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_glassp2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Marble Effect Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_ominous"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "No Visible Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_blank"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Palm Leaf Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_palm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Push Bar Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_glassp3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Push Bar Door - Double"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_glassp4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Screen/Patio Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slide1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sliding Glass Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sliding Glass Door - Sensor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_slide2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sloping Glass Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_hole2"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 201
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 7
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alien Door 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_alien1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alien Door 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_alien2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alien Door 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_alien3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Boulder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_boulder"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spiked Brown Stone Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_spikebr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spiked Green Stone Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_spikegr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Steamworks Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_steam"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stone Interlocking Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_stneint"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6737
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 8
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Folding Latticework Doors"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_folding"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Folding Wooden Doors"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Framed Glass Door - Double (Dark)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel10"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Framed Glass Door - Double (Light)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel08"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Framed Glass Door (Dark)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel09"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Framed Glass Door (Light)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel07"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gate - Wooden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_gate02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Light Door - Double (Brown)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel12"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Light Door - Double (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_pane001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Light Door (Brown)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Light Door (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel14"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door - Double (Old)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel21"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door - Double (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel06"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door (Cream)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel22"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel13"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door (Grey)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door (Old)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panel Door (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glass Panelled Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_wdglass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Four (Brown)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel19"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Four (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel15"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Four (Grey)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel16"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Four (Old)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel18"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Four (Tan)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel17"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Four (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel20"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Panelled Door - Two (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - /w Windows (Blue)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel30"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - /w Windows (Brown)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel31"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - /w Windows (Tan)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel26"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - /w Windows (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel27"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - Double (Blue)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel29"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - Double (Brown)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel32"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - Double (Tan)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel33"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - Double (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel28"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - Old (Green)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel24"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door - Old (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel23"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plain Door (White)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_panel25"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rough Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_rough"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rough Door (Weathered)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_rough2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wood Jail Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_jailwd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wooden Plank Door"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_dt_plank"
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6738
+              }
+            }
+          ]
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 6735
+        }
+      }
+    ]
+  }
+}

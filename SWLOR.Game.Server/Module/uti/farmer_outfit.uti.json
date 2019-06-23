@@ -1,0 +1,176 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 4
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 16
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 123
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 161
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 15
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 4
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 123
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 4
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 16
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 123
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 187
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 161
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 15
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 4
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 201
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 174
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 3
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 3
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 174
+  },
+  "LocalizedName": {
+    "id": 12835,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Farmer Outfit"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 8
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 5
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "farmer_outfit"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "farmer_outfit"
+  }
+}

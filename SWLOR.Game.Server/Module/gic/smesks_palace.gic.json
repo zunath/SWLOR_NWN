@@ -100,47 +100,194 @@
           "type": "cexostring",
           "value": "Generic human smuggler NPC"
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Generic human smuggler NPC"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Generic human smuggler NPC"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Generic human smuggler NPC"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "A Rodian Bounter Hunter NPC for use with SWLOR"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Rodian smuggler/gunslinger NPC (level 3) for use in SWLOR"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Generic human smuggler NPC"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Generic human smuggler NPC"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Generic human smuggler NPC"
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
   "Door List": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
       {
         "__struct_id": 8,
         "Comment": {
@@ -163,7 +310,57 @@
   },
   "List": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": "1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
   },
   "Placeable List": {
     "type": "list",
@@ -172,6 +369,258 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
+          "value": "Piano&Pianist v1.1 by Coulisfu\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Rokugan V2 by Kerry Mortensen\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Rokugan V2 by Kerry Mortensen\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Pak by Schazzwozzer"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Piano&Pianist v1.1 by Coulisfu\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Pak by Schazzwozzer"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs edited by SBird for CEP"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "TCC - Interiors\r\nby The_NWNCCC"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Rokugan V2 by Kerry Mortensen\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Liquor Cabinet by DigitalKnightmare"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
           "value": ""
         }
       },
@@ -179,7 +628,7 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
@@ -193,7 +642,7 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
@@ -207,7 +656,7 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Fly-Clad Plague Victim Corpse"
+          "value": ""
         }
       },
       {
@@ -263,7 +712,7 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
@@ -271,97 +720,104 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Lightshafts with pwk by Demigog"
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": "TCC - Interiors\r\nby The_NWNCCC"
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
@@ -375,7 +831,7 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
@@ -396,84 +852,84 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Sphinx Statue"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Low treasure script."
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Potted Plant"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Throw Rug"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Big Vase"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Flower Vase"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Big Vase"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Sphinx Statue"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Sphinx Statue"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Ottoman"
+          "value": ""
         }
       },
       {
@@ -494,7 +950,7 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Magic Sparks - Blue"
+          "value": ""
         }
       },
       {
@@ -740,6 +1196,34 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "x0_cushions"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "x0_cushions"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "x0_cushions"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Lightshafts with pwk by Demigog"
         }
       },
       {
@@ -950,6 +1434,34 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Blue"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Orange"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Red"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Red"
         }
       }
     ]
@@ -1077,162 +1589,30 @@
           "type": "byte",
           "value": 1
         }
+      },
+      {
+        "__struct_id": 6,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "PlayInToolset": {
+          "type": "byte",
+          "value": 1
+        }
       }
     ]
   },
   "StoreList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 11,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      }
-    ]
+    "value": []
   },
   "TriggerList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      }
-    ]
+    "value": []
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      }
-    ]
+    "value": []
   }
 }

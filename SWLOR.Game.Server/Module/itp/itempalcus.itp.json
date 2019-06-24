@@ -4142,17 +4142,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Flawed Gemstone"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "flawed_gemstone"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Flawed Green Crystal"
                     },
                     "RESREF": {
@@ -4345,17 +4334,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "furniture"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gemstone"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gemstone"
                     }
                   },
                   {
@@ -5511,17 +5489,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fiberp_perfect"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Perfect Gemstone"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "perfect_gemstone"
                     }
                   },
                   {

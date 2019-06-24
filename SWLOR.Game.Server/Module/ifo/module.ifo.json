@@ -886,7 +886,7 @@
   },
   "Mod_Entry_Area": {
     "type": "resref",
-    "value": "tat_anc_aridhill"
+    "value": "ooc_area"
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
@@ -898,15 +898,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 83.30750274658203
+    "value": 18.8521785736084
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 94.04537200927734
+    "value": 6.176247596740723
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 4.999999987376214e-007
+    "value": -9.5367431640625e-007
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1168,7 +1168,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "Ëd·!Ê\u0013ÆéêM6ýÂ>\u000E„"
+    "value": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

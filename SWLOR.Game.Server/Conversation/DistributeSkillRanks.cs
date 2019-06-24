@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
 
             DialogPage mainPage = new DialogPage(
-                "You have undistributed skill ranks. You are allowed to distribute these to skills within a single category up to rank 40. You MUST distribute all of these before you can acquire XP in any of the skills within this category.");
+                "You have undistributed skill ranks. You are allowed to distribute these to skills within a single category up to rank " + MaxRankForDistribution + ". You MUST distribute all of these before you can acquire XP in any of the skills within this category.");
 
             DialogPage skillListPage = new DialogPage();
             DialogPage skillPage = new DialogPage(
@@ -101,10 +101,11 @@ namespace SWLOR.Game.Server.Conversation
         private bool CanDistribute(int amount)
         {
             var model = GetDialogCustomData<Model>();
+            var skill = DataService.Get<Skill>(model.SkillID);
             var pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == GetPC().GlobalID && x.SkillID == model.SkillID);
             var pool = DataService.Single<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.SkillCategoryID == model.SkillCategoryID);
 
-            return pool.Levels >= amount && pcSkill.Rank + amount <= MaxRankForDistribution;
+            return pool.Levels >= amount && pcSkill.Rank + amount < MaxRankForDistribution && pcSkill.Rank + amount < skill.MaxRank;
         }
 
         private void LoadSkillPage()
@@ -119,7 +120,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ColorTokenService.Green("Current Rank: ") + pcSkill.Rank + "\n";
             header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
 
-            if (pcSkill.Rank >= MaxRankForDistribution)
+            if (pcSkill.Rank >= MaxRankForDistribution || pcSkill.Rank >= skill.MaxRank)
             {
                 header += ColorTokenService.Red("You cannot distribute any more ranks into this skill.");
             }
@@ -192,7 +193,17 @@ namespace SWLOR.Game.Server.Conversation
                 // all of that's already been applied. You don't want to reapply the SP gains because they'll get more than they should.
                 // Just set the ranks on the DB record and recalc stats.
                 var pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == GetPC().GlobalID && x.SkillID == model.SkillID);
+                var skill = DataService.Get<Skill>(pcSkill.SkillID);
+
+                // Prevent the player from adding too many ranks.
+                if (pcSkill.Rank + amount > skill.MaxRank)
+                {
+                    GetPC().FloatingText("You cannot distribute this number of ranks into this skill.");
+                    return;
+                }
+
                 pcSkill.Rank += amount;
+                
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
                 PlayerStatService.ApplyStatChanges(GetPC(), null);
 

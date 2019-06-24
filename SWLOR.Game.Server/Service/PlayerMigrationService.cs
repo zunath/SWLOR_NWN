@@ -121,6 +121,19 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 6;
             }
 
+            // VERSION 7: Give 40 language ranks to players, for their distribution.
+            if (dbPlayer.VersionNumber < 7)
+            {
+                var ranks = new PCSkillPool
+                {
+                    PlayerID = dbPlayer.ID,
+                    SkillCategoryID = 8, // 8 = Languages
+                    Levels = 40
+                };
+                DataService.SubmitDataChange(ranks, DatabaseActionType.Insert);
+                dbPlayer.VersionNumber = 7;
+            }
+
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
         

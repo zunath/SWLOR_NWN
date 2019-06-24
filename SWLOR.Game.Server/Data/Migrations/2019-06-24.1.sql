@@ -4965,3 +4965,74 @@ WHERE SpawnRule = 'DrillSpawnRule'
 UPDATE dbo.CooldownCategory
 SET BaseCooldownTime = 300
 WHERE ID = 32 -- 32 = Chi
+
+GO
+
+
+-- Merge all of the mod installation perks into one, per skill.
+
+-- Refund player perks
+
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 83 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 86 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 88 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 97 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 109 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 110 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 111 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 112 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 156 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 157 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 158 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 159 -- int
+
+
+
+-- Combat Mod Installation - Weapons becomes Weapon Mod Installation
+UPDATE dbo.Perk
+SET Name = 'Weapon Mod Installation',
+	Description = 'Enables the installation of mods into weapons.'
+WHERE ID = 83
+
+UPDATE dbo.PerkLevel
+SET Description = REPLACE(Description, 'red ', '')
+WHERE PerkID = 83
+
+-- Combat Mod Installation - Armors becomes Armor Mod Installation
+UPDATE dbo.Perk
+SET Name = 'Armor Mod Installation',
+	Description = 'Enables the installation of mods into armors.'
+WHERE ID = 109
+
+UPDATE dbo.PerkLevel
+SET Description = REPLACE(Description, 'red ', '')
+WHERE PerkID = 109
+
+-- Combat Mod Installation - Electronics becomes Engineering Mod Installation
+UPDATE dbo.Perk
+SET Name = 'Engineering Mod Installation',
+	Description = 'Enables the installation of mods into engineering items.'
+WHERE ID = 156
+
+UPDATE dbo.PerkLevel
+SET Description = REPLACE(Description, 'red ', '')
+WHERE PerkID = 156
+
+
+-- Remove the excess perks.
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (86,88 ,97 ,110,111,112,157,158,159) 
+)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID IN (86,88 ,97 ,110,111,112,157,158,159) 
+
+DELETE FROM dbo.PCPerkRefund
+WHERE PerkID IN (86,88 ,97 ,110,111,112,157,158,159) 
+
+DELETE FROM dbo.Perk
+WHERE ID IN (86,88 ,97 ,110,111,112,157,158,159) 
+

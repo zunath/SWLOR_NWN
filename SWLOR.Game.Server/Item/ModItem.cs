@@ -182,66 +182,15 @@ namespace SWLOR.Game.Server.Item
             // Get the perk level based on target item type and mod type.
             if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CombatModInstallationWeapons);
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ForceModInstallationWeapons);
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CraftingModInstallationWeapons);
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.SpecialModInstallationWeapons);
-                        break;
-                    default:
-                        perkLevel = 0;
-                        break;
-                }
+                perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.WeaponModInstallation);
             }
             else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CombatModInstallationArmors);
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ForceModInstallationArmors);
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CraftingModInstallationArmors);
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.SpecialModInstallationArmors);
-                        break;
-                    default:
-                        perkLevel = 0;
-                        break;
-                }
+                perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ArmorModInstallation);
             }
             else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CombatModInstallationEngineering);
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ForceModInstallationEngineering);
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CraftingModInstallationEngineering);
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.SpecialModInstallationEngineering);
-                        break;
-                    default:
-                        perkLevel = 0;
-                        break;
-                }
+                perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.EngineeringModInstallation);
             }
 
             // Ensure item isn't equipped.

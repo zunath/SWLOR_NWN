@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
+            ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Item
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
             string itemResref = target.GetLocalString("RESOURCE_RESREF");
-            int ipBonusChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
+            int gemChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = RandomService.Random(1, 100);
             int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             if (item.RecommendedLevel < rank)
@@ -51,14 +50,31 @@ namespace SWLOR.Game.Server.Item
 
             int itemHarvestBonus = item.HarvestingBonus;
             int scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
-            ipBonusChance += itemHarvestBonus * 2 + scanningBonus * 2;
+            gemChance += itemHarvestBonus * 2 + scanningBonus * 2;
 
             baseXP = baseXP + scanningBonus * 5;
 
-            NWItem resource = _.CreateItemOnObject(itemResref, player.Object);
+            // Spawn the normal resource.
+            NWItem resource = CreateItemOnObject(itemResref, player);
+            user.SendMessage("You harvest " + resource.Name + ".");
 
-            if (roll <= ipBonusChance)
+            // If player meets the chance to acquire a gem, create one and modify its properties.
+            if (quality > ResourceQuality.Low && roll <= gemChance)
             {
+                // Gemstone quality is determined by the quality of the vein.
+                switch (quality)
+                {
+                    case ResourceQuality.Normal:
+                        resource = CreateItemOnObject("flawed_gemstone", player);
+                        break;
+                    case ResourceQuality.High:
+                        resource = CreateItemOnObject("gemstone", player);
+                        break;
+                    case ResourceQuality.VeryHigh:
+                        resource = CreateItemOnObject("perfect_gemstone", player);
+                        break;
+                }
+
                 var ip = ResourceService.GetRandomComponentBonusIP(quality);
                 BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
@@ -89,6 +105,8 @@ namespace SWLOR.Game.Server.Item
                         resource.Name = ColorTokenService.Cyan(resource.Name);
                         break;
                 }
+
+                user.SendMessage("You harvest " + resource.Name + ".");
             }
 
             float decayMinimum = 0.03f;
@@ -100,7 +118,6 @@ namespace SWLOR.Game.Server.Item
                 decayMaximum += delta * 0.1f;
             }
 
-            user.SendMessage("You harvest " + resource.Name + ".");
             DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
             int xp = baseXP;
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
@@ -122,7 +139,7 @@ namespace SWLOR.Game.Server.Item
                 target.SetLocalInt("RESOURCE_COUNT", remaining);
             }
 
-            _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
+            ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
         }
         
 

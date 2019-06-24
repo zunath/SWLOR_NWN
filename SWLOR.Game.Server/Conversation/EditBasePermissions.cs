@@ -103,13 +103,13 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildPlayerListPage()
         {
+            var speakingPC = GetPC();
             ClearPageResponses("PlayerListPage");
             foreach (var player in NWModule.Get().Players)
             {
-                if (!Equals(player, GetPC()))
-                {
-                    AddResponseToPage("PlayerListPage", player.Name, true, player);
-                }
+                if (player == speakingPC || !player.IsPlayer) continue;
+                
+                AddResponseToPage("PlayerListPage", player.Name, true, player);
             }
         }
 

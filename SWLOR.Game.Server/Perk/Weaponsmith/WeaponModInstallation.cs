@@ -1,11 +1,11 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Armorsmith
+namespace SWLOR.Game.Server.Perk.Weaponsmith
 {
-    public class ForceModInstallationArmors : IPerkHandler
+    public class WeaponModInstallation: IPerkHandler
     {
-        public PerkType PerkType => PerkType.ForceModInstallationArmors;
+        public PerkType PerkType => PerkType.WeaponModInstallation;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

@@ -1,11 +1,11 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Weaponsmith
+namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class CombatModInstallationWeapons: IPerkHandler
+    public class EngineeringModInstallation: IPerkHandler
     {
-        public PerkType PerkType => PerkType.CombatModInstallationWeapons;
+        public PerkType PerkType => PerkType.EngineeringModInstallation;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

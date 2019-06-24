@@ -85,12 +85,12 @@
         ProcessingEfficiency = 80,
         RefineryManagement = 81,
         Refining = 82,
-        CombatModInstallationWeapons = 83,
+        WeaponModInstallation = 83,
         WeaponBlueprints = 84,
         ScavengingExpert = 85,
-        ForceModInstallationWeapons = 86,
+        // 86 is free
         WeaponFocusLightsaber = 87,
-        CraftingModInstallationWeapons = 88,
+        // 88 is free
         Dash = 89,
         CarefulScavenger = 90,
         FarmingEfficiency = 91,
@@ -99,7 +99,7 @@
         PlasmaCell = 94,
         Chi = 95,
         EngineeringBlueprints = 96,
-        SpecialModInstallationWeapons = 97,
+        // 97 is free
         SpeedyWeaponsmith = 98,
         SpeedyArmorsmith = 99,
         SpeedyCooking = 100,
@@ -111,10 +111,8 @@
         SeedPicker = 106,
         TwinBladeMastery = 107,
         BalancedStance = 108,
-        CombatModInstallationArmors = 109,
-        ForceModInstallationArmors = 110,
-        CraftingModInstallationArmors = 111,
-        SpecialModInstallationArmors = 112,
+        ArmorModInstallation = 109,
+        // 110-112 are free
         Skewer = 113,
         // 114-122 are free
         SneakAttack = 123,
@@ -150,10 +148,8 @@
         SaberstaffMastery = 153,
         DeflectBlasterFire = 154,
         LightsaberDualWielding = 155,
-        CombatModInstallationEngineering = 156,
-        ForceModInstallationEngineering = 157,
-        CraftingModInstallationEngineering = 158,
-        SpecialModInstallationEngineering = 159,
+        EngineeringModInstallation = 156,
+        // 157-159 are free
         SaberFinesse = 160,
         Racer = 161,
         Evasive = 162,

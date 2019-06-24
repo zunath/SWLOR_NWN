@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_astroport"
+    "value": "tat_anc_astropor"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -14610,7 +14610,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 236
+    "value": 237
   },
   "Width": {
     "type": "int",

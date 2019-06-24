@@ -445,41 +445,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "anchor_astroport"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_cantina"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_dirtoc002"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_dirtochee"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_entr_mine"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "anchor_entreenor"
         }
       },
@@ -494,49 +459,7 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "anchor_jabba_ext"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "anchor_jawa_int"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_jawa_o"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_medic_n"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_qn"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_qs"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_rc01_001"
         }
       },
       {
@@ -551,90 +474,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "anchor_roche01"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_roche02"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_roche03"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_rte_com01"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_rte_com02"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_rte_com03"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_rte_com04"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_scarab"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_transport"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_tusken002"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_tuskencp"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_verpex"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_vers_mine"
         }
       },
       {
@@ -768,13 +607,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_anc_rckpass1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "tat_anc_rckpass2"
         }
       },
       {
@@ -930,6 +762,97 @@
           "type": "resref",
           "value": "tat_tuskcavetunn"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "smesks_palace"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "smesks_entry"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "canyon_001"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_dow_ca001"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_dow_can"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_exit_sud"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_lucky"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_sand_001"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_sand_003"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_sand_004"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moseis_sand_005"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "tochee_cantina"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "tosche_cantina_s"
+        }
       }
     ]
   },
@@ -963,7 +886,7 @@
   },
   "Mod_Entry_Area": {
     "type": "resref",
-    "value": "ooc_area"
+    "value": "tat_anc_aridhill"
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
@@ -975,15 +898,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 19.0
+    "value": 83.30750274658203
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 5.0
+    "value": 94.04537200927734
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 0.0
+    "value": 4.999999987376214e-007
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1245,7 +1168,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "Ëd·!Ê\u0013ÆéêM6ýÂ>\u000E„"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

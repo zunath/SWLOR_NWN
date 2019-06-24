@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 34.0
   },
   "ClassList": {
     "type": "list",
@@ -149,11 +149,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 12
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 45
+    "value": 500
   },
   "DecayTime": {
     "type": "dword",
@@ -169,7 +169,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 50
+    "value": 60
   },
   "Disarmable": {
     "type": "byte",
@@ -315,7 +315,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 45
+    "value": 500
   },
   "Int": {
     "type": "byte",
@@ -333,30 +333,6 @@
     "type": "byte",
     "value": 0
   },
-  "ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cac_gaderffii002"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
-  },
   "LastName": {
     "type": "cexolocstring",
     "value": {
@@ -373,11 +349,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 49
+    "value": 504
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 30
   },
   "NoPermDeath": {
     "type": "byte",

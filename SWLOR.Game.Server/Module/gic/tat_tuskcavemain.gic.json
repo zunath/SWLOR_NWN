@@ -351,7 +351,29 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Deadly Gas\r\nDetect DC: 22\r\nDisarm DC: 36\r\nSet DC: 45\r\nDamage / Effect: Black Lotus Extract\r\nAverage Damage: 0\r\nArea of Effect: Medium, Sphere\r\nMin to Max player level: 15 - 30"
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Deadly Gas\r\nDetect DC: 22\r\nDisarm DC: 36\r\nSet DC: 45\r\nDamage / Effect: Black Lotus Extract\r\nAverage Damage: 0\r\nArea of Effect: Medium, Sphere\r\nMin to Max player level: 15 - 30"
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Deadly Gas\r\nDetect DC: 22\r\nDisarm DC: 36\r\nSet DC: 45\r\nDamage / Effect: Black Lotus Extract\r\nAverage Damage: 0\r\nArea of Effect: Medium, Sphere\r\nMin to Max player level: 15 - 30"
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",

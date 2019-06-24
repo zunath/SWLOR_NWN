@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 29.0
+    "value": 27.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -8
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -165,7 +165,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 15
+    "value": 30
   },
   "NoPermDeath": {
     "type": "byte",
@@ -466,7 +466,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 8
+    "value": 25
   },
   "Subrace": {
     "type": "cexostring",
@@ -490,7 +490,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 6
   },
   "willbonus": {
     "type": "short",

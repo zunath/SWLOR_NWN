@@ -1,4 +1,1815 @@
-﻿
+﻿-- REBALANCING CHANGES
+
+
+-- Disable the +2 and +3 BAB Mods
+UPDATE dbo.CraftBlueprint
+SET IsActive = 0
+WHERE ID IN (175, 205)
+
+
+
+-- Refund Health perk for all players.
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 16 -- int
+
+-- Refund FP perk for all players.
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 17 -- int
+
+-- Change price of Health and FP perks to 3 SP
+UPDATE dbo.PerkLevel
+SET Price = 3
+WHERE ID IN (16, 17)
+
+
+
+-- Update perk level descriptions to reflect changes to recovery amounts.
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 6 HP every 6 seconds. Recast time: 5 minutes'
+WHERE PerkID = 7 AND Level = 1
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 6 HP every 6 seconds. Recast time: 4 minutes, 30 seconds'
+WHERE PerkID = 7 AND Level = 2
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 6 HP every 6 seconds. Recast time: 4 minutes'
+WHERE PerkID = 7 AND Level = 3
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 10 HP every 6 seconds. Recast time: 4 minutes'
+WHERE PerkID = 7 AND Level = 4
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 10 HP every 6 seconds. Recast time: 3 minutes, 30 seconds'
+WHERE PerkID = 7 AND Level = 5
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 10 HP every 6 seconds. Recast time: 3 minutes'
+WHERE PerkID = 7 AND Level = 6
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 14 HP every 6 seconds. Recast time: 3 minutes'
+WHERE PerkID = 7 AND Level = 7
+
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 6 FP every 6 seconds. Recast time: 5 minutes'
+WHERE PerkID = 103 AND Level = 1
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 6 FP every 6 seconds. Recast time: 4 minutes, 30 seconds'
+WHERE PerkID = 103 AND Level = 2
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 6 FP every 6 seconds. Recast time: 4 minutes'
+WHERE PerkID = 103 AND Level = 3
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 10 FP every 6 seconds. Recast time: 4 minutes'
+WHERE PerkID = 103 AND Level = 4
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 10 FP every 6 seconds. Recast time: 3 minutes, 30 seconds'
+WHERE PerkID = 103 AND Level = 5
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 10 FP every 6 seconds. Recast time: 3 minutes'
+WHERE PerkID = 103 AND Level = 6
+UPDATE dbo.PerkLevel
+SET Description = 'Restores 14 FP every 6 seconds. Recast time: 3 minutes'
+WHERE PerkID = 103 AND Level = 7
+
+
+
+-- Update craft blueprint names for mods
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooldown Reduction +1' WHERE ID=121
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooldown Reduction +2' WHERE ID=152
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooldown Reduction +3' WHERE ID=184
+UPDATE dbo.CraftBlueprint SET ItemName = 'Armor Class +1' WHERE ID=127
+UPDATE dbo.CraftBlueprint SET ItemName = 'Armor Class +2' WHERE ID=160
+UPDATE dbo.CraftBlueprint SET ItemName = 'Armor Class +3' WHERE ID=190
+UPDATE dbo.CraftBlueprint SET ItemName = 'Armorsmith +3' WHERE ID=134
+UPDATE dbo.CraftBlueprint SET ItemName = 'Armorsmith +6' WHERE ID=167
+UPDATE dbo.CraftBlueprint SET ItemName = 'Armorsmith +9' WHERE ID=197
+UPDATE dbo.CraftBlueprint SET ItemName = 'Attack Bonus +1' WHERE ID=117
+UPDATE dbo.CraftBlueprint SET ItemName = 'Attack Bonus +2' WHERE ID=148
+UPDATE dbo.CraftBlueprint SET ItemName = 'Attack Bonus +3' WHERE ID=179
+UPDATE dbo.CraftBlueprint SET ItemName = 'Base Attack Bonus +1' WHERE ID=142
+UPDATE dbo.CraftBlueprint SET ItemName = 'Base Attack Bonus +2' WHERE ID=175
+UPDATE dbo.CraftBlueprint SET ItemName = 'Base Attack Bonus +3' WHERE ID=205
+UPDATE dbo.CraftBlueprint SET ItemName = 'Charisma +3' WHERE ID=122
+UPDATE dbo.CraftBlueprint SET ItemName = 'Charisma +6' WHERE ID=153
+UPDATE dbo.CraftBlueprint SET ItemName = 'Charisma +9' WHERE ID=185
+UPDATE dbo.CraftBlueprint SET ItemName = 'Constitution +3' WHERE ID=118
+UPDATE dbo.CraftBlueprint SET ItemName = 'Constitution +6' WHERE ID=149
+UPDATE dbo.CraftBlueprint SET ItemName = 'Constitution +9' WHERE ID=181
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooking +3' WHERE ID=131
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooking +6' WHERE ID=164
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooking +9' WHERE ID=194
+UPDATE dbo.CraftBlueprint SET ItemName = 'Damage +1' WHERE ID=125
+UPDATE dbo.CraftBlueprint SET ItemName = 'Damage +2' WHERE ID=158
+UPDATE dbo.CraftBlueprint SET ItemName = 'Damage +3' WHERE ID=188
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dark Defense +3' WHERE ID=333
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dark Defense +6' WHERE ID=334
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dark Defense +9' WHERE ID=352
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dark Potency +3' WHERE ID=129
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dark Potency +6' WHERE ID=162
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dark Potency +9' WHERE ID=192
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dexterity +3' WHERE ID=119
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dexterity +6' WHERE ID=150
+UPDATE dbo.CraftBlueprint SET ItemName = 'Dexterity +9' WHERE ID=182
+UPDATE dbo.CraftBlueprint SET ItemName = 'Durability +1' WHERE ID=144
+UPDATE dbo.CraftBlueprint SET ItemName = 'Durability +2' WHERE ID=177
+UPDATE dbo.CraftBlueprint SET ItemName = 'Durability +3' WHERE ID=207
+UPDATE dbo.CraftBlueprint SET ItemName = 'Electrical Defense +3' WHERE ID=389
+UPDATE dbo.CraftBlueprint SET ItemName = 'Electrical Defense +6' WHERE ID=405
+UPDATE dbo.CraftBlueprint SET ItemName = 'Electrical Defense +9' WHERE ID=412
+UPDATE dbo.CraftBlueprint SET ItemName = 'Electrical Potency +3' WHERE ID=195
+UPDATE dbo.CraftBlueprint SET ItemName = 'Electrical Potency +6' WHERE ID=323
+UPDATE dbo.CraftBlueprint SET ItemName = 'Electrical Potency +9' WHERE ID=329
+UPDATE dbo.CraftBlueprint SET ItemName = 'Engineering +3' WHERE ID=136
+UPDATE dbo.CraftBlueprint SET ItemName = 'Engineering +6' WHERE ID=169
+UPDATE dbo.CraftBlueprint SET ItemName = 'Engineering +9' WHERE ID=199
+UPDATE dbo.CraftBlueprint SET ItemName = 'Enhancement Bonus +1' WHERE ID=140
+UPDATE dbo.CraftBlueprint SET ItemName = 'Enhancement Bonus +2' WHERE ID=173
+UPDATE dbo.CraftBlueprint SET ItemName = 'Enhancement Bonus +3' WHERE ID=203
+UPDATE dbo.CraftBlueprint SET ItemName = 'Fabrication +3' WHERE ID=308
+UPDATE dbo.CraftBlueprint SET ItemName = 'Fabrication +6' WHERE ID=309
+UPDATE dbo.CraftBlueprint SET ItemName = 'Fabrication +9' WHERE ID=310
+UPDATE dbo.CraftBlueprint SET ItemName = 'Medicine +3' WHERE ID=137
+UPDATE dbo.CraftBlueprint SET ItemName = 'Medicine +6' WHERE ID=170
+UPDATE dbo.CraftBlueprint SET ItemName = 'Medicine +9' WHERE ID=200
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP +5' WHERE ID=130
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP +10' WHERE ID=163
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP +15' WHERE ID=193
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP Regen +1' WHERE ID=143
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP Regen +2' WHERE ID=176
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP Regen +3' WHERE ID=206
+UPDATE dbo.CraftBlueprint SET ItemName = 'Harvesting +3' WHERE ID=133
+UPDATE dbo.CraftBlueprint SET ItemName = 'Harvesting +6' WHERE ID=166
+UPDATE dbo.CraftBlueprint SET ItemName = 'Harvesting +9' WHERE ID=196
+UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +5' WHERE ID=126
+UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +10' WHERE ID=159
+UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +15' WHERE ID=189
+UPDATE dbo.CraftBlueprint SET ItemName = 'HP Regen +1' WHERE ID=141
+UPDATE dbo.CraftBlueprint SET ItemName = 'HP Regen +2' WHERE ID=174
+UPDATE dbo.CraftBlueprint SET ItemName = 'HP Regen +3' WHERE ID=204
+UPDATE dbo.CraftBlueprint SET ItemName = 'Improved Enmity +1' WHERE ID=138
+UPDATE dbo.CraftBlueprint SET ItemName = 'Improved Enmity +2' WHERE ID=171
+UPDATE dbo.CraftBlueprint SET ItemName = 'Improved Enmity +3' WHERE ID=201
+UPDATE dbo.CraftBlueprint SET ItemName = 'Intelligence +3' WHERE ID=123
+UPDATE dbo.CraftBlueprint SET ItemName = 'Intelligence +6' WHERE ID=154
+UPDATE dbo.CraftBlueprint SET ItemName = 'Intelligence +9' WHERE ID=186
+UPDATE dbo.CraftBlueprint SET ItemName = 'Level Decrease -5' WHERE ID=147
+UPDATE dbo.CraftBlueprint SET ItemName = 'Level Increase +5' WHERE ID=146
+UPDATE dbo.CraftBlueprint SET ItemName = 'Light Defense +3' WHERE ID=364
+UPDATE dbo.CraftBlueprint SET ItemName = 'Light Defense +6' WHERE ID=367
+UPDATE dbo.CraftBlueprint SET ItemName = 'Light Defense +9' WHERE ID=368
+UPDATE dbo.CraftBlueprint SET ItemName = 'Light Potency +3' WHERE ID=128
+UPDATE dbo.CraftBlueprint SET ItemName = 'Light Potency +6' WHERE ID=161
+UPDATE dbo.CraftBlueprint SET ItemName = 'Light Potency +9' WHERE ID=191
+UPDATE dbo.CraftBlueprint SET ItemName = 'Luck +1' WHERE ID=156
+UPDATE dbo.CraftBlueprint SET ItemName = 'Luck +2' WHERE ID=209
+UPDATE dbo.CraftBlueprint SET ItemName = 'Meditate +1' WHERE ID=157
+UPDATE dbo.CraftBlueprint SET ItemName = 'Meditate +2' WHERE ID=210
+UPDATE dbo.CraftBlueprint SET ItemName = 'Mind Defense +3' WHERE ID=371
+UPDATE dbo.CraftBlueprint SET ItemName = 'Mind Defense +6' WHERE ID=381
+UPDATE dbo.CraftBlueprint SET ItemName = 'Mind Defense +9' WHERE ID=384
+UPDATE dbo.CraftBlueprint SET ItemName = 'Mind Potency +3' WHERE ID=132
+UPDATE dbo.CraftBlueprint SET ItemName = 'Mind Potency +6' WHERE ID=165
+UPDATE dbo.CraftBlueprint SET ItemName = 'Mind Potency +9' WHERE ID=180
+UPDATE dbo.CraftBlueprint SET ItemName = 'Reduced Enmity -1' WHERE ID=145
+UPDATE dbo.CraftBlueprint SET ItemName = 'Reduced Enmity -2' WHERE ID=178
+UPDATE dbo.CraftBlueprint SET ItemName = 'Reduced Enmity -3' WHERE ID=208
+UPDATE dbo.CraftBlueprint SET ItemName = 'Sneak Attack +1' WHERE ID=139
+UPDATE dbo.CraftBlueprint SET ItemName = 'Sneak Attack +2' WHERE ID=172
+UPDATE dbo.CraftBlueprint SET ItemName = 'Sneak Attack +3' WHERE ID=202
+UPDATE dbo.CraftBlueprint SET ItemName = 'Strength +3' WHERE ID=120
+UPDATE dbo.CraftBlueprint SET ItemName = 'Strength +6' WHERE ID=151
+UPDATE dbo.CraftBlueprint SET ItemName = 'Strength +9' WHERE ID=183
+UPDATE dbo.CraftBlueprint SET ItemName = 'Weaponsmith +3' WHERE ID=135
+UPDATE dbo.CraftBlueprint SET ItemName = 'Weaponsmith +6' WHERE ID=168
+UPDATE dbo.CraftBlueprint SET ItemName = 'Weaponsmith +9' WHERE ID=198
+UPDATE dbo.CraftBlueprint SET ItemName = 'Wisdom +3' WHERE ID=124
+UPDATE dbo.CraftBlueprint SET ItemName = 'Wisdom +6' WHERE ID=155
+UPDATE dbo.CraftBlueprint SET ItemName = 'Wisdom +9' WHERE ID=187
+
+GO
+
+
+
+-- Refund Force Breach
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 3 -- int
+
+-- Refund Force Lightning
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 4 -- int
+
+-- Refund Force Heal
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 5 -- int
+
+-- Refund Absorption Field
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 11 -- int
+
+-- Refund Force Spread
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 13 -- int
+
+-- Refund Force Push
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 19 -- int
+
+-- Refund Force Aura
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 76 -- int
+
+-- Refund Drain Life
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 78 -- int
+
+-- Refund Chainspell
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 126 -- int
+
+
+UPDATE dbo.Skill
+SET Name = 'Force Alter',
+	Description = 'Ability to use alter-based force abilities like Force Confusion and Force Push. Higher skill levels unlock new abilities.'
+WHERE ID = 19 -- Force Combat
+
+UPDATE dbo.Skill
+SET Name = 'Force Control',
+	Description = 'Ability to use control-based force abilities like Force Speed and Rage. Higher skill levels unlock new abilities.'
+WHERE ID = 20 -- Force Support
+
+UPDATE dbo.Skill
+SET Name = 'Force Sense',
+	Description = 'Ability to use sense-based force abilities like Force Stun and Premonition. Higher skill levels unlock new abilities.'
+WHERE ID = 21 -- Force Utility
+
+
+-- Sum up levels in Force Combat / Force Support / Force Utility and put them into the Skill Pool for later redistribution by the player.
+INSERT INTO dbo.PCSkillPool ( ID ,
+                              PlayerID ,
+                              SkillCategoryID ,
+                              Levels )
+SELECT 
+	NEWID(),
+	pcs.PlayerID, 
+	6, -- 6 = Force
+	SUM(pcs.Rank)
+FROM dbo.PCSkill pcs
+WHERE pcs.SkillID IN (19, 20, 21)
+GROUP BY pcs.PlayerID 
+HAVING SUM(pcs.Rank) > 0
+
+-- Set the skill levels to zero since they've been pooled.
+UPDATE dbo.PCSkill
+SET Rank = 0,
+	XP = 0
+WHERE SkillID IN (19, 20, 21)
+
+
+-- Some of our perk names are carried over, but all of the functionality has changed.
+-- Just to make my life a little easier, we're going to wipe all existing perk information
+-- and start from scratch.
+
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (
+		3, 4, 5, 11, 13, 19, 76, 78, 126
+	) 
+)
+
+DELETE FROM dbo.PCPerkRefund
+WHERE PerkID IN (3, 4, 5, 11, 13, 19, 76, 78, 126)
+
+DELETE FROM dbo.PerkFeat
+WHERE PerkID IN (3, 4, 5, 11, 13, 19, 76, 78, 126)
+
+DELETE FROM dbo.PerkLevelQuestRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel 
+	WHERE PerkID IN (
+		3, 4, 5, 11, 13, 19, 76, 78, 126
+	)
+)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID IN(3, 4, 5, 11, 13, 19, 76, 78, 126)
+
+DELETE FROM dbo.Perk
+WHERE ID IN (3, 4, 5, 11, 13, 19, 76, 78, 126)
+
+-- Set up the Specialization table
+CREATE TABLE Specialization(
+	ID INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(32) NOT NULL
+)
+
+INSERT INTO dbo.Specialization ( ID ,
+                                 Name )
+VALUES ( 0 , -- ID - int
+         N'None' -- Name - nvarchar(32)
+    )
+INSERT INTO dbo.Specialization ( ID ,
+                                 Name )
+VALUES ( 1 , -- ID - int
+         N'Guardian' -- Name - nvarchar(32)
+    )
+INSERT INTO dbo.Specialization ( ID ,
+                                 Name )
+VALUES ( 2 , -- ID - int
+         N'Consular' -- Name - nvarchar(32)
+    )
+INSERT INTO dbo.Specialization ( ID ,
+                                 Name )
+VALUES ( 3 , -- ID - int
+         N'Sentinel' -- Name - nvarchar(32)
+    )
+
+CREATE TABLE ForceBalanceType(
+	ID INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(32) NOT NULL
+)
+
+INSERT INTO dbo.ForceBalanceType ( ID ,
+                                   Name )
+VALUES ( 0 , -- ID - int
+         N'Universal' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.ForceBalanceType ( ID ,
+                                   Name )
+VALUES ( 1 , -- ID - int
+         N'Light Side' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.ForceBalanceType ( ID ,
+                                   Name )
+VALUES ( 2 , -- ID - int
+         N'Dark Side' -- Name - nvarchar(32)
+    )
+
+ALTER TABLE dbo.Perk
+ADD ForceBalanceTypeID INT NOT NULL DEFAULT 0
+CONSTRAINT FK_Perk_ForceBalanceTypeID FOREIGN KEY REFERENCES dbo.ForceBalanceType(ID)
+
+ALTER TABLE dbo.Player
+ADD SpecializationID INT NOT NULL DEFAULT 0
+CONSTRAINT FK_Player_SpecializationID FOREIGN KEY REFERENCES dbo.Specialization(ID)
+
+-- Remove the old perk categories
+DELETE FROM dbo.PerkCategory WHERE ID IN (29, 30, 31)
+
+-- Move the sequences for other categories up.
+UPDATE dbo.PerkCategory
+SET Sequence = 28 WHERE ID = 36
+UPDATE dbo.PerkCategory
+SET Sequence = 29 WHERE ID = 37
+
+-- Add the new perk categories.
+INSERT INTO dbo.PerkCategory ( ID ,
+                               Name ,
+                               IsActive ,
+                               Sequence )
+VALUES ( 40 ,    -- ID - int
+         N'Force Alter - General' ,  -- Name - nvarchar(64)
+         1, -- IsActive - bit
+         30      -- Sequence - int
+    )
+INSERT INTO dbo.PerkCategory ( ID ,
+                               Name ,
+                               IsActive ,
+                               Sequence )
+VALUES ( 41 ,    -- ID - int
+         N'Force Alter - Guardian' ,  -- Name - nvarchar(64)
+         1, -- IsActive - bit
+         31      -- Sequence - int
+    )
+INSERT INTO dbo.PerkCategory ( ID ,
+                               Name ,
+                               IsActive ,
+                               Sequence )
+VALUES ( 42 ,    -- ID - int
+         N'Force Alter - Consular' ,  -- Name - nvarchar(64)
+         1 , -- IsActive - bit
+         32      -- Sequence - int
+    )
+INSERT INTO dbo.PerkCategory ( ID ,
+                               Name ,
+                               IsActive ,
+                               Sequence )
+VALUES ( 43 ,    -- ID - int
+         N'Force Control - General' ,  -- Name - nvarchar(64)
+         1, -- IsActive - bit
+         33      -- Sequence - int
+    )
+INSERT INTO dbo.PerkCategory ( ID ,
+                               Name ,
+                               IsActive ,
+                               Sequence )
+VALUES ( 44 ,    -- ID - int
+         N'Force Control - Guardian' ,  -- Name - nvarchar(64)
+         1, -- IsActive - bit
+         34      -- Sequence - int
+    )
+INSERT INTO dbo.PerkCategory ( ID ,
+                               Name ,
+                               IsActive ,
+                               Sequence )
+VALUES ( 45 ,    -- ID - int
+         N'Force Control - Consular' ,  -- Name - nvarchar(64)
+         1 , -- IsActive - bit
+         35      -- Sequence - int
+    )
+	
+
+-- Disable the force Defense/Potency mod blueprints
+UPDATE dbo.CraftBlueprint
+SET IsActive = 0
+WHERE ID IN (333,334,352,129,162,192,389,405,412,195,323,329,364,367,368,128,161,191,371,381,384,132,165,180)
+
+-- Rename Activation Speed to Cooldown Reduction
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Cooldown Reduction +1'
+WHERE ID = 121
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Cooldown Reduction +2'
+WHERE ID = 152
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Cooldown Reduction +3'
+WHERE ID = 184
+
+GO  
+
+-- Add perks for the force rebalance.
+-- Force Alter 40 = General, 41 = Guardian, 42 = Consular 49 = Sentinel
+-- Force Control 43 = General 44 = Guardian 45 = consular, 50 = sentinel
+-- Force Sense 46 = General, 47 = Guardian 48 = Consular 51 = Sentinel
+INSERT INTO dbo.PerkCategory ( ID ,  Name ,  IsActive ,  Sequence ) VALUES
+(46, N'Force Sense - General', 1, 36),
+(47, N'Force Sense - Guardian', 1, 37),
+(48, N'Force Sense - Consular', 1, 38),
+(49, N'Force Alter - Sentinel', 1, 39),
+(50, N'Force Control - Sentinel', 1, 40),
+(51, N'Force Sense - Sentinel', 1, 41);
+
+-- Remove PC cooldowns
+DELETE FROM dbo.PCCooldown
+WHERE CooldownCategoryID IN (2 ,4 ,5 ,6 ,7 ,8 ,9 ,10,11,12,16,17,20,21,28,34,35,36)
+
+-- Remove the old cooldown categories
+DELETE FROM dbo.CooldownCategory
+WHERE ID IN (2 ,4 ,5 ,6 ,7 ,8 ,9 ,10,11,12,16,17,20,21,28,34,35,36)
+
+
+-- Add new cooldown categories
+INSERT INTO dbo.CooldownCategory ( ID ,Name ,BaseCooldownTime ) VALUES
+( 2 , N'Force Speed' , 600.0),
+( 4 , N'Absorb Energy' , 600.0),
+( 5 , N'Force Body' , 600.0),
+( 6 , N'Mind Shield' , 600.0),
+( 7 , N'Rage' , 600.0),
+( 8 , N'Force Persuade' , 600.0),
+( 9 , N'Confusion' , 600.0),
+( 10 , N'Force Stun' , 600.0),
+( 11 , N'Sith Alchemy' , 600.0),
+( 12 , N'Throw Saber' , 600.0),
+( 16 , N'Premonition' , 600.0),
+( 17 , N'Comprehend Speech' , 600.0),
+( 20 , N'Force Detection' , 600.0),
+( 21 , N'Farseeing' , 600.0),
+( 28 , N'Battle Meditation' , 600.0),
+( 34 , N'Animal Bond' , 600.0),
+( 35 , N'Drain Life' , 600.0),
+( 36 , N'Force Lightning' , 600.0),
+( 37 , N'Force Push' , 10.0),
+( 38 , N'Force Breach' , 600.0)
+
+
+-- Definitions for each perk
+INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, IsTargetSelfOnly, Name, IsActive, Description, Enmity, EnmityAdjustmentRuleID, ForceBalanceTypeID) VALUES
+ (3, 44, 2, 3, 1, 'Force Speed', 1, 'Increases movement speed and dexterity.  At higher ranks grants additional attacks.', 0, 0, 0),
+ (4, 45, 4, 3, 1, 'Absorb Energy', 1, 'Absorbs a percentage of damage that the caster would take, from all sources.', 20, 2, 0),
+ (5, 43, 5, 3, 1, 'Force Body', 1, 'Converts a percentage of the casters current HP into FP.', 0, 0, 0),
+ (13, 45, 6, 3, 0, 'Mind Shield', 1, 'Protects the target from mind affecting powers and abilities.', 20, 2, 1),
+ (19, 45, 7, 3, 1, 'Rage', 1, 'Increases STR and CON at the cost of AC and HP damage each round.  At higher ranks grants additional attacks, that do not stack with Force Speed.', 10, 2, 2),
+ (76, 42, 8, 3, 0, 'Force Persuade', 1, 'Applies Domination effect to humanoid creatures with lower WIS than the caster.', 0, 0, 1),
+ (78, 42, 9, 3, 0, 'Confusion', 1, 'Applies Confusion effect to organic creatures with lower WIS than the caster.', 0, 0, 1),
+ (126, 42, 10, 3, 0, 'Force Stun', 1, 'Tranquilises an enemy or slows their reaction time.', 10, 1, 1),
+ (173, 42, 11, 3, 0, 'Sith Alchemy', 1, 'The power to transform living (or recently-living) flesh.', 0, 0, 2),
+ (174, 41, 12, 3, 0, 'Throw Saber', 1, 'The caster throws their lightsaber at nearby enemies and pulls it back to their hand.', 10, 1, 0),
+ (175, 51, 16, 3, 1, 'Premonition', 1, 'The caster sees a short way into the future, allowing them to avoid an untimely fate.', 0, 0, 0),
+ (176, 51, 17, 3, 1, 'Comprehend Speech', 1, 'The caster improves their ability to understand other languages.', 0, 0, 0),
+ (177, 51, 20, 3, 1, 'Force Detection', 1, 'The caster senses nearby hidden creatures.', 0, 0, 0),
+ (178, 46, 21, 3, 1, 'Farseeing', 1,  'The caster gets a vision of another character.', 0, 0, 0),
+ (179, 46, 28, 3, 1, 'Battle Meditation', 1, 'The caster boosts their nearby allies at the expense of their own abilities.', 10, 2, 0),
+ (180, 51, 34, 3, 0, 'Animal Bond', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
+ (181, 42, 35, 3, 0, 'Drain Life', 1, 'Steals HP from a single target every second.', 0, 0, 2),
+ (182, 42, 36, 3, 0, 'Force Lightning', 1, 'Deals electrical damage over time to a single target.', 0, 0, 2),
+ (183, 49, 37, 3, 0, 'Force Push', 1, 'Knocks down a single target or, if resisted, slows the target instead.', 0, 0, 0),
+ (184, 42, 38, 3, 0, 'Force Breach', 1, 'Deals direct damage to a single target.', 0, 0, 0),
+ (185, 45, NULL, 3, 0, 'Force Heal', 1, 'Restores HP on a single target over time.', 0, 0, 1)
+ ;
+
+-- Levels for each perk.
+ALTER TABLE dbo.PerkLevel
+ADD SpecializationID INT NOT NULL DEFAULT 0
+CONSTRAINT FK_PerkLevel_SpecializationID FOREIGN KEY REFERENCES dbo.Specialization(ID);
+
+ALTER TABLE dbo.PerkLevel ADD BaseFPCost INT NOT NULL DEFAULT 0;
+GO
+
+DECLARE @PerkLevelID INT;
+
+ INSERT INTO dbo.PerkLevel (PerkID, Level, Price, Description, SpecializationID, BaseFPCost) VALUES
+ (181,1,4, 'Steals 5 HP from a single target every second.', 2, 4),
+ (181,2,4, 'Steals 6 HP from a single target every second.', 2, 4),
+ (181,3,5, 'Steals 7 HP from a single target every second.', 2, 4),
+ (181,4,5, 'Steals 8 HP from a single target every second.', 2, 4),
+ (181,5,6, 'Steals 10 HP from a single target every second.', 2, 4),
+ (182,1,4, 'Damages a single target for 10 HP every second.', 2, 2),
+ (182,2,4, 'Damages a single target for 12 HP every second.', 2, 2),
+ (182,3,5, 'Damages a single target for 14 HP every second.', 2, 2),
+ (182,4,5, 'Damages a single target for 16 HP every second.', 2, 2),
+ (182,5,6, 'Damages a single target for 20 HP every second.', 2, 2),
+ (183,1,2, 'Knockdown a small target. If resisted, target is slowed for 6 seconds.', 0, 4),
+ (183,2,3, 'Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.', 0, 6),
+ (183,3,4, 'Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.', 3, 8),
+ (183,4,5, 'Knockdown any size target. If resisted, target is slowed for 6 seconds.', 3, 10),
+ (184,1,4, 'Deals 100 damage to a single target.', 2, 8),
+ (184,2,5, 'Deals 125 damage to a single target.', 2, 10),
+ (184,3,6, 'Deals 160 damage to a single target.', 2, 12),
+ (184,4,7, 'Deals 200 damage to a single target.', 2, 14),
+ (184,5,8, 'Deals 250 damage to a single target.', 2, 16),
+ (185,1,2, 'Heals a single target for 2 HP every second.', 0, 1),
+ (185,2,2, 'Heals a single target for 3 HP every second.', 0, 2),
+ (185,3,3, 'Heals a single target for 5 HP every second.', 0, 3),
+ (185,4,3, 'Heals a single target for 7 HP every second.', 2, 4),
+ (185,5,4, 'Heals a single target for 10 HP every second.', 2, 5),
+ (3,1,2,'Increases movement speed by 10% and Dexterity by 2.', 0, 2),
+ (3,2,2,'Increases movement speed by 20% and Dexterity by 4.', 0, 4),
+ (3,3,3,'Increases movement speed by 30%, Dexterity by 6 and grants an extra attack.', 0, 6),
+ (3,4,3,'Increases movement speed by 40%, Dexterity by 8 and grants an extra attack.', 1, 8),
+ (3,5,12,'Increases movement speed by 50%, Dexterity by 10 and grants two extra attacks and Epic Dodge.', 1, 20), 
+ (4,1,2,'Grants 10% immunity to all damage while the caster retains concentration.', 0, 2),
+ (4,2,2,'Grants 20% immunity to all damage while the caster retains concentration.', 0, 4),
+ (4,3,3,'Grants 30% immunity to all damage while the caster retains concentration.', 0, 6),
+ (4,4,3,'Grants 40% immunity to all damage while the caster retains concentration.', 2, 8),
+ (4,5,4,'Grants 50% immunity to all damage while the caster retains concentration.', 2, 10),
+ (5,1,3,'Converts 10% of the casters current HP into FP.', 0, 0),
+ (5,2,4,'Converts 20% of the casters current HP into FP.', 0, 0),
+ (5,3,5,'Converts 35% of the casters current HP into FP.', 0, 0),
+ (5,4,6,'Converts 50% of the casters current HP into FP.', 0, 0),
+ (13,1,4,'Immune to Tranquilisation effects while concentrating.', 0, 1),
+ (13,2,6,'Immune to Tranquilisation, Confusion and Persuade effects while concentrating.', 0, 2),
+ (13,3,8,'Immune to Tranquilisation, Confusion, Persuade and Drain effects while concentrating.', 1, 3),
+ (19,1,2,'Increases Strength and Dexterity by 2 while concentrating but reduces AC by 2 and deals 2 damage per round.', 0, 2),
+ (19,2,2,'Increases Strength and Dexterity by 4 while concentrating but reduces AC by 2 and deals 4 damage per round.', 0, 4),
+ (19,3,5,'Increases Strength and Dexterity by 6 while concentrating and grants an extra attack but reduces AC by 4 and deals 6 damage per round.', 0, 6),
+ (19,4,5,'Increases Strength and Dexterity by 8 while concentrating and grants an extra attack but reduces AC by 4 and deals 8 damage per round.', 1, 8),
+ (19,5,8,'Increases Strength and Dexterity by 10 while concentrating and grants two extra attacks but reduces AC by 2 and deals 10 damage per round.', 1, 10),
+ (76,1,7,'Applies Domination effect to a single humanoid target with lower WIS than the caster, while the caster concentrates.', 0, 8),
+ (76,2,7,'Applies Domination effect to all hostile humanoid targets within 5m with lower WIS than the caster, while the caster concentrates.', 2, 20),
+ (78,1,7,'Applies Confusion effect to a single non-mechanical target with lower WIS than the caster, while the caster concentrates.', 0, 8),
+ (78,2,7,'Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIS than the caster, while the caster concentrates.', 2, 20),
+ (126,1,4,'Single target is Tranquilised while the caster concentrates or, if resisted, gets -5 to AB and AC.', 0, 8),
+ (126,2,7,'Target and nearest other enemy within 10m is Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.', 2, 12),
+ (126,3,10,'Target and all other enemies within 10 are Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.', 2, 20),
+ (173,1,0,'Unlocks Sith Alchemy.', 2, 0),
+ (173,2,7,'When used on a corpse, raises the creature as a henchman while the caster concentrates.', 2, 25),
+ (173,3,7,'Alchemist can create monsters.', 2, 300),
+ (173,4,0,'Alchemist can employ monsters as henchmen while they concentrate.', 2, 5),
+ (174,1,2,'Throw your equipped lightsaber up to 5m for (saber damage + INT modifier) * 100%.  This ability hits automatically.', 0, 4),
+ (174,2,2,'Throw your equipped lightsaber up to 10m for (saber damage + INT modifier) * 125%.  This ability hits automatically.', 0, 5),
+ (174,3,2,'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 160%.  This ability hits automatically.', 0, 6),
+ (174,4,2,'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 200%.  This ability hits automatically and will chain to a second target within 5m of the first.', 1, 8),
+ (174,5,2,'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 250%.  This ability hits automatically and will chain to a second and third target within 5m each.', 1, 10),
+ (175,1,4,'The next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.', 0, 5),
+ (175,2,7,'The next time the caster would die in the next 30 minutes, they are instead healed to 50% of their max HP.', 0, 5),
+ (175,3,10,'For 12s after casting, the caster is immune to all damage, and the next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.', 3, 16),
+ (176,1,3,'The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 0, 1),
+ (176,2,4,'The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 0, 2),
+ (176,3,5,'The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 3, 3),
+ (176,4,6,'The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 3, 4),
+ (177,1,2,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 0, 1),
+ (177,2,2,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 0, 2),
+ (177,3,3,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 3, 3),
+ (177,4,3,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 3, 4),
+ (177,5,4,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 3, 5),
+ (178,1,10,'The caster attempts to view what another character is currently doing.', 0, 30),
+ (179,1,4, 'The caster gets -5 AB & AC but their nearby party members get +5 AB & AC', 0, 1),
+ (179,2,6, 'The caster gets -10 AB & AC but their nearby party members get +10 AB & AC', 0, 2),
+ (179,3,8, 'The caster and nearby enemies get -10 AB & AC but the nearby party members get +10 AB & AC', 0, 3),
+ (180,1,2, 'The caster befriends an animal or beast with up to Challenge Rating 4.', 0, 4),
+ (180,2,2, 'The caster befriends an animal or beast with up to Challenge Rating 8.', 0, 8),
+ (180,3,3, 'The caster befriends an animal or beast with up to Challenge Rating 12.', 0, 12),
+ (180,4,3, 'The caster befriends an animal or beast with up to Challenge Rating 16.', 3, 16),
+ (180,5,4, 'The caster befriends an animal or beast with up to Challenge Rating 20.', 3, 20),
+ (180,6,5, 'The caster befriends an animal or beast with any Challenge Rating.', 3, 30)
+ ;
+ 
+SET @PerkLevelID = SCOPE_IDENTITY();
+
+-- Add the skill requirement for each perk level.
+ INSERT INTO dbo.PerkLevelSkillRequirement (PerkLevelID, SkillID, RequiredRank) VALUES
+  
+  -- Drain Life
+  (@PerkLevelID-83,19,30),
+  (@PerkLevelID-82,19,45),
+  (@PerkLevelID-81,19,60),
+  (@PerkLevelID-80,19,75),
+  (@PerkLevelID-79,19,90),
+  
+  -- Force Lightning
+  (@PerkLevelID-78,19,30),
+  (@PerkLevelID-77,19,45),
+  (@PerkLevelID-76,19,60),
+  (@PerkLevelID-75,19,75),
+  (@PerkLevelID-74,19,90),
+
+  -- Force Push
+  (@PerkLevelID-73,19,0),
+  (@PerkLevelID-72,19,10),
+  (@PerkLevelID-71,19,20),
+  (@PerkLevelID-70,19,30),
+
+  -- Force Breach
+  (@PerkLevelID-69,19,50),
+  (@PerkLevelID-68,19,60),
+  (@PerkLevelID-67,19,70),
+  (@PerkLevelID-66,19,80),
+  (@PerkLevelID-65,19,90),
+
+  -- Force Heal
+  (@PerkLevelID-64,20,0),
+  (@PerkLevelID-63,20,10),
+  (@PerkLevelID-62,20,20),
+  (@PerkLevelID-61,20,30),
+  (@PerkLevelID-60,20,40),
+
+  -- Force Speed
+  (@PerkLevelID-59,20,0),
+  (@PerkLevelID-58,20,10),
+  (@PerkLevelID-57,20,25),
+  (@PerkLevelID-56,20,40),
+  (@PerkLevelID-55,20,80),
+
+  -- Absorb Energy
+  (@PerkLevelID-54,20,0),
+  (@PerkLevelID-53,20,15),
+  (@PerkLevelID-52,20,30),
+  (@PerkLevelID-51,20,45),
+  (@PerkLevelID-50,20,60),
+
+  -- Force Body
+  (@PerkLevelID-49,20,10),
+  (@PerkLevelID-48,20,25),
+  (@PerkLevelID-47,20,40),
+  (@PerkLevelID-46,20,55),
+
+  -- Mind Shield
+  (@PerkLevelID-45,20,10),
+  (@PerkLevelID-44,20,30),
+  (@PerkLevelID-43,20,50),
+  
+  -- Rage
+  (@PerkLevelID-42,20,10),
+  (@PerkLevelID-41,20,30),
+  (@PerkLevelID-40,20,50),
+  (@PerkLevelID-39,20,70),
+  (@PerkLevelID-38,20,90),
+
+  -- Force Persuade
+  (@PerkLevelID-37,19,40),
+  (@PerkLevelID-36,19,80),
+
+  -- Confusion
+  (@PerkLevelID-35,19,40),
+  (@PerkLevelID-34,19,80),
+
+  -- Force Stun
+  (@PerkLevelID-33,19,10),
+  (@PerkLevelID-32,19,50),
+  (@PerkLevelID-31,19,80),
+
+  -- Sith Alchemy
+  (@PerkLevelID-30,19,0),
+  (@PerkLevelID-29,19,80),
+  (@PerkLevelID-28,19,90),
+  (@PerkLevelID-27,19,90),
+
+  -- Throw Saber
+  (@PerkLevelID-26,19,10),
+  (@PerkLevelID-25,19,20),
+  (@PerkLevelID-24,19,30),
+  (@PerkLevelID-23,19,40),
+  (@PerkLevelID-22,19,50),
+
+  -- Premonition
+  (@PerkLevelID-21,21,0),
+  (@PerkLevelID-20,21,20),
+  (@PerkLevelID-19,21,50),
+
+  -- Comprehend Speech
+  (@PerkLevelID-18,21,0),
+  (@PerkLevelID-17,21,15),
+  (@PerkLevelID-16,21,30),
+  (@PerkLevelID-15,21,45),
+
+  -- Force Detection
+  (@PerkLevelID-14,21,0),
+  (@PerkLevelID-13,21,5),
+  (@PerkLevelID-12,21,20),
+  (@PerkLevelID-11,21,35),
+  (@PerkLevelID-10,21,50),
+
+  -- Farseeing
+  (@PerkLevelID-9,21,80),
+
+  -- Battle Meditation
+  (@PerkLevelID-8,21,40),
+  (@PerkLevelID-7,21,60),
+  (@PerkLevelID-6,21,80),
+
+  -- Animal Bond
+  (@PerkLevelID-5,21,10),
+  (@PerkLevelID-4,21,25),
+  (@PerkLevelID-3,21,40),
+  (@PerkLevelID-2,21,55),
+  (@PerkLevelID-1,21,70),
+  (@PerkLevelID, 21, 85)
+  ;
+ 
+INSERT INTO dbo.Quest ( ID ,
+                        Name ,
+                        JournalTag ,
+                        FameRegionID ,
+                        RequiredFameAmount ,
+                        AllowRewardSelection ,
+                        RewardGold ,
+                        RewardKeyItemID ,
+                        RewardFame ,
+                        IsRepeatable ,
+                        MapNoteTag ,
+                        StartKeyItemID ,
+                        RemoveStartKeyItemAfterCompletion ,
+                        OnAcceptRule ,
+                        OnAdvanceRule ,
+                        OnCompleteRule ,
+                        OnKillTargetRule ,
+                        OnAcceptArgs ,
+                        OnAdvanceArgs ,
+                        OnCompleteArgs ,
+                        OnKillTargetArgs )
+VALUES ( 99 ,    -- ID - int
+         N'Sith Alchemy' ,  -- Name - nvarchar(100)
+         N'' ,  -- JournalTag - nvarchar(32)
+         1 ,    -- FameRegionID - int
+         0 ,    -- RequiredFameAmount - int
+         0 , -- AllowRewardSelection - bit
+         0 ,    -- RewardGold - int
+         NULL ,    -- RewardKeyItemID - int
+         0 ,    -- RewardFame - int
+         0 , -- IsRepeatable - bit
+         N'' ,  -- MapNoteTag - nvarchar(32)
+         NULL ,    -- StartKeyItemID - int
+         0 , -- RemoveStartKeyItemAfterCompletion - bit
+         N'' ,  -- OnAcceptRule - nvarchar(32)
+         N'' ,  -- OnAdvanceRule - nvarchar(32)
+         N'' ,  -- OnCompleteRule - nvarchar(32)
+         N'' ,  -- OnKillTargetRule - nvarchar(32)
+         N'' ,  -- OnAcceptArgs - nvarchar(256)
+         N'' ,  -- OnAdvanceArgs - nvarchar(256)
+         N'' ,  -- OnCompleteArgs - nvarchar(256)
+         N''    -- OnKillTargetArgs - nvarchar(256)
+    )
+
+-- Set the Sith Alchemy perk level 1 to be gated on the above quest.
+INSERT INTO dbo.PerkLevelQuestRequirement (PerkLevelID, RequiredQuestID) VALUES (@PerkLevelID-30, 99);
+
+
+
+INSERT INTO dbo.PerkFeat ( PerkID , FeatID , PerkLevelUnlocked ) VALUES 
+-- Force Speed
+(3, 1165, 1),
+(3, 1166, 2),
+(3, 1167, 3),
+(3, 1168, 4),
+(3, 1169, 5),
+
+-- Absorb Energy
+(4, 1170, 1),
+(4, 1171, 2),
+(4, 1172, 3),
+(4, 1173, 4),
+(4, 1174, 5),
+
+-- Force Heal
+(185, 1175, 1),
+(185, 1176, 2),
+(185, 1177, 3),
+(185, 1178, 4),
+(185, 1179, 5),
+
+-- Force Body
+(5, 1180, 1),
+(5, 1181, 2),
+(5, 1182, 3),
+(5, 1183, 4),
+
+-- Mind Shield
+(13, 1184, 1),
+(13, 1185, 2),
+(13, 1186, 3),
+
+-- Rage
+(19, 1187, 1),
+(19, 1188, 2),
+(19, 1189, 3),
+(19, 1190, 4),
+(19, 1191, 5),
+
+-- Force Persuade
+(76, 1192, 1),
+(76, 1193, 2),
+
+-- Confusion
+(78, 1194, 1),
+(78, 1195, 2),
+
+-- Force Stun
+(126, 1196, 1),
+(126, 1197, 2),
+(126, 1198, 3),
+
+-- Force Push
+(183, 1199, 1),
+(183, 1200, 2),
+(183, 1201, 3),
+(183, 1202, 4),
+
+-- Force Lightning
+(182, 1203, 1),
+(182, 1204, 2),
+(182, 1205, 3),
+(182, 1206, 4),
+(182, 1207, 5),
+
+-- Drain Life
+(181, 1208, 1),
+(181, 1209, 2),
+(181, 1210, 3),
+(181, 1211, 4),
+(181, 1212, 5),
+
+-- Sith Alchemy
+(173, 1213, 1),
+(173, 1214, 2),
+(173, 1215, 3),
+
+-- Force Breach
+(184, 1216, 1),
+(184, 1217, 2),
+(184, 1218, 3),
+(184, 1219, 4),
+(184, 1220, 5),
+
+-- Throw Saber
+(174, 1221, 1),
+(174, 1222, 2),
+(174, 1223, 3),
+(174, 1224, 4),
+(174, 1225, 5),
+
+-- Premonition
+(175, 1226, 1),
+(175, 1227, 2),
+(175, 1228, 3),
+
+-- Comprehend Speech
+(176, 1229, 1),
+(176, 1230, 2),
+(176, 1231, 3),
+(176, 1232, 4),
+
+-- Force Detection
+(177, 1233, 1),
+(177, 1234, 2),
+(177, 1235, 3),
+(177, 1236, 4),
+(177, 1237, 5),
+
+-- Battle Meditation
+(179, 1238, 1),
+(179, 1239, 2),
+(179, 1240, 3),
+
+-- Animal Bond
+(180, 1241, 1),
+(180, 1242, 2),
+(180, 1243, 3),
+(180, 1244, 4),
+(180, 1245, 5),
+(180, 1246, 6)
+
+
+
+-- Remove custom effects
+
+-- Remove Chainspell
+DELETE FROM dbo.CustomEffect
+WHERE ID = 6
+
+
+
+-- New perk execution types
+INSERT INTO dbo.PerkExecutionType ( ID ,
+                                    Name )
+VALUES ( 7 , -- ID - int
+         N'Concentration Ability' -- Name - nvarchar(32)
+    )
+
+
+-- Mark concentration execution type
+UPDATE dbo.Perk
+SET ExecutionTypeID = 7
+WHERE ID IN (4, 13, 19, 76, 126, 173, 176, 178, 179, 180, 181, 182, 185)
+
+
+
+-- Add the active concentration perk ID column to player table
+ALTER TABLE dbo.Player
+ADD ActiveConcentrationPerkID INT NULL
+
+-- Add a FK constraint to this new column
+ALTER TABLE dbo.Player
+ADD CONSTRAINT FK_Player_ActiveConcentrationPerkID
+FOREIGN KEY(ActiveConcentrationPerkID) REFERENCES Perk(ID)
+
+-- Add the active concentration perk level column to player table
+ALTER TABLE dbo.Player
+ADD ActiveConcentrationTier INT NOT NULL DEFAULT 0
+
+
+-- Remove BaseFPCost from the perk. It's now on the PerkLevel table instead.
+EXEC dbo.ADM_Drop_Column @TableName = N'Perk' , -- nvarchar(200)
+                         @ColumnName = N'BaseFPCost'  -- nvarchar(200)
+
+
+-- Add a unique constraint to ensure we never get more than one feat per perk ID and perk level unlocked
+ALTER TABLE dbo.PerkFeat
+ADD CONSTRAINT UQ_PerkFeat_SurrogateKey UNIQUE(PerkID, PerkLevelUnlocked)
+
+-- Safety constraint to ensure we only ever have one feat ID registered in the PerkFeat table.
+-- A lot of our look-ups are based on the feat only, so we want to be sure there are no dupes.
+ALTER TABLE dbo.PerkFeat
+ADD CONSTRAINT UQ_PerkFeat_FeatID UNIQUE(FeatID)
+
+
+
+-- Moving FP costs and tick interval to the perk feat instead of perk level
+ALTER TABLE dbo.PerkFeat
+ADD BaseFPCost INT NOT NULL DEFAULT 0
+
+ALTER TABLE dbo.PerkFeat
+ADD ConcentrationFPCost INT NOT NULL DEFAULT 0
+
+ALTER TABLE dbo.PerkFeat
+ADD ConcentrationTickInterval INT NOT NULL DEFAULT 0
+
+
+EXEC dbo.ADM_Drop_Column @TableName = N'PerkLevel' , -- nvarchar(200)
+                         @ColumnName = N'BaseFPCost'  -- nvarchar(200)
+GO
+
+
+DECLARE @PerkID INT 
+
+-- 3 = Force Speed
+SET @PerkID = 3
+
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 2,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 4 = Absorb Energy
+SET @PerkID = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 2,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+-- 185 = Force Heal
+SET @PerkID = 185
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 13 = Mind Shield
+SET @PerkID = 13
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+-- 19 = Rage
+SET @PerkID = 19
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 2,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+-- 76 = Force Persuade
+SET @PerkID = 76
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+
+
+	
+-- 78 = Confusion
+SET @PerkID = 78
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+
+
+
+-- 126 = Force Stun
+SET @PerkID = 126
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 12,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+	
+-- 183 = Force Push
+SET @PerkID = 183
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+
+
+	
+-- 182 = Force Lightning
+SET @PerkID = 182
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 181 = Drain Life
+SET @PerkID = 181
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 173 = Sith Alchemy
+SET @PerkID = 173
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 25,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 300,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 5,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+	
+-- 184 = Force Breach
+SET @PerkID = 184
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 12,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 14,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 16,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+
+-- 174 = Throw Saber
+SET @PerkID = 174
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 5,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+-- 175 = Premonition
+SET @PerkID = 174
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 5,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 5,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 16,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+
+-- 176 = Comprehend Speech
+SET @PerkID = 176
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+
+
+	
+-- 177 = Force Detection
+SET @PerkID = 177
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 5,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+-- 178 = Farseeing
+SET @PerkID = 178
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 30,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+
+	
+-- 179 = Battle Meditation
+SET @PerkID = 179
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+	
+-- 180 = Animal Bond
+SET @PerkID = 180
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 12,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 16,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 30,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 6
+
+
+
+
+-- Some perks are cut until phase 2. Disable them for now.
+UPDATE dbo.Perk
+SET IsActive = 0
+WHERE ID IN (
+	178,
+	177,
+	180,
+	175,
+	76
+)
+
+
+-- Add module version to server configuration table.
+-- This will get bumped to 1 in the ModuleMigrationService
+ALTER TABLE dbo.ServerConfiguration
+ADD ModuleVersion INT NOT NULL DEFAULT 0
+GO
+
+-- Refund all weapon proficiency perks. Then disable them from being purchased.
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 38
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 113
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 114
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 115
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 116
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 117
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 118
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 119
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 120
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 121
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 122
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 129
+
+
+UPDATE dbo.Perk
+SET IsActive = 0
+WHERE ID IN (38 ,113,114,115,116,117,118,119,120,121,122,129)
+
+
+
+-- Make a loot table specifically for dropping reassembly fuel cells.
+INSERT INTO dbo.LootTable ( ID ,
+                            Name )
+VALUES ( 54 , -- ID - int
+         N'Reassembly Fuel Cell' -- Name - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 54 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+
+-- Add reassembly fuel cells to existing space encounter loot tables
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 51 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 52 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 53 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+-- Rename lightsaber to light foil
+UPDATE dbo.CraftBlueprint
+SET ItemName = REPLACE(ItemName, 'Lightsaber', 'Light Foil')
+WHERE ID IN (
+211,212,213,214,215,
+612,613,614,615,616,
+622,623,624,625,626,
+632,633,634,635,636)
+
+-- Rename saberstaff to lightfoil staff
+UPDATE dbo.CraftBlueprint
+SET ItemName = REPLACE(ItemName, 'Saberstaff', 'Lightfoil Staff')
+WHERE ID IN (
+216,217,218,219,220,
+617,618,619,620,621,
+627,628,629,630,631,
+637,638,639,640,641
+)
+
+
+
+-- Add Shield Proficiency perk
+INSERT INTO dbo.Perk ( ID ,
+                       Name ,
+                       IsActive ,
+                       BaseCastingTime ,
+                       Description ,
+                       PerkCategoryID ,
+                       CooldownCategoryID ,
+                       ExecutionTypeID ,
+                       IsTargetSelfOnly ,
+                       Enmity ,
+                       EnmityAdjustmentRuleID ,
+                       CastAnimationID ,
+                       ForceBalanceTypeID )
+VALUES ( 172 ,    -- ID - int
+         'Shield Proficiency' ,   -- Name - varchar(64)
+         1 , -- IsActive - bit
+         0.0 ,  -- BaseCastingTime - float
+         N'Increases your damage reduction by 2% while equipped with a shield.' ,  -- Description - nvarchar(256)
+         6 ,    -- PerkCategoryID - int
+         NULL ,    -- CooldownCategoryID - int
+         0 ,    -- ExecutionTypeID - int
+         0 , -- IsTargetSelfOnly - bit
+         0 ,    -- Enmity - int
+         0 ,    -- EnmityAdjustmentRuleID - int
+         NULL ,    -- CastAnimationID - int
+         0      -- ForceBalanceTypeID - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         1 ,   -- Level - int
+         3 ,   -- Price - int
+         N'2% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         10   -- RequiredRank - int
+    )
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         2 ,   -- Level - int
+         3 ,   -- Price - int
+         N'4% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         20   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         3 ,   -- Level - int
+         3 ,   -- Price - int
+         N'6% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         30   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         4 ,   -- Level - int
+         3 ,   -- Price - int
+         N'8% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         40   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         5 ,   -- Level - int
+         3 ,   -- Price - int
+         N'10% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         50   -- RequiredRank - int
+    )
+
+
+GO
+
+
+-- This table is redundant because all skills use the same XP requirements. If they didn't, skill decay wouldn't
+-- work properly. I've changed the code to read XP requirements from a static dictionary instead of pinging
+-- the DB/cache. This table is no longer necessary and will be dropped.
+DROP TABLE dbo.SkillXPRequirement
+
+GO
+
+
+
 CREATE TABLE Guild (
 	ID INT NOT NULL PRIMARY KEY,
 	Name NVARCHAR(64) NOT NULL,
@@ -1818,3 +3629,1339 @@ WHERE QuestID IN (383,384,386,387,398,399,401,402,453,461,462,464,465,477,478,48
 
 DELETE FROM dbo.Quest
 WHERE ID IN (383,384,386,387,398,399,401,402,453,461,462,464,465,477,478,484,485,505,515,516,519,520,534,535,542,543)
+
+GO
+
+
+--  Why: To avoid divide by zero error in AbilityService.ProcessConcentrationEffects:
+--                 // Are we ready to continue processing this concentration effect?
+--                if (tick % perkFeat.ConcentrationTickInterval != 0) return;
+--  What: Set all concentration based perks that have ConcentrationTickInterval = 0 
+--        to ConcentrationTickInterval = 1 to avoid divide by zero error.
+update PerkFeat
+    set ConcentrationTickInterval = 1
+    where PerkID in (select p.id
+                        from Perk p
+                        inner join PerkFeat pf on pf.perkid = p.id
+                        where exists (select 1 from PerkCategory pc
+                                        where upper(pc.name) like '%FORCE%'
+                                        and pc.IsActive = 1
+                                        and pc.id = p.PerkCategoryID)
+                        and pf.ConcentrationTickInterval = 0
+                        and p.ExecutionTypeID = (select pet.id
+                                                    from PerkExecutionType pet
+                                                    where upper(pet.Name) like '%CONCENTRATION%'));
+                                                    
+
+GO
+
+
+-- Consolidate perk categories for force.
+UPDATE dbo.PerkCategory
+SET Name = 'Force Alter'
+WHERE ID = 40
+
+UPDATE dbo.PerkCategory
+SET Name = 'Force Control'
+WHERE ID = 43
+
+UPDATE dbo.PerkCategory
+SET Name = 'Force Sense'
+WHERE ID = 46
+
+UPDATE dbo.Perk
+SET PerkCategoryID = 40
+WHERE PerkCategoryID IN (41, 42, 49)
+
+UPDATE dbo.Perk
+SET PerkCategoryID = 43
+WHERE PerkCategoryID IN (44, 45, 50)
+
+UPDATE dbo.Perk
+SET PerkCategoryID = 46
+WHERE PerkCategoryID IN (47, 48, 51)
+
+DELETE FROM dbo.PerkCategory
+WHERE ID IN (41, 42, 49, 44, 45, 50, 47, 48, 51)
+
+
+-- Fix Rage's interval to 6 seconds.
+UPDATE dbo.PerkFeat
+SET ConcentrationTickInterval = 6
+WHERE PerkID = 19
+
+
+-- Fix description of Force Speed.
+UPDATE dbo.PerkLevel
+SET Description = 'Increases movement speed by 50%, Dexterity by 10 and grants an extra attack.'
+WHERE PerkID = 3
+	AND Level = 5
+
+
+-- Reduce tick interval for force lightning to 3 per spreadsheet changes.
+UPDATE dbo.PerkFeat
+SET ConcentrationTickInterval = 3
+WHERE PerkID = 182
+
+
+-- Move FP costs to concentration and bump interval to 6 for Force Stun.
+UPDATE dbo.PerkFeat
+SET ConcentrationFPCost = BaseFPCost,
+	BaseFPCost = 0,
+	ConcentrationTickInterval = 6
+WHERE PerkID = 126
+
+
+GO
+
+
+INSERT INTO dbo.Skill ( ID ,
+                        SkillCategoryID ,
+                        Name ,
+                        MaxRank ,
+                        IsActive ,
+                        Description ,
+                        [Primary] ,
+                        Secondary ,
+                        Tertiary ,
+                        ContributesToSkillCap )
+VALUES ( 38 ,    -- ID - int
+         8 ,    -- SkillCategoryID - int
+         N'Ugnaught' ,  -- Name - nvarchar(32)
+         20 ,    -- MaxRank - int
+         1 , -- IsActive - bit
+         N'Ability to speak the Ugnaught language.' ,  -- Description - nvarchar(1024)
+         0 ,    -- Primary - int
+         0 ,    -- Secondary - int
+         0 ,    -- Tertiary - int
+         0   -- ContributesToSkillCap - bit
+    )
+
+GO
+
+
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+)
+
+DELETE FROM dbo.PerkLevelQuestRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+)
+
+DELETE FROM dbo.PCPerkRefund
+WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+
+DELETE FROM dbo.Perk
+WHERE ID IN (38, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 129)
+
+
+
+
+INSERT INTO dbo.Perk ( ID ,
+                       Name ,
+                       IsActive ,
+                       BaseCastingTime ,
+                       Description ,
+                       PerkCategoryID ,
+                       CooldownCategoryID ,
+                       ExecutionTypeID ,
+                       IsTargetSelfOnly ,
+                       Enmity ,
+                       EnmityAdjustmentRuleID ,
+                       CastAnimationID ,
+                       ForceBalanceTypeID )
+VALUES ( 38 ,    -- ID - int
+         'Guild Relations' ,   -- Name - varchar(64)
+         1 , -- IsActive - bit
+         0.0 ,  -- BaseCastingTime - float
+         N'Improves your GP acquisition with all guilds.' ,  -- Description - nvarchar(256)
+         4 ,    -- PerkCategoryID - int
+         NULL ,    -- CooldownCategoryID - int
+         0 ,    -- ExecutionTypeID - int
+         0 , -- IsTargetSelfOnly - bit
+         0 ,    -- Enmity - int
+         0 ,    -- EnmityAdjustmentRuleID - int
+         0 ,    -- CastAnimationID - int
+         0      -- ForceBalanceTypeID - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 38 ,   -- PerkID - int
+         1 ,   -- Level - int
+         6 ,   -- Price - int
+         N'Doubles GP gain.' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    ) 
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 38 ,   -- PerkID - int
+         2 ,   -- Level - int
+         6 ,   -- Price - int
+         N'Triples GP gain.' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 38 ,   -- PerkID - int
+         3 ,   -- Level - int
+         6 ,   -- Price - int
+         N'Quadruples GP gain.' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+
+
+
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 16 , -- ID - int
+         N'Viscara Crystal Spider' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 17 , -- ID - int
+         N'Mon Cala Aradile' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 18 , -- ID - int
+         N'Mon Cala Viper' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 19 , -- ID - int
+         N'Mon Cala Amphi-Hydrus' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 20 , -- ID - int
+         N'Mon Cala Eco Terrorist' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 21 , -- ID - int
+         N'Vellen Flesheater' -- Name - nvarchar(32)
+    )
+
+DECLARE @GuildID INT = 1
+DECLARE @QuestID INT = 566
+DECLARE @Name NVARCHAR(128)
+DECLARE @Quantity INT 
+DECLARE @GP INT 
+DECLARE @Gold INT 
+DECLARE @NPCGroupID INT
+DECLARE @RequiredRank INT 
+DECLARE @Resref NVARCHAR(16)
+
+------------
+-- RANK 0 --
+------------
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x CZ-220 Mynock'
+SET @GP = 7
+SET @Gold = 20
+SET @NPCGroupID = 1
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x CZ-220 Malfunctioning Droid'
+SET @GP = 7
+SET @Gold = 37
+SET @NPCGroupID = 2
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , 0 , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 1
+SET @Name = '1x CZ-220 Colicoid Experiment'
+SET @GP = 15
+SET @Gold = 53
+SET @NPCGroupID = 3
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Viscara Kath Hound'
+SET @GP = 12
+SET @Gold = 65
+SET @NPCGroupID = 4
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Viscara Warocas'
+SET @GP = 12
+SET @Gold = 65
+SET @NPCGroupID = 14
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Wildwoods Looter'
+SET @GP = 12
+SET @Gold = 65
+SET @NPCGroupID = 8
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 8
+SET @Name = '8x Wildwoods Gimpassa'
+SET @GP = 13
+SET @Gold = 70
+SET @NPCGroupID = 9
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Wildwoods Kinrath'
+SET @GP = 13
+SET @Gold = 70
+SET @NPCGroupID = 10
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mynock Wing'
+SET @GP = 7
+SET @Gold = 23
+SET @Resref = 'mynock_wing'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0) 
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mynock Tooth'
+SET @GP = 7
+SET @Gold = 23
+SET @Resref = 'mynock_tooth'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mynock Wing'
+SET @GP = 7
+SET @Gold = 23
+SET @Resref = 'mynock_wing'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mynock Tooth'
+SET @GP = 7
+SET @Gold = 23
+SET @Resref = 'mynock_tooth'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Kath Hound Fur'
+SET @GP = 12
+SET @Gold = 65
+SET @Resref = 'k_hound_fur'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Kath Hound Meat'
+SET @GP = 12
+SET @Gold = 65
+SET @Resref = 'kath_meat_1'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Kath Hound Tooth'
+SET @GP = 14
+SET @Gold = 67
+SET @Resref = 'k_hound_tooth'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Warocas Leg'
+SET @GP = 14
+SET @Gold = 67
+SET @Resref = 'waro_leg'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Warocas Meat'
+SET @GP = 14
+SET @Gold = 67
+SET @Resref = 'warocas_meat'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Warocas Spine'
+SET @GP = 15
+SET @Gold = 68
+SET @Resref = 'waro_feathers'
+SET @RequiredRank = 0
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+
+
+------------
+-- RANK 1 --
+------------
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Mandalorian Warrior'
+SET @GP = 19
+SET @Gold = 76
+SET @NPCGroupID = 6
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Mandalorian Ranger'
+SET @GP = 19
+SET @Gold = 76
+SET @NPCGroupID = 7
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 1
+SET @Name = '1x Mandalorian Leader'
+SET @GP = 24
+SET @Gold = 82
+SET @NPCGroupID = 5
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Valley Cairnmog'
+SET @GP = 27
+SET @Gold = 84
+SET @NPCGroupID = 11
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Valley Raivor'
+SET @GP = 27
+SET @Gold = 84
+SET @NPCGroupID = 13
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Valley Nashtah'
+SET @GP = 27
+SET @Gold = 84
+SET @NPCGroupID = 15
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalore Herb'
+SET @GP = 19
+SET @Gold = 76
+SET @Resref = 'herb_m'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Dog Tags'
+SET @GP = 20
+SET @Gold = 80
+SET @Resref = 'man_tags'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Plexi-plate'
+SET @GP = 25
+SET @Gold = 83
+SET @Resref = 'm_plexiplate'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Blaster Parts'
+SET @GP = 25
+SET @Gold = 83
+SET @Resref = 'm_blast_parts'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Large Vibroblade Parts'
+SET @GP = 25
+SET @Gold = 83
+SET @Resref = 'm_lvibro_parts'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Lightsaber Parts'
+SET @GP = 25
+SET @Gold = 83
+SET @Resref = 'm_ls_parts'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Polearm Parts'
+SET @GP = 25
+SET @Gold = 83
+SET @Resref = 'm_polearm_parts'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Mandalorian Vibroblade Parts'
+SET @GP = 25
+SET @Gold = 83
+SET @Resref = 'm_vibro_parts'
+SET @RequiredRank = 1
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+------------
+-- RANK 2 --
+------------
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Damaged Blue Crystal'
+SET @GP = 39
+SET @Gold = 122
+SET @Resref = 'p_crystal_blue'
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Damaged Green Crystal'
+SET @GP = 39
+SET @Gold = 122
+SET @Resref = 'p_crystal_green'
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Damaged Red Crystal'
+SET @GP = 39
+SET @Gold = 122
+SET @Resref = 'p_crystal_red'
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Damaged Yellow Crystal'
+SET @GP = 39
+SET @Gold = 122
+SET @Resref = 'p_crystal_yellow'
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Crystal Spider'
+SET @GP = 39
+SET @Gold = 122
+SET @NPCGroupID = 16
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Mon Cala Aradile'
+SET @GP = 52
+SET @Gold = 212
+SET @NPCGroupID = 17
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Mon Cala Viper'
+SET @GP = 52
+SET @Gold = 212
+SET @NPCGroupID = 18
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Mon Cala Amphi-Hydrus'
+SET @GP = 52
+SET @Gold = 212
+SET @NPCGroupID = 19
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Amphi-Hydrus Brain Stem'
+SET @GP = 52
+SET @Gold = 212
+SET @Resref = 'amphi_brain2'
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 6
+SET @Name = '6x Amphi-Hydrus Brain'
+SET @GP = 52
+SET @Gold = 212
+SET @Resref = 'amphi_brain'
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 4, 1)
+INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )
+VALUES ( @QuestID , @Resref, @Quantity, SCOPE_IDENTITY(), 0)
+
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 1
+SET @Name = '1x Vellen Fleshleader'
+SET @GP = 44
+SET @Gold = 184
+SET @NPCGroupID = 12
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+-- ===============
+SET @QuestID = @QuestID + 1
+SET @Quantity = 10
+SET @Name = '10x Vellen Flesheater'
+SET @GP = 44
+SET @Gold = 184
+SET @NPCGroupID = 21
+SET @RequiredRank = 2
+
+INSERT INTO dbo.Quest ( ID ,Name ,JournalTag ,FameRegionID ,RequiredFameAmount ,AllowRewardSelection ,RewardGold ,RewardKeyItemID ,RewardFame ,IsRepeatable ,MapNoteTag ,StartKeyItemID ,RemoveStartKeyItemAfterCompletion ,OnAcceptRule ,OnAdvanceRule ,OnCompleteRule ,OnKillTargetRule ,OnAcceptArgs ,OnAdvanceArgs ,OnCompleteArgs ,OnKillTargetArgs ,RewardGuildID ,RewardGuildPoints )
+VALUES ( @QuestID , N'Hunter''s Guild Task: ' + @Name , N'hun_tsk_' + CAST(@QuestID AS NVARCHAR(10)),  1 ,0 ,0 ,@Gold , NULL ,0 ,1 ,N'' ,NULL ,0 ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,N'' ,@GuildID , @GP)
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 1, 1, 1)
+INSERT INTO dbo.QuestKillTarget ( QuestID, NPCGroupID , Quantity , QuestStateID )
+VALUES ( @QuestID, @NPCGroupID, @Quantity, SCOPE_IDENTITY())
+
+INSERT INTO dbo.QuestState ( QuestID , Sequence , QuestTypeID , JournalStateID )
+VALUES (@QuestID, 2, 2, 1)
+INSERT INTO dbo.GuildTask ( GuildID , QuestID , RequiredRank , IsCurrentlyOffered )
+VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
+
+
+GO
+
+
+INSERT INTO dbo.CooldownCategory ( ID ,
+                                   Name ,
+                                   BaseCooldownTime )
+VALUES ( 40 ,   -- ID - int
+         N'Skewer' , -- Name - nvarchar(64)
+         300.0   -- BaseCooldownTime - float
+    )
+
+INSERT INTO dbo.Perk ( ID ,
+                       Name ,
+                       IsActive ,
+                       BaseCastingTime ,
+                       Description ,
+                       PerkCategoryID ,
+                       CooldownCategoryID ,
+                       ExecutionTypeID ,
+                       IsTargetSelfOnly ,
+                       Enmity ,
+                       EnmityAdjustmentRuleID ,
+                       CastAnimationID ,
+                       ForceBalanceTypeID )
+VALUES ( 113 ,    -- ID - int
+         'Skewer' ,   -- Name - varchar(64)
+         1 , -- IsActive - bit
+         0.0 ,  -- BaseCastingTime - float
+         N'Interrupts your target''s concentration effect. Must be equipped with a Polearm.' ,  -- Description - nvarchar(256)
+         15 ,    -- PerkCategoryID - int
+         40 ,    -- CooldownCategoryID - int
+         2 ,    -- ExecutionTypeID - int
+         1 , -- IsTargetSelfOnly - bit
+         0 ,    -- Enmity - int
+         0 ,    -- EnmityAdjustmentRuleID - int
+         NULL ,    -- CastAnimationID - int
+         0      -- ForceBalanceTypeID - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 113 ,   -- PerkID - int
+         1 ,   -- Level - int
+         4 ,   -- Price - int
+         N'25% chance to interrupt' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         2 , -- SkillID - int
+         15   -- RequiredRank - int
+    )
+
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked ,
+                           BaseFPCost ,
+                           ConcentrationFPCost ,
+                           ConcentrationTickInterval )
+VALUES ( 113 , -- PerkID - int
+         1247 , -- FeatID - int
+         1 , -- PerkLevelUnlocked - int
+         0 , -- BaseFPCost - int
+         0 , -- ConcentrationFPCost - int
+         0   -- ConcentrationTickInterval - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 113 ,   -- PerkID - int
+         2 ,   -- Level - int
+         4 ,   -- Price - int
+         N'50% chance to interrupt' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         2 , -- SkillID - int
+         30   -- RequiredRank - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 113 ,   -- PerkID - int
+         3 ,   -- Level - int
+         5 ,   -- Price - int
+         N'75% chance to interrupt' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         2 , -- SkillID - int
+         50   -- RequiredRank - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 113 ,   -- PerkID - int
+         4 ,   -- Level - int
+         6 ,   -- Price - int
+         N'100% chance to interrupt' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         2 , -- SkillID - int
+         80   -- RequiredRank - int
+    )
+
+GO
+
+
+
+UPDATE dbo.LootTableItem
+SET SpawnRule = ''
+WHERE SpawnRule = 'DrillSpawnRule'
+
+
+
+UPDATE dbo.CooldownCategory
+SET BaseCooldownTime = 300
+WHERE ID = 32 -- 32 = Chi

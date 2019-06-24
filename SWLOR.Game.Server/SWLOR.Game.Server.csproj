@@ -1399,7 +1399,7 @@
     <Compile Include="ValueObject\Skill\PlayerSkillRegistration.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Data\Migrations\2019-06-23.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-06-24.1.sql" />
     <Content Include="Module\are\anchor_astroport.are.json" />
     <Content Include="Module\are\anchor_cantina.are.json" />
     <Content Include="Module\are\anchor_dirtoc002.are.json" />
@@ -4708,16 +4708,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Data\Migrations\2019-06-06.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-06.2.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-07.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-09.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-10.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-22.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-22.2.sql" />
     <Content Include="Data\Scripts\WipeUserData.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-12.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-06-15.1.sql" />
     <Content Include="Module\nwn_erf.exe" />
     <Content Include="Module\nwn_gff.exe" />
     <Content Include="Module\Star Wars LOR.mod" />

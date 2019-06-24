@@ -7,8 +7,6 @@ using NWN;
 
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
-using System.Linq;
-using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
@@ -81,56 +79,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
                     if (!string.IsNullOrWhiteSpace(spawnItem.Resref) && spawnItem.Quantity > 0)
                     {
-                        NWItem resource = _.CreateItemOnObject(spawnItem.Resref, point.Object, spawnItem.Quantity);
-
-                        var componentIP = resource.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentType);                        
-                        if (componentIP != null)
-                        {
-                            // Add properties to the item based on Scavenging skill.  Similar logic to the resource harvester.
-                            var chance = RandomService.Random(1, 100) + PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
-                            ResourceQuality quality;
-
-                            if (chance < 50) quality = ResourceQuality.Low;
-                            else if (chance < 75) quality = ResourceQuality.Normal;
-                            else if (chance < 95) quality = ResourceQuality.High;
-                            else quality = ResourceQuality.VeryHigh;
-
-                            int ipBonusChance = ResourceService.CalculateChanceForComponentBonus(oPC, (level / 10 + 1), quality, true);
-
-                            if (RandomService.Random(1, 100) <= ipBonusChance)
-                            {
-                                var ip = ResourceService.GetRandomComponentBonusIP(quality);
-                                BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
-
-                                switch (ip.Item2)
-                                {
-                                    case 0:
-                                        resource.Name = ColorTokenService.Green(resource.Name);
-                                        break;
-                                    case 1:
-                                        resource.Name = ColorTokenService.Blue(resource.Name);
-                                        break;
-                                    case 2:
-                                        resource.Name = ColorTokenService.Purple(resource.Name);
-                                        break;
-                                    case 3:
-                                        resource.Name = ColorTokenService.Orange(resource.Name);
-                                        break;
-                                    case 4:
-                                        resource.Name = ColorTokenService.LightPurple(resource.Name);
-                                        break;
-                                    case 5:
-                                        resource.Name = ColorTokenService.Yellow(resource.Name);
-                                        break;
-                                    case 6:
-                                        resource.Name = ColorTokenService.Red(resource.Name);
-                                        break;
-                                    case 7:
-                                        resource.Name = ColorTokenService.Cyan(resource.Name);
-                                        break;
-                                }
-                            }
-                        }
+                        _.CreateItemOnObject(spawnItem.Resref, point.Object, spawnItem.Quantity);
                     }
 
                     float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(200, level, rank);

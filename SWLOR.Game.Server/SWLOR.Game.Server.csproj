@@ -387,6 +387,7 @@
     <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
     <Compile Include="Enumeration\CustomAnimation.cs" />
     <Compile Include="Enumeration\CustomItemPropertyDamageType.cs" />
+    <Compile Include="Enumeration\CutsceneFadeType.cs" />
     <Compile Include="Enumeration\ForceBalanceType.cs" />
     <Compile Include="Enumeration\GuildType.cs" />
     <Compile Include="Enumeration\MarketBrowseMode.cs" />
@@ -1150,6 +1151,7 @@
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
     <Compile Include="Service\Cached2DAService.cs" />
+    <Compile Include="Service\CutsceneService.cs" />
     <Compile Include="Service\GuildService.cs" />
     <Compile Include="Service\ModuleMigrationService.cs" />
     <Compile Include="Service\StoreService.cs" />

@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using static NWN._;
 
@@ -427,6 +428,30 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(fDelay, () => DoSpeak(sName, oActor, "", sLine, iAnimation, fDuration, fSpeed, true));
             RegisterActor(sName, oActor);
 
+        }
+
+        // 
+        // fDelay           
+        // oActor           
+        // sLine            
+        // iAnim            
+        // fDuration        
+        // fSpeed           
+
+        /// <summary>
+        /// Tell the selected actor to speak a line
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before speaking line</param>
+        /// <param name="oActor">the character you want to speak the line</param>
+        /// <param name="sLine">the line you want them to speak</param>
+        /// <param name="iAnimation">the animation you want them to play whilst speaking the line (leave as ANIMATION_NONE for no animation)</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void Speak(float fDelay, NWCreature oActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpeak(sName, oActor, "", sLine, iAnimation, fDuration, fSpeed));
+            RegisterActor(sName, oActor);
         }
 
 
@@ -1070,8 +1095,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        /// <summary>
+        /// Tell the selected actor to speak a line
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before speech is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to speak the line - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="sLine">the line you want them to speak</param>
+        /// <param name="iAnimation">the animation you want them to play whilst speaking the line (leave as ANIMATION_NONE for no animation). NOTE - if you are using a ANIMATION_LOOPING_TALK_* animation, all you need to use is the last word (eg FORCEFUL))</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void TagActionSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSpeak(sName, new Object(), sActor, sLine, iAnimation, fDuration, fSpeed, true));
@@ -1079,24 +1112,22 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        /// <summary>
+        /// Tell the selected actor to speak a line
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before speaking line</param>
+        /// <param name="sActor">the tag of the character you want to speak the line - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="sLine">the line you want them to speak</param>
+        /// <param name="iAnimation">the animation you want them to play whilst speaking the line (leave as ANIMATION_NONE for no animation)</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void TagSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSpeak(sName, new Object(), sActor, sLine, iAnimation, fDuration, fSpeed));
             RegisterActor(sName, new Object(), sActor);
         }
-
-
-        private static void Speak(float fDelay, NWCreature oActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
-        {
-            string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoSpeak(sName, oActor, "", sLine, iAnimation, fDuration, fSpeed));
-            RegisterActor(sName, oActor);
-        }
-
-
-
+        
         private static void DoConversation(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
         {
             if (GetLocalInt(GetModule(), sName) == TRUE)
@@ -1112,8 +1143,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionConversation(float fDelay, NWCreature oActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
+        /// <summary>
+        /// Tell the selected actor to start a conversation. NOTE players can hold a conversation while in cutscene mode.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before speech is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want to start the conversation</param>
+        /// <param name="oTarget">the character you want them to talk to</param>
+        /// <param name="sConv">the conversation file they should use</param>
+        /// <param name="sTarget">the tag of the character you want them to talk to. NOTE - this allows you to start conversations with creatures created during the cutscene, as long as they have a unique tag. If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the character you want the actor to talk to. If you have already set oTarget, leave sTarget at its default value of ""</param>
+        /// <param name="bGreet">whether or not the character should play its greeting sound when the conversation starts</param>
+        public static void ActionConversation(float fDelay, NWCreature oActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoConversation(sName, oActor, "", oTarget, sConv, sTarget, bGreet));
@@ -1121,8 +1160,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionConversation(float fDelay, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
+        /// <summary>
+        /// Tell the selected actor to start a conversation. NOTE players can hold a conversation while in cutscene mode.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before speech is added to oActor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to start the conversation - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oTarget">the character you want them to talk to</param>
+        /// <param name="sConv">the conversation file they should use</param>
+        /// <param name="sTarget">the tag of the character you want them to talk to. NOTE - this allows you to start conversations with creatures created during the cutscene, as long as they have a unique tag. If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the character you want the actor to talk to. If you have already set oTarget, leave sTarget at its default value of ""</param>
+        /// <param name="bGreet">whether or not the character should play its greeting sound when the conversation starts</param>
+        public static void TagActionConversation(float fDelay, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoConversation(sName, new Object(), sActor, oTarget, sConv, sTarget, bGreet));
@@ -1159,8 +1206,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
+        /// <summary>
+        /// Tells the selected actor to face in a particular direction
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before facing command is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to turn - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="fFace">the direction you want the actor to face in (due east is 0.0, count in degrees anti-clockwise). NOTE - fFace is ignored if iFace is not set to 0</param>
+        /// <param name="iFace">whether the actor should face in a specific direction (0), face in the direction the target is facing (1), or face the target (2)</param>
+        /// <param name="oTarget">the object they should face (leave as OBJECT_INVALID if you don't want them to face an object)</param>
+        public static void TagActionFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFace(sName, new Object(), sActor, oTarget, iFace, fFace, true));
@@ -1168,8 +1222,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
+        /// <summary>
+        /// Tells the selected actor to face in a particular direction
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before turning</param>
+        /// <param name="sActor">the tag of the character you want to turn - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="fFace">the direction you want the actor to face in (due east is 0.0, count in degrees anti-clockwise). NOTE - fFace is ignored if iFace is not set to 0</param>
+        /// <param name="iFace">whether the actor should face in a specific direction (0), face in the direction the target is facing (1), or face the target (2)</param>
+        /// <param name="oTarget">the object they should face (leave as OBJECT_INVALID if you don't want them to face an object)</param>
+        public static void TagFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFace(sName, new Object(), sActor, oTarget, iFace, fFace, false));
@@ -1177,8 +1238,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionFace(float fDelay, NWCreature oActor, float fFace, int iFace, NWObject oTarget)
+        /// <summary>
+        /// Tells the selected actor to face in a particular direction
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before facing command is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want to turn</param>
+        /// <param name="fFace">the direction you want the actor to face in (due east is 0.0, count in degrees anti-clockwise). NOTE - fFace is ignored if iFace is not set to 0</param>
+        /// <param name="iFace">whether the actor should face in a specific direction (0), face in the direction the target is facing (1), or face the target (2)</param>
+        /// <param name="oTarget">the object they should face (leave as OBJECT_INVALID if you don't want them to face an object)</param>
+        public static void ActionFace(float fDelay, NWCreature oActor, float fFace, int iFace, NWObject oTarget)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFace(sName, oActor, "", oTarget, iFace, fFace, true));
@@ -1186,8 +1254,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void Face(float fDelay, NWCreature oActor, float fFace, int iFace, NWObject oTarget)
+        /// <summary>
+        /// Tells the selected actor to face in a particular direction
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before turning</param>
+        /// <param name="oActor">the character you want to turn</param>
+        /// <param name="fFace">the direction you want the actor to face in (due east is 0.0, count in degrees anti-clockwise). NOTE - fFace is ignored if iFace is not set to 0</param>
+        /// <param name="iFace">whether the actor should face in a specific direction (0), face in the direction the target is facing (1), or face the target (2)</param>
+        /// <param name="oTarget">the object they should face (leave as OBJECT_INVALID if you don't want them to face an object)</param>
+        public static void Face(float fDelay, NWCreature oActor, float fFace, int iFace, NWObject oTarget)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFace(sName, oActor, "", oTarget, iFace, fFace, false));
@@ -1214,8 +1289,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionEquip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem)
+        /// <summary>
+        /// Tells the selected actor to equip an item
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before equip command is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to equip the item - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="iSlot">the inventory slot to put the item in. INVENTORY_SLOT_BEST_MELEE will equip the actor's best melee weapon in his right hand. INVENTORY_SLOT_BEST_RANGED will equip the actor's best ranged weapon in his right hand. INVENTORY_SLOT_BEST_ARMOUR will equip the actor's best armour in his chest slot</param>
+        /// <param name="oItem">the item you want to equip. NOTE - leave this as OBJECT_INVALID if you're auto-equipping an INVENTORY_SLOT_BEST_*</param>
+        /// <param name="sItem">the tag of the item you want to equip. NOTE - this is included so that you can equip items that are created in the actor's inventory during a cutscene. NOTE - leave sItem at its default value of "" if you're auto-equipping an INVENTORY_SLOT_BEST_*. NOTE - leave sItem at its default value of "" if you have set oItem already</param>
+        public static void TagActionEquip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoEquip(sName, new Object(), sActor, iSlot, oItem, sItem));
@@ -1223,8 +1305,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionEquip(float fDelay, NWCreature oActor, int iSlot, NWItem oItem, string sItem = "")
+        /// <summary>
+        /// Tells the selected actor to equip an item
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before equip command is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want to equip the item</param>
+        /// <param name="iSlot">the inventory slot to put the item in. INVENTORY_SLOT_BEST_MELEE will equip the actor's best melee weapon in his right hand. INVENTORY_SLOT_BEST_RANGED will equip the actor's best ranged weapon in his right hand. INVENTORY_SLOT_BEST_ARMOUR will equip the actor's best armour in his chest slot</param>
+        /// <param name="oItem">the item you want to equip. NOTE - leave this as OBJECT_INVALID if you're auto-equipping an INVENTORY_SLOT_BEST_*</param>
+        /// <param name="sItem">the tag of the item you want to equip. NOTE - this is included so that you can equip items that are created in the actor's inventory during a cutscene. NOTE - leave sItem at its default value of "" if you're auto-equipping an INVENTORY_SLOT_BEST_*. NOTE - leave sItem at its default value of "" if you have set oItem already</param>
+        public static void ActionEquip(float fDelay, NWCreature oActor, int iSlot, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoEquip(sName, oActor, "", iSlot, oItem, sItem));
@@ -1250,8 +1339,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionUnequip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem = "")
+        /// <summary>
+        /// Tells the selected actor to unequip an item
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before equip command is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to unequip the item - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="iSlot">the inventory slot you want the actor to clear. NOTE - if you set iSlot to anything other than its default INVENTORY_SLOT_NONE, the function will remove whatever item the actor has in the slot you specified</param>
+        /// <param name="oItem">the item you want to equip. NOTE - leave this as OBJECT_INVALID if you're auto-unequipping a specific INVENTORY_SLOT_*</param>
+        /// <param name="sItem">the tag of the item you want to equip. NOTE - this is included so that you can unequip items that are created during the cutscene. NOTE - leave sItem at its default value of "" if you're auto-unequipping a specific INVENTORY_SLOT_*. NOTE - leave sItem at its default value of "" if you have set oItem already</param>
+        public static void TagActionUnequip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoUnequip(sName, new Object(), sActor, iSlot, oItem, sItem));
@@ -1259,8 +1355,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionUnequip(float fDelay, NWCreature oActor, int iSlot, NWItem oItem, string sItem = "")
+        /// <summary>
+        /// Tells the selected actor to unequip an item
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before equip command is added to the actor's action queue</param>
+        /// <param name="oActor">the character you want to unequip the item</param>
+        /// <param name="iSlot">the inventory slot you want the actor to clear. NOTE - if you set iSlot to anything other than its default INVENTORY_SLOT_NONE, the function will remove whatever item the actor has in the slot you specified</param>
+        /// <param name="oItem">the item you want to equip. NOTE - leave this as OBJECT_INVALID if you're auto-unequipping a specific INVENTORY_SLOT_*</param>
+        /// <param name="sItem">the tag of the item you want to equip. NOTE - this is included so that you can unequip items that are created during the cutscene. NOTE - leave sItem at its default value of "" if you're auto-unequipping a specific INVENTORY_SLOT_*. NOTE - leave sItem at its default value of "" if you have set oItem already</param>
+        public static void ActionUnequip(float fDelay, NWCreature oActor, int iSlot, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoUnequip(sName, oActor, "", iSlot, oItem, sItem));
@@ -1282,15 +1385,31 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(oActor, () => _.ActionAttack(oTarget, bPassive ? TRUE : FALSE));
         }
-        
-        private static void TagActionAttack(float fDelay, string sActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
+
+        /// <summary>
+        /// Tells the selected actor to attack something
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before attack is added to oActor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to carry out the attack - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oTarget">the object or character you want them to attack</param>
+        /// <param name="sTarget">the tag of the object or character you want them to attack. NOTE - this is included so that you can attack objects and creatures that are created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        /// <param name="bPassive">whether or not to attack in passive mode</param>
+        public static void TagActionAttack(float fDelay, string sActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoAttack(sName, new Object(), sActor, oTarget, bPassive, sTarget));
             RegisterActor(sName, new Object(), sActor);
         }
-        
-        private static void ActionAttack(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
+
+        /// <summary>
+        /// Tells the selected actor to attack something
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before attack is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want to carry out the attack</param>
+        /// <param name="oTarget">the object or character you want them to attack</param>
+        /// <param name="sTarget">the tag of the object or character you want them to attack. NOTE - this is included so that you can attack objects and creatures that are created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        /// <param name="bPassive">whether or not to attack in passive mode</param>
+        public static void ActionAttack(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoAttack(sName, oActor, "", oTarget, bPassive, sTarget));
@@ -1350,8 +1469,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ApplyEffect(float fDelay, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
+        /// <summary>
+        /// Applies an effect to a target
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before applying the effect</param>
+        /// <param name="oTarget">the object to apply the effect to</param>
+        /// <param name="eFect">the effect to apply to the object (eg, EffectDeath())</param>
+        /// <param name="iDuration">the DURATION_TYPE_* (NOTE you only need to use the last word - INSTANT, TEMPORARY or PERMANENT)</param>
+        /// <param name="fDuration">how long the effect should last (only needed if iDuration is TEMPORARY)</param>
+        /// <param name="sTarget">the tag of the object to apply the effect to. NOTE - this is included so that you can apply effects to objects and creatures that are created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void ApplyEffect(float fDelay, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoEffect(sName, new Object(), "", oTarget, sTarget, eFect, iDuration, fDuration));
@@ -2173,6 +2300,595 @@ namespace SWLOR.Game.Server.Service
             return fdDirection;
         }
 
+
+        private static void CameraMove(float fDelay, float fDirection, float fRange, float fPitch, float fDirection2, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
+        {
+            // Get timing information
+            float fTicks = (fTime * fFrameRate);
+            float fdTime = (fTime / fTicks);
+            float fStart = fDelay;
+            float fCount;
+
+            float fdDirection = GetPanRate(fDirection, fDirection2, fTicks, iClockwise);
+            float fdRange = ((fRange2 - fRange) / fTicks);
+            float fdPitch = ((fPitch2 - fPitch) / fTicks);
+
+            int iCamID;
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                // Set the camera to top down mode
+                CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
+
+                // Give the camera movement a unique id code so that it can be stopped
+                iCamID = GetLocalInt(oParty, "iCamCount") + 1;
+                SetLocalInt(oParty, "iCamCount", iCamID);
+
+                // reset variables
+                fCount = 0.0f;
+                fDelay = fStart;
+
+                // Uncomment the line below to get a message in the game telling you the id of this camera movement
+                // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
+
+                // After delay, stop any older camera movements and start this one
+                DelayCommand(fStart, () => StopCameraMoves(oParty, 0, false, iCamID - 1));
+
+                while (fCount <= fTicks)
+                {
+                    DelayCommand(fDelay, () => CameraPoint(fDirection, fRange, fPitch, fdDirection, fdRange, fdPitch, 0.0f, 0.0f, 0.0f, fCount, oParty.Object, iCamID, iFace));
+                    fCount = (fCount + 1.0f);
+                    fDelay = fStart + (fCount * fdTime);
+                }
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void CameraCrane(float fDelay, float fDirection, float fRange, float fPitch, float fHeight, float fDirection2, float fRange2, float fPitch2, float fHeight2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
+        {
+            // Get timing information
+            float fTicks = (fTime * fFrameRate);
+            float fdTime = (fTime / fTicks);
+            float fStart = fDelay;
+            float fCount;
+
+            float fdDirection = GetPanRate(fDirection, fDirection2, fTicks, iClockwise);
+            float fdRange = ((fRange2 - fRange) / fTicks);
+            float fdPitch = ((fPitch2 - fPitch) / fTicks);
+            float fdHeight = ((fHeight2 - fHeight) / fTicks);
+
+            int iCamID;
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                // Set the camera to top down mode
+                CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
+
+                // Give the camera movement a unique id code so that it can be stopped
+                iCamID = GetLocalInt(oParty, "iCamCount") + 1;
+                SetLocalInt(oParty, "iCamCount", iCamID);
+
+                // reset variables
+                fCount = 0.0f;
+                fDelay = fStart;
+
+                // Uncomment the line below to get a message in the game telling you the id of this camera movement
+                // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
+
+                // After delay, stop any older camera movements and start this one
+                var party = oParty;
+                DelayCommand(fStart, () => StopCameraMoves(party, 0, false, iCamID - 1));
+
+                while (fCount <= fTicks)
+                {
+                    DelayCommand(fDelay, () => CameraPosition(fDirection, fRange, fPitch, fHeight, fdDirection, fdRange, fdPitch, fdHeight, 0.0f, 0.0f, 0.0f, 0.0f, fCount, oParty.Object, iCamID, iFace));
+                    fCount = (fCount + 1.0f);
+                    fDelay = fStart + (fCount * fdTime);
+                }
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void CameraSmoothStart(float fdDirection1, float fdRange1, float fdPitch1, float fdDirection2, float fdRange2, float fdPitch2, float fTime, float fFrameRate, NWCreature oParty, NWObject oSync, int iCamID)
+        {
+            // Get starting position for camera
+            float fDirection = GetLocalFloat(oSync, "fCameraDirection");
+            float fRange = GetLocalFloat(oSync, "fCameraRange");
+            float fPitch = GetLocalFloat(oSync, "fCameraPitch");
+
+            // Get timing information
+            float fTicks = (fTime * fFrameRate);
+            float fdTime = (fTime / fTicks);
+            float fDelay = 0.0f;
+            float fCount = 0.0f;
+
+            // Get camera speed and acceleration
+            float fdDirection = fdDirection1 / fFrameRate;
+            float fdRange = fdRange1 / fFrameRate;
+            float fdPitch = fdPitch1 / fFrameRate;
+
+            float fd2Direction = (fdDirection2 - fdDirection1) / ((fTicks - 1) * fFrameRate);
+            float fd2Range = (fdRange2 - fdRange1) / ((fTicks - 1) * fFrameRate);
+            float fd2Pitch = (fdPitch2 - fdPitch1) / ((fTicks - 1) * fFrameRate);
+
+            // Start camera movement
+            while (fCount < fTicks)
+            {
+                DelayCommand(fDelay, () => CameraPoint(fDirection, fRange, fPitch, fdDirection, fdRange, fdPitch, fd2Direction, fd2Range, fd2Pitch, fCount, oParty.Object, iCamID));
+                fCount = (fCount + 1.0f);
+                fDelay = (fCount * fdTime);
+            }
+
+            // Uncomment the line below to display the starting position of the camera movement
+            // GestaltDebugOutput(oSync);
+
+            // Uncomment the line below to display the finishing position of the camera movement
+            // DelayCommand(fDelay,GestaltDebugOutput(oSync));
+        }
+
+
+
+        private static void CameraSmooth(float fDelay, float fdDirection1, float fdRange1, float fdPitch1, float fdDirection2, float fdRange2, float fdPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iParty = 0, int iSync = 1)
+        {
+            NWCreature oParty;
+            NWObject oSync;
+            int iCamID;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                // Work out whose camera position to use as the starting position
+                if (iSync == 1) { oSync = oPC; }
+                else { oSync = oParty; }
+
+                // Set the camera to top down mode
+                CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
+
+                // Give the camera movement a unique id code so that it can be stopped
+                iCamID = GetLocalInt(oParty, "iCamCount") + 1;
+                SetLocalInt(oParty, "iCamCount", iCamID);
+
+                // Uncomment the line below to get a message in the game telling you the id of this camera movement
+                // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
+
+                // After delay, stop any older camera movements and start this one
+                var party = oParty;
+                var camId = iCamID;
+                DelayCommand(fDelay, () => StopCameraMoves(party, 0, false, camId - 1));
+                var party1 = oParty;
+                var sync = oSync;
+                var id = iCamID;
+                DelayCommand(fDelay, () => CameraSmoothStart(fdDirection1, fdRange1, fdPitch1, fdDirection2, fdRange2, fdPitch2, fTime, fFrameRate, party1, sync, id));
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void CameraCraneSmoothStart(float fdDirection1, float fdRange1, float fdPitch1, float fdHeight1, float fdDirection2, float fdRange2, float fdPitch2, float fdHeight2, float fTime, float fFrameRate, NWCreature oParty, NWObject oSync, int iCamID)
+        {
+            // Get starting position for camera
+            float fDirection = GetLocalFloat(oSync, "fCameraDirection");
+            float fRange = GetLocalFloat(oSync, "fCameraRange");
+            float fPitch = GetLocalFloat(oSync, "fCameraPitch");
+            float fHeight = GetLocalFloat(oSync, "fCameraHeight");
+
+            // Get timing information
+            float fTicks = (fTime * fFrameRate);
+            float fdTime = (fTime / fTicks);
+            float fDelay = 0.0f;
+            float fCount = 0.0f;
+
+            // Get camera speed and acceleration
+            float fdDirection = fdDirection1 / fFrameRate;
+            float fdRange = fdRange1 / fFrameRate;
+            float fdPitch = fdPitch1 / fFrameRate;
+            float fdHeight = fdHeight1 / fFrameRate;
+
+            float fd2Direction = (fdDirection2 - fdDirection1) / ((fTicks - 1) * fFrameRate);
+            float fd2Range = (fdRange2 - fdRange1) / ((fTicks - 1) * fFrameRate);
+            float fd2Pitch = (fdPitch2 - fdPitch1) / ((fTicks - 1) * fFrameRate);
+            float fd2Height = (fdHeight2 - fdHeight1) / ((fTicks - 1) * fFrameRate);
+
+            // Start camera movement
+            while (fCount < fTicks)
+            {
+                DelayCommand(fDelay, () => CameraPosition(fDirection, fRange, fPitch, fHeight, fdDirection, fdRange, fdPitch, fdHeight, fd2Direction, fd2Range, fd2Pitch, fd2Height, fCount, oParty.Object, iCamID));
+                fCount = (fCount + 1.0f);
+                fDelay = (fCount * fdTime);
+            }
+
+            // Uncomment the line below to display the starting position of the camera movement
+            // GestaltDebugOutput(oSync);
+
+            // Uncomment the line below to display the finishing position of the camera movement
+            // DelayCommand(fDelay,GestaltDebugOutput(oSync));
+        }
+
+
+
+        private static void CameraCraneSmooth(float fDelay, float fdDirection1, float fdRange1, float fdPitch1, float fdHeight1, float fdDirection2, float fdRange2, float fdPitch2, float fdHeight2, float fTime, float fFrameRate, NWPlayer oPC, int iParty = 0, int iSync = 1)
+        {
+            NWCreature oParty;
+            NWObject oSync;
+            int iCamID;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                // Work out whose camera position to use as the starting position
+                if (iSync == 1) { oSync = oPC; }
+                else { oSync = oParty; }
+
+                // Set the camera to top down mode
+                CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
+
+                // Give the camera movement a unique id code so that it can be stopped
+                iCamID = GetLocalInt(oParty, "iCamCount") + 1;
+                SetLocalInt(oParty, "iCamCount", iCamID);
+
+                // Uncomment the line below to get a message in the game telling you the id of this camera movement
+                // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
+
+                // After delay, stop any older camera movements and start this one
+                var id = iCamID;
+                var party = oParty;
+                DelayCommand(fDelay, () => StopCameraMoves(party, 0, false, id - 1));
+                var party1 = oParty;
+                DelayCommand(fDelay, () => CameraCraneSmoothStart(fdDirection1, fdRange1, fdPitch1, fdHeight1, fdDirection2, fdRange2, fdPitch2, fdHeight2, fTime, fFrameRate, party1, oSync, iCamID));
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void DoCameraSetup(string sName, NWPlayer oPC, float fDirection, float fRange, float fPitch, float fHeight)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            SetLocalFloat(oPC, "fCameraDirection", fDirection);
+            SetLocalFloat(oPC, "fCameraRange", fRange);
+            SetLocalFloat(oPC, "fCameraPitch", fPitch);
+            SetLocalFloat(oPC, "fCameraHeight", fHeight);
+        }
+
+
+
+        private static void CameraSetup(float fDelay, NWPlayer oPC, float fDirection, float fRange, float fPitch, float fHeight = 0.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+
+            if (fDelay == 0.0) { DoCameraSetup(sName, oPC, fDirection, fRange, fPitch, fHeight); }
+            else { DelayCommand(fDelay, () => DoCameraSetup(sName, oPC, fDirection, fRange, fPitch, fHeight)); }
+        }
+
+
+
+        private static void CameraFace(float fDelay, NWObject oStart, float fRange, float fPitch, NWObject oEnd, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
+        {
+            // Get timing information
+            float fCount = 0.0f;
+            float fStart = fDelay;
+            float fTicks = (fTime * fFrameRate);
+            float fdTime = (fTime / fTicks);
+
+            float fDirection;
+            float fDirection2;
+
+            float fdDirection;
+            float fdRange = ((fRange2 - fRange) / fTicks);
+            float fdPitch = ((fPitch2 - fPitch) / fTicks);
+
+            NWCreature oParty;
+            int iCamID;
+
+            // Get first player
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                // Set the camera to top down mode
+                CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
+
+                // Give the camera movement a unique id code so that it can be stopped
+                iCamID = GetLocalInt(oParty, "iCamCount") + 1;
+                SetLocalInt(oParty, "iCamCount", iCamID);
+
+                // reset variables
+                fCount = 0.0f;
+                fDelay = fStart;
+
+                // Work out rotation rate for this player
+                fDirection = GestaltGetDirection(oStart, oParty);
+                fDirection2 = GestaltGetDirection(oEnd, oParty);
+                fdDirection = GetPanRate(fDirection, fDirection2, fTicks, iClockwise);
+
+                // After delay, stop any older camera movements and start this one
+                var party = oParty;
+                var id = iCamID;
+                DelayCommand(fStart, () => StopCameraMoves(party, 0, false, id - 1));
+
+                while (fCount <= fTicks)
+                {
+                    var direction = fDirection;
+                    var direction1 = fdDirection;
+                    var camId = iCamID;
+                    var party1 = oParty;
+                    var count = fCount;
+                    DelayCommand(fDelay, () => CameraPoint(direction, fRange, fPitch, direction1, fdRange, fdPitch, 0.0f, 0.0f, 0.0f, count, party1.Object, camId, iFace));
+                    fCount = (fCount + 1.0f);
+                    fDelay = fStart + (fCount * fdTime);
+                }
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void CameraTrack(float fDelay, NWObject oTrack, float fRange, float fPitch, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iFace = 0, int iParty = 0)
+        {
+            // Get timing information
+            float fCount;
+            float fStart = fDelay;
+            float fTicks = (fTime * fFrameRate);
+            float fdTime = (fTime / fTicks);
+
+            float fSRange = fRange;
+            float fSPitch = fPitch;
+
+            float fdRange = ((fRange2 - fRange) / fTicks);
+            float fdPitch = ((fPitch2 - fPitch) / fTicks);
+
+            NWCreature oParty;
+            int iCamID;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                // Set the camera to top down mode
+                CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
+
+                // Give the camera movement a unique id code so that it can be stopped
+                iCamID = GetLocalInt(oParty, "iCamCount") + 1;
+                SetLocalInt(oParty, "iCamCount", iCamID);
+
+                // reset variables
+                fCount = 0.0f;
+                fDelay = fStart;
+                fRange = fSRange;
+                fPitch = fSPitch;
+
+                // After delay, stop any older camera movements and start this one
+                var id = iCamID;
+                var party = oParty;
+                var id1 = id;
+                DelayCommand(fStart, () => StopCameraMoves(party, 0, false, id1 - 1));
+
+                while (fCount <= fTicks)
+                {
+                    var range = fRange;
+                    var pitch = fPitch;
+                    id = iCamID;
+                    var party1 = oParty;
+                    DelayCommand(fDelay, () => CameraFaceTarget(oTrack, range, pitch, party1.Object, iFace, 0, id));
+                    fPitch = (fPitch + fdPitch);
+                    fRange = (fRange + fdRange);
+                    fCount = (fCount + 1.0f);
+                    fDelay = fStart + (fCount * fdTime);
+                }
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void DoFadeOut(string sName, NWPlayer oPC, float fSpeed, int iParty)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                FadeToBlack(oParty, fSpeed);
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void DoFadeIn(string sName, NWPlayer oPC, float fSpeed, int iParty)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                FadeFromBlack(oParty, fSpeed);
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void DoBlack(string sName, NWPlayer oPC, int iParty)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                BlackScreen(oParty);
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void DoStopFade(string sName, NWPlayer oPC, int iParty)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                StopFade(oParty);
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void DoFade(string sName, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed, float fDuration, int iParty)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (iFade == CutsceneFadeType.FadeIn)
+            {
+                if (fDuration > 0.0) { DoBlack(sName, oPC, iParty); }
+                DelayCommand(fDuration, () => DoFadeIn(sName, oPC, fSpeed, iParty));
+            }
+
+            else if (iFade == CutsceneFadeType.FadeOut)
+            {
+                DoFadeOut(sName, oPC, fSpeed, iParty);
+                if (fDuration > 0.0) { DelayCommand(fDuration, () => DoStopFade(sName, oPC, iParty)); }
+            }
+
+            else
+            {
+                DoFadeOut(sName, oPC, fSpeed, iParty);
+                DelayCommand(fDuration, () => DoFadeIn(sName, oPC, fSpeed, iParty));
+            }
+        }
+
+
+
+        private static void ActionCameraFade(float fDelay, NWCreature oActor, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed = FADE_SPEED_MEDIUM, float fDuration = 0.0f, int iParty = 0)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => AssignCommand(oActor, () => ActionDoCommand(() => DoFade(sName, oPC, iFade, fSpeed, fDuration, iParty))));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void CameraFade(float fDelay, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed = FADE_SPEED_MEDIUM, float fDuration = 0.0f, int iParty = 0)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoFade(sName, oPC, iFade, fSpeed, fDuration, iParty));
+        }
+
+
+
+        private static void FixedCamera(NWPlayer oPC, float fFrameRate = 50.0f)
+        {
+            // Thanks to Tenchi Masaki for the idea for this function
+            string sCamera = GetLocalString(oPC, "sGestaltFixedCamera");     // Gets the camera position to use
+            if (sCamera == "STOP")                                          // Camera tracking is turned off, stop script and don't recheck
+            { return; }
+            if (sCamera == "")                                              // Camera tracking is inactive, stop script but recheck in a second
+            {
+                DelayCommand(1.0f, () => FixedCamera(oPC, fFrameRate));
+                return;
+            }
+
+            float fHeight = GetLocalFloat(oPC, "fGestaltFixedCamera");       // Gets the camera height to use
+            if (fHeight == 0.0f) { fHeight = 10.0f; }                 // Defaults camera height to 10.0 if none has been set yet
+
+            NWObject oCamera = GetObjectByTag(sCamera);
+            float fDelay = 1.0f / fFrameRate;
+            float fRange = GetHorizontalDistanceBetween(oPC, oCamera);
+
+            float fAngle = GestaltGetDirection(oPC, oCamera);                // Works out angle between camera and player
+            float fPitch = atan(fRange / fHeight);                            // Works out vertical tilt
+            float fDistance = sqrt(pow(fHeight, 2.0f) + pow(fRange, 2.0f));     // Works out camera distance from player
+            if (fDistance > 30.0) { fDistance = 30.0f; }               // Sets distance to 30.0 if player is too far away
+            if (fDistance < 5.0) { fDistance = 5.0f; }                // Sets distance to 5.0 if player is too close
+
+            AssignCommand(oPC, () => SetCameraFacing(fAngle, fDistance, fPitch));
+            DelayCommand(fDelay, () => FixedCamera(oPC, fFrameRate));
+        }
 
     }
 }

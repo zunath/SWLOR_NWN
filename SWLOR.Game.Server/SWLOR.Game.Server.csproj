@@ -2314,7 +2314,6 @@
     <Content Include="Module\nss\dmfi_x_fx.nss" />
     <Content Include="Module\nss\dt_refermeporte.nss" />
     <Content Include="Module\nss\dt_tusken_spawn.nss" />
-    <Content Include="Module\nss\in_g_cutscene.nss" />
     <Content Include="Module\nss\jumptoobject.nss" />
     <Content Include="Module\nss\jumptoobject2.nss" />
     <Content Include="Module\nss\jumptoobject3.nss" />

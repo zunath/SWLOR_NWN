@@ -1076,7 +1076,14 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(oActor, () => ActionDoCommand(() => PrintTimeStamp(sMessage, fStartTime)));
         }
 
-        private static void ActionTimeStamp(float fDelay, NWCreature oActor, string sMessage)
+        /// <summary>
+        /// Makes the selected character say how many seconds it is since the cutscene began when it reaches this action in its queue
+        /// This can be a useful debug tool for checking the timing of your cutscene and specific actions within it
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding this command to oActor's action queue</param>
+        /// <param name="oActor">the actor whose action queue you want to place the command in (and who will speak the message)</param>
+        /// <param name="sMessage">the message you want them to speak. NOTE - the number of seconds since the cutscene began will automatically be added to the start of this message</param>
+        public static void ActionTimeStamp(float fDelay, NWCreature oActor, string sMessage)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             float fStartTime = HoursToSeconds(GetTimeHour()) + IntToFloat((GetTimeMinute() * 60) + GetTimeSecond()) + (IntToFloat(GetTimeMillisecond()) / 1000);
@@ -1434,8 +1441,21 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionSpellCast(float fDelay, NWCreature oActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+        /// <summary>
+        /// Tells the actor to cast (or fake casting) a spell at an object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the spell cast to the actor's action queue</param>
+        /// <param name="oActor">the character you want to cast the spell</param>
+        /// <param name="oTarget">the object you want to cast the spell at</param>
+        /// <param name="iSpell">the SPELL_* you want to be cast</param>
+        /// <param name="bFake">whether to only create the animations and visual effects for the spell (TRUE) or to really cast the spell (FALSE). NOTE - if iFake is TRUE, bCheat, bInstant and iMeta aren't used</param>
+        /// <param name="iPath">the PROJECTILE_PATH_TYPE_* the spell should use (uses spell's default path unless told otherwise)</param>
+        /// <param name="sTarget">the tag of the object you want to cast the spell at. NOTE - this is included so that you can cast spells at objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        /// <param name="bCheat">whether or not to let the character cast the spell even if he wouldn't normally be able to</param>
+        /// <param name="bInstant">if bInstant is set to TRUE, the character will cast the spell immediately without playing their casting animation</param>
+        /// <param name="iLevel">if iLevel is set to anything other than 0, that is the level at which the spell will be cast, rather than the actor's real level</param>
+        /// <param name="iMeta">the METAMAGIC_* type you want the caster to cast the spell using (NONE by default)</param>
+        public static void ActionSpellCast(float fDelay, NWCreature oActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSpellCast(sName, oActor, "", oTarget, iSpell, bFake, iPath, sTarget, bCheat, bInstant, iLevel, iMeta));
@@ -1443,8 +1463,21 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionSpellCast(float fDelay, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+        /// <summary>
+        /// Tells the actor to cast (or fake casting) a spell at an object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the spell cast to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to cast the spell - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oTarget">the object you want to cast the spell at</param>
+        /// <param name="iSpell">the SPELL_* you want to be cast</param>
+        /// <param name="bFake">whether to only create the animations and visual effects for the spell (TRUE) or to really cast the spell (FALSE). NOTE - if iFake is TRUE, bCheat, bInstant and iMeta aren't used</param>
+        /// <param name="iPath">the PROJECTILE_PATH_TYPE_* the spell should use (uses spell's default path unless told otherwise)</param>
+        /// <param name="sTarget">the tag of the object you want to cast the spell at. NOTE - this is included so that you can cast spells at objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        /// <param name="bCheat">whether or not to let the character cast the spell even if he wouldn't normally be able to</param>
+        /// <param name="bInstant">if bInstant is set to TRUE, the character will cast the spell immediately without playing their casting animation</param>
+        /// <param name="iLevel">if iLevel is set to anything other than 0, that is the level at which the spell will be cast, rather than the actor's real level</param>
+        /// <param name="iMeta">the METAMAGIC_* type you want the caster to cast the spell using (NONE by default)</param>
+        public static void TagActionSpellCast(float fDelay, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSpellCast(sName, new Object(), sActor, oTarget, iSpell, bFake, iPath, sTarget, bCheat, bInstant, iLevel, iMeta));
@@ -1495,16 +1528,32 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ApplyLocationEffect(float fDelay, Location lTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f)
+        /// <summary>
+        /// Creates an effect at a specific location
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before applying the effect</param>
+        /// <param name="lTarget">the location to apply the effect at</param>
+        /// <param name="eFect">the effect to apply (eg, EffectVisualEffect(VFX_FNF_FIREBALL))</param>
+        /// <param name="iDuration">the DURATION_TYPE_* (NOTE you only need to use the last word - INSTANT, TEMPORARY or PERMANENT)</param>
+        /// <param name="fDuration">how long the effect should last (only needed if iDuration is TEMPORARY)</param>
+        public static void ApplyLocationEffect(float fDelay, Location lTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoLocationEffect(sName, lTarget, eFect, iDuration, fDuration));
         }
 
 
-
-        private static void ActionEffect(float fDelay, NWCreature oActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
+        /// <summary>
+        /// Applies an effect to a target
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the effect to oActor's action queue</param>
+        /// <param name="oActor">the character whose action queue you want the effect to go into. NOTE - this is NOT the character the effect is applied to!</param>
+        /// <param name="oTarget">the object to apply the effect to</param>
+        /// <param name="eFect">the effect to apply to the object (eg, EffectDeath())</param>
+        /// <param name="iDuration">the DURATION_TYPE_* (NOTE you only need to use the last word - INSTANT, TEMPORARY or PERMANENT)</param>
+        /// <param name="fDuration">how long the effect should last (only needed if iDuration is TEMPORARY)</param>
+        /// <param name="sTarget">the tag of the object to apply the effect to. NOTE - this is included so that you can apply effects to objects and creatures that are created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void ActionEffect(float fDelay, NWCreature oActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoEffect(sName, oActor, "", oTarget, sTarget, eFect, iDuration, fDuration, true));
@@ -1512,8 +1561,17 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionEffect(float fDelay, string sActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
+        /// <summary>
+        /// Applies an effect to a target
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the effect to oActor's action queue</param>
+        /// <param name="sActor">the tag of the character whose action queue you want the effect to go into - MAKE SURE THIS IS UNIQUE! NOTE - this is NOT the character the effect is applied to!</param>
+        /// <param name="oTarget">the object to apply the effect to</param>
+        /// <param name="eFect">the effect to apply to the object (eg, EffectDeath())</param>
+        /// <param name="iDuration">the DURATION_TYPE_* (NOTE you only need to use the last word - INSTANT, TEMPORARY or PERMANENT)</param>
+        /// <param name="fDuration">how long the effect should last (only needed if iDuration is TEMPORARY)</param>
+        /// <param name="sTarget">the tag of the object to apply the effect to. NOTE - this is included so that you can apply effects to objects and creatures that are created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void TagActionEffect(float fDelay, string sActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoEffect(sName, new Object(), sActor, oTarget, sTarget, eFect, iDuration, fDuration, true));
@@ -1546,8 +1604,13 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ClearEffect(float fDelay, NWCreature oActor, int iFX = EffectTypeCutsceneEffects)
+        /// <summary>
+        /// Searches for the selected effect on an actor and removes it
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before removing the effect from oActor</param>
+        /// <param name="oActor">the object you want to remove the effect from</param>
+        /// <param name="iFX">the effect you want to remove (using the EFFECT_TYPE_* constants). NOTE - leaving this at its default value (EFFECT_TYPE_CUTSCENE_EFFECTS) will remove all visual effects that might interfere with a cutscene - invisibility, polymorph, darkness, blindness, visual effects etc</param>
+        public static void ClearEffect(float fDelay, NWCreature oActor, int iFX = EffectTypeCutsceneEffects)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoClearEffect(sName, oActor));
@@ -1590,8 +1653,20 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionCreate(float fDelay, NWCreature oActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        /// <summary>
+        /// Creates something on or at the selected object, creature or waypoint
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before the function is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want this command to go into the action queue for. NOTE - this is NOT the character the object is created on!</param>
+        /// <param name="oTarget">the object, character or waypoint you want to create the item at or on</param>
+        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)</param>
+        /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
+        /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
+        /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
+        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
+        /// <param name="bCreateOn">set this to TRUE if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void ActionCreate(float fDelay, NWCreature oActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCreate(sName, oActor, "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
@@ -1599,8 +1674,20 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        /// <summary>
+        /// Creates something on or at the selected object, creature or waypoint
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before the function is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want this command to go into the action queue for - MAKE SURE THIS IS UNIQUE! NOTE - this is NOT the character the object is created on!</param>
+        /// <param name="oTarget">the object, character or waypoint you want to create the item at or on</param>
+        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)</param>
+        /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
+        /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
+        /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
+        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
+        /// <param name="bCreateOn">set this to TRUE if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCreate(sName, new Object(), sActor, oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
@@ -1608,8 +1695,19 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void Create(float fDelay, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        /// <summary>
+        /// Creates something on or at the selected object, creature or waypoint
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before the object is created</param>
+        /// <param name="oTarget">the object, character or waypoint you want to create the item at or on</param>
+        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)</param>
+        /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
+        /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
+        /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
+        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
+        /// <param name="bCreateOn">set this to TRUE if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void Create(float fDelay, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCreate(sName, new Object(), "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn));
@@ -1629,8 +1727,17 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void Copy(float fDelay, NWObject oSource, NWObject oTarget, bool bCreateOn = false, string sTag = "", string sTarget = "")
+        /// <summary>
+        /// Copies a creature or inventory item.
+        /// Note that due to NWN limitations, this function will not work on placeable objects or doors
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before copying the object</param>
+        /// <param name="oSource">the object you want to copy</param>
+        /// <param name="oTarget">the object you want to create the copy at or on</param>
+        /// <param name="bCreateOn">set this to TRUE if you want to put the copy in oTarget's inventory. NOTE - this can only be used for items, and will only work if oTarget has an inventory (ie, it's a creature or a container)</param>
+        /// <param name="sTag">the tag you want to give the new item. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
+        /// <param name="sTarget">the tag of the object you want to create the copy at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void Copy(float fDelay, NWObject oSource, NWObject oTarget, bool bCreateOn = false, string sTag = "", string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCopy(sName, oSource, oTarget, sTarget, sTag, bCreateOn));
@@ -1655,8 +1762,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ClonePC(float fDelay, NWObject oPC, NWObject oTarget, string sTag = "cloned_pc", string sTarget = "", bool bInvisible = true)
+        /// <summary>
+        /// Creates a clone of the selected PC which you can then move around from your cutscene script
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before copying the object</param>
+        /// <param name="oPC">the PC you want to create a clone of</param>
+        /// <param name="oTarget">the object you want the clone to appear at</param>
+        /// <param name="sTag">the tag which the PC's clone will be given. NOTE - you need to make sure this tag is unique for every player you clone if you want to be able to do anything with them. NOTE - by default the clone will be given the tag "cloned_pc"</param>
+        /// <param name="sTarget">the tag of the object you want the clone to appear at. NOTE - this is included so that you can create clones at the position of other objects created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        /// <param name="bInvisible">sets whether or not you want to make the PC invisible, allowing you to use them as a cameraman while their clone does the acting</param>
+        public static void ClonePC(float fDelay, NWObject oPC, NWObject oTarget, string sTag = "cloned_pc", string sTarget = "", bool bInvisible = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoClone(sName, oPC, oTarget, sTarget, sTag, bInvisible));
@@ -1676,8 +1791,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionPickUp(float fDelay, string sActor, NWItem oItem, string sItem = "")
+        /// <summary>
+        /// Tells the actor to pick up an object from the ground
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to pick up the item - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oItem">the object to pick up</param>
+        /// <param name="sItem">the tag of the object to pick up (the game will find the nearest item with that tag to the actor). NOTE - this is included so that you can pick up an item created during the cutscene. NOTE - leave sItem at its default value of "" if you have already set oItem</param>
+        public static void TagActionPickUp(float fDelay, string sActor, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoPickUp(sName, new Object(), sActor, oItem, sItem));
@@ -1685,8 +1806,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionPickUp(float fDelay, NWCreature oActor, NWItem oItem, string sItem = "")
+        /// <summary>
+        /// Tells the actor to pick up an object from the ground
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="oActor">the character you want to pick up the item</param>
+        /// <param name="oItem">the object to pick up</param>
+        /// <param name="sItem">the tag of the object to pick up (the game will find the nearest item with that tag to the actor). NOTE - this is included so that you can pick up an item created during the cutscene. NOTE - leave sItem at its default value of "" if you have already set oItem</param>
+        public static void ActionPickUp(float fDelay, NWCreature oActor, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoPickUp(sName, oActor, "", oItem, sItem));
@@ -1707,8 +1834,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionSit(float fDelay, string sActor, NWObject oChair, string sChair = "")
+        /// <summary>
+        /// Tells the actor to sit down on a specified chair or other object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to sit down - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oChair">the object you want them to sit on</param>
+        /// <param name="sChair">the tag of the object you want them to sit on (the game will find the nearest object with that tag to the actor). NOTE - this is included so that you can sit on an object created during the cutscene. NOTE - leave sChair at its default value of "" if you have already set oChair</param>
+        public static void TagActionSit(float fDelay, string sActor, NWObject oChair, string sChair = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSit(sName, new Object(), sActor, oChair, sChair));
@@ -1716,8 +1849,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionSit(float fDelay, NWCreature oActor, NWObject oChair, string sChair = "")
+        /// <summary>
+        /// Tells the actor to sit down on a specified chair or other object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="oActor">the character you want to sit down</param>
+        /// <param name="oChair">the object you want them to sit on</param>
+        /// <param name="sChair">the tag of the object you want them to sit on (the game will find the nearest object with that tag to the actor). NOTE - this is included so that you can sit on an object created during the cutscene. NOTE - leave sChair at its default value of "" if you have already set oChair</param>
+        public static void ActionSit(float fDelay, NWCreature oActor, NWObject oChair, string sChair = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSit(sName, oActor, "", oChair, sChair));
@@ -1750,8 +1889,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void PlaySound(float fDelay, NWCreature oActor, string sSound, string sActor = "")
+        /// <summary>
+        /// Tells the actor to play a sound file
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before playing the sound</param>
+        /// <param name="oActor">the object you want to play the sound</param>
+        /// <param name="sSound">the name of the sound you want to be played</param>
+        /// <param name="sActor">the tag of the object you want to play the sound. NOTE - this is included so that you can play sounds on an object created during the cutscene. NOTE - leave sActor at its default value of "" if you have already set oActor</param>
+        public static void PlaySound(float fDelay, NWCreature oActor, string sSound, string sActor = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoPlaySound(sName, oActor, sActor, sSound, false));
@@ -1761,8 +1906,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionPlaySound(float fDelay, NWCreature oActor, string sSound, string sActor = "")
+        /// <summary>
+        /// Tells the actor to play a sound file
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="oActor">the object you want to play the sound</param>
+        /// <param name="sSound">the name of the sound you want to be played</param>
+        /// <param name="sActor">the tag of the object you want to play the sound. NOTE - this is included so that you can play sounds on an object created during the cutscene. NOTE - leave sActor at its default value of "" if you have already set oActor</param>
+        public static void ActionPlaySound(float fDelay, NWCreature oActor, string sSound, string sActor = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoPlaySound(sName, oActor, sActor, sSound, true));
@@ -1787,8 +1938,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void SoundObject(float fDelay, NWObject oSound, NWObject oPosition, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
+        /// <summary>
+        /// This function allows you to activate and deactivate sound objects, as well as to adjust their position and volume
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before making the change</param>
+        /// <param name="oSound">the sound object you want to adjust</param>
+        /// <param name="oPosition">changes the sound to play from the position of the specified object. NOTE - leave oPosition at its default value of OBJECT_INVALID to leave the position unchanged</param>
+        /// <param name="bOn">set to TRUE to switch the sound object on, or FALSE to switch it off</param>
+        /// <param name="fDuration">how long the sound object should stay on / off for. NOTE - leave fDuration at its default value of 0.0 to switch the sound object on / off permanently</param>
+        /// <param name="iVolume">changes the volume of the sound (iVolume must be between 0 and 127). NOTE - leave iVolume at its default value of 128 to leave the volume unchanged</param>
+        public static void SoundObject(float fDelay, NWObject oSound, NWObject oPosition, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoSoundObject(sName, oSound, bOn, fDuration, iVolume, oPosition));
@@ -1814,8 +1973,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void AmbientSound(float fDelay, NWArea oArea, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
+        /// <summary>
+        /// This function allows you to activate and deactivate sound objects, as well as to adjust their position and volume
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before making the change</param>
+        /// <param name="oArea">the area whose ambient sound you want to adjust</param>
+        /// <param name="bOn">set to TRUE to switch the ambient sound on, or FALSE to switch it off</param>
+        /// <param name="fDuration">how long the ambient sound should stay on / off for. NOTE - leave fDuration at its default value of 0.0 to switch the sound on / off permanently</param>
+        /// <param name="iVolume">changes the volume of the area's ambient sound (iVolume must be between 0 and 100). NOTE - leave iVolume at its default value of 128 to leave the volume unchanged</param>
+        public static void AmbientSound(float fDelay, NWArea oArea, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoAmbientSound(sName, oArea, bOn, fDuration, iVolume));
@@ -1859,8 +2025,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void PlayMusic(float fDelay, NWArea oArea, bool bOn = true, int iTrack = TrackCurrent, float fDuration = 0.0f)
+        /// <summary>
+        /// This function allows you to play a specific piece of soundtrack music at any point in the cutscene
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before changing the music</param>
+        /// <param name="oArea">the area whose music you want to change</param>
+        /// <param name="bOn">set to TRUE to switch the area music on, or FALSE to switch it off</param>
+        /// <param name="iTrack">the TRACK_* you want to play. NOTE - leave iTrack at its default value of TRACK_CURRENT to leave the area music unchanged. NOTE - set iTrack to TRACK_ORIGINAL if you want to switch all the music settings for the area back to their original values</param>
+        /// <param name="fDuration">how long the music should stay on / off for and how long the new piece of music (if you changed the track) should remain active. NOTE - leave fDuration at its default value of 0.0 to make the changes permanent</param>
+        public static void PlayMusic(float fDelay, NWArea oArea, bool bOn = true, int iTrack = TrackCurrent, float fDuration = 0.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoMusic(sName, oArea, bOn, iTrack, fDuration));
@@ -1888,9 +2061,14 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-
-
-        private static void ActionClose(float fDelay, NWCreature oActor, NWObject oDoor, bool bLock = false)
+        /// <summary>
+        /// Tells the actor to close a door
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="oActor">the character you want to close the door</param>
+        /// <param name="oDoor">the door you want them to close</param>
+        /// <param name="bLock">whether or not they should lock the door once it's closed</param>
+        public static void ActionClose(float fDelay, NWCreature oActor, NWObject oDoor, bool bLock = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDoor(sName, oActor, "", oDoor, bLock, false));
@@ -1898,8 +2076,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionOpen(float fDelay, NWCreature oActor, NWObject oDoor, bool bUnlock = true)
+        /// <summary>
+        /// Tells the actor to open a door
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="oActor">the character you want to open the door</param>
+        /// <param name="oDoor">the door you want them to open</param>
+        /// <param name="bUnlock">whether or not they should unlock the door if necessary before opening it</param>
+        public static void ActionOpen(float fDelay, NWCreature oActor, NWObject oDoor, bool bUnlock = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDoor(sName, oActor, "", oDoor, bUnlock, true));
@@ -1907,8 +2091,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionClose(float fDelay, string sActor, NWObject oDoor, bool bLock = false)
+        /// <summary>
+        /// Tells the actor to close a door
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to close the door - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oDoor">the door you want them to close</param>
+        /// <param name="bLock">whether or not they should lock the door once it's closed</param>
+        public static void TagActionClose(float fDelay, string sActor, NWObject oDoor, bool bLock = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDoor(sName, new Object(), sActor, oDoor, bLock, false));
@@ -1916,8 +2106,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionOpen(float fDelay, string sActor, NWObject oDoor, bool bUnlock = true)
+        /// <summary>
+        /// Tells the actor to open a door
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to open the door - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oDoor">the door you want them to open</param>
+        /// <param name="bUnlock">whether or not they should unlock the door if necessary before opening it</param>
+        public static void TagActionOpen(float fDelay, string sActor, NWObject oDoor, bool bUnlock = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDoor(sName, new Object(), sActor, oDoor, bUnlock, true));
@@ -1957,8 +2153,18 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void JournalEntry(float fDelay, NWPlayer oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, bool bRewardAll = true, bool bOverride = false)
+        /// <summary>
+        /// Update the journals of the selected player(s), and (optionally) give them quest experience
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before applying the journal update</param>
+        /// <param name="oPC">the PC who completed the quest</param>
+        /// <param name="sQuest">the id tag of the quest you want to update</param>
+        /// <param name="iState">the number of the quest entry you want to put in the journal</param>
+        /// <param name="iXP">how many XP to give the player(s). NOTE - leave this at 0 if you want to give no XP. NOTE - set this to 1 if you want to give the quest XP you specified in the journal editor</param>
+        /// <param name="iParty">sets whether to update the journal for only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        /// <param name="bRewardAll">sets whether or not to give the XP reward to all the players you updated the journal for, or only for oPC. NOTE - if iXP or iParty is 0 you can ignore this option</param>
+        /// <param name="bOverride">sets whether or not to allow the function to give a player a quest state lower than the one they already have in that quest. NOTE - this is TRUE by default!</param>
+        public static void JournalEntry(float fDelay, NWPlayer oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, bool bRewardAll = true, bool bOverride = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoQuest(sName, oPC, sQuest, iState, iXP, iParty, bRewardAll, bOverride));
@@ -1977,8 +2183,13 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionWait(float fDelay, string sActor, float fPause)
+        /// <summary>
+        /// Tells the actor to wait before proceeding with the actions in their queue
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the pause to their action queue</param>
+        /// <param name="sActor">the tag of the character you want to pause - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="fPause">how many seconds they should pause for</param>
+        public static void TagActionWait(float fDelay, string sActor, float fPause)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoWait(sName, new Object(), sActor, fPause));
@@ -1986,8 +2197,13 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionWait(float fDelay, NWCreature oActor, float fPause)
+        /// <summary>
+        /// Tells the actor to wait before proceeding with the actions in their queue
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the pause to their action queue</param>
+        /// <param name="oActor">the character you want to pause</param>
+        /// <param name="fPause">how many seconds they should pause for</param>
+        public static void ActionWait(float fDelay, NWCreature oActor, float fPause)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoWait(sName, oActor, "", fPause));
@@ -2007,15 +2223,18 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ClearActions(float fDelay, NWCreature oActor, string sActor = "")
+        /// <summary>
+        /// Tells the selected actor to stop everything he's doing and prepare for new orders.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before applying this to oActor</param>
+        /// <param name="oActor">the character whose action queue you want to clear</param>
+        /// <param name="sActor">the tag of the character whose action queue you want to clear. NOTE - this is included so that you can clear the actions of a creature created during the cutscene. NOTE - leave sActor at its default value of "" if you have already set oActor</param>
+        public static void ClearActions(float fDelay, NWCreature oActor, string sActor = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoClear(sName, oActor, sActor));
         }
-
-
-
+        
         private static void DoFloatingText(string sName, NWCreature oActor, string sMessage, int bFaction = TRUE)
         {
             if (GetLocalInt(GetModule(), sName) == TRUE)
@@ -2025,8 +2244,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void FloatingText(float fDelay, NWCreature oActor, string sMessage, int bFaction = TRUE)
+        /// <summary>
+        /// Creates a line of text that appears above the selected character and rises up the screen, fading out as it goes - good for creating scrolling credits for a module!
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before displaying the text</param>
+        /// <param name="oActor">the object above which the text should appear</param>
+        /// <param name="sMessage">the text you want to appear</param>
+        /// <param name="bFaction">whether or not the text will only appear to members in the object's faction. NOTE - if you set this to TRUE and oActor is an object or an NPC which isn't in the PC's party, nobody will see it. NOTE - if you set this to TRUE and oActor is a PC, only other players in their party will see it. NOTE - if you set this to FALSE, everyone on the server will see the message appear in their chat window</param>
+        public static void FloatingText(float fDelay, NWCreature oActor, string sMessage, int bFaction = TRUE)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFloatingText(sName, oActor, sMessage, bFaction));
@@ -2045,16 +2270,29 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ExecuteScript(float fDelay, NWObject oTarget, string sScript, string sTarget = "")
+        /// <summary>
+        /// Execute another script
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before triggering the other script</param>
+        /// <param name="oTarget">the object which the script will be triggered on</param>
+        /// <param name="sScript">the name of the script</param>
+        /// <param name="sTarget">the tag of the object which the script will be triggered on. NOTE - this is included so that you can run scripts on objects created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void ExecuteScript(float fDelay, NWObject oTarget, string sScript, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoExecute(sName, oTarget, sScript, sTarget));
         }
 
 
-
-        private static void ActionExecute(float fDelay, NWCreature oActor, NWObject oTarget, string sScript, string sTarget = "")
+        /// <summary>
+        /// Execute another script
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding this command to oActor's action queue</param>
+        /// <param name="oActor">the actor whose action queue you want to place this command in (oActor doesn't have to be the same as oTarget)</param>
+        /// <param name="oTarget">the object which the script will be triggered on</param>
+        /// <param name="sScript">the name of the script</param>
+        /// <param name="sTarget">the tag of the object which the script will be triggered on. NOTE - this is included so that you can run scripts on objects created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void ActionExecute(float fDelay, NWCreature oActor, NWObject oTarget, string sScript, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => AssignCommand(oActor, () => ActionDoCommand(() => DoExecute(sName, oTarget, sScript, sTarget))));
@@ -2084,8 +2322,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionDestroy(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "")
+        /// <summary>
+        /// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding this command to the actor's action queue</param>
+        /// <param name="oActor">the actor whose action queue you want this to be placed in. NOTE - this is not the object that will be destroyed!</param>
+        /// <param name="oTarget">the object you want to destroy</param>
+        /// <param name="sTarget">the tag of the object you want to destroy. NOTE - this is included so that you can destroy an object created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void ActionDestroy(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDestroy(sName, oActor, "", oTarget, sTarget, true));
@@ -2093,8 +2337,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void TagActionDestroy(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
+        /// <summary>
+        /// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding this command to the actor's action queue</param>
+        /// <param name="sActor">the tag of the actor whose action queue you want this to be placed in - MAKE SURE THIS IS UNIQUE! NOTE - this is not the object that will be destroyed!</param>
+        /// <param name="oTarget">the object you want to destroy</param>
+        /// <param name="sTarget">the tag of the object you want to destroy. NOTE - this is included so that you can destroy an object created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void TagActionDestroy(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDestroy(sName, new Object(), sActor, oTarget, sTarget, true));
@@ -2102,16 +2352,25 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void Destroy(float fDelay, NWObject oTarget, string sTarget = "")
+        /// <summary>
+        /// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before destroying the target</param>
+        /// <param name="oTarget">the object you want to destroy</param>
+        /// <param name="sTarget">the tag of the object you want to destroy. NOTE - this is included so that you can destroy an object created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
+        public static void Destroy(float fDelay, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoDestroy(sName, new Object(), "", oTarget, sTarget, false));
         }
         
-        // Camera functions
-
-        private static Vector GetVectorAB(NWObject oA, NWObject oB)
+        /// <summary>
+        /// Gets the vector linking object A to object B
+        /// </summary>
+        /// <param name="oA">The first object</param>
+        /// <param name="oB">The second object</param>
+        /// <returns></returns>
+        public static Vector GetVectorAB(NWObject oA, NWObject oB)
         {
             Vector vA = GetPosition(oA);
             Vector vB = GetPosition(oB);
@@ -2120,17 +2379,26 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static float GetHorizontalDistanceBetween(NWObject oA, NWObject oB)
+        /// <summary>
+        /// Finds the horizontal distance between two objects, ignoring any vertical component
+        /// </summary>
+        /// <param name="oA">The first object</param>
+        /// <param name="oB">The second object</param>
+        /// <returns></returns>
+        public static float GetHorizontalDistanceBetween(NWObject oA, NWObject oB)
         {
             Vector vHorizontal = GetVectorAB(oA, oB);
             float fDistance = sqrt(pow(vHorizontal.m_X, 2.0f) + pow(vHorizontal.m_Y, 2.0f));
             return fDistance;
         }
 
-
-
-        private static float GestaltGetDirection(NWObject oTarget, NWObject oPC)
+        /// <summary>
+        /// Finds the compass direction from the PC to a target object
+        /// </summary>
+        /// <param name="oTarget">The target object</param>
+        /// <param name="oPC">The player object</param>
+        /// <returns></returns>
+        public static float GestaltGetDirection(NWObject oTarget, NWObject oPC)
         {
             Vector vdTarget = GetVectorAB(oTarget, oPC);
             float fDirection = VectorToAngle(vdTarget);
@@ -2166,8 +2434,16 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraFacing(float fDelay, float fDirection, float fRange, float fPitch, NWPlayer oPC, int iTransition = CAMERA_TRANSITION_TYPE_SNAP)
+        /// <summary>
+        /// Acts just like the standard SetCameraFacing function
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="fDirection">the direction you want the camera to face in (0.0 = due east)</param>
+        /// <param name="fRange">how far you want the camera to be from the PC</param>
+        /// <param name="fPitch">how far from the vertical you want the camera to be tilted</param>
+        /// <param name="oPC">the PC whose camera you want to move</param>
+        /// <param name="iTransition">the transition speed (defaults to CAMERA_TRANSITION_TYPE_SNAP)</param>
+        public static void CameraFacing(float fDelay, float fDirection, float fRange, float fPitch, NWPlayer oPC, int iTransition = CAMERA_TRANSITION_TYPE_SNAP)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCameraFacing(sName, fDirection, fRange, fPitch, oPC, iTransition));
@@ -2300,8 +2576,23 @@ namespace SWLOR.Game.Server.Service
             return fdDirection;
         }
 
-
-        private static void CameraMove(float fDelay, float fDirection, float fRange, float fPitch, float fDirection2, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
+        /// <summary>
+        /// Moves the camera smoothly from one position to another over the specified time
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="fDirection">initial direction (0.0 = due east)</param>
+        /// <param name="fRange">initial distance between player and camera</param>
+        /// <param name="fPitch">initial pitch (vertical tilt)</param>
+        /// <param name="fDirection2">finishing direction</param>
+        /// <param name="fRange2">finishing distance</param>
+        /// <param name="fPitch2">finishing tilt</param>
+        /// <param name="fTime">number of seconds it takes camera to complete movement</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        /// <param name="oPC">the PC you want to apply the camera movement to</param>
+        /// <param name="iClockwise">set to 1 if you want the camera to rotate clockwise, 0 for anti-clockwise, or 2 for auto-select</param>
+        /// <param name="iFace">sets whether the camera (0), the character (2) or both (1) turn to face the specified direction</param>
+        /// <param name="iParty">sets whether to move the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        public static void CameraMove(float fDelay, float fDirection, float fRange, float fPitch, float fDirection2, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
         {
             // Get timing information
             float fTicks = (fTime * fFrameRate);
@@ -2353,8 +2644,25 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraCrane(float fDelay, float fDirection, float fRange, float fPitch, float fHeight, float fDirection2, float fRange2, float fPitch2, float fHeight2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
+        /// <summary>
+        /// Just like GestaltCameraMove, but with the added advantage of being able to move the point the camera is centered on up and down
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="fDirection">initial direction (0.0 = due east)</param>
+        /// <param name="fRange">initial distance between player and camera</param>
+        /// <param name="fPitch">initial pitch (vertical tilt)</param>
+        /// <param name="fHeight">initial height above the PC where the camera should point</param>
+        /// <param name="fDirection2">finishing direction</param>
+        /// <param name="fRange2">finishing distance</param>
+        /// <param name="fPitch2">finishing tilt</param>
+        /// <param name="fHeight2">finishing height</param>
+        /// <param name="fTime">number of seconds it takes camera to complete movement</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        /// <param name="oPC">the PC you want to apply the camera movement to</param>
+        /// <param name="iClockwise">set to 1 if you want the camera to rotate clockwise, 0 for anti-clockwise, or 2 for auto-select</param>
+        /// <param name="iFace">sets whether the camera (0), the character (2) or both (1) turn to face the specified direction</param>
+        /// <param name="iParty">sets whether to move the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        public static void CameraCrane(float fDelay, float fDirection, float fRange, float fPitch, float fHeight, float fDirection2, float fRange2, float fPitch2, float fHeight2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
         {
             // Get timing information
             float fTicks = (fTime * fFrameRate);
@@ -2447,8 +2755,23 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraSmooth(float fDelay, float fdDirection1, float fdRange1, float fdPitch1, float fdDirection2, float fdRange2, float fdPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iParty = 0, int iSync = 1)
+        /// <summary>
+        /// Produces smooth transitions between different camera movements by setting initial and final speeds
+        /// The function then interpolates between the two so that the movement rate changes smoothly over the duration of the movement.
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="fdDirection1">how fast the camera's compass direction should change by in degrees per second. positive numbers produce an anti-clockwise movement, negative anti-clockwise</param>
+        /// <param name="fdRange1">how fast the camera's range should change in meters per second. positive numbers move the camera away from the player, negative towards them</param>
+        /// <param name="fdPitch1">how fast the camera's pitch should change in degrees per second. positive numbers tilt the camera down towards the ground, negative up towards vertical</param>
+        /// <param name="fdDirection2">how fast the camera's compass direction should change by in degrees per second. positive numbers produce an anti-clockwise movement, negative anti-clockwise</param>
+        /// <param name="fdRange2">how fast the camera's range should change in meters per second. positive numbers move the camera away from the player, negative towards them</param>
+        /// <param name="fdPitch2">how fast the camera's pitch should change in degrees per second. positive numbers tilt the camera down towards the ground, negative up towards vertical</param>
+        /// <param name="fTime">number of seconds it should take the camera to complete movement</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        /// <param name="oPC">the player whose camera you want to move</param>
+        /// <param name="iParty">sets whether to move the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        /// <param name="iSync">sets whether to use separate camera starting positions for every player (0) or sync them all to oPC's camera position (1)</param>
+        public static void CameraSmooth(float fDelay, float fdDirection1, float fdRange1, float fdPitch1, float fdDirection2, float fdRange2, float fdPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iParty = 0, int iSync = 1)
         {
             NWCreature oParty;
             NWObject oSync;
@@ -2532,8 +2855,24 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraCraneSmooth(float fDelay, float fdDirection1, float fdRange1, float fdPitch1, float fdHeight1, float fdDirection2, float fdRange2, float fdPitch2, float fdHeight2, float fTime, float fFrameRate, NWPlayer oPC, int iParty = 0, int iSync = 1)
+        /// <summary>
+        /// Just like GestaltCameraSmooth, but with the added advantage of being able to move the point the camera is centered on up and down
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="fdDirection1">how fast the camera's compass direction should change by in degrees per second. positive numbers produce an anti-clockwise movement, negative anti-clockwise</param>
+        /// <param name="fdRange1">how fast the camera's range should change in meters per second. positive numbers move the camera away from the player, negative towards them</param>
+        /// <param name="fdPitch1">how fast the camera's pitch should change in degrees per second. positive numbers tilt the camera down towards the ground, negative up towards vertical</param>
+        /// <param name="fdHeight1">how fast the camera's vertical height should change in meters per second. positive numbers move the camera up, negative numbers move it down</param>
+        /// <param name="fdDirection2">how fast the camera's compass direction should change by in degrees per second. positive numbers produce an anti-clockwise movement, negative anti-clockwise</param>
+        /// <param name="fdRange2">how fast the camera's range should change in meters per second. positive numbers move the camera away from the player, negative towards them</param>
+        /// <param name="fdPitch2">how fast the camera's pitch should change in degrees per second. positive numbers tilt the camera down towards the ground, negative up towards vertical</param>
+        /// <param name="fdHeight2">how fast the camera's vertical height should change in meters per second. positive numbers move the camera up, negative numbers move it down</param>
+        /// <param name="fTime">number of seconds it should take the camera to complete movement</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        /// <param name="oPC">the player whose camera you want to move</param>
+        /// <param name="iParty">sets whether to move the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        /// <param name="iSync">sets whether to use separate camera starting positions for every player (0) or sync them all to oPC's camera position (1)</param>
+        public static void CameraCraneSmooth(float fDelay, float fdDirection1, float fdRange1, float fdPitch1, float fdHeight1, float fdDirection2, float fdRange2, float fdPitch2, float fdHeight2, float fTime, float fFrameRate, NWPlayer oPC, int iParty = 0, int iSync = 1)
         {
             NWCreature oParty;
             NWObject oSync;
@@ -2586,18 +2925,45 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraSetup(float fDelay, NWPlayer oPC, float fDirection, float fRange, float fPitch, float fHeight = 0.0f)
+        /// <summary>
+        /// Sets where the camera will start when you next use GestaltCameraSmooth and GestaltCameraCrane - it has no effect on other functions
+        /// NOTE GestaltCameraSmooth, GestaltCameraCrane, GestaltCameraCraneSmooth and GestaltCameraMove automatically store the current position of the camera after each step -
+        /// GestaltCameraSetup should only be used at the start of a cutscene to set the initial position for your first GestaltCameraSmooth,
+        /// or during a gap between camera movements if you want to set a new starting position midway through a cutscene
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before setting the starting position</param>
+        /// <param name="oPC">the player whose camera you're going to be moving</param>
+        /// <param name="fDirection">the compass direction the camera should start from</param>
+        /// <param name="fRange">the distance between the camera and the player it belongs to</param>
+        /// <param name="fPitch">the vertical tilt</param>
+        /// <param name="fHeight">how far above the character the camera should be centered (only needed for Crane shots)</param>
+        public static void CameraSetup(float fDelay, NWPlayer oPC, float fDirection, float fRange, float fPitch, float fHeight = 0.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
 
-            if (fDelay == 0.0) { DoCameraSetup(sName, oPC, fDirection, fRange, fPitch, fHeight); }
+            if (fDelay == 0.0f) { DoCameraSetup(sName, oPC, fDirection, fRange, fPitch, fHeight); }
             else { DelayCommand(fDelay, () => DoCameraSetup(sName, oPC, fDirection, fRange, fPitch, fHeight)); }
         }
 
 
-
-        private static void CameraFace(float fDelay, NWObject oStart, float fRange, float fPitch, NWObject oEnd, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
+        /// <summary>
+        /// Turns the camera and/or player between two objects
+        /// NOTE that this will only work properly if the player and target objects are stationary while the function is active
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="oStart">object to face at start of movement</param>
+        /// <param name="fRange">initial distance between player and camera</param>
+        /// <param name="fPitch">initial pitch (vertical tilt)</param>
+        /// <param name="oEnd">object to finish movement facing</param>
+        /// <param name="fRange2">finishing distance</param>
+        /// <param name="fPitch2">finishing tilt</param>
+        /// <param name="fTime">number of seconds it takes camera to complete movement</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        /// <param name="oPC">the player whose camera you want to move</param>
+        /// <param name="iClockwise">set to 1 if you want the camera to rotate clockwise, 0 for anti-clockwise, or 2 for auto-select</param>
+        /// <param name="iFace">controls whether the camera (0), the character (2) or both (1) turn</param>
+        /// <param name="iParty">sets whether to move the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        public static void CameraFace(float fDelay, NWObject oStart, float fRange, float fPitch, NWObject oEnd, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iClockwise = 0, int iFace = 0, int iParty = 0)
         {
             // Get timing information
             float fCount = 0.0f;
@@ -2662,8 +3028,21 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraTrack(float fDelay, NWObject oTrack, float fRange, float fPitch, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iFace = 0, int iParty = 0)
+        /// <summary>
+        /// Tracks a moving object, turning the player's camera so that it always faces towards it
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before starting the movement</param>
+        /// <param name="oTrack">object to track the movement of</param>
+        /// <param name="fRange">initial distance between player and camera</param>
+        /// <param name="fPitch">initial pitch (vertical tilt)</param>
+        /// <param name="fRange2">finishing distance</param>
+        /// <param name="fPitch2">finishing tilt</param>
+        /// <param name="fTime">how long the camera will track the object for</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        /// <param name="oPC">the PC you want to apply the camera movement to</param>
+        /// <param name="iFace">controls whether the camera (0), the character (2) or both (1) turn</param>
+        /// <param name="iParty">sets whether to move the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        public static void CameraTrack(float fDelay, NWObject oTrack, float fRange, float fPitch, float fRange2, float fPitch2, float fTime, float fFrameRate, NWPlayer oPC, int iFace = 0, int iParty = 0)
         {
             // Get timing information
             float fCount;
@@ -2843,8 +3222,17 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void ActionCameraFade(float fDelay, NWCreature oActor, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed = FADE_SPEED_MEDIUM, float fDuration = 0.0f, int iParty = 0)
+        /// <summary>
+        /// Fades the screen of the specified player(s) to and/or from black
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before adding the command to oActor's action queue</param>
+        /// <param name="oActor">the actor whose action queue you want to place this command in (oActor doesn't have to be the same as oPC)</param>
+        /// <param name="oPC">the player you want to fade the screen of</param>
+        /// <param name="iFade">sets what kind of fade you want - if iFade is FADE_IN, the screen will start black and then become visible. if iFade is FADE_OUT, the screen will start visible and then become black. if iFade is FADE_CROSS, the screen will start visible, fade to black and then become visible again</param>
+        /// <param name="fSpeed">the speed at which the fade(s) should take place. NOTE - always use the FADE_SPEED_* constants for this unless you really know what you're doing!</param>
+        /// <param name="fDuration">how many seconds the fade should last. if iFade is FADE_IN, this is how long the screen will remain black before the fade begins. if iFade is FADE_OUT, this is the time between the fade out beginning and the screen being cleared again - leave at 0.0 to keep the screen black. if iFade is FADE_CROSS, this is the time between the fade out beginning and the fade in beginning</param>
+        /// <param name="iParty">sets whether to fade the screen of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        public static void ActionCameraFade(float fDelay, NWCreature oActor, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed = FADE_SPEED_MEDIUM, float fDuration = 0.0f, int iParty = 0)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => AssignCommand(oActor, () => ActionDoCommand(() => DoFade(sName, oPC, iFade, fSpeed, fDuration, iParty))));
@@ -2852,16 +3240,32 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-
-        private static void CameraFade(float fDelay, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed = FADE_SPEED_MEDIUM, float fDuration = 0.0f, int iParty = 0)
+        /// <summary>
+        /// Fades the screen of the specified player(s) to and/or from black
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before fading the screen</param>
+        /// <param name="oPC">the player you want to fade the screen of</param>
+        /// <param name="iFade">sets what kind of fade you want - if iFade is FADE_IN, the screen will start black and then become visible. if iFade is FADE_OUT, the screen will start visible and then become black. if iFade is FADE_CROSS, the screen will start visible, fade to black and then become visible again</param>
+        /// <param name="fSpeed">the speed at which the fade(s) should take place. NOTE - always use the FADE_SPEED_* constants for this unless you really know what you're doing!</param>
+        /// <param name="fDuration">how many seconds the fade should last. if iFade is FADE_IN, this is how long the screen will remain black before the fade begins. if iFade is FADE_OUT, this is the time between the fade out beginning and the screen being cleared again - leave at 0.0 to keep the screen black. if iFade is FADE_CROSS, this is the time between the fade out beginning and the fade in beginning</param>
+        /// <param name="iParty">sets whether to fade the screen of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
+        public static void CameraFade(float fDelay, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed = FADE_SPEED_MEDIUM, float fDuration = 0.0f, int iParty = 0)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFade(sName, oPC, iFade, fSpeed, fDuration, iParty));
         }
 
 
-
-        private static void FixedCamera(NWPlayer oPC, float fFrameRate = 50.0f)
+        /// <summary>
+        /// Gives the illusion of the camera being fixed in one place and rotating to face the player as they move
+        /// To setup a fixed camera position, place a waypoint with a unique tag in your area
+        /// Set the camera's tag as a LocalString "sGestaltFixedCamera" on the PC to let them know to use that camera
+        /// Set a LocalFloat "fGestaltFixedCamera" on the PC to set the camera's vertical position
+        /// Set "sGestaltFixedCamera" to "" to pause the tracking, or to "STOP" to end the tracking
+        /// </summary>
+        /// <param name="oPC">the PC you want to apply the camera movement to</param>
+        /// <param name="fFrameRate">number of movements per second (governs how smooth the motion is)</param>
+        public static void FixedCamera(NWPlayer oPC, float fFrameRate = 50.0f)
         {
             // Thanks to Tenchi Masaki for the idea for this function
             string sCamera = GetLocalString(oPC, "sGestaltFixedCamera");     // Gets the camera position to use

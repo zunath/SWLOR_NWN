@@ -3658,3 +3658,4 @@ void GestaltFixedCamera(object oPC, float fFrameRate = 50.0)
     AssignCommand(oPC,SetCameraFacing(fAngle,fDistance,fPitch));
     DelayCommand(fDelay,GestaltFixedCamera(oPC,fFrameRate));
 }
+

@@ -310,6 +310,125 @@ namespace SWLOR.Game.Server.Service
             RegisterActor(sName, oActor);
         }
 
+        /// <summary>
+        /// Jumps the selected actor to the position of another object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before oActor jumps</param>
+        /// <param name="oActor">the character you want to jump</param>
+        /// <param name="oTarget">the object or waypoint they should jump to</param>
+        /// <param name="sTarget">the tag of the object or waypoint they should move to. NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag. If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the object you want to move to. If the object you want to send the actor to exists at the start of the cutscene, leave sTarget as "".</param>
+        public static void Jump(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoJump(sName, oActor, "", oTarget, sTarget));
+            RegisterActor(sName, oActor);
+        }
+
+        /// <summary>
+        /// Jumps the selected actor to the position of another object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before jump is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to jump - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oTarget">the object or waypoint they should jump to</param>
+        /// <param name="sTarget">the tag of the object or waypoint they should move to. NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag. If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the object you want to move to. If the object you want to send the actor to exists at the start of the cutscene, leave sTarget as "".</param>
+        public static void TagActionJump(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoJump(sName, new Object(), sActor, oTarget, sTarget, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+        
+        /// <summary>
+        /// Jumps the selected actor to the position of another object
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before the actor jumps</param>
+        /// <param name="sActor">the tag of the character you want to jump - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="oTarget">the object or waypoint they should jump to</param>
+        /// <param name="sTarget">the tag of the object or waypoint they should move to. NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag. If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the object you want to move to. If the object you want to send the actor to exists at the start of the cutscene, leave sTarget as "".</param>
+        public static void TagJump(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoJump(sName, new Object(), sActor, oTarget, sTarget));
+            RegisterActor(sName, new Object(), sActor);
+        }
+        
+        /// <summary>
+        /// Tell the selected actor to play an animation
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before animation is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want to play the animation</param>
+        /// <param name="iAnim">the animation you want them to play (ANIMATION_*)</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void ActionAnimate(float fDelay, NWCreature oActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAnimate(sName, oActor, "", iAnim, fDuration, fSpeed, true));
+            RegisterActor(sName, oActor);
+        }
+        
+        /// <summary>
+        /// Tell the selected actor to play an animation
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before playing the animation</param>
+        /// <param name="oActor">the character you want to play the animation</param>
+        /// <param name="iAnim">the animation you want them to play (ANIMATION_*)</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void Animate(float fDelay, NWCreature oActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAnimate(sName, oActor, "", iAnim, fDuration, fSpeed));
+            RegisterActor(sName, oActor);
+        }
+        
+        /// <summary>
+        /// Tell the selected actor to play an animation
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before animation is added to the actor's action queue</param>
+        /// <param name="sActor">the tag of the character you want to play the animation - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="iAnim">the animation you want them to play (ANIMATION_*)</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void TagActionAnimate(float fDelay, string sActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAnimate(sName, new Object(), sActor, iAnim, fDuration, fSpeed, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+        
+        /// <summary>
+        /// Tell the selected actor to play an animation
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before playing the animation</param>
+        /// <param name="sActor">the tag of the character you want to play the animation - MAKE SURE THIS IS UNIQUE!</param>
+        /// <param name="iAnim">the animation you want them to play (ANIMATION_*)</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void TagAnimate(float fDelay, string sActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAnimate(sName, new Object(), sActor, iAnim, fDuration, fSpeed));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+        /// <summary>
+        /// Tell the selected actor to speak a line
+        /// </summary>
+        /// <param name="fDelay">how many seconds to wait before speech is added to oActor's action queue</param>
+        /// <param name="oActor">the character you want to speak the line</param>
+        /// <param name="sLine">the line you want them to speak</param>
+        /// <param name="iAnimation">the animation you want them to play whilst speaking the line (leave as ANIMATION_NONE for no animation). NOTE - if you are using a ANIMATION_LOOPING_TALK_* animation, all you need to use is the last word (eg FORCEFUL))</param>
+        /// <param name="fDuration">how long the animation should last (leave at 0.0 for fire-and-forget animations)</param>
+        /// <param name="fSpeed">the speed of the animation (defaults to 1.0)</param>
+        public static void ActionSpeak(float fDelay, NWCreature oActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpeak(sName, oActor, "", sLine, iAnimation, fDuration, fSpeed, true));
+            RegisterActor(sName, oActor);
+
+        }
+
 
         private static void ClearFX(NWCreature oActor)
         {
@@ -879,6 +998,1181 @@ namespace SWLOR.Game.Server.Service
             if (bAction) { AssignCommand(oActor, () => ActionJumpToObject(oTarget, FALSE)); }
             else { AssignCommand(oActor, () => JumpToObject(oTarget, FALSE)); }
         }
+
+        private static void DoAnimate(string sName, NWCreature oActor, string sActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f, bool bAction = false)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (bAction) { AssignCommand(oActor, () => ActionPlayAnimation(iAnim, fSpeed, fDuration)); }
+            else { AssignCommand(oActor, () => PlayAnimation(iAnim, fSpeed, fDuration)); }
+        }
+
+
+        private static void DoSpeak(string sName, NWCreature oActor, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f, bool bAction = false)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (bAction)
+            {
+                AssignCommand(oActor, () => ActionSpeakString(sLine));
+                if (iAnimation != AnimationNone)
+                { AssignCommand(oActor, () => ActionPlayAnimation(iAnimation, fSpeed, fDuration)); }
+            }
+
+            else
+            {
+                AssignCommand(oActor, () => SpeakString(sLine));
+                if (iAnimation != AnimationNone)
+                { AssignCommand(oActor, () => PlayAnimation(iAnimation, fSpeed, fDuration)); }
+            }
+        }
+
+
+        private static void PrintTimeStamp(string sMessage, float fStartTime)
+        {
+            float fCurrentTime = HoursToSeconds(GetTimeHour()) + IntToFloat((GetTimeMinute() * 60) + GetTimeSecond()) + (IntToFloat(GetTimeMillisecond()) / 1000);
+            float fTime = fCurrentTime - fStartTime;
+            SpeakString(FloatToString(fTime) + "s - " + sMessage);
+        }
+
+        private static void DoActionTimeStamp(string sName, NWCreature oActor, string sMessage, float fStartTime)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            AssignCommand(oActor, () => ActionDoCommand(() => PrintTimeStamp(sMessage, fStartTime)));
+        }
+
+        private static void ActionTimeStamp(float fDelay, NWCreature oActor, string sMessage)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            float fStartTime = HoursToSeconds(GetTimeHour()) + IntToFloat((GetTimeMinute() * 60) + GetTimeSecond()) + (IntToFloat(GetTimeMillisecond()) / 1000);
+            DelayCommand(fDelay, () => DoActionTimeStamp(sName, oActor, sMessage, fStartTime));
+        }
+
+        private static void DebugOutput(NWPlayer oPC)
+        {
+            // Get the current position of oPC's camera
+            float fDirection = GetLocalFloat(oPC, "fCameraDirection");
+            float fRange = GetLocalFloat(oPC, "fCameraRange");
+            float fPitch = GetLocalFloat(oPC, "fCameraPitch");
+
+            // Fire a message to say where the camera is
+            AssignCommand(oPC, () => SpeakString(FloatToString(fDirection) + ", " + FloatToString(fRange) + ", " + FloatToString(fPitch)));
+        }
+
+
+
+        private static void TagActionSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpeak(sName, new Object(), sActor, sLine, iAnimation, fDuration, fSpeed, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void TagSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpeak(sName, new Object(), sActor, sLine, iAnimation, fDuration, fSpeed));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+        private static void Speak(float fDelay, NWCreature oActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpeak(sName, oActor, "", sLine, iAnimation, fDuration, fSpeed));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoConversation(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (sTarget != "")
+            { oTarget = GetObjectByTag(sTarget); }
+
+            AssignCommand(oActor, () => ActionStartConversation(oTarget, sConv, FALSE, bGreet ? TRUE : FALSE));
+        }
+
+
+
+        private static void ActionConversation(float fDelay, NWCreature oActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoConversation(sName, oActor, "", oTarget, sConv, sTarget, bGreet));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void TagActionConversation(float fDelay, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoConversation(sName, new Object(), sActor, oTarget, sConv, sTarget, bGreet));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void DoFace(string sName, NWCreature oActor, string sActor, NWObject oTarget, int iFace, float fFace, bool bAction)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (iFace == 0)
+            {
+                if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => SetFacing(fFace))); }
+                else { AssignCommand(oActor, () => SetFacing(fFace)); }
+            }
+
+            else if (iFace == 1)
+            {
+                if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => SetFacing(GetFacing(oTarget)))); }
+                else { AssignCommand(oActor, () => SetFacing(GetFacing(oTarget))); }
+            }
+
+            else
+            {
+                if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => SetFacingPoint(GetPosition(oTarget)))); }
+                else { AssignCommand(oActor, () => SetFacingPoint(GetPosition(oTarget))); }
+            }
+        }
+
+
+
+        private static void TagActionFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoFace(sName, new Object(), sActor, oTarget, iFace, fFace, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void TagFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoFace(sName, new Object(), sActor, oTarget, iFace, fFace, false));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void ActionFace(float fDelay, NWCreature oActor, float fFace, int iFace, NWObject oTarget)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoFace(sName, oActor, "", oTarget, iFace, fFace, true));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void Face(float fDelay, NWCreature oActor, float fFace, int iFace, NWObject oTarget)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoFace(sName, oActor, "", oTarget, iFace, fFace, false));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoEquip(string sName, NWCreature oActor, string sActor, int iSlot, NWItem oItem, string sItem)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (sItem != "")
+            { oItem = GetItemPossessedBy(oActor, sItem); }
+
+            if (iSlot == 999) { AssignCommand(oActor, () => ActionEquipMostDamagingMelee()); }
+            else if (iSlot == 998) { AssignCommand(oActor, () => ActionEquipMostDamagingRanged()); }
+            else if (iSlot == 997) { AssignCommand(oActor, ActionEquipMostEffectiveArmor); }
+            else { AssignCommand(oActor, () => ActionEquipItem(oItem, iSlot)); }
+        }
+
+
+
+        private static void TagActionEquip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoEquip(sName, new Object(), sActor, iSlot, oItem, sItem));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void ActionEquip(float fDelay, NWCreature oActor, int iSlot, NWItem oItem, string sItem = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoEquip(sName, oActor, "", iSlot, oItem, sItem));
+            RegisterActor(sName, oActor);
+        }
+
+
+        private static void DoUnequip(string sName, NWCreature oActor, string sActor, int iSlot, NWItem oItem, string sItem)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (sItem != "")
+            { oItem = GetItemPossessedBy(oActor, sItem); }
+
+            if (iSlot != 996)
+            { oItem = GetItemInSlot(iSlot, oActor); }
+
+            AssignCommand(oActor, () => ActionUnequipItem(oItem));
+        }
+
+
+
+        private static void TagActionUnequip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoUnequip(sName, new Object(), sActor, iSlot, oItem, sItem));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void ActionUnequip(float fDelay, NWCreature oActor, int iSlot, NWItem oItem, string sItem = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoUnequip(sName, oActor, "", iSlot, oItem, sItem));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoAttack(string sName, NWCreature oActor, string sActor, NWObject oTarget, bool bPassive, string sTarget)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (sTarget != "")
+            { oTarget = GetObjectByTag(sTarget); }
+
+            AssignCommand(oActor, () => _.ActionAttack(oTarget, bPassive ? TRUE : FALSE));
+        }
+        
+        private static void TagActionAttack(float fDelay, string sActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAttack(sName, new Object(), sActor, oTarget, bPassive, sTarget));
+            RegisterActor(sName, new Object(), sActor);
+        }
+        
+        private static void ActionAttack(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAttack(sName, oActor, "", oTarget, bPassive, sTarget));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoSpellCast(string sName, NWCreature oActor, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (sTarget != "")
+            { oTarget = GetObjectByTag(sTarget); }
+
+            if (bFake) { AssignCommand(oActor, () => ActionCastFakeSpellAtObject(iSpell, oTarget, iPath)); }
+            else { AssignCommand(oActor, () => ActionCastSpellAtObject(iSpell, oTarget, iMeta, bCheat ? TRUE : FALSE, iLevel, iPath, bInstant ? TRUE : FALSE)); }
+        }
+
+
+
+        private static void ActionSpellCast(float fDelay, NWCreature oActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpellCast(sName, oActor, "", oTarget, iSpell, bFake, iPath, sTarget, bCheat, bInstant, iLevel, iMeta));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void TagActionSpellCast(float fDelay, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSpellCast(sName, new Object(), sActor, oTarget, iSpell, bFake, iPath, sTarget, bCheat, bInstant, iLevel, iMeta));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void DoEffect(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, bool bAction = false)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "")
+            { oActor = GetObjectByTag(sActor); }
+
+            if (sTarget != "")
+            { oTarget = GetObjectByTag(sTarget); }
+
+            if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => ApplyEffectToObject(iDuration, eFect, oTarget, fDuration))); }
+            else { ApplyEffectToObject(iDuration, eFect, oTarget, fDuration); }
+        }
+
+
+
+        private static void ApplyEffect(float fDelay, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoEffect(sName, new Object(), "", oTarget, sTarget, eFect, iDuration, fDuration));
+        }
+
+
+
+        private static void DoLocationEffect(string sName, Location lTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            ApplyEffectAtLocation(iDuration, eFect, lTarget, fDuration);
+        }
+
+
+
+        private static void ApplyLocationEffect(float fDelay, Location lTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoLocationEffect(sName, lTarget, eFect, iDuration, fDuration));
+        }
+
+
+
+        private static void ActionEffect(float fDelay, NWCreature oActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoEffect(sName, oActor, "", oTarget, sTarget, eFect, iDuration, fDuration, true));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void TagActionEffect(float fDelay, string sActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoEffect(sName, new Object(), sActor, oTarget, sTarget, eFect, iDuration, fDuration, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void DoClearEffect(string sName, NWCreature oActor, int iFX = EffectTypeCutsceneEffects)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (iFX == EffectTypeCutsceneEffects)
+            {
+                ClearFX(oActor);
+            }
+            else
+            {
+                Effect eFect = GetFirstEffect(oActor);
+                int iType = GetEffectType(eFect);
+                while (GetIsEffectValid(eFect) == TRUE)
+                {
+                    if (iType == iFX)
+                    { RemoveEffect(oActor, eFect); }
+                    eFect = GetNextEffect(oActor);
+                    iType = GetEffectType(eFect);
+                }
+            }
+        }
+
+
+
+        private static void ClearEffect(float fDelay, NWCreature oActor, int iFX = EffectTypeCutsceneEffects)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoClearEffect(sName, oActor));
+        }
+
+
+
+        private static void VoidCreateObject(int iType, string sRef, Location lLoc, int iAnim, string sTag)
+        {
+            CreateObject(iType, sRef, lLoc, iAnim, sTag);
+        }
+
+
+        private static void VoidCreateItemOnObject(string sRef, NWObject oTarget, int iStack)
+        {
+            CreateItemOnObject(sRef, oTarget, iStack);
+        }
+
+
+
+        private static void DoCreate(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, int iType, string sRef, string sTag, int iAnim, int iStack, bool bCreateOn, bool bAction = false)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+            if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
+
+            if (bCreateOn)
+            {
+                if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => VoidCreateItemOnObject(sRef, oTarget, iStack))); }
+                else { CreateItemOnObject(sRef, oTarget, iStack); }
+            }
+
+            else
+            {
+                if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => VoidCreateObject(iType, sRef, GetLocation(oTarget), iAnim, sTag))); }
+                else { CreateObject(iType, sRef, GetLocation(oTarget), iAnim, sTag); }
+            }
+        }
+
+
+
+        private static void ActionCreate(float fDelay, NWCreature oActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoCreate(sName, oActor, "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoCreate(sName, new Object(), sActor, oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void Create(float fDelay, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoCreate(sName, new Object(), "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn));
+        }
+
+
+
+        private static void DoCopy(string sName, NWObject oSource, NWObject oTarget, string sTarget, string sTag, bool bCreateOn)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
+
+            if (bCreateOn) { CopyObject(oSource, GetLocation(oTarget), oTarget, sTag); }
+            else { CopyObject(oSource, GetLocation(oTarget), new Object(), sTag); }
+        }
+
+
+
+        private static void Copy(float fDelay, NWObject oSource, NWObject oTarget, bool bCreateOn = false, string sTag = "", string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoCopy(sName, oSource, oTarget, sTarget, sTag, bCreateOn));
+        }
+
+
+
+        private static void DoClone(string sName, NWObject oPC, NWObject oTarget, string sTarget, string sTag, bool bInvisible)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
+            NWObject oClone = CopyObject(oPC, GetLocation(oTarget), new Object(), sTag);
+
+            if (GetIsPC(oPC) == TRUE)
+            {
+                ChangeToStandardFaction(oClone, STANDARD_FACTION_COMMONER);
+            }
+
+            if (bInvisible) { ApplyEffectToObject(Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oPC); }
+        }
+
+
+
+        private static void ClonePC(float fDelay, NWObject oPC, NWObject oTarget, string sTag = "cloned_pc", string sTarget = "", bool bInvisible = true)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoClone(sName, oPC, oTarget, sTarget, sTag, bInvisible));
+        }
+
+
+
+        private static void DoPickUp(string sName, NWCreature oActor, string sActor, NWItem oItem, string sItem)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+            if (sItem != "") { oItem = GetNearestObjectByTag(sItem, oActor); }
+
+            AssignCommand(oActor, () => ActionPickUpItem(oItem));
+        }
+
+
+
+        private static void TagActionPickUp(float fDelay, string sActor, NWItem oItem, string sItem = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoPickUp(sName, new Object(), sActor, oItem, sItem));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void ActionPickUp(float fDelay, NWCreature oActor, NWItem oItem, string sItem = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoPickUp(sName, oActor, "", oItem, sItem));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoSit(string sName, NWCreature oActor, string sActor, NWObject oChair, string sChair)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+            if (sChair != "") { oChair = GetNearestObjectByTag(sChair, oActor); }
+
+            AssignCommand(oActor, () => _.ActionSit(oChair));
+        }
+
+
+
+        private static void TagActionSit(float fDelay, string sActor, NWObject oChair, string sChair = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSit(sName, new Object(), sActor, oChair, sChair));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void ActionSit(float fDelay, NWCreature oActor, NWObject oChair, string sChair = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSit(sName, oActor, "", oChair, sChair));
+            RegisterActor(sName, oActor);
+        }
+
+
+        private static float GestaltMonkSpeed(NWCreature oActor)
+        {
+            int iClass = GetLevelByClass(CLASS_TYPE_MONK, oActor);
+
+            if (iClass >= 18) { return 1.50f; }
+            if (iClass >= 15) { return 1.45f; }
+            if (iClass >= 12) { return 1.40f; }
+            if (iClass >= 9) { return 1.30f; }
+            if (iClass >= 6) { return 1.20f; }
+            if (iClass >= 3) { return 1.10f; }
+            else { return 1.00f; }
+        }
+
+
+        private static void DoPlaySound(string sName, NWCreature oActor, string sActor, string sSound, bool bAction)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+            if (bAction) { AssignCommand(oActor, () => ActionDoCommand(() => _.PlaySound(sSound))); }
+            else { AssignCommand(oActor, () => _.PlaySound(sSound)); }
+        }
+
+
+
+        private static void PlaySound(float fDelay, NWCreature oActor, string sSound, string sActor = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoPlaySound(sName, oActor, sActor, sSound, false));
+
+            if (sActor != "") { RegisterActor(sName, new Object(), sActor); }
+            else { RegisterActor(sName, oActor); }
+        }
+
+
+
+        private static void ActionPlaySound(float fDelay, NWCreature oActor, string sSound, string sActor = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoPlaySound(sName, oActor, sActor, sSound, true));
+
+            if (sActor != "") { RegisterActor(sName, new Object(), sActor); }
+            else { RegisterActor(sName, oActor); }
+        }
+
+
+
+        private static void DoSoundObject(string sName, NWObject oSound, bool bOn, float fDuration, int iVolume, NWObject oPosition)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (bOn) { SoundObjectPlay(oSound); }
+            else { SoundObjectStop(oSound); }
+
+            if (fDuration > 0.0) { DelayCommand(fDuration, () => DoSoundObject(sName, oSound, !bOn, 0.0f, 128, new Object())); }
+            if (iVolume < 128) { SoundObjectSetVolume(oSound, iVolume); }
+            if (GetIsObjectValid(oPosition) == TRUE) { SoundObjectSetPosition(oSound, GetPosition(oPosition)); }
+        }
+
+
+
+        private static void SoundObject(float fDelay, NWObject oSound, NWObject oPosition, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoSoundObject(sName, oSound, bOn, fDuration, iVolume, oPosition));
+        }
+
+
+
+        private static void DoAmbientSound(string sName, NWArea oArea, bool bOn, float fDuration, int iVolume)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (bOn) { AmbientSoundPlay(oArea); }
+            else { AmbientSoundStop(oArea); }
+
+            if (fDuration > 0.0) { DelayCommand(fDuration, () => DoAmbientSound(sName, oArea, !bOn, 0.0f, 128)); }
+
+            if (iVolume < 101)
+            {
+                AmbientSoundSetDayVolume(oArea, iVolume);
+                AmbientSoundSetNightVolume(oArea, iVolume);
+            }
+        }
+
+
+
+        private static void AmbientSound(float fDelay, NWArea oArea, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoAmbientSound(sName, oArea, bOn, fDuration, iVolume));
+        }
+
+
+
+        private static void DoMusic(string sName, NWArea oArea, bool bOn = true, int iTrack = TrackCurrent, float fDuration = 0.0f)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (fDuration > 0.0) { DelayCommand(fDuration, () => DoMusic(sName, oArea, !bOn, iTrack)); }
+
+            if (GetLocalInt(oArea, "gcss_music_day") == 0)
+            {
+                SetLocalInt(oArea, "gcss_music_day", MusicBackgroundGetDayTrack(oArea));
+                SetLocalInt(oArea, "gcss_music_night", MusicBackgroundGetNightTrack(oArea));
+            }
+
+            MusicBackgroundStop(oArea);
+            MusicBattleStop(oArea);
+
+            if (!bOn)
+            { return; }
+
+            if (iTrack == TrackCurrent)
+            { MusicBackgroundPlay(oArea); }
+
+            else if (iTrack == TrackOriginal)
+            {
+                MusicBackgroundChangeDay(oArea, GetLocalInt(oArea, "gcss_music_day"));
+                MusicBackgroundChangeNight(oArea, GetLocalInt(oArea, "gcss_music_night"));
+            }
+
+            else
+            {
+                MusicBackgroundChangeDay(oArea, iTrack);
+                MusicBackgroundChangeNight(oArea, iTrack);
+            }
+        }
+
+
+
+        private static void PlayMusic(float fDelay, NWArea oArea, bool bOn = true, int iTrack = TrackCurrent, float fDuration = 0.0f)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoMusic(sName, oArea, bOn, iTrack, fDuration));
+        }
+
+
+
+        private static void DoDoor(string sName, NWCreature oActor, string sActor, NWObject oDoor, bool bLock, bool bOpen)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+
+            if (bOpen)
+            {
+                if (bLock) { AssignCommand(oActor, () => ActionDoCommand(() => SetLocked(oDoor, FALSE))); }
+                AssignCommand(oActor, () => ActionOpenDoor(oDoor));
+            }
+
+            else
+            {
+                AssignCommand(oActor, () => ActionCloseDoor(oDoor));
+                if (bLock) { AssignCommand(oActor, () => ActionDoCommand(() => SetLocked(oDoor, TRUE))); }
+            }
+        }
+
+
+
+        private static void ActionClose(float fDelay, NWCreature oActor, NWObject oDoor, bool bLock = false)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDoor(sName, oActor, "", oDoor, bLock, false));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void ActionOpen(float fDelay, NWCreature oActor, NWObject oDoor, bool bUnlock = true)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDoor(sName, oActor, "", oDoor, bUnlock, true));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void TagActionClose(float fDelay, string sActor, NWObject oDoor, bool bLock = false)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDoor(sName, new Object(), sActor, oDoor, bLock, false));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void TagActionOpen(float fDelay, string sActor, NWObject oDoor, bool bUnlock = true)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDoor(sName, new Object(), sActor, oDoor, bUnlock, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void DoQuest(string sName, NWPlayer oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, bool bRewardAll = true, bool bOverride = false)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (iParty == 1) { AddJournalQuestEntry(sQuest, iState, oPC, TRUE, FALSE, bOverride ? TRUE : FALSE); }
+            else if (iParty == 2) { AddJournalQuestEntry(sQuest, iState, oPC, FALSE, TRUE, bOverride ? TRUE : FALSE); }
+            else { AddJournalQuestEntry(sQuest, iState, oPC, FALSE, FALSE, bOverride ? TRUE : FALSE); }
+
+            if (iXP == 0) { return; }
+            else if (iXP == 1) { iXP = GetJournalQuestExperience(sQuest); }
+
+            NWCreature oParty;
+
+            if (bRewardAll) { iParty = 0; }
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                GiveXPToCreature(oParty, iXP);
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static void JournalEntry(float fDelay, NWPlayer oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, bool bRewardAll = true, bool bOverride = false)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoQuest(sName, oPC, sQuest, iState, iXP, iParty, bRewardAll, bOverride));
+        }
+
+
+
+        private static void DoWait(string sName, NWCreature oActor, string sActor, float fPause)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+
+            AssignCommand(oActor, () => _.ActionWait(fPause));
+        }
+
+
+
+        private static void TagActionWait(float fDelay, string sActor, float fPause)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoWait(sName, new Object(), sActor, fPause));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void ActionWait(float fDelay, NWCreature oActor, float fPause)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoWait(sName, oActor, "", fPause));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoClear(string sName, NWCreature oActor, string sActor)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sActor != "") { oActor = GetObjectByTag(sActor); }
+
+            AssignCommand(oActor, () => ClearAllActions(TRUE));
+        }
+
+
+
+        private static void ClearActions(float fDelay, NWCreature oActor, string sActor = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoClear(sName, oActor, sActor));
+        }
+
+
+
+        private static void DoFloatingText(string sName, NWCreature oActor, string sMessage, int bFaction = TRUE)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            FloatingTextStringOnCreature(sMessage, oActor, bFaction);
+        }
+
+
+
+        private static void FloatingText(float fDelay, NWCreature oActor, string sMessage, int bFaction = TRUE)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoFloatingText(sName, oActor, sMessage, bFaction));
+        }
+
+
+
+        private static void DoExecute(string sName, NWObject oTarget, string sScript, string sTarget)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
+
+            _.ExecuteScript(sScript, oTarget);
+        }
+
+
+
+        private static void ExecuteScript(float fDelay, NWObject oTarget, string sScript, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoExecute(sName, oTarget, sScript, sTarget));
+        }
+
+
+
+        private static void ActionExecute(float fDelay, NWCreature oActor, NWObject oTarget, string sScript, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => AssignCommand(oActor, () => ActionDoCommand(() => DoExecute(sName, oTarget, sScript, sTarget))));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void DoDestroy(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, bool bAction)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
+
+            if (bAction)
+            {
+                AssignCommand(oActor, () => ActionDoCommand(() => AssignCommand(oTarget, () => SetIsDestroyable(TRUE))));
+                AssignCommand(oActor, () => ActionDoCommand(() => DestroyObject(oTarget)));
+            }
+
+            else
+            {
+                AssignCommand(oTarget, () => SetIsDestroyable(TRUE));
+                DestroyObject(oTarget);
+            }
+        }
+
+
+
+        private static void ActionDestroy(float fDelay, NWCreature oActor, NWObject oTarget, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDestroy(sName, oActor, "", oTarget, sTarget, true));
+            RegisterActor(sName, oActor);
+        }
+
+
+
+        private static void TagActionDestroy(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDestroy(sName, new Object(), sActor, oTarget, sTarget, true));
+            RegisterActor(sName, new Object(), sActor);
+        }
+
+
+
+        private static void Destroy(float fDelay, NWObject oTarget, string sTarget = "")
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoDestroy(sName, new Object(), "", oTarget, sTarget, false));
+        }
+        
+        // Camera functions
+
+        private static Vector GetVectorAB(NWObject oA, NWObject oB)
+        {
+            Vector vA = GetPosition(oA);
+            Vector vB = GetPosition(oB);
+            Vector vDelta = Vector(vA.m_X - vB.m_X, vA.m_Y - vB.m_Y, vA.m_Z - vB.m_Z);
+            return vDelta;
+        }
+
+
+
+        private static float GetHorizontalDistanceBetween(NWObject oA, NWObject oB)
+        {
+            Vector vHorizontal = GetVectorAB(oA, oB);
+            float fDistance = sqrt(pow(vHorizontal.m_X, 2.0f) + pow(vHorizontal.m_Y, 2.0f));
+            return fDistance;
+        }
+
+
+
+        private static float GestaltGetDirection(NWObject oTarget, NWObject oPC)
+        {
+            Vector vdTarget = GetVectorAB(oTarget, oPC);
+            float fDirection = VectorToAngle(vdTarget);
+            return fDirection;
+        }
+
+
+
+        private static void DoCameraMode(string sName, NWPlayer oPC, int iMode)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            SetCameraMode(oPC, iMode);
+        }
+
+
+
+        private static void CameraMode(float fDelay, NWPlayer oPC, int iMode)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoCameraMode(sName, oPC, iMode));
+        }
+
+
+
+        private static void DoCameraFacing(string sName, float fDirection, float fRange, float fPitch, NWPlayer oPC, int iTransition)
+        {
+            if (GetLocalInt(GetModule(), sName) == TRUE)
+            { return; }
+
+            AssignCommand(oPC, () => SetCameraFacing(fDirection, fRange, fPitch, iTransition));
+        }
+
+
+
+        private static void CameraFacing(float fDelay, float fDirection, float fRange, float fPitch, NWPlayer oPC, int iTransition = CAMERA_TRANSITION_TYPE_SNAP)
+        {
+            string sName = GetLocalString(GetModule(), "cutscene");
+            DelayCommand(fDelay, () => DoCameraFacing(sName, fDirection, fRange, fPitch, oPC, iTransition));
+        }
+
+
+
+        private static void CameraPoint(float fDirection, float fRange, float fPitch, float fdDirection, float fdRange, float fdPitch, float fd2Direction, float fd2Range, float fd2Pitch, float fCount, NWPlayer oPC, int iCamID, int iFace = 0)
+        {
+            // Check whether this camera movement has been stopped or ended
+            string sCam = "iCamStop" + IntToString(iCamID);
+            if (GetLocalInt(oPC, sCam) == 1)
+            { return; }
+
+            // Work out where to point the camera
+            fDirection = fDirection + ((fd2Direction * pow(fCount, 2.0f)) / 2) + (fdDirection * fCount);
+            fRange = fRange + ((fd2Range * pow(fCount, 2.0f)) / 2) + (fdRange * fCount);
+            fPitch = fPitch + ((fd2Pitch * pow(fCount, 2.0f)) / 2) + (fdPitch * fCount);
+
+            // Reset fDirectionNew if it's gone past 0 or 360 degrees
+            while (fDirection < 0.0) { fDirection = (fDirection + 360.0f); }
+            while (fDirection > 360.0) { fDirection = (fDirection - 360.0f); }
+
+            // Set the camera and/or player facing, according to iFace
+            if (iFace < 2) { AssignCommand(oPC, () => SetCameraFacing(fDirection, fRange, fPitch)); }
+            if (iFace > 0) { AssignCommand(oPC, () => SetFacing(fDirection)); }
+
+            // Store the current position of the camera
+            SetLocalFloat(oPC, "fCameraDirection", fDirection);
+            SetLocalFloat(oPC, "fCameraRange", fRange);
+            SetLocalFloat(oPC, "fCameraPitch", fPitch);
+        }
+
+
+
+        private static void CameraPosition(float fDirection, float fRange, float fPitch, float fHeight, float fdDirection, float fdRange, float fdPitch, float fdHeight, float fd2Direction, float fd2Range, float fd2Pitch, float fd2Height, float fCount, NWPlayer oPC, int iCamID, int iFace = 0)
+        {
+            // Check whether this camera movement has been stopped or ended
+            string sCam = "iCamStop" + IntToString(iCamID);
+            if (GetLocalInt(oPC, sCam) == 1)
+            { return; }
+
+            // Work out where to point the camera
+            fDirection = fDirection + ((fd2Direction * pow(fCount, 2.0f)) / 2) + (fdDirection * fCount);
+            fRange = fRange + ((fd2Range * pow(fCount, 2.0f)) / 2) + (fdRange * fCount);
+            fPitch = fPitch + ((fd2Pitch * pow(fCount, 2.0f)) / 2) + (fdPitch * fCount);
+            fHeight = fHeight + ((fd2Height * pow(fCount, 2.0f)) / 2) + (fdHeight * fCount);
+
+            // Reset fDirectionNew if it's gone past 0 or 360 degrees
+            while (fDirection < 0.0) { fDirection = (fDirection + 360.0f); }
+            while (fDirection > 360.0) { fDirection = (fDirection - 360.0f); }
+
+            // Set the camera and/or player facing, according to iFace
+            if (iFace < 2) { AssignCommand(oPC, () => SetCameraFacing(fDirection, fRange, fPitch)); }
+            if (iFace > 0) { AssignCommand(oPC, () => SetFacing(fDirection)); }
+
+            // Adjust camera height
+            SetCameraHeight(oPC, fHeight);
+
+            // Store the current position of the camera
+            SetLocalFloat(oPC, "fCameraDirection", fDirection);
+            SetLocalFloat(oPC, "fCameraRange", fRange);
+            SetLocalFloat(oPC, "fCameraPitch", fPitch);
+            SetLocalFloat(oPC, "fCameraHeight", fHeight);
+        }
+
+
+
+        private static void CameraFaceTarget(NWObject oTarget, float fRange, float fPitch, NWPlayer oPC, int iFace, int iParty = 0, int iCamID = 0)
+        {
+            // Check whether this camera movement has been stopped
+            string sCam = "iCamStop" + IntToString(iCamID);
+            if (iCamID > 0 && GetLocalInt(oPC, sCam) == 1)
+            { return; }
+
+            float fDirection;
+            NWCreature oParty;
+
+            if (iParty == 1) { oParty = GetFirstFactionMember(oPC); }
+            else if (iParty == 2) { oParty = GetFirstPC(); }
+            else { oParty = oPC; }
+
+            while (GetIsObjectValid(oParty) == TRUE)
+            {
+                fDirection = GestaltGetDirection(oTarget, oParty);
+
+                if (iFace < 2) { AssignCommand(oParty, () => SetCameraFacing(fDirection, fRange, fPitch)); }
+                if (iFace > 0) { AssignCommand(oParty, () => SetFacing(fDirection)); }
+
+                // Store the current position of the camera
+                SetLocalFloat(oParty, "fCameraDirection", fDirection);
+                SetLocalFloat(oParty, "fCameraRange", fRange);
+                SetLocalFloat(oParty, "fCameraPitch", fPitch);
+
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                else if (iParty == 2) { oParty = GetNextPC(); }
+                else { return; }
+            }
+        }
+
+
+
+        private static float GetPanRate(float fDirection, float fDirection2, float fTicks, int iClockwise)
+        {
+            // Calculates how far the camera needs to move each to tick to go from fDirection to fDirection2
+            // in fTicks steps, correcting as necessary to account for clockwise or anti-clockwise movement
+
+            float fdDirection = 0.0f;
+
+            if (iClockwise == 0)
+            {
+                if (fDirection > fDirection2) { fdDirection = ((fDirection2 + 360.0f - fDirection) / fTicks); }
+                else { fdDirection = ((fDirection2 - fDirection) / fTicks); }
+            }
+
+            if (iClockwise == 1)
+            {
+                if (fDirection2 > fDirection) { fdDirection = ((fDirection2 - fDirection - 360.0f) / fTicks); }
+                else { fdDirection = ((fDirection2 - fDirection) / fTicks); }
+            }
+
+            if (iClockwise == 2)
+            {
+                float fCheck = fDirection2 - fDirection;
+                if (fCheck > 180.0f) { fdDirection = ((fDirection2 - fDirection - 360.0f) / fTicks); }
+                else if (fCheck < -180.0f) { fdDirection = ((fDirection2 + 360.0f - fDirection) / fTicks); }
+                else { fdDirection = ((fDirection2 - fDirection) / fTicks); }
+            }
+
+            return fdDirection;
+        }
+
 
     }
 }

@@ -5,9 +5,9 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class BattleMeditation: IPerkHandler
+    public class BattleInsight: IPerkHandler
     {
-        public PerkType PerkType => PerkType.BattleMeditation;
+        public PerkType PerkType => PerkType.BattleInsight;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;

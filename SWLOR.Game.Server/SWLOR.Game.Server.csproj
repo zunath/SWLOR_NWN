@@ -979,7 +979,7 @@
     <Compile Include="Perk\ForceControl\MindShield.cs" />
     <Compile Include="Perk\ForceControl\Rage.cs" />
     <Compile Include="Perk\ForceSense\AnimalBond.cs" />
-    <Compile Include="Perk\ForceSense\BattleMeditation.cs" />
+    <Compile Include="Perk\ForceSense\BattleInsight.cs" />
     <Compile Include="Perk\ForceSense\ComprehendSpeech.cs" />
     <Compile Include="Perk\ForceSense\Farseeing.cs" />
     <Compile Include="Perk\ForceSense\ForceDetection.cs" />

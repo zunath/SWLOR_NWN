@@ -169,7 +169,7 @@
         ComprehendSpeech = 176,
         ForceDetection = 177,
         Farseeing = 178,
-        BattleMeditation = 179,
+        BattleInsight = 179,
         AnimalBond = 180,
         DrainLife = 181,
         ForceLightning = 182,

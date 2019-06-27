@@ -5036,3 +5036,7 @@ WHERE PerkID IN (86,88 ,97 ,110,111,112,157,158,159)
 DELETE FROM dbo.Perk
 WHERE ID IN (86,88 ,97 ,110,111,112,157,158,159) 
 
+-- Rename Battle Meditation -> Battle Insight
+UPDATE dbo.Perk
+SET Name = 'Battle Insight'
+WHERE ID = 179

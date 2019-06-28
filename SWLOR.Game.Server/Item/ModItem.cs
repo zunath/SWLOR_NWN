@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Item
                     else usePrismatic = true;
                     break;
                 case CustomItemPropertyType.GreenMod:
-                    if (slots.FilledBlueSlots < slots.GreenSlots)
+                    if (slots.FilledGreenSlots < slots.GreenSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Item
                     else usePrismatic = true;
                     break;
                 case CustomItemPropertyType.YellowMod:
-                    if (slots.FilledBlueSlots < slots.YellowSlots)
+                    if (slots.FilledYellowSlots < slots.YellowSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);

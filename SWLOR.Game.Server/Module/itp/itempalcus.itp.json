@@ -12456,7 +12456,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Light Foil"
+                            "value": "Basic Training Foil"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12467,7 +12467,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Light Foil"
+                            "value": "Basic Training Foil"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12478,7 +12478,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Light Foil"
+                            "value": "Basic Training Foil"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12489,7 +12489,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Light Foil"
+                            "value": "Basic Training Foil"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12544,7 +12544,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil I"
+                            "value": "Training Foil I"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12555,7 +12555,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil I"
+                            "value": "Training Foil I"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12566,7 +12566,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil I"
+                            "value": "Training Foil I"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12577,7 +12577,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil I"
+                            "value": "Training Foil I"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12588,7 +12588,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil II"
+                            "value": "Training Foil II"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12599,7 +12599,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil II"
+                            "value": "Training Foil II"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12610,7 +12610,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil II"
+                            "value": "Training Foil II"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12621,7 +12621,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil II"
+                            "value": "Training Foil II"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12632,7 +12632,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil III"
+                            "value": "Training Foil III"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12643,7 +12643,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil III"
+                            "value": "Training Foil III"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12654,7 +12654,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil III"
+                            "value": "Training Foil III"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12665,7 +12665,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil III"
+                            "value": "Training Foil III"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12676,7 +12676,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil IV"
+                            "value": "Training Foil IV"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12687,7 +12687,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil IV"
+                            "value": "Training Foil IV"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12698,7 +12698,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil IV"
+                            "value": "Training Foil IV"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -12709,7 +12709,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Foil IV"
+                            "value": "Training Foil IV"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -13473,7 +13473,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff I"
+                      "value": "Training Foil Staff I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13484,7 +13484,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff I"
+                      "value": "Training Foil Staff I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13495,7 +13495,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff I"
+                      "value": "Training Foil Staff I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13506,7 +13506,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff I"
+                      "value": "Training Foil Staff I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13517,7 +13517,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff II"
+                      "value": "Training Foil Staff II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13528,7 +13528,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff II"
+                      "value": "Training Foil Staff II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13539,7 +13539,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff II"
+                      "value": "Training Foil Staff II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13550,7 +13550,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff II"
+                      "value": "Training Foil Staff II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13561,7 +13561,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff III"
+                      "value": "Training Foil Staff III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13572,7 +13572,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff III"
+                      "value": "Training Foil Staff III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13583,7 +13583,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff III"
+                      "value": "Training Foil Staff III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13594,7 +13594,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff III"
+                      "value": "Training Foil Staff III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13605,7 +13605,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff IV"
+                      "value": "Training Foil Staff IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13616,7 +13616,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff IV"
+                      "value": "Training Foil Staff IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13627,7 +13627,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff IV"
+                      "value": "Training Foil Staff IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13638,7 +13638,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Lightfoil Staff IV"
+                      "value": "Training Foil Staff IV"
                     },
                     "RESREF": {
                       "type": "resref",

@@ -12544,6 +12544,50 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "NPC Lightsaber (Keyan)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Lightsaber (Red)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_npc_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Lightsaber (Verrac)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_npc_v"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Lightsaber (Zhetta)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber_npc_z"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Training Foil I"
                           },
                           "RESREF": {
@@ -12714,50 +12758,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "lightsaber_y_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Lightsaber (Keyan)"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "item001"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Lightsaber (Red)"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lightsaber_npc_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Lightsaber (Verrac)"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lightsaber_npc_v"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Lightsaber (Zhetta)"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lightsaber_npc_z"
                           }
                         },
                         {
@@ -13473,6 +13473,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nulaa's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nulaa's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_nulaasaber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quarterstaff I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quarterstaff II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quarterstaff III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quarterstaff IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sentinel Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Training Foil Staff I"
                     },
                     "RESREF": {
@@ -13643,83 +13720,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_y_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Nulaa's Saber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Nulaa's Saber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pil_nulaasaber"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sentinel Saberstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_s"
                     }
                   },
                   {

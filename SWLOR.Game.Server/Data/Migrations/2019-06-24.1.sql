@@ -5040,3 +5040,31 @@ WHERE ID IN (86,88 ,97 ,110,111,112,157,158,159)
 UPDATE dbo.Perk
 SET Name = 'Battle Insight'
 WHERE ID = 179
+
+
+-- Mind Shield: Lower cooldown to 5 minutes
+UPDATE dbo.CooldownCategory
+SET BaseCooldownTime = '300'
+WHERE ID = 6
+
+
+-- Drop Force Lightning & Drain Life cooldowns to 12 seconds.
+UPDATE dbo.CooldownCategory
+SET BaseCooldownTime = 12
+WHERE ID = 36
+
+UPDATE dbo.CooldownCategory
+SET BaseCooldownTime = 12
+WHERE ID = 35
+
+
+-- Drop Force Breach cooldown to 10 seconds.
+UPDATE dbo.CooldownCategory
+SET BaseCooldownTime = 10
+WHERE ID = 38
+
+
+-- Drop Throw Saber cooldown to 10 seconds.
+UPDATE dbo.CooldownCategory
+SET BaseCooldownTime = 10
+WHERE ID = 12

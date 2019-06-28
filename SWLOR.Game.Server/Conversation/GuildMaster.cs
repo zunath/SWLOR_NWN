@@ -315,6 +315,7 @@ namespace SWLOR.Game.Server.Conversation
             else if(QuestService.CanPlayerCompleteQuest(player, questID))
             {
                 QuestService.CompleteQuest(player, GetDialogTarget(), questID, null);
+                EndConversation();
             }
             // Missing a requirement.
             else

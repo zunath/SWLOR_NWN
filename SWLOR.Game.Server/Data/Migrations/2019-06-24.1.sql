@@ -5093,3 +5093,12 @@ WHERE QuestID IN (355,393,424,472,527,577,578)
 
 DELETE FROM dbo.Quest
 WHERE ID IN (355,393,424,472,527,577,578)
+
+
+
+-- Move AC mods to yellow category and require yellow clusters.
+
+UPDATE dbo.CraftBlueprint
+SET CraftCategoryID = 17,
+	MainComponentTypeID = 31
+WHERE ID IN (127, 160, 190)

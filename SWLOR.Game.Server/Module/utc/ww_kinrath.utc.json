@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 8.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": 1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The average Kinrath. Of a light yellow-brownish color, but other varieties show different markings and come in colors as diverse as orange and green. Kinrath seem to be hive creatures, and a single female kinrath matriarch is the leader of a hive. Kinrath have four legs and a leg-like, poisonous appendage coming out of their faces that they used to attack prey or other perceived enemies. All kinrath are blind but can sense heat which allows them to navigate their way around and identify potential threats. They identify members of their own hive using a specialized sweat gland in the abdomen which excreted a specific scent."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -165,7 +167,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 3
+    "value": 6
   },
   "NoPermDeath": {
     "type": "byte",
@@ -189,7 +191,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 302
   },
   "Race": {
     "type": "byte",
@@ -463,7 +465,7 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 664
+          "value": 242
         },
         "SpellCasterLevel": {
           "type": "byte",
@@ -497,7 +499,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 8
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -541,7 +543,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 6
   },
   "willbonus": {
     "type": "short",

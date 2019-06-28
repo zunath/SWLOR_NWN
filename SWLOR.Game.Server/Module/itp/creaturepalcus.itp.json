@@ -449,7 +449,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 4.0
+                            "value": 6.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -538,7 +538,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 4.0
+                            "value": 6.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -557,7 +557,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 5.0
+                            "value": 7.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -576,7 +576,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 5.0
+                            "value": 10.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -584,7 +584,7 @@
                           },
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Valley Cairnmog"
+                            "value": "Valley Cairnmog Alpha"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -652,7 +652,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 2.0
+                            "value": 0.5
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -690,7 +690,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 5.0
+                            "value": 9.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -709,7 +709,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 5.0
+                            "value": 10.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -717,7 +717,7 @@
                           },
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Viscara Raivor"
+                            "value": "Viscara Swamp Raivor"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -785,7 +785,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 5.0
+                            "value": 9.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -827,7 +827,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 6.0
+                      "value": 10.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1437,7 +1437,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 4.0
+                            "value": 2.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -1456,7 +1456,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 4.0
+                            "value": 8.0
                           },
                           "FACTION": {
                             "type": "cexostring",

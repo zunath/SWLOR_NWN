@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3849
+    "value": 369
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 6.0
+    "value": 10.0
   },
   "ClassList": {
     "type": "list",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 237
+    "value": 218
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These intelligent, bloodthirsty pack hunters are the only animals from Dra III to ever be domesticated. Their claws and teeth are diamond-hard, allowing them to dig prey out of formations of basaltic rock. Their barbed tails and saliva contain a venom that marks their prey, allowing them to unswervingly track it for up to a month after contact. Their coloration ranges from dark brown to green, though the ones that inhabit the Viscara Wilds are a deep brown and their venom is considerably less lethal than their Dra III counterparts."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -127,7 +129,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 237
+    "value": 218
   },
   "Int": {
     "type": "byte",
@@ -161,11 +163,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 239
+    "value": 220
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 3
   },
   "NoPermDeath": {
     "type": "byte",
@@ -189,7 +191,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 191
+    "value": 625
   },
   "Race": {
     "type": "byte",
@@ -454,11 +456,27 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 104
+    "value": 396
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 229
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -466,7 +484,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 26
   },
   "Subrace": {
     "type": "cexostring",

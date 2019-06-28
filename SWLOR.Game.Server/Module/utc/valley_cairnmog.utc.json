@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 6294
+    "value": 3117
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 17
+    "value": 8
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -1
+    "value": 3
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 166
+    "value": 138
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Cairnmogs are large spiked lizards indigenous to Chandrila. No longer able to survive in the wild, they were confined to the rocky hills in the Hanna Wild Game Reserve. They have hooves on their feet and bony protruding spikes, which they rattle and shake in displays of dominance. A cairnmog hibernates in winter, mated in the spring, and laid eggs in the fall. Female cairnmogs abandon their clutch of eggs in the winter, leaving their young to incubate while they attempted to survive the cold temperatures. Cairnmog hunting on Chandrila was allowed, but carefully regulated, while on Viscara they have been released into the wild and flourished in the lush and relatively safe crags near Veles."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -127,11 +129,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 166
+    "value": 138
   },
   "Int": {
     "type": "byte",
-    "value": 22
+    "value": 8
   },
   "Interruptable": {
     "type": "byte",
@@ -161,11 +163,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 168
+    "value": 140
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -189,7 +191,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 166
+    "value": 819
   },
   "Race": {
     "type": "byte",
@@ -466,7 +468,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 26
   },
   "Subrace": {
     "type": "cexostring",
@@ -510,7 +512,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 3
   },
   "willbonus": {
     "type": "short",
@@ -522,6 +524,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 17
+    "value": 9
   }
 }

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 6.0
   },
   "ClassList": {
     "type": "list",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 3
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 73
+    "value": 58
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Kath hounds are about the size of a large dog, fur-covered, and each limb ends in four hoofed digits. They are generally not very hostile, unless provoked, but if they are their massive maw is enough to remove limbs. Though native to Dantooine, Viscara appears to have a considerable wild hound population. Invasive as they are, their numbers grow steadily as Warocas numbers dwindle."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 12
   },
   "Disarmable": {
     "type": "byte",
@@ -120,11 +122,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 73
+    "value": 58
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 12
   },
   "Interruptable": {
     "type": "byte",
@@ -154,11 +156,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 75
+    "value": 60
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -182,7 +184,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 321
   },
   "Race": {
     "type": "byte",
@@ -447,7 +449,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 104
+    "value": 919
   },
   "SpecAbilityList": {
     "type": "list",
@@ -459,7 +461,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -563,7 +565,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -575,6 +577,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 3
+    "value": 4
   }
 }

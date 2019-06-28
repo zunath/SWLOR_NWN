@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 126
+    "value": 96
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "\nCrystal spiders are arachnids that inhabit the abandoned ore mines of Viscara. They live in complete darkness inside the mine's caves spinning webs around the crystals, made of glitterstim. The spiders shoot webbing from their mouths to capture prey, impale them and then quickly suck the life energy from them. "
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 8
   },
   "Disarmable": {
     "type": "byte",
@@ -134,7 +136,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 126
+    "value": 96
   },
   "Int": {
     "type": "byte",
@@ -168,11 +170,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 129
+    "value": 100
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 5
+    "value": 6
   },
   "NoPermDeath": {
     "type": "byte",
@@ -465,7 +467,23 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 192
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 14
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -473,7 +491,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 21
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -562,7 +580,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 7
   },
   "willbonus": {
     "type": "short",

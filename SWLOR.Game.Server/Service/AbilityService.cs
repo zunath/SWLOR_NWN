@@ -602,13 +602,15 @@ namespace SWLOR.Game.Server.Service
                 var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(creature.Object);
                 if (effectiveStats.CooldownRecovery > 0)
                 {
-                    armorPenalty -= effectiveStats.CooldownRecovery;
+                    armorPenalty -= (effectiveStats.CooldownRecovery * 0.01f);
                 }
             }
 
             // There's a cap of 50% cooldown reduction from equipment.
             if (armorPenalty < 0.5f)
                 armorPenalty = 0.5f;
+
+            Console.WriteLine("armorPenalty final = " + armorPenalty);
 
             float finalCooldown = handler.CooldownTime(creature, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
             int cooldownSeconds = (int)finalCooldown;

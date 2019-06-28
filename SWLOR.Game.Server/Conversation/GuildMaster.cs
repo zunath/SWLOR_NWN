@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Conversation
             var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int)model.Guild && x.PlayerID == player.GlobalID);
 
             // Check the player's rank and ensure they can access this store.
-            if (pcGP.Rank <= responseID)
+            if (pcGP.Rank < responseID)
             {
                 ChangePage("RankTooLowPage");
             }

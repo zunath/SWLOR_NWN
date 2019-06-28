@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessVersion1LightsaberItem(NWItem item)
         {
-            // Lightsaber appearances have changed because they're now considered light foils. 
+            // Lightsaber appearances have changed because they're now considered training foils. 
             // Depending on the type of lightsaber, modify the name, appearance and other details of the item.
             int baseItemType;
 
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
             NWNXItem.RestoreItemAppearance(item, appearanceString);
 
             item.SetLocalInt("LIGHTSABER", _.TRUE);
-            item.Name = item.Name.Replace("Lightsaber", "Light Foil").Replace("Saberstaff", "Lightfoil Staff");
+            item.Name = item.Name.Replace("Lightsaber", "Training Foil").Replace("Saberstaff", "Training Foil Staff");
         }
 
     }

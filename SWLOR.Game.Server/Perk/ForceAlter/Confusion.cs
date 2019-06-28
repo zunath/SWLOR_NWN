@@ -41,6 +41,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
+            if (spellTier == 1) return 300; // 5 minutes
+            else if (spellTier == 2) return 1800; // 30 minutes
+
             return baseCooldownTime;
         }
 

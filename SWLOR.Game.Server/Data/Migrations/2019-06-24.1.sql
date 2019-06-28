@@ -5068,3 +5068,28 @@ WHERE ID = 38
 UPDATE dbo.CooldownCategory
 SET BaseCooldownTime = 10
 WHERE ID = 12
+
+
+GO
+
+-- Remove duplicate guild task quests
+
+DELETE FROM dbo.PCQuestItemProgress
+WHERE PCQuestStatusID IN (
+	SELECT ID
+	FROM dbo.PCQuestStatus
+	WHERE QuestID IN (355,393,424,472,527,577,578)
+)
+DELETE FROM dbo.PCQuestStatus
+WHERE QuestID IN (355,393,424,472,527,577,578)
+DELETE FROM dbo.QuestRequiredItem 
+WHERE QuestID IN (355,393,424,472,527,577,578)
+
+DELETE FROM dbo.QuestState
+WHERE QuestID IN (355,393,424,472,527,577,578)
+
+DELETE FROM dbo.GuildTask
+WHERE QuestID IN (355,393,424,472,527,577,578)
+
+DELETE FROM dbo.Quest
+WHERE ID IN (355,393,424,472,527,577,578)

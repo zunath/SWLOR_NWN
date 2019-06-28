@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Item
             if (modType == CustomItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
 
             // Get the perk level based on target item type and mod type.
-            if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (targetItem.GetLocalInt("LIGHTSABER") == FALSE && WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.WeaponModInstallation);
             }
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Item
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ArmorModInstallation);
             }
-            else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (targetItem.GetLocalInt("LIGHTSABER") == TRUE || EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.EngineeringModInstallation);
             }

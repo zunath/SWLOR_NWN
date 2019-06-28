@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3147
+    "value": 2137
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 0.5
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 12
   },
   "Conversation": {
     "type": "resref",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Mynocks are a species of silicon-based bat-like parasites native to the planet Ord Mynock, that chew on the power cables and energy conductors of starships, and could drain a ship's entire power supply. They reproduced by splitting in two and growing new creatures from each half. Mynocks are capable of surviving in the atmospheres of planets and the vacuum of space, though only a few varieties lived on planets. This variety is not as dangerous as most, but it poses a great threat to the Czerka Mining Station they inhabit. \n\nThey are also known to inhabit asteroid fields and the gullets of exogorths, where they shared in its meals. Mynocks are remotely related to Tibidees, large flying creatures native to Stygeon Prime who were also a nuisance to starpilots."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 6
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -154,7 +156,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 16
+    "value": 18
   },
   "NaturalAC": {
     "type": "byte",
@@ -451,7 +453,23 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 188
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 1
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -459,7 +477,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -503,7 +521,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 7
   },
   "willbonus": {
     "type": "short",

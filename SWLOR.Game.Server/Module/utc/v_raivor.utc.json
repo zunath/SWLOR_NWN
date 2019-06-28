@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2987
+    "value": 2985
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 9.0
   },
   "ClassList": {
     "type": "list",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -3
+    "value": 4
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 186
+    "value": 100
   },
   "DecayTime": {
     "type": "dword",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Raivors are reptiles of Tatooine valued for their hide, which allowed them to blend into their natural environs. They have adapted to the Viscara Mountainside well, their hides matching the colour of the stone. Quick, dangerous and predatory, the Raivor of Viscara is likely the most dangerous variation of the species. "
+    }
   },
   "Dex": {
     "type": "byte",
@@ -120,7 +122,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 186
+    "value": 100
   },
   "Int": {
     "type": "byte",
@@ -154,11 +156,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 188
+    "value": 102
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 8
   },
   "NoPermDeath": {
     "type": "byte",
@@ -447,7 +449,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 65535
+    "value": 97
   },
   "SpecAbilityList": {
     "type": "list",
@@ -459,7 +461,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",

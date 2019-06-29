@@ -272,8 +272,7 @@ namespace SWLOR.Game.Server.Service
             {
                 return;
             }
-
-
+            
             pcSkill.XP = pcSkill.XP + xp;
             oPC.SendMessage("You earned " + skill.Name + " skill experience. (" + xp + ")");
 
@@ -306,6 +305,11 @@ namespace SWLOR.Game.Server.Service
                     ApplyWeaponPenalties(oPC, item);
                     RemoveEquipmentPenalties(item);
                     ApplyEquipmentPenalties(oPC, item);
+                }
+
+                if (pcSkill.Rank >= maxRank && pcSkill.XP > req)
+                {
+                    pcSkill.XP = req - 1;
                 }
 
                 MessageHub.Instance.Publish(new OnSkillGained(oPC, skillID));

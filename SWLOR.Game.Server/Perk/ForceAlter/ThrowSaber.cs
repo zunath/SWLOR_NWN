@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             }
             else
             {
-                return "You cannot throw this type of item.";
+                return string.Empty;
             }
 
         }
@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             int iRange = 15;
             int iCount = 1;
             float fDelay = 0;
+            int iPheno = _.GetPhenoType(player);
 
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
@@ -104,6 +105,18 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             BiowarePosition.TurnToFaceObject(target, player);
 
             player.AssignCommand(() => _.ActionPlayAnimation(30, 2));
+
+            // reset phenotype
+                player.DelayAssignCommand(() =>
+                {
+                    _.SetPhenoType(4, player);
+                }, 2.0f);
+
+                player.DelayAssignCommand(() =>
+                {
+                    _.SetPhenoType(iPheno, player);
+                }, 2.5f);
+
 
             _.SendMessageToPC(player, "Level " + spellTier);
 

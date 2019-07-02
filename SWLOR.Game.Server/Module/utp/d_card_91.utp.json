@@ -88,6 +88,10 @@
       "0": "Mythical - Deekin (1/3), cost 2"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

@@ -73831,6 +73831,17 @@
                       "type": "resref",
                       "value": "_mdrn_pl_flrh001"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Playing Cards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "playingcards"
+                    }
                   }
                 ]
               },
@@ -74468,6 +74479,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Spectate a Rimer Cards Game"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rimer_spectate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Spell - Angelic Choir, cost 2"
                     },
                     "RESREF": {
@@ -74803,6 +74825,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "d_card_10"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Start a Rimer Cards PvP Game"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rimer_pvp"
                     }
                   },
                   {

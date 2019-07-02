@@ -88,6 +88,10 @@
       "0": "Goblin Warlord (3/3), cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

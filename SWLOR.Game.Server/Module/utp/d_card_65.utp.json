@@ -88,6 +88,10 @@
       "0": "Dragon (7/7), cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

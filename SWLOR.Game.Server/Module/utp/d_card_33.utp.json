@@ -88,6 +88,10 @@
       "0": "Cow (1/1), cost 1"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

@@ -88,6 +88,10 @@
       "0": "Steel Guardian (1/5), cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

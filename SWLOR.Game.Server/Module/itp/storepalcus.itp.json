@@ -310,6 +310,22 @@
                 "type": "byte",
                 "value": 1
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rimer Cards Store"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rimer_store"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6689

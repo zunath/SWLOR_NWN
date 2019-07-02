@@ -88,6 +88,10 @@
       "0": "Spell - Wrath of the Horde, cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

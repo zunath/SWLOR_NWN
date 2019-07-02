@@ -88,6 +88,10 @@
       "0": "Spell - Energy Disruption, cost 2"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

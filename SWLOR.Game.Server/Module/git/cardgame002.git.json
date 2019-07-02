@@ -50,7 +50,7 @@
         "__struct_id": 4,
         "Appearance_Type": {
           "type": "word",
-          "value": 280
+          "value": 226
         },
         "BodyBag": {
           "type": "byte",
@@ -768,7 +768,7 @@
         },
         "DecayTime": {
           "type": "dword",
-          "value": 0
+          "value": 5000
         },
         "Deity": {
           "type": "cexostring",
@@ -792,7 +792,7 @@
         },
         "FactionID": {
           "type": "word",
-          "value": 6
+          "value": 9
         },
         "FeatList": {
           "type": "list",
@@ -1234,6 +1234,13 @@
                 "type": "byte",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
             }
           ]
         },
@@ -1261,8 +1268,8 @@
           "type": "cexostring",
           "value": "FactionObjectPlayer2"
         },
-        "Tail": {
-          "type": "byte",
+        "Tail_New": {
+          "type": "dword",
           "value": 0
         },
         "TemplateList": {
@@ -1281,8 +1288,8 @@
           "type": "short",
           "value": 0
         },
-        "Wings": {
-          "type": "byte",
+        "Wings_New": {
+          "type": "dword",
           "value": 0
         },
         "Wis": {
@@ -1291,7 +1298,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -4.068215275765397e-005
+          "value": -4.115898991585709e-005
         },
         "XPosition": {
           "type": "float",
@@ -1314,7 +1321,7 @@
         "__struct_id": 4,
         "Appearance_Type": {
           "type": "word",
-          "value": 280
+          "value": 226
         },
         "BodyBag": {
           "type": "byte",
@@ -2032,7 +2039,7 @@
         },
         "DecayTime": {
           "type": "dword",
-          "value": 0
+          "value": 5000
         },
         "Deity": {
           "type": "cexostring",
@@ -2056,7 +2063,7 @@
         },
         "FactionID": {
           "type": "word",
-          "value": 5
+          "value": 8
         },
         "FeatList": {
           "type": "list",
@@ -2498,6 +2505,13 @@
                 "type": "byte",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
             }
           ]
         },
@@ -2525,8 +2539,8 @@
           "type": "cexostring",
           "value": "FactionObjectPlayer1"
         },
-        "Tail": {
-          "type": "byte",
+        "Tail_New": {
+          "type": "dword",
           "value": 0
         },
         "TemplateList": {
@@ -2545,8 +2559,8 @@
           "type": "short",
           "value": 0
         },
-        "Wings": {
-          "type": "byte",
+        "Wings_New": {
+          "type": "dword",
           "value": 0
         },
         "Wis": {
@@ -2555,7 +2569,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.068215275765397e-005
+          "value": 4.115898991585709e-005
         },
         "XPosition": {
           "type": "float",
@@ -2682,6 +2696,10 @@
           "value": {
             "0": "Emergency Exit"
           }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -2908,6 +2926,10 @@
             "0": "Emergency Exit"
           }
         },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
         "OnClosed": {
           "type": "resref",
           "value": ""
@@ -3057,7 +3079,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795893669128
+          "value": 1.57079553604126
         },
         "BodyBag": {
           "type": "byte",
@@ -3132,6 +3154,10 @@
           "value": {
             "0": "Spectator Exit"
           }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",

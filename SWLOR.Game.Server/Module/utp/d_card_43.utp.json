@@ -88,6 +88,10 @@
       "0": "Loremaster (0/2), cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

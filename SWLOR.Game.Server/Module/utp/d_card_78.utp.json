@@ -88,6 +88,10 @@
       "0": "Spell - Boomerang, cost 1"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

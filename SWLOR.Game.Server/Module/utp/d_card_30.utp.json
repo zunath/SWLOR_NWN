@@ -88,6 +88,10 @@
       "0": "Druid (2/4), cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

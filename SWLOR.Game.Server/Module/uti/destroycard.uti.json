@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 4
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Creatures Destroy Card Wand"
+      "0": "Rimer Cards Destroy Card Wand"
     }
   },
   "ModelPart1": {
@@ -60,7 +60,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 54
+    "value": 1
   },
   "Plot": {
     "type": "byte",

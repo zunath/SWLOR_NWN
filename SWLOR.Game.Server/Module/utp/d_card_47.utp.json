@@ -88,6 +88,10 @@
       "0": "Shadow Assassin (4/1), cost 3"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

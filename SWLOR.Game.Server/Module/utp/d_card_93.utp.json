@@ -88,6 +88,10 @@
       "0": "Bulette (1/6), cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

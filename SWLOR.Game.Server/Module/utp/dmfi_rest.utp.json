@@ -88,6 +88,10 @@
       "0": "DMFI Invisible Rest Object"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

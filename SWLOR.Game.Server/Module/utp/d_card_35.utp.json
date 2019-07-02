@@ -88,6 +88,10 @@
       "0": "Bear (2/3), cost 3"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

@@ -88,6 +88,10 @@
       "0": "Mythical - Saeshen (0/1), cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

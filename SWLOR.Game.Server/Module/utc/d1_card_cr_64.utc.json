@@ -500,6 +500,13 @@
           "type": "byte",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 0,
+        "Rank": {
+          "type": "byte",
+          "value": 0
+        }
       }
     ]
   },
@@ -558,8 +565,8 @@
     "type": "cexostring",
     "value": "d1_card_cr_64"
   },
-  "Tail": {
-    "type": "byte",
+  "Tail_New": {
+    "type": "dword",
     "value": 0
   },
   "TemplateList": {
@@ -578,8 +585,8 @@
     "type": "short",
     "value": 0
   },
-  "Wings": {
-    "type": "byte",
+  "Wings_New": {
+    "type": "dword",
     "value": 0
   },
   "Wis": {

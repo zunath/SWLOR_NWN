@@ -88,6 +88,10 @@
       "0": "Spell - Vortex, cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

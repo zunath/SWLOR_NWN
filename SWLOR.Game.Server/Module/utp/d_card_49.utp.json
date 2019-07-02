@@ -88,6 +88,10 @@
       "0": "Solar Stone, cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

@@ -88,6 +88,10 @@
       "0": "Spell - Flux, cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

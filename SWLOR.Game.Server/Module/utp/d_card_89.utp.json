@@ -88,6 +88,10 @@
       "0": "Mythical - Ark'Neth (5/5), cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

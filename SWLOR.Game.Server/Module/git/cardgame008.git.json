@@ -154,6 +154,10 @@
             "0": "Emergency Exit"
           }
         },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
         "OnClosed": {
           "type": "resref",
           "value": ""
@@ -379,6 +383,10 @@
             "0": "Emergency Exit"
           }
         },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
         "OnClosed": {
           "type": "resref",
           "value": ""
@@ -528,7 +536,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "BodyBag": {
           "type": "byte",
@@ -603,6 +611,10 @@
           "value": {
             "0": "Spectator Exit"
           }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",

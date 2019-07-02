@@ -88,6 +88,10 @@
       "0": "Spell - Angelic Choir, cost 2"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

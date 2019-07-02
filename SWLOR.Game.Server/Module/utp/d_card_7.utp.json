@@ -88,6 +88,10 @@
       "0": "Umber Hulk (2/3), cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

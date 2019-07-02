@@ -88,6 +88,10 @@
       "0": "Kobold (1/1), cost 1"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

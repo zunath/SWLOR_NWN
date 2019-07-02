@@ -88,6 +88,10 @@
       "0": "Spell - Death Pact, cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

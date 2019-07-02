@@ -88,6 +88,10 @@
       "0": "Vampire Master (5/4), cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

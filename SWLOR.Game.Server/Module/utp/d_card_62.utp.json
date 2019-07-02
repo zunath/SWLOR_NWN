@@ -88,6 +88,10 @@
       "0": "Hook Horror (3/1), cost 5"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

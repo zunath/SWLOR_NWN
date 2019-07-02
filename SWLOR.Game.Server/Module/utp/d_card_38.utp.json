@@ -88,6 +88,10 @@
       "0": "Spell - Paralyze, cost 2"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

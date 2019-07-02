@@ -88,6 +88,10 @@
       "0": "Spell - Fire Shield, cost 3"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

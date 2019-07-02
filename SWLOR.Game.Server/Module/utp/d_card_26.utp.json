@@ -88,6 +88,10 @@
       "0": "Bone Golem (3/3), cost 4"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

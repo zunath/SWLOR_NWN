@@ -54,7 +54,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 181
+    "value": 214
   },
   "PaletteID": {
     "type": "byte",
@@ -96,6 +96,37 @@
         "Subtype": {
           "type": "word",
           "value": 15
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 18
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 3
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 9
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 1
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 44
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       },
       {

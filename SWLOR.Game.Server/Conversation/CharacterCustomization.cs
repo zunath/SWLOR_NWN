@@ -469,7 +469,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] TrandoshanEyeColors = { }; // All
             int[] WookieeHairColors = {0, 1, 2, 3, 14, 49, 51};
             int[] MonCalamariHairColors = { }; // All
-            int[] UgnaughtHairColors = { }; // All
+            int[] UgnaughtHairColors = { 16, 17, 18, 19, 62, 120, 128, 164, 166, 168 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int[] colorsToUse;

@@ -1,0 +1,17 @@
+/**********************************/
+/*          d_menu_pri4
+/*
+/*  Created By: Robert Straughan
+/**********************************/
+/*  Created For: Telarnia.com
+/*  Created On: God knows
+/**********************************/
+/*  Print option if value set.
+/**********************************/
+
+#include "d1_cards_jinc"
+
+int StartingConditional()
+{
+    return GetMenuValue (4);
+}

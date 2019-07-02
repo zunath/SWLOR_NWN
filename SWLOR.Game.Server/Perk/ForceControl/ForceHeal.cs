@@ -89,8 +89,10 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             // Give Control XP, if player.
             if (creature.IsPlayer)
             {
-                SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, amount);
+                SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, amount * 10);
             }
+            
+            EnmityService.AdjustEnmityOnAllTaggedCreatures(creature, amount * 3, 2);
         }
     }
 }

@@ -13407,7 +13407,18 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Lightfoil Staff"
+                      "value": "Basic Quarterstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Training Foil Staff"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13418,7 +13429,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Lightfoil Staff"
+                      "value": "Basic Training Foil Staff"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13429,7 +13440,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Lightfoil Staff"
+                      "value": "Basic Training Foil Staff"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13440,22 +13451,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Lightfoil Staff"
+                      "value": "Basic Training Foil Staff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_y_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Quarterstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_b"
                     }
                   },
                   {

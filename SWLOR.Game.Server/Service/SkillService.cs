@@ -1085,7 +1085,9 @@ namespace SWLOR.Game.Server.Service
                     item.SetLocalInt(immunity.VariableName, immunity.Amount);
 
                     // Calculate the new value (minimum of 1).
-                    int newImmunity = 1 + delta / 5;
+                    int newImmunity = 1 + (immunity.Amount - delta * 5);
+                    if (newImmunity < 1) newImmunity = 1;
+                    
                     if (newImmunity > immunity.Amount) newImmunity = immunity.Amount;
 
                     // We have the amount but we need to find the corresponding ID in the 2DA.

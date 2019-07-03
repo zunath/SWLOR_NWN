@@ -5102,3 +5102,21 @@ UPDATE dbo.CraftBlueprint
 SET CraftCategoryID = 17,
 	MainComponentTypeID = 31
 WHERE ID IN (127, 160, 190)
+
+
+-- Fix the FP cost on Force Heal perk feats
+UPDATE dbo.PerkFeat
+SET ConcentrationFPCost = 2 
+WHERE PerkID = 185 AND FeatID = 1176
+
+UPDATE dbo.PerkFeat
+SET ConcentrationFPCost = 3 
+WHERE PerkID = 185 AND FeatID = 1177
+
+UPDATE dbo.PerkFeat
+SET ConcentrationFPCost = 4 
+WHERE PerkID = 185 AND FeatID = 1178
+
+UPDATE dbo.PerkFeat
+SET ConcentrationFPCost = 5
+WHERE PerkID = 185 AND FeatID = 1179

@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 400
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 401
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 400
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "An angel of light, a warrior for hope and all that is good, Jysirael stands as a beacon of light against the darkness of evil.  Only one Jysirael can be in play at any time.\n\nCan trigger a sacrifice effect to fully heal all friendly summons within a 10m radius.  Using this ability does not kill Jysirael, but does reduce her hit points by half."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Mythical - Jysirael (5/5), cost 5"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 90
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 1
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "di_card_90"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "di_card_90"
+  }
+}

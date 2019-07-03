@@ -5260,3 +5260,8 @@ VALUES ( 86 , -- PerkID - int
 
 
 
+	
+-- Fix Force Sense description
+UPDATE dbo.Skill
+SET Description = 'Ability to use sense-based force abilities like Force Insight and Premonition. Higher skill levels unlock new abilities.'
+WHERE ID = 21

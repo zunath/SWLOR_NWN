@@ -73831,17 +73831,6 @@
                       "type": "resref",
                       "value": "_mdrn_pl_flrh001"
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Playing Cards"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "playingcards"
-                    }
                   }
                 ]
               },
@@ -74374,6 +74363,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "d_card_40"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Playing Cards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "playingcards"
                     }
                   },
                   {

@@ -9987,17 +9987,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Card Bag"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cardbag"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Crédits : 10"
                     },
                     "RESREF": {

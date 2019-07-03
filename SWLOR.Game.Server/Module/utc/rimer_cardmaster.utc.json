@@ -661,6 +661,26 @@
     "type": "resref",
     "value": "rimer_cardmaster"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "STORE_TAG"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "rimer_store"
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 7

@@ -1,0 +1,219 @@
+{
+  "__data_type": "UTP ",
+  "AnimationState": {
+    "type": "byte",
+    "value": 0
+  },
+  "Appearance": {
+    "type": "dword",
+    "value": 12062
+  },
+  "AutoRemoveKey": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyBag": {
+    "type": "byte",
+    "value": 0
+  },
+  "CloseLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Conversation": {
+    "type": "resref",
+    "value": ""
+  },
+  "CurrentHP": {
+    "type": "short",
+    "value": 10
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This freakish creature seeks to kill for pleasure whenever possible.\n\nOwner of the Hook Horror may sacrifice the highest attack value creature he currently controls to the Hook Horror to deal an amount of damage equal to half the maximum hit points of the sacrificed creature to the opponent's avatar, and to the Hook Horror.  This ability is controlled by selecting the Hook Horror from the sacrifice placeable.  Doing so does not destroy the Hook Horror."
+    }
+  },
+  "DisarmDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "Faction": {
+    "type": "dword",
+    "value": 1
+  },
+  "Fort": {
+    "type": "byte",
+    "value": 5
+  },
+  "Hardness": {
+    "type": "byte",
+    "value": 5
+  },
+  "HasInventory": {
+    "type": "byte",
+    "value": 0
+  },
+  "HP": {
+    "type": "short",
+    "value": 10
+  },
+  "Interruptable": {
+    "type": "byte",
+    "value": 1
+  },
+  "KeyName": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "KeyRequired": {
+    "type": "byte",
+    "value": 0
+  },
+  "Lockable": {
+    "type": "byte",
+    "value": 0
+  },
+  "Locked": {
+    "type": "byte",
+    "value": 0
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Hook Horror (3/1), cost 5"
+    }
+  },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnClosed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDamaged": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDeath": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnDisarm": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnHeartbeat": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnInvDisturbed": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnLock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnMeleeAttacked": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnOpen": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnSpellCastAt": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnTrapTriggered": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUnlock": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnUsed": {
+    "type": "resref",
+    "value": "d1_playcard"
+  },
+  "OnUserDefined": {
+    "type": "resref",
+    "value": ""
+  },
+  "OpenLockDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 2
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PortraitId": {
+    "type": "word",
+    "value": 236
+  },
+  "Ref": {
+    "type": "byte",
+    "value": 0
+  },
+  "Static": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "d_card_62"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "d_card_62"
+  },
+  "TrapDetectable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapDetectDC": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapDisarmable": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapFlag": {
+    "type": "byte",
+    "value": 0
+  },
+  "TrapOneShot": {
+    "type": "byte",
+    "value": 1
+  },
+  "TrapType": {
+    "type": "byte",
+    "value": 0
+  },
+  "Type": {
+    "type": "byte",
+    "value": 0
+  },
+  "Useable": {
+    "type": "byte",
+    "value": 1
+  },
+  "Will": {
+    "type": "byte",
+    "value": 0
+  }
+}

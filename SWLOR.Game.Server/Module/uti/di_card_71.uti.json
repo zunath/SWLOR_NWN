@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 50
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 401
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 50
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This spell creates a ring of fire around the target that deals 1d4 + 1 fire damage to any who strike the recipient.  Targets start with the avatar, and then move on to the highest defence creature you own."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Spell - Fire Shield, cost 3"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 71
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 1
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "di_card_71"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "di_card_71"
+  }
+}

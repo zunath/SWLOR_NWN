@@ -176,7 +176,7 @@
         ForcePush = 183,
         ForceBreach = 184,
         ForceHeal = 185,
-
+        ForceInsight = 186,
     }
 
 }

@@ -113,8 +113,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(targetCreature, creature) == 0)
-                        {                            
+                        {
                             // Do nothing against droids or non-hostile creatures, skip object
+                            targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
                             continue;
                         }
 

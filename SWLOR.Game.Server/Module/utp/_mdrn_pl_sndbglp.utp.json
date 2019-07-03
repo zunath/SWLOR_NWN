@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 7587
+    "value": 7104
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -83,7 +83,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Fallen Shelving"
+      "0": "Sand Bags (Grey)"
     }
   },
   "OnClick": {
@@ -172,7 +172,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "shelv_fallen"
+    "value": "_mdrn_pl_sndbglp"
   },
   "TemplateResRef": {
     "type": "resref",

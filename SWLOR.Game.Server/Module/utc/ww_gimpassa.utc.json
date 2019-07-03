@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 9.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -536,7 +536,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 3
   },
   "willbonus": {
     "type": "short",

@@ -319,7 +319,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "<He grumbles for a moment.> You gonna buy, or what?"
+            "0": "*He grumbles for a moment.* You gonna buy, or what?"
           }
         }
       },
@@ -422,7 +422,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Don't they have Rimer Cards where you're from? Well, then let me explain. <He clears his throat.>\n\nRimer is a collectable card game famous on Viscara! Purchase a deck holder and whatever cards you like from me. Then, use them to build your deck and challenge the computer or your friends. I also sell a playing guide - be sure to review it for more in-depth information."
+            "0": "Don't they have Rimer Cards where you're from? Well, then let me explain. *He clears his throat.*\n\nRimer is a collectable card game famous on Viscara! Purchase a deck holder and whatever cards you like from me. Then, use them to build your deck and challenge the computer or your friends. I also sell a playing guide - be sure to review it for more in-depth information."
           }
         }
       }

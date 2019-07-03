@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141577959060669
+          "value": -3.141577005386353
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5510,7 +5510,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.969772100448608
+          "value": -2.969771146774292
         },
         "BodyBag": {
           "type": "byte",
@@ -8915,7 +8915,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.117035865783691
+          "value": -3.117034912109375
         },
         "BodyBag": {
           "type": "byte",
@@ -9596,7 +9596,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.043404579162598
+          "value": 3.04340386390686
         },
         "BodyBag": {
           "type": "byte",
@@ -9823,7 +9823,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.945230007171631
+          "value": 2.945229053497315
         },
         "BodyBag": {
           "type": "byte",
@@ -10277,7 +10277,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.846618175506592
+          "value": -2.846617221832275
         },
         "BodyBag": {
           "type": "byte",
@@ -10504,7 +10504,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.871598720550537
+          "value": 2.8715980052948
         },
         "BodyBag": {
           "type": "byte",
@@ -15287,7 +15287,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.067947149276733
+          "value": -3.067946195602417
         },
         "BodyBag": {
           "type": "byte",

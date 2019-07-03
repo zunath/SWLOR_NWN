@@ -5120,3 +5120,143 @@ WHERE PerkID = 185 AND FeatID = 1178
 UPDATE dbo.PerkFeat
 SET ConcentrationFPCost = 5
 WHERE PerkID = 185 AND FeatID = 1179
+
+
+-- Add the Force Insight perk.
+UPDATE dbo.CooldownCategory
+SET Name = 'Battle/Force Insight'
+WHERE ID = 28
+
+INSERT INTO dbo.Perk ( ID ,
+                       Name ,
+                       IsActive ,
+                       BaseCastingTime ,
+                       Description ,
+                       PerkCategoryID ,
+                       CooldownCategoryID ,
+                       ExecutionTypeID ,
+                       IsTargetSelfOnly ,
+                       Enmity ,
+                       EnmityAdjustmentRuleID ,
+                       CastAnimationID ,
+                       ForceBalanceTypeID )
+VALUES ( 86 ,    -- ID - int
+         'Force Insight' ,   -- Name - varchar(64)
+         1 , -- IsActive - bit
+         0.0 ,  -- BaseCastingTime - float
+         N'The caster boosts their AB and AC. Only affects themselves.' ,  -- Description - nvarchar(256)
+         46 ,    -- PerkCategoryID - int
+         28 ,    -- CooldownCategoryID - int
+         7 ,    -- ExecutionTypeID - int
+         1 , -- IsTargetSelfOnly - bit
+         25 ,    -- Enmity - int
+         2 ,    -- EnmityAdjustmentRuleID - int
+         NULL ,    -- CastAnimationID - int
+         0      -- ForceBalanceTypeID - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 86 ,   -- PerkID - int
+         1 ,   -- Level - int
+         3 ,   -- Price - int
+         N'Caster gets +3 AB.' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         21 , -- SkillID - int
+         0   -- RequiredRank - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 86 ,   -- PerkID - int
+         2 ,   -- Level - int
+         4 ,   -- Price - int
+         N'Caster gets +5 AB and +2 AC.' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         21 , -- SkillID - int
+         15   -- RequiredRank - int
+    )
+
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 86 ,   -- PerkID - int
+         3 ,   -- Level - int
+         5 ,   -- Price - int
+         N'Caster gets +5 AB and +4 AC.' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         21 , -- SkillID - int
+         30   -- RequiredRank - int
+    )
+
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked ,
+                           BaseFPCost ,
+                           ConcentrationFPCost ,
+                           ConcentrationTickInterval )
+VALUES ( 86 , -- PerkID - int
+         1248 , -- FeatID - int
+         1 , -- PerkLevelUnlocked - int
+         0 , -- BaseFPCost - int
+         1 , -- ConcentrationFPCost - int
+         1   -- ConcentrationTickInterval - int
+    )
+
+
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked ,
+                           BaseFPCost ,
+                           ConcentrationFPCost ,
+                           ConcentrationTickInterval )
+VALUES ( 86 , -- PerkID - int
+         1249 , -- FeatID - int
+         2 , -- PerkLevelUnlocked - int
+         0 , -- BaseFPCost - int
+         2 , -- ConcentrationFPCost - int
+         1   -- ConcentrationTickInterval - int
+    )
+
+
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked ,
+                           BaseFPCost ,
+                           ConcentrationFPCost ,
+                           ConcentrationTickInterval )
+VALUES ( 86 , -- PerkID - int
+         1250 , -- FeatID - int
+         3 , -- PerkLevelUnlocked - int
+         0 , -- BaseFPCost - int
+         3 , -- ConcentrationFPCost - int
+         1   -- ConcentrationTickInterval - int
+    )
+
+
+

@@ -88,7 +88,7 @@
         WeaponModInstallation = 83,
         WeaponBlueprints = 84,
         ScavengingExpert = 85,
-        // 86 is free
+        ForceInsight = 86,
         WeaponFocusLightsaber = 87,
         // 88 is free
         Dash = 89,
@@ -176,7 +176,6 @@
         ForcePush = 183,
         ForceBreach = 184,
         ForceHeal = 185,
-        ForceInsight = 186,
     }
 
 }

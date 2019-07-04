@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 103
+    "value": 109
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10002
+    "value": 10007
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -103,26 +103,26 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 4
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 63
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 102
+    "value": 123
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 63
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 109
   },
   "Comment": {
     "type": "cexostring",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 1
+    "value": -1
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 43
+    "value": 44
   },
   "DecayTime": {
     "type": "dword",
@@ -154,11 +154,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Viscara is a diamond in the rough, there is no doubt about this. However, this diamond is along one of the most infamous slaving routes in the known galaxy. As a result, slavers from nearby systems are more than common. This is one of them; armed to the teeth and ready to shoot down any who get in his way."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -272,7 +274,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Looter"
+      "0": "Outlaw"
     }
   },
   "fortbonus": {
@@ -289,7 +291,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 43
+    "value": 44
   },
   "Int": {
     "type": "byte",
@@ -323,7 +325,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 44
+    "value": 48
   },
   "NaturalAC": {
     "type": "byte",
@@ -351,7 +353,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1044
+    "value": 1033
   },
   "Race": {
     "type": "byte",
@@ -616,7 +618,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 356
+    "value": 938
   },
   "SpecAbilityList": {
     "type": "list",

@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             NWCreature targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
             while (targetCreature.IsValid && GetDistanceBetween(creature, targetCreature) <= MaxDistance)
             {                
-                int amount = 0;
+                int amount;
 
                 // Handle effects for differing spellTier values
                 switch (perkLevel)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         throw new ArgumentOutOfRangeException(nameof(perkLevel));
                 }
 
-                Effect effect = new Effect();
+                Effect effect;
 
                 if (_.GetIsReactionTypeHostile(targetCreature, creature) == 1)
                 {
@@ -119,10 +119,11 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
-                var tempcreature = targetCreature; // VS recommends copying to another var due to modified closure.
+                var tempCreature = targetCreature; // VS recommends copying to another var due to modified closure.
                 creature.AssignCommand(() =>
                 {
-                    _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, tempcreature, 6.1f);
+                    _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, tempCreature, 6.1f);
+                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), tempCreature);
                 });
 
                 nth++;

@@ -88,6 +88,10 @@
       "0": "DMFI Campfire"
     }
   },
+  "OnClick": {
+    "type": "resref",
+    "value": ""
+  },
   "OnClosed": {
     "type": "resref",
     "value": ""

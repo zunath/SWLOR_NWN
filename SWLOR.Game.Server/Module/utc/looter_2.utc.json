@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 115
+    "value": 194
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10004
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -103,26 +103,26 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 4
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 63
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 149
+    "value": 116
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 63
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 63
   },
   "Comment": {
     "type": "cexostring",
@@ -138,7 +138,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 1
+    "value": -1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -154,11 +154,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Crime is present on Viscara, like any other place. This particular individual looks to be an outlaw on the run, and is willing to shoot down anyone in his way. "
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -272,7 +274,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Looter"
+      "0": "Outlaw"
     }
   },
   "fortbonus": {
@@ -323,7 +325,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 44
+    "value": 47
   },
   "NaturalAC": {
     "type": "byte",
@@ -351,7 +353,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1044
+    "value": 119
   },
   "Race": {
     "type": "byte",
@@ -616,7 +618,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 356
+    "value": 177
   },
   "SpecAbilityList": {
     "type": "list",

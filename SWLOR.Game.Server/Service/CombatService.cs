@@ -200,10 +200,12 @@ namespace SWLOR.Game.Server.Service
                 {
                     reduction = perkReduction;
                     // Calculate and award force XP based on total damage reduced.
-                    int xp = (int)(data.Total * reduction);
+                    int xp = (int)(data.Total * reduction * 3);
                     if (xp < 5) xp = 5;
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
+                    // Play a visual effect signifying the ability was activated.
+                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
                 }
             }
 

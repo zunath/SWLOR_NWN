@@ -1,18 +1,20 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using System;
+using System.Linq;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class ForceInsight: IPerkHandler
+    public class ForceInsight : IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceInsight;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -64,37 +66,49 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-                int abamount = 0;
-                int acamount = 0;
+            int abamount;
+            int acamount;
 
             // Handle effects for differing spellTier values
             switch (perkLevel)
-                {
-                    case 1:
-                        abamount = 3;
-                        acamount = 0;   
-                        break;
-                    case 2:
-                        abamount = 5;
-                        acamount = 2;
-                        break;
-                    case 3:
-                        abamount = 5;
-                        acamount = 4;
-                        break;
+            {
+                case 1:
+                    abamount = 3;
+                    acamount = 0;
+                    break;
+                case 2:
+                    abamount = 5;
+                    acamount = 2;
+                    break;
+                case 3:
+                    abamount = 5;
+                    acamount = 4;
+                    break;
                 default:
-                        throw new ArgumentOutOfRangeException(nameof(perkLevel));
-                }
+                    throw new ArgumentOutOfRangeException(nameof(perkLevel));
+            }
 
-                Effect effect = new Effect();
+            var effect = _.EffectACIncrease(acamount);
+            effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(abamount));
+            effect = _.TagEffect(effect, "EFFECT_FORCE_INSIGHT");
 
-                effect = _.EffectACIncrease(acamount);
-                effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(abamount));
+            // Remove any existing force insight effects.
+            foreach(var existing in creature.Effects.Where(x => _.GetEffectTag(effect) == "EFFECT_FORCE_INSIGHT"))
+            {
+                _.RemoveEffect(creature, existing);
+            }
+            
+            // Apply the new effect.
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature, 1.1f);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), target);
 
-                creature.AssignCommand(() =>
-                {
-                    _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
-                });           
+            // Register players to all combat targets for Force Sense.
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceSense, null);
+            }
+
+            EnmityService.AdjustEnmityOnAllTaggedCreatures(creature, 4);
         }
     }
 }

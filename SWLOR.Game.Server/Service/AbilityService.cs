@@ -609,9 +609,7 @@ namespace SWLOR.Game.Server.Service
             // There's a cap of 50% cooldown reduction from equipment.
             if (armorPenalty < 0.5f)
                 armorPenalty = 0.5f;
-
-            Console.WriteLine("armorPenalty final = " + armorPenalty);
-
+            
             float finalCooldown = handler.CooldownTime(creature, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);

@@ -528,7 +528,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -2414,7 +2414,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963491141796112
+          "value": 0.1963490396738052
         },
         "BodyBag": {
           "type": "byte",
@@ -3621,7 +3621,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8590282201766968
+          "value": 0.8590279817581177
         },
         "BodyBag": {
           "type": "byte",
@@ -4075,7 +4075,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.988036751747131
+          "value": -1.988036394119263
         },
         "BodyBag": {
           "type": "byte",
@@ -5723,7 +5723,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.04907344281673431
+          "value": 0.04907415434718132
         },
         "XPosition": {
           "type": "float",
@@ -5765,7 +5765,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -5881,7 +5881,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.7242494225502014
+          "value": -0.7242496013641357
         },
         "XPosition": {
           "type": "float",
@@ -5889,7 +5889,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.6895380616188049
+          "value": -0.6895378828048706
         },
         "YPosition": {
           "type": "float",
@@ -5923,7 +5923,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -6039,7 +6039,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9852774143218994
+          "value": 0.9852773547172546
         },
         "XPosition": {
           "type": "float",
@@ -6047,7 +6047,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.1709631532430649
+          "value": 0.1709636151790619
         },
         "YPosition": {
           "type": "float",
@@ -6081,7 +6081,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -6239,7 +6239,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -6355,7 +6355,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4714004099369049
+          "value": 0.4714010357856751
         },
         "XPosition": {
           "type": "float",
@@ -6363,7 +6363,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8819193243980408
+          "value": -0.8819189667701721
         },
         "YPosition": {
           "type": "float",
@@ -6397,7 +6397,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -6513,7 +6513,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.2667154669761658
+          "value": 0.2667163908481598
         },
         "XPosition": {
           "type": "float",
@@ -6521,7 +6521,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9637753367424011
+          "value": -0.9637750387191773
         },
         "YPosition": {
           "type": "float",
@@ -6555,7 +6555,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -6713,7 +6713,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -6871,7 +6871,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -7029,7 +7029,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -7187,7 +7187,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -7303,7 +7303,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7242465019226074
+          "value": 0.7242462635040283
         },
         "XPosition": {
           "type": "float",
@@ -7311,7 +7311,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895411610603333
+          "value": 0.6895413994789124
         },
         "YPosition": {
           "type": "float",
@@ -7345,7 +7345,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -7503,7 +7503,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -7661,7 +7661,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -7819,7 +7819,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -8609,7 +8609,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -8725,7 +8725,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9329937100410461
+          "value": -0.9329938888549805
         },
         "XPosition": {
           "type": "float",
@@ -8733,7 +8733,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3598926067352295
+          "value": -0.3598921597003937
         },
         "YPosition": {
           "type": "float",
@@ -8925,7 +8925,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -9199,7 +9199,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8032066822052002
+          "value": -0.8032065629959106
         },
         "XPosition": {
           "type": "float",
@@ -9207,7 +9207,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5957004427909851
+          "value": 0.5957005620002747
         },
         "YPosition": {
           "type": "float",
@@ -9557,7 +9557,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -9715,7 +9715,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -9873,7 +9873,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -9989,7 +9989,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9569411873817444
+          "value": -0.9569413065910339
         },
         "XPosition": {
           "type": "float",
@@ -9997,7 +9997,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2902818620204926
+          "value": -0.2902814149856567
         },
         "YPosition": {
           "type": "float",
@@ -10031,7 +10031,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -10189,7 +10189,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -10347,7 +10347,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -10463,7 +10463,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8448531031608582
+          "value": -0.8448529839515686
         },
         "XPosition": {
           "type": "float",
@@ -10471,7 +10471,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.53499835729599
+          "value": 0.5349985361099243
         },
         "YPosition": {
           "type": "float",
@@ -10505,7 +10505,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -10663,7 +10663,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -10821,7 +10821,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -10937,7 +10937,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7883458733558655
+          "value": 0.7883457541465759
         },
         "XPosition": {
           "type": "float",
@@ -10945,7 +10945,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6152322888374329
+          "value": 0.6152324080467224
         },
         "YPosition": {
           "type": "float",
@@ -10979,7 +10979,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -11137,7 +11137,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara - Wildwoods Looter"
+            "0": "Viscara - Wildwoods Outlaw"
           }
         },
         "MapNote": {
@@ -11253,7 +11253,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5555723309516907
+          "value": 0.5555731058120728
         },
         "XPosition": {
           "type": "float",
@@ -11261,7 +11261,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8314682245254517
+          "value": -0.8314676880836487
         },
         "YPosition": {
           "type": "float",

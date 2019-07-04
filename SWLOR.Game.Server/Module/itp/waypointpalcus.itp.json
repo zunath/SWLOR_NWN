@@ -417,7 +417,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Leader"
+                      "value": "Mandalorian War Hero"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -604,7 +604,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara - Wildwoods Looter"
+                      "value": "Viscara - Wildwoods Outlaw"
                     },
                     "RESREF": {
                       "type": "resref",

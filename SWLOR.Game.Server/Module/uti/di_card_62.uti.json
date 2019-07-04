@@ -1,0 +1,81 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 150
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 401
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 150
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This freakish creature seeks to kill for pleasure whenever possible.\n\nOwner of the Hook Horror may sacrifice the highest attack value creature he currently controls to the Hook Horror to deal an amount of damage equal to half the maximum hit points of the sacrificed creature to the opponent's avatar, and to the Hook Horror.  This ability is controlled by selecting the Hook Horror from the sacrifice placeable.  Doing so does not destroy the Hook Horror."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Hook Horror (3/1), cost 5"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 62
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 1
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "di_card_62"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "di_card_62"
+  }
+}

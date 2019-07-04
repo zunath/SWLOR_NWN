@@ -28228,7 +28228,7 @@
               "Text": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tal'gar wants you to avenge Captain N'guth's death. Enter the Mandalorian facility, kill the leader, and report back to him when it's done."
+                  "0": "Tal'gar wants you to avenge Captain N'guth's death. Enter the Mandalorian facility, kill the War Hero, and report back to him when it's done."
                 }
               }
             },
@@ -28245,7 +28245,7 @@
               "Text": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "You found and killed the Mandalorian leader. Return to Tal'gar to report."
+                  "0": "You found and killed the Mandalorian War Hero. Return to Tal'gar to report."
                 }
               }
             }
@@ -28254,7 +28254,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "The Mandalorian Leader"
+            "0": "The Mandalorian War Hero"
           }
         },
         "Picture": {
@@ -35275,7 +35275,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Wildwoods Looter"
+            "0": "Hunter's Guild Task: Vanquish 10x Wildwoods Outlaw"
           }
         },
         "Picture": {
@@ -35615,7 +35615,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 1x Mandalorian Leader"
+            "0": "Hunter's Guild Task: Vanquish 1x Mandalorian War Hero"
           }
         },
         "Picture": {

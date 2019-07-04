@@ -6,7 +6,7 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 0
+    "value": 106
   },
   "ArmorPart_LBicep": {
     "type": "byte",
@@ -30,7 +30,7 @@
   },
   "ArmorPart_LShoul": {
     "type": "byte",
-    "value": 15
+    "value": 186
   },
   "ArmorPart_LThigh": {
     "type": "byte",
@@ -38,7 +38,7 @@
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 1
+    "value": 105
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 186
+    "value": 234
   },
   "ArmorPart_RShin": {
     "type": "byte",
@@ -70,7 +70,7 @@
   },
   "ArmorPart_RShoul": {
     "type": "byte",
-    "value": 15
+    "value": 8
   },
   "ArmorPart_RThigh": {
     "type": "byte",
@@ -78,7 +78,7 @@
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 0
+    "value": 2
   },
   "BaseItem": {
     "type": "int",
@@ -124,17 +124,17 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 23
+    "value": 127
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 23
+    "value": 123
   },
   "LocalizedName": {
     "id": 12835,
     "type": "cexolocstring",
     "value": {
-      "0": "NPC Looter Outfit Male 2"
+      "0": "NPC Outlaw Outfit Male 2"
     }
   },
   "Metal1Color": {

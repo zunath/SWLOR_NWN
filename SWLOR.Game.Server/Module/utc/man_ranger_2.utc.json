@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 4
         }
       }
     ]
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 2
+    "value": -1
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 69
+    "value": 85
   },
   "DecayTime": {
     "type": "dword",
@@ -154,11 +154,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "\"Here's why you can't exterminate us, aruetii. We're not huddled in one place- we span the galaxy. We need no lords or leaders, so you can't destroy our command. We can live without technology, so we can fight with our bare hands. We have no species or bloodline, so we can rebuild our ranks with others who want to join us. We're more than just a people or an army, aruetii. We're a culture. We're an idea. And you can't kill ideas, but we can certainly kill you.\" - Mandalore the Destroyer"
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -185,7 +187,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_pistol"
+          "value": "npc_man_rifle"
         }
       }
     ]
@@ -296,7 +298,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 69
+    "value": 85
   },
   "Int": {
     "type": "byte",
@@ -330,11 +332,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 72
+    "value": 105
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -358,7 +360,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1044
+    "value": 1037
   },
   "Race": {
     "type": "byte",
@@ -623,11 +625,27 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 356
+    "value": 923
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 844
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",

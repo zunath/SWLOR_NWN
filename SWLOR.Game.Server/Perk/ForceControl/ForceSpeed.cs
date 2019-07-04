@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             {
                 NWPlayer player = creature.Object;
                 int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
-                int xp = skillLevel * 10 + 10;
+                int xp = skillLevel * 10 + 50;
                 SkillService.GiveSkillXP(player, SkillType.ForceControl, xp);
             }
         }

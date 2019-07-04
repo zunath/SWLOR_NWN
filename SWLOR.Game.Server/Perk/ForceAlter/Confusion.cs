@@ -101,6 +101,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         creature.AssignCommand(() =>
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
+                            // Play VFX
+                            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), target);
                         });
                         if (creature.IsPlayer)
                         {
@@ -125,6 +127,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             creature.AssignCommand(() =>
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, targetCreatureCopy, 6.1f);
+                                // Play VFX
+                                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), targetCreatureCopy);
                             });
 
                             if (creature.IsPlayer)

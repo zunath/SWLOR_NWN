@@ -204,6 +204,8 @@ namespace SWLOR.Game.Server.Service
                     if (xp < 5) xp = 5;
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
+                    // Play a visual effect signifying the ability was activated.
+                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
                 }
             }
 

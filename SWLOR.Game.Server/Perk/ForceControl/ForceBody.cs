@@ -89,6 +89,9 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             // Recover FP on target.
             AbilityService.RestorePlayerFP(target.Object, recovery);
 
+            // Play VFX
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_HEAD_ODD), target);
+
             // Grant XP, if player.
             if (creature.IsPlayer)
             {

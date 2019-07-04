@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             // Grant XP, if player.
             if (creature.IsPlayer)
             {
-                SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, recovery);
+                SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, recovery * 2);
             }
         }
 

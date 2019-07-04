@@ -1746,50 +1746,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "NPC Looter Outfit Female"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_f"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Looter Outfit Female 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_f_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Looter Outfit Male"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_m"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "NPC Looter Outfit Male 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_looter_m_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "NPC Mandalorian Armor"
                     },
                     "RESREF": {
@@ -1834,11 +1790,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "NPC Mandalorian Leader Armor"
+                      "value": "NPC Mandalorian War Hero Armor"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "man_larmor_npc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Outlaw Outfit Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Outlaw Outfit Female 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_f_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Outlaw Outfit Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Outlaw Outfit Male 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m_2"
                     }
                   },
                   {
@@ -2301,6 +2301,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "riktashaweapon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viper Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "viperbite"
                     }
                   },
                   {
@@ -13699,6 +13710,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Mandalorian Warblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "greatsword_mando"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Soldier Heavy Vibroblade"
                           },
                           "RESREF": {
@@ -13863,6 +13885,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "lightsaber_npc_z"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Mandalorian Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "longsword_mando"
                           }
                         },
                         {
@@ -15572,6 +15605,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "rifle_npc"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Mando Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_man_rifle"
                           }
                         },
                         {

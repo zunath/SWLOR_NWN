@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 30
+    "value": 18
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 7.0
+    "value": 8.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 14
   },
   "Conversation": {
     "type": "resref",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 2
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -118,20 +118,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1203
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1199
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 289
         }
       }
@@ -161,7 +147,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 32
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -191,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 54
+    "value": 63
   },
   "NaturalAC": {
     "type": "byte",
@@ -658,6 +644,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 28
+    "value": 20
   }
 }

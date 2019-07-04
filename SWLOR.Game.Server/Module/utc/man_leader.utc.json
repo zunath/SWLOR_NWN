@@ -86,7 +86,7 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": -9
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 182
+    "value": 297
   },
   "DecayTime": {
     "type": "dword",
@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This man has been chosen out of a large clan of rogue Mandalorians to lead them as their own de-facto Mandalore.. He is well armed, confident, and incredible lethal with his blade."
+    }
   },
   "Dex": {
     "type": "byte",
@@ -185,7 +187,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "greatsword_b"
+          "value": "greatsword_mando"
         }
       }
     ]
@@ -279,12 +281,12 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian Leader"
+      "0": "Mandalorian War Hero"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 0
+    "value": 5
   },
   "Gender": {
     "type": "byte",
@@ -296,7 +298,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 182
+    "value": 297
   },
   "Int": {
     "type": "byte",
@@ -330,11 +332,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 185
+    "value": 300
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 2
+    "value": 7
   },
   "NoPermDeath": {
     "type": "byte",
@@ -366,7 +368,7 @@
   },
   "refbonus": {
     "type": "short",
-    "value": 0
+    "value": 3
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -623,11 +625,87 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 356
+    "value": 923
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 271
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 842
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 842
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 842
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 301
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -635,7 +713,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -647,7 +725,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 0
+    "value": 1937
   },
   "TemplateList": {
     "type": "list",
@@ -758,11 +836,11 @@
   },
   "willbonus": {
     "type": "short",
-    "value": 0
+    "value": 8
   },
   "Wings_New": {
     "type": "dword",
-    "value": 0
+    "value": 553
   },
   "Wis": {
     "type": "byte",

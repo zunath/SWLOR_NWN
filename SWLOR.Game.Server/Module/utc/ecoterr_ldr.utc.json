@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 12.0
+    "value": 10.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 34
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 60
+    "value": 50
   },
   "Disarmable": {
     "type": "byte",
@@ -360,11 +360,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 261
+    "value": 201
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 10
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",

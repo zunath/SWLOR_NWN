@@ -930,7 +930,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Looters? No, N'guth would never have fallen to those types.\n\n[He takes the dog tags from you and inspects them.] I can't believe he's gone. The only ones who could have gotten the best of him would be those Mandalorians dogs ! [He grabs the key from you.] This must be the key for the facility.\n\nUnfortunately, we don't have a strike team available at the moment. But I assure you we will take care of those Mandalorian scum!"
+            "0": "Outlaws? No, N'guth would never have fallen to those types.\n\n[He takes the dog tags from you and inspects them.] I can't believe he's gone. The only ones who could have gotten the best of him would be those Mandalorians dogs ! [He grabs the key from you.] This must be the key for the facility.\n\nUnfortunately, we don't have a strike team available at the moment. But I assure you we will take care of those Mandalorian scum!"
           }
         }
       },
@@ -2092,7 +2092,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "It looked like they were ambushed. Possibly by looters. No one was left alive. I managed to find a key and Captain N'guth's dog tags."
+            "0": "It looked like they were ambushed. Possibly by outlaws. No one was left alive. I managed to find a key and Captain N'guth's dog tags."
           }
         }
       },

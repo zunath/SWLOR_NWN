@@ -278,25 +278,6 @@
                 "type": "word",
                 "value": 3
               }
-            },
-            {
-              "__struct_id": 9,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "lightsaber_t"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 4
-              }
             }
           ]
         }

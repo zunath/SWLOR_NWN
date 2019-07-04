@@ -891,7 +891,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.06278523802757263
+          "value": -0.06278499960899353
         },
         "YPosition": {
           "type": "float",
@@ -1781,7 +1781,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2215,7 +2215,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5459,7 +5459,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5892,7 +5892,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6324,7 +6324,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "CloseLockDC": {
           "type": "byte",
@@ -7886,7 +7886,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -38942,7 +38942,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -39169,7 +39169,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -40069,7 +40069,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -40294,7 +40294,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -40744,7 +40744,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -41194,7 +41194,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -44348,7 +44348,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -46148,7 +46148,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -46373,7 +46373,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -46598,7 +46598,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -46823,7 +46823,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -47048,7 +47048,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -47273,7 +47273,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344838619232178
+          "value": 0.8344836831092835
         },
         "BodyBag": {
           "type": "byte",
@@ -47498,7 +47498,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -48177,7 +48177,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -48854,7 +48854,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -49079,7 +49079,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -56064,7 +56064,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156985282898
+          "value": -3.141569375991821
         },
         "BodyBag": {
           "type": "byte",
@@ -58576,7 +58576,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -58838,7 +58838,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -59100,7 +59100,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.2216563671827316
+          "value": 0.2216563522815704
         },
         "BodyBag": {
           "type": "byte",
@@ -65657,7 +65657,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.822519063949585
+          "value": -2.822518587112427
         },
         "BodyBag": {
           "type": "byte",
@@ -66338,7 +66338,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -71320,7 +71320,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.724345445632935
+          "value": 2.724345207214356
         },
         "BodyBag": {
           "type": "byte",
@@ -71999,7 +71999,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -72226,7 +72226,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -72453,7 +72453,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -72680,7 +72680,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -72907,7 +72907,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -74265,7 +74265,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -76779,7 +76779,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -79966,7 +79966,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -81322,7 +81322,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -81547,7 +81547,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -81772,7 +81772,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -81997,7 +81997,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -82222,7 +82222,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -82447,7 +82447,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -82672,7 +82672,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -82897,7 +82897,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -83122,7 +83122,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -83347,7 +83347,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -83572,7 +83572,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -83797,7 +83797,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -84022,7 +84022,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -84247,7 +84247,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -84472,7 +84472,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -84697,7 +84697,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -91039,7 +91039,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587018966675
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -91718,7 +91718,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -91980,7 +91980,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -92242,7 +92242,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -92504,7 +92504,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -93552,7 +93552,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141576528549194
+          "value": -3.141576051712036
         },
         "BodyBag": {
           "type": "byte",
@@ -93814,7 +93814,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141576528549194
+          "value": -3.141576051712036
         },
         "BodyBag": {
           "type": "byte",
@@ -99833,7 +99833,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141580820083618
+          "value": -3.14158034324646
         },
         "BodyBag": {
           "type": "byte",
@@ -101639,7 +101639,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141580820083618
+          "value": -3.14158034324646
         },
         "BodyBag": {
           "type": "byte",
@@ -104566,7 +104566,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -105018,7 +105018,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.839571356773377
+          "value": -1.839571118354797
         },
         "BodyBag": {
           "type": "byte",
@@ -107961,7 +107961,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -109092,7 +109092,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -142440,7 +142440,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141583442687988
+          "value": -3.14158296585083
         },
         "BodyBag": {
           "type": "byte",
@@ -146747,7 +146747,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9093138575553894
+          "value": -0.9093137383460999
         },
         "BodyBag": {
           "type": "byte",
@@ -147201,7 +147201,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.12238335609436
+          "value": -3.122383117675781
         },
         "BodyBag": {
           "type": "byte",
@@ -151300,7 +151300,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -160570,7 +160570,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -161022,7 +161022,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.2208925634622574
+          "value": 0.220892533659935
         },
         "BodyBag": {
           "type": "byte",
@@ -165094,7 +165094,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -166229,7 +166229,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -167362,7 +167362,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -167589,7 +167589,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -167816,7 +167816,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -168043,7 +168043,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -168270,7 +168270,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585826873779
+          "value": -3.141585350036621
         },
         "BodyBag": {
           "type": "byte",
@@ -171667,7 +171667,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344838619232178
+          "value": 0.8344836831092835
         },
         "BodyBag": {
           "type": "byte",
@@ -171892,7 +171892,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.04908731207251549
+          "value": -0.04908730462193489
         },
         "BodyBag": {
           "type": "byte",
@@ -172342,7 +172342,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.392698347568512
+          "value": 0.3926983177661896
         },
         "BodyBag": {
           "type": "byte",
@@ -172792,7 +172792,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.8590275049209595
+          "value": -0.8590273857116699
         },
         "BodyBag": {
           "type": "byte",
@@ -178204,7 +178204,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.908115029335022
+          "value": 0.9081149697303772
         },
         "BodyBag": {
           "type": "byte",
@@ -179333,7 +179333,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587018966675
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -181364,7 +181364,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.724345445632935
+          "value": -2.724345207214356
         },
         "BodyBag": {
           "type": "byte",
@@ -184978,7 +184978,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.767142653465271
+          "value": -1.767142534255981
         },
         "BodyBag": {
           "type": "byte",
@@ -188377,7 +188377,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748887538909912
+          "value": 2.748887300491333
         },
         "BodyBag": {
           "type": "byte",
@@ -189056,7 +189056,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344838619232178
+          "value": 0.8344836831092835
         },
         "BodyBag": {
           "type": "byte",
@@ -194930,7 +194930,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.092499256134033
+          "value": 3.092498779296875
         },
         "BodyBag": {
           "type": "byte",
@@ -195382,7 +195382,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.908115029335022
+          "value": 0.9081149697303772
         },
         "BodyBag": {
           "type": "byte",
@@ -195607,7 +195607,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.908115029335022
+          "value": 0.9081149697303772
         },
         "BodyBag": {
           "type": "byte",
@@ -198088,7 +198088,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.767142653465271
+          "value": 1.767142534255981
         },
         "BodyBag": {
           "type": "byte",
@@ -199213,7 +199213,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587018966675
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -199663,7 +199663,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587018966675
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -203064,7 +203064,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.067955017089844
+          "value": 3.067954540252686
         },
         "BodyBag": {
           "type": "byte",
@@ -203289,7 +203289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.675257444381714
+          "value": 2.675256967544556
         },
         "BodyBag": {
           "type": "byte",
@@ -204864,7 +204864,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817460179328919
+          "value": 0.9817458987236023
         },
         "BodyBag": {
           "type": "byte",
@@ -205314,7 +205314,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.865317225456238
+          "value": -1.865317106246948
         },
         "BodyBag": {
           "type": "byte",
@@ -205989,7 +205989,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.043412446975708
+          "value": -3.04341197013855
         },
         "BodyBag": {
           "type": "byte",
@@ -208038,7 +208038,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795297622681
+          "value": 1.570795178413391
         },
         "BodyBag": {
           "type": "byte",
@@ -208330,7 +208330,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795297622681
+          "value": -1.570795178413391
         },
         "BodyBag": {
           "type": "byte",
@@ -211793,6 +211793,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 128
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
                         }
                       ]
                     },
@@ -211922,6 +211953,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 116
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 42
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 11
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 109
                           },
                           "Subtype": {
                             "type": "word",
@@ -212061,6 +212123,68 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
                         }
                       ]
                     },
@@ -212180,7 +212304,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 1
+                            "value": 6
                           },
                           "Param1": {
                             "type": "byte",
@@ -212193,6 +212317,68 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 16
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -212224,37 +212410,6 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 100
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 0
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 130
                           },
                           "Subtype": {
                             "type": "word",
@@ -212380,6 +212535,37 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "ChanceAppear": {
@@ -212553,6 +212739,37 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "ChanceAppear": {
@@ -212767,6 +212984,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -212927,7 +213175,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 130
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -213076,6 +213355,37 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "ChanceAppear": {
@@ -213448,7 +213758,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 130
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -213597,6 +213938,37 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "ChanceAppear": {
@@ -213794,7 +214166,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 130
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -213967,7 +214370,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 128
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -214140,7 +214574,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 128
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -214313,7 +214778,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 128
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -214470,7 +214966,7 @@
                           },
                           "CostTable": {
                             "type": "byte",
-                            "value": 33
+                            "value": 0
                           },
                           "CostValue": {
                             "type": "word",
@@ -214486,7 +214982,7 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 100
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -214517,7 +215013,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 128
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 33
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 100
                           },
                           "Subtype": {
                             "type": "word",
@@ -214660,6 +215187,68 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 130
                           },
                           "Subtype": {
                             "type": "word",
@@ -214847,6 +215436,68 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 130
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -215005,7 +215656,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 130
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -215154,6 +215836,37 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "ChanceAppear": {
@@ -215366,6 +216079,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -215500,6 +216244,37 @@
                     "PropertiesList": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "ChanceAppear": {
@@ -215759,7 +216534,38 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 130
+                            "value": 127
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 127
                           },
                           "Subtype": {
                             "type": "word",
@@ -215853,6 +216659,203 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "blaster_b"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 20,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 30
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 41
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 110
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 1535,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Electroblade Training Sword"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 14
+                    },
+                    "ModelPart2": {
+                      "type": "byte",
+                      "value": 11
+                    },
+                    "ModelPart3": {
+                      "type": "byte",
+                      "value": 125
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 128
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 0
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 83
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 5
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 10
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "lightsaber_t"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "lightsaber_t"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "LIGHTSABER"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -222229,7 +223232,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.02455837093293667
+          "value": -0.02455884777009487
         },
         "XPosition": {
           "type": "float",
@@ -222710,7 +223713,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 6.826715889474144e-006
+          "value": 7.303553047677269e-006
         },
         "XPosition": {
           "type": "float",
@@ -223714,7 +224717,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.3599005937576294
+          "value": 0.3599010407924652
         },
         "XPosition": {
           "type": "float",
@@ -223722,7 +224725,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9329906702041626
+          "value": -0.9329904913902283
         },
         "YPosition": {
           "type": "float",
@@ -224137,7 +225140,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9637773633003235
+          "value": -0.9637774229049683
         },
         "XPosition": {
           "type": "float",
@@ -224145,7 +225148,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2667081356048584
+          "value": -0.2667078971862793
         },
         "YPosition": {
           "type": "float",
@@ -224278,7 +225281,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9142119288444519
+          "value": -0.9142119884490967
         },
         "XPosition": {
           "type": "float",
@@ -224286,7 +225289,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.4052364528179169
+          "value": -0.4052362143993378
         },
         "YPosition": {
           "type": "float",
@@ -224701,7 +225704,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9569419026374817
+          "value": -0.9569419622421265
         },
         "XPosition": {
           "type": "float",
@@ -224709,7 +225712,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2902795970439911
+          "value": -0.290279358625412
         },
         "YPosition": {
           "type": "float",
@@ -224901,7 +225904,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 6.826715889474144e-006
+          "value": 7.303553047677269e-006
         },
         "XPosition": {
           "type": "float",
@@ -225343,7 +226346,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04908272996544838
+          "value": -0.04908320307731628
         },
         "XPosition": {
           "type": "float",
@@ -225351,7 +226354,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9987947344779968
+          "value": -0.9987946748733521
         },
         "YPosition": {
           "type": "float",
@@ -226378,7 +227381,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7242453694343567
+          "value": 0.7242453098297119
         },
         "XPosition": {
           "type": "float",
@@ -226386,7 +227389,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895423531532288
+          "value": 0.6895424127578735
         },
         "YPosition": {
           "type": "float",
@@ -226801,7 +227804,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9495297074317932
+          "value": -0.949529767036438
         },
         "XPosition": {
           "type": "float",
@@ -226809,7 +227812,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3136772215366364
+          "value": -0.3136769831180573
         },
         "YPosition": {
           "type": "float",
@@ -227083,7 +228086,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1709688603878021
+          "value": -0.1709693372249603
         },
         "XPosition": {
           "type": "float",
@@ -227091,7 +228094,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.985276460647583
+          "value": -0.9852763414382935
         },
         "YPosition": {
           "type": "float",
@@ -227788,7 +228791,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314684629440308
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -227796,7 +228799,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.555571973323822
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -228211,7 +229214,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7242453694343567
+          "value": 0.7242453098297119
         },
         "XPosition": {
           "type": "float",
@@ -228219,7 +229222,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895423531532288
+          "value": 0.6895424127578735
         },
         "YPosition": {
           "type": "float",
@@ -228818,7 +229821,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.923880934715271
+          "value": 0.9238809943199158
         },
         "XPosition": {
           "type": "float",
@@ -228826,7 +229829,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826800882816315
+          "value": -0.3826798796653748
         },
         "YPosition": {
           "type": "float",
@@ -228959,7 +229962,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8314685821533203
+          "value": -0.8314685225486755
         },
         "XPosition": {
           "type": "float",
@@ -228967,7 +229970,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555717349052429
+          "value": 0.5555718541145325
         },
         "YPosition": {
           "type": "float",
@@ -229100,7 +230103,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.923880934715271
+          "value": -0.9238809943199158
         },
         "XPosition": {
           "type": "float",
@@ -229108,7 +230111,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826800882816315
+          "value": -0.3826798796653748
         },
         "YPosition": {
           "type": "float",

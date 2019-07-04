@@ -16,17 +16,6 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "CardShopStore"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "cardshopstore"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
                 "value": "CZ-220 Merchant"
               },
               "RESREF": {

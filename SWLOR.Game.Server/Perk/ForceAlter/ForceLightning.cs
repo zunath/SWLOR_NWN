@@ -103,6 +103,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
+
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_LIGHTNING_S), target);
         }
     }
 }

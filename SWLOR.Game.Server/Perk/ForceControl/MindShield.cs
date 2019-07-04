@@ -118,6 +118,10 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
+
+            // Play VFX
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MIND_AFFECTING_POSITIVE), target);
+
         }
     }
 }

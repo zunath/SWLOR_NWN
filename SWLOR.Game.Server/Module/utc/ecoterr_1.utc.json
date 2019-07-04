@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 30
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -138,7 +138,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": 1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 50
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -346,11 +346,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 161
+    "value": 145
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 5
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",

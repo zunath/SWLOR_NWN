@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 191
+    "value": 101
   },
   "BodyBag": {
     "type": "byte",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 6
         }
       }
     ]
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -2
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 192
+    "value": 198
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Long ago, an ancient civilization thrived on Viscara. Now it is nothing more than ruins, and in those ruins, stood Vellen's Flesheaters- a race of vicious and horrifying beasts, carnivores that rip their prey iinto bits. You can see in their hungry, animalistic gaze that they are the savage bane of this ancient civilization, and they will be yours if you battle them unprepared."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -74,15 +76,7 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "mace_1"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",
@@ -127,7 +121,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 192
+    "value": 198
   },
   "Int": {
     "type": "byte",
@@ -161,11 +155,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 194
+    "value": 204
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -189,7 +183,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 232
+    "value": 188
   },
   "Race": {
     "type": "byte",
@@ -454,11 +448,42 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 899
+    "value": 41
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 274
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 871
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -466,7 +491,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 28
   },
   "Subrace": {
     "type": "cexostring",

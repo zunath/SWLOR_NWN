@@ -3992,7 +3992,7 @@ VALUES ( @GuildID , @QuestID , @RequiredRank , 0)
 -- ===============
 SET @QuestID = @QuestID + 1
 SET @Quantity = 10
-SET @Name = '10x Wildwoods Looter'
+SET @Name = '10x Wildwoods Outlaw'
 SET @GP = 12
 SET @Gold = 65
 SET @NPCGroupID = 8
@@ -5265,3 +5265,19 @@ VALUES ( 86 , -- PerkID - int
 UPDATE dbo.Skill
 SET Description = 'Ability to use sense-based force abilities like Force Insight and Premonition. Higher skill levels unlock new abilities.'
 WHERE ID = 21
+
+
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 22 ,    -- LootTableID - int
+         'greatsword_mando' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )

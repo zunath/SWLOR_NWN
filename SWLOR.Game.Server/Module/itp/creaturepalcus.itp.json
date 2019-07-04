@@ -633,7 +633,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 10.0
+                            "value": 9.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -1170,7 +1170,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 7.0
+                            "value": 8.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -4075,7 +4075,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 12.0
+                      "value": 10.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4107,44 +4107,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "night_jawa"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Looter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "looter_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Looter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "looter_2"
                     }
                   },
                   {
@@ -4227,25 +4189,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian Leader"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_leader"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 4.0
                     },
                     "FACTION": {
@@ -4284,6 +4227,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian War Hero"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_leader"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 4.0
                     },
                     "FACTION": {
@@ -4316,6 +4278,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "man_warrior_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Outlaw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "looter_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Outlaw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "looter_1"
                     }
                   },
                   {

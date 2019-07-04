@@ -6,7 +6,7 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 0
+    "value": 25
   },
   "ArmorPart_LBicep": {
     "type": "byte",
@@ -78,7 +78,7 @@
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 54
+    "value": 102
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 22
+    "value": 23
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 22
+    "value": 23
   },
   "Comment": {
     "type": "cexostring",
@@ -124,7 +124,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 45
+    "value": 23
   },
   "Leather2Color": {
     "type": "byte",
@@ -139,11 +139,11 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 6
+    "value": 23
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 6
+    "value": 58
   },
   "PaletteID": {
     "type": "byte",

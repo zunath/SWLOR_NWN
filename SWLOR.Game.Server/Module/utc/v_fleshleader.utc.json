@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 370
+    "value": 1850
   },
   "BodyBag": {
     "type": "byte",
@@ -27,7 +27,18 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 6
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 56
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 4
         }
       }
     ]
@@ -38,7 +49,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 22
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +57,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": -8
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 272
+    "value": 252
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +73,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An abnormally intelligent and co-ordinated Flesheater, holding an ancient lightsaber on the verge of breaking. Its body twitches and spasms in reaction to some dark curse. Despite its intelligence, the Fleshleader attacks on sight, using its lightsaber with brutal efficiency and screaming madly in the name of the dark side."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -77,13 +90,6 @@
     "value": [
       {
         "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "lightsaber_npc_r"
-        }
-      },
-      {
-        "__struct_id": 32,
         "EquippedRes": {
           "type": "resref",
           "value": "lightsaber_npc_r"
@@ -103,6 +109,20 @@
         "Feat": {
           "type": "word",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 564
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 574
         }
       },
       {
@@ -155,7 +175,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 272
+    "value": 252
   },
   "Int": {
     "type": "byte",
@@ -189,7 +209,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 274
+    "value": 312
   },
   "NaturalAC": {
     "type": "byte",
@@ -217,7 +237,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 655
+    "value": 2122
   },
   "Race": {
     "type": "byte",
@@ -482,11 +502,57 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 899
+    "value": 444
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 0
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 1
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 269
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 757
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -494,7 +560,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 32
   },
   "Subrace": {
     "type": "cexostring",
@@ -506,7 +572,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 0
+    "value": 13
   },
   "TemplateList": {
     "type": "list",
@@ -688,7 +754,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 5
   },
   "willbonus": {
     "type": "short",
@@ -696,7 +762,7 @@
   },
   "Wings_New": {
     "type": "dword",
-    "value": 0
+    "value": 110
   },
   "Wis": {
     "type": "byte",

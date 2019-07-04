@@ -5281,3 +5281,21 @@ VALUES ( 22 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+
+-- Fix Throw Saber description.
+UPDATE dbo.PerkLevel
+SET Description = 'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 100%.  This ability hits automatically.'
+WHERE PerkID = 174 AND Level = 1
+UPDATE dbo.PerkLevel
+SET Description = 'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 125%.  This ability hits automatically.'
+WHERE PerkID = 174 AND Level = 2
+
+-- Decrease skill level requirements for throw saber by 10. Gives players a low-level alter ability to use.
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = RequiredRank - 10
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID = 174 
+)

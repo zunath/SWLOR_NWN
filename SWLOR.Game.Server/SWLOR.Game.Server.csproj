@@ -997,6 +997,7 @@
     <Compile Include="Perk\ForceSense\Farseeing.cs" />
     <Compile Include="Perk\ForceSense\ForceDetection.cs" />
     <Compile Include="Perk\ForceSense\Premonition.cs" />
+    <Compile Include="Perk\General\GuildRelations.cs" />
     <Compile Include="Perk\Harvesting\StronidiumRefining.cs" />
     <Compile Include="Perk\Engineering\EngineeringModInstallation.cs" />
     <Compile Include="Perk\Engineering\ElectronicRepair.cs" />

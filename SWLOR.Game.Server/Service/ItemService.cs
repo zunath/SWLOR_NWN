@@ -117,9 +117,9 @@ namespace SWLOR.Game.Server.Service
             NWObject target = (_.GetItemActivatedTarget());
             Location targetLocation = _.GetItemActivatedTargetLocation();
 
-            string className = oItem.GetLocalString("JAVA_SCRIPT");
-            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_JAVA_SCRIPT");
-            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_ACTION_SCRIPT");
+            string className = oItem.GetLocalString("SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) return;
 
@@ -897,11 +897,11 @@ namespace SWLOR.Game.Server.Service
 
             NWObject oSpellOrigin = (_.GetSpellCastItem());
             // Item specific
-            string script = oSpellOrigin.GetLocalString("JAVA_SCRIPT");
+            string script = oSpellOrigin.GetLocalString("SCRIPT");
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                LegacyJVMItemEvent.Run(script);
+                ScriptItemEvent.Run(script);
             }
 
         }

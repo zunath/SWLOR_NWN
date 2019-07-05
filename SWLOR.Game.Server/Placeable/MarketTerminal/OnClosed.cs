@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             device.DestroyAllInventoryItems();
             device.IsLocked = false;
             
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);

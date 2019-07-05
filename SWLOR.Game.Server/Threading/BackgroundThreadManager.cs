@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Threading
             while (!_isShuttingDown)
             {
                 _dbThread.Run();
+                Thread.Sleep(500);
             }
 
             _dbThread.Stop();

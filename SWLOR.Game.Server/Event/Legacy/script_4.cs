@@ -5,13 +5,13 @@ using SWLOR.Game.Server.Event.Legacy;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class jvm_script_1
+    internal class script_4
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
-            LegacyJVMEvent.Run("JAVA_SCRIPT_1");
+            ScriptEvent.Run("SCRIPT_4");
         }
     }
 }

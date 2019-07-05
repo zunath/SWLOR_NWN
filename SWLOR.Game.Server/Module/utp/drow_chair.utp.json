@@ -217,7 +217,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "JAVA_SCRIPT_1"
+          "value": "SCRIPT_1"
         },
         "Type": {
           "type": "dword",

@@ -2162,7 +2162,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2235,7 +2235,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -6267,7 +6267,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -6340,7 +6340,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -8110,7 +8110,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -8183,7 +8183,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",

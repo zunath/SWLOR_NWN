@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Service
             plc.SetLocalString("ORIGINAL_SCRIPT_USED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_USED));
             plc.SetLocalString("ORIGINAL_SCRIPT_USER_DEFINED_EVENT", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_USER_DEFINED_EVENT));
             plc.SetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK));
-            plc.SetLocalString("ORIGINAL_JAVA_SCRIPT_1", _.GetLocalString(plc.Object, "JAVA_SCRIPT_1"));
+            plc.SetLocalString("ORIGINAL_SCRIPT_1", _.GetLocalString(plc.Object, "SCRIPT_1"));
 
             if (!string.IsNullOrWhiteSpace(pcStructure.CustomName))
             {
@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Service
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, structure.GetLocalString("ORIGINAL_SCRIPT_USED"));
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USER_DEFINED_EVENT, structure.GetLocalString("ORIGINAL_SCRIPT_USER_DEFINED_EVENT"));
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK, structure.GetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK"));
-                        structure.SetLocalString("JAVA_SCRIPT_1", structure.GetLocalString("ORIGINAL_JAVA_SCRIPT_1"));
+                        structure.SetLocalString("SCRIPT_1", structure.GetLocalString("ORIGINAL_SCRIPT_1"));
                         structure.IsLocked = false;
                     }
                     else
@@ -271,10 +271,10 @@ namespace SWLOR.Game.Server.Service
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_SPELLCASTAT, string.Empty);
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_UNLOCK, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
+                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USER_DEFINED_EVENT, string.Empty);
                         _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK, string.Empty);
-                        structure.SetLocalString("JAVA_SCRIPT_1", "Placeable.DisabledStructure.OnUsed");
+                        structure.SetLocalString("SCRIPT_1", "Placeable.DisabledStructure.OnUsed");
                         structure.IsLocked = true;
                     }
                 }

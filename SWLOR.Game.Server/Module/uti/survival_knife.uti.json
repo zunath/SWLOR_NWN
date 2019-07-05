@@ -124,7 +124,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "ACTIVATE_JAVA_SCRIPT"
+          "value": "ACTIVATE_SCRIPT"
         },
         "Type": {
           "type": "dword",

@@ -236,16 +236,16 @@ namespace SWLOR.Game.Server.Service
             if (item.GetLocalString("SCRIPT") == "RepairKit")
                 return 104;
             // Check for Stim Packs
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.StimPack")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.StimPack")
                 return 105;
             // Check for Force Packs
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.ForcePack")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.ForcePack")
                 return 106;
             // Check for Healing Kits
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.HealingKit")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.HealingKit")
                 return 107;
             // Check for Resuscitation Devices
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.ResuscitationKit")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.ResuscitationKit")
                 return 108;
             // Check for Starcharts
             if (item.GetLocalString("SCRIPT") == "StarchartDisk" &&

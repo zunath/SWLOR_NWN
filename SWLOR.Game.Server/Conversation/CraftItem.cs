@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.Access = CraftingAccessType.None;
 
-                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
+                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
                 _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
                 _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
                 _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
@@ -214,13 +214,13 @@ namespace SWLOR.Game.Server.Conversation
             model.IsAccessingStorage = true;
 
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "jvm_script_2");
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "jvm_script_3");
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "jvm_script_4");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "script_2");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "script_3");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "script_4");
 
-            device.SetLocalString("JAVA_SCRIPT_2", "Placeable.CraftingDevice.OnOpened");
-            device.SetLocalString("JAVA_SCRIPT_3", "Placeable.CraftingDevice.OnClosed");
-            device.SetLocalString("JAVA_SCRIPT_4", "Placeable.CraftingDevice.OnDisturbed");
+            device.SetLocalString("SCRIPT_2", "Placeable.CraftingDevice.OnOpened");
+            device.SetLocalString("SCRIPT_3", "Placeable.CraftingDevice.OnClosed");
+            device.SetLocalString("SCRIPT_4", "Placeable.CraftingDevice.OnDisturbed");
 
             GetPC().AssignCommand(() => _.ActionInteractObject(device.Object));
             EndConversation();

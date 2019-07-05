@@ -6,20 +6,20 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Legacy
 {
-    public static class LegacyJVMEvent
+    public static class ScriptEvent
     {
         public static void Run(string variableName)
         {
             NWObject self = (Object.OBJECT_SELF);
             string script = self.GetLocalString(variableName);
 
-            using (new Profiler("LegacyJVMEvent." + script))
+            using (new Profiler("ScriptEvent." + script))
             {
                 Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
 
                 if (type == null)
                 {
-                    Console.WriteLine("Unable to locate type for LegacyJVMEvent: " + script);
+                    Console.WriteLine("Unable to locate type for ScriptEvent: " + script);
                     return;
                 }
 

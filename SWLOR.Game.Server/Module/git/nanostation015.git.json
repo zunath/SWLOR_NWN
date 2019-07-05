@@ -58442,7 +58442,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -58515,7 +58515,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -58704,7 +58704,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -58777,7 +58777,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -58966,7 +58966,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -59039,7 +59039,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -74393,7 +74393,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -74466,7 +74466,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -76907,7 +76907,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -76980,7 +76980,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -91846,7 +91846,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -91919,7 +91919,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -92108,7 +92108,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -92181,7 +92181,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -92370,7 +92370,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -92443,7 +92443,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -92632,7 +92632,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -92705,7 +92705,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -92894,7 +92894,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -92967,7 +92967,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -93124,11 +93124,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -93229,7 +93229,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -93244,7 +93244,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -93386,11 +93386,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -93491,7 +93491,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -93506,7 +93506,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -93648,11 +93648,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -93753,7 +93753,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -93768,7 +93768,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -93910,11 +93910,11 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -94015,7 +94015,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -94030,7 +94030,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -94204,7 +94204,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -94277,7 +94277,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -94466,7 +94466,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -94539,7 +94539,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -94728,7 +94728,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -94801,7 +94801,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -94942,7 +94942,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "jvm_script_3"
+          "value": "script_3"
         },
         "OnDamaged": {
           "type": "resref",
@@ -94962,7 +94962,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -94974,7 +94974,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -95093,7 +95093,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -95108,7 +95108,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -95123,7 +95123,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_3"
+                "value": "SCRIPT_3"
               },
               "Type": {
                 "type": "dword",
@@ -95249,7 +95249,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "jvm_script_3"
+          "value": "script_3"
         },
         "OnDamaged": {
           "type": "resref",
@@ -95269,7 +95269,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -95281,7 +95281,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -95400,7 +95400,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -95415,7 +95415,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -95430,7 +95430,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_3"
+                "value": "SCRIPT_3"
               },
               "Type": {
                 "type": "dword",
@@ -95556,7 +95556,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "jvm_script_3"
+          "value": "script_3"
         },
         "OnDamaged": {
           "type": "resref",
@@ -95576,7 +95576,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnLock": {
           "type": "resref",
@@ -95588,7 +95588,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "jvm_script_2"
+          "value": "script_2"
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -95707,7 +95707,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -95722,7 +95722,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_2"
+                "value": "SCRIPT_2"
               },
               "Type": {
                 "type": "dword",
@@ -95737,7 +95737,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_3"
+                "value": "SCRIPT_3"
               },
               "Type": {
                 "type": "dword",
@@ -151166,7 +151166,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -151239,7 +151239,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -151428,7 +151428,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -151501,7 +151501,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -206796,7 +206796,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -206869,7 +206869,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -207058,7 +207058,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -207131,7 +207131,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -207320,7 +207320,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -207393,7 +207393,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -207582,7 +207582,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -207655,7 +207655,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -207874,7 +207874,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -207947,7 +207947,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -208166,7 +208166,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -208239,7 +208239,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -208458,7 +208458,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -208531,7 +208531,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "JAVA_SCRIPT_1"
+                "value": "SCRIPT_1"
               },
               "Type": {
                 "type": "dword",
@@ -217466,7 +217466,7 @@
                           "__struct_id": 0,
                           "Name": {
                             "type": "cexostring",
-                            "value": "JAVA_ACTION_SCRIPT"
+                            "value": "ACTION_SCRIPT"
                           },
                           "Type": {
                             "type": "dword",
@@ -217623,7 +217623,7 @@
                           "__struct_id": 0,
                           "Name": {
                             "type": "cexostring",
-                            "value": "JAVA_ACTION_SCRIPT"
+                            "value": "ACTION_SCRIPT"
                           },
                           "Type": {
                             "type": "dword",
@@ -217795,7 +217795,7 @@
                           "__struct_id": 0,
                           "Name": {
                             "type": "cexostring",
-                            "value": "JAVA_ACTION_SCRIPT"
+                            "value": "ACTION_SCRIPT"
                           },
                           "Type": {
                             "type": "dword",

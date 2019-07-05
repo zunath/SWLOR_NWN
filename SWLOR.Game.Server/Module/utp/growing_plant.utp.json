@@ -112,7 +112,7 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": "jvm_script_2"
+    "value": "script_2"
   },
   "OnInvDisturbed": {
     "type": "resref",
@@ -144,7 +144,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "jvm_script_1"
+    "value": "script_1"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -221,7 +221,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "JAVA_SCRIPT_1"
+          "value": "SCRIPT_1"
         },
         "Type": {
           "type": "dword",
@@ -236,7 +236,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "JAVA_SCRIPT_2"
+          "value": "SCRIPT_2"
         },
         "Type": {
           "type": "dword",

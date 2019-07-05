@@ -995,13 +995,13 @@ namespace SWLOR.Game.Server.Conversation
             model.IsConfirming = false;
 
             _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "jvm_script_2");
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "jvm_script_3");
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "jvm_script_4");
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "script_2");
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "script_3");
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "script_4");
 
-            terminal.SetLocalString("JAVA_SCRIPT_2", "Placeable.MarketTerminal.OnOpened");
-            terminal.SetLocalString("JAVA_SCRIPT_3", "Placeable.MarketTerminal.OnClosed");
-            terminal.SetLocalString("JAVA_SCRIPT_4", "Placeable.MarketTerminal.OnDisturbed");
+            terminal.SetLocalString("SCRIPT_2", "Placeable.MarketTerminal.OnOpened");
+            terminal.SetLocalString("SCRIPT_3", "Placeable.MarketTerminal.OnClosed");
+            terminal.SetLocalString("SCRIPT_4", "Placeable.MarketTerminal.OnDisturbed");
 
             GetPC().AssignCommand(() => _.ActionInteractObject(terminal));
             EndConversation();

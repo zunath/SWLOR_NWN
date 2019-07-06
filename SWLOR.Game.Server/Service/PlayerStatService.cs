@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
             // Apply AC
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcAC"))
             {
-                int ac = EffectiveArmorClass(itemBonuses, player);
+                int ac = EffectiveArmorClass(player, ignoreItem, itemBonuses);
                 NWNXCreature.SetBaseAC(player, ac);
             }
 
@@ -224,30 +224,34 @@ namespace SWLOR.Game.Server.Service
             return fp;
         }
 
-        private static int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
+        private static int EffectiveArmorClass(NWPlayer player, NWItem ignoreItem, EffectiveItemStats stats)
         {
             int baseAC = stats.AC / 3 + CustomEffectService.CalculateEffectAC(player);
 
             // Calculate AC bonus granted by skill ranks.
             // Only chest armor is checked for this bonus.
-            CustomItemType armorType = player.Chest.CustomItemType;
-            int skillRank = 0;
-            switch (armorType)
+            
+            if(ignoreItem != player.Chest)
             {
-                case CustomItemType.LightArmor:
-                    skillRank = SkillService.GetPCSkillRank(player, SkillType.LightArmor);
-                    break;
-                case CustomItemType.HeavyArmor:
-                    skillRank = SkillService.GetPCSkillRank(player, SkillType.HeavyArmor);
-                    break;
-                case CustomItemType.ForceArmor:
-                    skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceArmor);
-                    break;
-            }
+                CustomItemType armorType = player.Chest.CustomItemType;
+                int skillRank = 0;
+                switch (armorType)
+                {
+                    case CustomItemType.LightArmor:
+                        skillRank = SkillService.GetPCSkillRank(player, SkillType.LightArmor);
+                        break;
+                    case CustomItemType.HeavyArmor:
+                        skillRank = SkillService.GetPCSkillRank(player, SkillType.HeavyArmor);
+                        break;
+                    case CustomItemType.ForceArmor:
+                        skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceArmor);
+                        break;
+                }
 
-            // +1 AC per 20 skill ranks, while wearing the appropriate armor.
-            int skillACBonus = skillRank / 20;
-            baseAC += skillACBonus;
+                // +1 AC per 20 skill ranks, while wearing the appropriate armor.
+                int skillACBonus = skillRank / 20;
+                baseAC += skillACBonus;
+            }
 
             int totalAC = _.GetAC(player) - baseAC;
             

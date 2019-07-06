@@ -40,7 +40,7 @@ namespace NWN.Scripts
                 }
 
                 description = ModService.OnModuleExamine(description, examiner, examinedObject);
-                description = ItemService.OnModuleExamine(description, examiner, examinedObject);
+                description = ItemService.OnModuleExamine(description, examinedObject);
                 description = DurabilityService.OnModuleExamine(description, examinedObject);
                 description = FarmingService.OnModuleExamine(description, examinedObject);
 

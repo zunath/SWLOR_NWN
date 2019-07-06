@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
@@ -276,23 +276,23 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CraftBonusArmorsmith > 0)
             {
-                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + " (/8)\n";
+                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + " (/2)\n";
             }
             if (examinedItem.CraftBonusEngineering > 0)
             {
-                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + " (/8)\n";
+                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + " (/2)\n";
             }
             if (examinedItem.CraftBonusFabrication > 0)
             {
-                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + " (/8)\n";
+                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + " (/2)\n";
             }
             if (examinedItem.CraftBonusWeaponsmith > 0)
             {
-                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + " (/8)\n";
+                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + " (/2)\n";
             }
             if (examinedItem.CraftBonusCooking > 0)
             {
-                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + " (/8)\n";
+                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + " (/2)\n";
             }
             if (examinedItem.CraftTierLevel > 0)
             {

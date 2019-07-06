@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // parts 14 (lightfoil blade) excluded
                         case BASE_ITEM_RAPIER:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 11, 12, 13 };
                             break;
                         // parts 23 (lightfoil blade) excluded
                         case BASE_ITEM_KATANA:
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_KUKRI:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1 };
                             break;
                         // parts 9 (electric effect) excluded
                         case BASE_ITEM_HALBERD:
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_RAPIER:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
                             break;
                         case BASE_ITEM_KATANA:
                             parts = new[] { 1, 2, 3, 4, 5, 8, 11, 12, 13, 24, 25 };
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_KUKRI:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1 };
                             break;
                         case BASE_ITEM_HALBERD:
                             parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23, 24, 25 };
@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_RAPIER:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 11, 12, 13, 14, 15, 16 };
                             break;
                         case BASE_ITEM_KATANA:
                             parts = new[] { 1, 2, 3, 4, 7, 8, 11, 12, 24, 25 };
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_KUKRI:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1 };
                             break;
                         case BASE_ITEM_HALBERD:
                             parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23, 24, 25 };

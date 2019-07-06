@@ -21,10 +21,11 @@ namespace SWLOR.Game.Server.Threading
 
         public void Stop()
         {
+            ProcessQueue();
             _connection.Close();
         }
 
-        public void Run()
+        private void ProcessQueue()
         {
             while (!DataService.DataQueue.IsEmpty)
             {
@@ -70,6 +71,11 @@ namespace SWLOR.Game.Server.Threading
                     LoggingService.LogError(ex, request.Action.ToString());
                 }
             }
+        }
+
+        public void Run()
+        {
+            ProcessQueue();
         }
 
     }

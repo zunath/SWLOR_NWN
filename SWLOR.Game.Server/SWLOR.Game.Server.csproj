@@ -110,6 +110,10 @@
     <Compile Include="ChatCommand\KeyItems.cs" />
     <Compile Include="ChatCommand\Kill.cs" />
     <Compile Include="ChatCommand\Language.cs" />
+    <Compile Include="ChatCommand\Cower.cs" />
+    <Compile Include="ChatCommand\CrossArms.cs" />
+    <Compile Include="ChatCommand\Crouch.cs" />
+    <Compile Include="ChatCommand\Pointing.cs" />
     <Compile Include="ChatCommand\Laughing.cs" />
     <Compile Include="ChatCommand\Listen.cs" />
     <Compile Include="ChatCommand\Look.cs" />

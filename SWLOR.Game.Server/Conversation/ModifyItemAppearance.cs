@@ -287,16 +287,16 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_MORNINGSTAR:
-                            parts = new[] { 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 6 };
                             break;
                         case BASE_ITEM_QUARTERSTAFF:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
                             break;
                         case BASE_ITEM_DOUBLEAXE:
-                            parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14 };
                             break;
                         case BASE_ITEM_TWOBLADEDSWORD:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3 };
                             break;
                         case BASE_ITEM_KUKRI:
                             parts = new[] { 1 };
@@ -358,22 +358,22 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 25 };
                             break;
                         case BASE_ITEM_MORNINGSTAR:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4 };
                             break;
                         case BASE_ITEM_QUARTERSTAFF:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
                             break;
                         case BASE_ITEM_DOUBLEAXE:
-                            parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 6, 8, 11, 12 };
                             break;
                         case BASE_ITEM_TWOBLADEDSWORD:
-                            parts = new[] { 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 5 };
                             break;
                         case BASE_ITEM_KUKRI:
                             parts = new[] { 1 };
                             break;
                         case BASE_ITEM_HALBERD:
-                            parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23 };
                             break;
                         case BASE_ITEM_SHORTSPEAR:
                             parts = new[] { 1, 2, 3, 4, 6, 7, 11, 14, 18, 24, 25 };
@@ -428,22 +428,22 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 11, 25 };
                             break;
                         case BASE_ITEM_MORNINGSTAR:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4 };
                             break;
                         case BASE_ITEM_QUARTERSTAFF:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
                             break;
                         case BASE_ITEM_DOUBLEAXE:
-                            parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14, 15, 16, 17, 18 };
                             break;
                         case BASE_ITEM_TWOBLADEDSWORD:
-                            parts = new[] { 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3 };
                             break;
                         case BASE_ITEM_KUKRI:
                             parts = new[] { 1 };
                             break;
                         case BASE_ITEM_HALBERD:
-                            parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23 };
                             break;
                         case BASE_ITEM_SHORTSPEAR:
                             parts = new[] { 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 14, 18, 24, 25 };

@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
             var pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == GetPC().GlobalID && x.SkillID == model.SkillID);
             var pool = DataService.Single<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.SkillCategoryID == model.SkillCategoryID);
 
-            return pool.Levels >= amount && pcSkill.Rank + amount < MaxRankForDistribution && pcSkill.Rank + amount < skill.MaxRank;
+            return pool.Levels >= amount && pcSkill.Rank + amount < MaxRankForDistribution && pcSkill.Rank + amount <= skill.MaxRank;
         }
 
         private void LoadSkillPage()

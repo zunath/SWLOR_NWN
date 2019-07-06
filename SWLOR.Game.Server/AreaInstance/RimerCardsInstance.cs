@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.AreaInstance
 
             for (int x = 1; x <= CopyCount; x++)
             {
-                _.CopyArea(source);
+                NWArea copy = _.CopyArea(source);
+                copy.SetLocalInt("IS_AREA_INSTANCE", _.TRUE);
             }
 
             Console.WriteLine("Created " + CopyCount + " copies of Rimer Cards areas.");

@@ -5308,3 +5308,38 @@ WHERE ItemResref LIKE 'rune_%'
 	AND (ItemName LIKE '%+3%'  OR
 		ItemName LIKE '%+6%' OR 
 		ItemName LIKE '%+9%')
+
+
+		
+-- Refund Optimization Perks
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 143 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 144 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 145 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 146 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 147 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 148 -- int
+
+
+-- Refund Efficiency Perks
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 137 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 138 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 139 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 140 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 141 -- int
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 142 -- int
+
+DELETE FROM dbo.PCPerkRefund
+WHERE PerkID IN (143, 144, 145, 146, 147, 148, 137, 138, 139, 140, 141, 142) 
+
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel
+	WHERE PerkID IN (143, 144, 145, 146, 147, 148, 137, 138, 139, 140, 141, 142) 
+)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID IN (143, 144, 145, 146, 147, 148, 137, 138, 139, 140, 141, 142) 
+
+DELETE FROM dbo.Perk
+WHERE ID IN (143, 144, 145, 146, 147, 148, 137, 138, 139, 140, 141, 142) 

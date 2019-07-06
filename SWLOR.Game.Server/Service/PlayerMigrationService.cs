@@ -238,6 +238,7 @@ namespace SWLOR.Game.Server.Service
             item.CraftBonusCooking /= 3;
 
             item.DamageBonus /= 3;
+            item.LuckBonus /= 5;
         }
 
         private static SerializedObjectData ProcessVersion6LightsaberItem(NWItem item)

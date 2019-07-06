@@ -20,11 +20,11 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            int amount = int.Parse(args[0]);
+            int type = int.Parse(args[0]);
             Player dbPlayer = DataService.Get<Player>(target.GlobalID);
-            dbPlayer.SpecializationID = (SpecializationType) amount;
+            dbPlayer.SpecializationID = (SpecializationType) type;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
-            _.SendMessageToPC(target, "A DM has set your Force Specialization type to " + SpecializationType.Consular.ToString());
+            _.SendMessageToPC(target, "A DM has set your Force Specialization type to " + type);
         }
 
         public bool RequiresTarget => true;

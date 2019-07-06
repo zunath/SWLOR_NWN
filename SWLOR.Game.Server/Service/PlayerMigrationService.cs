@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Service
             // Start with equipped items.
             foreach (var item in player.EquippedItems)
             {
-                ProcessVersion6RemoveACFromItem(item);
+                ProcessVersion6_DeflateItemStats(item);
                 var data = ProcessVersion6LightsaberItem(item);
                 if(data.Data != null)
                     serializedItems.Add(data);
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Service
             // Next do all inventory items.
             foreach (var item in player.InventoryItems)
             {
-                ProcessVersion6RemoveACFromItem(item);
+                ProcessVersion6_DeflateItemStats(item);
                 var data = ProcessVersion6LightsaberItem(item);
                 if(data.Data != null)
                     serializedItems.Add(data);
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ProcessVersion6RemoveACFromItem(NWItem item)
+        public static void ProcessVersion6_DeflateItemStats(NWItem item)
         {
             // Start by pulling the custom AC off the item and halving it.
             // Durability is +1 for every 2 AC on the item.
@@ -183,32 +183,61 @@ namespace SWLOR.Game.Server.Service
                 DurabilityService.SetDurability(item, newCurrent);
             }
             
+            // All AC gets zeroed out.
             item.CustomAC = 0;
 
-            // Check all item properties. If the IP is a component Armor Class Bonus, remove it and replace with an increase to durability.
+            // Check all item properties. Use the following rule:
+            // Component Armor Class Bonus: Remove it and replace with an increase to durability.
             foreach (var ip in item.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
-                {
-                    // Check the sub-type. If it's AC, then do the replacement.
-                    if (GetItemPropertySubType(ip) == (int) ComponentBonusType.ACUp)
-                    {
-                        amount = GetItemPropertyCostTableValue(ip) / 2;
-                        // Grant the durability up property if amount > 0
-                        if (amount > 0)
-                        {
-                            // Unpack the IP we're working with. Adjust its type and value, then reapply it.
-                            var unpacked = NWNXItemProperty.UnpackIP(ip);
-                            unpacked.SubType = (int) ComponentBonusType.DurabilityUp;
-                            unpacked.CostTableValue = amount;
-                            var packed = NWNXItemProperty.PackIP(unpacked);
-                            BiowareXP2.IPSafeAddItemProperty(item, packed, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
-                        }
+                ProcessVersion6_ComponentBonuses(item, ip);
+            }
 
-                        _.RemoveItemProperty(item, ip);
+            // Deflate all stat bonuses.
+            ProcessVersion6_StatBonuses(item);
+        }
+
+        private static void ProcessVersion6_ComponentBonuses(NWItem item, ItemProperty ip)
+        {
+            // Component Bonuses
+            if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+            {
+                // +AC Component Bonus
+                if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
+                {
+                    int amount = GetItemPropertyCostTableValue(ip) / 2;
+                    // Grant the durability up property if amount > 0
+                    if (amount > 0)
+                    {
+                        // Unpack the IP we're working with. Adjust its type and value, then reapply it.
+                        var unpacked = NWNXItemProperty.UnpackIP(ip);
+                        unpacked.SubType = (int)ComponentBonusType.DurabilityUp;
+                        unpacked.CostTableValue = amount;
+                        var packed = NWNXItemProperty.PackIP(unpacked);
+                        BiowareXP2.IPSafeAddItemProperty(item, packed, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
                     }
+
+                    _.RemoveItemProperty(item, ip);
                 }
             }
+        }
+
+        private static void ProcessVersion6_StatBonuses(NWItem item)
+        {
+            item.StrengthBonus /= 3;
+            item.DexterityBonus /= 3;
+            item.ConstitutionBonus /= 3;
+            item.WisdomBonus /= 3;
+            item.IntelligenceBonus /= 3;
+            item.CharismaBonus /= 3;
+
+            item.CraftBonusArmorsmith /= 3;
+            item.CraftBonusEngineering /= 3;
+            item.CraftBonusFabrication /= 3;
+            item.CraftBonusWeaponsmith /= 3;
+            item.CraftBonusCooking /= 3;
+
+            item.DamageBonus /= 3;
         }
 
         private static SerializedObjectData ProcessVersion6LightsaberItem(NWItem item)

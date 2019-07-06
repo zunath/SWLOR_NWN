@@ -19,8 +19,7 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int tier = Convert.ToInt32(args[0]);
-            int amount = tier * 3;
+            int amount = Convert.ToInt32(args[0]);
             int newValue = target.CraftBonusCooking + amount;
             if (newValue > MaxValue) newValue = MaxValue;
             target.CraftBonusCooking = newValue;

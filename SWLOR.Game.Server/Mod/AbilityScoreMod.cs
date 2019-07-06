@@ -28,12 +28,8 @@ namespace SWLOR.Game.Server.Mod
 
             // STR, DEX, CON, INT, WIS, or CHA
             result.TypeName = data[0];
-            int tier = Convert.ToInt32(data[1]);
+            result.Amount = Convert.ToInt32(data[1]);
 
-            // Tier 1 = +3, Tier 2 = +6, Tier 3 = +9, etc.
-            // Recall that 1 point of STR is equivalent to +3 from an item's bonus.
-            result.Amount = tier * 3; 
-            
             switch (result.TypeName)
             {
                 case "STR":

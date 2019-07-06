@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var item in DataService.Connection.GetAll<BankItem>())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
-                    PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);
                     ProcessVersion1LightsaberItem(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var item in DataService.Connection.GetAll<PCBaseStructureItem>())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
-                    PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);
                     ProcessVersion1LightsaberItem(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var item in DataService.GetAll<PCImpoundedItem>())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
-                    PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);
                     ProcessVersion1LightsaberItem(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var item in DataService.GetAll<PCMarketListing>())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
-                    PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);
                     ProcessVersion1LightsaberItem(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);

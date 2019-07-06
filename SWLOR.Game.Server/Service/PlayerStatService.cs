@@ -88,12 +88,12 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
 
             // Apply item bonuses
-            strBonus += itemBonuses.Strength / 3;
-            dexBonus += itemBonuses.Dexterity / 3;
-            conBonus += itemBonuses.Constitution / 3;
-            wisBonus += itemBonuses.Wisdom / 3;
-            intBonus += itemBonuses.Intelligence / 3;
-            chaBonus += itemBonuses.Charisma / 3;
+            strBonus += itemBonuses.Strength;
+            dexBonus += itemBonuses.Dexterity;
+            conBonus += itemBonuses.Constitution;
+            wisBonus += itemBonuses.Wisdom;
+            intBonus += itemBonuses.Intelligence;
+            chaBonus += itemBonuses.Charisma;
 
             // Check final caps
             if (strBonus > 55) strBonus = 55;

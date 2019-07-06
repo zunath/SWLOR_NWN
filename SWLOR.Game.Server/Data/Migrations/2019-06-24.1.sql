@@ -5299,3 +5299,12 @@ WHERE PerkLevelID IN (
 	FROM dbo.PerkLevel
 	WHERE PerkID = 174 
 )
+
+
+-- Change stat increase amount on mods.
+UPDATE dbo.CraftBlueprint
+SET ItemName = REPLACE(REPLACE(REPLACE(ItemName, '+3', '+1'), '+6', '+2'), '+9', '+3')
+WHERE ItemResref LIKE 'rune_%'
+	AND (ItemName LIKE '%+3%'  OR
+		ItemName LIKE '%+6%' OR 
+		ItemName LIKE '%+9%')

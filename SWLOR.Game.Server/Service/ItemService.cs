@@ -219,11 +219,11 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + " (/3)\n";
+                    description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + "\n";
                 }
                 else
                 {
-                    description += ColorTokenService.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + " (/3)\n";
+                    description += ColorTokenService.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + "\n";
                 }
             }
             if (examinedItem.HPBonus > 0)
@@ -240,27 +240,27 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.StrengthBonus > 0)
             {
-                description += ColorTokenService.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + "\n";
             }
             if (examinedItem.DexterityBonus > 0)
             {
-                description += ColorTokenService.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + "\n";
             }
             if (examinedItem.ConstitutionBonus > 0)
             {
-                description += ColorTokenService.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + "\n";
             }
             if (examinedItem.WisdomBonus > 0)
             {
-                description += ColorTokenService.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + "\n";
             }
             if (examinedItem.IntelligenceBonus > 0)
             {
-                description += ColorTokenService.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + "\n";
             }
             if (examinedItem.CharismaBonus > 0)
             {
-                description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + "\n";
             }
             if (examinedItem.CooldownRecovery > 0)
             {
@@ -276,23 +276,23 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CraftBonusArmorsmith > 0)
             {
-                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + " (/2)\n";
+                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + "\n";
             }
             if (examinedItem.CraftBonusEngineering > 0)
             {
-                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + " (/2)\n";
+                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + "\n";
             }
             if (examinedItem.CraftBonusFabrication > 0)
             {
-                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + " (/2)\n";
+                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + "\n";
             }
             if (examinedItem.CraftBonusWeaponsmith > 0)
             {
-                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + " (/2)\n";
+                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + "\n";
             }
             if (examinedItem.CraftBonusCooking > 0)
             {
-                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + " (/2)\n";
+                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + "\n";
             }
             if (examinedItem.CraftTierLevel > 0)
             {

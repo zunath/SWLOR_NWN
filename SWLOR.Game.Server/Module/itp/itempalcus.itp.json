@@ -7469,7 +7469,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Charisma +3"
+                      "value": "Blue Mod: Charisma +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7480,7 +7480,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Charisma +6"
+                      "value": "Blue Mod: Charisma +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7491,7 +7491,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Charisma +9"
+                      "value": "Blue Mod: Charisma +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7601,7 +7601,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Intelligence +3"
+                      "value": "Blue Mod: Intelligence +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7612,7 +7612,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Intelligence +6"
+                      "value": "Blue Mod: Intelligence +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7623,7 +7623,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Intelligence +9"
+                      "value": "Blue Mod: Intelligence +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7634,7 +7634,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Wisdom +3"
+                      "value": "Blue Mod: Wisdom +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7645,7 +7645,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Wisdom +6"
+                      "value": "Blue Mod: Wisdom +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7656,7 +7656,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Wisdom +9"
+                      "value": "Blue Mod: Wisdom +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7667,7 +7667,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Armorsmith +3"
+                      "value": "Green Mod: Armorsmith +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7678,7 +7678,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Armorsmith +6"
+                      "value": "Green Mod: Armorsmith +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7689,7 +7689,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Armorsmith +9"
+                      "value": "Green Mod: Armorsmith +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7700,7 +7700,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Cooking +3"
+                      "value": "Green Mod: Cooking +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7711,7 +7711,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Cooking +6"
+                      "value": "Green Mod: Cooking +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7722,7 +7722,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Cooking +9"
+                      "value": "Green Mod: Cooking +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7733,7 +7733,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Engineering +3"
+                      "value": "Green Mod: Engineering +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7744,7 +7744,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Engineering +6"
+                      "value": "Green Mod: Engineering +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7755,7 +7755,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Engineering +9"
+                      "value": "Green Mod: Engineering +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7766,7 +7766,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Fabrication +3"
+                      "value": "Green Mod: Fabrication +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7777,7 +7777,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Fabrication +6"
+                      "value": "Green Mod: Fabrication +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7788,7 +7788,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Fabrication +9"
+                      "value": "Green Mod: Fabrication +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7799,7 +7799,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Harvesting +3"
+                      "value": "Green Mod: Harvesting +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7810,7 +7810,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Harvesting +6"
+                      "value": "Green Mod: Harvesting +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7821,7 +7821,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Harvesting +9"
+                      "value": "Green Mod: Harvesting +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7832,7 +7832,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Weaponsmith +3"
+                      "value": "Green Mod: Weaponsmith +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7843,7 +7843,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Weaponsmith +6"
+                      "value": "Green Mod: Weaponsmith +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7854,7 +7854,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Green Mod: Weaponsmith +9"
+                      "value": "Green Mod: Weaponsmith +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7931,7 +7931,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Constitution +3"
+                      "value": "Red Mod: Constitution +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7942,7 +7942,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Constitution +6"
+                      "value": "Red Mod: Constitution +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7953,7 +7953,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Constitution +9"
+                      "value": "Red Mod: Constitution +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7997,7 +7997,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Dexterity +3"
+                      "value": "Red Mod: Dexterity +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8008,7 +8008,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Dexterity +6"
+                      "value": "Red Mod: Dexterity +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8019,7 +8019,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Dexterity +9"
+                      "value": "Red Mod: Dexterity +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8129,7 +8129,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Strength +3"
+                      "value": "Red Mod: Strength +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8140,7 +8140,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Strength +6"
+                      "value": "Red Mod: Strength +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8151,7 +8151,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Red Mod: Strength +9"
+                      "value": "Red Mod: Strength +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8162,7 +8162,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Armor Class +3"
+                      "value": "Yellow Mod: Armor Class +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8173,7 +8173,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Armor Class +6"
+                      "value": "Yellow Mod: Armor Class +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8184,7 +8184,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Armor Class +9"
+                      "value": "Yellow Mod: Armor Class +3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8327,7 +8327,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Medicine +3"
+                      "value": "Yellow Mod: Medicine +1"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8338,7 +8338,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Medicine +6"
+                      "value": "Yellow Mod: Medicine +2"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8349,7 +8349,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Medicine +9"
+                      "value": "Yellow Mod: Medicine +3"
                     },
                     "RESREF": {
                       "type": "resref",

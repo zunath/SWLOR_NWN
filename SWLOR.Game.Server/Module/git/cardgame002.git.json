@@ -1298,7 +1298,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -4.115898991585709e-005
+          "value": -4.163582707406022e-005
         },
         "XPosition": {
           "type": "float",
@@ -2569,7 +2569,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.115898991585709e-005
+          "value": 4.163582707406022e-005
         },
         "XPosition": {
           "type": "float",
@@ -2621,7 +2621,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.159843683242798
+          "value": 1.570796132087708
         },
         "BodyBag": {
           "type": "byte",
@@ -2694,7 +2694,7 @@
           "id": 5718,
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Exit"
+            "0": "Rimer Cards Exit"
           }
         },
         "OnClick": {
@@ -2751,7 +2751,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "d1_cards_exit"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2779,11 +2779,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "EmergencyExit"
+          "value": "rimer_exit"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "plc_pedestal"
+          "value": "rimer_exit"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -2817,21 +2817,56 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MN_RimerCards"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 1.083397388458252
+          "value": 0.9599999785423279
         },
         "Y": {
           "type": "float",
-          "value": 1.152590751647949
+          "value": 44.97999954223633
         },
         "Z": {
           "type": "float",
-          "value": 9.5367431640625e-006
+          "value": 0.0
         }
       },
       {
@@ -2850,7 +2885,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.7853981852531433
+          "value": 2.086213827133179
         },
         "BodyBag": {
           "type": "byte",
@@ -2923,7 +2958,7 @@
           "id": 5718,
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Exit"
+            "0": "Rimer Cards Exit"
           }
         },
         "OnClick": {
@@ -2980,7 +3015,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "d1_cards_exit"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3008,11 +3043,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "EmergencyExit"
+          "value": "rimer_exit"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "plc_pedestal"
+          "value": "rimer_exit"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -3046,21 +3081,56 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MN_RimerCards"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 58.32716751098633
+          "value": 0.978731632232666
         },
         "Y": {
           "type": "float",
-          "value": 88.53643035888672
+          "value": 1.042786598205566
         },
         "Z": {
           "type": "float",
-          "value": 9.5367431640625e-006
+          "value": -1.192092895507813e-007
         }
       },
       {
@@ -3079,7 +3149,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": -0.613592267036438
         },
         "BodyBag": {
           "type": "byte",
@@ -3152,7 +3222,7 @@
           "id": 5718,
           "type": "cexolocstring",
           "value": {
-            "0": "Spectator Exit"
+            "0": "Rimer Cards Exit"
           }
         },
         "OnClick": {
@@ -3209,7 +3279,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "d1_cards_spexit"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3237,11 +3307,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "SpectatorExit"
+          "value": "rimer_exit"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "plc_pedestal"
+          "value": "rimer_exit"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -3275,21 +3345,56 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MN_RimerCards"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 0.9859304428100586
+          "value": 58.49828720092773
         },
         "Y": {
           "type": "float",
-          "value": 44.9541130065918
+          "value": 88.72449493408203
         },
         "Z": {
           "type": "float",
-          "value": 9.5367431640625e-006
+          "value": 2.384185791015625e-007
         }
       }
     ]

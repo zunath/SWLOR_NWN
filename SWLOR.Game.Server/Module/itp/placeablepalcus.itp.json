@@ -74413,6 +74413,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rimer Cards Exit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rimer_exit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sea Hag (2/1), cost 2"
                     },
                     "RESREF": {

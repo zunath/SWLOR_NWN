@@ -285,6 +285,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jolee's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_joleerobes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Musician Outfit"
                     },
                     "RESREF": {
@@ -389,6 +400,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "refugee_outfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Desk Worker Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicdeskwork"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Outfit (Reinforced)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republic_outf001"
                     }
                   },
                   {
@@ -686,11 +719,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Justina's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_justinaarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Armor"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "man_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Heavy Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicheavygun"
                     }
                   }
                 ]
@@ -900,6 +955,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Justina's Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_justinahelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Keyan Zione Hood"
                     },
                     "RESREF": {
@@ -977,6 +1043,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Republic Heavy Gunner Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicheavy001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Sniper Visor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicsnipervi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Republic Trooper Helm"
                     },
                     "RESREF": {
@@ -993,6 +1081,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fac_pubhelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Trooper Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republictrooperh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu Lieutenant Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sirtulieutenantm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu's Headgear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item006"
                     }
                   },
                   {
@@ -1306,6 +1427,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "leather_tunic_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Sniper Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicsniperou"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Sniper Outfit (Scouting)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicsnipe001"
                     }
                   },
                   {
@@ -1966,11 +2109,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Republic Commander Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republiccommande"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Officer Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicofficerh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Revêtement de droïde éboueur"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "arm_dromecano001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu Lieutenant Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sirtulieutenanto"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item004"
                     }
                   },
                   {
@@ -10997,6 +11184,28 @@
                       "type": "resref",
                       "value": "hastejedi2"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Agent Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicagentrif"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Agent Sidearm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicagent001"
+                    }
                   }
                 ]
               },
@@ -11705,6 +11914,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "di_card_47"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu's Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item010"
                     }
                   },
                   {
@@ -13710,6 +13930,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Justina's Vibroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pil_justinablade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Mandalorian Warblade"
                           },
                           "RESREF": {
@@ -13896,6 +14127,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "longsword_mando"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sirtu's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item003"
                           }
                         },
                         {
@@ -14231,6 +14473,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "rapier_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jolee's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pil_joleesaber"
                           }
                         },
                         {
@@ -15682,6 +15935,50 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Republic Commander Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republiccomma002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Heavy Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicheavybla"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Sniper Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicsniperbl"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republictrooperb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Tusken Blaster Rifle"
                           },
                           "RESREF": {
@@ -15791,6 +16088,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "npc_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Standard Issue Blaster Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicstand001"
                           }
                         },
                         {

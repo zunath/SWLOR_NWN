@@ -261,9 +261,6 @@ namespace SWLOR.Game.Server.Event.Delayed
                 case SkillType.Medicine: equipmentBonus = effectiveStats.Medicine; break;
             }
 
-            // Receive +1 for every 2 equipment bonus.
-            equipmentBonus /= 2;
-
             return equipmentBonus * multiplier; // +0.5%, +0.6%, or +0.7% per equipment bonus
         }
 

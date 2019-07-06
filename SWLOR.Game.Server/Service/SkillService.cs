@@ -1251,24 +1251,34 @@ namespace SWLOR.Game.Server.Service
                     string varName = immunities[subType].VariableName;
                     int costTableID = item.GetLocalInt(varName);
 
-                    // Unpack the IP, modify the value back to original, then add it to the list to be applied later.
-                    // Remove this version of the IP.
-                    var unpacked = NWNXItemProperty.UnpackIP(ip);
-                    unpacked.CostTableValue = costTableID;
-                    var packed = NWNXItemProperty.PackIP(unpacked);
-                    ipsToApply.Add(packed);
+                    if (costTableID > 0)
+                    {
+                        // Unpack the IP, modify the value back to original, then add it to the list to be applied later.
+                        // Remove this version of the IP.
+                        var unpacked = NWNXItemProperty.UnpackIP(ip);
+                        unpacked.CostTableValue = costTableID;
+                        var packed = NWNXItemProperty.PackIP(unpacked);
+                        ipsToApply.Add(packed);
 
-                    _.RemoveItemProperty(item, ip);
+                        _.RemoveItemProperty(item, ip);
+
+                        item.DeleteLocalInt(varName);
+                    }
                 }
                 else if (type == ITEM_PROPERTY_DAMAGE_REDUCTION)
                 {
                     int plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
                     int amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
+                    if(plusID > 0 && amountID > 0)
+                    {
+                        ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
+                        ipsToApply.Add(newIP);
 
-                    ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
-                    ipsToApply.Add(newIP);
+                        _.RemoveItemProperty(item, ip);
 
-                    _.RemoveItemProperty(item, ip);
+                        item.DeleteLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
+                        item.DeleteLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
+                    }
                 }
             }
 

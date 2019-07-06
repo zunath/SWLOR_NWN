@@ -4296,7 +4296,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "looter_2"
+                      "value": "looter_1"
                     }
                   },
                   {
@@ -4315,7 +4315,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "looter_1"
+                      "value": "looter_2"
                     }
                   },
                   {
@@ -4904,6 +4904,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 58.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jolee"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "joleebindo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 99.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Justina"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_justina"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.1666666716337204
                     },
                     "FACTION": {
@@ -4936,6 +4974,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nulaa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 34.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nulaa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nulaaaldette"
                     }
                   },
                   {
@@ -5411,6 +5468,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Convict"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "convict"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Female Republic Server"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "femalerepublicse"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 43.0
                     },
                     "FACTION": {
@@ -5424,6 +5519,291 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "keyan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 108.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord Sirtu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordsirtu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Republic Server Supervisor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malerepublicserv"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Trandoshan Republic Server"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "maletrandoshanre"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 104.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Commander"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republiccommandi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Desk Worker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicdeskwork"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Desk Worker Supervisor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicdeskw001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 24.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Defender"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Elite Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicelitesni"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Defender"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Elite Sniper Assassin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicelite001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Defender"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Heavy Gunner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicheavygun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Jailer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicdeskw021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Officer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicdeskw003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Reception Officer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicdeskw002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Technician "
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republictechnici"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu's Lieutenant"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sirtulieut"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veteran Republic Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "humanmaletrained"
                     }
                   }
                 ]

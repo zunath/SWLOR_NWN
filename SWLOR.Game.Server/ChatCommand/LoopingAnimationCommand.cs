@@ -7,13 +7,13 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            float duration = 6.0f;
+            float duration = 9999.0f;
 
             if (args.Length > 0)
             {
                 if (!float.TryParse(args[0], out duration))
                 {
-                    duration = 6.0f;
+                    duration = 9999.0f;
                 }
             }
 

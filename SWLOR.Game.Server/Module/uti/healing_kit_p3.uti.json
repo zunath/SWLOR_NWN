@@ -117,7 +117,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "JAVA_ACTION_SCRIPT"
+          "value": "ACTION_SCRIPT"
         },
         "Type": {
           "type": "dword",

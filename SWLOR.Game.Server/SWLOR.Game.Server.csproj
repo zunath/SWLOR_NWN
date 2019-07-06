@@ -415,6 +415,10 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
     <Compile Include="Event\Effect\OnEffectExpired.cs" />
+    <Compile Include="Event\Legacy\script_9.cs" />
+    <Compile Include="Event\Legacy\script_8.cs" />
+    <Compile Include="Event\Legacy\script_7.cs" />
+    <Compile Include="Event\Legacy\script_6.cs" />
     <Compile Include="Event\Store\OnCloseStore.cs" />
     <Compile Include="Event\Store\OnOpenStore.cs" />
     <Compile Include="Event\Store\on_close_store.cs" />
@@ -518,11 +522,11 @@
     <Compile Include="Event\DM\dm_toggle_ai.cs" />
     <Compile Include="Event\DM\dm_toggle_lock.cs" />
     <Compile Include="Event\DM\dm_togg_immo.cs" />
-    <Compile Include="Event\Legacy\jvm_script_1.cs" />
-    <Compile Include="Event\Legacy\jvm_script_2.cs" />
-    <Compile Include="Event\Legacy\jvm_script_3.cs" />
-    <Compile Include="Event\Legacy\jvm_script_4.cs" />
-    <Compile Include="Event\Legacy\jvm_script_5.cs" />
+    <Compile Include="Event\Legacy\script_1.cs" />
+    <Compile Include="Event\Legacy\script_2.cs" />
+    <Compile Include="Event\Legacy\script_3.cs" />
+    <Compile Include="Event\Legacy\script_4.cs" />
+    <Compile Include="Event\Legacy\script_5.cs" />
     <Compile Include="Event\Module\mod_on_acquire.cs" />
     <Compile Include="Event\Module\mod_on_activate.cs" />
     <Compile Include="Event\Module\mod_on_applydmg.cs" />
@@ -634,7 +638,7 @@
     <Compile Include="Event\Delayed\FinishAbilityUse.cs" />
     <Compile Include="Event\Delayed\FinishActionItem.cs" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
-    <Compile Include="Event\Legacy\LegacyJVMItemEvent.cs" />
+    <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
     <Compile Include="Event\DM\OnDMAction.cs" />
     <Compile Include="Event\Module\OnModuleApplyDamage.cs" />
     <Compile Include="Event\Module\OnModuleAttack.cs" />
@@ -1144,7 +1148,7 @@
     <Compile Include="Placeable\CraftingDevice\OnUsed.cs" />
     <Compile Include="Event\Feat\OnHitCastSpell.cs" />
     <Compile Include="Event\IRegisteredEvent.cs" />
-    <Compile Include="Event\Legacy\LegacyJVMEvent.cs" />
+    <Compile Include="Event\Legacy\ScriptEvent.cs" />
     <Compile Include="Event\Module\OnModuleAcquireItem.cs" />
     <Compile Include="Event\Module\OnModuleActivateItem.cs" />
     <Compile Include="Event\Module\OnModuleCutsceneAbort.cs" />

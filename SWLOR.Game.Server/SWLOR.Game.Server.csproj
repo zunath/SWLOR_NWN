@@ -71,6 +71,7 @@
     <Compile Include="AreaInstance\CoxxionBase.cs" />
     <Compile Include="AreaInstance\Contracts\IAreaInstance.cs" />
     <Compile Include="AreaInstance\ExitAreaInstance.cs" />
+    <Compile Include="AreaInstance\RimerCardsInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
     <Compile Include="ChatCommand\Blueprints.cs" />

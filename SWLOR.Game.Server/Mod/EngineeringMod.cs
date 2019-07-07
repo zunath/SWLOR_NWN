@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Mod
     public class EngineeringMod : IModHandler
     {
         public int ModTypeID => 17;
-        private const int MaxValue = 51;
+        private const int MaxValue = 17;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {

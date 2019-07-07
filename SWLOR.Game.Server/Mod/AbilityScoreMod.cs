@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Mod
         }
 
         public int ModTypeID => 1;
-        private const int MaxValue = 51;
+        private const int MaxValue = 17;
         
         private ParsedData ParseData(NWItem target, params string[] data)
         {

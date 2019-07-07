@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int EffectiveArmorClass(NWPlayer player, NWItem ignoreItem, EffectiveItemStats stats)
         {
-            int baseAC = stats.AC / 3 + CustomEffectService.CalculateEffectAC(player);
+            int baseAC = stats.AC + CustomEffectService.CalculateEffectAC(player);
 
             // Calculate AC bonus granted by skill ranks.
             // Only chest armor is checked for this bonus.

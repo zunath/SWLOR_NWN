@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (ShieldBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("Damage Immunity: " + (10 + examinedItem.CustomAC / 3) + "\n");
+                    description += ColorTokenService.Orange("Damage Immunity: " ) + (10 + examinedItem.CustomAC / 3) + "\n";
                 }
                 else if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {

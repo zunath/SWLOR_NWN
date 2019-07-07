@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 47
+    "value": 122
   },
   "Appearance_Type": {
     "type": "word",
@@ -110,19 +110,19 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 128
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 1
+    "value": 159
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 26
+    "value": 173
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 173
   },
   "Comment": {
     "type": "cexostring",
@@ -180,7 +180,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_s"
+          "value": "rifle_npc"
         }
       }
     ]

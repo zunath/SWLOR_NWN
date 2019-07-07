@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 5
         }
       }
     ]
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 1
+    "value": -1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -156,7 +156,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 102
+    "value": 105
   },
   "NaturalAC": {
     "type": "byte",
@@ -461,7 +461,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 24
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",

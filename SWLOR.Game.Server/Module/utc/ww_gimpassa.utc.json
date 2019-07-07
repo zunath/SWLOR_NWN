@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 6
         }
       }
     ]
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 210
+    "value": 300
   },
   "DecayTime": {
     "type": "dword",
@@ -122,7 +122,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 210
+    "value": 300
   },
   "Int": {
     "type": "byte",
@@ -156,7 +156,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 260
+    "value": 330
   },
   "NaturalAC": {
     "type": "byte",
@@ -492,7 +492,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 16
   },
   "Subrace": {
     "type": "cexostring",
@@ -536,7 +536,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 3
+    "value": 7
   },
   "willbonus": {
     "type": "short",

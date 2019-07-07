@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -461,7 +461,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 24
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",

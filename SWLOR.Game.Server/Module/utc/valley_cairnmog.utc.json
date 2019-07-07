@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 6
         }
       }
     ]
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 1
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -163,7 +163,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 140
+    "value": 144
   },
   "NaturalAC": {
     "type": "byte",
@@ -456,7 +456,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 104
+    "value": 53
   },
   "SpecAbilityList": {
     "type": "list",
@@ -468,7 +468,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 26
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",

@@ -652,7 +652,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 0.5
+                            "value": 0.125
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -5472,7 +5472,7 @@
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Neutral"
+                      "value": "Commoner"
                     },
                     "NAME": {
                       "type": "cexostring",

@@ -153,8 +153,10 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.PilotingUp:
                         product.PilotingBonus += amount;
                         break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+
+                    // Legacy and other component bonus types won't do anything.
+                    default: 
+                        return;
                 }
 
                 if (!string.IsNullOrWhiteSpace(sourceTag))

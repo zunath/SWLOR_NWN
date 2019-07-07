@@ -103,18 +103,18 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 8
+          "value": 10
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 128
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 1
+    "value": 13
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 81
+    "value": 56
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 34
+    "value": 32
   },
   "Disarmable": {
     "type": "byte",
@@ -180,7 +180,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_s"
+          "value": "rifle_tran"
         }
       }
     ]
@@ -312,7 +312,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 81
+    "value": 56
   },
   "Int": {
     "type": "byte",
@@ -346,11 +346,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 145
+    "value": 136
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -651,7 +651,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 17
+    "value": 16
   },
   "Subrace": {
     "type": "cexostring",

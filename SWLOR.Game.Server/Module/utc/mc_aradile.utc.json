@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 6
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 22
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -156,7 +156,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 256
+    "value": 250
   },
   "NaturalAC": {
     "type": "byte",
@@ -449,7 +449,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 65535
+    "value": 442
   },
   "SpecAbilityList": {
     "type": "list",

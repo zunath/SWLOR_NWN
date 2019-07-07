@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 2
+          "value": 5
         }
       }
     ]
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": -4
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -163,11 +163,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 182
+    "value": 185
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -465,6 +465,21 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
+          "value": 265
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
           "value": 299
         },
         "SpellCasterLevel": {
@@ -484,7 +499,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 26
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",

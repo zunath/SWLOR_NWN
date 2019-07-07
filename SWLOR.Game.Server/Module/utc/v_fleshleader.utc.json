@@ -57,11 +57,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -8
+    "value": -10
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 252
+    "value": 310
   },
   "DecayTime": {
     "type": "dword",
@@ -79,7 +79,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -175,7 +175,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 252
+    "value": 310
   },
   "Int": {
     "type": "byte",
@@ -209,7 +209,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 312
+    "value": 370
   },
   "NaturalAC": {
     "type": "byte",
@@ -560,7 +560,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 32
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",

@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 6
+          "value": 8
         }
       }
     ]
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": -3
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -155,11 +155,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 204
+    "value": 206
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",

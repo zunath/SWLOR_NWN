@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -105,13 +105,6 @@
         "Feat": {
           "type": "word",
           "value": 334
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1208
         }
       },
       {
@@ -570,7 +563,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 11
+    "value": 598
   },
   "TemplateList": {
     "type": "list",

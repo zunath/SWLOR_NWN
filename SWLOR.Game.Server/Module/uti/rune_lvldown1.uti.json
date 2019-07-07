@@ -46,7 +46,7 @@
     "id": 0,
     "type": "cexolocstring",
     "value": {
-      "0": "Yellow Mod: Level Decrease -5"
+      "0": "Yellow Mod: Level Decrease -3"
     }
   },
   "ModelPart1": {
@@ -220,7 +220,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "-5"
+          "value": "-3"
         }
       }
     ]

@@ -1035,6 +1035,10 @@ namespace SWLOR.Game.Server.Service
 
             if (door == null)
             {
+                player.SendMessage("Could not find exit. Either you have entered the module in an expired lease building area. If this is not the case log a /bug and report where you were.");
+                LoggingService.Trace(TraceComponent.Space, "Could not find exit. Either you have entered the module in an expired lease building area. If this is not the case log a /bug and report where you were.");
+                NWObject waypoint = GetObjectByTag("MN_StarchaserHomes");
+                player.AssignCommand(() => _.ActionJumpToObject(waypoint));               
                 return;
             }
 

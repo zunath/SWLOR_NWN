@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Mod
     public class HarvestingMod : IModHandler
     {
         public int ModTypeID => 16;
-        private const int MaxValue = 51;
+        private const int MaxValue = 17;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {

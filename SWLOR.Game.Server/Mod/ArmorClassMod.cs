@@ -9,11 +9,11 @@ namespace SWLOR.Game.Server.Mod
     public class ArmorClassMod: IModHandler
     {
         public int ModTypeID => 2;
-        private const int MaxValue = 51;
+        private const int MaxValue = 17;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CustomAC >= MaxValue) // Actually applies to the PC at 1/3 total, so 51 == 17
+            if (target.CustomAC >= MaxValue) 
                 return "You cannot improve that item's AC any further.";
 
             if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType) &&

@@ -5343,3 +5343,16 @@ WHERE PerkID IN (143, 144, 145, 146, 147, 148, 137, 138, 139, 140, 141, 142)
 
 DELETE FROM dbo.Perk
 WHERE ID IN (143, 144, 145, 146, 147, 148, 137, 138, 139, 140, 141, 142) 
+
+
+
+-- Remove the level up mods.
+DELETE FROM dbo.PCCraftedBlueprint
+WHERE CraftBlueprintID = 146
+
+DELETE FROM dbo.CraftBlueprint
+WHERE ID = 146
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Level Decrease -3'
+WHERE ID = 147

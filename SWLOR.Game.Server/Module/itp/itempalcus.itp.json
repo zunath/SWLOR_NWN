@@ -8261,18 +8261,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Level Decrease -10"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_lvldown2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Level Decrease -5"
+                      "value": "Yellow Mod: Level Decrease -3"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8283,22 +8272,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Yellow Mod: Level Increase +10"
+                      "value": "Yellow Mod: Level Decrease -5"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_lvlup2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Level Increase +5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_lvlup1"
+                      "value": "rune_lvldown2"
                     }
                   },
                   {

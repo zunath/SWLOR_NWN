@@ -248,8 +248,8 @@ namespace SWLOR.Game.Server.Service
                         break;
                 }
 
-                // +1 AC per 20 skill ranks, while wearing the appropriate armor.
-                int skillACBonus = skillRank / 20;
+                // +1 AC per 10 skill ranks, while wearing the appropriate armor.
+                int skillACBonus = skillRank / 10;
                 baseAC += skillACBonus;
             }
 

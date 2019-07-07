@@ -366,7 +366,8 @@ namespace SWLOR.Game.Server.Service
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcAC"))
                         {
                             // Calculate AC
-                            if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                            if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType) ||
+                                ItemService.ShieldBaseItemTypes.Contains(item.BaseItemType))
                             {
                                 int skillRankToUse;
                                 if (item.CustomItemType == CustomItemType.HeavyArmor)

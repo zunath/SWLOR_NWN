@@ -64,24 +64,24 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                         QuestService.AdvanceQuestState(player, owner, questID);
                     }
 
-                    player.SendMessage("You need " + progress.Remaining + " " + item.Name + " for this quest.");
+                    player.SendMessage("You need " + progress.Remaining + "x " + item.Name + " for this quest.");
                 }
                 item.Destroy();
 
                 var questItemProgresses = DataService.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
-                if ( !questItemProgresses.Any())
+                if (!questItemProgresses.Any())
                 {
                     string conversation = _.GetLocalString(owner, "CONVERSATION");
+
+                    // Either start a SWLOR conversation
                     if (!string.IsNullOrWhiteSpace(conversation))
                     {
                         DialogService.StartConversation(player, owner, conversation);
                     }
+                    // Or a regular NWN conversation.
                     else
                     {
-                        player.AssignCommand(() =>
-                        {
-                            _.ActionStartConversation(owner, "", TRUE, FALSE);
-                        });
+                        player.AssignCommand(() => { _.ActionStartConversation(owner, "", TRUE, FALSE); });
                     }
                 }
 

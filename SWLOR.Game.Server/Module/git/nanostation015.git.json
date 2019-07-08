@@ -891,7 +891,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.06278499960899353
+          "value": -0.06278488039970398
         },
         "YPosition": {
           "type": "float",
@@ -1781,7 +1781,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2215,7 +2215,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5459,7 +5459,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5892,7 +5892,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6324,7 +6324,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "CloseLockDC": {
           "type": "byte",
@@ -7886,7 +7886,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -38942,7 +38942,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -39169,7 +39169,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -40069,7 +40069,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -40294,7 +40294,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -40744,7 +40744,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -41194,7 +41194,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -44348,7 +44348,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -46148,7 +46148,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -46373,7 +46373,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -46598,7 +46598,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -46823,7 +46823,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -47048,7 +47048,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -47273,7 +47273,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344836831092835
+          "value": 0.8344836235046387
         },
         "BodyBag": {
           "type": "byte",
@@ -47498,7 +47498,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -48177,7 +48177,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -48854,7 +48854,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -49079,7 +49079,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568899154663
+          "value": -3.141568422317505
         },
         "BodyBag": {
           "type": "byte",
@@ -56064,7 +56064,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141569375991821
+          "value": -3.141568899154663
         },
         "BodyBag": {
           "type": "byte",
@@ -58576,7 +58576,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -58838,7 +58838,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -59100,7 +59100,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.2216563522815704
+          "value": 0.2216563075780869
         },
         "BodyBag": {
           "type": "byte",
@@ -65657,7 +65657,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.822518587112427
+          "value": -2.822518348693848
         },
         "BodyBag": {
           "type": "byte",
@@ -66338,7 +66338,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -71320,7 +71320,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.724345207214356
+          "value": 2.724344730377197
         },
         "BodyBag": {
           "type": "byte",
@@ -71999,7 +71999,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -72226,7 +72226,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -72453,7 +72453,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -72680,7 +72680,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -72907,7 +72907,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -74265,7 +74265,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -76779,7 +76779,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -79966,7 +79966,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -81322,7 +81322,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -81547,7 +81547,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -81772,7 +81772,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -81997,7 +81997,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -82222,7 +82222,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -82447,7 +82447,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -82672,7 +82672,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -82897,7 +82897,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -83122,7 +83122,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -83347,7 +83347,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -83572,7 +83572,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -83797,7 +83797,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -84022,7 +84022,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -84247,7 +84247,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -84472,7 +84472,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -84697,7 +84697,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -91039,7 +91039,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141586065292358
         },
         "BodyBag": {
           "type": "byte",
@@ -91718,7 +91718,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -91980,7 +91980,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -92242,7 +92242,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -92504,7 +92504,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -93552,7 +93552,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141576051712036
+          "value": -3.141575574874878
         },
         "BodyBag": {
           "type": "byte",
@@ -93814,7 +93814,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141576051712036
+          "value": -3.141575574874878
         },
         "BodyBag": {
           "type": "byte",
@@ -99833,7 +99833,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14158034324646
+          "value": -3.141579866409302
         },
         "BodyBag": {
           "type": "byte",
@@ -101639,7 +101639,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14158034324646
+          "value": -3.141579866409302
         },
         "BodyBag": {
           "type": "byte",
@@ -104566,7 +104566,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141580820083618
+          "value": -3.14158034324646
         },
         "BodyBag": {
           "type": "byte",
@@ -105018,7 +105018,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.839571118354797
+          "value": -1.839570879936218
         },
         "BodyBag": {
           "type": "byte",
@@ -107961,7 +107961,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141580820083618
+          "value": -3.14158034324646
         },
         "BodyBag": {
           "type": "byte",
@@ -109092,7 +109092,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141580820083618
+          "value": -3.14158034324646
         },
         "BodyBag": {
           "type": "byte",
@@ -142440,7 +142440,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14158296585083
+          "value": -3.141582489013672
         },
         "BodyBag": {
           "type": "byte",
@@ -146747,7 +146747,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9093137383460999
+          "value": -0.9093136787414551
         },
         "BodyBag": {
           "type": "byte",
@@ -147201,7 +147201,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.122383117675781
+          "value": -3.122382640838623
         },
         "BodyBag": {
           "type": "byte",
@@ -151300,7 +151300,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571521759033
+          "value": -3.141571044921875
         },
         "BodyBag": {
           "type": "byte",
@@ -160570,7 +160570,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -161022,7 +161022,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.220892533659935
+          "value": 0.2208925187587738
         },
         "BodyBag": {
           "type": "byte",
@@ -165094,7 +165094,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -166229,7 +166229,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -167362,7 +167362,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -167589,7 +167589,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -167816,7 +167816,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -168043,7 +168043,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -168270,7 +168270,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141585350036621
+          "value": -3.141584873199463
         },
         "BodyBag": {
           "type": "byte",
@@ -171667,7 +171667,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344836831092835
+          "value": 0.8344836235046387
         },
         "BodyBag": {
           "type": "byte",
@@ -171892,7 +171892,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.04908730462193489
+          "value": -0.04908729717135429
         },
         "BodyBag": {
           "type": "byte",
@@ -172342,7 +172342,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.3926983177661896
+          "value": 0.3926982581615448
         },
         "BodyBag": {
           "type": "byte",
@@ -172792,7 +172792,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.8590273857116699
+          "value": -0.8590272665023804
         },
         "BodyBag": {
           "type": "byte",
@@ -178204,7 +178204,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9081149697303772
+          "value": 0.9081148505210877
         },
         "BodyBag": {
           "type": "byte",
@@ -179333,7 +179333,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141586065292358
         },
         "BodyBag": {
           "type": "byte",
@@ -181364,7 +181364,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.724345207214356
+          "value": -2.724344730377197
         },
         "BodyBag": {
           "type": "byte",
@@ -184978,7 +184978,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.767142534255981
+          "value": -1.767142295837402
         },
         "BodyBag": {
           "type": "byte",
@@ -188377,7 +188377,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748887300491333
+          "value": 2.748886823654175
         },
         "BodyBag": {
           "type": "byte",
@@ -189056,7 +189056,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344836831092835
+          "value": 0.8344836235046387
         },
         "BodyBag": {
           "type": "byte",
@@ -194930,7 +194930,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.092498779296875
+          "value": 3.092498302459717
         },
         "BodyBag": {
           "type": "byte",
@@ -195382,7 +195382,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9081149697303772
+          "value": 0.9081148505210877
         },
         "BodyBag": {
           "type": "byte",
@@ -195607,7 +195607,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9081149697303772
+          "value": 0.9081148505210877
         },
         "BodyBag": {
           "type": "byte",
@@ -198088,7 +198088,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.767142534255981
+          "value": 1.767142295837402
         },
         "BodyBag": {
           "type": "byte",
@@ -199213,7 +199213,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141586065292358
         },
         "BodyBag": {
           "type": "byte",
@@ -199663,7 +199663,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141586065292358
         },
         "BodyBag": {
           "type": "byte",
@@ -203064,7 +203064,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.067954540252686
+          "value": 3.067954063415527
         },
         "BodyBag": {
           "type": "byte",
@@ -203289,7 +203289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.675256967544556
+          "value": 2.675256729125977
         },
         "BodyBag": {
           "type": "byte",
@@ -204864,7 +204864,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817458987236023
+          "value": 0.9817457795143127
         },
         "BodyBag": {
           "type": "byte",
@@ -205314,7 +205314,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.865317106246948
+          "value": -1.865316867828369
         },
         "BodyBag": {
           "type": "byte",
@@ -205989,7 +205989,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.04341197013855
+          "value": -3.043411493301392
         },
         "BodyBag": {
           "type": "byte",
@@ -208038,7 +208038,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795178413391
+          "value": 1.570795059204102
         },
         "BodyBag": {
           "type": "byte",
@@ -208330,7 +208330,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795178413391
+          "value": -1.570795059204102
         },
         "BodyBag": {
           "type": "byte",
@@ -216685,7 +216685,7 @@
                     "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
-                      "value": 30
+                      "value": 10
                     },
                     "BaseItem": {
                       "type": "int",
@@ -216697,7 +216697,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 110
+                      "value": 90
                     },
                     "Cursed": {
                       "type": "byte",
@@ -223232,7 +223232,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.02455884777009487
+          "value": -0.02455932460725308
         },
         "XPosition": {
           "type": "float",
@@ -223713,7 +223713,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 7.303553047677269e-006
+          "value": 7.780390660627745e-006
         },
         "XPosition": {
           "type": "float",
@@ -224717,7 +224717,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.3599010407924652
+          "value": 0.359901487827301
         },
         "XPosition": {
           "type": "float",
@@ -224725,7 +224725,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9329904913902283
+          "value": -0.932990312576294
         },
         "YPosition": {
           "type": "float",
@@ -225140,7 +225140,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9637774229049683
+          "value": -0.963777482509613
         },
         "XPosition": {
           "type": "float",
@@ -225148,7 +225148,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2667078971862793
+          "value": -0.266707569360733
         },
         "YPosition": {
           "type": "float",
@@ -225281,7 +225281,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9142119884490967
+          "value": -0.9142121076583862
         },
         "XPosition": {
           "type": "float",
@@ -225289,7 +225289,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.4052362143993378
+          "value": -0.4052360057830811
         },
         "YPosition": {
           "type": "float",
@@ -225704,7 +225704,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9569419622421265
+          "value": -0.956942081451416
         },
         "XPosition": {
           "type": "float",
@@ -225712,7 +225712,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.290279358625412
+          "value": -0.2902790307998657
         },
         "YPosition": {
           "type": "float",
@@ -225904,7 +225904,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 7.303553047677269e-006
+          "value": 7.780390660627745e-006
         },
         "XPosition": {
           "type": "float",
@@ -226346,7 +226346,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04908320307731628
+          "value": -0.04908367991447449
         },
         "XPosition": {
           "type": "float",
@@ -227381,7 +227381,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7242453098297119
+          "value": 0.7242451906204224
         },
         "XPosition": {
           "type": "float",
@@ -227389,7 +227389,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895424127578735
+          "value": 0.6895425319671631
         },
         "YPosition": {
           "type": "float",
@@ -227804,7 +227804,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.949529767036438
+          "value": -0.9495298266410828
         },
         "XPosition": {
           "type": "float",
@@ -227812,7 +227812,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3136769831180573
+          "value": -0.3136767446994782
         },
         "YPosition": {
           "type": "float",
@@ -228086,7 +228086,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1709693372249603
+          "value": -0.1709697991609573
         },
         "XPosition": {
           "type": "float",
@@ -228094,7 +228094,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9852763414382935
+          "value": -0.9852762818336487
         },
         "YPosition": {
           "type": "float",
@@ -228791,7 +228791,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314682841300964
+          "value": 0.8314682245254517
         },
         "XPosition": {
           "type": "float",
@@ -228799,7 +228799,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555721521377564
+          "value": 0.5555723309516907
         },
         "YPosition": {
           "type": "float",
@@ -229214,7 +229214,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7242453098297119
+          "value": 0.7242451906204224
         },
         "XPosition": {
           "type": "float",
@@ -229222,7 +229222,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895424127578735
+          "value": 0.6895425319671631
         },
         "YPosition": {
           "type": "float",
@@ -229821,7 +229821,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9238809943199158
+          "value": 0.9238810539245606
         },
         "XPosition": {
           "type": "float",
@@ -229829,7 +229829,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826798796653748
+          "value": -0.3826797604560852
         },
         "YPosition": {
           "type": "float",
@@ -229962,7 +229962,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8314685225486755
+          "value": -0.8314684629440308
         },
         "XPosition": {
           "type": "float",
@@ -229970,7 +229970,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.555571973323822
         },
         "YPosition": {
           "type": "float",
@@ -230103,7 +230103,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9238809943199158
+          "value": -0.9238810539245606
         },
         "XPosition": {
           "type": "float",
@@ -230111,7 +230111,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826798796653748
+          "value": -0.3826797604560852
         },
         "YPosition": {
           "type": "float",

@@ -86,6 +86,13 @@
           "type": "cexostring",
           "value": "Generic human smuggler NPC"
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },

@@ -150,6 +150,7 @@
     <Compile Include="ChatCommand\Sit.cs" />
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="ChatCommand\Taunt.cs" />
+    <Compile Include="ChatCommand\Time.cs" />
     <Compile Include="ChatCommand\Tired.cs" />
     <Compile Include="ChatCommand\ToggleHolonet.cs" />
     <Compile Include="ChatCommand\TpWp.cs" />

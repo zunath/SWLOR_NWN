@@ -728,7 +728,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 27.0
+                            "value": 18.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -1353,6 +1353,30 @@
                     "ID": {
                       "type": "byte",
                       "value": 10
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 37.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sand Beetle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sandbeetle"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -7115,7 +7139,45 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 34.0
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 93.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandworm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
                     },
                     "FACTION": {
                       "type": "cexostring",

@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "CloseLockDC": {
           "type": "byte",
@@ -295,7 +295,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356192350387573
+          "value": 2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -745,7 +745,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -1195,7 +1195,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963493466377258
+          "value": -1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -1645,7 +1645,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -2095,7 +2095,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963493674993515
+          "value": -0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -2320,7 +2320,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -2545,7 +2545,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -2770,7 +2770,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.3926986753940582
+          "value": 0.3926986455917358
         },
         "BodyBag": {
           "type": "byte",
@@ -2995,7 +2995,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817469716072083
+          "value": 0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -3220,7 +3220,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -3670,7 +3670,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -3895,7 +3895,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817469716072083
+          "value": -0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -4120,7 +4120,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -4570,7 +4570,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.945240259170532
+          "value": 2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -4795,7 +4795,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -5020,7 +5020,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141589403152466
+          "value": 3.141588926315308
         },
         "BodyBag": {
           "type": "byte",
@@ -5245,7 +5245,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.552541732788086
+          "value": -2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -5470,7 +5470,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.963493466377258
+          "value": 1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -5695,7 +5695,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817469716072083
+          "value": -0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -5920,7 +5920,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -6145,7 +6145,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -6370,7 +6370,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.37444531917572
+          "value": -1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -6595,7 +6595,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963493466377258
+          "value": -1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -6820,7 +6820,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.963493466377258
+          "value": 1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -7045,7 +7045,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963493674993515
+          "value": 0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -7270,7 +7270,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817469716072083
+          "value": -0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -7495,7 +7495,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -7720,7 +7720,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141589403152466
+          "value": 3.141588926315308
         },
         "BodyBag": {
           "type": "byte",
@@ -7945,7 +7945,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.552541732788086
+          "value": -2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -9070,7 +9070,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817469716072083
+          "value": -0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -9295,7 +9295,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963493466377258
+          "value": -1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -9520,7 +9520,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817469716072083
+          "value": -0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -9745,7 +9745,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963493674993515
+          "value": -0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -9970,7 +9970,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -10420,7 +10420,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963493466377258
+          "value": -1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -10645,7 +10645,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -11095,7 +11095,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -11320,7 +11320,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -11770,7 +11770,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -12220,7 +12220,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963493674993515
+          "value": -0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -12670,7 +12670,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.37444531917572
+          "value": -1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -12895,7 +12895,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.945240259170532
+          "value": 2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -13120,7 +13120,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.767144322395325
+          "value": 1.767143964767456
         },
         "BodyBag": {
           "type": "byte",
@@ -13345,7 +13345,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -13570,7 +13570,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926986753940582
+          "value": -0.3926986455917358
         },
         "BodyBag": {
           "type": "byte",
@@ -13795,7 +13795,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -14020,7 +14020,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.963493466377258
+          "value": 1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -14470,7 +14470,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356192350387573
+          "value": 2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -16503,7 +16503,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926986753940582
+          "value": -0.3926986455917358
         },
         "BodyBag": {
           "type": "byte",
@@ -16728,7 +16728,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -16953,7 +16953,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141589403152466
+          "value": -3.141588926315308
         },
         "BodyBag": {
           "type": "byte",
@@ -17178,7 +17178,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.552541732788086
+          "value": 2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -17628,7 +17628,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -17853,7 +17853,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -18303,7 +18303,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141589403152466
+          "value": 3.141588926315308
         },
         "BodyBag": {
           "type": "byte",
@@ -18753,7 +18753,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -18978,7 +18978,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -19203,7 +19203,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -19878,7 +19878,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.552541732788086
+          "value": -2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -20103,7 +20103,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817469716072083
+          "value": 0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -20328,7 +20328,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.552541732788086
+          "value": 2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -20553,7 +20553,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -20778,7 +20778,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -21003,7 +21003,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -21228,7 +21228,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -21453,7 +21453,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926986753940582
+          "value": -0.3926986455917358
         },
         "BodyBag": {
           "type": "byte",
@@ -21678,7 +21678,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.767144322395325
+          "value": 1.767143964767456
         },
         "BodyBag": {
           "type": "byte",
@@ -21903,7 +21903,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.552541732788086
+          "value": -2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -22128,7 +22128,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963493466377258
+          "value": -1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -22353,7 +22353,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356192350387573
+          "value": 2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -22578,7 +22578,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -22803,7 +22803,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.767144322395325
+          "value": 1.767143964767456
         },
         "BodyBag": {
           "type": "byte",
@@ -23253,7 +23253,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -23478,7 +23478,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963493674993515
+          "value": -0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -23703,7 +23703,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963493674993515
+          "value": 0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -23928,7 +23928,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.552541732788086
+          "value": 2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -24153,7 +24153,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.552541732788086
+          "value": -2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -24378,7 +24378,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926986753940582
+          "value": -0.3926986455917358
         },
         "BodyBag": {
           "type": "byte",
@@ -24603,7 +24603,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.552541732788086
+          "value": 2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -25278,7 +25278,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -25503,7 +25503,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963493674993515
+          "value": 0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -25728,7 +25728,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -26178,7 +26178,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.356192350387573
+          "value": -2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -26628,7 +26628,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356192350387573
+          "value": 2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -27078,7 +27078,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356192350387573
+          "value": 2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -27528,7 +27528,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963493674993515
+          "value": -0.1963493376970291
         },
         "BodyBag": {
           "type": "byte",
@@ -27978,7 +27978,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817469716072083
+          "value": 0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -28203,7 +28203,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -28428,7 +28428,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817469716072083
+          "value": -0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -28653,7 +28653,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141589403152466
+          "value": 3.141588926315308
         },
         "BodyBag": {
           "type": "byte",
@@ -28878,7 +28878,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963493466377258
+          "value": -1.963493227958679
         },
         "BodyBag": {
           "type": "byte",
@@ -29103,7 +29103,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.552541732788086
+          "value": -2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -29328,7 +29328,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -29553,7 +29553,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -29778,7 +29778,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.767144322395325
+          "value": -1.767143964767456
         },
         "BodyBag": {
           "type": "byte",
@@ -30228,7 +30228,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.356192350387573
+          "value": -2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -30680,7 +30680,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1972220093011856
+          "value": 0.1972219794988632
         },
         "BodyBag": {
           "type": "byte",
@@ -30905,7 +30905,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -31130,7 +31130,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.748890399932861
+          "value": -2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -31355,7 +31355,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -32030,7 +32030,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -32255,7 +32255,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -32480,7 +32480,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -32705,7 +32705,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.37444531917572
+          "value": -1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -32930,7 +32930,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.37444531917572
+          "value": 1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -33155,7 +33155,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -33380,7 +33380,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356192350387573
+          "value": 2.356192111968994
         },
         "BodyBag": {
           "type": "byte",
@@ -33605,7 +33605,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -33830,7 +33830,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -34280,7 +34280,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748890399932861
+          "value": 2.748890161514282
         },
         "BodyBag": {
           "type": "byte",
@@ -34505,7 +34505,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926986753940582
+          "value": -0.3926986455917358
         },
         "BodyBag": {
           "type": "byte",
@@ -34730,7 +34730,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.945240259170532
+          "value": -2.945240020751953
         },
         "BodyBag": {
           "type": "byte",
@@ -34955,7 +34955,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -35180,7 +35180,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -35405,7 +35405,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -35630,7 +35630,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -35855,7 +35855,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -36080,7 +36080,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.552541732788086
+          "value": 2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -36305,7 +36305,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.552541732788086
+          "value": 2.552541494369507
         },
         "BodyBag": {
           "type": "byte",
@@ -36530,7 +36530,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141589403152466
+          "value": -3.141588926315308
         },
         "BodyBag": {
           "type": "byte",
@@ -36980,7 +36980,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1972220093011856
+          "value": 0.1972219794988632
         },
         "BodyBag": {
           "type": "byte",
@@ -37430,7 +37430,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817469716072083
+          "value": 0.9817468523979187
         },
         "BodyBag": {
           "type": "byte",
@@ -37880,7 +37880,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.37444531917572
+          "value": -1.374445199966431
         },
         "BodyBag": {
           "type": "byte",
@@ -38330,7 +38330,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794701576233
         },
         "BodyBag": {
           "type": "byte",
@@ -39232,7 +39232,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963494420051575
+          "value": 0.1963494122028351
         },
         "BodyBag": {
           "type": "byte",
@@ -39682,7 +39682,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963494420051575
+          "value": -0.1963494122028351
         },
         "BodyBag": {
           "type": "byte",
@@ -39907,7 +39907,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.1963494420051575
+          "value": 0.1963494122028351
         },
         "BodyBag": {
           "type": "byte",
@@ -40132,7 +40132,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795655250549
+          "value": -1.57079553604126
         },
         "BodyBag": {
           "type": "byte",
@@ -40357,7 +40357,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.356193542480469
+          "value": 2.356193065643311
         },
         "BodyBag": {
           "type": "byte",
@@ -41101,11 +41101,2464 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 6.715443419125222e-007
+          "value": 7.907536314633035e-007
         },
         "YPosition": {
           "type": "float",
           "value": 90.02367401123047
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Demon"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_sanddmn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_sandworm001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "sanddemon"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 39.93366622924805
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 67.89965057373047
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.3875979483127594
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Demon"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_sanddmn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_sandworm001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "sanddemon"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 31.24752807617188
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 272.7908325195313
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.04224395751953125
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Demon"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_sanddmn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_sandworm001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "sanddemon"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 268.6693420410156
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 64.62184906005859
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.802522659301758
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Demon"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_sanddmn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_sandworm001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "sanddemon"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 178.1672058105469
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 138.8779907226563
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.098079681396484
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Demon"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_sanddmn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_sandworm001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "sanddemon"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 263.0889892578125
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 242.2097320556641
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 8.982217788696289
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Cave Beetle"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "beetle"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "beetle_spwn001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "beetle"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 97.80446624755859
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 226.8769226074219
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.749228954315186
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Cave Beetle"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "beetle"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "beetle_spwn001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "beetle"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 62.42707824707031
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 67.84385681152344
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1184582114219666
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Cave Beetle"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "beetle"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "beetle_spwn001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "beetle"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 244.929931640625
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 83.17778778076172
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.7711148262023926
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Cave Beetle"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "beetle"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "beetle_spwn001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "beetle"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 268.8999633789063
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 43.13895034790039
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.755580425262451
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Cave Beetle"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "beetle"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "beetle_spwn001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "beetle"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 116.8553924560547
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 43.48667526245117
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4208643436431885
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Tusken Raider"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_tuskspwn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_tuskspwn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ext_tusken_tri01"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 133.3986663818359
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 205.5559844970703
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.851332187652588
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Tusken Raider"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_tuskspwn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_tuskspwn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ext_tusken_tri01"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 151.431884765625
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.8144989013672
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.448398590087891
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Tusken Raider"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_tuskspwn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_tuskspwn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ext_tusken_tri01"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 182.7782287597656
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 162.0764465332031
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.088838577270508
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Tusken Raider"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_tuskspwn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_tuskspwn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ext_tusken_tri01"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 205.6748504638672
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 97.81471252441406
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.4999923706054688
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Tusken Raider"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_tuskspwn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_tuskspwn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ext_tusken_tri01"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 74.82674407958984
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 141.3980560302734
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.63154411315918
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Tusken Raider"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_tuskspwn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_tuskspwn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ext_tusken_tri01"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 61.60985946655273
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 97.4248046875
         },
         "ZPosition": {
           "type": "float",

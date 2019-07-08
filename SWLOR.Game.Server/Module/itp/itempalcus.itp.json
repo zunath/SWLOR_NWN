@@ -2494,6 +2494,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sand Beetle Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandbeetlebite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viper Bite"
                     },
                     "RESREF": {

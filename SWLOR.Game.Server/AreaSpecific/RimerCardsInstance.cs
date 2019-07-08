@@ -4,9 +4,8 @@ using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.AreaInstance
+namespace SWLOR.Game.Server.AreaSpecific
 {
     public static class RimerCardsInstance
     {

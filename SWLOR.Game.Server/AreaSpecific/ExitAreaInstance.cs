@@ -4,8 +4,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-
-namespace SWLOR.Game.Server.AreaInstance
+namespace SWLOR.Game.Server.AreaSpecific
 {
     public class ExitAreaInstance: IRegisteredEvent
     {

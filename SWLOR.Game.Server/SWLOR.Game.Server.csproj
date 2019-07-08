@@ -68,10 +68,10 @@
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="AppCache.cs" />
-    <Compile Include="AreaInstance\CoxxionBase.cs" />
-    <Compile Include="AreaInstance\Contracts\IAreaInstance.cs" />
-    <Compile Include="AreaInstance\ExitAreaInstance.cs" />
-    <Compile Include="AreaInstance\RimerCardsInstance.cs" />
+    <Compile Include="AreaSpecific\Contracts\IAreaInstance.cs" />
+    <Compile Include="AreaSpecific\CoxxionBase.cs" />
+    <Compile Include="AreaSpecific\ExitAreaInstance.cs" />
+    <Compile Include="AreaSpecific\RimerCardsInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
     <Compile Include="ChatCommand\Blueprints.cs" />

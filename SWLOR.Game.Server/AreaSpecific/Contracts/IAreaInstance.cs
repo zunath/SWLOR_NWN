@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.AreaInstance.Contracts
+namespace SWLOR.Game.Server.AreaSpecific.Contracts
 {
     public interface IAreaInstance
     {

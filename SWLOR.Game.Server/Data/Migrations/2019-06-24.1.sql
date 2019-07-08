@@ -5356,3 +5356,9 @@ WHERE ID = 146
 UPDATE dbo.CraftBlueprint
 SET ItemName = 'Level Decrease -3'
 WHERE ID = 147
+
+
+-- Reduce crystal cluster requirements to 4 items instead of 6.
+UPDATE dbo.CraftBlueprint
+SET MainMinimum = 4, MainMaximum = 4
+WHERE ID IN (113, 114, 115, 116)

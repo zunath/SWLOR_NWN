@@ -211,6 +211,7 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("TaskListPage");
 
+            var lastUpdate = DataService.Single<ServerConfiguration>().LastGuildTaskUpdate;
             var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
                                                              x.GuildID == (int) model.Guild);
 
@@ -230,7 +231,7 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
             }
 
-            // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs. 
+            // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs.
             var tasks = DataService.Where<GuildTask>(x => x.GuildID == (int) model.Guild && 
                                                           x.IsCurrentlyOffered &&
                                                           x.RequiredRank <= pcGP.Rank)
@@ -240,7 +241,18 @@ namespace SWLOR.Game.Server.Conversation
                 var quest = DataService.Get<Quest>(task.QuestID);
                 var questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
                                                                                   x.QuestID == task.QuestID);
-                string status = questStatus == null ? ColorTokenService.Yellow("{Available}") : ColorTokenService.Green("{ACCEPTED}");
+
+                // If the player has completed the task during this task cycle, it will be excluded from this list.
+                // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
+                if (questStatus != null && questStatus.CompletionDate >= lastUpdate) continue;
+
+                string status = ColorTokenService.Green("{ACCEPTED}");
+                // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
+                if (questStatus == null || questStatus.CompletionDate != null)
+                {
+                    status = ColorTokenService.Yellow("{Available}");
+                }
+
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status, true, task.ID);
             }
 

@@ -441,7 +441,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!spawn.Spawn.IsValid)
                 {
-                    Console.WriteLine("ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
+                    Console.WriteLine("SPAWN SERVICE ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
                     return;
                 }
 

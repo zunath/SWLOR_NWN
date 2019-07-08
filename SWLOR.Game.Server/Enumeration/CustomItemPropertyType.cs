@@ -31,9 +31,9 @@
         EnmityRate = 115,
         ItemType = 116,
         ArmorClass = 117,
-        DarkPotencyBonus = 118,
-        LightPotencyBonus = 119,
-        MindPotencyBonus = 120,
+        DarkPotencyBonus = 118,     // Deprecated
+        LightPotencyBonus = 119,    // Deprecated
+        MindPotencyBonus = 120,     // Deprecated
         LuckBonus = 121,
         MeditateBonus = 122,
         MedicineBonus = 123,
@@ -55,13 +55,13 @@
         CraftBonusFabrication = 139,
         StructureBonus = 140,
         ScanningBonus = 141,
-        ElectricalPotencyBonus = 142,
-        ForcePotencyBonus = 143,
-        ForceAccuracyBonus = 144,
-        ForceDefenseBonus = 145,
-        ElectricalDefenseBonus = 146,
-        MindDefenseBonus = 147,
-        LightDefenseBonus = 148,
-        DarkDefenseBonus = 149
+        ElectricalPotencyBonus = 142, // Deprecated
+        ForcePotencyBonus = 143,      // Deprecated
+        ForceAccuracyBonus = 144,     // Deprecated
+        ForceDefenseBonus = 145,      // Deprecated
+        ElectricalDefenseBonus = 146, // Deprecated
+        MindDefenseBonus = 147,       // Deprecated
+        LightDefenseBonus = 148,      // Deprecated
+        DarkDefenseBonus = 149        // Deprecated
     }
 }

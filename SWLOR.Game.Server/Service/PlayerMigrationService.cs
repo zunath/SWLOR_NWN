@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
@@ -191,6 +192,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var ip in item.ItemProperties)
             {
                 ProcessVersion6_ComponentBonuses(item, ip);
+                ProcessVersion6_DeprecatedStats(item, ip);
             }
 
             // Deflate all stat bonuses.
@@ -220,6 +222,35 @@ namespace SWLOR.Game.Server.Service
                     _.RemoveItemProperty(item, ip);
                 }
             }
+        }
+
+        /// <summary>
+        /// Removes deprecated item property stats for the version 6 migration process.
+        /// </summary>
+        /// <param name="item">The item to remove properties from.</param>
+        /// <param name="ip">The item property to check and remove, if applicable.</param>
+        private static void ProcessVersion6_DeprecatedStats(NWItem item, ItemProperty ip)
+        {
+            int[] ipsToRemove =
+            {
+                (int)CustomItemPropertyType.DarkPotencyBonus,
+                (int)CustomItemPropertyType.LightPotencyBonus,
+                (int)CustomItemPropertyType.MindPotencyBonus,
+                (int)CustomItemPropertyType.ElectricalPotencyBonus,
+                (int)CustomItemPropertyType.ForcePotencyBonus,
+                (int)CustomItemPropertyType.ForceAccuracyBonus,
+                (int)CustomItemPropertyType.ForceDefenseBonus,
+                (int)CustomItemPropertyType.ElectricalDefenseBonus,
+                (int)CustomItemPropertyType.MindDefenseBonus,
+                (int)CustomItemPropertyType.LightDefenseBonus,
+                (int)CustomItemPropertyType.DarkDefenseBonus
+            };
+
+            if (ipsToRemove.Contains(_.GetItemPropertyType(ip)))
+            {
+                _.RemoveItemProperty(item, ip);
+            }
+
         }
 
         private static void ProcessVersion6_StatBonuses(NWItem item)

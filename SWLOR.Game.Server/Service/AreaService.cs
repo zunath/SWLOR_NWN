@@ -5,7 +5,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.AreaInstance.Contracts;
+using SWLOR.Game.Server.AreaSpecific.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;

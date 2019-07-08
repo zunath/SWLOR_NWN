@@ -717,11 +717,169 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 6.715443419125222e-007
+          "value": 7.907536314633035e-007
         },
         "YPosition": {
           "type": "float",
           "value": 69.86017608642578
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Worm"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tat_sandworm"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tat_sandworm"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 300.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "sandworm"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7409513592720032
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 65.14904022216797
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.671558678150177
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 69.26567077636719
         },
         "ZPosition": {
           "type": "float",

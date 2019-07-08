@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_qn"
+    "value": "tat_anc_northdis"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -15986,7 +15986,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 149
+    "value": 151
   },
   "Width": {
     "type": "int",

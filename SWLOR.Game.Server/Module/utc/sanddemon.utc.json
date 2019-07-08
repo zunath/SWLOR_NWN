@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 1438
+    "value": 3300
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 3
+    "value": 8
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 13.0
   },
   "ClassList": {
     "type": "list",
@@ -23,7 +23,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 26
+          "value": 15
         },
         "ClassLevel": {
           "type": "short",
@@ -34,11 +34,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "\"Just like hitting Womprats back home...\""
+    "value": ""
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 15
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -23
+    "value": -43
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 800
   },
   "DecayTime": {
     "type": "dword",
@@ -66,11 +66,11 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Equip_ItemList": {
     "type": "list",
@@ -79,14 +79,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "raptorbite001"
+          "value": "raptorbite"
         }
       },
       {
-        "__struct_id": 131072,
+        "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitem005"
+          "value": "raptorbite"
         }
       }
     ]
@@ -102,6 +102,48 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1174
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 293
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1020
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 392
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 255
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -110,12 +152,12 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Womprat"
+      "0": "Sand Demon"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 20
+    "value": 30
   },
   "Gender": {
     "type": "byte",
@@ -123,19 +165,19 @@
   },
   "GoodEvil": {
     "type": "byte",
-    "value": 50
+    "value": 0
   },
   "HitPoints": {
     "type": "short",
-    "value": 400
+    "value": 800
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 7
   },
   "Interruptable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsImmortal": {
     "type": "byte",
@@ -153,7 +195,7 @@
   },
   "LawfulChaotic": {
     "type": "byte",
-    "value": 50
+    "value": 0
   },
   "Lootable": {
     "type": "byte",
@@ -161,19 +203,19 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 410
+    "value": 820
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 7
+    "value": 20
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 4
   },
   "PerceptionRange": {
     "type": "byte",
@@ -189,15 +231,15 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 603
+    "value": 309
   },
   "Race": {
     "type": "byte",
-    "value": 25
+    "value": 13
   },
   "refbonus": {
     "type": "short",
-    "value": 20
+    "value": 30
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -454,7 +496,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 249
+    "value": 0
   },
   "SpecAbilityList": {
     "type": "list",
@@ -462,11 +504,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 88
+    "value": 77
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 90
   },
   "Subrace": {
     "type": "cexostring",
@@ -474,7 +516,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Womprat"
+    "value": "sanddemon"
   },
   "Tail_New": {
     "type": "dword",
@@ -486,15 +528,15 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "womprat"
+    "value": "sanddemon"
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 5
   },
   "willbonus": {
     "type": "short",
-    "value": 20
+    "value": 30
   },
   "Wings_New": {
     "type": "dword",

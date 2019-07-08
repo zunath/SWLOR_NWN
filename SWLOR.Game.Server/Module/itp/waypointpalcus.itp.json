@@ -527,6 +527,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine - Cave Beetle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beetle_spwn001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Sand Demon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_sandworm001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Sand Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_sandworm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Tusken Raider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_tuskspwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Womprat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womprat_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara - Coxxion Base"
                     },
                     "RESREF": {

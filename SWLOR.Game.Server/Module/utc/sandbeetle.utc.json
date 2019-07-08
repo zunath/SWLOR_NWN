@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 1438
+    "value": 1187
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 3
+    "value": 5
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 37.0
   },
   "ClassList": {
     "type": "list",
@@ -23,22 +23,22 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 26
+          "value": 11
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 15
         }
       }
     ]
   },
   "Comment": {
     "type": "cexostring",
-    "value": "\"Just like hitting Womprats back home...\""
+    "value": ""
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -23
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 500
   },
   "DecayTime": {
     "type": "dword",
@@ -66,11 +66,11 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Equip_ItemList": {
     "type": "list",
@@ -79,14 +79,7 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "raptorbite001"
-        }
-      },
-      {
-        "__struct_id": 131072,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_creitem005"
+          "value": "sandbeetlebite"
         }
       }
     ]
@@ -102,6 +95,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 334
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -110,12 +110,12 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Womprat"
+      "0": "Sand Beetle"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 20
+    "value": 0
   },
   "Gender": {
     "type": "byte",
@@ -123,15 +123,15 @@
   },
   "GoodEvil": {
     "type": "byte",
-    "value": 50
+    "value": 0
   },
   "HitPoints": {
     "type": "short",
-    "value": 400
+    "value": 500
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 3
   },
   "Interruptable": {
     "type": "byte",
@@ -153,27 +153,27 @@
   },
   "LawfulChaotic": {
     "type": "byte",
-    "value": 50
+    "value": 0
   },
   "Lootable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 410
+    "value": 500
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 7
+    "value": 22
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 10
   },
   "PerceptionRange": {
     "type": "byte",
@@ -189,15 +189,15 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 603
+    "value": 236
   },
   "Race": {
     "type": "byte",
-    "value": 25
+    "value": 7
   },
   "refbonus": {
     "type": "short",
-    "value": 20
+    "value": 0
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -454,7 +454,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 249
+    "value": 9
   },
   "SpecAbilityList": {
     "type": "list",
@@ -462,11 +462,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 88
+    "value": 73
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 50
   },
   "Subrace": {
     "type": "cexostring",
@@ -474,7 +474,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Womprat"
+    "value": "beetle"
   },
   "Tail_New": {
     "type": "dword",
@@ -486,15 +486,15 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "womprat"
+    "value": "sandbeetle"
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 4
   },
   "willbonus": {
     "type": "short",
-    "value": 20
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",
@@ -502,6 +502,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 14
   }
 }

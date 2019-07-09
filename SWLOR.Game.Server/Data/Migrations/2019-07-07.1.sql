@@ -16,6 +16,7 @@ ADD ContentType NVARCHAR(32) NOT NULL
 
 ALTER TABLE dbo.Download
 ADD Instructions NVARCHAR(1000) NOT NULL DEFAULT ''
+GO
 
 INSERT INTO dbo.Download ( ID ,
                            Name ,

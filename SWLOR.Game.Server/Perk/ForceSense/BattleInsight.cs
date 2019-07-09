@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            const float MaxDistance = _.RADIUS_SIZE_SMALL;
+            const float MaxDistance = 5.0f;
             int nth = 1;
             int amount;
 

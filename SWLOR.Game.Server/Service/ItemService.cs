@@ -121,6 +121,10 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
+            // Legacy events follow. We can't remove these because of backwards compatibility issues with existing items.
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_JAVA_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) return;
 
             user.ClearAllActions();

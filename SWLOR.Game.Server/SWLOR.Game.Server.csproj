@@ -974,6 +974,7 @@
     <Compile Include="Event\Player\pc_on_heartbeat.cs" />
     <Compile Include="Perk\Armorsmith\ArmorRepair.cs" />
     <Compile Include="Perk\Armor\AbsorptionField.cs" />
+    <Compile Include="Perk\Armor\Clarity.cs" />
     <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\Armor\ShieldBoost.cs" />
     <Compile Include="Perk\Armor\ShieldProficiency.cs" />

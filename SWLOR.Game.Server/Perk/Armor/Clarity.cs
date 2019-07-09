@@ -6,58 +6,56 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Clarity: IPerkHandler
     {
         public PerkType PerkType => PerkType.Clarity;
-
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
-        {
-            return false;
-        }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier)
         {
             return null;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWCreature creature, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWCreature creature, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWCreature creature, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
+        {
+        }
+
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 

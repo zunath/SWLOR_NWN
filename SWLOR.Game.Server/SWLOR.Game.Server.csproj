@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIFlags.cs" />
+    <Compile Include="AI\DancerBehaviour.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="AppCache.cs" />

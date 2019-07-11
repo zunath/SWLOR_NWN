@@ -92,7 +92,12 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             while (targetCreature.IsValid && GetDistanceBetween(creature, targetCreature) <= MaxDistance)
             {
                 // Skip the caster, if they get picked up.
-                if (targetCreature == creature) continue;
+                if (targetCreature == creature)
+                {
+                    nth++;
+                    targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+                    continue;
+                }
 
                 // Handle effects for differing spellTier values
                 switch (perkLevel)

@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4 };
                             break;
                         case BASE_ITEM_QUARTERSTAFF:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 23 };
                             break;
                         case BASE_ITEM_DOUBLEAXE:
                             parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14, 15, 16, 17, 18 };

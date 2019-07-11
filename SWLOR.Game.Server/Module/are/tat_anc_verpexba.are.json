@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_verpex"
+    "value": "tat_anc_verpexba"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -850,7 +850,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 42
+    "value": 43
   },
   "Width": {
     "type": "int",

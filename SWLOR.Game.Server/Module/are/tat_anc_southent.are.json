@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_entreesud"
+    "value": "tat_anc_southent"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -5979,7 +5979,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 75
+          "value": 67
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -5991,7 +5991,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 1
+          "value": 3
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -6065,7 +6065,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 75
+          "value": 76
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -6077,7 +6077,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 3
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -9290,7 +9290,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 75
+          "value": 5
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -9302,7 +9302,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 3
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -11170,7 +11170,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 50
+    "value": 51
   },
   "Width": {
     "type": "int",

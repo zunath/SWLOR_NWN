@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_qs"
+    "value": "tat_anc_southdis"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -20286,7 +20286,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 107
+    "value": 112
   },
   "Width": {
     "type": "int",

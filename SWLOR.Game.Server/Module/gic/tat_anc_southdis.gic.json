@@ -51,6 +51,146 @@
           "type": "cexostring",
           "value": "Generic human smuggler NPC"
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
@@ -1811,6 +1951,62 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
+          "value": "Draconic Signs by Anaeles\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Draconic Signs by Anaeles\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Draconic Signs by Anaeles\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Draconic Signs by Anaeles\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Draconic Signs by Anaeles\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "volition's Bio Placeables by volition\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
           "value": ""
         }
       }
@@ -1878,7 +2074,15 @@
   },
   "StoreList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
   },
   "TriggerList": {
     "type": "list",
@@ -1921,6 +2125,153 @@
         "Comment": {
           "type": "cexostring",
           "value": "On the Advanced tab, replace <Place text here> with whatever information you wish to appear on the Map of an area."
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       },
       {

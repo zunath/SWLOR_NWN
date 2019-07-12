@@ -501,9 +501,10 @@ namespace SWLOR.Game.Server.Service
 
                 oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
+                MessageHub.Instance.Publish(new OnPerkUpgraded(oPC, perkID));
+
                 var handler = GetPerkHandler(perkID);
                 handler.OnPurchased(oPC, pcPerk.PerkLevel);
-                MessageHub.Instance.Publish(new OnPerkUpgraded(oPC, perkID));
             }
             else
             {

@@ -90,8 +90,6 @@ namespace SWLOR.Game.Server.Scripting
                 _scriptCache[file] = script;
                 string @namespace = script.GetType().FullName;
                 _namespacePointers[@namespace] = file;
-
-                CSScript.MonoEvaluator.
                 return true;
             }
             catch (Exception ex)

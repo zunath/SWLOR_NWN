@@ -7,7 +7,6 @@ using NWN;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
@@ -151,7 +150,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
         {
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem oItem = (_.GetInventoryDisturbItem());
-            NWPlaceable device = (Object.OBJECT_SELF);
+            NWPlaceable device = (NWGameObject.OBJECT_SELF);
             NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
             var model = CraftService.GetPlayerCraftingData(oPC);
             if (oPC.IsBusy)

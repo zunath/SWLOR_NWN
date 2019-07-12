@@ -8,8 +8,6 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 
 namespace SWLOR.Game.Server.Placeable.Bank
 {
@@ -20,7 +18,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
             NWPlayer player = _.GetLastOpenedBy();
             if (!player.IsPlayer) return false;
 
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             NWArea area = terminal.Area;
             int bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0)

@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Event;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.WeatherModifier
 {
@@ -11,7 +10,7 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
     {
         public bool Run(params object[] args)
         {
-            NWObject oSelf = Object.OBJECT_SELF;
+            NWObject oSelf = NWGameObject.OBJECT_SELF;
             int nHeat = oSelf.GetLocalInt("WEATHER_HEAT");
             int nWind = oSelf.GetLocalInt("WEATHER_WIND");
             int nWet = oSelf.GetLocalInt("WEATHER_HUMIDITY");

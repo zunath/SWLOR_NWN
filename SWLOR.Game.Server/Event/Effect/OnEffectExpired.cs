@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Event.Effect
         {
             Data = data.Split(',');
             Creator = creator;
-            AppliedTo = Object.OBJECT_SELF;
+            AppliedTo = NWGameObject.OBJECT_SELF;
         }
     }
 }

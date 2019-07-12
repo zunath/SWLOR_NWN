@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.StructureRubble
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable self = Object.OBJECT_SELF;
+            NWPlaceable self = NWGameObject.OBJECT_SELF;
             NWItem item = _.GetFirstItemInInventory(self);
 
             if (!item.IsValid)

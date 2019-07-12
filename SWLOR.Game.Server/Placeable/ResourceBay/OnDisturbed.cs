@@ -7,7 +7,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ResourceBay
 {
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
         public bool Run(params object[] args)
         {
             NWPlayer player = _.GetLastDisturbed();
-            NWPlaceable bay = Object.OBJECT_SELF;
+            NWPlaceable bay = NWGameObject.OBJECT_SELF;
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = _.GetInventoryDisturbItem();
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");

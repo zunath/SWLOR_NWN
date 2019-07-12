@@ -6,8 +6,6 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnUsed: IRegisteredEvent
@@ -15,7 +13,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetLastUsedBy());
-            NWPlaceable device = (Object.OBJECT_SELF);
+            NWPlaceable device = (NWGameObject.OBJECT_SELF);
 
             // If a structure ID is defined, we need to make sure the building is set to Workshop mode.
             string structureID = device.GetLocalString("PC_BASE_STRUCTURE_ID");

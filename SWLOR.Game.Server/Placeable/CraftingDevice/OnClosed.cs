@@ -4,8 +4,6 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnClosed: IRegisteredEvent
@@ -15,7 +13,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             // Should only fire when a player walks away from the device.
             // Clean up temporary data and return all items placed inside.
             NWPlayer player = (_.GetLastClosedBy());
-            NWPlaceable device = (Object.OBJECT_SELF);
+            NWPlaceable device = (NWGameObject.OBJECT_SELF);
             var model = CraftService.GetPlayerCraftingData(player);
             device.DestroyAllInventoryItems();
             device.IsLocked = false;

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem
     {
         public bool Run(params object[] args)
         {
-            QuestService.OnQuestPlaceableUsed(Object.OBJECT_SELF);
+            QuestService.OnQuestPlaceableUsed(NWGameObject.OBJECT_SELF);
             return true;
         }
     }

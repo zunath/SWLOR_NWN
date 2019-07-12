@@ -1,11 +1,10 @@
 ﻿using NWN;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWPlaceable : NWObject
     {
-        public NWPlaceable(Object nwnObject) 
+        public NWPlaceable(NWGameObject nwnObject) 
             : base(nwnObject)
         {
         }
@@ -49,12 +48,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWPlaceable o)
+        public static implicit operator NWGameObject(NWPlaceable o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWPlaceable(Object o)
+        public static implicit operator NWPlaceable(NWGameObject o)
         {
             return new NWPlaceable(o);
         }

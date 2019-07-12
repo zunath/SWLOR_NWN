@@ -1178,7 +1178,7 @@
     <Compile Include="Scripting\OnScriptLoaded.cs" />
     <Compile Include="Scripting\OnScriptUnloaded.cs" />
     <Compile Include="Scripting\ScriptService.cs" />
-    <Compile Include="Scripting\Scripts\MyScript.cs" />
+    <Compile Include="Scripting\Scripts\Placeable\Sit.cs" />
     <Compile Include="Service\Cached2DAService.cs" />
     <Compile Include="Service\CutsceneService.cs" />
     <Compile Include="Service\GuildService.cs" />
@@ -1261,7 +1261,6 @@
     <Compile Include="Placeable\SearchContainer\OnDisturbed.cs" />
     <Compile Include="Placeable\SearchContainer\OnOpened.cs" />
     <Compile Include="Placeable\SearchContainer\OnUsed.cs" />
-    <Compile Include="Placeable\Sit.cs" />
     <Compile Include="Placeable\Bank\OnDisturbed.cs" />
     <Compile Include="Placeable\Bank\OnOpened.cs" />
     <Compile Include="Placeable\Stores\GenericStore.cs" />

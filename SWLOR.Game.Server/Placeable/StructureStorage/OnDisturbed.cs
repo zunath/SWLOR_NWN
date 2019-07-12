@@ -8,7 +8,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
@@ -18,7 +17,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
         {
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
-            NWPlaceable container = (Object.OBJECT_SELF);
+            NWPlaceable container = (NWGameObject.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);

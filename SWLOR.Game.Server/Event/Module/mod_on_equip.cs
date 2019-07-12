@@ -14,7 +14,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
-            NWObject equipper = Object.OBJECT_SELF;
+            NWObject equipper = NWGameObject.OBJECT_SELF;
             // Bioware Default
             _.ExecuteScript("x2_mod_def_equ", equipper);
 

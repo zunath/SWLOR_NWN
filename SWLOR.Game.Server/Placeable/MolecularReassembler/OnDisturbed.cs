@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 return false;
             
             NWPlayer player = _.GetLastDisturbed();
-            NWPlaceable device = Object.OBJECT_SELF;
+            NWPlaceable device = NWGameObject.OBJECT_SELF;
             NWItem item = _.GetInventoryDisturbItem();
 
             // Check the item type to see if it's valid.

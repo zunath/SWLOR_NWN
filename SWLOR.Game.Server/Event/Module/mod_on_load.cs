@@ -43,7 +43,7 @@ namespace NWN.Scripts
 
             }
             // Bioware default
-            _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
 
             using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
             {
@@ -79,7 +79,7 @@ namespace NWN.Scripts
 
         private static void SetAreaEventScripts()
         {
-            Object area = _.GetFirstArea();
+            NWGameObject area = _.GetFirstArea();
             while (_.GetIsObjectValid(area) == _.TRUE)
             {
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");

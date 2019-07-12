@@ -10,7 +10,6 @@ using SWLOR.Game.Server.NWNX;
 using static NWN._;
 
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -210,7 +209,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnHitCastSpell()
         {
-            NWPlayer oTarget = Object.OBJECT_SELF;
+            NWPlayer oTarget = NWGameObject.OBJECT_SELF;
             if (!oTarget.IsValid) return;
             NWItem oSpellOrigin = (_.GetSpellCastItem());
 

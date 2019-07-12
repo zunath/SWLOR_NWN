@@ -22,7 +22,7 @@ namespace NWN.Scripts
 
             using (new Profiler(nameof(mod_on_examine)))
             {
-                NWPlayer examiner = (Object.OBJECT_SELF);
+                NWPlayer examiner = (NWGameObject.OBJECT_SELF);
                 NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
                 if (ExaminationService.OnModuleExamine(examiner, examinedObject))
                 {

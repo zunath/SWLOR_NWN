@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -25,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnAreaEnter()
         {
-            NWArea area = (Object.OBJECT_SELF);
+            NWArea area = (NWGameObject.OBJECT_SELF);
             NWPlayer player = _.GetEnteringObject();
             
             if (!player.IsPlayer) return;
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaExit()
         {
-            NWArea area = Object.OBJECT_SELF;
+            NWArea area = NWGameObject.OBJECT_SELF;
             NWPlayer player = _.GetExitingObject();
             if (!player.IsPlayer) return;
 
@@ -128,7 +127,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaHeartbeat()
         {
-            NWArea area = Object.OBJECT_SELF;
+            NWArea area = NWGameObject.OBJECT_SELF;
             
             if (area.GetLocalInt("HIDE_MINIMAP") == _.TRUE)
             {

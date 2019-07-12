@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Placeable
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable self = Object.OBJECT_SELF;
+            NWPlaceable self = NWGameObject.OBJECT_SELF;
 
             int vfxID = self.GetLocalInt("PERMANENT_VFX_ID");
             

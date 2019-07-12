@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable device = Object.OBJECT_SELF;
+            NWPlaceable device = NWGameObject.OBJECT_SELF;
             NWPlayer player = _.GetLastOpenedBy();
             var model = MarketService.GetPlayerMarketData(player);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CSScriptLibrary;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -22,6 +23,11 @@ namespace SWLOR.Game.Server.Scripting
         /// Keeps compiled scripts in memory.
         /// </summary>
         private static readonly Dictionary<string, IScript> _scriptCache = new Dictionary<string, IScript>();
+
+        /// <summary>
+        /// Points a namespace to a compiled script in the cache.
+        /// </summary>
+        private static readonly Dictionary<string, string> _namespacePointers = new Dictionary<string, string>();
 
         public static void SubscribeEvents()
         {
@@ -46,6 +52,32 @@ namespace SWLOR.Game.Server.Scripting
         }
 
         /// <summary>
+        /// Executes the Main() function in a compiled script by its namespace.
+        /// </summary>
+        /// <param name="namespace">The fully qualified namespace of the script you wish to run.</param>
+        public static void RunScriptByNamespace(string @namespace)
+        {
+            if (!_namespacePointers.ContainsKey(@namespace))
+            {
+                throw new KeyNotFoundException("Script with namespace '" + @namespace + "' not found. Does the script exist in the Scripts folder?");
+            }
+
+            string fileKey = _namespacePointers[@namespace];
+            IScript script = _scriptCache[fileKey];
+            script.Main();
+        }
+
+        /// <summary>
+        /// Returns whether a script with the given namespace is registered in the script cache.
+        /// </summary>
+        /// <param name="namespace">The namespace of the script you wish to run.</param>
+        /// <returns>true if the script is registered, false otherwise.</returns>
+        public static bool IsScriptRegisteredByNamespace(string @namespace)
+        {
+            return _namespacePointers.ContainsKey(@namespace);
+        }
+
+        /// <summary>
         /// Loads a script from disk and compiles it using the Mono compiler.
         /// </summary>
         /// <param name="file">The path to the script file.</param>
@@ -56,11 +88,17 @@ namespace SWLOR.Game.Server.Scripting
             {
                 var script = CSScript.MonoEvaluator.LoadFile<IScript>(file);
                 _scriptCache[file] = script;
+                string @namespace = script.GetType().FullName;
+                _namespacePointers[@namespace] = file;
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine( "Failed to compile script: " + file + ". Exception: " + ex);
+
+                if (_scriptCache.ContainsKey(file))
+                    _scriptCache.Remove(file);
+
                 return false;
             }
         }
@@ -113,6 +151,8 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
+                var namespacePointer = _namespacePointers.Values.Single(x => x == file);
+                _namespacePointers.Remove(namespacePointer);
                 _scriptCache.Remove(file);
                 return true;
             }

@@ -4,7 +4,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
         {
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            NWPlaceable device = Object.OBJECT_SELF;
+            NWPlaceable device = NWGameObject.OBJECT_SELF;
             var model = MarketService.GetPlayerMarketData(player);
 
             // Serializing containers can be tricky so for the time being we'll leave them disabled.
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
         {
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            NWPlaceable device = Object.OBJECT_SELF;
+            NWPlaceable device = NWGameObject.OBJECT_SELF;
             var model = MarketService.GetPlayerMarketData(player);
 
             // Done previewing an item. Return to menu.

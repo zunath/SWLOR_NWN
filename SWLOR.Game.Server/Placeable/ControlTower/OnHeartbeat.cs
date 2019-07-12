@@ -8,7 +8,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable tower = Object.OBJECT_SELF;
+            NWPlaceable tower = NWGameObject.OBJECT_SELF;
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
             int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);

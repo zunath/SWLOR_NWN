@@ -8,7 +8,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Bank
 {
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             int bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0) return false;
 

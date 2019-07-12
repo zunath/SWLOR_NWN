@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
     {
         public bool Run(params object[] args)
         {
-            NWObject container = Object.OBJECT_SELF;
+            NWObject container = NWGameObject.OBJECT_SELF;
             container.DestroyAllInventoryItems();
             container.Destroy();
 

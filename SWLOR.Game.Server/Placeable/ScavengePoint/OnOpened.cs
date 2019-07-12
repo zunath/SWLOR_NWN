@@ -6,7 +6,6 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
         public bool Run(params object[] args)
         {
-            NWPlaceable point = (Object.OBJECT_SELF);
+            NWPlaceable point = (NWGameObject.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
             if (!oPC.IsPlayer) return false;
 

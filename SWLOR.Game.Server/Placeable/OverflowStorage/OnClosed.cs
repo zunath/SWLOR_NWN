@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable container = (Object.OBJECT_SELF);
+            NWPlaceable container = (NWGameObject.OBJECT_SELF);
             container.DestroyAllInventoryItems();
             container.Destroy();
 

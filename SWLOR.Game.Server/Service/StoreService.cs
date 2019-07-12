@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Store;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -100,14 +99,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnStoreOpened()
         {
-            NWObject store = Object.OBJECT_SELF;
+            NWObject store = NWGameObject.OBJECT_SELF;
             int playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") + 1;
             store.SetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING", playersAccessing);
         }
 
         private static void OnStoreClosed()
         {
-            NWObject store = Object.OBJECT_SELF;
+            NWObject store = NWGameObject.OBJECT_SELF;
             int playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") - 1;
             if (playersAccessing <= 0)
             {

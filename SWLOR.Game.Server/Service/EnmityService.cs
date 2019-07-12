@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -121,15 +120,15 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnNPCPhysicallyAttacked()
         {
-            NWCreature self = (Object.OBJECT_SELF);
-            NWCreature attacker = (_.GetLastAttacker(Object.OBJECT_SELF));
+            NWCreature self = (NWGameObject.OBJECT_SELF);
+            NWCreature attacker = (_.GetLastAttacker(NWGameObject.OBJECT_SELF));
             AdjustEnmity(self, attacker, 0, 1);
         }
 
         public static void OnNPCDamaged()
         {
-            NWCreature self = (Object.OBJECT_SELF);
-            NWCreature damager = (_.GetLastDamager(Object.OBJECT_SELF));
+            NWCreature self = (NWGameObject.OBJECT_SELF);
+            NWCreature damager = (_.GetLastDamager(NWGameObject.OBJECT_SELF));
             int enmityAmount = _.GetTotalDamageDealt();
             if (enmityAmount <= 0) enmityAmount = 1;
 
@@ -138,8 +137,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnPlayerDamaged()
         {
-            NWPlayer player = (Object.OBJECT_SELF);
-            NWCreature npc = (_.GetLastDamager(Object.OBJECT_SELF));
+            NWPlayer player = (NWGameObject.OBJECT_SELF);
+            NWCreature npc = (_.GetLastDamager(NWGameObject.OBJECT_SELF));
 
             if (!player.IsPlayer || !npc.IsNPC) return;
 

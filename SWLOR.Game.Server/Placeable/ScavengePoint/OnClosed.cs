@@ -5,15 +5,13 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnClosed: IRegisteredEvent
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable point = (Object.OBJECT_SELF);
+            NWPlaceable point = (NWGameObject.OBJECT_SELF);
             NWPlayer player = _.GetLastClosedBy();
 
             if (!player.IsPlayer) return false;

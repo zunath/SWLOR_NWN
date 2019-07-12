@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable container = Object.OBJECT_SELF;
+            NWPlaceable container = NWGameObject.OBJECT_SELF;
 
             container.IsUseable = false;
 

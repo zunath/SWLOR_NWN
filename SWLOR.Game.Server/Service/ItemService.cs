@@ -16,7 +16,6 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -895,7 +894,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWObject target = Object.OBJECT_SELF;
+            NWObject target = NWGameObject.OBJECT_SELF;
             if (!target.IsValid) return;
 
             NWObject oSpellOrigin = (_.GetSpellCastItem());

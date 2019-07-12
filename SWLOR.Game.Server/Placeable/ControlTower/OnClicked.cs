@@ -6,8 +6,6 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnClicked: IRegisteredEvent
@@ -15,7 +13,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         public bool Run(params object[] args)
         {
             NWPlayer clicker = (_.GetPlaceableLastClickedBy());
-            NWPlaceable tower = (Object.OBJECT_SELF);
+            NWPlaceable tower = (NWGameObject.OBJECT_SELF);
 
             clicker.ClearAllActions();
             if (!clicker.IsPlayer) return false;

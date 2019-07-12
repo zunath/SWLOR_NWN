@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
         public bool Run(params object[] args)
         {
             NWPlayer player = _.GetLastOpenedBy();
-            NWPlaceable container = Object.OBJECT_SELF;
+            NWPlaceable container = NWGameObject.OBJECT_SELF;
             player.FloatingText("Components placed inside this container will have all bonuses stripped and their level will be reduced to zero.");
             container.IsLocked = true;
             container.IsUseable = false;

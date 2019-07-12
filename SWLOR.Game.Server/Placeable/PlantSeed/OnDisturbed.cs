@@ -7,8 +7,6 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.PlantSeed
 {
     public class OnDisturbed: IRegisteredEvent
@@ -16,7 +14,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
         public bool Run(params object[] args)
         {
-            NWPlaceable container = (Object.OBJECT_SELF);
+            NWPlaceable container = (NWGameObject.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastDisturbed());
             int type = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());

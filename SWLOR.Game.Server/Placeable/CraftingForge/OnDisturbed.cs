@@ -8,8 +8,6 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class OnDisturbed: IRegisteredEvent
@@ -20,7 +18,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             NWPlayer pc = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
-            NWPlaceable forge = (Object.OBJECT_SELF);
+            NWPlaceable forge = (NWGameObject.OBJECT_SELF);
 
             if (!CheckValidity(forge, pc, item)) return false;
             StartSmelt(forge, pc, item);

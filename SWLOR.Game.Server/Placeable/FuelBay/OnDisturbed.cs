@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using static NWN._;
-using Object = NWN.Object;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Placeable.FuelBay
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetLastDisturbed());
-            NWPlaceable bay = (Object.OBJECT_SELF);
+            NWPlaceable bay = (NWGameObject.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
             bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == TRUE;

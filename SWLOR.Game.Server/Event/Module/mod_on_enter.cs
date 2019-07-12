@@ -30,7 +30,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(mod_on_enter) + ":BiowareDefault"))
             {
                 player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
-                _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
+                _.ExecuteScript("dmfi_onclienter ", NWGameObject.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             }
 
             using (new Profiler(nameof(mod_on_enter) + ":PlayerValidation"))

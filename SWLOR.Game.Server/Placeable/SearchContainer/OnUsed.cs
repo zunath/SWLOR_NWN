@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Placeable.SearchContainer
     {
         public bool Run(params object[] args)
         {
-            SearchService.OnChestUsed((Object.OBJECT_SELF));
+            SearchService.OnChestUsed((NWGameObject.OBJECT_SELF));
             return true;
         }
     }

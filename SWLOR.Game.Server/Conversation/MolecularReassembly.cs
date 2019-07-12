@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Show sparks halfway through the process.
                         _.DelayCommand(1.0f * (delay / 2.0f), () =>
                         {
-                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), Object.OBJECT_SELF);
+                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), NWGameObject.OBJECT_SELF);
                         });
                         
                         // Immobilize the player while crafting.

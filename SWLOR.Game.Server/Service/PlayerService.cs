@@ -7,7 +7,6 @@ using NWN;
 
 
 using static NWN._;
-using Object = NWN.Object;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
@@ -462,7 +461,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = (Object.OBJECT_SELF);
+            NWPlayer pc = (NWGameObject.OBJECT_SELF);
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.OpenRestMenu) return;

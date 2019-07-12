@@ -1,10 +1,9 @@
 ﻿using System;
+using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable chest = (Object.OBJECT_SELF);
+            NWPlaceable chest = (NWGameObject.OBJECT_SELF);
             Guid structureID = new Guid(chest.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
 

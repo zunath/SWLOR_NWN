@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Resource
 {
@@ -10,7 +9,7 @@ namespace SWLOR.Game.Server.Placeable.Resource
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable objSelf = (Object.OBJECT_SELF);
+            NWPlaceable objSelf = (NWGameObject.OBJECT_SELF);
             bool hasSpawnedProp = objSelf.GetLocalInt("RESOURCE_PROP_SPAWNED") == 1;
             if (hasSpawnedProp) return false;
 

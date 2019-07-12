@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable chest = Object.OBJECT_SELF;
+            NWPlaceable chest = NWGameObject.OBJECT_SELF;
             NWPlayer player = _.GetLastOpenedBy();
 
             player.SendMessage("Retrieve any resources from this container. When finished, use the control tower or walk away.");

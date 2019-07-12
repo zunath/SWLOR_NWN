@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using static NWN._;
-using Object = NWN.Object;
 using System.Globalization;
 using SWLOR.Game.Server.Service;
 
@@ -17,8 +16,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     {
         public bool Run(params object[] args)
         {
-            NWCreature attacker = (_.GetLastDamager(Object.OBJECT_SELF));
-            NWPlaceable tower = (Object.OBJECT_SELF);
+            NWCreature attacker = (_.GetLastDamager(NWGameObject.OBJECT_SELF));
+            NWPlaceable tower = (NWGameObject.OBJECT_SELF);
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");

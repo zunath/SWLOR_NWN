@@ -5,8 +5,6 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.Quests
 {
     public class ForceCrystal: IRegisteredEvent
@@ -14,7 +12,7 @@ namespace SWLOR.Game.Server.Placeable.Quests
         public bool Run(params object[] args)
         {
             const int QuestID = 30;
-            NWPlaceable crystal = Object.OBJECT_SELF;
+            NWPlaceable crystal = NWGameObject.OBJECT_SELF;
             NWPlayer player = _.GetLastUsedBy();
 
             // Check player's current quest state. If they aren't on stage 2 of the quest only show a message.

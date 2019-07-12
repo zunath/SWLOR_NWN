@@ -15,7 +15,6 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using LoopingAnimationCommand = SWLOR.Game.Server.ChatCommand.LoopingAnimationCommand;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = Object.OBJECT_SELF;
+            NWPlayer sender = NWGameObject.OBJECT_SELF;
             string originalMessage = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
@@ -154,7 +153,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = Object.OBJECT_SELF;
+            NWPlayer pc = NWGameObject.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.ChatCommandTargeter) return;
@@ -182,7 +181,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (target == null)
             {
-                target = new Object();
+                target = new NWGameObject();
             }
 
             if (targetLocation == null)

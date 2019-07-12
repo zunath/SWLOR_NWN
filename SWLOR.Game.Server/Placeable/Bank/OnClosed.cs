@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             
             terminal.DestroyAllInventoryItems();
             

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable plc = (Object.OBJECT_SELF);
+            NWPlaceable plc = (NWGameObject.OBJECT_SELF);
             int growingPlantID = plc.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID <= 0) return false;
             

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.AreaSpecific
     {
         public bool Run(params object[] args)
         {
-            NWObject door = Object.OBJECT_SELF;
+            NWObject door = NWGameObject.OBJECT_SELF;
 
             if (!door.Area.IsInstance) return false;
 

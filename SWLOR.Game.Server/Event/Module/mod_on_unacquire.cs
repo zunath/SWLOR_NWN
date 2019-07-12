@@ -14,7 +14,7 @@ namespace NWN.Scripts
         private static void Main()
         {
             // Bioware default
-            _.ExecuteScript("x2_mod_def_unaqu", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_unaqu", NWGameObject.OBJECT_SELF);
             MessageHub.Instance.Publish(new OnModuleUnacquireItem());
         }
     }

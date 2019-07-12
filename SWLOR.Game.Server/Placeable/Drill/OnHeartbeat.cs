@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Drill
 {
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.Drill
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable drill = Object.OBJECT_SELF;
+            NWPlaceable drill = NWGameObject.OBJECT_SELF;
             string structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(structureID))

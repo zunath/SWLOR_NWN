@@ -13,7 +13,6 @@ using System.Linq;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using static NWN._;
-using Object = NWN.Object;
 using Quest = SWLOR.Game.Server.Data.Entity.Quest;
 using QuestType = SWLOR.Game.Server.Enumeration.QuestType;
 
@@ -642,7 +641,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnCreatureDeath()
         {
-            NWCreature creature = Object.OBJECT_SELF;
+            NWCreature creature = NWGameObject.OBJECT_SELF;
 
             int npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;

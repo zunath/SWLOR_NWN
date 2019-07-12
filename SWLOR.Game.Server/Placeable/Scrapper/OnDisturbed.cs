@@ -8,7 +8,6 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Scrapper
 {
@@ -18,7 +17,7 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
         {
             int type = _.GetInventoryDisturbType();
             if (type != INVENTORY_DISTURB_TYPE_ADDED) return true;
-            NWPlaceable device = Object.OBJECT_SELF;
+            NWPlaceable device = NWGameObject.OBJECT_SELF;
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
             var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentType);

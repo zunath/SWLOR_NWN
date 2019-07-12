@@ -5,15 +5,13 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service;
 
-using Object = NWN.Object;
-
 namespace SWLOR.Game.Server.Placeable.GrowingPlant
 {
     public class OnUsed: IRegisteredEvent
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable plant = (Object.OBJECT_SELF);
+            NWPlaceable plant = (NWGameObject.OBJECT_SELF);
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
             if (string.IsNullOrWhiteSpace(growingPlantID)) return false;
 

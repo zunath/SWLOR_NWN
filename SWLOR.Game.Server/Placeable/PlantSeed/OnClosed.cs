@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable container = (Object.OBJECT_SELF);
+            NWPlaceable container = (NWGameObject.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastClosedBy());
             
             foreach (NWItem item in container.InventoryItems)

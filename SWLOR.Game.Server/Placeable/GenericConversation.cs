@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Placeable
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable placeable = (Object.OBJECT_SELF);
+            NWPlaceable placeable = (NWGameObject.OBJECT_SELF);
             NWPlayer user = placeable.ObjectType == OBJECT_TYPE_PLACEABLE ? 
                 _.GetLastUsedBy() :
                 _.GetClickingObject();

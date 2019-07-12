@@ -13,7 +13,7 @@ namespace NWN.Scripts
         private static void Main()
         {
             // Bioware Default
-            _.ExecuteScript("x2_mod_def_aqu", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_aqu", NWGameObject.OBJECT_SELF);
             MessageHub.Instance.Publish(new OnModuleAcquireItem());
         }
     }

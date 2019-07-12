@@ -13,7 +13,7 @@ namespace NWN.Scripts
         private static void Main()
         {
             // Bioware default
-            _.ExecuteScript("x2_mod_def_act", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_act", NWGameObject.OBJECT_SELF);
             MessageHub.Instance.Publish(new OnModuleActivateItem());
         }
     }

@@ -4,5 +4,6 @@
     {
         void SubscribeEvents();
         void UnsubscribeEvents();
+        void Main();
     }
 }

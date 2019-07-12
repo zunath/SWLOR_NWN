@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 {
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable container = Object.OBJECT_SELF;
+            NWPlaceable container = NWGameObject.OBJECT_SELF;
             NWObject owner = container.GetLocalObject("QUEST_OWNER");
 
             NWPlayer player = _.GetLastDisturbed();

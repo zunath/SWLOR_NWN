@@ -36,6 +36,9 @@
     <Reference Include="Costura, Version=4.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.0.0\lib\net40\Costura.dll</HintPath>
     </Reference>
+    <Reference Include="CSScriptLibrary, Version=3.29.0.0, Culture=neutral, PublicKeyToken=70fcc3d18c749033, processorArchitecture=MSIL">
+      <HintPath>..\packages\CS-Script.lib.3.29.0\lib\CSScriptLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
     </Reference>
@@ -1171,6 +1174,11 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
+    <Compile Include="Scripting\Contracts\IScript.cs" />
+    <Compile Include="Scripting\OnScriptLoaded.cs" />
+    <Compile Include="Scripting\OnScriptUnloaded.cs" />
+    <Compile Include="Scripting\ScriptService.cs" />
+    <Compile Include="Scripting\Scripts\MyScript.cs" />
     <Compile Include="Service\Cached2DAService.cs" />
     <Compile Include="Service\CutsceneService.cs" />
     <Compile Include="Service\GuildService.cs" />
@@ -1445,8 +1453,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)." "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
-</PostBuildEvent>
+    <PostBuildEvent>
+      xcopy "$(TargetDir).\SWLOR.Game.Server.dll" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.pdb" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.dll.config" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir)..\..\Scripting\Scripts" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts" /E /Y /C /i
+    </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

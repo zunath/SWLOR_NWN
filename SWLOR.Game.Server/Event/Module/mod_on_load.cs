@@ -62,7 +62,10 @@ namespace NWN.Scripts
             // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
             var typesInNamespace = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.Namespace != null && x.Namespace.StartsWith("SWLOR.Game.Server"))
+                .Where(x => x.Namespace != null && 
+                            x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
+                            !x.Namespace.StartsWith("SWLOR.Game.Server.Scripting.Scripts") && // Exclude scripts
+                            x.IsClass) // Classes only.
                 .ToArray();
             foreach (var type in typesInNamespace)
             {

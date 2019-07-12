@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Event.Delayed
         {
             using (new Profiler(nameof(FinishAbilityUse)))
             {
+                Console.WriteLine("Firing FinishAbilityUse");
+
                 // These arguments are sent from the AbilityService's ActivateAbility method.
                 NWCreature activator = (NWCreature) args[0];
                 string spellUUID = Convert.ToString(args[1]);
@@ -24,6 +26,8 @@ namespace SWLOR.Game.Server.Event.Delayed
                 int pcPerkLevel = (int) args[4];
                 int spellTier = (int) args[5];
                 float armorPenalty = (float) args[6];
+
+                Console.WriteLine("FinishAbilityUse perkID = " + perkID);
 
                 // Get the relevant perk information from the database.
                 Data.Entity.Perk dbPerk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);

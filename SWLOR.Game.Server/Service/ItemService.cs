@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
@@ -15,6 +14,8 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Scripting.Scripts.Delayed;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -180,17 +181,9 @@ namespace SWLOR.Game.Server.Service
             });
 
             NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
-            user.DelayEvent<FinishActionItem>(
-                delay,
-                className,
-                user,
-                oItem,
-                target,
-                targetLocation,
-                userPosition,
-                customData);
-        
 
+            var @event = new OnFinishActionItem(className, user, oItem, target, targetLocation, userPosition, customData);
+            user.DelayEvent(delay, @event);
         }
 
         public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
@@ -670,60 +663,6 @@ namespace SWLOR.Game.Server.Service
             foreach (var ip in item.ItemProperties)
             {
                 _.RemoveItemProperty(item.Object, ip);
-            }
-        }
-
-        public static void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
-        {
-            user.IsBusy = false;
-
-            Vector userPosition = user.Position;
-            if (userPosition.m_X != userStartPosition.m_X ||
-                userPosition.m_Y != userStartPosition.m_Y ||
-                userPosition.m_Z != userStartPosition.m_Z)
-            {
-                user.SendMessage("You move and interrupt your action.");
-                return;
-            }
-
-            float maxDistance = actionItem.MaxDistance(user, item, target, targetLocation);
-            if (maxDistance > 0.0f)
-            {
-                if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                    user.Area.Resref != target.Area.Resref))
-                {
-                    user.SendMessage("Your target is too far away.");
-                    return;
-                }
-                else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
-                {
-                    user.SendMessage("That location is too far away.");
-                    return;
-                }
-            }
-
-            if (!target.IsValid && !actionItem.AllowLocationTarget())
-            {
-                user.SendMessage("Unable to locate target.");
-                return;
-            }
-
-            string invalidTargetMessage = actionItem.IsValidTarget(user, item, target, targetLocation);
-            if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
-            {
-                user.SendMessage(invalidTargetMessage);
-                return;
-            }
-
-            actionItem.ApplyEffects(user, item, target, targetLocation, customData);
-
-            if (actionItem.ReducesItemCharge(user, item, target, targetLocation, customData))
-            {
-                if (item.Charges > 0) item.ReduceCharges();
-                else item.Destroy();
             }
         }
 

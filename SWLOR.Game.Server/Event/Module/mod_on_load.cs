@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
 
@@ -64,7 +65,7 @@ namespace NWN.Scripts
                 .GetTypes()
                 .Where(x => x.Namespace != null && 
                             x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
-                            !x.Namespace.StartsWith("SWLOR.Game.Server.Scripting.Scripts") && // Exclude scripts
+                            !typeof(IScript).IsAssignableFrom(x) && // Exclude scripts
                             x.IsClass) // Classes only.
                 .ToArray();
             foreach (var type in typesInNamespace)

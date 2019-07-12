@@ -1,8 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Placeable.MolecularReassembler;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -193,7 +193,8 @@ namespace SWLOR.Game.Server.Conversation
                         // Calculate delay, fire off delayed event, and show timing bar.
                         float delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
                         NWNXPlayer.StartGuiTimingBar(player, delay, string.Empty);
-                        player.DelayEvent<ReassembleComplete>(delay, player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
+                        var @event = new OnReassembleComplete(player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
+                        player.DelayEvent(delay, @event);
 
                         // Make the player play an animation.
                         player.AssignCommand(() =>

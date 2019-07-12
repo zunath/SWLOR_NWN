@@ -2,7 +2,6 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
@@ -16,6 +15,7 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.Scripting.Scripts.Delayed;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -579,14 +579,9 @@ namespace SWLOR.Game.Server.Service
 
             // Run the FinishAbilityUse event at the end of the activation time.
             int perkID = entity.ID;
-            activator.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
-                activator,
-                uuid,
-                perkID,
-                target,
-                pcPerkLevel,
-                spellTier,
-                armorPenalty);
+
+            var @event = new OnFinishAbilityUse(activator, uuid, perkID, target, pcPerkLevel, spellTier, armorPenalty);
+            activator.DelayEvent(activationTime + 0.2f, @event);
         }
 
         public static void ApplyCooldown(NWCreature creature, CooldownCategory cooldown, IPerkHandler handler, int spellTier, float armorPenalty)

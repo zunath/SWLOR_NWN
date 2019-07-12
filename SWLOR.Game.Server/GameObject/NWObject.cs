@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using NWN;
 using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -249,13 +250,11 @@ namespace SWLOR.Game.Server.GameObject
             });
         }
 
-        public virtual void DelayEvent<T>(float seconds, params object[] args)
-            where T: IRegisteredEvent
+        public virtual void DelayEvent<T>(float seconds, T data)
         {
             _.DelayCommand(seconds, () =>
             {
-                IRegisteredEvent @event = Activator.CreateInstance<T>();
-                @event.Run(args);
+                MessageHub.Instance.Publish(data);
             });
         }
 

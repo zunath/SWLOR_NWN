@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using CSScriptLibrary;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -22,12 +24,12 @@ namespace SWLOR.Game.Server.Scripting
         /// <summary>
         /// Keeps compiled scripts in memory.
         /// </summary>
-        private static readonly Dictionary<string, IScript> _scriptCache = new Dictionary<string, IScript>();
+        private static readonly ConcurrentDictionary<string, IScript> _scriptCache = new ConcurrentDictionary<string, IScript>();
 
         /// <summary>
         /// Points a namespace to a compiled script in the cache.
         /// </summary>
-        private static readonly Dictionary<string, string> _namespacePointers = new Dictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> _namespacePointers = new ConcurrentDictionary<string, string>();
 
         public static void SubscribeEvents()
         {
@@ -44,10 +46,12 @@ namespace SWLOR.Game.Server.Scripting
             string scriptsDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY") + "/Scripts/";
             string[] files = Directory.GetFiles(scriptsDirectory, "*.cs", SearchOption.AllDirectories);
 
-            foreach (var file in files)
+            Console.WriteLine("Compiling script files...");
+            Parallel.ForEach(files, (file) =>
             {
                 DoLoadScript(file);
-            }
+            });
+            Console.WriteLine("Scripts finished compiling!");
 
             StartFileWatcher(scriptsDirectory);
         }
@@ -98,7 +102,13 @@ namespace SWLOR.Game.Server.Scripting
                 Console.WriteLine( "Failed to compile script: " + file + ". Exception: " + ex);
 
                 if (_scriptCache.ContainsKey(file))
-                    _scriptCache.Remove(file);
+                {
+                    // It's safe to assume this will always succeed.
+                    // The reason being is that we only do parallelism
+                    // during the boot-up sequence. Future accesses to the
+                    // dictionary are on a single thread.
+                    _scriptCache.TryRemove(file, out _);
+                }
 
                 return false;
             }
@@ -153,8 +163,8 @@ namespace SWLOR.Game.Server.Scripting
             try
             {
                 var namespacePointer = _namespacePointers.Values.Single(x => x == file);
-                _namespacePointers.Remove(namespacePointer);
-                _scriptCache.Remove(file);
+                _namespacePointers.TryRemove(namespacePointer, out _);
+                _scriptCache.TryRemove(file, out _);
                 return true;
             }
             catch (Exception ex)

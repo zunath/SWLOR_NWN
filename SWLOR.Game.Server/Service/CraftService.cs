@@ -9,8 +9,8 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;

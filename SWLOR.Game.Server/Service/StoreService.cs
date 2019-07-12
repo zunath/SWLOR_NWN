@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Store;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service

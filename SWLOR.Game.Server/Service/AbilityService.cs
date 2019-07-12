@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
 using System;

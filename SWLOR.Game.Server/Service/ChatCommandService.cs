@@ -12,7 +12,6 @@ using System.Reflection;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using LoopingAnimationCommand = SWLOR.Game.Server.ChatCommand.LoopingAnimationCommand;

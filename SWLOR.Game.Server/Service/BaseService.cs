@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;

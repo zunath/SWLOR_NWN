@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.NWN.Events.Module
+﻿namespace SWLOR.Game.Server.Event.Module
 {
     public class OnModuleEnterStealthAfter
     {

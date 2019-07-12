@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Scripting
         /// <param name="event">The event raised.</param>
         private static void OnModuleLoad(OnModuleLoad @event)
         {
+            CSScript.EvaluatorConfig.Engine = EvaluatorEngine.Roslyn;
             string scriptsDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY") + "/Scripts/";
             string[] files = Directory.GetFiles(scriptsDirectory, "*.cs", SearchOption.AllDirectories);
 

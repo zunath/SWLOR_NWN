@@ -12,7 +12,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Scripting.Scripts.Delayed;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;

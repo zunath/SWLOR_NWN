@@ -1,18 +1,25 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Scripting.Contracts;
 
 namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.QuestSystem.ItemCollector
 {
-    public class OnClosed: IRegisteredEvent
+    public class OnClosed: IScript
     {
-        public bool Run(params object[] args)
+        public void SubscribeEvents()
+        {
+        }
+
+        public void UnsubscribeEvents()
+        {
+        }
+
+        public void Main()
         {
             NWObject container = NWGameObject.OBJECT_SELF;
             container.DestroyAllInventoryItems();
             container.Destroy();
-
-            return true;
         }
     }
 }

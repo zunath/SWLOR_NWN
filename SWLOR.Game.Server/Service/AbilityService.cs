@@ -14,8 +14,6 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.Scripting.Scripts.Delayed;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;

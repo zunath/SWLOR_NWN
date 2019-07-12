@@ -15,7 +15,6 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.Scripting.Scripts.Delayed;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service

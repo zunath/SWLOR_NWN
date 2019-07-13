@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<Attribute>();
             GetAll<AuthorizedDM>();
             GetAll<Bank>();
-            RegisterEmptyCacheSet<BankItem>();
+            GetAll<BankItem>();
             GetAll<BaseItemType>();
             GetAll<BaseStructure>();
             GetAll<BaseStructureType>();
@@ -140,27 +140,29 @@ namespace SWLOR.Game.Server.Service
             GetAll<SpaceStarport>();
             GetAll<SpaceEncounter>();
 
-            RegisterEmptyCacheSet<PCCooldown>();
-            RegisterEmptyCacheSet<PCCraftedBlueprint>();
-            RegisterEmptyCacheSet<PCCustomEffect>();
-            RegisterEmptyCacheSet<PCImpoundedItem>();
-            RegisterEmptyCacheSet<PCGuildPoint>();
-            RegisterEmptyCacheSet<PCKeyItem>();
-            RegisterEmptyCacheSet<PCMapPin>();
-            RegisterEmptyCacheSet<PCMapProgression>();
-            RegisterEmptyCacheSet<PCObjectVisibility>();
-            RegisterEmptyCacheSet<PCOutfit>();
-            RegisterEmptyCacheSet<PCOverflowItem>();
-            RegisterEmptyCacheSet<PCPerk>();
-            RegisterEmptyCacheSet<PCQuestItemProgress>();
-            RegisterEmptyCacheSet<PCQuestKillTargetProgress>();
-            RegisterEmptyCacheSet<PCQuestStatus>();
-            RegisterEmptyCacheSet<PCRegionalFame>();
-            RegisterEmptyCacheSet<PCSearchSite>();
-            RegisterEmptyCacheSet<PCSearchSiteItem>();
-            RegisterEmptyCacheSet<PCSkill>();
-            RegisterEmptyCacheSet<PCSkillPool>();
-            RegisterEmptyCacheSet<PCPerkRefund>();
+            
+            GetAll<PCCooldown>();
+            GetAll<PCCraftedBlueprint>();
+            GetAll<PCCustomEffect>();
+
+            LoadPCImpoundedItemsCache();
+            GetAll<PCGuildPoint>();
+            GetAll<PCKeyItem>();
+            GetAll<PCMapPin>();
+            GetAll<PCMapProgression>();
+            GetAll<PCObjectVisibility>();
+            GetAll<PCOutfit>();
+            GetAll<PCOverflowItem>();
+            GetAll<PCPerk>();
+            GetAll<PCQuestItemProgress>();
+            GetAll<PCQuestKillTargetProgress>();
+            GetAll<PCQuestStatus>();
+            GetAll<PCRegionalFame>();
+            GetAll<PCSearchSite>();
+            GetAll<PCSearchSiteItem>();
+            GetAll<PCSkill>();
+            GetAll<PCSkillPool>();
+            GetAll<PCPerkRefund>();
 
             GetAll<Data.Entity.Perk>();
             GetAll<PerkFeat>();
@@ -169,7 +171,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<PerkLevelQuestRequirement>();
             GetAll<PerkLevelSkillRequirement>();
             GetAll<Plant>();
-            GetAll<Player>(); // Load all player data as it's referenced in other systems even if player isn't online.
+            GetAll<Player>(); 
             GetAll<Quest>();
             GetAll<QuestKillTarget>();
             GetAll<QuestPrerequisite>();
@@ -195,7 +197,7 @@ namespace SWLOR.Game.Server.Service
         /// 1.) Haven't been sold already
         /// 2.) Haven't been removed by the seller.
         /// This method will retrieve these specific records and store them into the cache.
-        /// Should be called in the InitializeCache() method.
+        /// Should be called in the InitializeCache() method one time.
         /// </summary>
         private static void LoadPCMarketListingCache()
         {
@@ -211,126 +213,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Caches a player's data. Be sure to call RemoveCachedPlayerData when the player exits the game.
+        /// PC Impounded Items should only be loaded into the cache if they:
+        /// 1.) Haven't been retrieved.
+        /// 2.) Haven't expired (30 days after the date they were impounded.)
+        /// Should be called in the InitializeCache() method one time.
         /// </summary>
-        /// <param name="player"></param>
-        public static void CachePlayerData(NWPlayer player)
+        private static void LoadPCImpoundedItemsCache()
         {
-            if (!player.IsPlayer) return;
-            
-            Console.WriteLine("Starting CachePlayerData for ID = " + player.GlobalID);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            using (var multi = Connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
+            const string Sql = "SELECT * FROM dbo.PCImpoundedItem WHERE DateRetrieved IS NULL AND GETUTCDATE() < DATEADD(DAY, 30, CAST(DateImpounded AS DATE))";
+
+            var results = Connection.Query<PCImpoundedItem>(Sql);
+            foreach (var result in results)
             {
-                foreach (var item in multi.Read<PCCooldown>())
-                    SetIntoCache<PCCooldown>(item.ID, item);
-                foreach (var item in multi.Read<PCCraftedBlueprint>())
-                    SetIntoCache<PCCraftedBlueprint>(item.ID, item);
-
-                foreach (var item in multi.Read<PCCustomEffect>())
-                    SetIntoCache<PCCustomEffect>(item.ID, item);
-                foreach (var item in multi.Read<PCImpoundedItem>())
-                    SetIntoCache<PCImpoundedItem>(item.ID, item);
-                foreach (var item in multi.Read<PCKeyItem>())
-                    SetIntoCache<PCKeyItem>(item.ID, item);
-                foreach (var item in multi.Read<PCMapPin>())
-                    SetIntoCache<PCMapPin>(item.ID, item);
-                foreach (var item in multi.Read<PCMapProgression>())
-                    SetIntoCache<PCMapProgression>(item.ID, item);
-                foreach (var item in multi.Read<PCObjectVisibility>())
-                    SetIntoCache<PCObjectVisibility>(item.ID, item);
-
-                var outfit = multi.Read<PCOutfit>().SingleOrDefault();
-
-                if (outfit != null)
-                    SetIntoCache<PCOutfit>(outfit.PlayerID, outfit);
-
-                foreach (var item in multi.Read<PCOverflowItem>())
-                    SetIntoCache<PCOverflowItem>(item.ID, item);
-                foreach (var item in multi.Read<PCPerk>())
-                    SetIntoCache<PCPerk>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestItemProgress>())
-                    SetIntoCache<PCQuestItemProgress>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestKillTargetProgress>())
-                    SetIntoCache<PCQuestKillTargetProgress>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestStatus>())
-                    SetIntoCache<PCQuestStatus>(item.ID, item);
-                foreach (var item in multi.Read<PCRegionalFame>())
-                    SetIntoCache<PCRegionalFame>(item.ID, item);
-                foreach (var item in multi.Read<PCSearchSite>())
-                    SetIntoCache<PCSearchSite>(item.ID, item);
-                foreach (var item in multi.Read<PCSearchSiteItem>())
-                    SetIntoCache<PCSearchSiteItem>(item.ID, item);
-                foreach (var item in multi.Read<PCSkill>())
-                    SetIntoCache<PCSkill>(item.ID, item);
-                foreach (var item in multi.Read<BankItem>())
-                    SetIntoCache<BankItem>(item.ID, item);
-                foreach (var item in multi.Read<PCSkillPool>())
-                    SetIntoCache<PCSkillPool>(item.ID, item);
-                foreach(var item in multi.Read<PCGuildPoint>())
-                    SetIntoCache<PCGuildPoint>(item.ID, item);
+                object id = GetEntityKey(result);
+                SetIntoCache<PCImpoundedItem>(id, result);
             }
-            sw.Stop();
-            Console.WriteLine("CachePlayerData took " + sw.ElapsedMilliseconds + " ms to run. Player ID = " + player.GlobalID);
-
-            Get<Player>(player.GlobalID);
-        }
-
-        /// <summary>
-        /// Removes a player's cached data. Be sure to call this ONLY on the OnClientLeave event.
-        /// </summary>
-        /// <param name="player"></param>
-        public static void RemoveCachedPlayerData(NWPlayer player)
-        {
-            if (!player.IsPlayer) return;
-
-            Guid id = player.GlobalID;
-            
-            foreach(var item in Where<PCCooldown>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCCooldown>(item.ID);
-            foreach (var item in Where<PCCraftedBlueprint>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCCraftedBlueprint>(item.ID);
-            foreach (var item in Where<PCCustomEffect>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCCustomEffect>(item.ID);
-            foreach (var item in Where<PCImpoundedItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCImpoundedItem>(item.ID);
-            foreach (var item in Where<PCKeyItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCKeyItem>(item.ID);
-            foreach (var item in Where<PCMapPin>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCMapPin>(item.ID);
-            foreach (var item in Where<PCMapProgression>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCMapProgression>(item.ID);
-            foreach (var item in Where<PCObjectVisibility>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCObjectVisibility>(item.ID);
-            foreach (var item in Where<PCOutfit>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCOutfit>(item.PlayerID);
-            foreach (var item in Where<PCOverflowItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCOverflowItem>(item.ID);
-            foreach (var item in Where<PCPerk>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCPerk>(item.ID);
-            foreach (var item in Where<PCPerkRefund>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCPerkRefund>(item.ID);
-            foreach (var item in Where<PCQuestItemProgress>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCQuestItemProgress>(item.ID);
-            foreach (var item in Where<PCQuestKillTargetProgress>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCQuestKillTargetProgress>(item.ID);
-            foreach (var item in Where<PCQuestStatus>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCQuestStatus>(item.ID);
-            foreach (var item in Where<PCRegionalFame>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCRegionalFame>(item.ID);
-            foreach (var item in Where<PCSearchSite>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSearchSite>(item.ID);
-            foreach (var item in Where<PCSearchSiteItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSearchSiteItem>(item.ID);
-            foreach(var item in Where<PCSkill>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSkill>(item.ID);
-            foreach(var item in Where<BankItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<BankItem>(item.ID);
-            foreach(var item in Where<PCSkillPool>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSkillPool>(item.ID);
-            foreach(var item in Where<PCGuildPoint>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCGuildPoint>(item.ID);
         }
 
         /// <summary>

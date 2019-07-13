@@ -7,11 +7,9 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -156,7 +154,7 @@ namespace SWLOR.Game.Server.Service
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                _.BeginConversation("dialog" + dialog.DialogNumber, new Object());
+                _.BeginConversation("dialog" + dialog.DialogNumber, new NWGameObject());
             }
             // Everything else
             else
@@ -337,19 +335,19 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer pc = (_.GetLastUsedBy());
                 if (!pc.IsValid) pc = (_.GetPCSpeaker());
 
-                string conversation = _.GetLocalString(Object.OBJECT_SELF, "CONVERSATION");
+                string conversation = _.GetLocalString(NWGameObject.OBJECT_SELF, "CONVERSATION");
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    int objectType = _.GetObjectType(Object.OBJECT_SELF);
+                    int objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
                     if (objectType == _.OBJECT_TYPE_PLACEABLE)
                     {
-                        NWPlaceable talkTo = (Object.OBJECT_SELF);
+                        NWPlaceable talkTo = (NWGameObject.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                     else
                     {
-                        NWCreature talkTo = (Object.OBJECT_SELF);
+                        NWCreature talkTo = (NWGameObject.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                 }

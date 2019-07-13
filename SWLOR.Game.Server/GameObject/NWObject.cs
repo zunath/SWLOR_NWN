@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 using NWN;
 using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWObject
     {
-        public virtual Object Object { get; }
+        public virtual NWGameObject Object { get; }
         
-        public NWObject(Object nwnObject)
+        public NWObject(NWGameObject nwnObject)
         {
             Object = nwnObject;
         }
@@ -217,12 +217,12 @@ namespace SWLOR.Game.Server.GameObject
         }
 
 
-        public virtual Object GetLocalObject(string name)
+        public virtual NWGameObject GetLocalObject(string name)
         {
             return _.GetLocalObject(Object, name);
         }
 
-        public virtual void SetLocalObject(string name, Object value)
+        public virtual void SetLocalObject(string name, NWGameObject value)
         {
             _.SetLocalObject(Object, name, value);
         }
@@ -250,13 +250,11 @@ namespace SWLOR.Game.Server.GameObject
             });
         }
 
-        public virtual void DelayEvent<T>(float seconds, params object[] args)
-            where T: IRegisteredEvent
+        public virtual void DelayEvent<T>(float seconds, T data)
         {
             _.DelayCommand(seconds, () =>
             {
-                IRegisteredEvent @event = Activator.CreateInstance<T>();
-                @event.Run(args);
+                MessageHub.Instance.Publish(data);
             });
         }
 
@@ -361,12 +359,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWObject o)
+        public static implicit operator NWGameObject(NWObject o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWObject(Object o)
+        public static implicit operator NWObject(NWGameObject o)
         {
             return new NWObject(o);
         }

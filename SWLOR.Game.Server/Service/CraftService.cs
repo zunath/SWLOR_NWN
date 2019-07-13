@@ -7,16 +7,14 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
-
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
             {
-                NWPlayer player = Object.OBJECT_SELF;
+                NWPlayer player = NWGameObject.OBJECT_SELF;
                 DialogService.StartConversation(player, player, "ModifyItemAppearance");
             });
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
@@ -220,9 +218,8 @@ namespace SWLOR.Game.Server.Service
 
             NWNXPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
 
-            oPC.DelayEvent<CraftCreateItem>(
-                modifiedCraftDelay,
-                oPC);
+            var @event = new OnCreateCraftedItem(oPC);
+            oPC.DelayEvent(modifiedCraftDelay, @event);
         }
 
 
@@ -583,7 +580,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = Object.OBJECT_SELF;
+            NWPlayer pc = NWGameObject.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.RenameCraftedItem) return;
@@ -691,7 +688,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaEnter()
         {
-            NWArea area = Object.OBJECT_SELF;
+            NWArea area = NWGameObject.OBJECT_SELF;
             string bonuses = GetAreaAtmosphereBonusText(area);
 
             if (string.IsNullOrWhiteSpace(bonuses)) return;

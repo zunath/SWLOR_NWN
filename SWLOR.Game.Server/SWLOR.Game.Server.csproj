@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.3.1.1\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.3.1.1\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.3\build\Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.3\build\Microsoft.CodeAnalysis.Analyzers.props')" />
   <Import Project="..\packages\Costura.Fody.4.0.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.4.0.0\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -36,28 +38,117 @@
     <Reference Include="Costura, Version=4.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.0.0\lib\net40\Costura.dll</HintPath>
     </Reference>
+    <Reference Include="CSScriptLibrary, Version=3.29.0.0, Culture=neutral, PublicKeyToken=70fcc3d18c749033, processorArchitecture=MSIL">
+      <HintPath>..\packages\CS-Script.bin.3.29.0\lib\net46\CSScriptLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="CSSRoslynProvider, Version=3.28.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CS-Script.RoslynProvider.3.29.0\lib\net46\CSSRoslynProvider.dll</HintPath>
+    </Reference>
     <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.8.4.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.1.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.3.1.0\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Scripting, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Scripting.3.1.0\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Scripting.Common.3.1.0\lib\netstandard2.0\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\CS-Script.bin.3.29.0\lib\net46\Mono.CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.4.5.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.ComponentModel.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Primitives.4.3.0\lib\net45\System.ComponentModel.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Console, Version=4.0.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Console.4.3.1\lib\net46\System.Console.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Diagnostics.FileVersionInfo, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.FileVersionInfo.4.3.0\lib\net46\System.Diagnostics.FileVersionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.StackTrace, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.StackTrace.4.3.0\lib\net46\System.Diagnostics.StackTrace.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata, Version=1.4.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Text.Encoding.CodePages, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.4.5.1\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -68,6 +159,20 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.1\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.XmlDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XPath, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Xml.XPath.4.3.0\lib\net46\System.Xml.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XPath.XDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIFlags.cs" />
@@ -428,6 +533,7 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_4.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
+    <Compile Include="Event\SWLOR\OnCompleteSmelt.cs" />
     <Compile Include="Event\Effect\OnEffectExpired.cs" />
     <Compile Include="Event\Legacy\script_9.cs" />
     <Compile Include="Event\Legacy\script_8.cs" />
@@ -441,10 +547,14 @@
     <Compile Include="Event\SWLOR\OnAreaInstanceCreated.cs" />
     <Compile Include="Event\SWLOR\OnAreaInstanceDestroyed.cs" />
     <Compile Include="Event\SWLOR\OnChatProcessed.cs" />
+    <Compile Include="Event\SWLOR\OnCreateCraftedItem.cs" />
+    <Compile Include="Event\SWLOR\OnFinishAbilityUse.cs" />
+    <Compile Include="Event\SWLOR\OnFinishActionItem.cs" />
     <Compile Include="Event\SWLOR\OnObjectProcessorRan.cs" />
     <Compile Include="Event\SWLOR\OnPlayerGuildRankUp.cs" />
     <Compile Include="Event\SWLOR\OnQuestAccepted.cs" />
     <Compile Include="Event\SWLOR\OnQuestAdvanced.cs" />
+    <Compile Include="Event\SWLOR\OnReassembleComplete.cs" />
     <Compile Include="Language\TranslatorUgnaught.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />
@@ -648,9 +758,8 @@
     <Compile Include="Event\Creature\OnCreatureSpawn.cs" />
     <Compile Include="Event\Creature\OnCreatureSpellCastAt.cs" />
     <Compile Include="Event\Creature\OnCreatureUserDefined.cs" />
-    <Compile Include="Event\Delayed\CraftCreateItem.cs" />
-    <Compile Include="Event\Delayed\FinishAbilityUse.cs" />
-    <Compile Include="Event\Delayed\FinishActionItem.cs" />
+    <Content Include="Module\**\*.json" />
+    <Compile Include="Scripting\Scripts\**\*.cs" Condition=" '$(Configuration)' == 'Release' " />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
     <Compile Include="Event\DM\OnDMAction.cs" />
@@ -1136,19 +1245,6 @@
     <Compile Include="Perk\Weapons\WeaponFocusThrowing.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusTwinBlades.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusVibroblades.cs" />
-    <Compile Include="Placeable\MolecularReassembler\OnDisturbed.cs" />
-    <Compile Include="Placeable\MolecularReassembler\OnOpened.cs" />
-    <Compile Include="Placeable\MolecularReassembler\ReassembleComplete.cs" />
-    <Compile Include="Placeable\Bank\OnClosed.cs" />
-    <Compile Include="Placeable\ControlTower\OnClicked.cs" />
-    <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
-    <Compile Include="Placeable\ControlTower\OnHeartbeat.cs" />
-    <Compile Include="Placeable\Corpse\OnClosed.cs" />
-    <Compile Include="Placeable\Corpse\OnDisturbed.cs" />
-    <Compile Include="Placeable\CraftingDevice\OnClosed.cs" />
-    <Compile Include="Placeable\CraftingDevice\OnDisturbed.cs" />
-    <Compile Include="Placeable\CraftingDevice\OnOpened.cs" />
-    <Compile Include="Placeable\CraftingDevice\OnUsed.cs" />
     <Compile Include="Event\Feat\OnHitCastSpell.cs" />
     <Compile Include="Event\IRegisteredEvent.cs" />
     <Compile Include="Event\Legacy\ScriptEvent.cs" />
@@ -1171,6 +1267,10 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
+    <Compile Include="Scripting\Contracts\IScript.cs" />
+    <Compile Include="Scripting\OnScriptLoaded.cs" />
+    <Compile Include="Scripting\OnScriptUnloaded.cs" />
+    <Compile Include="Scripting\ScriptService.cs" />
     <Compile Include="Service\Cached2DAService.cs" />
     <Compile Include="Service\CutsceneService.cs" />
     <Compile Include="Service\GuildService.cs" />
@@ -1209,65 +1309,6 @@
     <Compile Include="NWNX\SpecialAbilitySlot.cs" />
     <Compile Include="Event\Feat\onhit_castspell.cs" />
     <Compile Include="Perk\IPerkHandler.cs" />
-    <Compile Include="Placeable\CraftingForge\CompleteSmelt.cs" />
-    <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
-    <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
-    <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
-    <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
-    <Compile Include="Placeable\MarketTerminal\OnClosed.cs" />
-    <Compile Include="Placeable\MarketTerminal\OnDisturbed.cs" />
-    <Compile Include="Placeable\MarketTerminal\OnOpened.cs" />
-    <Compile Include="Placeable\MarketTerminal\OnUsed.cs" />
-    <Compile Include="Placeable\ObtainKeyItem.cs" />
-    <Compile Include="Placeable\PermanentVisualEffect.cs" />
-    <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
-    <Compile Include="Placeable\Quests\ForceCrystal.cs" />
-    <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
-    <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />
-    <Compile Include="Placeable\ResourceBay\OnOpened.cs" />
-    <Compile Include="Placeable\ScavengePoint\OnClosed.cs" />
-    <Compile Include="Placeable\ScavengePoint\OnDisturbed.cs" />
-    <Compile Include="Placeable\ScavengePoint\OnHeartbeat.cs" />
-    <Compile Include="Placeable\ScavengePoint\OnOpened.cs" />
-    <Compile Include="Placeable\FuelBay\OnClosed.cs" />
-    <Compile Include="Placeable\FuelBay\OnDisturbed.cs" />
-    <Compile Include="Placeable\FuelBay\OnOpened.cs" />
-    <Compile Include="Placeable\GenericConversation.cs" />
-    <Compile Include="Placeable\GrowingPlant\OnHeartbeat.cs" />
-    <Compile Include="Placeable\GrowingPlant\OnUsed.cs" />
-    <Compile Include="Placeable\OverflowStorage\OnClosed.cs" />
-    <Compile Include="Placeable\OverflowStorage\OnDisturbed.cs" />
-    <Compile Include="Placeable\OverflowStorage\OnOpened.cs" />
-    <Compile Include="Placeable\PlantSeed\OnClosed.cs" />
-    <Compile Include="Placeable\PlantSeed\OnDisturbed.cs" />
-    <Compile Include="Placeable\PlantSeed\OnOpened.cs" />
-    <Compile Include="Placeable\QuestSystem\ItemCollector\OnDisturbed.cs" />
-    <Compile Include="Placeable\QuestSystem\ItemCollector\OnOpened.cs" />
-    <Compile Include="Placeable\QuestSystem\OnUsed.cs" />
-    <Compile Include="Placeable\Resource\OnHeartbeat.cs" />
-    <Compile Include="Placeable\Resource\OnUsed.cs" />
-    <Compile Include="Placeable\Scrapper\OnDisturbed.cs" />
-    <Compile Include="Placeable\Scrapper\OnClosed.cs" />
-    <Compile Include="Placeable\Scrapper\OnOpened.cs" />
-    <Compile Include="Placeable\SearchContainer\OnClosed.cs" />
-    <Compile Include="Placeable\SearchContainer\OnDisturbed.cs" />
-    <Compile Include="Placeable\SearchContainer\OnOpened.cs" />
-    <Compile Include="Placeable\SearchContainer\OnUsed.cs" />
-    <Compile Include="Placeable\Sit.cs" />
-    <Compile Include="Placeable\Bank\OnDisturbed.cs" />
-    <Compile Include="Placeable\Bank\OnOpened.cs" />
-    <Compile Include="Placeable\Stores\GenericStore.cs" />
-    <Compile Include="Placeable\StructureRubble\OnClosed.cs" />
-    <Compile Include="Placeable\StructureRubble\OnDisturbed.cs" />
-    <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
-    <Compile Include="Placeable\StructureStorage\OnDisturbed.cs" />
-    <Compile Include="Placeable\StructureStorage\OnOpened.cs" />
-    <Compile Include="Placeable\StructureStorage\OnUsed.cs" />
-    <Compile Include="Placeable\TrashCan\OnClosed.cs" />
-    <Compile Include="Placeable\TrashCan\OnDisturbed.cs" />
-    <Compile Include="Placeable\TrashCan\OnOpened.cs" />
-    <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
-    <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
     <Compile Include="Mod\ArmorClassMod.cs" />
     <Compile Include="Mod\ArmorsmithMod.cs" />
     <Compile Include="Mod\AttackBonusMod.cs" />
@@ -1292,7 +1333,6 @@
     <Compile Include="Mod\HarvestingMod.cs" />
     <Compile Include="Mod\SneakAttackMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
-    <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
     <Compile Include="Processor\ServerRestartProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
@@ -1427,7 +1467,9 @@
     <None Include="ServerFiles\docker-linux-startSWLOR.sh" />
     <None Include="ServerFiles\docker-windows-startSWLOR.cmd" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Placeable\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Scripts\WipeUserData.sql" />
     <Content Include="Module\nwn_erf.exe" />
@@ -1443,10 +1485,18 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)." "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
-</PostBuildEvent>
+    <PostBuildEvent>
+      xcopy "$(TargetDir).\SWLOR.Game.Server.dll" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.pdb" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.dll.config" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir)..\..\Scripting\Scripts" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts" /E /Y /C /i
+    </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -1454,6 +1504,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Costura.Fody.4.0.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.4.0.0\build\Costura.Fody.props'))" />
     <Error Condition="!Exists('..\packages\Fody.5.1.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.5.1.1\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.3\build\Microsoft.CodeAnalysis.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.3\build\Microsoft.CodeAnalysis.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.3.1.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.3.1.1\build\Microsoft.Net.Compilers.props'))" />
   </Target>
   <Import Project="..\packages\Fody.5.1.1\build\Fody.targets" Condition="Exists('..\packages\Fody.5.1.1\build\Fody.targets')" />
 </Project>

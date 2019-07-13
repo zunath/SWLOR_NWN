@@ -1,7 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             using (new Profiler(nameof(TransportToMosEisley)))
             {
                 NWPlayer oPC = _.GetPCSpeaker();
-                NWObject oNPC = Object.OBJECT_SELF;
+                NWObject oNPC = NWGameObject.OBJECT_SELF;
                 oPC = _.GetPCSpeaker();
                 NWObject oWay01 = _.GetWaypointByTag("landspeeder_anc_mos");
                 _.SetLocalString(oPC, "oDest", "");

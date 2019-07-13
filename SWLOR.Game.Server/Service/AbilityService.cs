@@ -2,10 +2,8 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
 using System;
@@ -16,10 +14,8 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
@@ -211,7 +207,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Activator is the creature who used the feat.
             // Target is who the activator selected to use this feat on.
-            NWCreature activator = Object.OBJECT_SELF;
+            NWCreature activator = NWGameObject.OBJECT_SELF;
             NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
@@ -581,14 +577,9 @@ namespace SWLOR.Game.Server.Service
 
             // Run the FinishAbilityUse event at the end of the activation time.
             int perkID = entity.ID;
-            activator.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
-                activator,
-                uuid,
-                perkID,
-                target,
-                pcPerkLevel,
-                spellTier,
-                armorPenalty);
+
+            var @event = new OnFinishAbilityUse(activator, uuid, perkID, target, pcPerkLevel, spellTier, armorPenalty);
+            activator.DelayEvent(activationTime + 0.2f, @event);
         }
 
         public static void ApplyCooldown(NWCreature creature, CooldownCategory cooldown, IPerkHandler handler, int spellTier, float armorPenalty)
@@ -789,7 +780,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWPlayer oPC = Object.OBJECT_SELF;
+            NWPlayer oPC = NWGameObject.OBJECT_SELF;
             if (!oPC.IsValid) return;
 
             NWObject oTarget = _.GetSpellTargetObject();

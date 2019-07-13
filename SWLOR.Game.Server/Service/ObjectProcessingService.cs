@@ -5,7 +5,6 @@ using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;

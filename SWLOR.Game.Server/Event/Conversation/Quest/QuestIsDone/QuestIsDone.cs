@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation.Quest.QuestIsDone
 {
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.QuestIsDone
             {
                 int index = (int) args[0];
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = Object.OBJECT_SELF;
+                NWObject talkingTo = NWGameObject.OBJECT_SELF;
                 int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 

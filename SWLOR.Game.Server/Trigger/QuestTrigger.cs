@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Trigger
     {
         public bool Run(params object[] args)
         {
-            QuestService.OnQuestTriggerEntered(Object.OBJECT_SELF);
+            QuestService.OnQuestTriggerEntered(NWGameObject.OBJECT_SELF);
 
             return true;
         }

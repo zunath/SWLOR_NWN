@@ -1,9 +1,6 @@
-﻿using NWN;
-using SWLOR.Game.Server.Event;
-
-namespace SWLOR.Game.Server.NWN.Events.Module
+﻿namespace SWLOR.Game.Server.Event.Module
 {
-    internal class OnModuleDying
+    public class OnModuleDying
     {
     }
 }

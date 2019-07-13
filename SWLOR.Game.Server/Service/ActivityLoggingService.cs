@@ -6,11 +6,9 @@ using SWLOR.Game.Server.Event.DM;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -108,7 +106,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = Object.OBJECT_SELF;
+            NWPlayer sender = NWGameObject.OBJECT_SELF;
             if (!sender.IsPlayer && !sender.IsDM) return;
             string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
@@ -172,7 +170,7 @@ namespace SWLOR.Game.Server.Service
         {
             string details = ProcessEventAndBuildDetails(actionTypeID);
 
-            NWObject dm = Object.OBJECT_SELF;
+            NWObject dm = NWGameObject.OBJECT_SELF;
 
             var record = new DMAction
             {

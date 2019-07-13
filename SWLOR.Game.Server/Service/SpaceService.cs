@@ -15,13 +15,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Event.Creature;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -914,7 +913,7 @@ namespace SWLOR.Game.Server.Service
         private static void ClonePCAndSit(NWPlayer player, NWPlaceable chair)
         {
             // Create a copy of the PC and link the two. 
-            NWObject copy = _.CopyObject(player, player.Location, Object.OBJECT_INVALID, "spaceship_copy");
+            NWObject copy = _.CopyObject(player, player.Location, NWGameObject.OBJECT_INVALID, "spaceship_copy");
             _.ChangeToStandardFaction(copy, STANDARD_FACTION_DEFENDER);
 
             Effect eInv = _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY);
@@ -962,7 +961,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleNWNXChat()
         {
             // Is the speaker a pilot or gunner?
-            NWPlayer speaker = Object.OBJECT_SELF;
+            NWPlayer speaker = NWGameObject.OBJECT_SELF;
             if (!speaker.IsPlayer) return;
 
             // Ignore Tells, DM messages etc..
@@ -1415,7 +1414,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureSpawn()
         {
-            NWCreature creature = Object.OBJECT_SELF;
+            NWCreature creature = NWGameObject.OBJECT_SELF;
 
             // Only do things for ships. 
             ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
@@ -1488,7 +1487,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureHeartbeat()
         {
-            NWCreature creature = Object.OBJECT_SELF;
+            NWCreature creature = NWGameObject.OBJECT_SELF;
 
             // Only do things for armed ships. 
             if (creature.IsDead) return;

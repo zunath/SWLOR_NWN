@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
 
@@ -43,7 +44,7 @@ namespace NWN.Scripts
 
             }
             // Bioware default
-            _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
 
             using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
             {
@@ -62,7 +63,10 @@ namespace NWN.Scripts
             // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
             var typesInNamespace = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.Namespace != null && x.Namespace.StartsWith("SWLOR.Game.Server"))
+                .Where(x => x.Namespace != null && 
+                            x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
+                            !typeof(IScript).IsAssignableFrom(x) && // Exclude scripts
+                            x.IsClass) // Classes only.
                 .ToArray();
             foreach (var type in typesInNamespace)
             {
@@ -76,7 +80,7 @@ namespace NWN.Scripts
 
         private static void SetAreaEventScripts()
         {
-            Object area = _.GetFirstArea();
+            NWGameObject area = _.GetFirstArea();
             while (_.GetIsObjectValid(area) == _.TRUE)
             {
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");

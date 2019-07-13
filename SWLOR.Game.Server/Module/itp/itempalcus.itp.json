@@ -1098,6 +1098,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shadow's Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_shadowhoodanc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sirtu Lieutenant Mask"
                     },
                     "RESREF": {
@@ -1790,6 +1801,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Female Tat Civilian Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_femtatcivoutf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jedi Master Lightsaber [Zhar]"
                     },
                     "RESREF": {
@@ -1828,6 +1850,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jhorensarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Tat Civilian Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_maletatcivout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Merchant Guard Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_merchguardout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nickkell Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_nickkelloutfi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Night Dancer's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_danceroutfit"
                     }
                   },
                   {
@@ -2142,6 +2208,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shadow's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_shadowanchor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sirtu Lieutenant Outfit"
                     },
                     "RESREF": {
@@ -2175,6 +2252,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Thurn Durvi Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_thurnoutfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tina's Clothes"
                     },
                     "RESREF": {
@@ -2191,6 +2279,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "turq_npc_breast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twi'lek Triplet Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_twilektripl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wott Rok Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_wottrokoutfit"
                     }
                   }
                 ]

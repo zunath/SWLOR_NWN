@@ -664,7 +664,7 @@ namespace SWLOR.Game.Server.Service
                 int nNth = 1;
                 NWObject dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
 
-                while (true)
+                while (dock.IsValid)
                 {
                     // Not close enough. 
                     if (_.GetDistanceBetweenLocations(targetLocation, dock.Location) > 10.0f) break;

@@ -1,11 +1,9 @@
-﻿
-using SWLOR.Game.Server.Event;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Placeable.WeatherModifier
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.WeatherModifier
 {
     public class OnHeartbeat : IScript
     {

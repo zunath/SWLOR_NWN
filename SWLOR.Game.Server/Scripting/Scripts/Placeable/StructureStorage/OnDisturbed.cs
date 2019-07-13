@@ -3,14 +3,11 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
-
-namespace SWLOR.Game.Server.Placeable.StructureStorage
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.StructureStorage
 {
     public class OnDisturbed : IScript
     {
@@ -36,11 +33,11 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             int itemCount = container.InventoryItems.Count();
             string itemResref = item.Resref;
 
-            if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
-                if (_.GetHasInventory(item) == TRUE)
+                if (_.GetHasInventory(item) == _.TRUE)
                 {
-                    item.SetLocalInt("RETURNING_ITEM", TRUE);
+                    item.SetLocalInt("RETURNING_ITEM", _.TRUE);
                     ItemService.ReturnItem(oPC, item);
                     oPC.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return;
@@ -51,7 +48,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                     ItemService.ReturnItem(oPC, item);
                     oPC.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
                 }
-                else if (item.BaseItemType == BASE_ITEM_GOLD)
+                else if (item.BaseItemType == _.BASE_ITEM_GOLD)
                 {
                     ItemService.ReturnItem(oPC, item);
                     oPC.SendMessage(ColorTokenService.Red("Credits cannot be placed inside."));
@@ -70,9 +67,9 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                     DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
-            else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                if (item.GetLocalInt("RETURNING_ITEM") == TRUE)
+                if (item.GetLocalInt("RETURNING_ITEM") == _.TRUE)
                 {
                     item.DeleteLocalInt("RETURNING_ITEM");
                 }

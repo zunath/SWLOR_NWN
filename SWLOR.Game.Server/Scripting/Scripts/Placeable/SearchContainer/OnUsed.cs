@@ -1,10 +1,8 @@
-﻿using SWLOR.Game.Server.Event;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-
-namespace SWLOR.Game.Server.Placeable.SearchContainer
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.SearchContainer
 {
     public class OnUsed : IScript
     {

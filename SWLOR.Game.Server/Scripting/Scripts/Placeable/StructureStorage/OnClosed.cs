@@ -1,9 +1,8 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Placeable.StructureStorage
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.StructureStorage
 {
     public class OnClosed : IScript
     {

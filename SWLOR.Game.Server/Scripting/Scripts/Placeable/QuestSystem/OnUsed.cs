@@ -1,10 +1,8 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-
-namespace SWLOR.Game.Server.Placeable.QuestSystem
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.QuestSystem
 {
     public class OnUsed: IScript
     {

@@ -1467,9 +1467,7 @@
     <None Include="ServerFiles\docker-linux-startSWLOR.sh" />
     <None Include="ServerFiles\docker-windows-startSWLOR.cmd" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Placeable\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Data\Scripts\WipeUserData.sql" />
     <Content Include="Module\nwn_erf.exe" />

@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("TaskListPage");
 
-            var lastUpdate = DataService.Single<ServerConfiguration>().LastGuildTaskUpdate;
+            var lastUpdate = DataService.Get<ServerConfiguration>(1).LastGuildTaskUpdate;
             var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
                                                              x.GuildID == (int) model.Guild);
 

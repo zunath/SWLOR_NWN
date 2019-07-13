@@ -335,12 +335,6 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        private static void DeleteFromCache<T>(object key)
-            where T : IEntity
-        {
-            DeleteFromCache(typeof(T), key);
-        }
-
         private static void DeleteFromCache(Type type, object key)
         {
             if (!Cache.ContainsKey(type)) return;
@@ -371,18 +365,6 @@ namespace SWLOR.Game.Server.Service
             SetIntoCache<T>(id, cached);
             
             return cached;
-        }
-
-        private static void RegisterEmptyCacheSet<T>()
-            where T: class, IEntity
-        {
-            if (Cache.ContainsKey(typeof(T)))
-            {
-                throw new Exception("Cannot register an empty cacheset because it already exists! Did you call " + nameof(RegisterEmptyCacheSet) + " more than once? Type = " + typeof(T));
-            }
-
-            var cachedSet = new Dictionary<object, object>();
-            Cache.Add(typeof(T), cachedSet);
         }
 
         /// <summary>
@@ -423,22 +405,10 @@ namespace SWLOR.Game.Server.Service
             return new HashSet<T>();
         }
 
-        public static T Single<T>()
-            where T : class, IEntity
-        {
-            return GetAll<T>().Single();
-        }
-
         public static T Single<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
             return GetAll<T>().Single(predicate);
-        }
-
-        public static T SingleOrDefault<T>()
-            where T : class, IEntity
-        {
-            return GetAll<T>().SingleOrDefault();
         }
 
         public static T SingleOrDefault<T>(Func<T, bool> predicate)
@@ -486,63 +456,5 @@ namespace SWLOR.Game.Server.Service
             return propertyWithKey.GetValue(entity);
         }
 
-        public static void StoredProcedure(string procedureName, params SqlParameter[] args)
-        {
-            Connection.Execute(BuildSQLQuery(procedureName, args), args);
-        }
-
-        public static IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
-        {
-            return Connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, T7, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, T7, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args)
-        {
-            return Connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
-        }
-
-        private static string BuildSQLQuery(string procedureName, params SqlParameter[] args)
-        {
-            string sql = procedureName;
-
-            for (int x = 0; x < args.Length; x++)
-            {
-                sql += " " + args[x].ParameterName;
-
-                if (x + 1 < args.Length) sql += ",";
-            }
-
-            return sql;
-        }
     }
 }

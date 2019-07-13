@@ -1,10 +1,10 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
-using Object = NWN.Object;
+
 /*
     Name: WeatherService
     Author: Mithreas
@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void SetWeather()
         {
-            SetWeather(Object.OBJECT_SELF);
+            SetWeather(NWGameObject.OBJECT_SELF);
         }
 
         public static void SetWeather(NWObject oArea)
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetWeather()
         {
-            return GetWeather(Object.OBJECT_SELF);
+            return GetWeather(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetWeather(NWObject oArea)
@@ -583,7 +583,7 @@ namespace SWLOR.Game.Server.Service
         
         public static int GetHeatIndex()
         {
-            return GetHeatIndex(Object.OBJECT_SELF);
+            return GetHeatIndex(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetHeatIndex(NWObject oArea)
@@ -609,7 +609,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetHumidity()
         {
-            return GetHumidity(Object.OBJECT_SELF);
+            return GetHumidity(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetHumidity(NWObject oArea)
@@ -633,7 +633,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetWindStrength()
         {
-            return GetWindStrength(Object.OBJECT_SELF);
+            return GetWindStrength(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetWindStrength(NWObject oArea)
@@ -775,7 +775,7 @@ namespace SWLOR.Game.Server.Service
 
             DoWeatherEffects(_.GetEnteringObject());
 
-            NWArea oArea = (Object.OBJECT_SELF);
+            NWArea oArea = (NWGameObject.OBJECT_SELF);
             int nHour = _.GetTimeHour();
             int nLastHour = oArea.GetLocalInt("WEATHER_LAST_HOUR");
 
@@ -851,7 +851,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnCreatureSpawn()
         {
-            DoWeatherEffects(Object.OBJECT_SELF);
+            DoWeatherEffects(NWGameObject.OBJECT_SELF);
         }
 
         public static void SetAreaHeatModifier(NWObject oArea, int nModifier)

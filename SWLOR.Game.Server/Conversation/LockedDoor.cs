@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWObject door = Object.OBJECT_SELF;
+            NWObject door = NWGameObject.OBJECT_SELF;
             NWPlayer player = GetPC();
             List<int> keyItemIDs = new List<int>();
 
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             if (responseID != 1) return;
 
-            NWObject door = Object.OBJECT_SELF;
+            NWObject door = NWGameObject.OBJECT_SELF;
             string insideWP = door.GetLocalString("LOCKED_DOOR_INSIDE_WP");
             NWObject wp = _.GetWaypointByTag(insideWP);
             Location portTo = wp.Location;

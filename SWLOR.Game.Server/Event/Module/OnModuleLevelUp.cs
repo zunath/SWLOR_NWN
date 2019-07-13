@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.NWN.Events.Module
+﻿namespace SWLOR.Game.Server.Event.Module
 {
-    internal class OnModuleLevelUp
+    public class OnModuleLevelUp
     {
     }
 }

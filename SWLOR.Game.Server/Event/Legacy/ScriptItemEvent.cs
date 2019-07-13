@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Legacy
@@ -15,7 +16,19 @@ namespace SWLOR.Game.Server.Event.Legacy
 
             using (new Profiler(nameof(ScriptEvent) + "." + script))
             {
-                Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
+                string rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
+                string scriptNamespace = rootNamespace + ".Scripting.Scripts." + script;
+
+                // Check the script cache first. If it exists, we run it.
+                if (ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
+                {
+                    ScriptService.RunScriptByNamespace(scriptNamespace);
+                    return;
+                }
+
+                // Otherwise look for a script contained by the app.
+                scriptNamespace = rootNamespace + "." + script;
+                Type type = Type.GetType(scriptNamespace);
 
                 if (type == null)
                 {

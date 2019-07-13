@@ -1,7 +1,6 @@
 ﻿
 using NWN;
 using SWLOR.Game.Server.GameObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -19,22 +18,22 @@ namespace SWLOR.Game.Server.NWNX
 
         public static void NWNX_PushArgumentInt(string pluginName, string functionName, int value)
         {
-            _.SetLocalInt(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
+            _.SetLocalInt(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
         public static void NWNX_PushArgumentFloat(string pluginName, string functionName, float value)
         {
-            _.SetLocalFloat(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
+            _.SetLocalFloat(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
         public static void NWNX_PushArgumentObject(string pluginName, string functionName, NWObject value)
         {
-            _.SetLocalObject(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
+            _.SetLocalObject(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
         public static void NWNX_PushArgumentString(string pluginName, string functionName, string value)
         {
-            _.SetLocalString(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
+            _.SetLocalString(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
         public static void NWNX_PushArgumentEffect(string pluginName, string functionName, Effect value)
@@ -49,22 +48,22 @@ namespace SWLOR.Game.Server.NWNX
 
         public static int NWNX_GetReturnValueInt(string pluginName, string functionName)
         {
-            return _.GetLocalInt(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+            return _.GetLocalInt(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         public static float NWNX_GetReturnValueFloat(string pluginName, string functionName)
         {
-            return _.GetLocalFloat(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+            return _.GetLocalFloat(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
-        public static Object NWNX_GetReturnValueObject(string pluginName, string functionName)
+        public static NWGameObject NWNX_GetReturnValueObject(string pluginName, string functionName)
         {
-            return _.GetLocalObject(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+            return _.GetLocalObject(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         public static string NWNX_GetReturnValueString(string pluginName, string functionName)
         {
-            return _.GetLocalString(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+            return _.GetLocalString(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         public static Effect NWNX_GetReturnValueEffect(string pluginName, string functionName)

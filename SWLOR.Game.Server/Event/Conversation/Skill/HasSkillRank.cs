@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Skill
             using (new Profiler(nameof(HasSkillRank)))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkTo = Object.OBJECT_SELF;
+                NWObject talkTo = NWGameObject.OBJECT_SELF;
 
                 int count = 1;
                 string varName = "SKILL_" + index + "_REQ_";

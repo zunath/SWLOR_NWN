@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
+﻿using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Messaging;
 
 
 // ReSharper disable once CheckNamespace

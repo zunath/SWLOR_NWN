@@ -1,8 +1,8 @@
 ﻿using System;
 using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -22,7 +22,7 @@ namespace NWN.Scripts
 
             using (new Profiler(nameof(mod_on_examine)))
             {
-                NWPlayer examiner = (Object.OBJECT_SELF);
+                NWPlayer examiner = (NWGameObject.OBJECT_SELF);
                 NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
                 if (ExaminationService.OnModuleExamine(examiner, examinedObject))
                 {

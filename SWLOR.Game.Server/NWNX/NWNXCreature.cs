@@ -1229,7 +1229,7 @@ namespace SWLOR.Game.Server.NWNX
             int abilityScore = -1, 
             int isOffhand = FALSE)
         {
-            if (target == null) target = new Object();
+            if (target == null) target = new NWGameObject();
 
             string sFunc = "GetTotalEffectBonus";
 

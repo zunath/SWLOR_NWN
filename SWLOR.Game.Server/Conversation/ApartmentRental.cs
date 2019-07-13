@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             var data = BaseService.GetPlayerTempData(GetPC());
             data.ApartmentBuildingID = terminal.GetLocalInt("APARTMENT_BUILDING_ID");
 

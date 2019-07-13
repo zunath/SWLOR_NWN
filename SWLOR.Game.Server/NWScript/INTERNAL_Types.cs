@@ -3,33 +3,33 @@
 // ReSharper disable once CheckNamespace
 namespace NWN
 {
-    public partial class Object
+    public partial class NWGameObject
     {
         public const uint OBJECT_INVALID = 0x7F000000;
-        public static Object OBJECT_SELF { get { return Internal.OBJECT_SELF; } }
+        public static NWGameObject OBJECT_SELF { get { return Internal.OBJECT_SELF; } }
 
         public uint m_ObjId = OBJECT_INVALID;
 
-        public static implicit operator Object(uint objId)
+        public static implicit operator NWGameObject(uint objId)
         {
-            return new Object { m_ObjId = objId };
+            return new NWGameObject { m_ObjId = objId };
         }
 
-        public static bool operator ==(Object lhs, Object rhs)
+        public static bool operator ==(NWGameObject lhs, NWGameObject rhs)
         {
             bool lhsNull = object.ReferenceEquals(lhs, null);
             bool rhsNull = object.ReferenceEquals(rhs, null);
             return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.m_ObjId == rhs.m_ObjId);
         }
 
-        public static bool operator !=(Object lhs, Object rhs)
+        public static bool operator !=(NWGameObject lhs, NWGameObject rhs)
         {
             return !(lhs == rhs);
         }
 
         public override bool Equals(object o)
         {
-            Object other = o as Object;
+            NWGameObject other = o as NWGameObject;
             return other != null && other == this;
         }
 

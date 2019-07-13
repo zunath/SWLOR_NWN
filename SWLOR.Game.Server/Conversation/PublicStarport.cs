@@ -6,7 +6,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -39,7 +38,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = Object.OBJECT_SELF;
+            NWPlaceable door = NWGameObject.OBJECT_SELF;
             string starportID = door.GetLocalString("STARPORT_ID");
 
             if (string.IsNullOrWhiteSpace(starportID))

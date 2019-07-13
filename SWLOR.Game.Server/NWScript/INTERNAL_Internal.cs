@@ -7,9 +7,9 @@ namespace NWN
 {
     public class Internal
     {
-        public static Object OBJECT_SELF { get; private set; } = Object.OBJECT_INVALID;
+        public static NWGameObject OBJECT_SELF { get; private set; } = NWGameObject.OBJECT_INVALID;
 
-        private static Stack<Object> s_ScriptContexts = new Stack<Object>();
+        private static Stack<NWGameObject> s_ScriptContexts = new Stack<NWGameObject>();
 
         private static void PushScriptContext(uint oid)
         {
@@ -20,7 +20,7 @@ namespace NWN
         private static void PopScriptContext()
         {
             s_ScriptContexts.Pop();
-            OBJECT_SELF = s_ScriptContexts.Count == 0 ? Object.OBJECT_INVALID : s_ScriptContexts.Peek();
+            OBJECT_SELF = s_ScriptContexts.Count == 0 ? NWGameObject.OBJECT_INVALID : s_ScriptContexts.Peek();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -38,11 +38,11 @@ namespace NWN
         [MethodImpl(MethodImplOptions.InternalCall)]
         public extern static void StackPushObject_Native(uint value);
 
-        public static void StackPushObject(Object value, bool defAsObjSelf)
+        public static void StackPushObject(NWGameObject value, bool defAsObjSelf)
         {
             if (value == null)
             {
-                value = defAsObjSelf ? OBJECT_SELF : Object.OBJECT_INVALID;
+                value = defAsObjSelf ? OBJECT_SELF : NWGameObject.OBJECT_INVALID;
             }
 
             StackPushObject_Native(value.m_ObjId);
@@ -113,7 +113,7 @@ namespace NWN
         [MethodImpl(MethodImplOptions.InternalCall)]
         public extern static uint StackPopObject_Native();
 
-        public static Object StackPopObject()
+        public static NWGameObject StackPopObject()
         {
             return StackPopObject_Native();
         }
@@ -163,7 +163,7 @@ namespace NWN
 
         private struct Closure
         {
-            public Object m_Object;
+            public NWGameObject m_Object;
             public ActionDelegate m_Func;
         }
 
@@ -176,7 +176,7 @@ namespace NWN
         [MethodImpl(MethodImplOptions.InternalCall)]
         private extern static int ClosureAssignCommand_Native(uint oid, ulong eventId);
 
-        public static void ClosureAssignCommand(Object obj, ActionDelegate func)
+        public static void ClosureAssignCommand(NWGameObject obj, ActionDelegate func)
         {
             if (ClosureAssignCommand_Native(obj.m_ObjId, m_NextEventId) != 0)
             {
@@ -187,7 +187,7 @@ namespace NWN
         [MethodImpl(MethodImplOptions.InternalCall)]
         private extern static int ClosureDelayCommand_Native(uint oid, float duration, ulong eventId);
 
-        public static void ClosureDelayCommand(Object obj, float duration, ActionDelegate func)
+        public static void ClosureDelayCommand(NWGameObject obj, float duration, ActionDelegate func)
         {
             if (ClosureDelayCommand_Native(obj.m_ObjId, duration, m_NextEventId) != 0)
             {
@@ -198,7 +198,7 @@ namespace NWN
         [MethodImpl(MethodImplOptions.InternalCall)]
         private extern static int ClosureActionDoCommand_Native(uint oid, ulong eventId);
 
-        public static void ClosureActionDoCommand(Object obj, ActionDelegate func)
+        public static void ClosureActionDoCommand(NWGameObject obj, ActionDelegate func)
         {
             if (ClosureActionDoCommand_Native(obj.m_ObjId, m_NextEventId) != 0)
             {

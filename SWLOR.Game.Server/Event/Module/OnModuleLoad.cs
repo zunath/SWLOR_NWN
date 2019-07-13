@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Event.Module
 {
-    internal class OnModuleLoad
+    public class OnModuleLoad
     {
 
     }

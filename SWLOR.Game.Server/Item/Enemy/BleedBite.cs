@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Item.Enemy
 
             if (RandomService.D100(1) > 5) return false;
             
-            CustomEffectService.ApplyCustomEffect(Object.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
+            CustomEffectService.ApplyCustomEffect(NWGameObject.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
             return true;
         }
     }

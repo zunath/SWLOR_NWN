@@ -12,7 +12,6 @@ using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
 
             NWPlayer player = data.Damager.Object;
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
@@ -79,7 +78,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWCreature damager = data.Damager.Object;
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
 
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
             NWItem targetWeapon = target.RightHand;
@@ -174,7 +173,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
             NWItem shield = target.LeftHand;
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target);
             double reduction = 0.0f;
@@ -242,7 +241,7 @@ namespace SWLOR.Game.Server.Service
             if (damager.IsPlayer && sneakAttackType > 0)
             {
                 NWPlayer player = damager.Object;
-                NWCreature target = Object.OBJECT_SELF;
+                NWCreature target = NWGameObject.OBJECT_SELF;
                 int perkRank = PerkService.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
                 int perkBonus = 1;
 
@@ -278,7 +277,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWObject target = Object.OBJECT_SELF;
+            NWObject target = NWGameObject.OBJECT_SELF;
             if (!target.IsPlayer) return;
 
             NWPlayer player = target.Object;
@@ -330,7 +329,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWObject self = Object.OBJECT_SELF;
+            NWObject self = NWGameObject.OBJECT_SELF;
 
             // Ignore the first damage because it occurred during the application of the effect.
             if (self.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") > 0)

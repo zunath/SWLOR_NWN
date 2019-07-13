@@ -1,12 +1,11 @@
 ﻿using System;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Placeable.StructureStorage
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.StructureStorage
 {
     public class OnUsed: IScript
     {

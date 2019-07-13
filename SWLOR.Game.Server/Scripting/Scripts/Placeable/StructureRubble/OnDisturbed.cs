@@ -1,13 +1,10 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
-
-namespace SWLOR.Game.Server.Placeable.StructureRubble
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.StructureRubble
 {
     public class OnDisturbed: IScript
     {
@@ -26,11 +23,11 @@ namespace SWLOR.Game.Server.Placeable.StructureRubble
             NWCreature creature = (_.GetLastDisturbed());
             NWPlaceable container = (NWGameObject.OBJECT_SELF);
 
-            if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
                 ItemService.ReturnItem(creature, item);
             }
-            else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
             {
                 if (!container.InventoryItems.Any())
                 {

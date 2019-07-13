@@ -1,14 +1,12 @@
 ﻿using System;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event;
-using SWLOR.Game.Server.GameObject;
-
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Placeable.PlantSeed
+namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.PlantSeed
 {
     public class OnDisturbed: IScript
     {
@@ -62,7 +60,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             Location plantLocation = container.Location;
             int perkBonus = PerkService.GetCreaturePerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
             int ticks = (int)(plant.BaseTicks - ((PerkService.GetCreaturePerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
-            GrowingPlant growingPlant = new GrowingPlant
+            Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant
             {
                 PlantID = plant.ID,
                 RemainingTicks = ticks,

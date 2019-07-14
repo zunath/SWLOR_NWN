@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.Quests
             NWPlayer player = _.GetLastUsedBy();
 
             // Check player's current quest state. If they aren't on stage 2 of the quest only show a message.
-            var status = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == QuestID);
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, QuestID);
             var currentState = DataService.Single<QuestState>(x => x.ID == status.CurrentQuestStateID);
 
             if (currentState.Sequence != 2)

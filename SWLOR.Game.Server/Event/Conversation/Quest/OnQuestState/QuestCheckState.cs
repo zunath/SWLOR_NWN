@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.OnQuestState
                     return false;
                 }
 
-                var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+                var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrNull(player.GlobalID, questID);
                 if (status == null) return false;
 
                 var questState = DataService.QuestState.GetByID(status.CurrentQuestStateID);

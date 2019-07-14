@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.QuestSystem.ItemCollecto
             if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
                 int questID = container.GetLocalInt("QUEST_ID");
-                PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+                PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
                 PCQuestItemProgress progress = DataService.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID && x.Resref == item.Resref);
                 DatabaseActionType action = DatabaseActionType.Update;
 

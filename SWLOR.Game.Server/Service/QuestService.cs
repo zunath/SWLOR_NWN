@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The quest with the provided quest ID.</returns>
         public static Quest GetQuestByID(int questID)
         {
-            return DataService.Single<Quest>(x => x.ID == questID);
+            return DataService.Quest.GetByID(questID);
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            Quest quest = DataService.Single<Quest>(x => x.ID == questID);
-            PCQuestStatus pcState = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            Quest quest = DataService.Quest.GetByID(questID);
+            PCQuestStatus pcState = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
 
             QuestState finalState = DataService.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
 
@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // Retrieve the player's current quest state.
-            PCQuestStatus questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            PCQuestStatus questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrNull(player.GlobalID, questID);
 
             // Can't find a state? Notify the player they haven't accepted the quest.
             if (questStatus == null)
@@ -891,7 +891,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerCompleteQuest(NWPlayer player, int questID)
         {
             // Has the player even accepted this quest?
-            var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrNull(player.GlobalID, questID);
             if (pcStatus == null) return false;
 
             // Is the player on the final state of this quest?

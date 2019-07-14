@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(SpaceEncounter entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public SpaceEncounter GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

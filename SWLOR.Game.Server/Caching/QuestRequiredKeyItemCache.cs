@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(QuestRequiredKeyItem entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public QuestRequiredKeyItem GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

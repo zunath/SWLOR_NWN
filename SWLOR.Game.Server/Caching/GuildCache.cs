@@ -12,6 +12,10 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
+        protected override void OnSubscribeEvents()
+        {
+        }
+
         public Guild GetByID(int id)
         {
             return ByID[id];

@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(FameRegion entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public FameRegion GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

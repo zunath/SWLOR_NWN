@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(p => typeof(IDoorRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
-                IDoorRule instance = Activator.CreateInstance(type) as IDoorRule;
+                var instance = Activator.CreateInstance(type) as IDoorRule;
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Service
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
             BaseStructureType structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
             string resref = baseStructure.PlaceableResref;
-            var exteriorStyle = pcStructure.ExteriorStyleID == null ? null : DataService.BuildingStyle.GetByID(pcStructure.ExteriorStyleID);
+            var exteriorStyle = pcStructure.ExteriorStyleID == null ? null : DataService.BuildingStyle.GetByID(Convert.ToInt32(pcStructure.ExteriorStyleID));
 
             List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
             if (string.IsNullOrWhiteSpace(resref) &&
@@ -568,7 +568,7 @@ namespace SWLOR.Game.Server.Service
             else if (pcBase == null && buildingType == BuildingType.Starship)
             {
                 var parentStructure = DataService.PCBaseStructure.GetByID(buildingStructureGuid);
-                var buildingStyle = DataService.BuildingStyle.GetByID(parentStructure.InteriorStyleID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(parentStructure.InteriorStyleID));
                 pcBase = DataService.PCBase.GetByID(parentStructure.PCBaseID);
 
                 int buildingStructureCount = DataService.GetAll<PCBaseStructure>().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (buildingType == BuildingType.Apartment)
             {
-                var buildingStyle = DataService.BuildingStyle.GetByID(pcBase.BuildingStyleID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 var buildingStructureCount = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList().Count();
                 if (buildingStructureCount > buildingStyle.FurnitureLimit)
                 {
@@ -818,7 +818,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (x.PrimaryResidencePCBaseID == pcBaseID) return true;
                 if (x.PrimaryResidencePCBaseStructureID == null) return false;
-                var primaryResidenceStructure = DataService.PCBaseStructure.GetByID(x.PrimaryResidencePCBaseStructureID);
+                var primaryResidenceStructure = DataService.PCBaseStructure.GetByID((Guid)x.PrimaryResidencePCBaseStructureID);
                 return primaryResidenceStructure.PCBaseID == pcBaseID;
             }).ToList();
 
@@ -1253,7 +1253,7 @@ namespace SWLOR.Game.Server.Service
             return null;
         }
 
-        public static bool CanHandleChat(NWObject sender, string message)
+        public static bool CanHandleChat(NWObject sender)
         {
             bool validTarget = sender.IsPlayer || sender.IsDM;
             return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == TRUE;
@@ -1264,7 +1264,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer sender = NWGameObject.OBJECT_SELF;
             string text = NWNXChat.GetMessage().Trim();
 
-            if (!CanHandleChat(sender, text))
+            if (!CanHandleChat(sender))
             {
                 return;
             }
@@ -1486,7 +1486,7 @@ namespace SWLOR.Game.Server.Service
             {
                 pcBase = DataService.PCBase.GetByID(instanceID);
                 furnitureStructures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
-                style = DataService.BuildingStyle.GetByID(pcBase.BuildingStyleID);
+                style = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 type = (int)BuildingType.Apartment;
                 name = pcBase.CustomName;
                 
@@ -1501,7 +1501,7 @@ namespace SWLOR.Game.Server.Service
                 structure = DataService.PCBaseStructure.GetByID(instanceID);
                 pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
                 furnitureStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
-                style = DataService.BuildingStyle.GetByID(structure.InteriorStyleID);
+                style = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
                 name = structure.CustomName;
 
                 bool starship = pcBase.PCBaseTypeID == 3;

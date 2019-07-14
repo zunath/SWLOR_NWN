@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(QuestRewardItem entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public QuestRewardItem GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

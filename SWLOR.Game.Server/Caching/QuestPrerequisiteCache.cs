@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(QuestPrerequisite entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public QuestPrerequisite GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

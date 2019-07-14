@@ -12,6 +12,10 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
+        protected override void OnSubscribeEvents()
+        {
+        }
+
         public BaseStructure GetByID(int id)
         {
             return ByID[id];

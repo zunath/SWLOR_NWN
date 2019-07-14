@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(CraftBlueprintCategory entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public CraftBlueprintCategory GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

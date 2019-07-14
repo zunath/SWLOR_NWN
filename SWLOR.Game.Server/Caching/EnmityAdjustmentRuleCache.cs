@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(EnmityAdjustmentRule entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public EnmityAdjustmentRule GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

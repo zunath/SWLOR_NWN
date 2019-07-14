@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnModuleLoad()
         {
-            var config = DataService.ServerConfiguration.Get(1);
+            var config = DataService.ServerConfiguration.Get();
             var now = DateTime.UtcNow;
             
             // 24 hours haven't passed since the last cycle. Bail out now.

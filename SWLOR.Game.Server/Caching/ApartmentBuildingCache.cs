@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(ApartmentBuilding entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public ApartmentBuilding GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

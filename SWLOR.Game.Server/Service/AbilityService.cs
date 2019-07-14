@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Service
         {
             var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == spellFeatID);
             int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
-            var cooldownCategory = DataService.CooldownCategory.GetByID(cooldownCategoryID);
+            var cooldownCategory = DataService.CooldownCategory.GetByID(Convert.ToInt32(cooldownCategoryID));
             string queueUUID = Guid.NewGuid().ToString();
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);

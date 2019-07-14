@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(PerkFeat entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public PerkFeat GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

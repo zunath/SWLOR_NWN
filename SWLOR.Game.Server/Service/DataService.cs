@@ -5,7 +5,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using SWLOR.Game.Server.Data;
 using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
@@ -379,5 +381,54 @@ namespace SWLOR.Game.Server.Service
 
             DataQueue.Enqueue(new DatabaseAction(data, actionType));
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // The following methods will eventually be removed. 
+        // Only keeping them here for the time being to make the server build.
+
+        /// <summary>
+        /// Returns all entities of a given type from the database or cache.
+        /// Keep in mind that if you don't build the cache up-front (i.e: at load time) you will only retrieve records which have been cached so far.
+        /// For example, if Get() is called first, then subsequent GetAll() will only retrieve that one object.
+        /// To fix this, you should call GetAll() at load time to retrieve everything from the database for that object type.
+        /// </summary>
+        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetAll<T>()
+            where T : class, IEntity
+        {
+            throw new NotSupportedException();
+        }
+
+        public static T Single<T>(Func<T, bool> predicate)
+            where T : class, IEntity
+        {
+            throw new NotSupportedException();
+        }
+
+        public static T SingleOrDefault<T>(Func<T, bool> predicate)
+            where T : class, IEntity
+        {
+            throw new NotSupportedException();
+        }
+
+        public static HashSet<T> Where<T>(Func<T, bool> predicate)
+            where T : class, IEntity
+        {
+            throw new NotSupportedException();
+        }
+
+
     }
 }

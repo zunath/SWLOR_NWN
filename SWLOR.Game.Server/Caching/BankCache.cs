@@ -11,5 +11,15 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(Bank entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public Bank GetByID(int id)
+        {
+            return ByID[id];
+        }
+
     }
 }

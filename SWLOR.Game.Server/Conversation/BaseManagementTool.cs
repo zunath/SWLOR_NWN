@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(structure.InteriorStyleID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
                 int itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(pcBase.BuildingStyleID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 int itemLimit = buildingStyle.FurnitureLimit;
                 var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
@@ -186,10 +186,10 @@ namespace SWLOR.Game.Server.Conversation
 
                 var pcBase = DataService.SingleOrDefault<PCBase>(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
 
-                var northeastOwner = dbArea.NortheastOwner == null ? null : DataService.Player.GetByID(dbArea.NortheastOwner);
-                var northwestOwner = dbArea.NorthwestOwner == null ? null : DataService.Player.GetByID(dbArea.NorthwestOwner);
-                var southeastOwner = dbArea.SoutheastOwner == null ? null : DataService.Player.GetByID(dbArea.SoutheastOwner);
-                var southwestOwner = dbArea.SouthwestOwner == null ? null : DataService.Player.GetByID(dbArea.SouthwestOwner);
+                var northeastOwner = dbArea.NortheastOwner == null ? null : DataService.Player.GetByID((Guid)dbArea.NortheastOwner);
+                var northwestOwner = dbArea.NorthwestOwner == null ? null : DataService.Player.GetByID((Guid)dbArea.NorthwestOwner);
+                var southeastOwner = dbArea.SoutheastOwner == null ? null : DataService.Player.GetByID((Guid)dbArea.SoutheastOwner);
+                var southwestOwner = dbArea.SouthwestOwner == null ? null : DataService.Player.GetByID((Guid)dbArea.SouthwestOwner);
 
                 if (northeastOwner != null)
                 {
@@ -901,7 +901,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 // The structure's facing isn't updated until after this code executes.
                 // Build a new location object for use with spawning the door.
-                var exteriorStyle = DataService.BuildingStyle.GetByID(dbStructure.ExteriorStyleID);
+                var exteriorStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(dbStructure.ExteriorStyleID));
 
                 Location locationOverride = _.Location(data.TargetArea.Object,
                     structure.Position,

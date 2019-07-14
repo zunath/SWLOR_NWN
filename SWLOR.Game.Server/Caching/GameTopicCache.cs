@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(GameTopic entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public GameTopic GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

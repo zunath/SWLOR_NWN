@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(player);
             var pcApartment = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            var style = DataService.BuildingStyle.GetByID(pcApartment.BuildingStyleID);
+            var style = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcApartment.BuildingStyleID));
             int dailyUpkeep = style.DailyUpkeep + (int)(style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
             if (data.ExtensionDays != days)

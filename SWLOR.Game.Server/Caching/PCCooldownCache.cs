@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -10,6 +11,15 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectRemoved(PCCooldown entity)
         {
+        }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public PCCooldown GetByID(Guid id)
+        {
+            return ByID[id];
         }
     }
 }

@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(ChatChannel entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public ChatChannel GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

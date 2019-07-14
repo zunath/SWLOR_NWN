@@ -76,12 +76,12 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
         }
 
-        public static string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
+        public static string BuildBlueprintHeader(NWPlayer player, bool showAddedComponentList)
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
-            var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(bp.BaseStructureID);
+            var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(bp.BaseStructureID));
             var mainComponent = DataService.ComponentType.GetByID(bp.MainComponentTypeID);
             var secondaryComponent = DataService.ComponentType.GetByID(bp.SecondaryComponentTypeID);
             var tertiaryComponent = DataService.ComponentType.GetByID(bp.TertiaryComponentTypeID);
@@ -540,7 +540,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public static bool CanHandleChat(NWObject sender, string message)
+        public static bool CanHandleChat(NWObject sender)
         {
             return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
         }
@@ -550,7 +550,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = NWNXChat.GetSender().Object;
             string newName = NWNXChat.GetMessage();
 
-            if (!CanHandleChat(pc, newName))
+            if (!CanHandleChat(pc))
             {
                 return;
             }

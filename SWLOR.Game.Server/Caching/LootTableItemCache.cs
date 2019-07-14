@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(LootTableItem entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public LootTableItem GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

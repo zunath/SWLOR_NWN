@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Caching
         {
             MessageHub.Instance.Subscribe<OnCacheObjectSet<T>>(msg => CacheObjectSet(msg.Entity));
             MessageHub.Instance.Subscribe<OnCacheObjectDeleted<T>>(msg => CacheObjectRemoved(msg.Entity));
+            OnSubscribeEvents();
         }
 
         private void CacheObjectSet(T entity)
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Caching
 
         protected abstract void OnCacheObjectSet(T entity);
         protected abstract void OnCacheObjectRemoved(T entity);
-
+        protected abstract void OnSubscribeEvents();
 
         private static object GetEntityKey(IEntity entity)
         {
@@ -72,5 +73,36 @@ namespace SWLOR.Game.Server.Caching
             return propertyWithKey.GetValue(entity);
         }
 
+        protected void PopulateDictionarySet<TPrimary, TSecondary, TEntity>(
+            TPrimary primaryOrganizationID, 
+            TSecondary secondaryOrganizationID, 
+            TEntity entity, 
+            Dictionary<TPrimary, Dictionary<TSecondary, TEntity>> dictionary)
+            where TEntity: class, IEntity
+        {
+            if(!dictionary.ContainsKey(primaryOrganizationID))
+            {
+                dictionary.Add(primaryOrganizationID, new Dictionary<TSecondary, TEntity>());
+            }
+
+            var list = dictionary[primaryOrganizationID];
+            list[secondaryOrganizationID] = entity;
+        }
+
+        protected void RemoveFromDictionarySet<TPrimary, TSecondary, TEntity>(
+            TPrimary primaryOrganizationID,
+            TSecondary secondaryOrganizationID,
+            Dictionary<TPrimary, Dictionary<TSecondary, TEntity>> dictionary)
+        where TEntity: class, IEntity
+        {
+            if (!dictionary.ContainsKey(primaryOrganizationID))
+            {
+                dictionary.Add(primaryOrganizationID, new Dictionary<TSecondary, TEntity>());
+            }
+
+            var list = dictionary[primaryOrganizationID];
+            list.Remove(secondaryOrganizationID);
+
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -10,6 +11,15 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectRemoved(PCBaseStructureItem entity)
         {
+        }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public PCBaseStructureItem GetByID(Guid id)
+        {
+            return ByID[id];
         }
     }
 }

@@ -18,6 +18,10 @@ namespace SWLOR.Game.Server.Caching
             ByPlayerAndQuestID.Remove(new Tuple<Guid, int>(entity.PlayerID, entity.QuestID));
         }
 
+        protected override void OnSubscribeEvents()
+        {
+        }
+
         public PCQuestStatus GetByID(Guid id)
         {
             return ByID[id];

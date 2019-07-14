@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(ItemType entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public ItemType GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

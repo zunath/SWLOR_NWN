@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(PCBaseType entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public PCBaseType GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -10,6 +11,15 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectRemoved(BuildingType entity)
         {
+        }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public BuildingType GetByID(int id)
+        {
+            return ByID[id];
         }
     }
 }

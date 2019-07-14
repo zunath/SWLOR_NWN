@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior)
             {
-                var buildingStructure = DataService.PCBaseStructure.GetByID(data.ParentStructureID);
+                var buildingStructure = DataService.PCBaseStructure.GetByID((Guid)data.ParentStructureID);
                 var baseStructure = DataService.BaseStructure.GetByID(buildingStructure.BaseStructureID);
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
@@ -98,8 +98,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Starship)
             {
-                var buildingStructure = DataService.PCBaseStructure.GetByID(data.ParentStructureID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(buildingStructure.InteriorStyleID);
+                var buildingStructure = DataService.PCBaseStructure.GetByID((Guid)data.ParentStructureID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(buildingStructure.InteriorStyleID));
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(pcBase.BuildingStyleID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;

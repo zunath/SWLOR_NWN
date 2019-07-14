@@ -11,5 +11,14 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(DMRole entity)
         {
         }
+
+        protected override void OnSubscribeEvents()
+        {
+        }
+
+        public DMRole GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

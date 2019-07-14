@@ -53,14 +53,12 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
 
             // Get apartments owned by player.
-            var apartments = DataService.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
-                                                         x.ApartmentBuildingID == apartmentBuildingID &&
-                                                         x.DateRentDue > DateTime.UtcNow)
-                                             .OrderBy(o => o.DateInitialPurchase)
-                                             .ToList();
-
+            var apartments = DataService.PCBase.GetApartmentsOwnedByPlayer(player.GlobalID, apartmentBuildingID);
             // Get apartments owned by other players and the current player currently has access to.
-            var permissions = DataService.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
+            var permissions = DataService.PCBasePermission.GetAllByPlayerID(player.GlobalID);
+            
+            
+            
             var permissionedApartments = DataService.Where<PCBase>(x =>
             {
                 if (x.ApartmentBuildingID != apartmentBuildingID ||

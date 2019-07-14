@@ -97,11 +97,6 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            var interiorStyle = DataService.BuildingStyle.GetByID(structure.InteriorStyleID);
-
-            bool starship = pcBase.PCBaseTypeID == 3;
             NWArea instance = BaseService.GetAreaInstance(structureID, false);
 
             if (instance == null)

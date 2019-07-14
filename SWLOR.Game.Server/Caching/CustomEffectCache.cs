@@ -12,6 +12,10 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
+        protected override void OnSubscribeEvents()
+        {
+        }
+
         public Data.Entity.CustomEffect GetByID(int id)
         {
             return ByID[id];

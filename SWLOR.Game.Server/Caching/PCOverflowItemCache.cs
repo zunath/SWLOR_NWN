@@ -13,6 +13,10 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
+        protected override void OnSubscribeEvents()
+        {
+        }
+
         public PCOverflowItem GetByID(Guid id)
         {
             return ByID[id];

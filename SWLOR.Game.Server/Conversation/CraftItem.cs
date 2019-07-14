@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
 
-            SetPageHeader("MainPage", CraftService.BuildBlueprintHeader(GetPC(), model.BlueprintID, true));
+            SetPageHeader("MainPage", CraftService.BuildBlueprintHeader(GetPC(), true));
             BuildMainPageOptions();
         }
 

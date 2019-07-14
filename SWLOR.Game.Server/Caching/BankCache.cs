@@ -1,0 +1,15 @@
+using SWLOR.Game.Server.Data.Entity;
+
+namespace SWLOR.Game.Server.Caching
+{
+    public class BankCache: CacheBase<Bank>
+    {
+        protected override void OnCacheObjectSet(Bank entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(Bank entity)
+        {
+        }
+    }
+}

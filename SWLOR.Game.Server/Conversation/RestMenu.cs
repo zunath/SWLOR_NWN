@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
@@ -103,13 +104,28 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
             Player playerEntity = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            sw.Stop();
+            Console.WriteLine("playerEntity = " + sw.ElapsedMilliseconds + "ms");
+            sw.Reset();
+
+            sw.Start();
             var association = DataService.Get<Association>(playerEntity.AssociationID);
+            sw.Stop();
+            Console.WriteLine("association = " + sw.ElapsedMilliseconds + "ms");
+            sw.Reset();
+
+            sw.Start();
             int totalSkillCount = DataService.Where<PCSkill>(x =>
             {
                 var skill = DataService.Get<Skill>(x.SkillID);
                 return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
             }).Sum(s => s.Rank);
+            sw.Stop();
+            Console.WriteLine("totalSkillCount = " + sw.ElapsedMilliseconds);
 
             string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
             header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";

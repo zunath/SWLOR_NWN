@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCBasePermission entity)
         {
-            PopulateDictionarySet(entity.PlayerID, entity.ID, entity, ByPlayerIDList);
+            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDList);
             SetPCBaseIDsWithPermissionByID(entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBasePermission entity)
         {
-            RemoveFromDictionarySet(entity.PlayerID, entity.ID, ByPlayerIDList);
+            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDList);
             RemovePCBaseIDsWithPermissionByID(entity);
         }
 

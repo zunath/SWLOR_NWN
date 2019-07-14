@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Data.Entity;
@@ -95,6 +96,40 @@ namespace SWLOR.Game.Server.Tests.Caching
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id2); });
 
+        }
+
+        [Test]
+        public void GetAllByPCBaseID_ThreeItems_AreSame()
+        {
+            // Arrange
+            var pcBaseID = Guid.NewGuid();
+            var entity1 = new PCBaseStructure { ID = Guid.NewGuid(), PCBaseID = pcBaseID };
+            var entity2 = new PCBaseStructure { ID = Guid.NewGuid(), PCBaseID = pcBaseID };
+            var entity3 = new PCBaseStructure { ID = Guid.NewGuid(), PCBaseID = pcBaseID };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity3));
+            var results = _cache.GetAllByPCBaseID(pcBaseID).ToList();
+
+            // Assert
+            Assert.AreSame(entity1, results[0]);
+            Assert.AreSame(entity2, results[1]);
+            Assert.AreSame(entity3, results[2]);
+        }
+
+        [Test]
+        public void GetAllByPCBaseID_NoItems_ReturnsEmptyList()
+        {
+            // Arrange
+            var pcBaseID = Guid.NewGuid();
+
+            // Act
+            var results = _cache.GetAllByPCBaseID(pcBaseID);
+
+            // Assert
+            Assert.IsEmpty(results);
         }
     }
 }

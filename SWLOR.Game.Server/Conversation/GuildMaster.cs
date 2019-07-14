@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadTellMePage()
         {
-            var guilds = DataService.GetAll<Guild>();
+            var guilds = DataService.Guild.GetAll();
 
             string header = "Guilds are organizations focused on the advancement of a particular task. Every guild is freely open for you to contribute as you see fit. Those who contribute the most will receive the biggest benefits.\n\n";
             header += "One of the ways we reward contributors is by way of Guild Points or GP. When you complete a task - such as hunting a beast or creating needed supplies - you'll receive not only payment but also GP.\n\n";

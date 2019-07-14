@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCBase entity)
         {
-            PopulateDictionarySet(entity.PlayerID, entity.ID, entity, ByPlayerIDList);
+            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDList);
         }
 
         protected override void OnCacheObjectRemoved(PCBase entity)
         {
-            RemoveFromDictionarySet(entity.PlayerID, entity.ID, ByPlayerIDList);
+            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDList);
         }
 
         protected override void OnSubscribeEvents()

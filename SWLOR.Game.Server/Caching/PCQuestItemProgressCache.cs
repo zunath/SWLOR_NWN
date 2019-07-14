@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -20,6 +22,11 @@ namespace SWLOR.Game.Server.Caching
         public PCQuestItemProgress GetByID(Guid id)
         {
             return ByID[id];
+        }
+
+        public int GetCountByPCQuestStatusID(Guid pcQuestStatusID)
+        {
+            return ByID.Values.Count(x => x.PCQuestStatusID == pcQuestStatusID);
         }
     }
 }

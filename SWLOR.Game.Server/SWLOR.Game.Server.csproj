@@ -207,6 +207,7 @@
     <Compile Include="Caching\ClientLogEventCache.cs" />
     <Compile Include="Caching\ClientLogEventTypeCache.cs" />
     <Compile Include="Caching\ComponentTypeCache.cs" />
+    <Compile Include="Caching\Contracts\ICache.cs" />
     <Compile Include="Caching\CooldownCategoryCache.cs" />
     <Compile Include="Caching\CraftBlueprintCache.cs" />
     <Compile Include="Caching\CraftBlueprintCategoryCache.cs" />
@@ -225,7 +226,6 @@
     <Compile Include="Caching\FameRegionCache.cs" />
     <Compile Include="Caching\GameTopicCache.cs" />
     <Compile Include="Caching\GameTopicCategoryCache.cs" />
-    <Compile Include="Caching\GrowingPlantCache.cs" />
     <Compile Include="Caching\GuildCache.cs" />
     <Compile Include="Caching\GuildTaskCache.cs" />
     <Compile Include="Caching\ItemTypeCache.cs" />
@@ -261,8 +261,6 @@
     <Compile Include="Caching\PCQuestKillTargetProgressCache.cs" />
     <Compile Include="Caching\PCQuestStatusCache.cs" />
     <Compile Include="Caching\PCRegionalFameCache.cs" />
-    <Compile Include="Caching\PCSearchSiteCache.cs" />
-    <Compile Include="Caching\PCSearchSiteItemCache.cs" />
     <Compile Include="Caching\PCSkillCache.cs" />
     <Compile Include="Caching\PCSkillPoolCache.cs" />
     <Compile Include="Caching\PerkCache.cs" />
@@ -271,7 +269,6 @@
     <Compile Include="Caching\PerkLevelCache.cs" />
     <Compile Include="Caching\PerkLevelQuestRequirementCache.cs" />
     <Compile Include="Caching\PerkLevelSkillRequirementCache.cs" />
-    <Compile Include="Caching\PlantCache.cs" />
     <Compile Include="Caching\PlayerCache.cs" />
     <Compile Include="Caching\QuestCache.cs" />
     <Compile Include="Caching\QuestKillTargetCache.cs" />
@@ -415,7 +412,6 @@
     <Compile Include="Conversation\QuestRewardSelection.cs" />
     <Compile Include="Conversation\RestMenu.cs" />
     <Compile Include="Conversation\ShipGunControls.cs" />
-    <Compile Include="Conversation\Shovel.cs" />
     <Compile Include="Conversation\SliceTerminal.cs" />
     <Compile Include="Conversation\StarportFlights.cs" />
     <Compile Include="Conversation\StructureStorage.cs" />
@@ -496,7 +492,6 @@
     <Compile Include="Data\Entity\FameRegion.cs" />
     <Compile Include="Data\Entity\GameTopic.cs" />
     <Compile Include="Data\Entity\GameTopicCategory.cs" />
-    <Compile Include="Data\Entity\GrowingPlant.cs" />
     <Compile Include="Data\Entity\ItemType.cs" />
     <Compile Include="Data\Entity\KeyItem.cs" />
     <Compile Include="Data\Entity\KeyItemCategory.cs" />
@@ -525,8 +520,6 @@
     <Compile Include="Data\Entity\PCQuestKillTargetProgress.cs" />
     <Compile Include="Data\Entity\PCQuestStatus.cs" />
     <Compile Include="Data\Entity\PCRegionalFame.cs" />
-    <Compile Include="Data\Entity\PCSearchSite.cs" />
-    <Compile Include="Data\Entity\PCSearchSiteItem.cs" />
     <Compile Include="Data\Entity\PCSkill.cs" />
     <Compile Include="Data\Entity\PCSkillPool.cs" />
     <Compile Include="Data\Entity\Perk.cs" />
@@ -535,7 +528,6 @@
     <Compile Include="Data\Entity\PerkLevel.cs" />
     <Compile Include="Data\Entity\PerkLevelQuestRequirement.cs" />
     <Compile Include="Data\Entity\PerkLevelSkillRequirement.cs" />
-    <Compile Include="Data\Entity\Plant.cs" />
     <Compile Include="Data\Entity\Player.cs" />
     <Compile Include="Data\Entity\Quest.cs" />
     <Compile Include="Data\Entity\QuestKillTarget.cs" />
@@ -572,7 +564,6 @@
     <Compile Include="Data\Validator\LootTableValidator.cs" />
     <Compile Include="Data\Validator\NPCGroupValidator.cs" />
     <Compile Include="Data\Validator\PerkCategoryValidator.cs" />
-    <Compile Include="Data\Validator\PlantValidator.cs" />
     <Compile Include="Data\Validator\QuestValidator.cs" />
     <Compile Include="Data\Validator\SkillCategoryValidator.cs" />
     <Compile Include="Data\Validator\SkillValidator.cs" />
@@ -842,7 +833,6 @@
     <Compile Include="Event\Creature\OnCreatureUserDefined.cs" />
     <EmbeddedResource Include="Data\Migrations\2019-07-13.1.sql" />
     <Content Include="Module\**\*.json" />
-    <Compile Include="Scripting\Scripts\**\*.cs" Condition=" '$(Configuration)' == 'Release' " />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
     <Compile Include="Event\DM\OnDMAction.cs" />
@@ -1375,8 +1365,6 @@
     <Compile Include="Item\GenericStartConversation.cs" />
     <Compile Include="Item\Contracts\IActionItem.cs" />
     <Compile Include="Item\RepairKit.cs" />
-    <Compile Include="Item\Shovel.cs" />
-    <Compile Include="Item\WaterJug.cs" />
     <Compile Include="Item\XPTome.cs" />
     <Compile Include="NWNX\LocalVariable.cs" />
     <Compile Include="NWNX\NWNXCore.cs" />
@@ -1457,7 +1445,6 @@
     <Compile Include="Service\EnmityService.cs" />
     <Compile Include="Service\LoggingService.cs" />
     <Compile Include="Service\ExaminationService.cs" />
-    <Compile Include="Service\FarmingService.cs" />
     <Compile Include="Service\HelmetToggleService.cs" />
     <Compile Include="Service\ImpoundService.cs" />
     <Compile Include="Service\ItemService.cs" />
@@ -1480,7 +1467,6 @@
     <Compile Include="Service\ModService.cs" />
     <Compile Include="Service\ResourceService.cs" />
     <Compile Include="Service\RoleplayService.cs" />
-    <Compile Include="Service\SearchService.cs" />
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
     <Compile Include="Service\SpaceService.cs" />
@@ -1575,8 +1561,8 @@
       xcopy "$(TargetDir).\SWLOR.Game.Server.dll" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
       xcopy "$(TargetDir).\SWLOR.Game.Server.pdb" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
       xcopy "$(TargetDir).\SWLOR.Game.Server.dll.config" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
-      xcopy "$(TargetDir)..\..\Scripting\Scripts" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts" /E /Y /C /i
-    </PostBuildEvent>
+
+</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

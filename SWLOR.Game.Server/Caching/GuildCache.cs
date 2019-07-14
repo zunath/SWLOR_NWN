@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -19,6 +20,11 @@ namespace SWLOR.Game.Server.Caching
         public Guild GetByID(int id)
         {
             return ByID[id];
+        }
+
+        public IEnumerable<Guild> GetAll()
+        {
+            return ByID.Values;
         }
     }
 }

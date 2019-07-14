@@ -674,8 +674,8 @@ namespace SWLOR.Game.Server.Conversation
 
             if (structureType == BaseStructureType.ControlTower)
             {
-                var structureCount = DataService.GetAll<PCBaseStructure>().Count(x => x.PCBaseID == structure.PCBaseID);
-                
+                var structureCount = DataService.PCBaseStructure.GetAllByPCBaseID(structure.PCBaseID).Count();
+
                 if (structureCount > 1)
                 {
                     GetPC().FloatingText("You must remove all structures in this sector before picking up the control tower.");

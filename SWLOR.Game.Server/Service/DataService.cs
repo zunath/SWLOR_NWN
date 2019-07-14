@@ -15,6 +15,7 @@ using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using PCBaseType = SWLOR.Game.Server.Data.Entity.PCBaseType;
 using QuestType = SWLOR.Game.Server.Data.Entity.QuestType;
 using SWLOR.Game.Server.Caching;
+using SWLOR.Game.Server.Caching.Contracts;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 
@@ -26,6 +27,8 @@ namespace SWLOR.Game.Server.Service
         public static string MasterConnectionString { get; }
         public static string SWLORConnectionString { get; }
         public static SqlConnection Connection { get; private set; }
+
+        private static Dictionary<Type, ICache<dynamic>> _cacheLookup = new Dictionary<Type, ICache<dynamic>>();
 
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
@@ -64,7 +67,6 @@ namespace SWLOR.Game.Server.Service
         public static FameRegionCache FameRegion { get; } = new FameRegionCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
         public static GameTopicCategoryCache GameTopicCategory { get; } = new GameTopicCategoryCache();
-        public static GrowingPlantCache GrowingPlant { get; } = new GrowingPlantCache();
         public static GuildCache Guild { get; } = new GuildCache();
         public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();
         public static ItemTypeCache ItemType { get; } = new ItemTypeCache();
@@ -100,8 +102,6 @@ namespace SWLOR.Game.Server.Service
         public static PCQuestKillTargetProgressCache PCQuestKillTargetProgress { get; } = new PCQuestKillTargetProgressCache();
         public static PCQuestStatusCache PCQuestStatus { get; } = new PCQuestStatusCache();
         public static PCRegionalFameCache PCRegionalFame { get; } = new PCRegionalFameCache();
-        public static PCSearchSiteCache PCSearchSite { get; } = new PCSearchSiteCache();
-        public static PCSearchSiteItemCache PCSearchSiteItem { get; } = new PCSearchSiteItemCache();
         public static PCSkillCache PCSkill { get; } = new PCSkillCache();
         public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
         public static PerkCache Perk { get; } = new PerkCache();
@@ -110,7 +110,6 @@ namespace SWLOR.Game.Server.Service
         public static PerkLevelCache PerkLevel { get; } = new PerkLevelCache();
         public static PerkLevelQuestRequirementCache PerkLevelQuestRequirement { get; } = new PerkLevelQuestRequirementCache();
         public static PerkLevelSkillRequirementCache PerkLevelSkillRequirement { get; } = new PerkLevelSkillRequirementCache();
-        public static PlantCache Plant { get; } = new PlantCache();
         public static PlayerCache Player { get; } = new PlayerCache();
         public static QuestCache Quest { get; } = new QuestCache();
         public static QuestKillTargetCache QuestKillTarget { get; } = new QuestKillTargetCache();
@@ -167,9 +166,11 @@ namespace SWLOR.Game.Server.Service
                 InitializeCache();
         }
 
-        private static void LoadCache<T>()
+        private static void LoadCache<T>(ICache<T> cache)
             where T: class, IEntity
         {
+            _cacheLookup[typeof(T)] = cache;
+
             var entities = Connection.GetAll<T>();
             foreach(var entity in entities)
             {
@@ -197,102 +198,97 @@ namespace SWLOR.Game.Server.Service
         private static void InitializeCache()
         {
             Console.WriteLine("Initializing the cache...");
-            LoadCache<Area>();
+            LoadCache(Area);
+            LoadCache(AreaWalkmesh);
 
-
-            LoadCache<ApartmentBuilding>();
-            // Note: Area and AreaWalkmesh get cached in the AreaService
-            LoadCache<Association>();
-            LoadCache<Attribute>();
-            LoadCache<AuthorizedDM>();
-            LoadCache<Bank>();
-            LoadCache<BankItem>();
-            LoadCache<BaseItemType>();
-            LoadCache<BaseStructure>();
-            LoadCache<BaseStructureType>();
-            LoadCache<BuildingStyle>();
-            LoadCache<Data.Entity.BuildingType>();
-            LoadCache<ChatChannel>();
-            LoadCache<ClientLogEventType>();
-            LoadCache<ComponentType>();
-            LoadCache<CooldownCategory>();
-            LoadCache<CraftBlueprint>();
-            LoadCache<CraftBlueprintCategory>();
-            LoadCache<CraftDevice>();
-            LoadCache<Data.Entity.CustomEffect>();
-            LoadCache<CustomEffectCategory>();
-            LoadCache<DMRole>();
-            LoadCache<EnmityAdjustmentRule>();
-            LoadCache<FameRegion>();
-            LoadCache<Guild>();
-            LoadCache<GuildTask>();
-            LoadCache<GrowingPlant>();
-            LoadCache<ItemType>();
-            LoadCache<JukeboxSong>();
-            LoadCache<KeyItem>();
-            LoadCache<KeyItemCategory>();
-            LoadCache<LootTable>();
-            LoadCache<LootTableItem>();
-            LoadCache<MarketCategory>();
-            LoadCache<Message>();
-            LoadCache<NPCGroup>();
-            LoadCache<PCBase>();
-            LoadCache<PCBasePermission>();
-            LoadCache<PCBaseStructure>();
-            LoadCache<PCBaseStructureItem>();
-            LoadCache<PCBaseStructurePermission>();
-            LoadCache<PCBaseType>();
+            LoadCache(ApartmentBuilding);
+            LoadCache(Association);
+            LoadCache(Attribute);
+            LoadCache(AuthorizedDM);
+            LoadCache(Bank);
+            LoadCache(BankItem);
+            LoadCache(BaseItemType);
+            LoadCache(BaseStructure);
+            LoadCache(BaseStructureType);
+            LoadCache(BuildingStyle);
+            LoadCache(BuildingType);
+            LoadCache(ChatChannel);
+            LoadCache(ClientLogEventType);
+            LoadCache(ComponentType);
+            LoadCache(CooldownCategory);
+            LoadCache(CraftBlueprint);
+            LoadCache(CraftBlueprintCategory);
+            LoadCache(CraftDevice);
+            LoadCache(CustomEffect);
+            LoadCache(CustomEffectCategory);
+            LoadCache(DMRole);
+            LoadCache(EnmityAdjustmentRule);
+            LoadCache(FameRegion);
+            LoadCache(Guild);
+            LoadCache(GuildTask);
+            LoadCache(ItemType);
+            LoadCache(JukeboxSong);
+            LoadCache(KeyItem);
+            LoadCache(KeyItemCategory);
+            LoadCache(LootTable);
+            LoadCache(LootTableItem);
+            LoadCache(MarketCategory);
+            LoadCache(Message);
+            LoadCache(NPCGroup);
+            LoadCache(PCBase);
+            LoadCache(PCBasePermission);
+            LoadCache(PCBaseStructure);
+            LoadCache(PCBaseStructureItem);
+            LoadCache(PCBaseStructurePermission);
+            LoadCache(PCBaseType);
             LoadPCMarketListingCache();
-            LoadCache<SpaceStarport>();
-            LoadCache<SpaceEncounter>();
+            LoadCache(SpaceStarport);
+            LoadCache(SpaceEncounter);
 
             
-            LoadCache<PCCooldown>();
-            LoadCache<PCCraftedBlueprint>();
-            LoadCache<PCCustomEffect>();
+            LoadCache(PCCooldown);
+            LoadCache(PCCraftedBlueprint);
+            LoadCache(PCCustomEffect);
 
             LoadPCImpoundedItemsCache();
-            LoadCache<PCGuildPoint>();
-            LoadCache<PCKeyItem>();
-            LoadCache<PCMapPin>();
-            LoadCache<PCMapProgression>();
-            LoadCache<PCObjectVisibility>();
-            LoadCache<PCOutfit>();
-            LoadCache<PCOverflowItem>();
-            LoadCache<PCPerk>();
-            LoadCache<PCQuestItemProgress>();
-            LoadCache<PCQuestKillTargetProgress>();
-            LoadCache<PCQuestStatus>();
-            LoadCache<PCRegionalFame>();
-            LoadCache<PCSearchSite>();
-            LoadCache<PCSearchSiteItem>();
-            LoadCache<PCSkill>();
-            LoadCache<PCSkillPool>();
-            LoadCache<PCPerkRefund>();
+            LoadCache(PCGuildPoint);
+            LoadCache(PCKeyItem);
+            LoadCache(PCMapPin);
+            LoadCache(PCMapProgression);
+            LoadCache(PCObjectVisibility);
+            LoadCache(PCOutfit);
+            LoadCache(PCOverflowItem);
+            LoadCache(PCPerk);
+            LoadCache(PCQuestItemProgress);
+            LoadCache(PCQuestKillTargetProgress);
+            LoadCache(PCQuestStatus);
+            LoadCache(PCRegionalFame);
+            LoadCache(PCSkill);
+            LoadCache(PCSkillPool);
+            LoadCache(PCPerkRefund);
 
-            LoadCache<Data.Entity.Perk>();
-            LoadCache<PerkFeat>();
-            LoadCache<PerkCategory>();
-            LoadCache<PerkLevel>();
-            LoadCache<PerkLevelQuestRequirement>();
-            LoadCache<PerkLevelSkillRequirement>();
-            LoadCache<Plant>();
-            LoadCache<Player>(); 
-            LoadCache<Quest>();
-            LoadCache<QuestKillTarget>();
-            LoadCache<QuestPrerequisite>();
-            LoadCache<QuestRequiredItem>();
-            LoadCache<QuestRequiredKeyItem>();
-            LoadCache<QuestRewardItem>();
-            LoadCache<QuestState>();
-            LoadCache<QuestType>();
-            LoadCache<ServerConfiguration>();
-            LoadCache<Skill>();
-            LoadCache<SkillCategory>();
-            LoadCache<Spawn>();
-            LoadCache<SpawnObject>();
-            LoadCache<SpawnObjectType>();
-            LoadCache<StructureMode>();
+            LoadCache(Perk);
+            LoadCache(PerkFeat);
+            LoadCache(PerkCategory);
+            LoadCache(PerkLevel);
+            LoadCache(PerkLevelQuestRequirement);
+            LoadCache(PerkLevelSkillRequirement);
+            LoadCache(Player); 
+            LoadCache(Quest);
+            LoadCache(QuestKillTarget);
+            LoadCache(QuestPrerequisite);
+            LoadCache(QuestRequiredItem);
+            LoadCache(QuestRequiredKeyItem);
+            LoadCache(QuestRewardItem);
+            LoadCache(QuestState);
+            LoadCache(QuestType);
+            LoadCache(ServerConfiguration);
+            LoadCache(Skill);
+            LoadCache(SkillCategory);
+            LoadCache(Spawn);
+            LoadCache(SpawnObject);
+            LoadCache(SpawnObjectType);
+            LoadCache(StructureMode);
             Console.WriteLine("Cache initialized!");
         }
 
@@ -397,36 +393,29 @@ namespace SWLOR.Game.Server.Service
         // The following methods will eventually be removed. 
         // Only keeping them here for the time being to make the server build.
 
-        /// <summary>
-        /// Returns all entities of a given type from the database or cache.
-        /// Keep in mind that if you don't build the cache up-front (i.e: at load time) you will only retrieve records which have been cached so far.
-        /// For example, if Get() is called first, then subsequent GetAll() will only retrieve that one object.
-        /// To fix this, you should call GetAll() at load time to retrieve everything from the database for that object type.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
-        /// <returns></returns>
         public static IEnumerable<T> GetAll<T>()
             where T : class, IEntity
         {
-            throw new NotSupportedException();
+            ICache<T> cache = (ICache<T>)_cacheLookup[typeof(T)];
+            return cache.GetAll();
         }
 
         public static T Single<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
-            throw new NotSupportedException();
+            return GetAll<T>().Single(predicate);
         }
 
         public static T SingleOrDefault<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
-            throw new NotSupportedException();
+            return GetAll<T>().SingleOrDefault(predicate);
         }
 
         public static HashSet<T> Where<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
-            throw new NotSupportedException();
+            return new HashSet<T>(GetAll<T>().Where(predicate));
         }
 
 

@@ -94,6 +94,60 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id2); });
+        }
+
+        [Test]
+        public void GetByResref_OneItem_ReturnsArea()
+        {
+            // Arrange
+            var resref = "testarea";
+            var entity1 = new Area {ID = Guid.NewGuid(), Resref = resref};
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity1));
+            var result = _cache.GetByResref(resref);
+
+            // Assert
+            Assert.AreSame(result, entity1);
+        }
+
+        [Test]
+        public void GetByResref_TwoItems_ReturnsSecondArea()
+        {
+            // Arrange
+            var resref1 = "testarea1";
+            var resref2 = "testarea2";
+            var entity1 = new Area { ID = Guid.NewGuid(), Resref = resref1 };
+            var entity2 = new Area { ID = Guid.NewGuid(), Resref = resref2 };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity2));
+            var result2 = _cache.GetByResref(resref2);
+
+            // Assert
+            Assert.AreSame(result2, entity2);
+        }
+
+        [Test]
+        public void GetByResref_NullKey_ThrowsKeyNotFoundException()
+        {
+            // Arrange
+            var resref1 = "testarea1";
+            var resref2 = "testarea2";
+            var entity1 = new Area { ID = Guid.NewGuid(), Resref = resref1 };
+            var entity2 = new Area { ID = Guid.NewGuid(), Resref = resref2 };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity2));
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _cache.GetByResref(null);
+            }) ;
+
 
         }
     }

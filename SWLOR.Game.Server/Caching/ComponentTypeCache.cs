@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(ComponentType entity)
         {
         }
+
+        public ComponentType GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

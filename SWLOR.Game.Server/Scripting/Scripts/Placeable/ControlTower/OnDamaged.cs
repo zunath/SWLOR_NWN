@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.ControlTower
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
-            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             var playerIDs = DataService.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID &&
                                                                !x.IsPublicPermission)
                                  .Select(s => s.PlayerID);

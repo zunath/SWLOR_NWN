@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Item
                 return;
             }
             GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == new Guid(growingPlantID));
-            var plant = DataService.Get<Plant>(growingPlant.PlantID);
+            var plant = DataService.Plant.GetByID(growingPlant.PlantID);
 
             if (growingPlant.WaterStatus <= 0)
             {

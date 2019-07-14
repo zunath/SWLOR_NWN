@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
             if (!pc.IsPlayer) return;
 
             // Reapply the visual effect icon to player if they logged in with an active concentration ability.
-            Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(pc.GlobalID);
             if (dbPlayer.ActiveConcentrationPerkID != null)
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
+                Player dbPlayer = DataService.Player.GetByID(creature.GlobalID);
                 if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
 
                 return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                var player = DataService.Get<Player>(creature.GlobalID);
+                var player = DataService.Player.GetByID(creature.GlobalID);
                 player.ActiveConcentrationPerkID = perkID;
                 player.ActiveConcentrationTier = spellTier;
                 DataService.SubmitDataChange(player, DatabaseActionType.Update);
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                Player player = DataService.Get<Player>(creature.GlobalID);
+                Player player = DataService.Player.GetByID(creature.GlobalID);
                 if (player.ActiveConcentrationPerkID == null) return;
 
                 player.ActiveConcentrationPerkID = null;
@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Service
         {
             var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == spellFeatID);
             int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
-            var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
+            var cooldownCategory = DataService.CooldownCategory.GetByID(cooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString();
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
@@ -682,7 +682,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                var player = DataService.Get<Player>(creature.GlobalID);
+                var player = DataService.Player.GetByID(creature.GlobalID);
                 return player.CurrentFP;
             }
             else
@@ -703,7 +703,7 @@ namespace SWLOR.Game.Server.Service
 
             if (creature.IsPlayer)
             {
-                var player = DataService.Get<Player>(creature.GlobalID);
+                var player = DataService.Player.GetByID(creature.GlobalID);
                 if (amount > player.MaxFP) amount = player.MaxFP;
 
                 player.CurrentFP = amount;
@@ -726,7 +726,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                var player = DataService.Get<Player>(creature.GlobalID);
+                var player = DataService.Player.GetByID(creature.GlobalID);
                 return player.MaxFP;
             }
             else
@@ -746,7 +746,7 @@ namespace SWLOR.Game.Server.Service
 
             if (creature.IsPlayer)
             {
-                var player = DataService.Get<Player>(creature.GlobalID);
+                var player = DataService.Player.GetByID(creature.GlobalID);
                 player.MaxFP = amount;
                 if (player.CurrentFP > player.MaxFP)
                     player.CurrentFP = player.MaxFP;
@@ -773,7 +773,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestorePlayerFP(NWPlayer oPC, int amount)
         {
-            Player entity = DataService.Get<Player>(oPC.GlobalID);
+            Player entity = DataService.Player.GetByID(oPC.GlobalID);
             RestorePlayerFP(oPC, amount, entity);
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
@@ -801,7 +801,7 @@ namespace SWLOR.Game.Server.Service
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
             PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
-            var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
+            var perk = DataService.Perk.GetByID(entity.PerkID);
             var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
@@ -957,7 +957,7 @@ namespace SWLOR.Game.Server.Service
                 int level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
                 if (level >= perkFeat.PerkLevelUnlocked) continue;
 
-                var perk = DataService.Get<Data.Entity.Perk>(perkFeat.PerkID);
+                var perk = DataService.Perk.GetByID(perkFeat.PerkID);
                 self.SetLocalInt("PERK_LEVEL_" + perkFeat.PerkID, perkFeat.PerkLevelUnlocked);
                 perkFeatCache[perkFeat.PerkID] = new AIPerkDetails(perkFeat.FeatID, perk.ExecutionTypeID);
                 hasPerkFeat = true;

@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Service
             return pcPerks.Where(x =>
             {
                 // Filter on equipment-based execution type.
-                var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
+                var perk = DataService.Perk.GetByID(x.PerkID);
                 bool matchesExecutionType = perk.ExecutionTypeID == executionType;
                 if (!matchesExecutionType) return false;
 
@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Service
                 if (oPC.GlobalID != x.PlayerID) return false;
 
                 // Only pull back perks which have a Shield On Hit execution type.
-                var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
+                var perk = DataService.Perk.GetByID(x.PerkID);
                 if (perk.ExecutionTypeID != PerkExecutionType.ShieldOnHit)
                     return false;
 
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
             // Retrieve database records.
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
             var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
             

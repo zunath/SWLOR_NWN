@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Conversation
             sw.Reset();
 
             sw.Start();
-            var association = DataService.Get<Association>(playerEntity.AssociationID);
+            var association = DataService.Association.GetByID(playerEntity.AssociationID);
             sw.Stop();
             Console.WriteLine("association = " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Conversation
             sw.Start();
             int totalSkillCount = DataService.Where<PCSkill>(x =>
             {
-                var skill = DataService.Get<Skill>(x.SkillID);
+                var skill = DataService.Skill.GetByID(x.SkillID);
                 return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
             }).Sum(s => s.Rank);
             sw.Stop();

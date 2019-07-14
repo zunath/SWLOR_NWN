@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.StructureStorage
             int disturbType = _.GetInventoryDisturbType();
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            var baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
+            var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
             int itemLimit = baseStructure.Storage + structure.StructureBonus;
 
             int itemCount = container.InventoryItems.Count();

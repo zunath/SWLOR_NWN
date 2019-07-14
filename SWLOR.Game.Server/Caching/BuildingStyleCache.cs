@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(BuildingStyle entity)
         {
         }
+
+        public BuildingStyle GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

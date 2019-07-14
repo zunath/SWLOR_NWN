@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -10,6 +11,11 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectRemoved(Message entity)
         {
+        }
+
+        public Message GetByID(Guid id)
+        {
+            return ByID[id];
         }
     }
 }

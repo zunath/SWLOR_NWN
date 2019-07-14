@@ -33,8 +33,8 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.Drill
             }
 
             Guid structureGUID = new Guid(structureID);
-            PCBaseStructure pcStructure = DataService.Get<PCBaseStructure>(structureGUID);
-            PCBase pcBase = DataService.Get<PCBase>(pcStructure.PCBaseID);
+            PCBaseStructure pcStructure = DataService.PCBaseStructure.GetByID(structureGUID);
+            PCBase pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
             PCBaseStructure tower = BaseService.GetBaseControlTower(pcBase.ID);
 
             // Check whether there's space in this tower.
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.Drill
             int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
             if (count > capacity) return;
 
-            BaseStructure baseStructure = DataService.Get<BaseStructure>(pcStructure.BaseStructureID);
+            BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
             var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");

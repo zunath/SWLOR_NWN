@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.OnQuestState
                 var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
                 if (status == null) return false;
 
-                var questState = DataService.Get<QuestState>(status.CurrentQuestStateID);
+                var questState = DataService.QuestState.GetByID(status.CurrentQuestStateID);
 
                 bool has = questState.Sequence == state && status.CompletionDate == null;
                 return has;

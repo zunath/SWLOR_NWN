@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Data.Entity;
+﻿using System;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Conversation
             string header = ColorTokenService.Green("Perks purchased:") + "\n\n";
             foreach (PCPerk pcPerk in perks)
             {
-                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                var perk = DataService.Perk.GetByID(pcPerk.PerkID);
                 header += perk.Name + " (Lvl. " + pcPerk.PerkLevel + ") \n";
             }
 
@@ -184,10 +185,10 @@ namespace SWLOR.Game.Server.Conversation
                     nextSpecializationRequired = ((SpecializationType)nextPerkLevel.SpecializationID).ToString();
                 }
             }
-            var perkCategory = DataService.Get<PerkCategory>(perk.PerkCategoryID);
+            var perkCategory = DataService.PerkCategory.GetByID(perk.PerkCategoryID);
             var cooldownCategory = perk.CooldownCategoryID == null ?
                 null :
-                DataService.Get<CooldownCategory>(perk.CooldownCategoryID);
+                DataService.CooldownCategory.GetByID(Convert.ToInt32(perk.CooldownCategoryID));
 
             string header = ColorTokenService.Green("Name: ") + perk.Name + "\n" +
                             ColorTokenService.Green("Category: ") + perkCategory.Name + "\n" +

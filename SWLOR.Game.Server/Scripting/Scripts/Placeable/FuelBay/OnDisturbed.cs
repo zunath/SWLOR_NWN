@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.FuelBay
             }
 
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
-            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             // Calculate how much fuel exists in the bay's inventory.
             int fuelCount = 0;

@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
             
             foreach (PCPerk pcPerk in pcPerks)
             {
-                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                var perk = DataService.Perk.GetByID(pcPerk.PerkID);
                 description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
             }
             

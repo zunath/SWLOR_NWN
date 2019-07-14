@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(ServerConfiguration entity)
         {
         }
+
+        public ServerConfiguration Get()
+        {
+            return ByID[1];
+        }
     }
 }

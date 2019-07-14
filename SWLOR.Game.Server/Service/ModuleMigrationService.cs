@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void MigrateModuleVersion()
         {
-            var config = DataService.Get<ServerConfiguration>(1); // There should only ever be one row in the server configuration table.
+            var config = DataService.ServerConfiguration.Get(1); // There should only ever be one row in the server configuration table.
             NWPlaceable storage = _.GetObjectByTag("MIGRATION_STORAGE");
 
             // VERSION 1: Apply new AC rules to all items in persistent storage.

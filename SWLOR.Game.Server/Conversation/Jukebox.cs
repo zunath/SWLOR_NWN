@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
             int jukeboxSongID = (int)response.CustomData;
-            JukeboxSong song = DataService.Get<JukeboxSong>(jukeboxSongID);
+            JukeboxSong song = DataService.JukeboxSong.GetByID(jukeboxSongID);
 
             player.FloatingText("Song Selected: " + song.DisplayName);
 

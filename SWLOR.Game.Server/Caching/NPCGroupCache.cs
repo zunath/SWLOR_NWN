@@ -11,5 +11,11 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(NPCGroup entity)
         {
         }
+
+        public NPCGroup GetByID(int id)
+        {
+            return ByID[id];
+        }
+
     }
 }

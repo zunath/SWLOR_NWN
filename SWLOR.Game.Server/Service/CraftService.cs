@@ -81,10 +81,10 @@ namespace SWLOR.Game.Server.Service
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
-            var baseStructure = bp.BaseStructureID == null ? null : DataService.Get<BaseStructure>(bp.BaseStructureID);
-            var mainComponent = DataService.Get<ComponentType>(bp.MainComponentTypeID);
-            var secondaryComponent = DataService.Get<ComponentType>(bp.SecondaryComponentTypeID);
-            var tertiaryComponent = DataService.Get<ComponentType>(bp.TertiaryComponentTypeID);
+            var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(bp.BaseStructureID);
+            var mainComponent = DataService.ComponentType.GetByID(bp.MainComponentTypeID);
+            var secondaryComponent = DataService.ComponentType.GetByID(bp.SecondaryComponentTypeID);
+            var tertiaryComponent = DataService.ComponentType.GetByID(bp.TertiaryComponentTypeID);
 
             string header = ColorTokenService.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += ColorTokenService.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
@@ -617,7 +617,7 @@ namespace SWLOR.Game.Server.Service
 
             // Pull the building structure from the database.
             Guid buildingID = new Guid(pcStructureID);
-            var building = DataService.Get<PCBaseStructure>(buildingID);
+            var building = DataService.PCBaseStructure.GetByID(buildingID);
 
             // Building must be in "Workshop" mode in order for the atmosphere bonuses to take effect.
             if (building.StructureModeID != (int)StructureModeType.Workshop) return 0;
@@ -626,7 +626,7 @@ namespace SWLOR.Game.Server.Service
             var structures = DataService.Where<PCBaseStructure>(x =>
             {
                 if (x.ParentPCBaseStructureID != buildingID) return false;
-                var baseStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
+                var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             });
 

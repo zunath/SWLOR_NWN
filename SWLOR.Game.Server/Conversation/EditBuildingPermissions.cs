@@ -302,8 +302,8 @@ namespace SWLOR.Game.Server.Conversation
         private void PublicPermissionsResponses(int responseID)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var pcStructure = DataService.Get<PCBaseStructure>(data.StructureID);
-            var pcBase = DataService.Get<PCBase>(pcStructure.PCBaseID);
+            var pcStructure = DataService.PCBaseStructure.GetByID(data.StructureID);
+            var pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
             var ownerPlayerID = pcBase.PlayerID;
 
             switch (responseID)

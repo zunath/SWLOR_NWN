@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.MolecularReassembler
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
             int salvageComponentTypeID = data.SalvageComponentTypeID;
-            _componentType = DataService.Get<ComponentType>(salvageComponentTypeID);
+            _componentType = DataService.ComponentType.GetByID(salvageComponentTypeID);
 
             // Create an item with no bonuses every time.
             _.CreateItemOnObject(_componentType.ReassembledResref, _player);

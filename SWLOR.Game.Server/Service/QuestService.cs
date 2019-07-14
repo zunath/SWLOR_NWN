@@ -242,8 +242,8 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
-                var quest = DataService.Get<Quest>(pcQuest.QuestID);
-                var state = DataService.Get<QuestState>(pcQuest.CurrentQuestStateID);
+                var quest = DataService.Quest.GetByID(pcQuest.QuestID);
+                var state = DataService.QuestState.GetByID(pcQuest.CurrentQuestStateID);
                 _.AddJournalQuestEntry(quest.JournalTag, state.JournalStateID, oPC.Object, FALSE);
             }
         }
@@ -443,8 +443,8 @@ namespace SWLOR.Game.Server.Service
             if (questStatus.CompletionDate != null) return;
 
             // Retrieve the quest, the current state, and the next state of the quest from the cache.
-            Quest quest = DataService.Get<Quest>(questStatus.QuestID);
-            QuestState currentState = DataService.Get<QuestState>(questStatus.CurrentQuestStateID);
+            Quest quest = DataService.Quest.GetByID(questStatus.QuestID);
+            QuestState currentState = DataService.QuestState.GetByID(questStatus.CurrentQuestStateID);
             QuestState nextState = DataService.SingleOrDefault<QuestState>(x => x.QuestID == quest.ID && x.Sequence == currentState.Sequence + 1);
 
             // If there's no state after this one, the assumption is that it's time to complete the quest.
@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Service
         private static void CreateExtendedQuestDataEntries(PCQuestStatus status)
         {
             // Retrieve the quest and state information from the cache.
-            var quest = DataService.Get<Quest>(status.QuestID);
+            var quest = DataService.Quest.GetByID(status.QuestID);
             var state = DataService.Single<QuestState>(x => x.QuestID == quest.ID && x.ID == status.CurrentQuestStateID);
 
             // Retrieve the kill targets and required items necessary for this quest state.
@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Service
             if (questID <= 0 || questStateSequence <= 0 || string.IsNullOrWhiteSpace(questItemResref)) return;
 
             PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
-            QuestState questState = DataService.Get<QuestState>(status.CurrentQuestStateID);
+            QuestState questState = DataService.QuestState.GetByID(status.CurrentQuestStateID);
 
             if (questStateSequence != questState.Sequence) return;
             if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, questItemResref)) == FALSE) return;
@@ -673,9 +673,9 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var kt in killTargets)
                 {
-                    var questStatus = DataService.Get<PCQuestStatus>(kt.PCQuestStatusID);
-                    var quest = DataService.Get<Quest>(questStatus.QuestID);
-                    var npcGroup = DataService.Get<NPCGroup>(kt.NPCGroupID);
+                    var questStatus = DataService.PCQuestStatus.GetByID(kt.PCQuestStatusID);
+                    var quest = DataService.Quest.GetByID(questStatus.QuestID);
+                    var npcGroup = DataService.NPCGroup.GetByID(kt.NPCGroupID);
 
                     kt.RemainingToKill--;
                     string targetGroupName = npcGroup.Name;
@@ -748,7 +748,7 @@ namespace SWLOR.Game.Server.Service
             PCQuestStatus pcQuestStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
             if (pcQuestStatus == null) return;
 
-            QuestState questState = DataService.Get<QuestState>(pcQuestStatus.CurrentQuestStateID);
+            QuestState questState = DataService.QuestState.GetByID(pcQuestStatus.CurrentQuestStateID);
 
             if (questState.Sequence != questSequence ||
               (questState.QuestTypeID != (int)QuestType.UseObject &&
@@ -815,7 +815,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            QuestState questState = DataService.Get<QuestState>(pcStatus.CurrentQuestStateID);
+            QuestState questState = DataService.QuestState.GetByID(pcStatus.CurrentQuestStateID);
             var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestStateID == pcStatus.CurrentQuestStateID);
 
             foreach (QuestRequiredKeyItem ki in requiredKeyItems)
@@ -873,7 +873,7 @@ namespace SWLOR.Game.Server.Service
             PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
 
             if (status == null) return -1;
-            var state = DataService.Get<QuestState>(status.CurrentQuestStateID);
+            var state = DataService.QuestState.GetByID(status.CurrentQuestStateID);
             return state.JournalStateID;
         }
 

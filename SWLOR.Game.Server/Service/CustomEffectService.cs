@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
 
             if (category == CustomEffectCategoryType.FoodEffect)
             {
-                var customEffectPC = DataService.Get<Data.Entity.CustomEffect>(pcEffect.CustomEffectID);
+                var customEffectPC = DataService.CustomEffect.GetByID(pcEffect.CustomEffectID);
                 if (customEffectPC != null)
                 {
                     var foodHandler = GetCustomEffectHandler(customEffectPC.ID);

@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             BaseStructure structure = DataService.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
             var tower = BaseService.GetBaseControlTower(data.PCBaseID);
-            var towerBaseStructure = tower == null ? null : DataService.Get<BaseStructure>(tower.BaseStructureID);
+            var towerBaseStructure = tower == null ? null : DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             bool canPlaceStructure = true;
             bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
@@ -78,15 +78,15 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior)
             {
-                var buildingStructure = DataService.Get<PCBaseStructure>(data.ParentStructureID);
-                var baseStructure = DataService.Get<BaseStructure>(buildingStructure.BaseStructureID);
+                var buildingStructure = DataService.PCBaseStructure.GetByID(data.ParentStructureID);
+                var baseStructure = DataService.BaseStructure.GetByID(buildingStructure.BaseStructureID);
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
                 var structures = DataService.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    var childStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
+                    var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
 
@@ -98,15 +98,15 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Starship)
             {
-                var buildingStructure = DataService.Get<PCBaseStructure>(data.ParentStructureID);
-                var buildingStyle = DataService.Get<BuildingStyle>(buildingStructure.InteriorStyleID);
+                var buildingStructure = DataService.PCBaseStructure.GetByID(data.ParentStructureID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(buildingStructure.InteriorStyleID);
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
                 var structures = DataService.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    var childStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
+                    var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
 
@@ -118,8 +118,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                var pcBase = DataService.Get<PCBase>(data.PCBaseID);
-                var buildingStyle = DataService.Get<BuildingStyle>(pcBase.BuildingStyleID);
+                var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+                var buildingStyle = DataService.BuildingStyle.GetByID(pcBase.BuildingStyleID);
                 var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;

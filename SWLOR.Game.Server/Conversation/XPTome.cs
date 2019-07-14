@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (vm.Item != null && vm.Item.IsValid)
             {
-                var skill = DataService.Get<Skill>(vm.SkillID);
+                var skill = DataService.Skill.GetByID(vm.SkillID);
                 if (!skill.ContributesToSkillCap)
                 {
                     GetPC().FloatingText("You cannot raise that skill with this tome.");

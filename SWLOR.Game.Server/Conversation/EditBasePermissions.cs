@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("PlayerListPage");
                     break;
                 case 2: // Change Public Permissions
-                    var pcBase = DataService.Get<PCBase>(data.PCBaseID);
+                    var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                     
                     if (pcBase.Sector == "AP")
                     {
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Conversation
         private void PublicPermissionsResponses(int responseID)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var pcBase = DataService.Get<PCBase>(data.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
             var ownerPlayerID = pcBase.PlayerID;
 
             switch (responseID)

@@ -47,9 +47,9 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.CraftingDevice
             }
 
             var model = CraftService.GetPlayerCraftingData(oPC);
-            var mainComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.MainComponentTypeID);
-            var secondaryComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.SecondaryComponentTypeID);
-            var tertiaryComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.TertiaryComponentTypeID);
+            var mainComponent = DataService.ComponentType.GetByID(model.Blueprint.MainComponentTypeID);
+            var secondaryComponent = DataService.ComponentType.GetByID(model.Blueprint.SecondaryComponentTypeID);
+            var tertiaryComponent = DataService.ComponentType.GetByID(model.Blueprint.TertiaryComponentTypeID);
 
             NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
 

@@ -522,7 +522,7 @@ namespace SWLOR.Game.Server.Conversation
             // Otherwise an item has already been picked.
             else
             {
-                MarketCategory category = DataService.Get<MarketCategory>(model.ItemMarketCategoryID);
+                MarketCategory category = DataService.MarketCategory.GetByID(model.ItemMarketCategoryID);
                 float feeRate = MarketService.CalculateFeePercentage(model.LengthDays);
                 int fees = (int)(model.SellPrice * feeRate);
                 if (fees < 1) fees = 1;
@@ -791,7 +791,7 @@ namespace SWLOR.Game.Server.Conversation
             model.ManageListingID = (Guid)response.CustomData;
 
             // Populate the temporary data model for use on other pages.
-            var listing = DataService.Get<PCMarketListing>(model.ManageListingID);
+            var listing = DataService.PCMarketListing.GetByID(model.ManageListingID);
             model.ItemID = new Guid(listing.ItemID);
             model.ItemName = listing.ItemName;
             model.ItemTag = listing.ItemTag;
@@ -813,7 +813,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = MarketService.GetPlayerMarketData(player);
-            var category = DataService.Get<MarketCategory>(model.ItemMarketCategoryID);
+            var category = DataService.MarketCategory.GetByID(model.ItemMarketCategoryID);
 
             // Build the header
             string header = ColorTokenService.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
@@ -854,7 +854,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 2: // Remove Listing
 
-                    var listing = DataService.Get<PCMarketListing>(model.ManageListingID);
+                    var listing = DataService.PCMarketListing.GetByID(model.ManageListingID);
 
                     // Start by verifying the item is still in a valid state.
                     if (listing.DateRemoved != null ||

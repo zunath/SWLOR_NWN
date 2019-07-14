@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(KeyItem entity)
         {
         }
+
+        public KeyItem GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

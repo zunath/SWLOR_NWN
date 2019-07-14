@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Item
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
+            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
             
             var dbItem = new PCBaseStructureItem
             {
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Item
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
+            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
             int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == pcbs.ID).Count() + 1;
             if (count > (structure.ResourceStorage + pcbs.StructureBonus))

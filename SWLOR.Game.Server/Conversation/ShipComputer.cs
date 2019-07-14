@@ -91,8 +91,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID); 
-            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
-            BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
 
             NWPlaceable bay = SpaceService.GetCargoBay(GetPC().Area, null);
 
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             Guid structureID = new Guid(_.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
@@ -461,7 +461,7 @@ namespace SWLOR.Game.Server.Conversation
 
             Guid structureID = new Guid(_.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));

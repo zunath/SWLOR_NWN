@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string CreateSkillDetailsHeader(PCSkill pcSkill, int req)
         {
-            Player player = DataService.Get<Player>(pcSkill.PlayerID);
+            Player player = DataService.Player.GetByID(pcSkill.PlayerID);
             Skill skill = SkillService.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
@@ -138,9 +138,9 @@ namespace SWLOR.Game.Server.Conversation
 
             string rpXP = ColorTokenService.Green("Roleplay XP: ") + player.RoleplayXP + "\n";
 
-            Attribute primaryAttribute = DataService.Get<Attribute>(skill.Primary);
-            Attribute secondaryAttribute = DataService.Get<Attribute>(skill.Secondary);
-            Attribute tertiaryAttribute = DataService.Get<Attribute>(skill.Tertiary);
+            Attribute primaryAttribute = DataService.Attribute.GetByID(skill.Primary);
+            Attribute secondaryAttribute = DataService.Attribute.GetByID(skill.Secondary);
+            Attribute tertiaryAttribute = DataService.Attribute.GetByID(skill.Tertiary);
             string primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
             string secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
             string tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadDistributeRPXPPage()
         {
             NWPlayer player = GetPC();
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Model vm = GetDialogCustomData<Model>();
             Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
 
@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleDistributeRPXPResponse(int responseID)
         {
             NWPlayer player = GetPC();
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Model vm = GetDialogCustomData<Model>();
 
             switch (responseID)

@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
             Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
-            var owner = DataService.Get<Player>(pcBase.PlayerID);
+            var owner = DataService.Player.GetByID(pcBase.PlayerID);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
             bool canCancelLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanCancelLease);
 
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Conversation
             PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
             Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
-            var owner = DataService.Get<Player>(pcBase.PlayerID);
+            var owner = DataService.Player.GetByID(pcBase.PlayerID);
 
             if (!canExtendLease)
             {

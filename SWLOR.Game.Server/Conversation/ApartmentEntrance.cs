@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var apartment in permissionedApartments)
             {
-                var owner = DataService.Get<Player>(apartment.PlayerID);
+                var owner = DataService.Player.GetByID(apartment.PlayerID);
                 string name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))

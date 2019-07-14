@@ -37,8 +37,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Get<PCBaseStructure>(structureID);
-            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Player owner = PlayerService.GetPlayerEntity(pcBase.PlayerID);
             string buildingName = owner.CharacterName + "'s Building";
             if (!string.IsNullOrWhiteSpace(structure.CustomName))
@@ -98,8 +98,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
-            var interiorStyle = DataService.Get<BuildingStyle>(structure.InteriorStyleID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var interiorStyle = DataService.BuildingStyle.GetByID(structure.InteriorStyleID);
 
             bool starship = pcBase.PCBaseTypeID == 3;
             NWArea instance = BaseService.GetAreaInstance(structureID, false);

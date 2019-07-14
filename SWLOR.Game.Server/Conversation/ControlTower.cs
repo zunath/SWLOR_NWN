@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
             Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
             Guid pcBaseID = structure.PCBaseID;
-            PCBase pcBase = DataService.Get<PCBase>(pcBaseID);
+            PCBase pcBase = DataService.PCBase.GetByID(pcBaseID);
 
             double currentCPU = BaseService.GetCPUInUse(pcBaseID);
             double currentPower = BaseService.GetPowerInUse(pcBaseID);
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));

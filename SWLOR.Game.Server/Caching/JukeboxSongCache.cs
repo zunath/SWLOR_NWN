@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(JukeboxSong entity)
         {
         }
+
+        public JukeboxSong GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

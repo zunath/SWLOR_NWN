@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
-            Plant plantEntity = DataService.Get<Plant>(growingPlant.PlantID);
+            Plant plantEntity = DataService.Plant.GetByID(growingPlant.PlantID);
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
             {
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (GrowingPlant growingPlant in plants)
             {
-                var plant = DataService.Get<Plant>(growingPlant.PlantID);
+                var plant = DataService.Plant.GetByID(growingPlant.PlantID);
                 string resref = "growing_plant";
                 if (growingPlant.RemainingTicks <= 0)
                     resref = plant.Resref;

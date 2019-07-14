@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         {
             return DataService.Where<PCKeyItem>(x =>
             {
-                var keyItem = DataService.Get<KeyItem>(x.KeyItemID);
+                var keyItem = DataService.KeyItem.GetByID(x.KeyItemID);
                 return x.PlayerID == player.GlobalID && keyItem.KeyItemCategoryID == categoryID;
             }).ToList();
         }

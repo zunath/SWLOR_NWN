@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(MarketCategory entity)
         {
         }
+
+        public MarketCategory GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

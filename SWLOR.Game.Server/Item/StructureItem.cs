@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Item
             else if (!string.IsNullOrWhiteSpace(parentStructureID))
             {
                 var parentStructureGuid = new Guid(parentStructureID);
-                var parentStructure = DataService.Get<PCBaseStructure>(parentStructureGuid);
+                var parentStructure = DataService.PCBaseStructure.GetByID(parentStructureGuid);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureGuid;
 

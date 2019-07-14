@@ -572,7 +572,7 @@ namespace SWLOR.Game.Server.Service
                             var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
                             foreach (var structure in structures)
                             {
-                                BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
+                                BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                                 if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
                                 {
                                     LoggingService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID.ToString());
@@ -653,7 +653,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
+            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             if (location == null)
             {
@@ -691,7 +691,7 @@ namespace SWLOR.Game.Server.Service
             {
                 string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
                 PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-                PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
+                PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
                 
                 // Remove the ship object.
                 LoggingService.Trace(TraceComponent.Space, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
@@ -707,7 +707,7 @@ namespace SWLOR.Game.Server.Service
         {
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
             PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
+            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
             NWCreature shipCreature = ship.GetLocalObject("CREATURE");
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.Service
             PlayerService.SaveLocation(player);
 
             PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
+            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             int shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
 
@@ -1036,7 +1036,7 @@ namespace SWLOR.Game.Server.Service
 
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
             PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
+            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
             LoggingService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
@@ -1122,7 +1122,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             player.SendMessage("You found some salvage!");
 
-                            BaseStructure structure = DataService.Get<BaseStructure>(shipStructure.BaseStructureID);
+                            BaseStructure structure = DataService.BaseStructure.GetByID(shipStructure.BaseStructureID);
                             int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == shipStructure.ID).Count() + 1;
                             if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
                             {

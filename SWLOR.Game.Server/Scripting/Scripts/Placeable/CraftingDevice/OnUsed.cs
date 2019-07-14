@@ -29,13 +29,13 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.CraftingDevice
             if (!string.IsNullOrWhiteSpace(structureID))
             {
                 Guid structureGuid = new Guid(structureID);
-                var structure = DataService.Get<PCBaseStructure>(structureGuid);
+                var structure = DataService.PCBaseStructure.GetByID(structureGuid);
 
                 // Workbenches and crafting devices can only be used inside 
                 // buildings set to "Workshop" mode.
                 if(structure.ParentPCBaseStructureID != null)
                 {
-                    var buildingStructure = DataService.Get<PCBaseStructure>(structure.ParentPCBaseStructureID);
+                    var buildingStructure = DataService.PCBaseStructure.GetByID(structure.ParentPCBaseStructureID);
                     var modeType = (StructureModeType) buildingStructure.StructureModeID;
 
                     if (modeType != StructureModeType.Workshop)

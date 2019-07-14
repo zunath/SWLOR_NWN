@@ -11,5 +11,11 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(SkillCategory entity)
         {
         }
+
+        public SkillCategory GetByID(int id)
+        {
+            return ByID[id];
+        }
+
     }
 }

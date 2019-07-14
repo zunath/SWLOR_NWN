@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations) + 1;
             baseAmount *= perkBonus;
 
-            var dbGuild = DataService.Get<Guild>((int) guild);
+            var dbGuild = DataService.Guild.GetByID((int) guild);
             var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int) guild && x.PlayerID == player.GlobalID);
             pcGP.Points += baseAmount;
 
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questID">The ID of the quest</param>
         private static void OnQuestCompleted(NWPlayer player, int questID)
         {
-            var quest = DataService.Get<Quest>(questID);
+            var quest = DataService.Quest.GetByID(questID);
             // GP rewards not specified. Bail out early.
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return;
 
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnModuleLoad()
         {
-            var config = DataService.Get<ServerConfiguration>(1);
+            var config = DataService.ServerConfiguration.Get(1);
             var now = DateTime.UtcNow;
             
             // 24 hours haven't passed since the last cycle. Bail out now.
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static int CalculateGuildPointsReward(NWPlayer player, int questID)
         {
-            var quest = DataService.Get<Quest>(questID);
+            var quest = DataService.Quest.GetByID(questID);
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return 0;
 
             var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&

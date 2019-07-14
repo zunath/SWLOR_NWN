@@ -264,13 +264,13 @@ namespace SWLOR.Game.Server.Service
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return DataService.Get<Player>(player.GlobalID);
+            return DataService.Player.GetByID(player.GlobalID);
         }
 
         public static Player GetPlayerEntity(Guid playerID)
         {
             if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
-            return DataService.Get<Player>(playerID);
+            return DataService.Player.GetByID(playerID);
         }
 
         private static void OnAreaEnter()

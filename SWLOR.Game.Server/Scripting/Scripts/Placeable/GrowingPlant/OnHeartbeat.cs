@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
@@ -21,11 +22,11 @@ namespace SWLOR.Game.Server.Scripting.Scripts.Placeable.GrowingPlant
         public void Main()
         {
             NWPlaceable plc = (NWGameObject.OBJECT_SELF);
-            int growingPlantID = plc.GetLocalInt("GROWING_PLANT_ID");
+            Guid growingPlantID = new Guid(plc.GetLocalString("GROWING_PLANT_ID"));
             if (growingPlantID <= 0) return;
             
-            var growingPlant = DataService.Get<Data.Entity.GrowingPlant>(growingPlantID);
-            var plant = DataService.Get<Plant>(growingPlant.PlantID);
+            var growingPlant = DataService.GrowingPlant.GetByID(growingPlantID);
+            var plant = DataService.Plant.GetByID(growingPlant.PlantID);
 
             growingPlant.RemainingTicks--;
             growingPlant.TotalTicks++;

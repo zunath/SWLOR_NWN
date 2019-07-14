@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
                  ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
                  ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
 
-            Player pcEntity = DataService.Get<Player>(player.GlobalID);
+            Player pcEntity = DataService.Player.GetByID(player.GlobalID);
             List<PCSkill> skills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
             
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (PCSkill pcSkill in skills)
                 {
-                    Skill skill = DataService.Get<Skill>(pcSkill.SkillID);
+                    Skill skill = DataService.Skill.GetByID(pcSkill.SkillID);
                     CustomAttribute primary = (CustomAttribute) skill.Primary;
                     CustomAttribute secondary = (CustomAttribute) skill.Secondary;
                     CustomAttribute tertiary = (CustomAttribute) skill.Tertiary;
@@ -436,7 +436,7 @@ namespace SWLOR.Game.Server.Service
 
         public static float EffectiveResidencyBonus(NWPlayer player)
         {
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             // Player doesn't have either kind of residence. Return 0f
             if (dbPlayer.PrimaryResidencePCBaseID == null &&
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Service
 
             var atmoStructures = structures.Where(x =>
             {
-                var baseStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
+                var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             }).ToList();
             

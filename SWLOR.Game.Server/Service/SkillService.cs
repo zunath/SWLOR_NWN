@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             {
                 xp = (int)(xp + xp * PlayerStatService.EffectiveResidencyBonus(oPC));
             }
-            Player player = DataService.Get<Player>(oPC.GlobalID);
+            Player player = DataService.Player.GetByID(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
 
             // Check if the player has any undistributed skill ranks for this skill category.
@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Service
 
         public static Skill GetSkill(SkillType skillType)
         {
-            return DataService.Get<Skill>((int)skillType);
+            return DataService.Skill.GetByID((int)skillType);
         }
 
         public static int GetPCTotalSkillCount(NWPlayer player)
@@ -716,7 +716,7 @@ namespace SWLOR.Game.Server.Service
             var skillsPossibleToDecay = GetAllPCSkills(oPC)
                 .Where(x =>
                 {
-                    var skill = DataService.Get<Skill>(x.SkillID);
+                    var skill = DataService.Skill.GetByID(x.SkillID);
                     return !x.IsLocked &&
                            skill.ContributesToSkillCap &&
                            x.SkillID != levelingSkill.SkillID &&

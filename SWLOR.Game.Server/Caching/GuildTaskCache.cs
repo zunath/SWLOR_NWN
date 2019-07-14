@@ -11,5 +11,10 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectRemoved(GuildTask entity)
         {
         }
+
+        public GuildTask GetByID(int id)
+        {
+            return ByID[id];
+        }
     }
 }

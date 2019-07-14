@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var ship in permissionedShips)
             {
-                var owner = DataService.Get<Player>(ship.PlayerID);
+                var owner = DataService.Player.GetByID(ship.PlayerID);
                 string name = owner.CharacterName + "'s Starship [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(ship.CustomName))
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
 
-            var shipBase = DataService.Get<PCBase>(pcBaseID);
+            var shipBase = DataService.PCBase.GetByID(pcBaseID);
             var ship = DataService.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == shipBase.ID && x.InteriorStyleID != null);
 
             NWArea instance = BaseService.GetAreaInstance(ship.ID, false);

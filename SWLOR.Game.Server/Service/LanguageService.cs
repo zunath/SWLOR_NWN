@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Service
             int maxRank = SkillService.GetSkill(language).MaxRank;
 
             // Check for the Comprehend Speech concentration ability.
-            Player dbPlayer = DataService.Get<Player>(listenerAsPlayer.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(listenerAsPlayer.GlobalID);
             bool grantSenseXP = false;
             if (dbPlayer.ActiveConcentrationPerkID == (int)PerkType.ComprehendSpeech)
             {
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var pcSkill in pcSkills)
             {
-                var skill = DataService.Get<Skill>(pcSkill.SkillID);
+                var skill = DataService.Skill.GetByID(pcSkill.SkillID);
                 int maxRank = skill.MaxRank;
                 int maxRankXP = SkillService.SkillXPRequirements[maxRank];
 

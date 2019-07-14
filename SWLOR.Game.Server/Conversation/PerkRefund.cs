@@ -88,13 +88,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID).OrderBy(o =>
                 {
-                    var perk = DataService.Get<Data.Entity.Perk>(o.PerkID);
+                    var perk = DataService.Perk.GetByID(o.PerkID);
                     return perk.Name;
                 }).ToList();
 
                 foreach (var pcPerk in pcPerks)
                 {
-                    var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                    var perk = DataService.Perk.GetByID(pcPerk.PerkID);
                     AddResponseToPage("MainPage", perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")", true, pcPerk.ID);
                 }
             }
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var pcPerk = DataService.Single<PCPerk>(x => x.ID == model.PCPerkID);
-            var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+            var perk = DataService.Perk.GetByID(pcPerk.PerkID);
             var minimumLevel = 1;
 
             if (IsGrantedByBackground((PerkType) perk.ID))
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
             var pcPerk = DataService.Single<PCPerk>(x => x.ID == model.PCPerkID);
-            var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+            var perk = DataService.Perk.GetByID(pcPerk.PerkID);
             var minimumLevel = 1;
 
             if (IsGrantedByBackground((PerkType) perk.ID))

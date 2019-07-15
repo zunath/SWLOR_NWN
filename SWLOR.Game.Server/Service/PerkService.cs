@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             // Calculating effective perk levels can be expensive. To aid with the performance,
             // organize skill IDs and quest IDs by which perks require them.
             // That way, later checks are much quicker than iterating through the data cache for this info.
-            foreach (var perk in DataService.GetAll<Data.Entity.Perk>())
+            foreach (var perk in DataService.Perk.GetAll())
             {
                 var perkLevelIDs = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID).Select(s => s.ID);
                 // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetPCTotalPerkCount(Guid playerID)
         {
-            return DataService.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
+            return DataService.PCPerk.GetAllByPlayerID(playerID).Count();
         }
 
 

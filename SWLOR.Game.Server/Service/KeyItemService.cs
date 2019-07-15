@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool PlayerHasKeyItem(NWObject oPC, int keyItemID)
         {
-            var entity = DataService.GetAll<PCKeyItem>().FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+            var entity = DataService.PCKeyItem.GetByPlayerAndKeyItemIDOrDefault(oPC.GlobalID, keyItemID); 
             return entity != null;
         }
 
@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Service
 
         public static bool PlayerHasAnyKeyItem(NWObject oPC, params int[] keyItemIDs)
         {
-            return DataService.GetAll<PCKeyItem>().Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
+            var pcKeyItems = DataService.PCKeyItem.GetAllByPlayerID(oPC.GlobalID);
+            return pcKeyItems.Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
         }
 
 

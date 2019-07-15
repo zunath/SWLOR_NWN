@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Data.Entity;
@@ -96,5 +97,63 @@ namespace SWLOR.Game.Server.Tests.Caching
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id2); });
 
         }
+
+        [Test]
+        public void GetAllByPlayerID_NoItems_ReturnsEmptyEnumerable()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+
+            // Act
+            var results = _cache.GetAllByPlayerID(id);
+
+            // Assert
+            Assert.IsEmpty(results);
+        }
+
+        [Test]
+        public void GetAllByPlayerID_ThreeItemsSamePlayer_ReturnsThreeItems()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var entity1 = new PCSkill { ID = Guid.NewGuid(), PlayerID = id };
+            var entity2 = new PCSkill { ID = Guid.NewGuid(), PlayerID = id };
+            var entity3 = new PCSkill { ID = Guid.NewGuid(), PlayerID = id };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity3));
+            var result = _cache.GetAllByPlayerID(id).ToList();
+
+            // Assert
+            Assert.AreEqual(3, result.Count);
+            Assert.Contains(entity1, result);
+            Assert.Contains(entity2, result);
+            Assert.Contains(entity3, result);
+        }
+
+        [Test]
+        public void GetAllByPlayerID_TwoPlayers_ReturnsTwoItems()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var entity1 = new PCSkill { ID = Guid.NewGuid(), PlayerID = id };
+            var entity2 = new PCSkill { ID = Guid.NewGuid(), PlayerID = id2 };
+            var entity3 = new PCSkill { ID = Guid.NewGuid(), PlayerID = id };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity3));
+            var result = _cache.GetAllByPlayerID(id).ToList();
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+            Assert.Contains(entity1, result);
+            Assert.Contains(entity3, result);
+        }
+
     }
 }

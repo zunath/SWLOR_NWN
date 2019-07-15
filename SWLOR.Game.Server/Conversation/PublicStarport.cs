@@ -52,14 +52,14 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
 
             // Get starships owned by player and docked at this starport.
-            var ships = DataService.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
+            var ships = DataService.PCBase.GetAll().Where(x => x.PlayerID == player.GlobalID &&
                                                          x.ShipLocation == starportID.ToLower() &&
                                                          x.DateRentDue > DateTime.UtcNow)
                                              .OrderBy(o => o.DateInitialPurchase)
                                              .ToList();
 
             // Get starships owned by other players and the current player currently has access to.
-            var permissions = DataService.GetAll<PCBaseStructurePermission>().Where(x => x.PlayerID == player.GlobalID);
+            var permissions = DataService.PCBaseStructurePermission.GetAllByPlayerID(player.GlobalID);
             var permissionedShips = DataService.Where<PCBase>(x =>
             {
                 if (x.ShipLocation != starportID.ToLower() ||

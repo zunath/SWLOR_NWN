@@ -92,24 +92,24 @@ namespace SWLOR.Game.Server.Caching
         /// <typeparam name="TPrimary">The type of the first organization key</typeparam>
         /// <typeparam name="TSecondary">The type of the second organization key</typeparam>
         /// <typeparam name="TEntity">The type of the entity</typeparam>
-        /// <param name="primaryOrganizationID">The first organization key</param>
-        /// <param name="secondaryOrganizationID">The second organization key</param>
+        /// <param name="primaryIndexID">The first organization key</param>
+        /// <param name="secondaryIndexID">The second organization key</param>
         /// <param name="entity">The entity to set</param>
         /// <param name="dictionary">The dictionary to modify</param>
         protected void SetEntityIntoDictionary<TPrimary, TSecondary, TEntity>(
-            TPrimary primaryOrganizationID, 
-            TSecondary secondaryOrganizationID, 
+            TPrimary primaryIndexID, 
+            TSecondary secondaryIndexID, 
             TEntity entity, 
             Dictionary<TPrimary, Dictionary<TSecondary, TEntity>> dictionary)
             where TEntity: class, IEntity
         {
-            if(!dictionary.ContainsKey(primaryOrganizationID))
+            if(!dictionary.ContainsKey(primaryIndexID))
             {
-                dictionary.Add(primaryOrganizationID, new Dictionary<TSecondary, TEntity>());
+                dictionary.Add(primaryIndexID, new Dictionary<TSecondary, TEntity>());
             }
 
-            var list = dictionary[primaryOrganizationID];
-            list[secondaryOrganizationID] = entity;
+            var list = dictionary[primaryIndexID];
+            list[secondaryIndexID] = entity;
         }
 
         /// <summary>
@@ -119,22 +119,22 @@ namespace SWLOR.Game.Server.Caching
         /// <typeparam name="TPrimary">The type of the first organization key</typeparam>
         /// <typeparam name="TSecondary">The type of the second organization key</typeparam>
         /// <typeparam name="TEntity">The type of the entity</typeparam>
-        /// <param name="primaryOrganizationID">The first organization key</param>
-        /// <param name="secondaryOrganizationID">The second organization key</param>
+        /// <param name="primaryIndexID">The first organization key</param>
+        /// <param name="secondaryIndexID">The second organization key</param>
         /// <param name="dictionary">The dictionary to modify</param>
         protected void RemoveEntityFromDictionary<TPrimary, TSecondary, TEntity>(
-            TPrimary primaryOrganizationID,
-            TSecondary secondaryOrganizationID,
+            TPrimary primaryIndexID,
+            TSecondary secondaryIndexID,
             Dictionary<TPrimary, Dictionary<TSecondary, TEntity>> dictionary)
         where TEntity: class, IEntity
         {
-            if (!dictionary.ContainsKey(primaryOrganizationID))
+            if (!dictionary.ContainsKey(primaryIndexID))
             {
-                dictionary.Add(primaryOrganizationID, new Dictionary<TSecondary, TEntity>());
+                dictionary.Add(primaryIndexID, new Dictionary<TSecondary, TEntity>());
             }
 
-            var list = dictionary[primaryOrganizationID];
-            list.Remove(secondaryOrganizationID);
+            var list = dictionary[primaryIndexID];
+            list.Remove(secondaryIndexID);
         }
 
         /// <summary>
@@ -143,20 +143,20 @@ namespace SWLOR.Game.Server.Caching
         /// </summary>
         /// <typeparam name="TPrimary">The type of the first organization key</typeparam>
         /// <typeparam name="TEntity">The type of the entity</typeparam>
-        /// <param name="primaryOrganizationID">The first organization key</param>
+        /// <param name="primaryIndexID">The first organization key</param>
         /// <param name="entity">The entity to set</param>
         /// <param name="dictionary">The dictionary to modify</param>
         protected void SetEntityIntoDictionary<TPrimary, TEntity>(
-            TPrimary primaryOrganizationID,
+            TPrimary primaryIndexID,
             TEntity entity,
             Dictionary<TPrimary, List<TEntity>> dictionary)
         {
-            if (!dictionary.ContainsKey(primaryOrganizationID))
+            if (!dictionary.ContainsKey(primaryIndexID))
             {
-                dictionary.Add(primaryOrganizationID, new List<TEntity>());
+                dictionary.Add(primaryIndexID, new List<TEntity>());
             }
 
-            var list = dictionary[primaryOrganizationID];
+            var list = dictionary[primaryIndexID];
 
             // We only add the entity if it doesn't already exist.
             // Because objects are pass by reference, any changes made to them
@@ -171,21 +171,98 @@ namespace SWLOR.Game.Server.Caching
         /// </summary>
         /// <typeparam name="TPrimary">The type of the first organization key</typeparam>
         /// <typeparam name="TEntity">The type of the entity</typeparam>
-        /// <param name="primaryOrganizationID">The first organization key</param>
+        /// <param name="primaryIndexID">The first organization key</param>
         /// <param name="entity">The entity to remove</param>
         /// <param name="dictionary">The dictionary to modify</param>
         protected void RemoveEntityFromDictionary<TPrimary, TEntity>(
-            TPrimary primaryOrganizationID,
+            TPrimary primaryIndexID,
             TEntity entity,
             Dictionary<TPrimary, List<TEntity>> dictionary)
         {
-            if (!dictionary.ContainsKey(primaryOrganizationID))
+            if (!dictionary.ContainsKey(primaryIndexID))
             {
-                dictionary.Add(primaryOrganizationID, new List<TEntity>());
+                dictionary.Add(primaryIndexID, new List<TEntity>());
             }
 
-            var list = dictionary[primaryOrganizationID];
+            var list = dictionary[primaryIndexID];
             list.Remove(entity);
         }
+
+        /// <summary>
+        /// Retrieves an entity from a dictionary of dictionaries.
+        /// If entity does not exist, a KeyNotFound exception will be thrown.
+        /// </summary>
+        /// <typeparam name="TPrimary">The type of the primary index</typeparam>
+        /// <typeparam name="TSecondary">The type of the secondary index</typeparam>
+        /// <typeparam name="TEntity">The type of the entity</typeparam>
+        /// <param name="primaryIndexID">The primary index</param>
+        /// <param name="secondaryIndexID">The secondary index</param>
+        /// <param name="dictionary">The dictionary to read from</param>
+        /// <returns></returns>
+        protected TEntity GetEntityFromDictionary<TPrimary, TSecondary, TEntity>(
+            TPrimary primaryIndexID, 
+            TSecondary secondaryIndexID,
+            Dictionary<TPrimary, Dictionary<TSecondary, TEntity>> dictionary)
+        {
+            if (!dictionary.ContainsKey(primaryIndexID))
+            {
+                dictionary.Add(primaryIndexID, new Dictionary<TSecondary, TEntity>());
+            }
+
+            return dictionary[primaryIndexID][secondaryIndexID];
+        }
+
+        /// <summary>
+        /// Retrieves an entity from a dictionary of dictionaries.
+        /// If entity does not exist, the default value for that type will be returned.
+        /// </summary>
+        /// <typeparam name="TPrimary">The type of the primary index</typeparam>
+        /// <typeparam name="TSecondary">The type of the secondary index</typeparam>
+        /// <typeparam name="TEntity">The type of the entity</typeparam>
+        /// <param name="primaryIndexID">The primary index</param>
+        /// <param name="secondaryIndexID">The secondary index</param>
+        /// <param name="dictionary">The dictionary to read from</param>
+        /// <returns></returns>
+        protected TEntity GetEntityFromDictionaryOrDefault<TPrimary, TSecondary, TEntity>(
+            TPrimary primaryIndexID,
+            TSecondary secondaryIndexID,
+            Dictionary<TPrimary, Dictionary<TSecondary, TEntity>> dictionary)
+        {
+            if (!dictionary.ContainsKey(primaryIndexID))
+            {
+                dictionary.Add(primaryIndexID, new Dictionary<TSecondary, TEntity>());
+            }
+
+            if (dictionary[primaryIndexID].ContainsKey(secondaryIndexID))
+            {
+                return dictionary[primaryIndexID][secondaryIndexID];
+            }
+            else
+            {
+                return default;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves an entity list from a dictionary.
+        /// If entity does not exist, and empty list will be returned.
+        /// </summary>
+        /// <typeparam name="TPrimary">The type of the primary index</typeparam>
+        /// <typeparam name="TEntity">The type of the entity</typeparam>
+        /// <param name="primaryIndexID">The primary index</param>
+        /// <param name="dictionary">The dictionary to read from</param>
+        /// <returns></returns>
+        protected IEnumerable<TEntity> GetEntityListFromDictionary<TPrimary, TEntity>(
+            TPrimary primaryIndexID,
+            Dictionary<TPrimary, List<TEntity>> dictionary)
+        {
+            if (!dictionary.ContainsKey(primaryIndexID))
+            {
+                dictionary.Add(primaryIndexID, new List<TEntity>());
+            }
+
+            return dictionary[primaryIndexID];
+        }
+
     }
 }

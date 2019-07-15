@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine("Processed PCBaseStructureItem");
 
                 // PCImpoundedItem
-                foreach (var item in DataService.GetAll<PCImpoundedItem>())
+                foreach (var item in DataService.PCImpoundedItem.GetAll())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine("Processed PCImpoundedItem");
 
                 // PCMarketListing
-                foreach (var item in DataService.GetAll<PCMarketListing>())
+                foreach (var item in DataService.PCMarketListing.GetAll())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);

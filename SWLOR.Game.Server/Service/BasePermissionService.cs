@@ -20,8 +20,9 @@ namespace SWLOR.Game.Server.Service
         public static bool HasBasePermission(Guid player, Guid pcBaseID, BasePermission permission)
         {
             // Public permissions take priority over all other permissions. Check those first.
-            var publicBasePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == pcBaseID &&
-                                                                                x.IsPublicPermission);
+            var publicBasePermission = DataService.PCBasePermission.GetAll()
+                .SingleOrDefault(x => x.PCBaseID == pcBaseID &&
+                                      x.IsPublicPermission);
 
             if (publicBasePermission != null)
             {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No matching public permissions. Now check the base permissions for this player.
-            var dbPermission = DataService.GetAll<PCBasePermission>()
+            var dbPermission = DataService.PCBasePermission.GetAll()
                 .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
                                       x.PlayerID == player &&
                                       !x.IsPublicPermission);
@@ -71,10 +72,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (player.IsDM) return true;
 
-            var dbStructure = DataService.GetAll<PCBaseStructure>().Single(x => x.ID == pcBaseStructureID);
+            var dbStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
 
             // Check whether this is an item of furniture in a building.  If so, check the building's permissions.
-            if (!String.IsNullOrWhiteSpace(dbStructure.ParentPCBaseStructureID.ToString()))
+            if (!string.IsNullOrWhiteSpace(dbStructure.ParentPCBaseStructureID.ToString()))
             {
                 return HasStructurePermission(player, (Guid)dbStructure.ParentPCBaseStructureID, permission);
             }
@@ -118,9 +119,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Base permissions take priority over structure permissions. Check those next.
-            var basePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
-                                                                              x.PCBaseID == dbStructure.PCBaseID &&
-                                                                              !x.IsPublicPermission);
+            var basePermission = DataService.PCBasePermission.GetAll()
+                .SingleOrDefault(x => x.PlayerID == player.GlobalID &&
+                                      x.PCBaseID == dbStructure.PCBaseID &&
+                                      !x.IsPublicPermission);
 
 
             if (basePermission != null)
@@ -139,7 +141,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Didn't find a base permission. Check the structure permissions.
-            var structurePermission = DataService.GetAll<PCBaseStructurePermission>()
+            var structurePermission = DataService.PCBaseStructurePermission.GetAll()
                 .SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && 
                                       x.PlayerID == player.GlobalID &&
                                       !x.IsPublicPermission);
@@ -168,7 +170,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void GrantBasePermissions(Guid player, Guid pcBaseID, params BasePermission[] permissions)
         {
-            var dbPermission = DataService.GetAll<PCBasePermission>()
+            var dbPermission = DataService.PCBasePermission.GetAll()
                 .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
                                       x.PlayerID == player &&
                                       !x.IsPublicPermission);

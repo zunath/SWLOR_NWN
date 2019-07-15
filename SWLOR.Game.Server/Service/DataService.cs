@@ -7,13 +7,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Data;
-using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
-using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
-using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
-using PCBaseType = SWLOR.Game.Server.Data.Entity.PCBaseType;
-using QuestType = SWLOR.Game.Server.Data.Entity.QuestType;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Caching.Contracts;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -28,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         public static string SWLORConnectionString { get; }
         public static SqlConnection Connection { get; private set; }
 
-        private static Dictionary<Type, ICache<dynamic>> _cacheLookup = new Dictionary<Type, ICache<dynamic>>();
+        private static readonly Dictionary<Type, ICache<dynamic>> _cacheLookup = new Dictionary<Type, ICache<dynamic>>();
 
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
@@ -169,6 +165,8 @@ namespace SWLOR.Game.Server.Service
         private static void LoadCache<T>(ICache<T> cache)
             where T: class, IEntity
         {
+            var sw = new Stopwatch();
+            sw.Start();
             _cacheLookup[typeof(T)] = cache;
 
             var entities = Connection.GetAll<T>();
@@ -176,6 +174,9 @@ namespace SWLOR.Game.Server.Service
             {
                 MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
             }
+
+            sw.Stop();
+            Console.WriteLine("Loaded Cache: " + typeof(T).Name + " (" + sw.ElapsedMilliseconds + "ms)");
         }
 
         private static void SetIntoCache<T>(T entity)

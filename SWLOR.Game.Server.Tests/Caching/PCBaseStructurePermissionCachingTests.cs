@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Data.Entity;
@@ -94,7 +95,36 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id2); });
+        }
 
+        [Test]
+        public void GetAllByPlayerID_ThreeItems_ShouldReturnSameItems()
+        {
+            // Arrange
+            var playerID = Guid.NewGuid();
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
+            var id4 = Guid.NewGuid();
+            PCBaseStructurePermission entity1 = new PCBaseStructurePermission { ID = id1, PlayerID = playerID };
+            PCBaseStructurePermission entity2 = new PCBaseStructurePermission { ID = id2, PlayerID = playerID };
+            PCBaseStructurePermission entity3 = new PCBaseStructurePermission { ID = id3, PlayerID = playerID };
+            PCBaseStructurePermission entity4 = new PCBaseStructurePermission { ID = id4, PlayerID = playerID };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity3));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity4));
+
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<PCBaseStructurePermission>(entity2));
+
+            // Assert
+            var results = _cache.GetAllByPlayerID(playerID).ToList();
+            Assert.AreEqual(3, results.Count);
+            Assert.Contains(entity1, results);
+            Assert.Contains(entity3, results);
+            Assert.Contains(entity4, results);
         }
     }
 }

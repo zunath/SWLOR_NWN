@@ -20,5 +20,10 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByID[id];
         }
+
+        public bool ExistsByID(int id)
+        {
+            return ByID.ContainsKey(id);
+        }
     }
 }

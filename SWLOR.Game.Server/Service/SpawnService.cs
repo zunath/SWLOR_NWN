@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
-            var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == area.Resref);
+            var dbArea = DataService.Area.GetByResref(area.Resref);
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;

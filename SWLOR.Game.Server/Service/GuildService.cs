@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // If player is missing any entries for guild points, add them now.
-            foreach (var guild in DataService.GetAll<Guild>())
+            foreach (var guild in DataService.Guild.GetAll())
             {
                 var pcGP = DataService.SingleOrDefault<PCGuildPoint>(x => x.GuildID == guild.ID && x.PlayerID == player.GlobalID);
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
-            foreach (var guild in DataService.GetAll<Guild>())
+            foreach (var guild in DataService.Guild.GetAll())
             {
                 for (int rank = 0; rank <= maxRank; rank++)
                 {

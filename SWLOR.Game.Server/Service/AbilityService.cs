@@ -265,8 +265,7 @@ namespace SWLOR.Game.Server.Service
             // Players: Retrieve info from cache/DB, if it doesn't exist create a new record and insert it. Return unlock date.
             if (activator.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == activator.GlobalID &&
-                                                                                              x.CooldownCategoryID == cooldownCategoryID);
+                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryIDOrDefault(activator.GlobalID, cooldownCategoryID);
                 if (pcCooldown == null)
                 {
                     pcCooldown = new PCCooldown
@@ -800,7 +799,7 @@ namespace SWLOR.Game.Server.Service
             int activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
-            PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
+            PCPerk entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
             var perk = DataService.Perk.GetByID(entity.PerkID);
             var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);

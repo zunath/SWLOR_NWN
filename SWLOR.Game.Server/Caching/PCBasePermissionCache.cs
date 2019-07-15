@@ -64,5 +64,9 @@ namespace SWLOR.Game.Server.Caching
             return ByPlayerIDList[id].Values;
         }
 
+        public PCBasePermission GetByPlayerAndPCBaseIDOrDefault(Guid playerID, Guid pcBaseID)
+        {
+            return GetEntityFromDictionaryOrDefault(playerID, pcBaseID, ByPlayerIDList);
+        }
     }
 }

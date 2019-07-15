@@ -129,7 +129,10 @@ namespace SWLOR.Game.Server.Service
             Quest quest = DataService.Quest.GetByID(questID);
             PCQuestStatus pcState = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
 
-            QuestState finalState = DataService.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
+            // Get all quest states, order by the sequence, and then get the last one.
+            QuestState finalState = DataService.QuestState.GetAllByQuestID(questID)
+                .OrderBy(o => o.Sequence)
+                .Last();
 
             if (finalState == null)
             {
@@ -895,7 +898,9 @@ namespace SWLOR.Game.Server.Service
             if (pcStatus == null) return false;
 
             // Is the player on the final state of this quest?
-            var finalState = DataService.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
+            var finalState = DataService.QuestState.GetAllByQuestID(questID) 
+                .OrderBy(o => o.Sequence)
+                .Last();
             if (pcStatus.CurrentQuestStateID != finalState.ID) return false;
 
             // Are there any remaining kill targets for this quest and player?

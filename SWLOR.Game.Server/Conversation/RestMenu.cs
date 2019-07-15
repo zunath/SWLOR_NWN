@@ -106,26 +106,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             Stopwatch sw = new Stopwatch();
 
-            sw.Start();
-            Player playerEntity = DataService.Single<Player>(x => x.ID == player.GlobalID);
-            sw.Stop();
-            Console.WriteLine("playerEntity = " + sw.ElapsedMilliseconds + "ms");
-            sw.Reset();
-
-            sw.Start();
+            Player playerEntity = DataService.Player.GetByID(player.GlobalID);
             var association = DataService.Association.GetByID(playerEntity.AssociationID);
-            sw.Stop();
-            Console.WriteLine("association = " + sw.ElapsedMilliseconds + "ms");
-            sw.Reset();
 
-            sw.Start();
-            int totalSkillCount = DataService.Where<PCSkill>(x =>
-            {
-                var skill = DataService.Skill.GetByID(x.SkillID);
-                return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
-            }).Sum(s => s.Rank);
-            sw.Stop();
-            Console.WriteLine("totalSkillCount = " + sw.ElapsedMilliseconds);
+            // Get all player skills and then sum them up by the rank.
+            int totalSkillCount = DataService.PCSkill
+                .GetAllByPlayerID(player.GlobalID).ToList()
+                .Sum(s => s.Rank);
 
             string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
             header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";

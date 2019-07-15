@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.OnQuestState
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-                if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
+                if (!DataService.Quest.ExistsByID(questID))
                 {
                     _.SpeakString("ERROR: Quest #" + index + " State #" + state + " is improperly configured. Please notify an admin");
                     return false;

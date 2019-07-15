@@ -413,41 +413,12 @@ namespace SWLOR.Game.Server.Service
 
         public static double GetPowerInUse(Guid pcBaseID)
         {
-            const int controlTowerID = (int)BaseStructureType.ControlTower;
-
-            return DataService.GetAll<PCBaseStructure>()
-                .Where(x =>
-                {
-                    var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                    return x.PCBaseID == pcBaseID && baseStructure.BaseStructureTypeID != controlTowerID;
-                })
-                .DefaultIfEmpty()
-                .Sum(s =>
-                {
-                    if (s == null) return 0.0f;
-                    var baseStructure = DataService.BaseStructure.GetByID(s.BaseStructureID);
-                    return baseStructure == null ? 0 : baseStructure.Power;
-                });
+            return DataService.PCBaseStructure.GetPowerInUseByPCBaseID(pcBaseID);
         }
 
         public static double GetCPUInUse(Guid pcBaseID)
         {
-            int controlTowerID = (int)BaseStructureType.ControlTower;
-            return DataService.GetAll<PCBaseStructure>()
-                .Where(x =>
-                {
-                    if (x == null) return false;
-
-                    var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                    return x.PCBaseID == pcBaseID && baseStructure != null && baseStructure.BaseStructureTypeID != controlTowerID;
-                })
-                .DefaultIfEmpty()
-                .Sum(s =>
-                {
-                    if (s == null) return 0;
-                    var baseStructure = DataService.BaseStructure.GetByID(s.BaseStructureID);
-                    return baseStructure == null ? 0 : baseStructure.CPU;
-                });
+            return DataService.PCBaseStructure.GetCPUInUseByPCBaseID(pcBaseID);
         }
 
         public static double GetMaxBaseCPU(Guid pcBaseID)
@@ -559,7 +530,7 @@ namespace SWLOR.Game.Server.Service
                 var parentBaseStructure = DataService.BaseStructure.GetByID(parentStructure.BaseStructureID);
                 pcBase = DataService.PCBase.GetByID(parentStructure.PCBaseID);
 
-                int buildingStructureCount = DataService.GetAll<PCBaseStructure>().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
+                int buildingStructureCount = DataService.PCBaseStructure.GetAll().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
                 if (buildingStructureCount > parentBaseStructure.Storage + parentStructure.StructureBonus)
                 {
                     return "No more structures can be placed inside this building.";
@@ -571,7 +542,7 @@ namespace SWLOR.Game.Server.Service
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(parentStructure.InteriorStyleID));
                 pcBase = DataService.PCBase.GetByID(parentStructure.PCBaseID);
 
-                int buildingStructureCount = DataService.GetAll<PCBaseStructure>().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
+                int buildingStructureCount = DataService.PCBaseStructure.GetAll().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
                 if (buildingStructureCount > buildingStyle.FurnitureLimit + parentStructure.StructureBonus)
                 {
                     return "No more structures can be placed inside this starship.";

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
 
-            var bankItems = DataService.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.ID);
+            var bankItems = DataService.BankItem.GetAllByPlayerIDAndBankID(player.GlobalID, bankID);
             foreach (BankItem item in bankItems.Where(x => x.PlayerID == player.GlobalID))
             {
                 SerializationService.DeserializeItem(item.ItemObject, terminal);

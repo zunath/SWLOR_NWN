@@ -37,5 +37,10 @@ namespace SWLOR.Game.Server.Caching
         {
             return GetEntityFromDictionaryOrDefault(pcQuestStatusID, resref, ByQuestStatusIDAndResref);
         }
+
+        public IEnumerable<PCQuestItemProgress> GetAllByPCQuestStatusID(Guid pcQuestStatusID)
+        {
+            return ByQuestStatusIDAndResref[pcQuestStatusID].Values;
+        }
     }
 }

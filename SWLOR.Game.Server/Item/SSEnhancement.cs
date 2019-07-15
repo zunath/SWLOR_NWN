@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Item
             PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
-            int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == pcbs.ID).Count() + 1;
+            int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(pcbs.ID) + 1;
             if (count > (structure.ResourceStorage + pcbs.StructureBonus))
             {
                 return "Your cargo bay is full!  You cannot add any enhancements.";

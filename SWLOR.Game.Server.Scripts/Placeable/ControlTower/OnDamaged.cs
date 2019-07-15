@@ -30,8 +30,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
             int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            var playerIDs = DataService.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID &&
-                                                               !x.IsPublicPermission)
+            var playerIDs = DataService.PCBasePermission.GetAllByHasPrivatePermissionToBase(structure.PCBaseID)
                                  .Select(s => s.PlayerID);
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
             DateTime timer = DateTime.UtcNow.AddSeconds(30);

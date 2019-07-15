@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
                 }
                 item.Destroy();
 
-                var questItemProgresses = DataService.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
+                var questItemProgresses = DataService.PCQuestItemProgress.GetAllByPCQuestStatusID(status.ID);
                 if (!questItemProgresses.Any())
                 {
                     string conversation = _.GetLocalString(owner, "CONVERSATION");

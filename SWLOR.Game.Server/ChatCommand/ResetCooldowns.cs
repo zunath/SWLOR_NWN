@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
@@ -20,8 +21,10 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            var cooldowns = DataService.Where<PCCooldown>(x => x.PlayerID == target.GlobalID &&
-                                                               x.DateUnlocked > DateTime.UtcNow);
+            var now = DateTime.UtcNow;
+            var cooldowns = DataService.PCCooldown.GetAllByPlayerID(target.GlobalID)
+                .Where(x => x.DateUnlocked > now);
+
             foreach (var cooldown in cooldowns)
             {
                 cooldown.DateUnlocked = DateTime.UtcNow;

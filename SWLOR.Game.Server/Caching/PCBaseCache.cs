@@ -67,5 +67,13 @@ namespace SWLOR.Game.Server.Caching
             if(string.IsNullOrWhiteSpace(shipLocation)) throw new ArgumentException(nameof(shipLocation) + " cannot be null or whitespace.");
             return All.SingleOrDefault(x => x.ShipLocation == shipLocation);
         }
+
+        public IEnumerable<PCBase> GetAllByPlayerID(Guid playerID)
+        {
+            if(!ByPlayerIDAndPCBaseID.ContainsKey(playerID))
+                return new List<PCBase>();
+
+            return ByPlayerIDAndPCBaseID[playerID].Values;
+        }
     }
 }

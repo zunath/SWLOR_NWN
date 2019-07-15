@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
 
             // Check whether there's space in this tower.
             int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
-            int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
+            int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(tower.ID) + 1;
             if (count > capacity) return;
 
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);

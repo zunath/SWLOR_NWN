@@ -7,18 +7,30 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBasePermissionCache: CacheBase<PCBasePermission>
     {
-        // Organized by PlayerID -> PCBasePermissionID
+        // Primary Index: PlayerID
+        // Secondary Index: PCBasePermissionID
         private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
+        
+        // Primary Index: PCBaseID
+        // Secondary Index: PlayerID
+        // Only includes private (non-IsPublic) records.
+        private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPCBaseIDPrivate { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
 
         protected override void OnCacheObjectSet(PCBasePermission entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
 
+            if(!entity.IsPublicPermission)
+                SetEntityIntoDictionary(entity.PCBaseID, entity.PlayerID, entity, ByPCBaseIDPrivate);
         }
 
         protected override void OnCacheObjectRemoved(PCBasePermission entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+
+            if(!entity.IsPublicPermission)
+                RemoveEntityFromDictionary(entity.PCBaseID, entity.PlayerID, ByPCBaseIDPrivate);
+
         }
 
         protected override void OnSubscribeEvents()
@@ -58,6 +70,11 @@ namespace SWLOR.Game.Server.Caching
 
             var permissions = ByPlayerID[playerID].Values;
             return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseID == pcBaseID);
+        }
+
+        public IEnumerable<PCBasePermission> GetAllByHasPrivatePermissionToBase(Guid pcBaseID)
+        {
+            return ByPCBaseIDPrivate[pcBaseID].Values;
         }
     }
 }

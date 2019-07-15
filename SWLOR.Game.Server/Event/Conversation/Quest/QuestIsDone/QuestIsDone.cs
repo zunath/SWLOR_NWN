@@ -30,8 +30,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.QuestIsDone
 
 
                 var currentQuestState = DataService.QuestState.GetByID(status.CurrentQuestStateID);
-                var quest = DataService.Quest.GetByID(currentQuestState.QuestID);
-                var states = DataService.Where<QuestState>(x => x.QuestID == quest.ID);
+                var states = DataService.QuestState.GetAllByQuestID(currentQuestState.QuestID);
                 return currentQuestState.ID == states.OrderBy(o => o.Sequence).Last().ID &&
                        status.CompletionDate != null;
             }

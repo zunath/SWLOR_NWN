@@ -8,17 +8,20 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<string, PCBaseStructureItem> ByItemGlobalID { get; } = new Dictionary<string, PCBaseStructureItem>();
         private Dictionary<Guid, Dictionary<string, PCBaseStructureItem>> ByPCBaseStructureIDAndItemGlobalID { get; } = new Dictionary<Guid, Dictionary<string, PCBaseStructureItem>>();
+        private Dictionary<Guid, int> CountsByPCBaseStructureID { get;  } = new Dictionary<Guid, int>();
 
         protected override void OnCacheObjectSet(PCBaseStructureItem entity)
         {
             ByItemGlobalID[entity.ItemGlobalID] = entity;
             SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
+            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] + 1;
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructureItem entity)
         {
             ByItemGlobalID.Remove(entity.ItemGlobalID);
             RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
+            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] - 1;
         }
 
         protected override void OnSubscribeEvents()
@@ -38,6 +41,19 @@ namespace SWLOR.Game.Server.Caching
         public PCBaseStructureItem GetByPCBaseStructureIDAndItemGlobalIDOrDefault(Guid pcBaseStructureID, string itemGlobalID)
         {
             return GetEntityFromDictionaryOrDefault(pcBaseStructureID, itemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
+        }
+
+        public int GetNumberOfItemsContainedBy(Guid pcBaseStructureID)
+        {
+            if (!CountsByPCBaseStructureID.ContainsKey(pcBaseStructureID))
+                return 0;
+
+            return CountsByPCBaseStructureID[pcBaseStructureID];
+        }
+
+        public IEnumerable<PCBaseStructureItem> GetAllByPCBaseStructureID(Guid pcBaseStructureID)
+        {
+            return ByPCBaseStructureIDAndItemGlobalID[pcBaseStructureID].Values;
         }
     }
 }

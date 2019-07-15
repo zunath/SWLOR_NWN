@@ -88,14 +88,14 @@ namespace SWLOR.Game.Server.Service
                     area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                 }
 
-                var pcBases = DataService.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
+                var pcBases = DataService.PCBase.GetAllNonApartmentPCBasesByAreaResref(area.Resref);
                 foreach (var @base in pcBases)
                 {
                     // Migration code : ensure owner has all permissions.
                     var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
                     BasePermissionService.GrantBasePermissions(@base.PlayerID, @base.ID, allPermissions);
 
-                    var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
+                    var structures = DataService.PCBaseStructure.GetAllByPCBaseID(@base.ID);
                     foreach (var structure in structures)
                     {
                         if (structure.ParentPCBaseStructureID != null) continue; // Don't spawn any structures contained by buildings.
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Service
             if (ticks >= 10)
             {
                 List<Tuple<Guid, string>> playerIDs = new List<Tuple<Guid, string>>();
-                var pcBases = DataService.Where<PCBase>(x => x.DateRentDue <= DateTime.UtcNow).ToList();
+                var pcBases = DataService.PCBase.GetAllWhereRentDue();
 
                 foreach (var pcBase in pcBases)
                 {
@@ -402,12 +402,12 @@ namespace SWLOR.Game.Server.Service
         public static PCBaseStructure GetBaseControlTower(Guid pcBaseID)
         {
             // Note - if this is a starship base, then the "control tower" is the starship object. 
-            var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID);
+            var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID);
 
             return structures.SingleOrDefault(x =>
             {
                 var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                return (baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower || baseStructure.BaseStructureTypeID == (int) BaseStructureType.Starship);
+                return (baseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower || baseStructure.BaseStructureTypeID == (int)BaseStructureType.Starship);
             });
         }
 
@@ -551,7 +551,7 @@ namespace SWLOR.Game.Server.Service
             else if (buildingType == BuildingType.Apartment)
             {
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
-                var buildingStructureCount = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList().Count();
+                var buildingStructureCount = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID).Count();
                 if (buildingStructureCount > buildingStyle.FurnitureLimit)
                 {
                     return "No more structures can be placed inside this building.";
@@ -572,7 +572,7 @@ namespace SWLOR.Game.Server.Service
 
             if (baseStructureType.ID == (int)BaseStructureType.Starship)
             {
-                canPlaceOrEditStructures = BasePermissionService.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship); 
+                canPlaceOrEditStructures = BasePermissionService.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship);
             }
 
             // Don't have permission.
@@ -594,7 +594,7 @@ namespace SWLOR.Game.Server.Service
             // Check for control tower requirements.
             if (buildingType == BuildingType.Exterior)
             {
-                var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
+                var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID);
 
                 bool hasControlTower = structures
                                            .SingleOrDefault(x =>
@@ -630,7 +630,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Starships may only be placed on an empty bay.
-            if (baseStructureType.ID == (int) BaseStructureType.Starship)
+            if (baseStructureType.ID == (int)BaseStructureType.Starship)
             {
                 int nNth = 1;
                 NWObject dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Service
                         PCBaseStructure dockStructure = DataService.PCBaseStructure.GetByIDOrDefault(dockPCBaseStructureGuid);
                         BaseStructure dockBaseStructure = DataService.BaseStructure.GetByID(dockStructure.BaseStructureID);
 
-                        if (dockBaseStructure.BaseStructureTypeID == (int) BaseStructureType.StarshipProduction)
+                        if (dockBaseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
                         {
                             // We've found a dock!
                             dock.SetLocalInt("DOCKED_STARSHIP", 1);
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Service
                                 ShipLocation = dockPCBaseStructureID
                             };
                             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Insert);
-                            
+
                             PCBasePermission permission = new PCBasePermission
                             {
                                 PCBaseID = starkillerBase.ID,
@@ -725,7 +725,7 @@ namespace SWLOR.Game.Server.Service
 
                 return "Unable to dock starship.  Starships must be docked on a vacant docking bay.";
             }
-            
+
             return null;
         }
 
@@ -776,7 +776,7 @@ namespace SWLOR.Game.Server.Service
             // The order here is important because we want to remove child structures first otherwise we'll get foreign key issues when the DB persists.
             // For this reason, we want to order by ParentPCBaseStructureID which will give us those with an ID followed by those with no ID (i.e null).
             var structures = DataService
-                .Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID)
+                .PCBaseStructure.GetAllByPCBaseID(pcBaseID)
                 .OrderBy(o => o.ParentPCBaseStructureID)
                 .ToList();
 
@@ -785,23 +785,28 @@ namespace SWLOR.Game.Server.Service
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
 
-            // Remove all players who are a resident of any structure in this base or the base itself.
-            var residents = DataService.Where<Player>(x =>
+            // Remove the primary resident of the base.
+            var basePrimaryResident = DataService.Player.GetByPrimaryResidencePCBaseIDOrDefault(pcBaseID);
+            if (basePrimaryResident != null)
             {
-                if (x.PrimaryResidencePCBaseID == pcBaseID) return true;
-                if (x.PrimaryResidencePCBaseStructureID == null) return false;
-                var primaryResidenceStructure = DataService.PCBaseStructure.GetByID((Guid)x.PrimaryResidencePCBaseStructureID);
-                return primaryResidenceStructure.PCBaseID == pcBaseID;
-            }).ToList();
-
-            foreach (var resident in residents)
-            {
-                resident.PrimaryResidencePCBaseID = null;
-                resident.PrimaryResidencePCBaseStructureID = null;
-
-                DataService.SubmitDataChange(resident, DatabaseActionType.Update);
+                basePrimaryResident.PrimaryResidencePCBaseID = null;
+                DataService.SubmitDataChange(basePrimaryResident, DatabaseActionType.Update);
             }
-            
+            // Get all structures whose PCBaseID matches this one (I.E children of this base)
+            // Then filter out the ones with a primary resident
+            var childStructures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID);
+            foreach (var child in childStructures)
+            {
+                var primaryResident = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(child.ID);
+
+                // If we found a resident, mark their primary residence as null and update in the cache.
+                if (primaryResident != null)
+                {
+                    primaryResident.PrimaryResidencePCBaseStructureID = null;
+                    DataService.SubmitDataChange(primaryResident, DatabaseActionType.Update);
+                }
+            }
+
             foreach (var structure in areaStructures)
             {
                 BootPlayersOutOfInstance(structure.PCBaseStructureID);
@@ -814,16 +819,16 @@ namespace SWLOR.Game.Server.Service
                     ClearPCBaseByID(starkillerBase.ID);
                 }
 
-                ((List<AreaStructure>) baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
+                ((List<AreaStructure>)baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
                 structure.Structure.Destroy();
             }
-            
+
             Dictionary<Guid, NWPlaceable> rubbleContainers = new Dictionary<Guid, NWPlaceable>();
             for (int x = structures.Count - 1; x >= 0; x--)
             {
                 var pcBaseStructure = structures.ElementAt(x);
                 var baseStructure = DataService.BaseStructure.GetByID(pcBaseStructure.BaseStructureID);
-                var items = DataService.Where<PCBaseStructureItem>(i => i.PCBaseStructureID == pcBaseStructure.ID).ToList();
+                var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(pcBaseStructure.ID).ToList();
                 NWPlaceable rubbleContainer = null;
 
                 if (!impoundItems)
@@ -874,13 +879,13 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Clear structure permissions
-                var structurePermissions = DataService.Where<PCBaseStructurePermission>(p => p.PCBaseStructureID == pcBaseStructure.ID).ToList();
+                var structurePermissions = DataService.PCBaseStructurePermission.GetAllByPCBaseStructureID(pcBaseStructure.ID).ToList();
                 for (int p = structurePermissions.Count - 1; p >= 0; p--)
                 {
                     var permission = structurePermissions.ElementAt(p);
                     DataService.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
-                
+
                 if (impoundItems)
                 {
                     // Build the structure's item in-world and then impound it. Destroy the copy after we're done.
@@ -904,7 +909,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Clear base permissions
-            var permissions = DataService.Where<PCBasePermission>(x => x.PCBaseID == pcBaseID).ToList();
+            var permissions = DataService.PCBasePermission.GetAllPermissionsByPCBaseID(pcBaseID).ToList();
             for (int p = permissions.Count - 1; p >= 0; p--)
             {
                 var permission = permissions.ElementAt(p);
@@ -1011,7 +1016,7 @@ namespace SWLOR.Game.Server.Service
             player.AssignCommand(() =>
             {
                 _.ActionJumpToLocation(location);
-                _.ActionDoCommand(()=> { PlayerService.SaveLocation(player); });
+                _.ActionDoCommand(() => { PlayerService.SaveLocation(player); });
             });
         }
 
@@ -1039,7 +1044,7 @@ namespace SWLOR.Game.Server.Service
                 player.SendMessage("Could not find exit. Either you have entered the module in an expired lease building area. If this is not the case log a /bug and report where you were.");
                 LoggingService.Trace(TraceComponent.Space, "Could not find exit. Either you have entered the module in an expired lease building area. If this is not the case log a /bug and report where you were.");
                 NWObject waypoint = GetObjectByTag("MN_StarchaserHomes");
-                player.AssignCommand(() => _.ActionJumpToObject(waypoint));               
+                player.AssignCommand(() => _.ActionJumpToObject(waypoint));
                 return;
             }
 
@@ -1053,7 +1058,7 @@ namespace SWLOR.Game.Server.Service
                 if (baseStructure != null)
                 {
                     PCBase pcBase = DataService.PCBase.GetByIDOrDefault(baseStructure.PCBaseID);
-                    if (pcBase != null && pcBase.PCBaseTypeID == (int) Enumeration.PCBaseType.Starship)
+                    if (pcBase != null && pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
                     {
                         // This is a starship.  Exit should be based on location, not based on the door variable.
                         if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
@@ -1068,7 +1073,7 @@ namespace SWLOR.Game.Server.Service
                             {
                                 player.SendMessage("Could not find waypoint " + starport.Waypoint + ". This is a bug, please report it.");
                                 LoggingService.Trace(TraceComponent.Space, "Failed to find waypoint: " + starport.Waypoint);
-                                return; 
+                                return;
                             }
 
                             player.AssignCommand(() => _.ActionJumpToObject(waypoint));
@@ -1095,7 +1100,7 @@ namespace SWLOR.Game.Server.Service
                             player.AssignCommand(() => _.ActionJumpToObject(dock));
                         }
 
-                        return; 
+                        return;
                     }
                 }
             }
@@ -1271,7 +1276,8 @@ namespace SWLOR.Game.Server.Service
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
             var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
-            float siloBonus = DataService.Where<PCBaseStructure>(x =>
+            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
+                                  .Where(x =>
                                   {
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                                       return x.PCBaseID == pcBaseID && baseStructure.BaseStructureTypeID == siloType;
@@ -1294,8 +1300,8 @@ namespace SWLOR.Game.Server.Service
             const int siloType = (int)BaseStructureType.StronidiumSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
             var towerBaseStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
-            float siloBonus = DataService.Where<PCBaseStructure>
-                                  (x =>
+            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
+                                  .Where(x =>
                                   {
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                                       return x.PCBaseID == pcBaseID &&
@@ -1320,8 +1326,8 @@ namespace SWLOR.Game.Server.Service
             const int siloType = (int)BaseStructureType.ResourceSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
             var towerBaseStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
-            float siloBonus = DataService.Where<PCBaseStructure>
-                                  (x =>
+            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
+                                  .Where(x =>
                                   {
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
 
@@ -1455,18 +1461,18 @@ namespace SWLOR.Game.Server.Service
             PCBase pcBase = null;
             PCBaseStructure structure = null;
             BuildingStyle style = null;
-            HashSet<PCBaseStructure> furnitureStructures = null;
+            List<PCBaseStructure> furnitureStructures = null;
             string name = "";
             int type = 0;
 
             if (isBase)
             {
                 pcBase = DataService.PCBase.GetByID(instanceID);
-                furnitureStructures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
+                furnitureStructures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID).ToList();
                 style = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 type = (int)BuildingType.Apartment;
                 name = pcBase.CustomName;
-                
+
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     Player owner = DataService.Player.GetByID(pcBase.PlayerID);
@@ -1477,7 +1483,7 @@ namespace SWLOR.Game.Server.Service
             {
                 structure = DataService.PCBaseStructure.GetByID(instanceID);
                 pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-                furnitureStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
+                furnitureStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID).ToList();
                 style = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
                 name = structure.CustomName;
 
@@ -1519,7 +1525,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = (_.GetEnteringObject());
             if (!player.IsPlayer) return;
 
-            if (player.Area.Tag == "ooc_area" || (player.Area.Name.StartsWith("Space - " ) && player.GetLocalInt("IS_SHIP") == 0))
+            if (player.Area.Tag == "ooc_area" || (player.Area.Name.StartsWith("Space - ") && player.GetLocalInt("IS_SHIP") == 0))
             {
                 Player entity = PlayerService.GetPlayerEntity(player.GlobalID);
                 NWArea area = null;
@@ -1541,9 +1547,9 @@ namespace SWLOR.Game.Server.Service
                         // This is a base (i.e. apartment).
                         //--------------------------------------------------------------------------
                         LoggingService.Trace(TraceComponent.None, "Player logging in to an apartment.");
-    
+
                         area = GetAreaInstance((Guid)locationInstanceID, true);
-                        if (area == null) area = CreateAreaInstance(player, (Guid)locationInstanceID, true);                        
+                        if (area == null) area = CreateAreaInstance(player, (Guid)locationInstanceID, true);
                     }
                     else if (DataService.PCBaseStructure.GetByIDOrDefault((Guid)locationInstanceID) != null)
                     {

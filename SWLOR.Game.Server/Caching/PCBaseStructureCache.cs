@@ -11,18 +11,26 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, List<PCBaseStructure>> ByPCBaseID { get; } = new Dictionary<Guid, List<PCBaseStructure>>();
         private Dictionary<Guid, double> PowerInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
         private Dictionary<Guid, double> CPUInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
+        private Dictionary<Guid, Dictionary<Guid, PCBaseStructure>> ByParentPCBaseStructureID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructure>>();
 
         protected override void OnCacheObjectSet(PCBaseStructure entity)
         {
             SetEntityIntoDictionary(entity.PCBaseID, entity, ByPCBaseID);
             RecalculatePowerAndCPU(entity);
+            if (entity.ParentPCBaseStructureID != null)
+            {
+                SetEntityIntoDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, entity, ByParentPCBaseStructureID);
+            }
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructure entity)
         {
             RemoveEntityFromDictionary(entity.PCBaseID, entity, ByPCBaseID);
-
             RecalculatePowerAndCPU(entity);
+            if (entity.ParentPCBaseStructureID != null)
+            {
+                RemoveEntityFromDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, ByParentPCBaseStructureID);
+            }
         }
 
         protected override void OnSubscribeEvents()
@@ -85,6 +93,14 @@ namespace SWLOR.Game.Server.Caching
         public PCBaseStructure GetStarshipExteriorByPCBaseID(Guid pcBaseID)
         {
             return ByPCBaseID[pcBaseID].SingleOrDefault(x => x.ExteriorStyleID > 0);
+        }
+
+        public IEnumerable<PCBaseStructure> GetAllByParentPCBaseStructureID(Guid parentPCBaseStructureID)
+        {
+            if(!ByParentPCBaseStructureID.ContainsKey(parentPCBaseStructureID))
+                return new List<PCBaseStructure>();
+
+            return ByParentPCBaseStructureID[parentPCBaseStructureID].Values;
         }
     }
 }

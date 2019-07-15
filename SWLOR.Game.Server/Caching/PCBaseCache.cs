@@ -9,21 +9,28 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseCache: CacheBase<PCBase>
     {
-        // PlayerID -> PCBaseID -> PCBase
+        // Primary Index: PlayerID
+        // Secondary Index: PCBaseID 
         private Dictionary<Guid, Dictionary<Guid, PCBase>> ByPlayerIDAndPCBaseID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBase>>();
 
+        // Primary Index: AreaResref
+        // Secondary Index: Sector
         private Dictionary<string, Dictionary<string, PCBase>> ByAreaResrefAndSector { get; } = new Dictionary<string, Dictionary<string, PCBase>>();
+
+        private Dictionary<Guid, DateTime> RentDueTimes { get; } = new Dictionary<Guid, DateTime>();
 
         protected override void OnCacheObjectSet(PCBase entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDAndPCBaseID);
             SetEntityIntoDictionary(entity.AreaResref, entity.Sector, entity, ByAreaResrefAndSector);
+            RentDueTimes[entity.ID] = entity.DateRentDue;
         }
 
         protected override void OnCacheObjectRemoved(PCBase entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndPCBaseID);
             RemoveEntityFromDictionary(entity.AreaResref, entity.Sector, ByAreaResrefAndSector);
+            RentDueTimes.Remove(entity.ID);
         }
 
         protected override void OnSubscribeEvents()
@@ -74,6 +81,21 @@ namespace SWLOR.Game.Server.Caching
                 return new List<PCBase>();
 
             return ByPlayerIDAndPCBaseID[playerID].Values;
+        }
+
+        public IEnumerable<PCBase> GetAllNonApartmentPCBasesByAreaResref(string areaResref)
+        {
+            // This could be optimized with an index, but it only runs on module load so I figured we'd save the memory for a slightly longer boot time.
+            return All.Where(x => x.AreaResref == areaResref && x.ApartmentBuildingID == null);
+        }
+
+        public IEnumerable<PCBase> GetAllWhereRentDue()
+        {
+            DateTime now = DateTime.UtcNow;
+            foreach (var pcBaseID in RentDueTimes.Where(x => x.Value <= now))
+            {
+                yield return ByID[pcBaseID];
+            }
         }
     }
 }

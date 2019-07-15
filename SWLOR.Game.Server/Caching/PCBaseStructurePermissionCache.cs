@@ -7,16 +7,24 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseStructurePermissionCache: CacheBase<PCBaseStructurePermission>
     {
+        // Primary Index: PlayerID
+        // Secondary Index: PCBaseStructurePermissionID
         private Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>>();
+
+        // Primary INdex: PCBaseStructureID
+        // Secondary Index: PCBaseStructurePermissionID
+        private Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>> ByPCBaseStructureID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>>();
 
         protected override void OnCacheObjectSet(PCBaseStructurePermission entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ID, entity, ByPCBaseStructureID);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructurePermission entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ID, ByPCBaseStructureID);
         }
 
         protected override void OnSubscribeEvents()
@@ -50,6 +58,16 @@ namespace SWLOR.Game.Server.Caching
 
             var permissions = ByPlayerID[playerID].Values;
             return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID);
+        }
+
+        public IEnumerable<PCBaseStructurePermission> GetAllByPCBaseStructureID(Guid pcBaseStructureID)
+        {
+            if (!ByPCBaseStructureID.ContainsKey(pcBaseStructureID))
+            {
+                ByPCBaseStructureID[pcBaseStructureID] = new Dictionary<Guid, PCBaseStructurePermission>(); 
+            }
+
+            return ByPCBaseStructureID[pcBaseStructureID].Values;
         }
     }
 }

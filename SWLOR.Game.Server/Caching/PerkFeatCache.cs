@@ -49,5 +49,16 @@ namespace SWLOR.Game.Server.Caching
 
             return ByFeatID[featID];
         }
+
+        public IEnumerable<PerkFeat> GetByIDs(IEnumerable<int> perkIDs)
+        {
+            foreach (var perkID in perkIDs)
+            {
+                if (ByFeatID.ContainsKey(perkID))
+                {
+                    yield return ByFeatID[perkID];
+                }
+            }
+        }
     }
 }

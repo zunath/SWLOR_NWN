@@ -27,9 +27,21 @@ namespace SWLOR.Game.Server.Caching
             return ByID[id];
         }
 
+        public PCGuildPoint GetByIDOrDefault(Guid id)
+        {
+            if (!ByID.ContainsKey(id))
+                return default;
+            return ByID[id];
+        }
+
         public PCGuildPoint GetByPlayerIDAndGuildID(Guid playerID, int guildID)
         {
             return GetEntityFromDictionary(playerID, guildID, ByPlayerIDAndGuildID);
+        }
+
+        public PCGuildPoint GetByPlayerIDAndGuildIDOrDefault(Guid playerID, int guildID)
+        {
+            return GetEntityFromDictionaryOrDefault(playerID, guildID, ByPlayerIDAndGuildID);
         }
     }
 }

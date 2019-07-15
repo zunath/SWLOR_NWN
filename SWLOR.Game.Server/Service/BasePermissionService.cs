@@ -81,8 +81,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Public base permissions take priority over all other permissions. Check those first.
-            var publicBasePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == dbStructure.PCBaseID &&
-                                                                                x.IsPublicPermission);
+            var publicBasePermission = DataService.PCBasePermission.GetPublicPermissionOrDefault(dbStructure.PCBaseID);
 
             if (publicBasePermission != null)
             {
@@ -100,8 +99,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Public structure permissions are the next thing we check.
-            var publicStructurePermission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.ID &&
-                                                                                                  x.IsPublicPermission);
+            var publicStructurePermission = DataService.PCBaseStructurePermission.GetPublicPermissionOrDefault(dbStructure.ID);
 
             if (publicStructurePermission != null)
             {
@@ -245,9 +243,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
         {
-            var dbPermission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == pcBaseStructureID && 
-                                                                                     x.PlayerID == player.GlobalID && 
-                                                                                     !x.IsPublicPermission);
+            var dbPermission = DataService.PCBaseStructurePermission.GetPlayerPrivatePermissionOrDefault(player.GlobalID, pcBaseStructureID);
             var action = DatabaseActionType.Update;
 
             if (dbPermission == null)

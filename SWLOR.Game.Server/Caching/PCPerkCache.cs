@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server.Caching
             return GetEntityFromDictionary(playerID, perkID, ByPlayerAndPerkID);
         }
 
+        public PCPerk GetByPlayerAndPerkIDOrDefault(Guid playerID, int perkID)
+        {
+            return GetEntityFromDictionaryOrDefault(playerID, perkID, ByPlayerAndPerkID);
+        }
+
         public IEnumerable<PCPerk> GetAllByPlayerID(Guid playerID)
         {
             if (!ByPlayerAndPerkID.ContainsKey(playerID))

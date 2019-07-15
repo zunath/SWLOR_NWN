@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var perk = GetPerkByID(pcPerk.PerkID);
                     if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
-                    var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
+                    var perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(pcPerk.PerkID, pcPerk.PerkLevel);
                     int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
 
                     var handler = GetPerkHandler(pcPerk.PerkID);
@@ -319,8 +319,7 @@ namespace SWLOR.Game.Server.Service
                 // Check the player's quest completion status against the perk requirements.
                 foreach (var questReq in questRequirements)
                 {
-                    var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID &&
-                                                                            q.QuestID == questReq.RequiredQuestID);
+                    var pcQuest = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questReq.RequiredQuestID);
                     if (pcQuest == null || pcQuest.CompletionDate == null)
                         return false;
                 }
@@ -339,7 +338,7 @@ namespace SWLOR.Game.Server.Service
 
         public static PCPerk GetPCPerkByID(Guid playerID, int perkID)
         {
-            return DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == playerID && x.PerkID == perkID);
+            return DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(playerID, perkID);
         }
 
         public static PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
@@ -358,7 +357,7 @@ namespace SWLOR.Game.Server.Service
             // Retrieve database records.
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
-            var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+            var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkID);
             
             // Identify the max number of ranks for this perk.
             int rank = 0;
@@ -394,12 +393,10 @@ namespace SWLOR.Game.Server.Service
             // Cycle through the quest requirements.
             foreach (var req in questRequirements)
             {
-                var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID &&
-                                                               x.QuestID == req.RequiredQuestID &&
-                                                               x.CompletionDate != null);
-
+                var pcQuest = DataService.PCQuestStatus.GetByPlayerAndQuestID(dbPlayer.ID, req.RequiredQuestID);
+                
                 // Player has not completed this required quest. Exit early and return false.
-                if (pcQuest == null) return false;
+                if (pcQuest == null || pcQuest.CompletionDate == null) return false;
             }
 
             // If this perk level requires a specialization, confirm the player has the required specialization.
@@ -424,7 +421,7 @@ namespace SWLOR.Game.Server.Service
         {
             var perk = DataService.Perk.GetByID(perkID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID);
-            var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
+            var pcPerk = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, perkID);
             var player = DataService.Player.GetByID(oPC.GlobalID);
 
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
@@ -573,7 +570,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
                 // Get the PC's perk information and all of the perk levels at or below their current level.
-                var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+                var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkID);
                 if (pcPerk == null) return 0;
 
                 // Get all of the perk levels in range, starting with the highest level.
@@ -609,7 +606,7 @@ namespace SWLOR.Game.Server.Service
                         // Check the quest requirements.
                         foreach (var req in questRequirements)
                         {
-                            var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && q.QuestID == req.RequiredQuestID);
+                            var pcQuest = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, req.RequiredQuestID);
                             if (pcQuest == null || pcQuest.CompletionDate == null)
                             {
                                 effectiveLevel--;

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
             // If player is missing any entries for guild points, add them now.
             foreach (var guild in DataService.Guild.GetAll())
             {
-                var pcGP = DataService.SingleOrDefault<PCGuildPoint>(x => x.GuildID == guild.ID && x.PlayerID == player.GlobalID);
+                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildIDOrDefault(player.GlobalID, guild.ID);
 
                 // No GP entry found. Add one now.
                 if (pcGP == null)

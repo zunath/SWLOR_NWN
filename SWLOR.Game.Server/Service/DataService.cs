@@ -401,18 +401,6 @@ namespace SWLOR.Game.Server.Service
             return cache.GetAll();
         }
 
-        public static T Single<T>(Func<T, bool> predicate)
-            where T : class, IEntity
-        {
-            return GetAll<T>().Single(predicate);
-        }
-
-        public static T SingleOrDefault<T>(Func<T, bool> predicate)
-            where T : class, IEntity
-        {
-            return GetAll<T>().SingleOrDefault(predicate);
-        }
-
         public static HashSet<T> Where<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {

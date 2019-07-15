@@ -20,5 +20,12 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByID[id];
         }
+
+        public CraftBlueprint GetByIDOrDefault(int id)
+        {
+            if (!ByID.ContainsKey(id))
+                return default;
+            return ByID[id];
+        }
     }
 }

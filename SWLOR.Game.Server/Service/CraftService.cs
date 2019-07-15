@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Service
 
         public static CraftBlueprint GetBlueprintByID(int craftBlueprintID)
         {
-            return DataService.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
+            return DataService.CraftBlueprint.GetByIDOrDefault(craftBlueprintID);
         }
 
         public static List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)

@@ -39,5 +39,15 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByFeatID[featID];
         }
+
+        public PerkFeat GetByFeatIDOrDefault(int featID)
+        {
+            if (!ByFeatID.ContainsKey(featID))
+            {
+                return default;
+            }
+
+            return ByFeatID[featID];
+        }
     }
 }

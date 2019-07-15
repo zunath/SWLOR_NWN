@@ -1,3 +1,4 @@
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -19,6 +20,11 @@ namespace SWLOR.Game.Server.Caching
         public AuthorizedDM GetByID(int id)
         {
             return ByID[id];
+        }
+
+        public AuthorizedDM GetByCDKeyAndActiveOrDefault(string cdKey)
+        {
+            return ByID.Values.SingleOrDefault(x => x.CDKey == cdKey && x.IsActive);
         }
     }
 }

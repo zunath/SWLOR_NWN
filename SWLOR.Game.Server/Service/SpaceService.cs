@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsLocationPublicStarport(string location)
         {
-            SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == location);
+            SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(new Guid(location));
             return (starport != null);
         }
 
@@ -314,11 +314,11 @@ namespace SWLOR.Game.Server.Service
             {
                 // Ship is docked.  Get the PCBaseStructure of the dock and find its parent base.  
                 // Then find the area from the resref.
-                PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == location);
+                PCBaseStructure dock = DataService.PCBaseStructure.GetByIDOrDefault(new Guid(location));
 
                 if (dock != null)
                 {
-                    PCBase parentBase = DataService.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
+                    PCBase parentBase = DataService.PCBase.GetByIDOrDefault(dock.PCBaseID);
                     IEnumerable<NWArea> areas = NWModule.Get().Areas;
 
                     foreach (var area in areas)
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Service
                 else 
                 {
                     // Not on a PC dock.  Are we on a starport dock?
-                    SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == location);
+                    SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(new Guid(location));
 
                     if (starport != null)
                     {
@@ -453,8 +453,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            Guid structureGuid = new Guid(structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByIDOrDefault(structureGuid);
+            PCBase starkillerBase = DataService.PCBase.GetByIDOrDefault(structure.PCBaseID);
             starkillerBase.ShipLocation = location;
             area.SetLocalString("SHIP_LOCATION", location);
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
@@ -477,8 +478,9 @@ namespace SWLOR.Game.Server.Service
                 return "";
             }
 
-            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            Guid structureGuid = new Guid(structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByIDOrDefault(structureGuid);
+            PCBase starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             return starkillerBase.ShipLocation;
         }
@@ -653,7 +655,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            Guid shipGuid = new Guid(shipID);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             if (location == null)
@@ -691,7 +694,8 @@ namespace SWLOR.Game.Server.Service
             if (shipCreature.IsValid)
             {
                 string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-                PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+                Guid shipGuid = new Guid(shipID);
+                PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
                 PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
                 
                 // Remove the ship object.
@@ -707,7 +711,8 @@ namespace SWLOR.Game.Server.Service
         public static bool CanLandOnPlanet(NWArea ship)
         {
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            Guid shipGuid = new Guid(shipID);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
@@ -744,7 +749,8 @@ namespace SWLOR.Game.Server.Service
             // Save our location so we come back to the computer if we disconnect in space.
             PlayerService.SaveLocation(player);
 
-            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            Guid shipGuid = new Guid(shipID);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             int shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
@@ -1036,7 +1042,8 @@ namespace SWLOR.Game.Server.Service
             NWArea ship = player.GetLocalObject("AREA");
 
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            Guid shipGuid = new Guid(shipID);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 

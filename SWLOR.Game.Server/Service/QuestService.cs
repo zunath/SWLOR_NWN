@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Service
 
             if (quest.RewardFame > 0)
             {
-                PCRegionalFame fame = DataService.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == player.GlobalID && x.FameRegionID == quest.FameRegionID);
+                PCRegionalFame fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, quest.FameRegionID);
                 DatabaseActionType action = DatabaseActionType.Update;
 
                 if (fame == null)
@@ -277,8 +277,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Retrieve the player's current quest status for this quest.
             // If they haven't accepted it yet, this will be null.
-            PCQuestStatus status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && 
-                                                                                   x.QuestID == quest.ID);
+            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, quest.ID);
 
             // If the status is null, it's assumed that the player hasn't accepted it yet.
             if (status != null)
@@ -323,7 +322,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the player's fame information. Treat a missing record as having 0 fame for this region.
-            PCRegionalFame fame = DataService.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
+            PCRegionalFame fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(oPC.GlobalID, quest.FameRegionID);
             int fameAmount = fame == null ? 0 : fame.Amount;
 
             // Ensure player has necessary fame for accepting this quest.
@@ -359,8 +358,7 @@ namespace SWLOR.Game.Server.Service
 
             // By this point, it's assumed the player will accept the quest.
             // However, if this quest is repeatable we must first update the existing entry.
-            var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.QuestID == questID && 
-                                                                                     x.PlayerID == player.GlobalID);
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             bool foundExisting = status != null;
 
             // Didn't find an existing state so we'll create a new object.
@@ -448,7 +446,7 @@ namespace SWLOR.Game.Server.Service
             // Retrieve the quest, the current state, and the next state of the quest from the cache.
             Quest quest = DataService.Quest.GetByID(questStatus.QuestID);
             QuestState currentState = DataService.QuestState.GetByID(questStatus.CurrentQuestStateID);
-            QuestState nextState = DataService.SingleOrDefault<QuestState>(x => x.QuestID == quest.ID && x.Sequence == currentState.Sequence + 1);
+            QuestState nextState = DataService.QuestState.GetByQuestIDAndSequenceOrDefault(quest.ID, currentState.Sequence + 1);
 
             // If there's no state after this one, the assumption is that it's time to complete the quest.
             if (nextState == null) 
@@ -748,7 +746,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCQuestStatus pcQuestStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcQuestStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
             if (pcQuestStatus == null) return;
 
             QuestState questState = DataService.QuestState.GetByID(pcQuestStatus.CurrentQuestStateID);
@@ -810,7 +808,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!oPC.IsPlayer) return;
 
-            PCQuestStatus pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
 
             if (pcStatus == null)
             {

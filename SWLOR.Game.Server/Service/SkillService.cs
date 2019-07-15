@@ -230,10 +230,8 @@ namespace SWLOR.Game.Server.Service
 
             // Check if the player has any undistributed skill ranks for this skill category.
             // If they haven't been distributed yet, the player CANNOT gain XP for this skill.
-            var pool = DataService.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID &&
-                                                               x.SkillCategoryID == skill.SkillCategoryID &&
-                                                               x.Levels > 0);
-            if (pool != null)
+            var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(oPC.GlobalID, skill.SkillCategoryID);
+            if (pool != null && pool.Levels > 0)
             {
                 oPC.FloatingText("You must distribute all pooled skill ranks before you can gain any new XP in the '" + skill.Name + "' skill. Access this menu from the 'View Skills' section of your rest menu.");
                 return;
@@ -540,7 +538,7 @@ namespace SWLOR.Game.Server.Service
                 // Add any missing skills the player does not have.
                 var skills = DataService.Where<Skill>(x =>
                 {
-                    var pcSkill = DataService.SingleOrDefault<PCSkill>(s => s.SkillID == x.ID && s.PlayerID == oPC.GlobalID);
+                    var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillIDOrDefault(oPC.GlobalID, x.ID);
                     return pcSkill == null;
                 });
                 foreach (var skill in skills)

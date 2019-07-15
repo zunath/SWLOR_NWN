@@ -77,13 +77,13 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if able to use perk feat on target, false otherwise.</returns>
         public static bool CanUsePerkFeat(NWCreature activator, NWObject target, int featID)
         {
-            var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
+            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault(featID);
 
             // There's no matching feat in the DB for this ability. Exit early.
             if (perkFeat == null) return false;
 
             // Retrieve the perk information.
-            Data.Entity.Perk perk = DataService.SingleOrDefault<Data.Entity.Perk>(x => x.ID == perkFeat.PerkID);
+            Data.Entity.Perk perk = DataService.Perk.GetByIDOrDefault(perkFeat.PerkID);
 
             // No perk could be found. Exit early.
             if (perk == null) return false;
@@ -107,9 +107,8 @@ namespace SWLOR.Game.Server.Service
                 // Can't process NPC stances at the moment. Need to do some more refactoring before this is possible.
                 // todo: handle NPC stances.
                 if (!activator.IsPlayer) return false;
-                
-                PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
-                                                                                               x.PlayerID == activator.GlobalID);
+
+                PCCustomEffect stanceEffect = DataService.PCCustomEffect.GetByStancePerkOrDefault(activator.GlobalID, perk.ID);
 
                 if (stanceEffect != null)
                 {
@@ -215,8 +214,8 @@ namespace SWLOR.Game.Server.Service
             if (!CanUsePerkFeat(activator, target, featID)) return;
 
             // Retrieve information necessary for activation of perk feat.
-            var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
-            Data.Entity.Perk perk = DataService.SingleOrDefault<Data.Entity.Perk>(x => x.ID == perkFeat.PerkID);
+            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault(featID);
+            Data.Entity.Perk perk = DataService.Perk.GetByIDOrDefault(perkFeat.PerkID);
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 

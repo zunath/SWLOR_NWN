@@ -35,6 +35,13 @@ namespace SWLOR.Game.Server.Caching
             return ByID[id];
         }
 
+        public PCBase GetByIDOrDefault(Guid id)
+        {
+            if (!ByID.ContainsKey(id))
+                return default;
+            return ByID[id];
+        }
+
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
         {
             var apartments = ByPlayerIDAndPCBaseID[playerID].Values
@@ -55,5 +62,10 @@ namespace SWLOR.Game.Server.Caching
             return GetEntityFromDictionaryOrDefault(areaResref, sector, ByAreaResrefAndSector);
         }
 
+        public PCBase GetByShipLocationOrDefault(string shipLocation)
+        {
+            if(string.IsNullOrWhiteSpace(shipLocation)) throw new ArgumentException(nameof(shipLocation) + " cannot be null or whitespace.");
+            return All.SingleOrDefault(x => x.ShipLocation == shipLocation);
+        }
     }
 }

@@ -38,5 +38,11 @@ namespace SWLOR.Game.Server.Caching
         {
             return GetEntityFromDictionary(questID, sequence, ByQuestIDAndSequence);
         }
+
+        public QuestState GetByQuestIDAndSequenceOrDefault(int questID, int sequence)
+        {
+            return GetEntityFromDictionaryOrDefault(questID, sequence, ByQuestIDAndSequence);
+        }
+
     }
 }

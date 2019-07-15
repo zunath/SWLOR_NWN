@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
 
             string cdKey = _.GetPCPublicCDKey(player.Object);
 
-            AuthorizedDM entity = DataService.SingleOrDefault<AuthorizedDM>(x => x.CDKey == cdKey && x.IsActive);
+            AuthorizedDM entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
             return entity != null;
         }
     }

@@ -39,5 +39,6 @@ namespace SWLOR.Game.Server.Caching
 
             return ByPlayerAndQuestID[key];
         }
+
     }
 }

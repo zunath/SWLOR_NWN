@@ -31,5 +31,12 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByResref[resref];
         }
+
+        public Area GetByResrefOrDefault(string resref)
+        {
+            if (!ByResref.ContainsKey(resref))
+                return default;
+            return ByResref[resref];
+        }
     }
 }

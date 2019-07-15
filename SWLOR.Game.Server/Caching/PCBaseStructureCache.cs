@@ -77,9 +77,14 @@ namespace SWLOR.Game.Server.Caching
             return CPUInUseByPCBaseID[pcBaseID];
         }
 
-        public PCBaseStructure GetStarshipByPCBaseID(Guid pcBaseID)
+        public PCBaseStructure GetStarshipInteriorByPCBaseIDOrDefault(Guid pcBaseID)
         {
-            return ByPCBaseID[pcBaseID].Single(x => x.InteriorStyleID != null);
+            return ByPCBaseID[pcBaseID].SingleOrDefault(x => x.InteriorStyleID != null);
+        }
+
+        public PCBaseStructure GetStarshipExteriorByPCBaseID(Guid pcBaseID)
+        {
+            return ByPCBaseID[pcBaseID].SingleOrDefault(x => x.ExteriorStyleID > 0);
         }
     }
 }

@@ -20,5 +20,12 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByID[id];
         }
+
+        public Data.Entity.Perk GetByIDOrDefault(int id)
+        {
+            if (!ByID.ContainsKey(id))
+                return default;
+            return ByID[id];
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("MainPage");
             foreach (var @base in bases)
             {
-                Area dbArea = DataService.Single<Area>(x => x.Resref == @base.AreaResref);
+                Area dbArea = DataService.Area.GetByResref(@base.AreaResref);
                 string status = @base.PlayerID == playerID ? " [OWNER]" : " [GUEST]";
 
                 AddResponseToPage("MainPage", dbArea.Name + " (" + @base.Sector + ")" + status, true, @base.ID);
@@ -117,8 +117,8 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadBaseDetailsPage()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
-            Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             var owner = DataService.Player.GetByID(pcBase.PlayerID);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
             bool canCancelLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanCancelLease);
@@ -187,8 +187,8 @@ namespace SWLOR.Game.Server.Conversation
         private void ExtendLease(int days, int responseID, string optionText)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
-            Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
             var owner = DataService.Player.GetByID(pcBase.PlayerID);
 

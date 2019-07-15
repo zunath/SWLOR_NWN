@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
         }
         

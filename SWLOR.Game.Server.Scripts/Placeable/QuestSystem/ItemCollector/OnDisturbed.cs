@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
                     if (progress.Remaining <= 0)
                     {
                         var progressCopy = progress;
-                        progress = DataService.Single<PCQuestItemProgress>(x => x.ID == progressCopy.ID);
+                        progress = DataService.PCQuestItemProgress.GetByID(progressCopy.ID);
                         action = DatabaseActionType.Delete;
                     }
                     DataService.SubmitDataChange(progress, action);

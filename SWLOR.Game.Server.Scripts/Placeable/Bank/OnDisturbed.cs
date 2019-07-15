@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                 }
                 else
                 {
-                    var record = DataService.Single<BankItem>(x => x.ItemID == item.GlobalID.ToString());
+                    var record = DataService.BankItem.GetByItemID(item.GlobalID.ToString());
                     DataService.SubmitDataChange(record, DatabaseActionType.Delete);
                 }
             }

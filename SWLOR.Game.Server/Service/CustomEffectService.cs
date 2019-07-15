@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
-            Data.Entity.CustomEffect customEffect = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == customEffectID);
+            Data.Entity.CustomEffect customEffect = DataService.CustomEffect.GetByID(customEffectID);
             PCCustomEffect pcEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == target.GlobalID && x.CustomEffectID == customEffectID);
             ICustomEffectHandler handler = GetCustomEffectHandler(customEffectID);
             CustomEffectCategoryType category = handler.CustomEffectCategoryType;
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void ApplyNPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
-            Data.Entity.CustomEffect effectEntity = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == customEffectID);
+            Data.Entity.CustomEffect effectEntity = DataService.CustomEffect.GetByID(customEffectID);
             // Look for existing effect.
             var spellModel = AppCache.NPCEffects.SingleOrDefault(x => x.Key.Caster.Equals(caster) &&
                                                                     x.Key.CustomEffectID == customEffectID &&
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Service
                 var entry = AppCache.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
                 AppCache.NPCEffects[entry.Key] = entry.Value - 1;
-                Data.Entity.CustomEffect entity = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == casterModel.CustomEffectID);
+                Data.Entity.CustomEffect entity = DataService.CustomEffect.GetByID(casterModel.CustomEffectID);
                 ICustomEffectHandler handler = CustomEffectService.GetCustomEffectHandler(casterModel.CustomEffectID);
 
                 try

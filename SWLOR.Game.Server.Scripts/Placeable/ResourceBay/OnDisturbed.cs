@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
             NWItem item = _.GetInventoryDisturbItem();
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             Guid structureGUID = new Guid(structureID);
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureGUID);
+            var structure = DataService.PCBaseStructure.GetByID(structureGUID);
             var controlTower = BaseService.GetBaseControlTower(structure.PCBaseID);
 
             if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)

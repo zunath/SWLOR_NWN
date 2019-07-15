@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
             var player = GetPC();
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var header = "You may use this tome to refund one of your perks. Refunding may only occur once every 24 hours (real world time). Selecting a perk from this list will refund all levels you have purchased of that perk. The refunded SP may be used to purchase other perks immediately afterwards.\n\n";
 
             if (dbPlayer.DatePerkRefundAvailable != null && dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadConfirmPage()
         {
             var model = GetDialogCustomData<Model>();
-            var pcPerk = DataService.Single<PCPerk>(x => x.ID == model.PCPerkID);
+            var pcPerk = DataService.PCPerk.GetByID(model.PCPerkID);
             var perk = DataService.Perk.GetByID(pcPerk.PerkID);
             var minimumLevel = 1;
 
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Conversation
         private bool CanRefundPerk()
         {
             var player = GetPC();
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             if (dbPlayer.DatePerkRefundAvailable == null) return true;
 
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
-            var pcPerk = DataService.Single<PCPerk>(x => x.ID == model.PCPerkID);
+            var pcPerk = DataService.PCPerk.GetByID(model.PCPerkID);
             var perk = DataService.Perk.GetByID(pcPerk.PerkID);
             var minimumLevel = 1;
 
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Conversation
                 minimumLevel = 2;
 
             var refundAmount = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
             RemovePerkItem(perk);

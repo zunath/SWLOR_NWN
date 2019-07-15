@@ -31,5 +31,10 @@ namespace SWLOR.Game.Server.Caching
         {
             return GetEntityFromDictionaryOrDefault(playerID, cooldownCategoryID, ByPlayerAndCooldownCategoryID);
         }
+
+        public PCCooldown GetByPlayerAndCooldownCategoryID(Guid playerID, int cooldownCategoryID)
+        {
+            return GetEntityFromDictionary(playerID, cooldownCategoryID, ByPlayerAndCooldownCategoryID);
+        }
     }
 }

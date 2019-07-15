@@ -388,8 +388,7 @@ namespace SWLOR.Game.Server.Service
                 int tick = creature.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
                 creature.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
                 
-                PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == perkID &&
-                                                                      x.PerkLevelUnlocked == tier);                
+                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, tier);                
                 
                 // Are we ready to continue processing this concentration effect?
                 if (tick % perkFeat.ConcentrationTickInterval != 0) return;
@@ -607,7 +606,7 @@ namespace SWLOR.Game.Server.Service
 
             if (creature.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.Single<PCCooldown>(x => x.PlayerID == creature.GlobalID && x.CooldownCategoryID == cooldown.ID);
+                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryID(creature.GlobalID, cooldown.ID);
                 pcCooldown.DateUnlocked = unlockDate;
                 DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
             }
@@ -646,7 +645,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
         {
-            var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == spellFeatID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID(spellFeatID);
             int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.CooldownCategory.GetByID(Convert.ToInt32(cooldownCategoryID));
             string queueUUID = Guid.NewGuid().ToString();
@@ -801,7 +800,7 @@ namespace SWLOR.Game.Server.Service
 
             PCPerk entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
             var perk = DataService.Perk.GetByID(entity.PerkID);
-            var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == activeWeaponSkillFeatID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID(activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
             string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.PerkLevelUnlocked);

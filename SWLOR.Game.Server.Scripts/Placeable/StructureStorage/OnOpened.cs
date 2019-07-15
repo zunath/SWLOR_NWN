@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
         {
             NWPlaceable chest = (NWGameObject.OBJECT_SELF);
             Guid structureID = new Guid(chest.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
 
             var items = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID);
             foreach (var item in items)

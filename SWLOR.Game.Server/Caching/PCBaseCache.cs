@@ -10,16 +10,20 @@ namespace SWLOR.Game.Server.Caching
     public class PCBaseCache: CacheBase<PCBase>
     {
         // PlayerID -> PCBaseID -> PCBase
-        private Dictionary<Guid, Dictionary<Guid, PCBase>> ByPlayerIDList { get; } = new Dictionary<Guid, Dictionary<Guid, PCBase>>();
+        private Dictionary<Guid, Dictionary<Guid, PCBase>> ByPlayerIDAndPCBaseID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBase>>();
+
+        private Dictionary<string, Dictionary<string, PCBase>> ByAreaResrefAndSector { get; } = new Dictionary<string, Dictionary<string, PCBase>>();
 
         protected override void OnCacheObjectSet(PCBase entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDList);
+            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDAndPCBaseID);
+            SetEntityIntoDictionary(entity.AreaResref, entity.Sector, entity, ByAreaResrefAndSector);
         }
 
         protected override void OnCacheObjectRemoved(PCBase entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDList);
+            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndPCBaseID);
+            RemoveEntityFromDictionary(entity.AreaResref, entity.Sector, ByAreaResrefAndSector);
         }
 
         protected override void OnSubscribeEvents()
@@ -33,7 +37,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
         {
-            var apartments = ByPlayerIDList[playerID].Values
+            var apartments = ByPlayerIDAndPCBaseID[playerID].Values
                 .Where(x => x.ApartmentBuildingID == apartmentBuildingID &&
                             x.DateRentDue > DateTime.UtcNow)
                 .OrderBy(o => o.DateInitialPurchase);
@@ -41,9 +45,10 @@ namespace SWLOR.Game.Server.Caching
             return apartments;
         }
 
-        public IEnumerable<PCBase> GetApartmentsPlayerHasAccessTo(Guid playerID, IEnumerable<Guid> pcBaseIDs)
+        public PCBase GetByAreaResrefAndSector(string areaResref, string sector)
         {
-            throw new NotImplementedException();
+            return GetEntityFromDictionary(areaResref, sector, ByAreaResrefAndSector);
         }
+
     }
 }

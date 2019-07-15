@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -25,8 +26,9 @@ namespace SWLOR.Game.Server.Item
             NWArea area = user.Area;
             NWPlayer player = new NWPlayer(user);
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
             
             var dbItem = new PCBaseStructureItem
@@ -79,8 +81,9 @@ namespace SWLOR.Game.Server.Item
             }
 
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
             int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == pcbs.ID).Count() + 1;

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 Console.WriteLine("FinishAbilityUse perkID = " + perkID);
 
                 // Get the relevant perk information from the database.
-                Data.Entity.Perk dbPerk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
+                Data.Entity.Perk dbPerk = DataService.Perk.GetByID(perkID);
 
                 // The execution type determines how the perk behaves and the rules surrounding it.
                 PerkExecutionType executionType = dbPerk.ExecutionTypeID;
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
                 // Adjust creature's current FP, if necessary.
                 // Adjust FP only if spell cost > 0
-                PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == spellTier);
+                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, spellTier);
                 int fpCost = perk.FPCost(activator, perkFeat.BaseFPCost, spellTier);
 
                 if (fpCost > 0)

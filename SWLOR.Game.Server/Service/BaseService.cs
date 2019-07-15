@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Service
             if (area.Height < 32) throw new Exception("Area must be at least 32 tiles high.");
 
 
-            var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+            var dbArea = DataService.Area.GetByResref(area.Resref);
             Guid? existingOwner = null;
             switch (sector)
             {
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var pcBase in pcBases)
                 {
-                    Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+                    Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
                     playerIDs.Add(new Tuple<Guid, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
                     ClearPCBaseByID(pcBase.ID);
                 }
@@ -912,7 +912,7 @@ namespace SWLOR.Game.Server.Service
 
             DataService.SubmitDataChange(pcBase, DatabaseActionType.Delete);
 
-            Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
@@ -948,8 +948,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (structure.BaseStructureTypeID == (int)BaseStructureType.Building)
                 {
-                    var defaultInterior = DataService.Single<BuildingStyle>(x => x.BaseStructureID == structure.ID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Interior && x.IsActive).ID;
-                    var defaultExterior = DataService.Single<BuildingStyle>(x => x.BaseStructureID == structure.ID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Exterior && x.IsActive).ID;
+                    var defaultInterior = DataService.BuildingStyle.GetDefaultInteriorByBaseStructureID(structure.ID).ID;
+                    var defaultExterior = DataService.BuildingStyle.GetDefaultExteriorByBaseStructureID(structure.ID).ID;
 
                     item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", defaultInterior);
                     item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", defaultExterior);
@@ -1349,7 +1349,7 @@ namespace SWLOR.Game.Server.Service
             // Check that the item is a control tower.
             //--------------------------------------------------------------------------
             int newTowerStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
-            BaseStructure newTower = DataService.Single<BaseStructure>(x => x.ID == newTowerStructureID);
+            BaseStructure newTower = DataService.BaseStructure.GetByID(newTowerStructureID);
             if (newTower.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
             {
                 return "";

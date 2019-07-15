@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Service
         public static void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
+            CraftBlueprint blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)

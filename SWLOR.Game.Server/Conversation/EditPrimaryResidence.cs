@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
 
-            Player dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Player primaryResident;
 
             bool isPrimaryResident;
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
-            var newResident = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var newResident = DataService.Player.GetByID(player.GlobalID);
             
             Player currentResident;
             bool isPrimaryResident;

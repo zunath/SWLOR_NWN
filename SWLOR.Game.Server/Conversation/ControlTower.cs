@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
             Guid pcBaseID = structure.PCBaseID;
             PCBase pcBase = DataService.PCBase.GetByID(pcBaseID);
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Conversation
                 TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
 
                 var tower = BaseService.GetBaseControlTower(pcBaseID);
-                var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+                var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);

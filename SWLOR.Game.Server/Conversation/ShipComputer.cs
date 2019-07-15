@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID); 
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID); 
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
 
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             Guid structureID = new Guid(_.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             DialogPage page = dialog.GetPageByName(pageName);
@@ -460,7 +460,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             Guid structureID = new Guid(_.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);

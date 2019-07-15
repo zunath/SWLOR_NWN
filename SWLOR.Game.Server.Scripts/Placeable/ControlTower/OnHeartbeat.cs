@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
         {
             NWPlaceable tower = NWGameObject.OBJECT_SELF;
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
             int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
             {
                 pcBase.Fuel--;
-                BaseStructure towerStructure = DataService.Single<BaseStructure>(x => x.ID == structure.BaseStructureID);
+                BaseStructure towerStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 

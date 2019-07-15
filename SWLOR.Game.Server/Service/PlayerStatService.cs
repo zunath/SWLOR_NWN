@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.Service
                 itemSkill == SkillType.Shields) return 0;
 
             int weaponSkillID = (int)itemSkill;
-            PCSkill skill = DataService.Single<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID == weaponSkillID);
+            PCSkill skill = DataService.PCSkill.GetByPlayerIDAndSkillID(oPC.GlobalID, weaponSkillID);
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;

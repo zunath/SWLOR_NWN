@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest
 
                 if (!string.IsNullOrWhiteSpace(rule))
                 {
-                    Data.Entity.Quest quest = DataService.Single<Data.Entity.Quest>(x => x.ID == questID);
+                    Data.Entity.Quest quest = DataService.Quest.GetByID(questID);
                     var ruleAction = QuestService.GetQuestRule(rule);
 
                     string[] argsArray = null;

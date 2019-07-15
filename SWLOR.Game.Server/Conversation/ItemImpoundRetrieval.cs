@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var response = GetResponseByID("MainPage", responseID);
             Guid pcImpoundedItemID = (Guid)response.CustomData;
-            var item = DataService.Single<PCImpoundedItem>(x => x.ID == pcImpoundedItemID);
+            var item = DataService.PCImpoundedItem.GetByID(pcImpoundedItemID);
 
             if (item.DateRetrieved != null)
             {

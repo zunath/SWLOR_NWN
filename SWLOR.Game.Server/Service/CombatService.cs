@@ -481,7 +481,7 @@ namespace SWLOR.Game.Server.Service
             int balance = 0;
             foreach (var perkID in perkIDs)
             {
-                var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID.PerkID);
+                var perk = DataService.Perk.GetByID(perkID.PerkID);
                 if (perk.ForceBalance == ForceBalanceType.Universal) continue;
                 var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID.PerkID && x.Level <= perkID.PerkLevel);
                 foreach (var perkLevel in perkLevels)

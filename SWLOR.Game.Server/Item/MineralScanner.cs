@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Item
         private int GetLootTable(Location targetLocation)
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+            var dbArea = DataService.Area.GetByResref(area.Resref);
             var sector = BaseService.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;
 

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                 };
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
-                KeyItem keyItem = DataService.Single<KeyItem>(x => x.ID == keyItemID);
+                KeyItem keyItem = DataService.KeyItem.GetByID(keyItemID);
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
             }
         }
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             if (PlayerHasKeyItem(oPC, keyItemID))
             {
 
-                PCKeyItem entity = DataService.Single<PCKeyItem>(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+                PCKeyItem entity = DataService.PCKeyItem.GetByPlayerAndKeyItemID(oPC.GlobalID, keyItemID);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Delete);
             }
         }
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
 
         public static KeyItem GetKeyItemByID(int keyItemID)
         {
-            return DataService.Single<KeyItem>(x => x.ID == keyItemID);
+            return DataService.KeyItem.GetByID(keyItemID);
         }
 
         private static void OnModuleItemAcquired()

@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = MarketService.GetPlayerMarketData(player);
-            var listing = DataService.Single<PCMarketListing>(x => x.ID == model.BrowseListingID);
+            var listing = DataService.PCMarketListing.GetByID(model.BrowseListingID);
             string sellerNote = listing.Note;
             if (string.IsNullOrWhiteSpace(listing.Note))
                 sellerNote = "[UNSPECIFIED]";

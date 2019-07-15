@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer || skill == SkillType.Unknown) return 0;
 
-            return DataService.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
+            return DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
         }
 
         public static int GetPCSkillRank(NWPlayer player, int skillID)
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Service
 
         public static PCSkill GetPCSkill(NWPlayer player, int skillID)
         {
-            return DataService.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == skillID);
+            return DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, skillID);
         }
 
         public static List<PCSkill> GetAllPCSkills(NWPlayer player)
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ToggleSkillLock(Guid playerID, int skillID)
         {
-            PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == playerID && x.SkillID == skillID);
+            PCSkill pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(playerID, skillID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
 
             DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);

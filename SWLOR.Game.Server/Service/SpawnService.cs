@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Service
         
         public static Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+            Area dbArea = DataService.Area.GetByResref(area.Resref);
             var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
             int count = walkmeshes.Count;
             var index = count <= 0 ? 0 : RandomService.Random(count);

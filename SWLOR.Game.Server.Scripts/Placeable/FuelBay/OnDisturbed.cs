@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 }
             }
 
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            var structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             // Calculate how much fuel exists in the bay's inventory.
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
             DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
             var tower = BaseService.GetBaseControlTower(structure.PCBaseID);
-            var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+            var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             if (towerStructure.BaseStructureTypeID == (int)BaseStructureType.Starship)
             {

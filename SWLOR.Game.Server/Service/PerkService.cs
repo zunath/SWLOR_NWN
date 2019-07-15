@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Service
                 if (!x.IsActive) return false;
                 // Determination for whether a player can see a perk in the menu is based on whether they meet the
                 // requirements for the first level in that perk.
-                var perkLevel = DataService.Single<PerkLevel>(pl => pl.PerkID == x.ID && pl.Level == 1);
+                var perkLevel = DataService.PerkLevel.GetByPerkIDAndLevel(x.ID, 1);
                 var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(sr => sr.PerkLevelID == perkLevel.ID);
                 var questRequirements = DataService.Where<PerkLevelQuestRequirement>(qr => qr.PerkLevelID == perkLevel.ID);
 
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Service
 
         public static Data.Entity.Perk GetPerkByID(int perkID)
         {
-            return DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            return DataService.Perk.GetByID(perkID);
         }
 
         public static PCPerk GetPCPerkByID(Guid playerID, int perkID)
@@ -385,8 +385,7 @@ namespace SWLOR.Game.Server.Service
             // Cycle through the skill requirements
             foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID &&
-                                                             x.SkillID == req.SkillID);
+                PCSkill pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(dbPlayer.ID, req.SkillID);
 
                 // Player has not completed this required quest. Exit early and return false.
                 if (pcSkill.Rank < req.RequiredRank) return false;
@@ -423,10 +422,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="freeUpgrade">If true, no SP will be deducted. Otherwise, SP will be deducted from player.</param>
         public static void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
-            var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            var perk = DataService.Perk.GetByID(perkID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID);
             var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
-            var player = DataService.Single<Player>(x => x.ID == oPC.GlobalID);
+            var player = DataService.Player.GetByID(oPC.GlobalID);
 
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {

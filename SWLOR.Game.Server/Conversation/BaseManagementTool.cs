@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Conversation
             int cellY = (int)(_.GetPositionFromLocation(data.TargetLocation).m_Y / 10.0f);
             string sector = BaseService.GetSectorOfLocation(data.TargetLocation);
 
-            Area dbArea = DataService.Single<Area>(x => x.Resref == data.TargetArea.Resref);
+            Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
             bool hasUnclaimed = false;
             Guid playerID = GetPC().GlobalID;
             int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
             if (buildingType == Enumeration.BuildingType.Starship)
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-                var structure = DataService.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
+                var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
                 int itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (buildingType == Enumeration.BuildingType.Interior)
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-                var structure = DataService.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
+                var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildPurchaseTerritoryHeader()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            Area dbArea = DataService.Single<Area>(x => x.Resref == data.TargetArea.Resref);
+            Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
             var player = DataService.Player.GetByID(GetPC().GlobalID);
             int purchasePrice = dbArea.PurchasePrice + (int)(dbArea.PurchasePrice * (player.LeaseRate * 0.01f));
             int dailyUpkeep = dbArea.DailyUpkeep + (int) (dbArea.DailyUpkeep * (player.LeaseRate * 0.01f));
@@ -452,7 +452,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PurchaseTerritoryPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            Area dbArea = DataService.Single<Area>(x => x.Resref == data.TargetArea.Resref);
+            Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
 
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northeast Sector", dbArea.NortheastOwner == null);
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northwest Sector", dbArea.NorthwestOwner == null);
@@ -893,7 +893,7 @@ namespace SWLOR.Game.Server.Conversation
             structure.Facing = facing;
             LoadRotatePage();
 
-            var dbStructure = DataService.Single<PCBaseStructure>(x => x.ID == data.ManipulatingStructure.PCBaseStructureID);
+            var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
             var baseStructure = DataService.BaseStructure.GetByID(dbStructure.BaseStructureID);
             dbStructure.LocationOrientation = facing;
 

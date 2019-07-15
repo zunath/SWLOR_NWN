@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
             NWPlaceable container = (NWGameObject.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
             var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
             int itemLimit = baseStructure.Storage + structure.StructureBonus;
 
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
                 }
                 else
                 {
-                    var dbItem = DataService.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID.ToString());
+                    var dbItem = DataService.PCBaseStructureItem.GetByItemGlobalID(item.GlobalID.ToString());
                     DataService.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                 }
             }

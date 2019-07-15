@@ -407,8 +407,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
-            PCBase pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
+            Guid baseStructureGuid = new Guid(baseStructureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             NWPlaceable bay = GetCargoBay(area, null);
 
             ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipWeaponsBonus));
@@ -1329,8 +1330,9 @@ namespace SWLOR.Game.Server.Service
             if (attackerArea.IsValid)
             {
                 string baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-                PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
-                PCBase pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                Guid baseStructureGuid = new Guid(baseStructureID);
+                PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
+                PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
                 int stronLoss = pcBase.ReinforcedFuel - attackStron;
 
@@ -1363,8 +1365,9 @@ namespace SWLOR.Game.Server.Service
             if (defenderArea.IsValid)
             {
                 string baseStructureID = defenderArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-                PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
-                PCBase pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                Guid baseStructureGuid = new Guid(baseStructureID);
+                PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
+                PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
                 int stronLoss = pcBase.ReinforcedFuel - defendStron;
 

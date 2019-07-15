@@ -36,6 +36,11 @@ namespace SWLOR.Game.Server.Caching
             return GetEntityFromDictionaryOrDefault(playerID, pcKeyItemID, ByPlayerAndKeyItemID);
         }
 
+        public PCKeyItem GetByPlayerAndKeyItemID(Guid playerID, int pcKeyItemID)
+        {
+            return GetEntityFromDictionary(playerID, pcKeyItemID, ByPlayerAndKeyItemID);
+        }
+
         public IEnumerable<PCKeyItem> GetAllByPlayerID(Guid playerID)
         {
             return GetEntityListFromDictionary(playerID, ByPlayerID);

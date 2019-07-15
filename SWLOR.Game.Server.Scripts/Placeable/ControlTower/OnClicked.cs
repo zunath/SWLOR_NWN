@@ -33,13 +33,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 return;
             }
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
 
             // Does the player have permission to access the fuel bays?
             if (BasePermissionService.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 // Is the tower in reinforced mode? If so, fuel cannot be accessed.
-                var pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
                 if (pcBase.IsInReinforcedMode)
                 {
                     clicker.SendMessage("This tower is currently in reinforced mode and cannot be accessed.");

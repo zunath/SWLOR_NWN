@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             baseAmount *= perkBonus;
 
             var dbGuild = DataService.Guild.GetByID((int) guild);
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int) guild && x.PlayerID == player.GlobalID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) guild);
             pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
@@ -221,8 +221,7 @@ namespace SWLOR.Game.Server.Service
             var quest = DataService.Quest.GetByID(questID);
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return 0;
 
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
-                                                             x.GuildID == quest.RewardGuildID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)quest.RewardGuildID);
             float rankBonus = 0.25f * pcGP.Rank;
             return quest.RewardGuildPoints + (int)(quest.RewardGuildPoints * rankBonus);
         }

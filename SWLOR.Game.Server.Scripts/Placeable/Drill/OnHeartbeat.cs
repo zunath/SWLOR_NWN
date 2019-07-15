@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
             if (!(now >= pcStructure.DateNextActivity)) return;
 
             // Time to spawn a new item and reset the timer.
-            var dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             string sector = pcBase.Sector;
             int lootTableID = 0;
 

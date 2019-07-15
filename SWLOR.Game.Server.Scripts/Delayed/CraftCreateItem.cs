@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
             var model = CraftService.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
+            CraftBlueprint blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
             BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
             PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
 

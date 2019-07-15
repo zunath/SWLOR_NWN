@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
             var guild = DataService.Guild.GetByID((int) model.Guild);
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == guild.ID && x.PlayerID == player.GlobalID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild.ID);
             int requiredPoints = GuildService.RankProgression[pcGP.Rank];
 
             string header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int)model.Guild && x.PlayerID == player.GlobalID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) model.Guild);
 
             // If player's rank is too low, send them to the page explaining that.
             if (pcGP.Rank <= 0)
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int)model.Guild && x.PlayerID == player.GlobalID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)model.Guild);
 
             // Check the player's rank and ensure they can access this store.
             if (pcGP.Rank < responseID)
@@ -212,8 +212,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("TaskListPage");
 
             var lastUpdate = DataService.ServerConfiguration.Get().LastGuildTaskUpdate;
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
-                                                             x.GuildID == (int) model.Guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) model.Guild);
 
             // It's possible for players to have tasks which are no longer offered. 
             // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.

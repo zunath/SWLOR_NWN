@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
             int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             var playerIDs = DataService.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID &&

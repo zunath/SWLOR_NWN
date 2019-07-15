@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -34,8 +35,9 @@ namespace SWLOR.Game.Server.Item
 
             // Get the base.
             string starshipID = _.GetLocalString(_.GetArea(target), "PC_BASE_STRUCTURE_ID");
-            PCBaseStructure starship = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == starshipID);
-            PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ID == starship.PCBaseID);
+            Guid starshipGuid = new Guid(starshipID);
+            PCBaseStructure starship = DataService.PCBaseStructure.GetByID(starshipGuid);
+            PCBase starkillerBase = DataService.PCBase.GetByID(starship.PCBaseID);
 
             starkillerBase.Starcharts |= starcharts;
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);

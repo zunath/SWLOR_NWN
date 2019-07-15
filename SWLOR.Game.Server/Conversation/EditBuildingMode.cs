@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Conversation
             var impoundedItems = 0;
 
             // Remove primary residents
-            var primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == pcBaseStructureID);
+            var primaryResident = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(pcBaseStructureID);
             if (primaryResident != null)
             {
                 primaryResident.PrimaryResidencePCBaseStructureID = null;

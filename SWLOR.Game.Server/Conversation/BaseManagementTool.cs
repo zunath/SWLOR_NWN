@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (buildingType == Enumeration.BuildingType.Exterior)
             {
 
-                var pcBase = DataService.SingleOrDefault<PCBase>(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
+                var pcBase = DataService.PCBase.GetByAreaResrefAndSectorOrDefault(data.TargetArea.Resref, sector);
 
                 var northeastOwner = dbArea.NortheastOwner == null ? null : DataService.Player.GetByID((Guid)dbArea.NortheastOwner);
                 var northwestOwner = dbArea.NorthwestOwner == null ? null : DataService.Player.GetByID((Guid)dbArea.NorthwestOwner);
@@ -706,7 +706,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 
                 // Remove any primary owner permissions.
-                var primaryOwner = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structure.ID);
+                var primaryOwner = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(structure.ID);
                 if (primaryOwner != null)
                 {
                     primaryOwner.PrimaryResidencePCBaseStructureID = null;

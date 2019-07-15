@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 
@@ -52,6 +53,13 @@ namespace SWLOR.Game.Server.Caching
             return ByID[id];
         }
 
+        public PCBaseStructure GetByIDOrDefault(Guid id)
+        {
+            if (!ByID.ContainsKey(id))
+                return default;
+            return ByID[id];
+        }
+
         public IEnumerable<PCBaseStructure> GetAllByPCBaseID(Guid pcBaseID)
         {
             if(!ByPCBaseID.ContainsKey(pcBaseID))
@@ -67,6 +75,11 @@ namespace SWLOR.Game.Server.Caching
         public double GetCPUInUseByPCBaseID(Guid pcBaseID)
         {
             return CPUInUseByPCBaseID[pcBaseID];
+        }
+
+        public PCBaseStructure GetStarshipByPCBaseID(Guid pcBaseID)
+        {
+            return ByPCBaseID[pcBaseID].Single(x => x.InteriorStyleID != null);
         }
     }
 }

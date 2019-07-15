@@ -366,9 +366,8 @@ namespace SWLOR.Game.Server.Conversation
 
             // If the item no longer exists on the market (expired, bought, or listing removed)
             // notify the player and refresh the item list page.
-            var listing = DataService.SingleOrDefault<PCMarketListing>(x => x.ID == listingID && 
-                                                                      x.DateSold == null);
-            if (listing == null || listing.DateExpires <= DateTime.UtcNow)
+            var listing = DataService.PCMarketListing.GetByIDOrDefault(listingID);
+            if (listing == null || listing.DateSold != null || listing.DateExpires <= DateTime.UtcNow)
             {
                 LoadItemListPage();
                 player.FloatingText("Unfortunately, that item is no longer available.");
@@ -417,12 +416,11 @@ namespace SWLOR.Game.Server.Conversation
         {
             var buyer = GetPC();
             var model = MarketService.GetPlayerMarketData(buyer);
-            var listing = DataService.SingleOrDefault<PCMarketListing>(x => x.ID == model.BrowseListingID && 
-                                                                      x.DateSold == null);
+            var listing = DataService.PCMarketListing.GetByIDOrDefault(model.BrowseListingID);
             NWPlaceable terminal = GetDialogTarget().Object;
             
             // Item was removed, sold, or expired.
-            if (listing == null || listing.DateExpires <= DateTime.UtcNow)
+            if (listing == null || listing.DateSold != null || listing.DateExpires <= DateTime.UtcNow)
             {
                 LoadItemListPage();
                 ChangePage("ItemListPage", false);

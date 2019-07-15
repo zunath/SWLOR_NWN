@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -35,6 +36,20 @@ namespace SWLOR.Game.Server.Caching
             }
 
             return ByPlayerID[playerID].Values;
+        }
+
+        public PCBaseStructurePermission GetPublicPermissionOrDefault(Guid pcBaseStructureID)
+        {
+            return ByID.Values.SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission);
+        }
+
+        public PCBaseStructurePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseStructureID)
+        {
+            if (!ByPlayerID.ContainsKey(playerID))
+                return default;
+
+            var permissions = ByPlayerID[playerID].Values;
+            return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID);
         }
     }
 }

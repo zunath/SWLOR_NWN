@@ -21,5 +21,12 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByID[id];
         }
+
+        public PCMarketListing GetByIDOrDefault(Guid id)
+        {
+            if (!ByID.ContainsKey(id)) return default;
+
+            return ByID[id];
+        }
     }
 }

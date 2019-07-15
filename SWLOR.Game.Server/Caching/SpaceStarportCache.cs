@@ -21,5 +21,15 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByID[id];
         }
+
+        public SpaceStarport GetByIDOrDefault(Guid id)
+        {
+            if(!ByID.ContainsKey(id))
+            {
+                return default;
+            }
+
+            return ByID[id];
+        }
     }
 }

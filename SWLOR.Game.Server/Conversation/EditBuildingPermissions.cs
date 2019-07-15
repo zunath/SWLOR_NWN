@@ -117,9 +117,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            var permission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && 
-                                                                                   x.PCBaseStructureID == data.StructureID &&
-                                                                                   !x.IsPublicPermission);
+            var permission = DataService.PCBaseStructurePermission.GetPlayerPrivatePermissionOrDefault(player.GlobalID, data.StructureID);
 
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -217,12 +215,10 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(Guid playerID, StructurePermission permission, bool isPublicPermission)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var dbPermission = isPublicPermission ? 
-                DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
-                                                                      x.IsPublicPermission) :
-                DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == playerID && 
-                                                                      x.PCBaseStructureID == data.StructureID &&
-                                                                      !x.IsPublicPermission);
+            var dbPermission = isPublicPermission ?
+                DataService.PCBaseStructurePermission.GetPublicPermissionOrDefault(data.StructureID) :
+                DataService.PCBaseStructurePermission.GetPlayerPrivatePermissionOrDefault(playerID, data.StructureID);
+
             var action = DatabaseActionType.Update;
 
             if (dbPermission == null)
@@ -282,8 +278,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PublicPermissionsPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            var permission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
-                                                                                   x.IsPublicPermission);
+            var permission = DataService.PCBaseStructurePermission.GetPublicPermissionOrDefault(data.StructureID);
 
             // Intentionally excluded permissions:
             // CanAdjustPermissions, CanCancelLease, CanPlaceEditStructures, CanAccessStructureInventory, CanAdjustPermissions,

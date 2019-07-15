@@ -94,7 +94,39 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id2); });
-
         }
+
+        [Test]
+        public void GetByPrimaryResidenceStructureIDOrDefault_NoEntries_ShouldReturnNull()
+        {
+            // Arrange
+            Guid id = Guid.NewGuid();
+
+            // Act
+            var result = _cache.GetByPrimaryResidencePCBaseStructureIDOrDefault(id);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void GetByPrimaryResidenceStructureIDOrDefault_TwoEntries_ShouldReturnPlayer()
+        {
+            // Arrange
+            Guid playerID = Guid.NewGuid();
+            Guid structureID = Guid.NewGuid();
+            var player = new Player { ID = playerID, PrimaryResidencePCBaseStructureID = structureID };
+            var player2 = new Player { ID = Guid.NewGuid() };
+
+            // Act
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Player>(player));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Player>(player2));
+
+            var result = _cache.GetByPrimaryResidencePCBaseStructureIDOrDefault(structureID);
+
+            // Assert
+            Assert.AreSame(player, result);
+        }
+
     }
 }

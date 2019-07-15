@@ -238,8 +238,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var task in tasks)
             {
                 var quest = DataService.Quest.GetByID(task.QuestID);
-                var questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
-                                                                                  x.QuestID == task.QuestID);
+                var questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
 
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
@@ -273,8 +272,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var task = DataService.GuildTask.GetByID(model.TaskID);
             var quest = DataService.Quest.GetByID(task.QuestID);
-            var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
-                                                                         x.QuestID == task.QuestID);
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
             bool showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
             bool showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
             
@@ -312,8 +310,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleGiveReport(NWPlayer player, int questID)
         {
-            var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
-                                                                           x.QuestID == questID);
+            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcStatus == null) return;
             var state = DataService.QuestState.GetByID(pcStatus.CurrentQuestStateID);
             

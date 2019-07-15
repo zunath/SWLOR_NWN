@@ -136,8 +136,7 @@ namespace SWLOR.Game.Server.Conversation
             // Player has purchased at least one rank in this perk. Show their current bonuses.
             if (rank > 0 && currentPerkLevel != null)
             {
-                var currentPerkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == vm.SelectedPerkID &&
-                                                                        x.PerkLevelUnlocked == currentPerkLevel.Level);
+                var currentPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(vm.SelectedPerkID, currentPerkLevel.Level);
                 currentBonus = currentPerkLevel.Description;
 
                 // Not every perk is going to have a perk feat. Don't display this information if not necessary.
@@ -164,8 +163,7 @@ namespace SWLOR.Game.Server.Conversation
             // Player hasn't reached max rank and this perk has another perk level to display.
             if (rank + 1 <= maxRank && nextPerkLevel != null)
             {
-                var nextPerkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == vm.SelectedPerkID &&
-                                                                     x.PerkLevelUnlocked == rank + 1);
+                var nextPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(vm.SelectedPerkID, rank + 1);
                 nextBonus = nextPerkLevel.Description;
                 price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
 

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                 return;
             }
 
-            Data.Entity.Bank entity = DataService.SingleOrDefault<Data.Entity.Bank>(x => x.ID == bankID);
+            Data.Entity.Bank entity = DataService.Bank.GetByID(bankID);
 
             if (entity == null)
             {

@@ -50,5 +50,10 @@ namespace SWLOR.Game.Server.Caching
             return GetEntityFromDictionary(areaResref, sector, ByAreaResrefAndSector);
         }
 
+        public PCBase GetByAreaResrefAndSectorOrDefault(string areaResref, string sector)
+        {
+            return GetEntityFromDictionaryOrDefault(areaResref, sector, ByAreaResrefAndSector);
+        }
+
     }
 }

@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
             {
                 int questID = container.GetLocalInt("QUEST_ID");
                 PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-                PCQuestItemProgress progress = DataService.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID && x.Resref == item.Resref);
+                PCQuestItemProgress progress = DataService.PCQuestItemProgress.GetByPCQuestStatusIDAndResrefOrDefault(status.ID, item.Resref);
                 DatabaseActionType action = DatabaseActionType.Update;
 
                 if (progress == null)

@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        public PCOutfit GetByID(Guid id)
+        public PCOutfit GetByID(Guid playerID)
         {
-            return ByID[id];
+            return ByID[playerID];
         }
     }
 }

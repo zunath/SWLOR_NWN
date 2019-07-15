@@ -28,8 +28,9 @@ namespace SWLOR.Game.Server.Conversation
                 return null;
             }
 
-            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase pcBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            Guid pcBaseStructureID = new Guid(structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             bool bSpace = SpaceService.IsLocationSpace(pcBase.ShipLocation);
 
@@ -183,7 +184,8 @@ namespace SWLOR.Game.Server.Conversation
                         EndConversation();
 
                         // Save details of the current dock for later.
-                        PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBase.ShipLocation);
+                        Guid shipPCBaseID = new Guid(pcBase.ShipLocation);
+                        PCBaseStructure dock = DataService.PCBaseStructure.GetByID(shipPCBaseID);
 
                         pcBase.Fuel -= 1;
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);
@@ -207,7 +209,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
                         if (dock != null)
                         {
-                            PCBase dockBase = DataService.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
+                            PCBase dockBase = DataService.PCBase.GetByID(dock.PCBaseID);
 
                             IEnumerable<NWArea> areas = NWModule.Get().Areas;
                             NWArea landingArea = new NWArea(_.GetFirstArea());
@@ -329,7 +331,7 @@ namespace SWLOR.Game.Server.Conversation
                 Guid dockStructureID = dialog.CustomData["LAND_" + response.Text];
 
                 // This could be a public startport ID or a private dock base structure ID.  
-                SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID == dockStructureID);
+                SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(dockStructureID);
                 if (starport != null)
                 {
                     // We have a public starport.  
@@ -356,7 +358,7 @@ namespace SWLOR.Game.Server.Conversation
                 else
                 {
                     LoggingService.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
-                    PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
+                    PCBaseStructure dock = DataService.PCBaseStructure.GetByIDOrDefault(dockStructureID);
 
                     if (dock == null)
                     {

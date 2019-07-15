@@ -32,10 +32,10 @@ namespace SWLOR.Game.Server.Caching
             return ByPlayerAndQuestID[new Tuple<Guid, int>(playerID, questID)];
         }
 
-        public PCQuestStatus GetByPlayerAndQuestIDOrNull(Guid playerID, int questID)
+        public PCQuestStatus GetByPlayerAndQuestIDOrDefault(Guid playerID, int questID)
         {
             var key = new Tuple<Guid, int>(playerID, questID);
-            if (!ByPlayerAndQuestID.ContainsKey(key)) return null;
+            if (!ByPlayerAndQuestID.ContainsKey(key)) return default;
 
             return ByPlayerAndQuestID[key];
         }

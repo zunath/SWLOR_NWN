@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
             }
             else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var removeItem = DataService.SingleOrDefault<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.ID && x.ItemGlobalID == item.GlobalID.ToString());
+                var removeItem = DataService.PCBaseStructureItem.GetByPCBaseStructureIDAndItemGlobalIDOrDefault(controlTower.ID, item.GlobalID.ToString());
                 if (removeItem == null) return;
 
                 DataService.SubmitDataChange(removeItem, DatabaseActionType.Delete);

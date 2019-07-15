@@ -114,9 +114,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
 
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
-            var permission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
-                                                                          x.PCBaseID == pcBaseID &&
-                                                                          !x.IsPublicPermission);
+            var permission = DataService.PCBasePermission.GetPlayerPrivatePermissionOrDefault(oPC.GlobalID, pcBaseID);
 
             if (permission == null || !permission.CanEnterBuildings)
             {

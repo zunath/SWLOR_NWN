@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // Retrieve the player's current quest state.
-            PCQuestStatus questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrNull(player.GlobalID, questID);
+            PCQuestStatus questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
 
             // Can't find a state? Notify the player they haven't accepted the quest.
             if (questStatus == null)
@@ -894,7 +894,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerCompleteQuest(NWPlayer player, int questID)
         {
             // Has the player even accepted this quest?
-            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrNull(player.GlobalID, questID);
+            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcStatus == null) return false;
 
             // Is the player on the final state of this quest?

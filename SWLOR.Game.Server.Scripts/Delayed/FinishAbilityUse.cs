@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
                 // Pull back cooldown information.
                 int? cooldownID = perk.CooldownCategoryID(activator, dbPerk.CooldownCategoryID, spellTier);
-                CooldownCategory cooldown = cooldownID == null ? null : DataService.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
+                CooldownCategory cooldown = cooldownID == null ? null : DataService.CooldownCategory.GetByIDOrDefault((int)cooldownID);
 
                 // If the activator interrupted the spell or died, we can bail out early.
                 if (activator.GetLocalInt(spellUUID) == (int)SpellStatusType.Interrupted || // Moved during casting

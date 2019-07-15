@@ -21,5 +21,12 @@ namespace SWLOR.Game.Server.Caching
             return ByID[id];
         }
 
+        public CooldownCategory GetByIDOrDefault(int id)
+        {
+            if (ByID.ContainsKey(id))
+                return ByID[id];
+            else return default;
+        }
+
     }
 }

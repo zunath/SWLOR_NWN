@@ -182,7 +182,6 @@ namespace SWLOR.Game.Server.Service
         private static void SetIntoCache<T>(T entity)
             where T: class, IEntity
         {
-            Console.WriteLine("set into cache: " + typeof(T) + " entity = " + entity.GetType());
             MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
         }
 

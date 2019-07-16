@@ -81,6 +81,16 @@ namespace SWLOR.Game.Server.Caching
             return ByID[id];
         }
 
+        public IEnumerable<Player> GetAllByIDs(IEnumerable<Guid> playerIDs)
+        {
+            var list = new List<Player>();
+            foreach (var id in playerIDs)
+            {
+                list.Add(ByID[id]);
+            }
+            return list;
+        }
+
         public bool ExistsByID(Guid id)
         {
             return ByID.ContainsKey(id);

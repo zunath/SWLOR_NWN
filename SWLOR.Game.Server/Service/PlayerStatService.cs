@@ -33,7 +33,9 @@ namespace SWLOR.Game.Server.Service
                  ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
 
             Player pcEntity = DataService.Player.GetByID(player.GlobalID);
-            List<PCSkill> skills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
+            List<PCSkill> skills = DataService.PCSkill
+                .GetAllByPlayerID(player.GlobalID)
+                .Where(x => x.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
             
             float strBonus = 0.0f;
@@ -277,7 +279,7 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                var pcSkills = DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
                 
                 int heavyRank = pcSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
@@ -451,14 +453,15 @@ namespace SWLOR.Game.Server.Service
             // Apartments - Pull structures directly from the table based on the PCBaseID
             if (dbPlayer.PrimaryResidencePCBaseID != null)
             {
-                structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == dbPlayer.PrimaryResidencePCBaseID).ToList();
+                structures = DataService.PCBaseStructure.GetAllByPCBaseID((Guid)dbPlayer.PrimaryResidencePCBaseID).ToList();
                 
             }
             // Buildings - Get the building's PCBaseID and then grab its children
-            else
+            else if (dbPlayer.PrimaryResidencePCBaseStructureID != null)
             {
-                structures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
+                structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID((Guid) dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
             }
+            else return 0.0f;
 
             var atmoStructures = structures.Where(x =>
             {

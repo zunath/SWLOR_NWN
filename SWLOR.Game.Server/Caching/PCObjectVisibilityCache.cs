@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -30,6 +31,29 @@ namespace SWLOR.Game.Server.Caching
         public PCObjectVisibility GetByPlayerIDAndVisibilityObjectIDOrDefault(Guid playerID, string visibilityObjectID)
         {
             return GetEntityFromDictionaryOrDefault(playerID, visibilityObjectID, ByPlayer);
+        }
+
+        public IEnumerable<PCObjectVisibility> GetAllByPlayerID(Guid playerID)
+        {
+            if(!ByPlayer.ContainsKey(playerID))
+                return new List<PCObjectVisibility>();
+
+            return ByPlayer[playerID].Values;
+        }
+
+        public IEnumerable<PCObjectVisibility> GetAllByPlayerIDsAndVisibilityObjectID(IEnumerable<Guid> playerIDs, string visibilityObjectID)
+        {
+            var list = new List<PCObjectVisibility>();
+
+            foreach (var playerID in playerIDs)
+            {
+                if (!ByPlayer.ContainsKey(playerID)) continue;
+
+                var results = ByPlayer[playerID].Where(x => x.Key == visibilityObjectID).Select(s => s.Value);
+                list.AddRange(results);
+            }
+
+            return list;
         }
     }
 }

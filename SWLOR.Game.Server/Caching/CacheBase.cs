@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Caching
 
         protected CacheBase()
         {
-            Console.WriteLine("Subscribing to events as type: " + typeof(T));
             MessageHub.Instance.Subscribe<OnCacheObjectSet<T>>(msg => CacheObjectSet(msg.Entity));
             MessageHub.Instance.Subscribe<OnCacheObjectDeleted<T>>(msg => CacheObjectRemoved(msg.Entity));
             OnSubscribeEvents();

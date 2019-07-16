@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleHeartbeat()
         {
             Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = DataService.Where<Data.Entity.Player>(x => playerIDs.Contains(x.ID)).ToList();
+            var entities = DataService.Player.GetAllByIDs(playerIDs).ToList();
 
             foreach (var player in NWModule.Get().Players)
             {

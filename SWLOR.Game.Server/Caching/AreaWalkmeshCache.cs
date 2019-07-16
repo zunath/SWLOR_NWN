@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Caching
             return ByID[id];
         }
 
-        public IEnumerable<AreaWalkmesh> GetByAreaID(Guid areaID)
+        public IEnumerable<AreaWalkmesh> GetAllByAreaID(Guid areaID)
         {
             return ByAreaID[areaID].Values;
         }

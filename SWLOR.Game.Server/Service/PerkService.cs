@@ -79,10 +79,13 @@ namespace SWLOR.Game.Server.Service
             // That way, later checks are much quicker than iterating through the data cache for this info.
             foreach (var perk in DataService.Perk.GetAll())
             {
-                var perkLevelIDs = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID).Select(s => s.ID);
+                var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID(perk.ID).Select(s => s.ID);
                 // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
                 // we only care to know that there IS one.
-                var skillReqs = DataService.Where<PerkLevelSkillRequirement>(x => perkLevelIDs.Contains(x.PerkLevelID)).Distinct();
+                var skillReqs = DataService.PerkLevelSkillRequirement
+                    .GetAll()
+                    .Where(x => perkLevelIDs.Contains(x.PerkLevelID))
+                    .Distinct();
                 
                 foreach (var skillReq in skillReqs)
                 {
@@ -103,7 +106,10 @@ namespace SWLOR.Game.Server.Service
 
                 // Now check for a quest requirement on this perk. Again, we don't care which perk level has which quest requirement,
                 // we only care to know that there IS one.
-                var questReqs = DataService.Where<PerkLevelQuestRequirement>(x => perkLevelIDs.Contains(x.PerkLevelID)).Distinct();
+                var questReqs = DataService.PerkLevelQuestRequirement
+                    .GetAll()
+                    .Where(x => perkLevelIDs.Contains(x.PerkLevelID))
+                    .Distinct();
 
                 foreach (var questReq in questReqs)
                 {
@@ -142,7 +148,7 @@ namespace SWLOR.Game.Server.Service
 
         private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
         {
-            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == oPC.GlobalID);
+            var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID);
             return pcPerks.Where(x =>
             {
                 // Filter on equipment-based execution type.
@@ -254,7 +260,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
-            var pcPerks = DataService.Where<PCPerk>(x =>
+            var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID).Where(x =>
             {
                 if (oPC.GlobalID != x.PlayerID) return false;
 
@@ -294,16 +300,16 @@ namespace SWLOR.Game.Server.Service
         public static List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
         {
             var playerID = player.GlobalID;
-            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+            var pcSkills = DataService.PCSkill.GetAllByPlayerID(playerID).ToList();
 
-            return DataService.Where<Data.Entity.Perk>(x =>
+            return DataService.Perk.GetAll().Where(x =>
             {
                 if (!x.IsActive) return false;
                 // Determination for whether a player can see a perk in the menu is based on whether they meet the
                 // requirements for the first level in that perk.
                 var perkLevel = DataService.PerkLevel.GetByPerkIDAndLevel(x.ID, 1);
-                var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(sr => sr.PerkLevelID == perkLevel.ID);
-                var questRequirements = DataService.Where<PerkLevelQuestRequirement>(qr => qr.PerkLevelID == perkLevel.ID);
+                var skillRequirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(perkLevel.ID);
+                var questRequirements = DataService.PerkLevelQuestRequirement.GetAllByPerkLevelID(perkLevel.ID);
 
                 // Check the player's skill level against the perk requirements.
                 foreach (var skillReq in skillRequirements)
@@ -356,7 +362,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Retrieve database records.
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
+            var perkLevels = DataService.PerkLevel.GetAllByPerkID(perkID).ToList();
             var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkID);
             
             // Identify the max number of ranks for this perk.
@@ -378,8 +384,8 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.UnallocatedSP < level.Price) return false;
 
             // Retrieve skill and quest requirements for this perk.
-            var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.ID).ToList();
-            var questRequirements = DataService.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.ID).ToList();
+            var skillRequirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(level.ID).ToList();
+            var questRequirements = DataService.PerkLevelQuestRequirement.GetAllByPerkLevelID(level.ID).ToList();
 
             // Cycle through the skill requirements
             foreach (var req in skillRequirements)
@@ -439,16 +445,9 @@ namespace SWLOR.Game.Server.Service
                     action = DatabaseActionType.Insert;
                 }
 
-                Console.WriteLine("finding next perk level");
                 PerkLevel nextPerkLevel = FindPerkLevel(perkLevels, pcPerk.PerkLevel + 1);
 
-                if (nextPerkLevel == null)
-                {
-                    Console.WriteLine("Found no next level");
-                    return;
-                }
-                Console.WriteLine("Found next perk level. incrementing and publishing");
-
+                if (nextPerkLevel == null) return;
                 pcPerk.PerkLevel++;
                 DataService.SubmitDataChange(pcPerk, action);
 
@@ -458,46 +457,39 @@ namespace SWLOR.Game.Server.Service
                     DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 }
 
-                // Look for any perk levels to grant.
-                var perkFeatsToGrant = DataService.Where<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == pcPerk.PerkLevel);
+                // Look for a perk feat to grant.
+                var perkFeatToGrant = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(perkID, pcPerk.PerkLevel);
 
-                // If at least one feat ID is assigned, add the feat(s) to the player if it doesn't exist yet.
-                if (perkFeatsToGrant.Count > 0)
+                // Add the feat(s) to the player if it doesn't exist yet.
+                if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.FeatID, oPC.Object) == FALSE)
                 {
-                    foreach (var perkFeat in perkFeatsToGrant)
-                    {
-                        if (_.GetHasFeat(perkFeat.FeatID, oPC.Object) == TRUE) continue;
+                    NWNXCreature.AddFeatByLevel(oPC, perkFeatToGrant.FeatID, 1);
 
-                        NWNXCreature.AddFeatByLevel(oPC, perkFeat.FeatID, 1);
+                    var qbs = NWNXPlayerQuickBarSlot.UseFeat(perkFeatToGrant.FeatID);
 
-                        var qbs = NWNXPlayerQuickBarSlot.UseFeat(perkFeat.FeatID);
-
-                        // Try to add the new feat to the player's hotbar.
-                        if (NWNXPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 0, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 1).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 1, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 2).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 2, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 3).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 3, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 4).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 4, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 5).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 5, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 6).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 6, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 7).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 7, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 8).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 8, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 9).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 9, qbs);
-                        else if (NWNXPlayer.GetQuickBarSlot(oPC, 10).ObjectType == QuickBarSlotType.Empty)
-                            NWNXPlayer.SetQuickBarSlot(oPC, 10, qbs);
-
-                    }
-
+                    // Try to add the new feat to the player's hotbar.
+                    if (NWNXPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 0, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 1).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 1, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 2).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 2, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 3).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 3, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 4).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 4, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 5).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 5, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 6).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 6, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 7).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 7, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 8).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 8, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 9).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 9, qbs);
+                    else if (NWNXPlayer.GetQuickBarSlot(oPC, 10).ObjectType == QuickBarSlotType.Empty)
+                        NWNXPlayer.SetQuickBarSlot(oPC, 10, qbs);
                 }
 
                 oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
@@ -575,14 +567,13 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
             {
-                var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                var pcSkills = DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
                 // Get the PC's perk information and all of the perk levels at or below their current level.
                 var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkID);
                 if (pcPerk == null) return 0;
 
                 // Get all of the perk levels in range, starting with the highest level.
-                var perkLevelsInRange = DataService
-                    .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
+                var perkLevelsInRange = DataService.PerkLevel.GetAllAtOrBelowPerkIDAndLevel(perkID, pcPerk.PerkLevel)
                     .OrderByDescending(o => o.Level);
 
                 using (new Profiler("PerkService::CalculateEffectivePerkLevel::PerkLevelIteration"))
@@ -592,8 +583,8 @@ namespace SWLOR.Game.Server.Service
                     // Iteration ends when the player meets that level's requirements. 
                     foreach (var perkLevel in perkLevelsInRange)
                     {
-                        var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.ID);
-                        var questRequirements = DataService.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.ID);
+                        var skillRequirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(perkLevel.ID);
+                        var questRequirements = DataService.PerkLevelQuestRequirement.GetAllByPerkLevelID(perkLevel.ID);
                         int effectiveLevel = pcPerk.PerkLevel;
 
                         // Check the skill requirements.

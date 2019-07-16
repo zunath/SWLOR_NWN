@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -35,6 +36,14 @@ namespace SWLOR.Game.Server.Caching
         public IEnumerable<PerkLevel> GetAllByPerkID(int perkID)
         {
             return ByPerkIDAndLevel[perkID].Values;
+        }
+
+        public IEnumerable<PerkLevel> GetAllAtOrBelowPerkIDAndLevel(int perkID, int level)
+        {
+            if(!ByPerkIDAndLevel.ContainsKey(perkID))
+                return new List<PerkLevel>();
+
+            return ByPerkIDAndLevel[perkID].Values.Where(x => x.Level <= level);
         }
     }
 }

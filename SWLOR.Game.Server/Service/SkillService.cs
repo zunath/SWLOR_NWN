@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Service
 
         public static List<PCSkill> GetAllPCSkills(NWPlayer player)
         {
-            return DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
+            return DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
         }
 
         public static Skill GetSkill(int skillID)
@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetPCTotalSkillCount(NWPlayer player)
         {
             var skills = DataService
-                .Where<Skill>(x => x.ContributesToSkillCap)
+                .Skill.GetAllWhereContributesToSkillCap()
                 .Select(s => s.ID);
             var pcSkills = GetAllPCSkills(player)
                 .Where(x => skills.Contains(x.SkillID));
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.Service
 
         public static List<SkillCategory> GetActiveCategories()
         {
-            return DataService.Where<SkillCategory>(x => x.ID != 0).ToList();
+            return DataService.SkillCategory.GetAllActive().ToList();
         }
 
         public static List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID)

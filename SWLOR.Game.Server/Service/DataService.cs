@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         public static PCObjectVisibilityCache PCObjectVisibility { get; } = new PCObjectVisibilityCache();
         public static PCOutfitCache PCOutfit { get; } = new PCOutfitCache();
         public static PCOverflowItemCache PCOverflowItem { get; } = new PCOverflowItemCache();
-        public static PCPerkCache PCPerk { get; private set; }
+        public static PCPerkCache PCPerk { get; } = new PCPerkCache();
         public static PCPerkRefundCache PCPerkRefund { get; } = new PCPerkRefundCache();
         public static PCQuestItemProgressCache PCQuestItemProgress { get; } = new PCQuestItemProgressCache();
         public static PCQuestKillTargetProgressCache PCQuestKillTargetProgress { get; } = new PCQuestKillTargetProgressCache();
@@ -129,7 +129,6 @@ namespace SWLOR.Game.Server.Service
 
         static DataService()
         {
-            PCPerk = new PCPerkCache();
             DataQueue = new ConcurrentQueue<DatabaseAction>();
 
             var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");

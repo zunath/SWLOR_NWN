@@ -19,5 +19,19 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime? CompletionDate { get; set; }
         public int? SelectedItemRewardID { get; set; }
         public int TimesCompleted { get; set; }
+
+        public PCQuestStatus Clone()
+        {
+            return new PCQuestStatus
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                QuestID = QuestID,
+                CurrentQuestStateID = CurrentQuestStateID,
+                CompletionDate = CompletionDate,
+                SelectedItemRewardID = SelectedItemRewardID,
+                TimesCompleted = TimesCompleted
+            };
+        }
     }
 }

@@ -8,5 +8,14 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Name { get; set; }
+
+        public Association Clone()
+        {
+            return new Association
+            {
+                ID = ID,
+                Name = Name
+            };
+        }
     }
 }

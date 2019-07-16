@@ -23,5 +23,23 @@ namespace SWLOR.Game.Server.Data.Entity
         public double SenderLocationZ { get; set; }
         public double SenderLocationOrientation { get; set; }
         public DateTime DateSubmitted { get; set; }
+
+        public BugReport Clone()
+        {
+            return new BugReport
+            {
+                ID = ID,
+                SenderPlayerID = SenderPlayerID,
+                CDKey = CDKey,
+                Text = Text,
+                TargetName = TargetName,
+                AreaResref = AreaResref,
+                SenderLocationX = SenderLocationX,
+                SenderLocationY = SenderLocationY,
+                SenderLocationZ = SenderLocationZ,
+                SenderLocationOrientation = SenderLocationOrientation,
+                DateSubmitted = DateSubmitted
+            };
+        }
     }
 }

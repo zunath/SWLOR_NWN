@@ -8,6 +8,14 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Name { get; set; }
-    
+
+        public ClientLogEventType Clone()
+        {
+            return new ClientLogEventType
+            {
+                ID = ID,
+                Name = Name
+            };
+        }
     }
 }

@@ -19,5 +19,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CDKey { get; set; }
         public string AccountName { get; set; }
         public DateTime DateOfEvent { get; set; }
+
+        public ClientLogEvent Clone()
+        {
+            return new ClientLogEvent
+            {
+                ID = ID,
+                ClientLogEventTypeID = ClientLogEventTypeID,
+                PlayerID = PlayerID,
+                CDKey = CDKey,
+                AccountName = AccountName,
+                DateOfEvent = DateOfEvent
+            };
+        }
     }
 }

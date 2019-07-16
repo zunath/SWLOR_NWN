@@ -29,5 +29,27 @@ namespace SWLOR.Game.Server.Data.Entity
         public int StructureBonus { get; set; }
         public DateTime? DateNextActivity { get; set; }
         public int StructureModeID { get; set; }
+
+        public PCBaseStructure Clone()
+        {
+            return new PCBaseStructure
+            {
+                ID = ID,
+                PCBaseID = PCBaseID,
+                BaseStructureID = BaseStructureID,
+                LocationX = LocationX,
+                LocationY = LocationY,
+                LocationZ = LocationZ,
+                LocationOrientation = LocationOrientation,
+                Durability = Durability,
+                InteriorStyleID = InteriorStyleID,
+                ExteriorStyleID = ExteriorStyleID,
+                ParentPCBaseStructureID = ParentPCBaseStructureID,
+                CustomName = CustomName,
+                StructureBonus = StructureBonus,
+                DateNextActivity = DateNextActivity,
+                StructureModeID = StructureModeID
+            };
+        }
     }
 }

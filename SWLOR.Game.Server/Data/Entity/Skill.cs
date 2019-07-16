@@ -22,5 +22,22 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Secondary { get; set; }
         public int Tertiary { get; set; }
         public bool ContributesToSkillCap { get; set; }
+
+        public Skill Clone()
+        {
+            return new Skill
+            {
+                ID = ID,
+                SkillCategoryID = SkillCategoryID,
+                Name = Name,
+                MaxRank = MaxRank,
+                IsActive = IsActive,
+                Description = Description,
+                Primary = Primary,
+                Secondary = Secondary,
+                Tertiary = Tertiary,
+                ContributesToSkillCap = ContributesToSkillCap
+            };
+        }
     }
 }

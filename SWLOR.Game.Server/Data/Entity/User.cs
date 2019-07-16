@@ -17,5 +17,21 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Email { get; set; }
         public int RoleID { get; set; }
         public DateTime DateRegistered { get; set; }
+
+
+        public User Clone()
+        {
+            return new User
+            {
+                ID = ID,
+                DiscordUserID = DiscordUserID,
+                Username = Username,
+                AvatarHash = AvatarHash,
+                Discriminator = Discriminator,
+                Email = Email,
+                RoleID = RoleID,
+                DateRegistered = DateRegistered
+            };
+        }
     }
 }

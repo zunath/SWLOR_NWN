@@ -23,5 +23,21 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemResref { get; set; }
         public string ItemObject { get; set; }
         public DateTime DateStored { get; set; }
+
+        public BankItem Clone()
+        {
+            return new BankItem
+            {
+                ID = ID,
+                BankID = BankID,
+                PlayerID = PlayerID,
+                ItemID = ItemID,
+                ItemName = ItemName,
+                ItemTag = ItemTag,
+                ItemResref = ItemResref,
+                ItemObject = ItemObject, 
+                DateStored = DateStored
+            };
+        }
     }
 }

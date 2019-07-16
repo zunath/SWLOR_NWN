@@ -19,5 +19,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Resref { get; set; }
         public int Remaining { get; set; }
         public bool MustBeCraftedByPlayer { get; set; }
+
+        public PCQuestItemProgress Clone()
+        {
+            return new PCQuestItemProgress
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                PCQuestStatusID = PCQuestStatusID,
+                Resref = Resref,
+                Remaining = Remaining,
+                MustBeCraftedByPlayer = MustBeCraftedByPlayer
+            };
+        }
     }
 }

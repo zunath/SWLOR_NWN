@@ -11,5 +11,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public string FileName { get; set; }
         public string DisplayName { get; set; }
         public bool IsActive { get; set; }
+
+        public JukeboxSong Clone()
+        {
+            return new JukeboxSong
+            {
+                ID = ID,
+                AmbientMusicID = AmbientMusicID,
+                FileName = FileName,
+                DisplayName = DisplayName,
+                IsActive = IsActive
+            };
+        }
     }
 }

@@ -9,5 +9,15 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        public Guild Clone()
+        {
+            return new Guild
+            {
+                ID = ID,
+                Name = Name,
+                Description = Description
+            };
+        }
     }
 }

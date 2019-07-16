@@ -22,5 +22,19 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateExpires { get; set; }
         public DateTime? DateRemoved { get; set; }
 
+        public Message Clone()
+        {
+            return new Message
+            {
+                ID = ID,
+                BoardID = BoardID,
+                PlayerID = PlayerID,
+                Title = Title,
+                Text = Text,
+                DatePosted = DatePosted,
+                DateExpires = DateExpires,
+                DateRemoved = DateRemoved
+            };
+        }
     }
 }

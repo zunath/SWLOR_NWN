@@ -29,5 +29,24 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateSent { get; set; }
         public string SenderDMName { get; set; }
         public string ReceiverDMName { get; set; }
+
+        public ChatLog Clone()
+        {
+            return new ChatLog
+            {
+                ID = ID,
+                ChatChannelID = ChatChannelID,
+                SenderPlayerID = SenderPlayerID,
+                SenderAccountName = SenderAccountName,
+                SenderCDKey = SenderCDKey,
+                ReceiverPlayerID = ReceiverPlayerID,
+                ReceiverAccountName = ReceiverAccountName,
+                ReceiverCDKey = ReceiverCDKey,
+                Message = Message,
+                DateSent = DateSent,
+                SenderDMName = SenderDMName,
+                ReceiverDMName = ReceiverDMName
+            };
+        }
     }
 }

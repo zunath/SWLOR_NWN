@@ -13,5 +13,14 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Name { get; set; }
+
+        public CraftDevice Clone()
+        {
+            return new CraftDevice
+            {
+                ID = ID,
+                Name = Name
+            };
+        }
     }
 }

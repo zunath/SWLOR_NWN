@@ -27,5 +27,22 @@ namespace SWLOR.Game.Server.Data.Entity
         public int RetryAttempts { get; set; }
         public string SenderAccountName { get; set; }
         public string SenderCDKey { get; set; }
+
+        public DiscordChatQueue Clone()
+        {
+            return new DiscordChatQueue
+            {
+                ID = ID,
+                SenderName = SenderName,
+                Message = Message,
+                DateSent = DateSent,
+                DatePosted = DatePosted,
+                DateForRetry = DateForRetry,
+                ResponseContent = ResponseContent,
+                RetryAttempts = RetryAttempts,
+                SenderAccountName = SenderAccountName,
+                SenderCDKey = SenderCDKey
+            };
+        }
     }
 }

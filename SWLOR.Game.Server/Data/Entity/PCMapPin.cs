@@ -19,5 +19,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public double PositionX { get; set; }
         public double PositionY { get; set; }
         public string NoteText { get; set; }
+
+        public PCMapPin Clone()
+        {
+            return new PCMapPin
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                AreaTag = AreaTag,
+                PositionX = PositionX,
+                PositionY = PositionY,
+                NoteText = NoteText
+            };
+        }
     }
 }

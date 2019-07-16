@@ -22,5 +22,21 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Content { get; set; }
         public bool ImportedSuccessfully { get; set; }
         public string ErrorMessage { get; set; }
+
+        public DataPackage Clone()
+        {
+            return new DataPackage
+            {
+                ID = ID,
+                DateFound = DateFound,
+                DateExported = DateExported,
+                FileName = FileName,
+                PackageName = PackageName,
+                Checksum = Checksum,
+                Content = Content,
+                ImportedSuccessfully = ImportedSuccessfully,
+                ErrorMessage = ErrorMessage
+            };
+        }
     }
 }

@@ -9,5 +9,15 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }
+
+        public KeyItemCategory Clone()
+        {
+            return new KeyItemCategory
+            {
+                ID = ID,
+                Name = Name,
+                IsActive = IsActive
+            };
+        }
     }
 }

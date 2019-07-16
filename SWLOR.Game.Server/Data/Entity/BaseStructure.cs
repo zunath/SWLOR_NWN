@@ -32,5 +32,29 @@ namespace SWLOR.Game.Server.Data.Entity
         public int FuelRating { get; set; }
         public int DefaultStructureModeID { get; set; }
 
+        public BaseStructure Clone()
+        {
+            return new BaseStructure
+            {
+                ID = ID,
+                BaseStructureTypeID = BaseStructureTypeID,
+                Name = Name,
+                PlaceableResref = PlaceableResref,
+                ItemResref = ItemResref,
+                IsActive = IsActive,
+                Power = Power,
+                CPU = CPU,
+                Durability = Durability,
+                Storage = Storage,
+                HasAtmosphere = HasAtmosphere,
+                ReinforcedStorage = ReinforcedStorage,
+                RequiresBasePower = RequiresBasePower,
+                ResourceStorage = ResourceStorage,
+                RetrievalRating = RetrievalRating,
+                FuelRating = FuelRating,
+                DefaultStructureModeID = DefaultStructureModeID
+            };
+        }
+
     }
 }

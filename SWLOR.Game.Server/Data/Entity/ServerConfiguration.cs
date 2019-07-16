@@ -19,5 +19,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public int AreaBakeStep { get; set; }
         public int ModuleVersion { get; set; }
         public DateTime LastGuildTaskUpdate { get; set; }
+
+        public ServerConfiguration Clone()
+        {
+            return new ServerConfiguration
+            {
+                ID = ID,
+                ServerName = ServerName,
+                MessageOfTheDay = MessageOfTheDay,
+                AreaBakeStep = AreaBakeStep,
+                ModuleVersion = ModuleVersion,
+                LastGuildTaskUpdate = LastGuildTaskUpdate
+            };
+        }
     }
 }

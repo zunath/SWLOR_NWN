@@ -19,5 +19,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public int XP { get; set; }
         public int Rank { get; set; }
         public bool IsLocked { get; set; }
+
+        public PCSkill Clone()
+        {
+            return new PCSkill
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                SkillID = SkillID,
+                XP = XP,
+                Rank = Rank,
+                IsLocked = IsLocked
+            };
+        }
     }
 }

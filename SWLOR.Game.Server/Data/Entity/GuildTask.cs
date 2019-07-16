@@ -12,5 +12,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public int QuestID { get; set; }
         public int RequiredRank { get; set; }
         public bool IsCurrentlyOffered { get; set; }
+
+        public GuildTask Clone()
+        {
+            return new GuildTask
+            {
+                ID = ID,
+                GuildID = GuildID,
+                QuestID = QuestID,
+                RequiredRank = RequiredRank,
+                IsCurrentlyOffered = IsCurrentlyOffered
+            };
+        }
     }
 }

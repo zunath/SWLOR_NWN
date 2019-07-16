@@ -13,5 +13,14 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Name { get; set; }
+
+        public EnmityAdjustmentRule Clone()
+        {
+            return new EnmityAdjustmentRule
+            {
+                ID = ID,
+                Name = Name
+            };
+        }
     }
 }

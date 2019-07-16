@@ -65,5 +65,61 @@ namespace SWLOR.Game.Server.Data.Entity
         public SpecializationType SpecializationID { get; set; }
         public int? ActiveConcentrationPerkID { get; set; }
         public int ActiveConcentrationTier { get; set; }
+
+        public Player Clone()
+        {
+            return new Player
+            {
+                ID = ID,
+                CharacterName = CharacterName,
+                HitPoints = HitPoints,
+                LocationAreaResref = LocationAreaResref,
+                LocationX = LocationX,
+                LocationY = LocationY,
+                LocationZ = LocationZ,
+                LocationOrientation = LocationOrientation,
+                CreateTimestamp = CreateTimestamp,
+                UnallocatedSP = UnallocatedSP,
+                HPRegenerationAmount = HPRegenerationAmount,
+                RegenerationTick = RegenerationTick,
+                RegenerationRate = RegenerationRate,
+                VersionNumber = VersionNumber,
+                MaxFP = MaxFP,
+                CurrentFP = CurrentFP,
+                CurrentFPTick = CurrentFPTick,
+                RespawnAreaResref = RespawnAreaResref,
+                RespawnLocationX = RespawnLocationX,
+                RespawnLocationY = RespawnLocationY,
+                RespawnLocationZ = RespawnLocationZ,
+                RespawnLocationOrientation = RespawnLocationOrientation,
+                DateSanctuaryEnds = DateSanctuaryEnds,
+                IsSanctuaryOverrideEnabled = IsSanctuaryOverrideEnabled,
+                STRBase = STRBase,
+                DEXBase = DEXBase,
+                CONBase = CONBase,
+                INTBase = INTBase,
+                WISBase = WISBase,
+                CHABase = CHABase,
+                TotalSPAcquired = TotalSPAcquired,
+                DisplayHelmet = DisplayHelmet,
+                PrimaryResidencePCBaseStructureID = PrimaryResidencePCBaseStructureID,
+                DatePerkRefundAvailable = DatePerkRefundAvailable,
+                AssociationID = AssociationID,
+                DisplayHolonet = DisplayHolonet,
+                DisplayDiscord = DisplayDiscord,
+                PrimaryResidencePCBaseID = PrimaryResidencePCBaseID,
+                IsUsingNovelEmoteStyle = IsUsingNovelEmoteStyle,
+                IsDeleted = IsDeleted,
+                XPBonus = XPBonus,
+                LeaseRate = LeaseRate,
+                LocationInstanceID = LocationInstanceID,
+                GoldTill = GoldTill,
+                RoleplayPoints = RoleplayPoints,
+                RoleplayXP = RoleplayXP,
+                SpecializationID = SpecializationID,
+                ActiveConcentrationPerkID = ActiveConcentrationPerkID,
+                ActiveConcentrationTier = ActiveConcentrationTier
+            };
+        }
     }
 }

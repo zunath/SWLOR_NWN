@@ -18,5 +18,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CDKey { get; set; }
         public DateTime DateOfAction { get; set; }
         public string Details { get; set; }
+
+        public DMAction Clone()
+        {
+            return new DMAction
+            {
+                ID = ID,
+                DMActionTypeID = DMActionTypeID,
+                Name = Name,
+                CDKey = CDKey,
+                DateOfAction = DateOfAction,
+                Details = Details
+            };
+        }
     }
 }

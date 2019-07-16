@@ -21,6 +21,20 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemObject { get; set; }
         public DateTime DateImpounded { get; set; }
         public DateTime? DateRetrieved { get; set; }
-    
+
+        public PCImpoundedItem Clone()
+        {
+            return new PCImpoundedItem
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                ItemName = ItemName,
+                ItemTag = ItemTag,
+                ItemResref = ItemResref,
+                ItemObject = ItemObject,
+                DateImpounded = DateImpounded,
+                DateRetrieved = DateRetrieved
+            };
+        }
     }
 }

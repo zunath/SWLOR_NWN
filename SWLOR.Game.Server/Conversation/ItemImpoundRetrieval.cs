@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
-            var items = DataService.Where<PCImpoundedItem>(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
+            var items = DataService.PCImpoundedItem.GetAllByPlayerIDAndNotRetrieved(player.GlobalID);
 
             ClearPageResponses("MainPage");
             foreach (var item in items)

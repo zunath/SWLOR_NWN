@@ -216,12 +216,15 @@ namespace SWLOR.Game.Server.Conversation
 
             // It's possible for players to have tasks which are no longer offered. 
             // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.
-            var questIDs = DataService.Where<PCQuestStatus>(x => x.PlayerID == player.GlobalID && 
-                                                                 x.CompletionDate == null)
+            var questIDs = DataService.PCQuestStatus
+                .GetAllByPlayerID(player.GlobalID)
+                .Where(x => x.CompletionDate == null)
                 .Select(s => s.QuestID);
-            var expiredTasks = DataService.Where<GuildTask>(x => !x.IsCurrentlyOffered && 
-                                                                 questIDs.Contains(x.QuestID) &&
-                                                                 x.GuildID == (int)model.Guild)
+            var expiredTasks = DataService.GuildTask
+                .GetAll()
+                .Where(x => !x.IsCurrentlyOffered &&
+                            questIDs.Contains(x.QuestID) &&
+                            x.GuildID == (int)model.Guild)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in expiredTasks)
             {
@@ -231,9 +234,10 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs.
-            var tasks = DataService.Where<GuildTask>(x => x.GuildID == (int) model.Guild && 
-                                                          x.IsCurrentlyOffered &&
-                                                          x.RequiredRank <= pcGP.Rank)
+            var tasks = DataService.GuildTask
+                .GetAllByCurrentlyOffered()
+                .Where(x => x.GuildID == (int) model.Guild &&
+                            x.RequiredRank <= pcGP.Rank)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in tasks)
             {

@@ -50,10 +50,10 @@ namespace SWLOR.Game.Server.Conversation
             // Look for any bases for which the player has permissions to manage leases or cancel leases.
             // Owners are included in this since they automatically get all permissions for their own bases.
             // Apartments are excluded from this list as they are canceled from terminals outside individual apartment buildings.
-            var bases = DataService
-                .Where<PCBase>(x =>
+            var bases = DataService.PCBase.GetAll()
+                .Where(x =>
                 {
-                    var pcBasePermissions = DataService.Where<PCBasePermission>(p => p.PCBaseID == x.ID);
+                    var pcBasePermissions = DataService.PCBasePermission.GetAllPermissionsByPCBaseID(x.ID);
                     return x.Sector != "AP" &&
                            pcBasePermissions
                                .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease));

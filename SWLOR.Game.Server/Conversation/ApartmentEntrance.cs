@@ -59,15 +59,17 @@ namespace SWLOR.Game.Server.Conversation
             
             
             
-            var permissionedApartments = DataService.Where<PCBase>(x =>
-            {
-                if (x.ApartmentBuildingID != apartmentBuildingID ||
-                    x.DateRentDue <= DateTime.UtcNow ||
-                    x.PlayerID == player.GlobalID) return false;
-                
-                var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
-                return permission != null && permission.CanEnterBuildings;
-            })
+            var permissionedApartments = DataService.PCBase
+                .GetAll()
+                .Where(x =>
+                {
+                    if (x.ApartmentBuildingID != apartmentBuildingID ||
+                        x.DateRentDue <= DateTime.UtcNow ||
+                        x.PlayerID == player.GlobalID) return false;
+                    
+                    var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
+                    return permission != null && permission.CanEnterBuildings;
+                })
                 .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 

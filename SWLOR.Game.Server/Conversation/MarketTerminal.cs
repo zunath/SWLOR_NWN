@@ -226,12 +226,14 @@ namespace SWLOR.Game.Server.Conversation
 
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             int marketRegionID = MarketService.GetMarketRegionID(terminal);
-            IEnumerable<PCMarketListing> listings = DataService.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
-                                                                                      x.MarketRegionID == marketRegionID &&
-                                                                                      x.DateSold == null &&
-                                                                                      x.DateRemoved == null);
+            IEnumerable<PCMarketListing> listings = DataService.PCMarketListing
+                .GetAllByMarketRegionID(marketRegionID)
+                .Where(x => x.DateExpires > DateTime.UtcNow &&
+                            x.DateSold == null &&
+                            x.DateRemoved == null);
+
             IEnumerable<int> categoryIDs = listings.Select(s => s.MarketCategoryID).Distinct();
-            IEnumerable<MarketCategory> categories = DataService.Where<MarketCategory>(x => categoryIDs.Contains(x.ID))
+            IEnumerable<MarketCategory> categories = DataService.MarketCategory.GetAllByIDs(categoryIDs)
                 .OrderBy(o => o.Name);
 
             ClearPageResponses("BrowseByCategoryPage");
@@ -269,12 +271,13 @@ namespace SWLOR.Game.Server.Conversation
 
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             int marketRegionID = MarketService.GetMarketRegionID(terminal);
-            IEnumerable<PCMarketListing> listings = DataService.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
-                                                                                      x.MarketRegionID == marketRegionID &&
-                                                                                      x.DateSold == null &&
-                                                                                      x.DateRemoved == null);
+            IEnumerable<PCMarketListing> listings = DataService.PCMarketListing
+                .GetAllByMarketRegionID(marketRegionID)
+                .Where(x => x.DateExpires > DateTime.UtcNow &&
+                            x.DateSold == null &&
+                            x.DateRemoved == null);
             IEnumerable<Guid> playerIDs = listings.Select(s => s.SellerPlayerID).Distinct();
-            IEnumerable<Player> players = DataService.Where<Player>(x => playerIDs.Contains(x.ID))
+            IEnumerable<Player> players = DataService.Player.GetAllByIDs(playerIDs)
                 .OrderBy(o => o.CharacterName);
 
             ClearPageResponses("BrowseBySellerPage");
@@ -314,20 +317,22 @@ namespace SWLOR.Game.Server.Conversation
             // Pull items by category
             if (model.BrowseMode == MarketBrowseMode.ByCategory)
             {
-                listings = DataService.Where<PCMarketListing>(x => x.DateExpires > now &&
-                                                             x.MarketRegionID == marketRegionID &&
-                                                             x.MarketCategoryID == model.BrowseCategoryID &&
-                                                             x.DateSold == null &&
-                                                             x.DateRemoved == null);
+                listings = DataService.PCMarketListing
+                    .GetAllByMarketRegionID(marketRegionID)
+                    .Where(x => x.DateExpires > now &&
+                                x.MarketCategoryID == model.BrowseCategoryID &&
+                                x.DateSold == null &&
+                                x.DateRemoved == null);
             }
             // Pull items being sold by a specific player
             else
             {
-                listings = DataService.Where<PCMarketListing>(x => x.DateExpires > now &&
-                                                             x.MarketRegionID == marketRegionID &&
-                                                             x.SellerPlayerID == model.BrowsePlayerID &&
-                                                             x.DateSold == null &&
-                                                             x.DateRemoved == null);
+                listings = DataService.PCMarketListing
+                    .GetAllByMarketRegionID(marketRegionID)
+                    .Where(x => x.DateExpires > now &&
+                                x.SellerPlayerID == model.BrowsePlayerID &&
+                                x.DateSold == null &&
+                                x.DateRemoved == null);
             }
 
             // Build the response list.
@@ -492,10 +497,10 @@ namespace SWLOR.Game.Server.Conversation
             if (string.IsNullOrWhiteSpace(model.ItemObject))
             {
                 int numberItemsSelling = DataService
-                    .Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID &&
-                                                 x.DateRemoved == null &&
-                                                 x.DateSold == null)
-                    .Count;
+                    .PCMarketListing
+                    .GetAllBySellerPlayerID(player.GlobalID)
+                    .Count(x => x.DateRemoved == null &&
+                                x.DateSold == null);
                 bool canSellAnotherItem = numberItemsSelling < MarketService.NumberOfItemsAllowedToBeSoldAtATime;
                 header = ColorTokenService.Green("Galactic Trade Network - Sell Item") + "\n\n";
                 header += ColorTokenService.Green("Items Selling: ") + numberItemsSelling + " / " + MarketService.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";
@@ -763,10 +768,10 @@ namespace SWLOR.Game.Server.Conversation
 
             var player = GetPC();
             var regionID = MarketService.GetMarketRegionID(NWGameObject.OBJECT_SELF);
-            var listings = DataService.Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID && 
-                                                             x.DateSold == null &&
-                                                             x.DateRemoved == null &&
-                                                             x.MarketRegionID == regionID);
+            var listings = DataService.PCMarketListing.GetAllBySellerPlayerID(player.GlobalID)
+                .Where(x => x.DateSold == null &&
+                    x.DateRemoved == null &&
+                    x.MarketRegionID == regionID);
             
             ClearPageResponses("MarketListingsPage");
             foreach (var listing in listings)

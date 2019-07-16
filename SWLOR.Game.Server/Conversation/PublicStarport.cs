@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // Get starships owned by other players and the current player currently has access to.
             var permissions = DataService.PCBaseStructurePermission.GetAllByPlayerID(player.GlobalID);
-            var permissionedShips = DataService.Where<PCBase>(x =>
+            var permissionedShips = DataService.PCBase.GetAll().Where(x =>
             {
                 if (x.ShipLocation != starportID.ToLower() ||
                     x.DateRentDue <= DateTime.UtcNow ||

@@ -67,6 +67,9 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBaseStructureItem> GetAllByPCBaseStructureID(Guid pcBaseStructureID)
         {
+            if(!ByPCBaseStructureIDAndItemGlobalID.ContainsKey(pcBaseStructureID))
+                return new List<PCBaseStructureItem>();
+
             return ByPCBaseStructureIDAndItemGlobalID[pcBaseStructureID].Values;
         }
     }

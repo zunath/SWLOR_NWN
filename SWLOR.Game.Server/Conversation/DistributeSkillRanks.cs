@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             ClearPageResponses("MainPage");
-            var pools = DataService.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0);
+            var pools = DataService.PCSkillPool.GetByPlayerIDWithLevelsUndistributed(GetPC().GlobalID);
 
             foreach (var pool in pools)
             {
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var category = DataService.SkillCategory.GetByID(model.SkillCategoryID);
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
-            var skills = DataService.Where<Skill>(x => x.SkillCategoryID == model.SkillCategoryID);
+            var skills = DataService.Skill.GetAllBySkillCategoryIDAndActive(model.SkillCategoryID);
 
             string header = ColorTokenService.Green("Category: ") + category.Name + "\n";
             header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";

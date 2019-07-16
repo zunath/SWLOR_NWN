@@ -67,7 +67,9 @@ namespace SWLOR.Game.Server.Conversation
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
             bool isDM = player.IsDM;
-            var messages = DataService.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
+            var messages = DataService.Message
+                .GetAllByBoardID(boardID)
+                .Where(x => x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");

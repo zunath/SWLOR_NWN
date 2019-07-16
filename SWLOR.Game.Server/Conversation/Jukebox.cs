@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
 
-            var songs = DataService.Where<JukeboxSong>(x => x.IsActive).OrderBy(o => o.DisplayName);
+            var songs = DataService.JukeboxSong.GetAll().Where(x => x.IsActive).OrderBy(o => o.DisplayName);
             foreach (var song in songs)
             {
                 AddResponseToPage("MainPage", song.DisplayName, true, song.ID);

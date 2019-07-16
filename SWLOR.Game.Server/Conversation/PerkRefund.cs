@@ -86,11 +86,12 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID).OrderBy(o =>
-                {
-                    var perk = DataService.Perk.GetByID(o.PerkID);
-                    return perk.Name;
-                }).ToList();
+                var pcPerks = DataService.PCPerk.GetAllByPlayerID(player.GlobalID)
+                    .OrderBy(o =>
+                    {
+                        var perk = DataService.Perk.GetByID(o.PerkID);
+                        return perk.Name;
+                    }).ToList();
 
                 foreach (var pcPerk in pcPerks)
                 {
@@ -111,7 +112,9 @@ namespace SWLOR.Game.Server.Conversation
             if (IsGrantedByBackground((PerkType) perk.ID))
                 minimumLevel = 2;
 
-            int refundAmount = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
+            int refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID).Where(x => 
+                x.Level <= pcPerk.PerkLevel &&
+                x.Level >= minimumLevel).Sum(x => x.Price);
 
             string header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
             header += ColorTokenService.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
@@ -186,7 +189,9 @@ namespace SWLOR.Game.Server.Conversation
             if (IsGrantedByBackground((PerkType) perk.ID))
                 minimumLevel = 2;
 
-            var refundAmount = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
+            var refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID)
+                .Where(x => x.Level <= pcPerk.PerkLevel && 
+                            x.Level >= minimumLevel).Sum(x => x.Price);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
@@ -270,7 +275,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void RemovePerkFeat(Data.Entity.Perk perk)
         {
-            var feats = DataService.Where<PerkFeat>(x => x.PerkID == perk.ID);
+            var feats = DataService.PerkFeat.GetAllByPerkID(perk.ID);
 
             foreach (var feat in feats)
             {

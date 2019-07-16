@@ -93,12 +93,11 @@ namespace SWLOR.Game.Server.Conversation
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
                 int itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
-                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
+                var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
-                var structures = DataService.Where<PCBaseStructure>(x =>
+                var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(pcBaseStructureID).Where(x =>
                 {
-                    if (x.ParentPCBaseStructureID != pcBaseStructureID) return false;
                     var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
@@ -130,12 +129,11 @@ namespace SWLOR.Game.Server.Conversation
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
-                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
+                var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
-                var structures = DataService.Where<PCBaseStructure>(x =>
+                var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(pcBaseStructureID).Where(x =>
                 {
-                    if (x.ParentPCBaseStructureID != pcBaseStructureID) return false;
                     var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
@@ -166,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 int itemLimit = buildingStyle.FurnitureLimit;
-                var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
+                var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
@@ -256,7 +254,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("MainPage", header);
 
-            bool showManage = DataService.Where<PCBasePermission>(x => x.CanExtendLease).Count > 0;
+            bool showManage = DataService.PCBasePermission.GetAllByPlayerID(GetPC().GlobalID).Count(x => x.CanExtendLease) > 0;
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
@@ -683,7 +681,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 // Impound resources retrieved by drills.
-                var items = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).ToList();
+                var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID);
                 foreach(var item in items)
                 {
                     ImpoundService.Impound(item);
@@ -693,7 +691,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.Building)
             {
-                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID).ToList();
+                var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID).ToList();
                 for (int x = childStructures.Count - 1; x >= 0; x--)
                 {
                     var furniture = childStructures.ElementAt(x);
@@ -714,7 +712,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 // Remove any access permissions.
-                foreach (var buildingPermission in DataService.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == structure.ID))
+                foreach (var buildingPermission in DataService.PCBaseStructurePermission.GetAllByPCBaseStructureID(structure.ID))
                 {
                     DataService.SubmitDataChange(buildingPermission, DatabaseActionType.Delete);
                 }
@@ -759,7 +757,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (structureType == BaseStructureType.ResourceSilo)
             {
                 int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
-                var items = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.ID).ToList();
+                var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(controlTower.ID).ToList();
 
                 while (items.Count > maxResources)
                 {

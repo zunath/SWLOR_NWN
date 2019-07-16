@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            var componentTypes = DataService.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
+            var componentTypes = DataService.ComponentType.GetAllWhereHasReassembledResref();
             foreach (var type in componentTypes)
             {
                 AddResponseToPage("MainPage", type.Name, true, type.ID);

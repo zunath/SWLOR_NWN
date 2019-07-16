@@ -352,35 +352,5 @@ namespace SWLOR.Game.Server.Service
 
             DataQueue.Enqueue(new DatabaseAction(data, actionType));
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // The following methods will eventually be removed. 
-        // Only keeping them here for the time being to make the server build.
-
-        public static IEnumerable<T> GetAll<T>()
-            where T : class, IEntity
-        {
-            ICache<T> cache = (ICache<T>)_cacheLookup[typeof(T)];
-            return cache.GetAll();
-        }
-
-        public static HashSet<T> Where<T>(Func<T, bool> predicate)
-            where T : class, IEntity
-        {
-            return new HashSet<T>(GetAll<T>().Where(predicate));
-        }
-
-
     }
 }

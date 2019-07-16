@@ -105,7 +105,9 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
             var bases = DataService
-                .Where<PCBase>(x => x.PlayerID == player.GlobalID && x.ApartmentBuildingID == data.ApartmentBuildingID).OrderBy(o => o.DateInitialPurchase)
+                .PCBase.GetAllByPlayerID(player.GlobalID)
+                .Where(x => x.ApartmentBuildingID == data.ApartmentBuildingID)
+                .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
             string header = ColorTokenService.Green("Apartment Rental Terminal") + "\n\n";
@@ -157,7 +159,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = BaseService.GetPlayerTempData(GetPC());
             var apartmentBuilding = DataService.ApartmentBuilding.GetByID(data.ApartmentBuildingID);
-            var styles = DataService.Where<BuildingStyle>(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive).ToList();
+            var styles = DataService.BuildingStyle
+                .GetAll()
+                .Where(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && 
+                            x.IsActive).ToList();
 
             string header = ColorTokenService.Green(apartmentBuilding.Name) + "\n\n";
 

@@ -83,12 +83,12 @@ namespace SWLOR.Game.Server.Conversation
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
-                var structures = DataService.Where<PCBaseStructure>(x =>
-                {
-                    if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                    return childStructure.HasAtmosphere;
-                });
+                var structures = DataService.PCBaseStructure
+                    .GetAllByParentPCBaseStructureID(buildingStructure.ID).Where(x =>
+                    {
+                        var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                        return childStructure.HasAtmosphere;
+                    });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
@@ -100,15 +100,15 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var buildingStructure = DataService.PCBaseStructure.GetByID((Guid)data.ParentStructureID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(buildingStructure.InteriorStyleID));
-                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
+                var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
-                var structures = DataService.Where<PCBaseStructure>(x =>
-                {
-                    if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                    return childStructure.HasAtmosphere;
-                });
+                var structures = DataService.PCBaseStructure
+                    .GetAllByParentPCBaseStructureID(buildingStructure.ID).Where(x =>
+                    {
+                        var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                        return childStructure.HasAtmosphere;
+                    });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
-                var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
+                var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID).ToList();
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
@@ -414,7 +414,8 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("StylePage", "Preview Interior", true, new Tuple<int, BuildingType>(-2, BuildingType.Interior));
             }
 
-            var styles = DataService.Where<BuildingStyle>(x => x.BuildingTypeID == (int)buildingType && x.BaseStructureID == data.BaseStructureID && x.IsActive).ToList();
+            var styles = DataService.BuildingStyle.GetAll().Where(x => x.BuildingTypeID == (int)buildingType && 
+                                                               x.BaseStructureID == data.BaseStructureID && x.IsActive).ToList();
             foreach (var style in styles)
             {
                 var args = new Tuple<int, BuildingType>(style.ID, buildingType);

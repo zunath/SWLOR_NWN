@@ -65,5 +65,13 @@ namespace SWLOR.Game.Server.Caching
                 }
             }
         }
+
+        public IEnumerable<PerkFeat> GetAllByPerkID(int perkID)
+        {
+            if(!ByPerkIDAndLevelUnlocked.ContainsKey(perkID))
+                return new List<PerkFeat>();
+
+            return ByPerkIDAndLevelUnlocked[perkID].Values;
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -19,6 +20,18 @@ namespace SWLOR.Game.Server.Caching
         public MarketCategory GetByID(int id)
         {
             return ByID[id];
+        }
+
+        public IEnumerable<MarketCategory> GetAllByIDs(IEnumerable<int> ids)
+        {
+            var list = new List<MarketCategory>();
+
+            foreach (var id in ids)
+            {
+                list.Add(ByID[id]);
+            }
+
+            return list;
         }
     }
 }

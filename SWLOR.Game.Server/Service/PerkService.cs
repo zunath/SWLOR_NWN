@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var perk = GetPerkByID(pcPerk.PerkID);
                     if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
-                    var perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(pcPerk.PerkID, pcPerk.PerkLevel);
+                    var perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(pcPerk.PerkID, pcPerk.PerkLevel);
                     int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
 
                     var handler = GetPerkHandler(pcPerk.PerkID);
@@ -420,8 +420,8 @@ namespace SWLOR.Game.Server.Service
         public static void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
             var perk = DataService.Perk.GetByID(perkID);
-            var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID);
-            var pcPerk = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, perkID);
+            var perkLevels = DataService.PerkLevel.GetAllByPerkID(perkID);
+            var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(oPC.GlobalID, perkID);
             var player = DataService.Player.GetByID(oPC.GlobalID);
 
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
@@ -439,8 +439,15 @@ namespace SWLOR.Game.Server.Service
                     action = DatabaseActionType.Insert;
                 }
 
+                Console.WriteLine("finding next perk level");
                 PerkLevel nextPerkLevel = FindPerkLevel(perkLevels, pcPerk.PerkLevel + 1);
-                if (nextPerkLevel == null) return;
+
+                if (nextPerkLevel == null)
+                {
+                    Console.WriteLine("Found no next level");
+                    return;
+                }
+                Console.WriteLine("Found next perk level. incrementing and publishing");
 
                 pcPerk.PerkLevel++;
                 DataService.SubmitDataChange(pcPerk, action);

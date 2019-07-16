@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         protected CacheBase()
         {
+            Console.WriteLine("Subscribing to events as type: " + typeof(T));
             MessageHub.Instance.Subscribe<OnCacheObjectSet<T>>(msg => CacheObjectSet(msg.Entity));
             MessageHub.Instance.Subscribe<OnCacheObjectDeleted<T>>(msg => CacheObjectRemoved(msg.Entity));
             OnSubscribeEvents();
@@ -105,11 +106,10 @@ namespace SWLOR.Game.Server.Caching
         {
             if(!dictionary.ContainsKey(primaryIndexID))
             {
-                dictionary.Add(primaryIndexID, new Dictionary<TSecondary, TEntity>());
+                dictionary[primaryIndexID] = new Dictionary<TSecondary, TEntity>();
             }
 
-            var list = dictionary[primaryIndexID];
-            list[secondaryIndexID] = entity;
+            dictionary[primaryIndexID][secondaryIndexID] = entity;
         }
 
         /// <summary>

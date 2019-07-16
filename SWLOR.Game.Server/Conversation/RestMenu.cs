@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid playerID = GetPC().GlobalID;
-            long overflowCount = DataService.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
+            long overflowCount = DataService.PCOverflowItem.GetAllByPlayerID(playerID).Count();
 
             if (overflowCount <= 0)
             {

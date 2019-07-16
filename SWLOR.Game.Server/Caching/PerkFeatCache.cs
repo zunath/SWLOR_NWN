@@ -35,6 +35,11 @@ namespace SWLOR.Game.Server.Caching
             return GetEntityFromDictionary(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
         }
 
+        public PerkFeat GetByPerkIDAndLevelUnlockedOrDefault(int perkID, int levelUnlocked)
+        {
+            return GetEntityFromDictionaryOrDefault(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
+        }
+
         public PerkFeat GetByFeatID(int featID)
         {
             return ByFeatID[featID];

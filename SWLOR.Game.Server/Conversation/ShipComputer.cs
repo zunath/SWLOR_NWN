@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int currentResources = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID).Count();
             int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
             int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
             int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);

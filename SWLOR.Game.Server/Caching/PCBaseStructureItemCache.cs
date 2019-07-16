@@ -14,18 +14,32 @@ namespace SWLOR.Game.Server.Caching
         {
             ByItemGlobalID[entity.ItemGlobalID] = entity;
             SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
-            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] + 1;
+            SetCountsByPCBaseStructureID(entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructureItem entity)
         {
             ByItemGlobalID.Remove(entity.ItemGlobalID);
             RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
-            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] - 1;
+            RemoveCountsByPCBaseStructureID(entity);
         }
 
         protected override void OnSubscribeEvents()
         {
+        }
+
+        private void SetCountsByPCBaseStructureID(PCBaseStructureItem entity)
+        {
+            if (!CountsByPCBaseStructureID.ContainsKey(entity.PCBaseStructureID))
+                CountsByPCBaseStructureID[entity.PCBaseStructureID] = 0;
+            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] + 1;
+        }
+
+        private void RemoveCountsByPCBaseStructureID(PCBaseStructureItem entity)
+        {
+            if (!CountsByPCBaseStructureID.ContainsKey(entity.PCBaseStructureID))
+                CountsByPCBaseStructureID[entity.PCBaseStructureID] = 0;
+            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] - 1;
         }
 
         public PCBaseStructureItem GetByID(Guid id)

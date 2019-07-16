@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Caching
             DateTime now = DateTime.UtcNow;
             foreach (var pcBaseID in RentDueTimes.Where(x => x.Value <= now))
             {
-                yield return ByID[pcBaseID];
+                yield return ByID[pcBaseID.Key];
             }
         }
     }

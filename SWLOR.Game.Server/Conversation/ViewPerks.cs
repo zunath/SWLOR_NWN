@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildViewMyPerks()
         {
-            List<PCPerk> perks = DataService.Where<PCPerk>(x => x.PlayerID == GetPC().GlobalID).ToList();
+            List<PCPerk> perks = DataService.PCPerk.GetAllByPlayerID(GetPC().GlobalID).ToList();
 
             string header = ColorTokenService.Green("Perks purchased:") + "\n\n";
             foreach (PCPerk pcPerk in perks)
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
             var categoryIDs = perksAvailable.Select(x => x.PerkCategoryID).Distinct();
-            List<PerkCategory> categories = DataService.Where<PerkCategory>(x => categoryIDs.Contains(x.ID)).ToList();
+            List<PerkCategory> categories = DataService.PerkCategory.GetAllByIDs(categoryIDs).ToList();
 
             ClearPageResponses("CategoryPage");
             foreach (PerkCategory category in categories)
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Conversation
             Data.Entity.Perk perk = PerkService.GetPerkByID(vm.SelectedPerkID);
             PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, perk.ID);
             Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
-            var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID).ToList();
+            var perkLevels = DataService.PerkLevel.GetAllByPerkID(perk.ID).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Conversation
             // Player has purchased at least one rank in this perk. Show their current bonuses.
             if (rank > 0 && currentPerkLevel != null)
             {
-                var currentPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(vm.SelectedPerkID, currentPerkLevel.Level);
+                var currentPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(vm.SelectedPerkID, currentPerkLevel.Level);
                 currentBonus = currentPerkLevel.Description;
 
                 // Not every perk is going to have a perk feat. Don't display this information if not necessary.
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Conversation
             // Player hasn't reached max rank and this perk has another perk level to display.
             if (rank + 1 <= maxRank && nextPerkLevel != null)
             {
-                var nextPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(vm.SelectedPerkID, rank + 1);
+                var nextPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(vm.SelectedPerkID, rank + 1);
                 nextBonus = nextPerkLevel.Description;
                 price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
 
@@ -206,8 +206,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (nextPerkLevel != null)
             {
-                List<PerkLevelSkillRequirement> requirements =
-                    DataService.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == nextPerkLevel.ID).ToList();
+                List<PerkLevelSkillRequirement> requirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(nextPerkLevel.ID).ToList();
                 if (requirements.Count > 0)
                 {
                     header += "\n" + ColorTokenService.Green("Next Upgrade Skill Requirements:\n\n");

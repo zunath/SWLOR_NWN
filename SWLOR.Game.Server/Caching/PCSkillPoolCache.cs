@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -32,6 +33,17 @@ namespace SWLOR.Game.Server.Caching
             return GetEntityFromDictionary(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
         }
 
+        public PCSkillPool GetByPlayerIDAndSkillCategoryIDOrDefault(Guid playerID, int skillCategoryID)
+        {
+            return GetEntityFromDictionaryOrDefault(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
+        }
 
+        public IEnumerable<PCSkillPool> GetByPlayerIDWithLevelsUndistributed(Guid playerID)
+        {
+            if(!ByPlayerIDAndSkillCategoryID.ContainsKey(playerID))
+                return new List<PCSkillPool>();
+
+            return ByPlayerIDAndSkillCategoryID[playerID].Values.Where(x => x.Levels > 0);
+        }
     }
 }

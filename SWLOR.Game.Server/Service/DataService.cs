@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         public static PCObjectVisibilityCache PCObjectVisibility { get; } = new PCObjectVisibilityCache();
         public static PCOutfitCache PCOutfit { get; } = new PCOutfitCache();
         public static PCOverflowItemCache PCOverflowItem { get; } = new PCOverflowItemCache();
-        public static PCPerkCache PCPerk { get; } = new PCPerkCache();
+        public static PCPerkCache PCPerk { get; private set; }
         public static PCPerkRefundCache PCPerkRefund { get; } = new PCPerkRefundCache();
         public static PCQuestItemProgressCache PCQuestItemProgress { get; } = new PCQuestItemProgressCache();
         public static PCQuestKillTargetProgressCache PCQuestKillTargetProgress { get; } = new PCQuestKillTargetProgressCache();
@@ -129,6 +129,7 @@ namespace SWLOR.Game.Server.Service
 
         static DataService()
         {
+            PCPerk = new PCPerkCache();
             DataQueue = new ConcurrentQueue<DatabaseAction>();
 
             var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
@@ -182,6 +183,7 @@ namespace SWLOR.Game.Server.Service
         private static void SetIntoCache<T>(T entity)
             where T: class, IEntity
         {
+            Console.WriteLine("set into cache: " + typeof(T) + " entity = " + entity.GetType());
             MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
         }
 
@@ -330,40 +332,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Sends a request to change data into the database queue. Processing is asynchronous
-        /// and you cannot reliably retrieve the data directly from the database immediately afterwards.
-        /// However, data in the cache will be up to date as soon as a value is changed.
-        /// </summary>
-        public static void SubmitDataChange(DatabaseAction action)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            if(action.Data == null) throw new ArgumentNullException(nameof(action.Data));
-
-            var actionType = action.Action;
-
-            foreach(var item in action.Data)
-            {
-                if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
-                {
-                    SetIntoCache(item);
-                }
-                else if (actionType == DatabaseActionType.Delete)
-                {
-                    RemoveFromCache(item);
-                }
-            }
-
-            DataQueue.Enqueue(action);
-        }
-
-        /// <summary>
         /// Sends a request to change data into the queue. Processing is asynchronous
         /// and you cannot reliably retrieve the data directly from the database immediately afterwards.
         /// However, data in the cache will be up to date as soon as a value is changed.
         /// </summary>
         /// <param name="data">The data to submit for processing</param>
         /// <param name="actionType">The type (Insert, Update, Delete, etc.) of change to make.</param>
-        public static void SubmitDataChange(IEntity data, DatabaseActionType actionType)
+        public static void SubmitDataChange<T>(T data, DatabaseActionType actionType)
+            where T: class, IEntity
         {
             if(data == null) throw new ArgumentNullException(nameof(data));
 

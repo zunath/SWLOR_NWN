@@ -102,8 +102,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var playerID = Guid.NewGuid();
             var baseID = Guid.NewGuid();
-            var entity1 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = false };
-            var entity2 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = true };
+            var entity1 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = true };
+            var entity2 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = false };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBasePermission>(entity1));
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var playerID = Guid.NewGuid();
             var baseID = Guid.NewGuid();
-            var entity1 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = false };
+            var entity1 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = true };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBasePermission>(entity1));
@@ -131,13 +131,13 @@ namespace SWLOR.Game.Server.Tests.Caching
         }
 
         [Test]
-        public void GetPlayerPublicPermissionOrDefault_TwoPrivate_ShouldReturnNull()
+        public void GetPlayerPublicPermissionOrDefault_TwoPublic_ShouldReturnNull()
         {
             // Arrange
             var playerID = Guid.NewGuid();
             var baseID = Guid.NewGuid();
-            var entity1 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = false };
-            var entity2 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = false };
+            var entity1 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = true };
+            var entity2 = new PCBasePermission { ID = Guid.NewGuid(), PlayerID = playerID, PCBaseID = baseID, IsPublicPermission = true };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBasePermission>(entity1));

@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var buildingStructure = DataService.PCBaseStructure.GetByID((Guid)data.ParentStructureID);
                 var baseStructure = DataService.BaseStructure.GetByID(buildingStructure.BaseStructureID);
-                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
+                var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
                 var structures = DataService.Where<PCBaseStructure>(x =>

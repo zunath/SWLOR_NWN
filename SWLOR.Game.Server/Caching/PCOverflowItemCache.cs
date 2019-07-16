@@ -29,6 +29,9 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCOverflowItem> GetAllByPlayerID(Guid playerID)
         {
+            if(!ByPlayerID.ContainsKey(playerID))
+                return new List<PCOverflowItem>();
+
             return ByPlayerID[playerID].Values;
         }
     }

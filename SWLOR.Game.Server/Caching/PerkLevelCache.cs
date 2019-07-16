@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
 
@@ -29,6 +30,11 @@ namespace SWLOR.Game.Server.Caching
         public PerkLevel GetByPerkIDAndLevel(int perkID, int level)
         {
             return GetEntityFromDictionary(perkID, level, ByPerkIDAndLevel);
+        }
+
+        public IEnumerable<PerkLevel> GetAllByPerkID(int perkID)
+        {
+            return ByPerkIDAndLevel[perkID].Values;
         }
     }
 }

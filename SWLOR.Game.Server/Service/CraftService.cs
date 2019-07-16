@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
     public static class CraftService
     {
         private const float BaseCraftDelay = 18.0f;
-        
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
@@ -33,13 +33,15 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
         }
-        
+
         private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
-            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
-            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+            var pcPerks = DataService.PCPerk.GetAllByPlayerID(playerID).ToList();
+            var pcSkills = DataService.PCSkill.GetAllByPlayerID(playerID).ToList();
 
-            return DataService.Where<CraftBlueprint>(x =>
+            // This likely needs to be improved with additional indexes in the CraftBlueprint cache.
+            // Will revisit this at some point in the future but I don't want to risk breaking existing functionality.
+            return DataService.CraftBlueprint.GetAll().Where(x =>
             {
                 // ReSharper disable once ReplaceWithSingleAssignment.True
                 bool found = true;
@@ -64,8 +66,7 @@ namespace SWLOR.Game.Server.Service
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
             var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
 
-            var categories = DataService.Where<CraftBlueprintCategory>(x => x.IsActive &&
-                                                                      categoryIDs.Contains(x.ID));
+            var categories = DataService.CraftBlueprintCategory.GetAllActiveByIDs(categoryIDs);
             return categories.ToList();
         }
 
@@ -172,8 +173,8 @@ namespace SWLOR.Game.Server.Service
 
         public static List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
         {
-            var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
-            return DataService.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
+            var blueprintIDs = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
+            return DataService.CraftBlueprintCategory.GetAllActiveByIDs(blueprintIDs).ToList();
         }
 
         public static List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
@@ -623,12 +624,12 @@ namespace SWLOR.Game.Server.Service
             if (building.StructureModeID != (int)StructureModeType.Workshop) return 0;
 
             // Get all child structures contained by this building which improve atmosphere.
-            var structures = DataService.Where<PCBaseStructure>(x =>
-            {
-                if (x.ParentPCBaseStructureID != buildingID) return false;
-                var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                return baseStructure.HasAtmosphere;
-            });
+            var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingID)
+                    .Where(x =>
+                    {
+                        var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                        return baseStructure.HasAtmosphere;
+                    });
 
             // Add up the total atmosphere rating, being careful not to go over the cap.
             int bonus = structures.Sum(x => 1 + x.StructureBonus);
@@ -705,7 +706,7 @@ namespace SWLOR.Game.Server.Service
             int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.MolecularReassemblyProficiency);
 
             // Calculate the base chance after factoring in skills, perks, and items.
-            int categoryChance = (int) (BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);
+            int categoryChance = (int)(BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);
 
             // Reduce the chance by the penalty. This penalty is generally determined by how many properties were already
             // applied during this batch.

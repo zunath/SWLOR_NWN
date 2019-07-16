@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             List<SkillCategory> categories = SkillService.GetActiveCategories().Where(x =>
             {
-                var skills = DataService.Where<Skill>(s => s.SkillCategoryID == x.ID && s.ContributesToSkillCap);
+                var skills = DataService.Skill.GetByCategoryIDAndContributesToSkillCap(x.ID);
                 return skills.Any();
             }).ToList();
 

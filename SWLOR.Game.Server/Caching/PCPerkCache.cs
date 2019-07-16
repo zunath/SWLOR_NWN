@@ -10,11 +10,20 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCPerk entity)
         {
+            if(ByPlayerAndPerkID.ContainsKey(entity.PlayerID))
+                Console.WriteLine("Changing existing record: " + entity.PlayerID + ", perkID = " + entity.PerkID + ", perkLevel = " + entity.PerkLevel);
+
+            Console.WriteLine("record: " + entity.PlayerID + ", perkID = " + entity.PerkID + ", perkLevel = " + entity.PerkLevel + ", count = " + ByPlayerAndPerkID.Count);
+            
             SetEntityIntoDictionary(entity.PlayerID, entity.PerkID, entity, ByPlayerAndPerkID);
+
+            Console.WriteLine("new count = " + ByPlayerAndPerkID.Count);
         }
 
         protected override void OnCacheObjectRemoved(PCPerk entity)
         {
+            Console.WriteLine("Removing record: " + entity.PlayerID + ", perkID = " + entity.PerkID + ", perkLevel = " + entity.PerkLevel);
+
             RemoveEntityFromDictionary(entity.PlayerID, entity.PerkID, ByPlayerAndPerkID);
         }
 

@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Messaging
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("MessageHub Exception: " + e);
                     _globalErrorHandler?.Invoke(subscription.Token, e);
                 }
             }

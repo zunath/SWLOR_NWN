@@ -245,10 +245,9 @@ namespace SWLOR.Game.Server.Service
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
-            var pcSkills = DataService.Where<PCSkill>
-                (x => x.PlayerID == player.GlobalID &&
-                            languages.Contains((SkillType)x.SkillID))
-                .ToList();
+
+            List<int> languageSkillIDs = languages.ConvertAll(x => (int) x);
+            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languageSkillIDs).ToList();
 
             foreach (var pcSkill in pcSkills)
             {

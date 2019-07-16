@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             description.Append("\n\n").Append(ColorTokenService.Green("Perks: ")).Append("\n\n");
-            
-            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == target.GlobalID);
+
+            var pcPerks = DataService.PCPerk.GetAllByPlayerID(target.GlobalID);
             
             foreach (PCPerk pcPerk in pcPerks)
             {

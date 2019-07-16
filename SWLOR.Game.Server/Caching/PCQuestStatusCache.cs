@@ -6,16 +6,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCQuestStatusCache: CacheBase<PCQuestStatus>
     {
-        private Dictionary<Tuple<Guid, int>, PCQuestStatus> ByPlayerAndQuestID { get; } = new Dictionary<Tuple<Guid, int>, PCQuestStatus>();
+        private Dictionary<Guid, Dictionary<int, PCQuestStatus>> ByPlayerAndQuestID { get; } = new Dictionary<Guid, Dictionary<int, PCQuestStatus>>();
 
         protected override void OnCacheObjectSet(PCQuestStatus entity)
         {
-            ByPlayerAndQuestID[new Tuple<Guid, int>(entity.PlayerID, entity.QuestID)] = entity;
+            SetEntityIntoDictionary(entity.PlayerID, entity.QuestID, entity, ByPlayerAndQuestID);
         }
 
         protected override void OnCacheObjectRemoved(PCQuestStatus entity)
         {
-            ByPlayerAndQuestID.Remove(new Tuple<Guid, int>(entity.PlayerID, entity.QuestID));
+            RemoveEntityFromDictionary(entity.PlayerID, entity.QuestID, ByPlayerAndQuestID);
         }
 
         protected override void OnSubscribeEvents()
@@ -29,15 +29,20 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestStatus GetByPlayerAndQuestID(Guid playerID, int questID)
         {
-            return ByPlayerAndQuestID[new Tuple<Guid, int>(playerID, questID)];
+            return GetEntityFromDictionary(playerID, questID, ByPlayerAndQuestID);
         }
 
         public PCQuestStatus GetByPlayerAndQuestIDOrDefault(Guid playerID, int questID)
         {
-            var key = new Tuple<Guid, int>(playerID, questID);
-            if (!ByPlayerAndQuestID.ContainsKey(key)) return default;
+            return GetEntityFromDictionaryOrDefault(playerID, questID, ByPlayerAndQuestID);
+        }
 
-            return ByPlayerAndQuestID[key];
+        public IEnumerable<PCQuestStatus> GetAllByPlayerID(Guid playerID)
+        {
+            if(!ByPlayerAndQuestID.ContainsKey(playerID))
+                return new List<PCQuestStatus>();
+
+            return ByPlayerAndQuestID[playerID].Values;
         }
 
     }

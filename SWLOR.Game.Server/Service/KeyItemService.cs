@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs)
         {
-            var result = DataService.Where<PCKeyItem>(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID)).ToList();
+            var result = DataService.PCKeyItem.GetAllByPlayerIDAndKeyItemIDs(oPC.GlobalID, keyItemIDs);
             return result.Count() == keyItemIDs.Length;
         }
 
@@ -66,10 +66,10 @@ namespace SWLOR.Game.Server.Service
 
         public static IEnumerable<PCKeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, int categoryID)
         {
-            return DataService.Where<PCKeyItem>(x =>
+            return DataService.PCKeyItem.GetAllByPlayerID(player.GlobalID).Where(x =>
             {
                 var keyItem = DataService.KeyItem.GetByID(x.KeyItemID);
-                return x.PlayerID == player.GlobalID && keyItem.KeyItemCategoryID == categoryID;
+                return keyItem.KeyItemCategoryID == categoryID;
             }).ToList();
         }
 

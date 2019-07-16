@@ -371,13 +371,11 @@ namespace SWLOR.Game.Server.Service
         {
             // Get list of skills part of this category.
             var skillIDs = DataService
-                .Where<Skill>(x => x.SkillCategoryID == skillCategoryID && x.IsActive)
+                .Skill.GetAllBySkillCategoryIDAndActive(skillCategoryID)
                 .Select(s => s.ID);
 
             // Get all PC Skills with a matching category.
-            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID &&
-                                                     skillIDs.Contains(x.SkillID))
-                .ToList();
+            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(playerID, skillIDs).ToList();
 
             return pcSkills;
         }
@@ -535,7 +533,7 @@ namespace SWLOR.Game.Server.Service
             if (oPC.IsPlayer)
             {
                 // Add any missing skills the player does not have.
-                var skills = DataService.Where<Skill>(x =>
+                var skills = DataService.Skill.GetAll().Where(x =>
                 {
                     var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillIDOrDefault(oPC.GlobalID, x.ID);
                     return pcSkill == null;
@@ -694,7 +692,7 @@ namespace SWLOR.Game.Server.Service
             if (totalSkillRanks < SkillCap) return true;
 
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
-            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
+            var pcSkills = DataService.PCSkill.GetAllByPlayerID(oPC.GlobalID).Where(x => x.SkillID != levelingSkill.SkillID);
             var totalXPs = pcSkills.Select(s =>
             {
                 var reqXP = SkillXPRequirements.Where(x => (x.Key < s.Rank || x.Key == 0 && s.XP > 0));

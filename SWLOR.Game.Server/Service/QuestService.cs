@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Service
 
             if (selectedItem == null)
             {
-                var rewardItems = DataService.Where<QuestRewardItem>(x => x.QuestID == questID);
+                var rewardItems = DataService.QuestRewardItem.GetAllByQuestID(questID);
                 foreach (QuestRewardItem reward in rewardItems)
                 {
                     _.CreateItemOnObject(reward.Resref, player.Object, reward.Quantity);
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            List<PCQuestStatus> pcQuests = DataService.Where<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.CompletionDate == null).ToList();
+            List<PCQuestStatus> pcQuests = DataService.PCQuestStatus.GetAllByPlayerID(oPC.GlobalID).Where(x => x.CompletionDate == null).ToList();
 
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the first state of the quest.
-            var questState = DataService.Where<QuestState>(x => x.QuestID == quest.ID).First();
+            var questState = DataService.QuestState.GetAllByQuestID(quest.ID).OrderBy(o => o.Sequence).First();
 
             // If this quest requires key items, ensure player has acquired them.
             if (!DoesPlayerHaveRequiredKeyItems(oPC, questState.ID))
@@ -501,8 +501,8 @@ namespace SWLOR.Game.Server.Service
             var state = DataService.QuestState.GetByQuestIDAndSequence(quest.ID,status.CurrentQuestStateID);
 
             // Retrieve the kill targets and required items necessary for this quest state.
-            var killTargets = DataService.Where<QuestKillTarget>(x => x.QuestStateID == state.ID);
-            var requiredItems = DataService.Where<QuestRequiredItem>(x => x.QuestStateID == state.ID);
+            var killTargets = DataService.QuestKillTarget.GetAllByQuestStateID(state.ID);
+            var requiredItems = DataService.QuestRequiredItem.GetAllByQuestStateID(state.ID);
 
             // Create entries for the PC kill targets.
             foreach (var kt in killTargets)
@@ -568,12 +568,12 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the player can accept the quest. false otherwise.</returns>
         private static bool DoesPlayerMeetPrerequisites(NWPlayer oPC, int questID)
         {
-            var prereqs = DataService.Where<QuestPrerequisite>(x => x.QuestID == questID).ToList();
+            var prereqs = DataService.QuestPrerequisite.GetAllByQuestID(questID).ToList();
 
             if (!oPC.IsPlayer) return false;
             if (prereqs.Count <= 0) return true;
 
-            List<int> completedQuestIDs = DataService.Where<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.CompletionDate != null)
+            List<int> completedQuestIDs = DataService.PCQuestStatus.GetAllByPlayerID(oPC.GlobalID).Where(x => x.CompletionDate != null)
                 .Select(s => s.QuestID).ToList();
 
             List<int> prereqIDs = new List<int>();
@@ -593,11 +593,11 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the player has required key items. false otherwise.</returns>
         private static bool DoesPlayerHaveRequiredKeyItems(NWPlayer oPC, int questStateID)
         {
-            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestStateID == questStateID).ToList();
+            var requiredKeyItems = DataService.QuestRequiredKeyItem.GetAllByQuestStateID(questStateID).ToList();
             if (!oPC.IsPlayer) return false;
             if (requiredKeyItems.Count <= 0) return true;
 
-            List<int> keyItemIDs = DataService.Where<PCKeyItem>(x => x.PlayerID == oPC.GlobalID)
+            List<int> keyItemIDs = DataService.PCKeyItem.GetAllByPlayerID(oPC.GlobalID)
                 .Select(s => s.KeyItemID).ToList();
 
             List<int> requiredKeyItemIDs = new List<int>();
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var playerID = oPC.GlobalID;
-                var killTargets = DataService.Where<PCQuestKillTargetProgress>(x => x.PlayerID == playerID && x.NPCGroupID == npcGroupID).ToList();
+                var killTargets = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndNPCGroupID(playerID, npcGroupID).ToList();
 
                 foreach (var kt in killTargets)
                 {
@@ -817,7 +817,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             QuestState questState = DataService.QuestState.GetByID(pcStatus.CurrentQuestStateID);
-            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestStateID == pcStatus.CurrentQuestStateID);
+            var requiredKeyItems = DataService.QuestRequiredKeyItem.GetAllByQuestStateID(pcStatus.CurrentQuestStateID);
 
             foreach (QuestRequiredKeyItem ki in requiredKeyItems)
             {
@@ -902,18 +902,15 @@ namespace SWLOR.Game.Server.Service
             if (pcStatus.CurrentQuestStateID != finalState.ID) return false;
 
             // Are there any remaining kill targets for this quest and player?
-            var killTargetCount = DataService.Where<PCQuestKillTargetProgress>(x => x.PlayerID == player.GlobalID && 
-                                                                                x.PCQuestStatusID == pcStatus.ID).Count;
+            var killTargetCount = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndPCQuestStatusID(player.GlobalID, pcStatus.ID).Count();
             if (killTargetCount > 0) return false;
 
             // Are there any remaining item requirements?
-            var itemCount = DataService.Where<PCQuestItemProgress>(x => x.PlayerID == player.GlobalID &&
-                                                                        x.PCQuestStatusID == pcStatus.ID).Count;
+            var itemCount = DataService.PCQuestItemProgress.GetCountByPCQuestStatusID(pcStatus.ID);
             if (itemCount > 0) return false;
 
             // Are there any remaining key item requirements?
-            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestID == questID &&
-                                                                                x.QuestStateID == finalState.ID)
+            var requiredKeyItems = DataService.QuestRequiredKeyItem.GetAllByQuestStateID(finalState.ID)
                 .Select(s => s.KeyItemID).ToArray();
             bool hasAllKeyItems = KeyItemService.PlayerHasAllKeyItems(player, requiredKeyItems);
             if (!hasAllKeyItems) return false;

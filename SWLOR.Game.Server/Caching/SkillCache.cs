@@ -51,5 +51,10 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByContributesToSkillCap.Values;
         }
+
+        public IEnumerable<Skill> GetAllBySkillCategoryIDAndActive(int skillCategoryID)
+        {
+            return ByCategoryID[skillCategoryID].Values.Where(x => x.IsActive);
+        }
     }
 }

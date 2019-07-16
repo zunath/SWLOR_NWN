@@ -50,5 +50,13 @@ namespace SWLOR.Game.Server.Caching
         {
             return GetEntityFromDictionaryOrDefault(playerID, skillID, ByPlayerIDAndSkillID);
         }
+
+        public IEnumerable<PCSkill> GetAllByPlayerIDAndSkillIDs(Guid playerID, IEnumerable<int> skillIDs)
+        {
+            foreach(var skillID in skillIDs)
+            {
+                yield return GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID);
+            }
+        }
     }
 }

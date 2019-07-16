@@ -385,8 +385,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (!player.IsInitializedAsPlayer) continue; // Ignored to prevent a timing issue where new characters would be included in this processing.
 
-                List<PCCustomEffect> effects = DataService.Where<PCCustomEffect>(x => x.PlayerID == player.GlobalID &&
-                                                                                      x.StancePerkID == null).ToList();
+                List<PCCustomEffect> effects = DataService.PCCustomEffect.GetAllByPlayerID(player.GlobalID).Where(x => x.StancePerkID == null).ToList();
 
                 foreach (var effect in effects)
                 {
@@ -484,7 +483,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ClearRemovedPCEffects()
         {
-            var records = DataService.Where<PCCustomEffect>(x => AppCache.PCEffectsForRemoval.Contains(x.ID)).ToList();
+            var records = DataService.PCCustomEffect.GetAllByPCCustomEffectID(AppCache.PCEffectsForRemoval.ToList());
 
             foreach (var record in records)
             {

@@ -379,7 +379,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structureItems = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
+            var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
@@ -537,7 +537,7 @@ namespace SWLOR.Game.Server.Service
             Hashtable landingSpots = new Hashtable();
 
             // First get any public starports.
-            HashSet<SpaceStarport> starports = DataService.Where<SpaceStarport>(x => x.Planet == planet);
+            List<SpaceStarport> starports = DataService.SpaceStarport.GetAllByPlanet(planet).ToList();
 
             foreach (var starport in starports)
             {
@@ -562,7 +562,7 @@ namespace SWLOR.Game.Server.Service
                         area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                     }
 
-                    var pcBases = DataService.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
+                    var pcBases = DataService.PCBase.GetAllNonApartmentPCBasesByAreaResref(area.Resref);
                     foreach (var @base in pcBases)
                     {
                         LoggingService.Trace(TraceComponent.Space, "Checking base " + @base.ID.ToString() + " for landing slots.");
@@ -572,7 +572,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             LoggingService.Trace(TraceComponent.Space, "Player has permission to land here.");
                             // Are there any docks in the base?
-                            var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
+                            var structures = DataService.PCBaseStructure.GetAllByPCBaseID(@base.ID);
                             foreach (var structure in structures)
                             {
                                 BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
@@ -1049,7 +1049,7 @@ namespace SWLOR.Game.Server.Service
 
             LoggingService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
 
-            HashSet<SpaceEncounter> encounters = DataService.Where<SpaceEncounter>(x => x.Planet == planet);
+            List<SpaceEncounter> encounters = DataService.SpaceEncounter.GetAllByPlanet(planet).ToList();
             int totalChance = 0;
 
             foreach (var encounter in encounters)
@@ -1131,7 +1131,7 @@ namespace SWLOR.Game.Server.Service
                             player.SendMessage("You found some salvage!");
 
                             BaseStructure structure = DataService.BaseStructure.GetByID(shipStructure.BaseStructureID);
-                            int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == shipStructure.ID).Count() + 1;
+                            int count = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(shipStructure.ID).Count() + 1;
                             if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
                             {
                                 player.SendMessage("Your cargo bay is full!  You weren't able to collect the salvage.");

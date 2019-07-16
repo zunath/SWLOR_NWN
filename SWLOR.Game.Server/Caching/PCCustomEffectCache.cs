@@ -7,16 +7,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCCustomEffectCache: CacheBase<PCCustomEffect>
     {
-        private Dictionary<Guid, List<PCCustomEffect>> ByPlayer { get; } = new Dictionary<Guid, List<PCCustomEffect>>();
+        private Dictionary<Guid, Dictionary<Guid, PCCustomEffect>> ByPlayer { get; } = new Dictionary<Guid, Dictionary<Guid, PCCustomEffect>>();
 
         protected override void OnCacheObjectSet(PCCustomEffect entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity, ByPlayer);
+            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayer);
         }
 
         protected override void OnCacheObjectRemoved(PCCustomEffect entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity, ByPlayer);
+            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayer);
         }
 
         protected override void OnSubscribeEvents()
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return ByPlayer[playerID].SingleOrDefault(x => x.StancePerkID == stancePerkID);
+            return ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID == stancePerkID);
         }
 
         public PCCustomEffect GetByPlayerStanceOrDefault(Guid playerID)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return ByPlayer[playerID].SingleOrDefault(x => x.StancePerkID != null);
+            return ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID != null);
         }
 
         public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, int customEffectID)
@@ -49,7 +49,27 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return ByPlayer[playerID].SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID);
+            return ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID);
+        }
+
+        public IEnumerable<PCCustomEffect> GetAllByPlayerID(Guid playerID)
+        {
+            if(!ByPlayer.ContainsKey(playerID))
+                return new List<PCCustomEffect>();
+
+            return ByPlayer[playerID].Values;
+        }
+
+        public IEnumerable<PCCustomEffect> GetAllByPCCustomEffectID(IEnumerable<Guid> pcCustomEffectIDs)
+        {
+            var list = new List<PCCustomEffect>();
+
+            foreach (var pcCustomEffectID in pcCustomEffectIDs)
+            {
+                list.Add(ByID[pcCustomEffectID]);
+            }
+
+            return list;
         }
     }
 }

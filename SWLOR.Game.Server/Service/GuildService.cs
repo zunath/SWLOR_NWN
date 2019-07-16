@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             if (now < config.LastGuildTaskUpdate.AddHours(24)) return;
             
             // Start by marking the existing tasks as not currently offered.
-            foreach (var task in DataService.Where<GuildTask>(x => x.IsCurrentlyOffered))
+            foreach (var task in DataService.GuildTask.GetAllByCurrentlyOffered())
             {
                 task.IsCurrentlyOffered = false;
                 DataService.SubmitDataChange(task, DatabaseActionType.Update);
@@ -179,9 +179,7 @@ namespace SWLOR.Game.Server.Service
             {
                 for (int rank = 0; rank <= maxRank; rank++)
                 {
-                    var rank1 = rank; // VS recommends copying the variable. Unsure why.
-                    var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID && 
-                                                                           x.RequiredRank == rank1);
+                    var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
                     IEnumerable<GuildTask> tasks;
                     
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.

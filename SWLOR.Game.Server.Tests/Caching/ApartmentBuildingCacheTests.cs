@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<ApartmentBuilding>(building));
 
             // Assert
-            Assert.AreSame(building, _cache.GetByID(1));
+            Assert.AreNotSame(building, _cache.GetByID(1));
         }
 
         [Test]
@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<ApartmentBuilding>(building2));
 
             // Assert
-            Assert.AreSame(building1, _cache.GetByID(1));
-            Assert.AreSame(building2, _cache.GetByID(2));
+            Assert.AreNotSame(building1, _cache.GetByID(1));
+            Assert.AreNotSame(building2, _cache.GetByID(2));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Tests.Caching
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(1); });
-            Assert.AreSame(building2, _cache.GetByID(2));
+            Assert.AreNotSame(building2, _cache.GetByID(2));
         }
 
         [Test]

@@ -26,17 +26,18 @@ namespace SWLOR.Game.Server.Tests.Caching
 
 
         [Test]
-        public void GetByID_OneItem_ReturnsArea()
+        public void GetByID_OneItem_ReturnsCopyOfArea()
         {
             // Arrange
             var id = Guid.NewGuid();
-            Area entity = new Area {ID = id};
+            Area entity = new Area {ID = id, Name = "my area"};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity));
 
             // Assert
-            Assert.AreSame(entity, _cache.GetByID(id));
+            Assert.AreNotSame(entity, _cache.GetByID(id));
+            Assert.AreEqual("my area", entity.Name);
         }
 
         [Test]
@@ -53,8 +54,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity2));
 
             // Assert
-            Assert.AreSame(entity1, _cache.GetByID(id1));
-            Assert.AreSame(entity2, _cache.GetByID(id2));
+            Assert.AreNotSame(entity1, _cache.GetByID(id1));
+            Assert.AreNotSame(entity2, _cache.GetByID(id2));
         }
 
         [Test]
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Tests.Caching
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
-            Assert.AreSame(entity2, _cache.GetByID(id2));
+            Assert.AreNotSame(entity2, _cache.GetByID(id2));
         }
 
         [Test]
@@ -108,7 +109,7 @@ namespace SWLOR.Game.Server.Tests.Caching
             var result = _cache.GetByResref(resref);
 
             // Assert
-            Assert.AreSame(result, entity1);
+            Assert.AreNotSame(result, entity1);
         }
 
         [Test]
@@ -126,7 +127,7 @@ namespace SWLOR.Game.Server.Tests.Caching
             var result2 = _cache.GetByResref(resref2);
 
             // Assert
-            Assert.AreSame(result2, entity2);
+            Assert.AreNotSame(result2, entity2);
         }
 
         [Test]

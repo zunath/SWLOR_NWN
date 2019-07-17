@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity));
 
             // Assert
-            Assert.AreSame(entity, _cache.GetByID(id));
+            Assert.AreNotSame(entity, _cache.GetByID(id));
         }
 
         [Test]
@@ -54,8 +54,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity2));
 
             // Assert
-            Assert.AreSame(entity1, _cache.GetByID(id1));
-            Assert.AreSame(entity2, _cache.GetByID(id2));
+            Assert.AreNotSame(entity1, _cache.GetByID(id1));
+            Assert.AreNotSame(entity2, _cache.GetByID(id2));
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Tests.Caching
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
-            Assert.AreSame(entity2, _cache.GetByID(id2));
+            Assert.AreNotSame(entity2, _cache.GetByID(id2));
         }
 
         [Test]
@@ -114,9 +114,9 @@ namespace SWLOR.Game.Server.Tests.Caching
             var results = _cache.GetAllByPCBaseID(pcBaseID).ToList();
 
             // Assert
-            Assert.AreSame(entity1, results[0]);
-            Assert.AreSame(entity2, results[1]);
-            Assert.AreSame(entity3, results[2]);
+            Assert.AreNotSame(entity1, results[0]);
+            Assert.AreNotSame(entity2, results[1]);
+            Assert.AreNotSame(entity3, results[2]);
         }
 
         [Test]

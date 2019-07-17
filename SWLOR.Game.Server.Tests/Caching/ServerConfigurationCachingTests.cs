@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<ServerConfiguration>(entity));
 
             // Assert
-            Assert.AreSame(entity, _cache.Get());
+            Assert.AreNotSame(entity, _cache.Get());
         }
 
     }

@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
-            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            Player pc = DataService.Player.GetByID(player.GlobalID);
             pc.RespawnLocationX = player.Position.m_X;
             pc.RespawnLocationY = player.Position.m_Y;
             pc.RespawnLocationZ = player.Position.m_Z;
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void TeleportPlayerToBindPoint(NWPlayer pc)
         {
-            Player entity = DataService.Single<Player>(x => x.ID == pc.GlobalID);
+            Player entity = DataService.Player.GetByID(pc.GlobalID);
             TeleportPlayerToBindPoint(pc, entity);
         }
 

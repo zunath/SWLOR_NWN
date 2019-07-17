@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return DataService.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
+            return DataService.PCOutfit.GetByID(oPC.GlobalID);
         }
 
         private bool CanModifyClothes()

@@ -28,8 +28,9 @@ namespace SWLOR.Game.Server.Conversation
                 return null;
             }
 
-            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase pcBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            Guid pcBaseStructureID = new Guid(structureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             bool bSpace = SpaceService.IsLocationSpace(pcBase.ShipLocation);
 
@@ -90,15 +91,15 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID); 
-            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
-            BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID); 
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
 
             NWPlaceable bay = SpaceService.GetCargoBay(GetPC().Area, null);
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int currentResources = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID).Count();
             int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
             int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
             int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
@@ -134,8 +135,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             Guid structureID = new Guid(_.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
+            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
@@ -183,7 +184,8 @@ namespace SWLOR.Game.Server.Conversation
                         EndConversation();
 
                         // Save details of the current dock for later.
-                        PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBase.ShipLocation);
+                        Guid shipPCBaseID = new Guid(pcBase.ShipLocation);
+                        PCBaseStructure dock = DataService.PCBaseStructure.GetByIDOrDefault(shipPCBaseID);
 
                         pcBase.Fuel -= 1;
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);
@@ -207,7 +209,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
                         if (dock != null)
                         {
-                            PCBase dockBase = DataService.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
+                            PCBase dockBase = DataService.PCBase.GetByID(dock.PCBaseID);
 
                             IEnumerable<NWArea> areas = NWModule.Get().Areas;
                             NWArea landingArea = new NWArea(_.GetFirstArea());
@@ -329,7 +331,7 @@ namespace SWLOR.Game.Server.Conversation
                 Guid dockStructureID = dialog.CustomData["LAND_" + response.Text];
 
                 // This could be a public startport ID or a private dock base structure ID.  
-                SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID == dockStructureID);
+                SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(dockStructureID);
                 if (starport != null)
                 {
                     // We have a public starport.  
@@ -356,7 +358,7 @@ namespace SWLOR.Game.Server.Conversation
                 else
                 {
                     LoggingService.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
-                    PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
+                    PCBaseStructure dock = DataService.PCBaseStructure.GetByIDOrDefault(dockStructureID);
 
                     if (dock == null)
                     {
@@ -460,8 +462,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             Guid structureID = new Guid(_.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));

@@ -12,5 +12,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Quantity { get; set; }
         public int QuestStateID { get; set; }
         public bool MustBeCraftedByPlayer { get; set; }
+
+        public IEntity Clone()
+        {
+            return new QuestRequiredItem
+            {
+                ID = ID,
+                QuestID = QuestID,
+                Resref = Resref,
+                Quantity = Quantity,
+                QuestStateID = QuestStateID,
+                MustBeCraftedByPlayer = MustBeCraftedByPlayer
+            };
+        }
     }
 }

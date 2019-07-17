@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         {
             RegisterAreaInstances();
             var areas = NWModule.Get().Areas;
-            var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();
+            var dbAreas = DataService.Area.GetAll().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
 
             foreach (var area in areas)
@@ -129,10 +129,6 @@ namespace SWLOR.Game.Server.Service
             {
                 Console.WriteLine("WARNING: Area baking has been disabled. You may encounter errors during normal operations. This should only be disabled for debugging purposes. Please shut down the server and set the AREA_BAKING_ENABLED argument to true for all other scenarios.");
             }
-
-            // Cache both areas and area walkmeshes now that they're built, if they aren't already.
-            DataService.GetAll<Area>();
-            DataService.GetAll<AreaWalkmesh>();
         }
 
         // Area baking process
@@ -143,13 +139,13 @@ namespace SWLOR.Game.Server.Service
         // accuracy I wanted, without too much overhead. Your mileage may vary.
         private static void BakeAreas()
         {
-            var config = DataService.GetAll<ServerConfiguration>().First();
+            var config = DataService.ServerConfiguration.Get();
             int Step = config.AreaBakeStep;
             const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+                var dbArea = DataService.Area.GetByResref(area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
@@ -187,7 +183,7 @@ namespace SWLOR.Game.Server.Service
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+                    var walkmeshes = DataService.AreaWalkmesh.GetAllByAreaID(dbArea.ID).ToList();
                     for(int x = walkmeshes.Count-1; x >= 0; x--)
                     {
                         var mesh = walkmeshes.ElementAt(x);

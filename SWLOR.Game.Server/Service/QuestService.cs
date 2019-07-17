@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The quest with the provided quest ID.</returns>
         public static Quest GetQuestByID(int questID)
         {
-            return DataService.Single<Quest>(x => x.ID == questID);
+            return DataService.Quest.GetByID(questID);
         }
 
         /// <summary>
@@ -126,10 +126,13 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            Quest quest = DataService.Single<Quest>(x => x.ID == questID);
-            PCQuestStatus pcState = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            Quest quest = DataService.Quest.GetByID(questID);
+            PCQuestStatus pcState = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
 
-            QuestState finalState = DataService.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
+            // Get all quest states, order by the sequence, and then get the last one.
+            QuestState finalState = DataService.QuestState.GetAllByQuestID(questID)
+                .OrderBy(o => o.Sequence)
+                .Last();
 
             if (finalState == null)
             {
@@ -143,7 +146,7 @@ namespace SWLOR.Game.Server.Service
 
             if (selectedItem == null)
             {
-                var rewardItems = DataService.Where<QuestRewardItem>(x => x.QuestID == questID);
+                var rewardItems = DataService.QuestRewardItem.GetAllByQuestID(questID);
                 foreach (QuestRewardItem reward in rewardItems)
                 {
                     _.CreateItemOnObject(reward.Resref, player.Object, reward.Quantity);
@@ -176,7 +179,7 @@ namespace SWLOR.Game.Server.Service
 
             if (quest.RewardFame > 0)
             {
-                PCRegionalFame fame = DataService.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == player.GlobalID && x.FameRegionID == quest.FameRegionID);
+                PCRegionalFame fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, quest.FameRegionID);
                 DatabaseActionType action = DatabaseActionType.Update;
 
                 if (fame == null)
@@ -238,12 +241,12 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            List<PCQuestStatus> pcQuests = DataService.Where<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.CompletionDate == null).ToList();
+            List<PCQuestStatus> pcQuests = DataService.PCQuestStatus.GetAllByPlayerID(oPC.GlobalID).Where(x => x.CompletionDate == null).ToList();
 
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
-                var quest = DataService.Get<Quest>(pcQuest.QuestID);
-                var state = DataService.Get<QuestState>(pcQuest.CurrentQuestStateID);
+                var quest = DataService.Quest.GetByID(pcQuest.QuestID);
+                var state = DataService.QuestState.GetByID(pcQuest.CurrentQuestStateID);
                 _.AddJournalQuestEntry(quest.JournalTag, state.JournalStateID, oPC.Object, FALSE);
             }
         }
@@ -274,8 +277,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Retrieve the player's current quest status for this quest.
             // If they haven't accepted it yet, this will be null.
-            PCQuestStatus status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && 
-                                                                                   x.QuestID == quest.ID);
+            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, quest.ID);
 
             // If the status is null, it's assumed that the player hasn't accepted it yet.
             if (status != null)
@@ -309,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the first state of the quest.
-            var questState = DataService.Where<QuestState>(x => x.QuestID == quest.ID).First();
+            var questState = DataService.QuestState.GetAllByQuestID(quest.ID).OrderBy(o => o.Sequence).First();
 
             // If this quest requires key items, ensure player has acquired them.
             if (!DoesPlayerHaveRequiredKeyItems(oPC, questState.ID))
@@ -320,7 +322,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the player's fame information. Treat a missing record as having 0 fame for this region.
-            PCRegionalFame fame = DataService.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
+            PCRegionalFame fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(oPC.GlobalID, quest.FameRegionID);
             int fameAmount = fame == null ? 0 : fame.Amount;
 
             // Ensure player has necessary fame for accepting this quest.
@@ -346,7 +348,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // Retrieve quest from the cache.
-            Quest quest = DataService.Single<Quest>(x => x.ID == questID);
+            Quest quest = DataService.Quest.GetByID(questID);
 
             // Check whether player can accept the quest. Send a message if they can't.
             if (!CanAcceptQuest(player, quest, true))
@@ -356,8 +358,7 @@ namespace SWLOR.Game.Server.Service
 
             // By this point, it's assumed the player will accept the quest.
             // However, if this quest is repeatable we must first update the existing entry.
-            var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.QuestID == questID && 
-                                                                                     x.PlayerID == player.GlobalID);
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             bool foundExisting = status != null;
 
             // Didn't find an existing state so we'll create a new object.
@@ -371,7 +372,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the first quest state for this quest.
-            var questState = DataService.Single<QuestState>(x => x.QuestID == questID && x.Sequence == 1);
+            var questState = DataService.QuestState.GetByQuestIDAndSequence(questID, 1);
             status.CurrentQuestStateID = questState.ID;
             
             // Give temporary key item at start of quest.
@@ -428,7 +429,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // Retrieve the player's current quest state.
-            PCQuestStatus questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            PCQuestStatus questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
 
             // Can't find a state? Notify the player they haven't accepted the quest.
             if (questStatus == null)
@@ -443,9 +444,9 @@ namespace SWLOR.Game.Server.Service
             if (questStatus.CompletionDate != null) return;
 
             // Retrieve the quest, the current state, and the next state of the quest from the cache.
-            Quest quest = DataService.Get<Quest>(questStatus.QuestID);
-            QuestState currentState = DataService.Get<QuestState>(questStatus.CurrentQuestStateID);
-            QuestState nextState = DataService.SingleOrDefault<QuestState>(x => x.QuestID == quest.ID && x.Sequence == currentState.Sequence + 1);
+            Quest quest = DataService.Quest.GetByID(questStatus.QuestID);
+            QuestState currentState = DataService.QuestState.GetByID(questStatus.CurrentQuestStateID);
+            QuestState nextState = DataService.QuestState.GetByQuestIDAndSequenceOrDefault(quest.ID, currentState.Sequence + 1);
 
             // If there's no state after this one, the assumption is that it's time to complete the quest.
             if (nextState == null) 
@@ -496,12 +497,12 @@ namespace SWLOR.Game.Server.Service
         private static void CreateExtendedQuestDataEntries(PCQuestStatus status)
         {
             // Retrieve the quest and state information from the cache.
-            var quest = DataService.Get<Quest>(status.QuestID);
-            var state = DataService.Single<QuestState>(x => x.QuestID == quest.ID && x.ID == status.CurrentQuestStateID);
+            var quest = DataService.Quest.GetByID(status.QuestID);
+            var state = DataService.QuestState.GetByID(status.CurrentQuestStateID);
 
             // Retrieve the kill targets and required items necessary for this quest state.
-            var killTargets = DataService.Where<QuestKillTarget>(x => x.QuestStateID == state.ID);
-            var requiredItems = DataService.Where<QuestRequiredItem>(x => x.QuestStateID == state.ID);
+            var killTargets = DataService.QuestKillTarget.GetAllByQuestStateID(state.ID);
+            var requiredItems = DataService.QuestRequiredItem.GetAllByQuestStateID(state.ID);
 
             // Create entries for the PC kill targets.
             foreach (var kt in killTargets)
@@ -545,7 +546,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!oPC.IsPlayer) return;
 
-            Quest quest = DataService.Single<Quest>(x => x.ID == questID);
+            Quest quest = DataService.Quest.GetByID(questID);
 
             if (quest.AllowRewardSelection)
             {
@@ -567,12 +568,12 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the player can accept the quest. false otherwise.</returns>
         private static bool DoesPlayerMeetPrerequisites(NWPlayer oPC, int questID)
         {
-            var prereqs = DataService.Where<QuestPrerequisite>(x => x.QuestID == questID).ToList();
+            var prereqs = DataService.QuestPrerequisite.GetAllByQuestID(questID).ToList();
 
             if (!oPC.IsPlayer) return false;
             if (prereqs.Count <= 0) return true;
 
-            List<int> completedQuestIDs = DataService.Where<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.CompletionDate != null)
+            List<int> completedQuestIDs = DataService.PCQuestStatus.GetAllByPlayerID(oPC.GlobalID).Where(x => x.CompletionDate != null)
                 .Select(s => s.QuestID).ToList();
 
             List<int> prereqIDs = new List<int>();
@@ -592,11 +593,11 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the player has required key items. false otherwise.</returns>
         private static bool DoesPlayerHaveRequiredKeyItems(NWPlayer oPC, int questStateID)
         {
-            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestStateID == questStateID).ToList();
+            var requiredKeyItems = DataService.QuestRequiredKeyItem.GetAllByQuestStateID(questStateID).ToList();
             if (!oPC.IsPlayer) return false;
             if (requiredKeyItems.Count <= 0) return true;
 
-            List<int> keyItemIDs = DataService.Where<PCKeyItem>(x => x.PlayerID == oPC.GlobalID)
+            List<int> keyItemIDs = DataService.PCKeyItem.GetAllByPlayerID(oPC.GlobalID)
                 .Select(s => s.KeyItemID).ToList();
 
             List<int> requiredKeyItemIDs = new List<int>();
@@ -622,8 +623,8 @@ namespace SWLOR.Game.Server.Service
 
             if (questID <= 0 || questStateSequence <= 0 || string.IsNullOrWhiteSpace(questItemResref)) return;
 
-            PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
-            QuestState questState = DataService.Get<QuestState>(status.CurrentQuestStateID);
+            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(oPC.GlobalID, questID);
+            QuestState questState = DataService.QuestState.GetByID(status.CurrentQuestStateID);
 
             if (questStateSequence != questState.Sequence) return;
             if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, questItemResref)) == FALSE) return;
@@ -669,13 +670,13 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var playerID = oPC.GlobalID;
-                var killTargets = DataService.Where<PCQuestKillTargetProgress>(x => x.PlayerID == playerID && x.NPCGroupID == npcGroupID).ToList();
+                var killTargets = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndNPCGroupID(playerID, npcGroupID).ToList();
 
                 foreach (var kt in killTargets)
                 {
-                    var questStatus = DataService.Get<PCQuestStatus>(kt.PCQuestStatusID);
-                    var quest = DataService.Get<Quest>(questStatus.QuestID);
-                    var npcGroup = DataService.Get<NPCGroup>(kt.NPCGroupID);
+                    var questStatus = DataService.PCQuestStatus.GetByID(kt.PCQuestStatusID);
+                    var quest = DataService.Quest.GetByID(questStatus.QuestID);
+                    var npcGroup = DataService.NPCGroup.GetByID(kt.NPCGroupID);
 
                     kt.RemainingToKill--;
                     string targetGroupName = npcGroup.Name;
@@ -745,10 +746,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCQuestStatus pcQuestStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcQuestStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
             if (pcQuestStatus == null) return;
 
-            QuestState questState = DataService.Get<QuestState>(pcQuestStatus.CurrentQuestStateID);
+            QuestState questState = DataService.QuestState.GetByID(pcQuestStatus.CurrentQuestStateID);
 
             if (questState.Sequence != questSequence ||
               (questState.QuestTypeID != (int)QuestType.UseObject &&
@@ -807,7 +808,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!oPC.IsPlayer) return;
 
-            PCQuestStatus pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
 
             if (pcStatus == null)
             {
@@ -815,8 +816,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            QuestState questState = DataService.Get<QuestState>(pcStatus.CurrentQuestStateID);
-            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestStateID == pcStatus.CurrentQuestStateID);
+            QuestState questState = DataService.QuestState.GetByID(pcStatus.CurrentQuestStateID);
+            var requiredKeyItems = DataService.QuestRequiredKeyItem.GetAllByQuestStateID(pcStatus.CurrentQuestStateID);
 
             foreach (QuestRequiredKeyItem ki in requiredKeyItems)
             {
@@ -857,7 +858,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if player has completed quest. false otherwise.</returns>
         public static bool HasPlayerCompletedQuest(NWObject oPC, int questID)
         {
-            PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(oPC.GlobalID, questID);
 
             return status?.CompletionDate != null;
         }
@@ -870,10 +871,10 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The ID number of the journal entry</returns>
         public static int GetPlayerQuestJournalID(NWObject oPC, int questID)
         {
-            PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(oPC.GlobalID, questID);
 
             if (status == null) return -1;
-            var state = DataService.Get<QuestState>(status.CurrentQuestStateID);
+            var state = DataService.QuestState.GetByID(status.CurrentQuestStateID);
             return state.JournalStateID;
         }
 
@@ -891,26 +892,25 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerCompleteQuest(NWPlayer player, int questID)
         {
             // Has the player even accepted this quest?
-            var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcStatus == null) return false;
 
             // Is the player on the final state of this quest?
-            var finalState = DataService.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
+            var finalState = DataService.QuestState.GetAllByQuestID(questID) 
+                .OrderBy(o => o.Sequence)
+                .Last();
             if (pcStatus.CurrentQuestStateID != finalState.ID) return false;
 
             // Are there any remaining kill targets for this quest and player?
-            var killTargetCount = DataService.Where<PCQuestKillTargetProgress>(x => x.PlayerID == player.GlobalID && 
-                                                                                x.PCQuestStatusID == pcStatus.ID).Count;
+            var killTargetCount = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndPCQuestStatusID(player.GlobalID, pcStatus.ID).Count();
             if (killTargetCount > 0) return false;
 
             // Are there any remaining item requirements?
-            var itemCount = DataService.Where<PCQuestItemProgress>(x => x.PlayerID == player.GlobalID &&
-                                                                        x.PCQuestStatusID == pcStatus.ID).Count;
+            var itemCount = DataService.PCQuestItemProgress.GetCountByPCQuestStatusID(pcStatus.ID);
             if (itemCount > 0) return false;
 
             // Are there any remaining key item requirements?
-            var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestID == questID &&
-                                                                                x.QuestStateID == finalState.ID)
+            var requiredKeyItems = DataService.QuestRequiredKeyItem.GetAllByQuestStateID(finalState.ID)
                 .Select(s => s.KeyItemID).ToArray();
             bool hasAllKeyItems = KeyItemService.PlayerHasAllKeyItems(player, requiredKeyItems);
             if (!hasAllKeyItems) return false;

@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
-            var mode = DataService.Get<StructureMode>(structure.StructureModeID);
+            var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
+            var mode = DataService.StructureMode.GetByID(structure.StructureModeID);
             var modeType = (StructureModeType) mode.ID;
 
             string header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
+            var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
             var modeType = (StructureModeType)structure.StructureModeID;
             string warning;
 
@@ -166,11 +166,11 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
+            var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
             var impoundedItems = 0;
 
             // Remove primary residents
-            var primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == pcBaseStructureID);
+            var primaryResident = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(pcBaseStructureID);
             if (primaryResident != null)
             {
                 primaryResident.PrimaryResidencePCBaseStructureID = null;

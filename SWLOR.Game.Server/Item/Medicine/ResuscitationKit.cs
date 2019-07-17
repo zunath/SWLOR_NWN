@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (target.IsPlayer)
             {
                 baseHeal = (int)(baseHeal * effectivenessPercent);
-                Player dbPlayer = DataService.Single<Player>(x => x.ID == target.GlobalID);
+                Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
                 int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
                 int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 

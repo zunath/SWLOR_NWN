@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
 
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
-            Player playerEntity = DataService.Single<Player>(x => x.ID == target.GlobalID);
+            Player playerEntity = DataService.Player.GetByID(target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
 
@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             description.Append("\n\n").Append(ColorTokenService.Green("Perks: ")).Append("\n\n");
-            
-            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == target.GlobalID);
+
+            var pcPerks = DataService.PCPerk.GetAllByPlayerID(target.GlobalID);
             
             foreach (PCPerk pcPerk in pcPerks)
             {
-                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                var perk = DataService.Perk.GetByID(pcPerk.PerkID);
                 description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
             }
             

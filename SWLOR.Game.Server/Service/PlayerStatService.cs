@@ -32,8 +32,10 @@ namespace SWLOR.Game.Server.Service
                  ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
                  ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
 
-            Player pcEntity = DataService.Get<Player>(player.GlobalID);
-            List<PCSkill> skills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
+            Player pcEntity = DataService.Player.GetByID(player.GlobalID);
+            List<PCSkill> skills = DataService.PCSkill
+                .GetAllByPlayerID(player.GlobalID)
+                .Where(x => x.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
             
             float strBonus = 0.0f;
@@ -47,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (PCSkill pcSkill in skills)
                 {
-                    Skill skill = DataService.Get<Skill>(pcSkill.SkillID);
+                    Skill skill = DataService.Skill.GetByID(pcSkill.SkillID);
                     CustomAttribute primary = (CustomAttribute) skill.Primary;
                     CustomAttribute secondary = (CustomAttribute) skill.Secondary;
                     CustomAttribute tertiary = (CustomAttribute) skill.Tertiary;
@@ -277,7 +279,7 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                var pcSkills = DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
                 
                 int heavyRank = pcSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
@@ -436,7 +438,7 @@ namespace SWLOR.Game.Server.Service
 
         public static float EffectiveResidencyBonus(NWPlayer player)
         {
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             // Player doesn't have either kind of residence. Return 0f
             if (dbPlayer.PrimaryResidencePCBaseID == null &&
@@ -451,18 +453,19 @@ namespace SWLOR.Game.Server.Service
             // Apartments - Pull structures directly from the table based on the PCBaseID
             if (dbPlayer.PrimaryResidencePCBaseID != null)
             {
-                structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == dbPlayer.PrimaryResidencePCBaseID).ToList();
+                structures = DataService.PCBaseStructure.GetAllByPCBaseID((Guid)dbPlayer.PrimaryResidencePCBaseID).ToList();
                 
             }
             // Buildings - Get the building's PCBaseID and then grab its children
-            else
+            else if (dbPlayer.PrimaryResidencePCBaseStructureID != null)
             {
-                structures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
+                structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID((Guid) dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
             }
+            else return 0.0f;
 
             var atmoStructures = structures.Where(x =>
             {
-                var baseStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
+                var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             }).ToList();
             
@@ -514,7 +517,7 @@ namespace SWLOR.Game.Server.Service
                 itemSkill == SkillType.Shields) return 0;
 
             int weaponSkillID = (int)itemSkill;
-            PCSkill skill = DataService.Single<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID == weaponSkillID);
+            PCSkill skill = DataService.PCSkill.GetByPlayerIDAndSkillID(oPC.GlobalID, weaponSkillID);
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;

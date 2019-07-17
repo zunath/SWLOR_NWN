@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
             // Player is initialized but not in the DB. Wipe the tag and rerun them through initialization - something went wrong before.
             if (player.IsInitializedAsPlayer)
             {
-                if (DataService.GetAll<Player>().SingleOrDefault(x => x.ID == player.GlobalID) == null)
+                if (!DataService.Player.ExistsByID(player.GlobalID))
                 {
                     _.SetTag(player, string.Empty);
                 }
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Service
 
                 Player entity = CreateDBPCEntity(player);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
-                
-                var skills = DataService.GetAll<Skill>();
+
+                var skills = DataService.Skill.GetAll();
                 foreach (var skill in skills)
                 {
                     var pcSkill = new PCSkill
@@ -264,13 +264,13 @@ namespace SWLOR.Game.Server.Service
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return DataService.Get<Player>(player.GlobalID);
+            return DataService.Player.GetByID(player.GlobalID);
         }
 
         public static Player GetPlayerEntity(Guid playerID)
         {
             if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
-            return DataService.Get<Player>(playerID);
+            return DataService.Player.GetByID(playerID);
         }
 
         private static void OnAreaEnter()
@@ -329,7 +329,7 @@ namespace SWLOR.Game.Server.Service
         private static void ShowMOTD()
         {
             NWPlayer player = _.GetEnteringObject();
-            ServerConfiguration config = DataService.GetAll<ServerConfiguration>().First();
+            ServerConfiguration config = DataService.ServerConfiguration.Get();
             string message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
 
             _.DelayCommand(6.5f, () =>
@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleHeartbeat()
         {
             Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = DataService.Where<Data.Entity.Player>(x => playerIDs.Contains(x.ID)).ToList();
+            var entities = DataService.Player.GetAllByIDs(playerIDs).ToList();
 
             foreach (var player in NWModule.Get().Players)
             {

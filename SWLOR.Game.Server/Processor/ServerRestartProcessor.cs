@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -86,8 +87,9 @@ namespace SWLOR.Game.Server.Processor
                         player.FloatingText(message);
 
                         // If the player has a lease which is expiring in <= 24 hours, notify them.
-                        int leasesExpiring = DataService.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
-
+                        int leasesExpiring = DataService.PCBase
+                            .GetAllByPlayerID(player.GlobalID)
+                            .Count(x => x.DateRentDue.AddHours(-24) <= now);
                         if (leasesExpiring > 0)
                         {
                             string leaseDetails = leasesExpiring == 1 ? "1 lease" : leasesExpiring + " leases";

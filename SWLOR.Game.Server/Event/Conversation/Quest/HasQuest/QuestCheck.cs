@@ -19,13 +19,13 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.HasQuest
                 int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 
-                if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
+                if (!DataService.Quest.ExistsByID(questID))
                 {
                     _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                     return false;
                 }
 
-                var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+                var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
                 return status != null && status.CurrentQuestStateID > 0;
             }
         }

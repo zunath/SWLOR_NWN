@@ -94,8 +94,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var guild = DataService.Get<Guild>((int) model.Guild);
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == guild.ID && x.PlayerID == player.GlobalID);
+            var guild = DataService.Guild.GetByID((int) model.Guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild.ID);
             int requiredPoints = GuildService.RankProgression[pcGP.Rank];
 
             string header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadTellMePage()
         {
-            var guilds = DataService.GetAll<Guild>();
+            var guilds = DataService.Guild.GetAll();
 
             string header = "Guilds are organizations focused on the advancement of a particular task. Every guild is freely open for you to contribute as you see fit. Those who contribute the most will receive the biggest benefits.\n\n";
             header += "One of the ways we reward contributors is by way of Guild Points or GP. When you complete a task - such as hunting a beast or creating needed supplies - you'll receive not only payment but also GP.\n\n";
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int)model.Guild && x.PlayerID == player.GlobalID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) model.Guild);
 
             // If player's rank is too low, send them to the page explaining that.
             if (pcGP.Rank <= 0)
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int)model.Guild && x.PlayerID == player.GlobalID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)model.Guild);
 
             // Check the player's rank and ensure they can access this store.
             if (pcGP.Rank < responseID)
@@ -211,36 +211,38 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("TaskListPage");
 
-            var lastUpdate = DataService.Single<ServerConfiguration>().LastGuildTaskUpdate;
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
-                                                             x.GuildID == (int) model.Guild);
+            var lastUpdate = DataService.ServerConfiguration.Get().LastGuildTaskUpdate;
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) model.Guild);
 
             // It's possible for players to have tasks which are no longer offered. 
             // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.
-            var questIDs = DataService.Where<PCQuestStatus>(x => x.PlayerID == player.GlobalID && 
-                                                                 x.CompletionDate == null)
+            var questIDs = DataService.PCQuestStatus
+                .GetAllByPlayerID(player.GlobalID)
+                .Where(x => x.CompletionDate == null)
                 .Select(s => s.QuestID);
-            var expiredTasks = DataService.Where<GuildTask>(x => !x.IsCurrentlyOffered && 
-                                                                 questIDs.Contains(x.QuestID) &&
-                                                                 x.GuildID == (int)model.Guild)
+            var expiredTasks = DataService.GuildTask
+                .GetAll()
+                .Where(x => !x.IsCurrentlyOffered &&
+                            questIDs.Contains(x.QuestID) &&
+                            x.GuildID == (int)model.Guild)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in expiredTasks)
             {
-                var quest = DataService.Get<Quest>(task.QuestID);
+                var quest = DataService.Quest.GetByID(task.QuestID);
                 string status = ColorTokenService.Green("{ACCEPTED}");
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
             }
 
             // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs.
-            var tasks = DataService.Where<GuildTask>(x => x.GuildID == (int) model.Guild && 
-                                                          x.IsCurrentlyOffered &&
-                                                          x.RequiredRank <= pcGP.Rank)
+            var tasks = DataService.GuildTask
+                .GetAllByCurrentlyOffered()
+                .Where(x => x.GuildID == (int) model.Guild &&
+                            x.RequiredRank <= pcGP.Rank)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in tasks)
             {
-                var quest = DataService.Get<Quest>(task.QuestID);
-                var questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
-                                                                                  x.QuestID == task.QuestID);
+                var quest = DataService.Quest.GetByID(task.QuestID);
+                var questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
 
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
@@ -272,10 +274,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var task = DataService.Get<GuildTask>(model.TaskID);
-            var quest = DataService.Get<Quest>(task.QuestID);
-            var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
-                                                                         x.QuestID == task.QuestID);
+            var task = DataService.GuildTask.GetByID(model.TaskID);
+            var quest = DataService.Quest.GetByID(task.QuestID);
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
             bool showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
             bool showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
             
@@ -296,7 +297,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var npc = GetDialogTarget();
             var model = GetDialogCustomData<Model>();
-            var task = DataService.Get<GuildTask>(model.TaskID);
+            var task = DataService.GuildTask.GetByID(model.TaskID);
             
             switch (responseID)
             {
@@ -313,10 +314,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleGiveReport(NWPlayer player, int questID)
         {
-            var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
-                                                                           x.QuestID == questID);
+            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcStatus == null) return;
-            var state = DataService.Get<QuestState>(pcStatus.CurrentQuestStateID);
+            var state = DataService.QuestState.GetByID(pcStatus.CurrentQuestStateID);
             
             // Quest is calling for collecting items. Run that method.
             if (state.QuestTypeID == (int) QuestType.CollectItems)

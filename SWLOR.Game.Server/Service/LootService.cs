@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         public static ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
-            var lootTableItems = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
+            var lootTableItems = DataService.LootTableItem.GetAllByLootTableID(lootTableID).ToList();
 
             if (lootTableItems.Count <= 0) return null;
             int[] weights = new int[lootTableItems.Count];

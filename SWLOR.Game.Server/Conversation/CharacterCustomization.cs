@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             int association = model.AssociationID;
             var player = GetPC();
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             dbPlayer.AssociationID = association;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

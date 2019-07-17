@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // If player is missing any entries for guild points, add them now.
-            foreach (var guild in DataService.GetAll<Guild>())
+            foreach (var guild in DataService.Guild.GetAll())
             {
-                var pcGP = DataService.SingleOrDefault<PCGuildPoint>(x => x.GuildID == guild.ID && x.PlayerID == player.GlobalID);
+                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildIDOrDefault(player.GlobalID, guild.ID);
 
                 // No GP entry found. Add one now.
                 if (pcGP == null)
@@ -98,8 +98,8 @@ namespace SWLOR.Game.Server.Service
             int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations) + 1;
             baseAmount *= perkBonus;
 
-            var dbGuild = DataService.Get<Guild>((int) guild);
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int) guild && x.PlayerID == player.GlobalID);
+            var dbGuild = DataService.Guild.GetByID((int) guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) guild);
             pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questID">The ID of the quest</param>
         private static void OnQuestCompleted(NWPlayer player, int questID)
         {
-            var quest = DataService.Get<Quest>(questID);
+            var quest = DataService.Quest.GetByID(questID);
             // GP rewards not specified. Bail out early.
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return;
 
@@ -156,14 +156,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnModuleLoad()
         {
-            var config = DataService.Get<ServerConfiguration>(1);
+            var config = DataService.ServerConfiguration.Get();
             var now = DateTime.UtcNow;
             
             // 24 hours haven't passed since the last cycle. Bail out now.
             if (now < config.LastGuildTaskUpdate.AddHours(24)) return;
             
             // Start by marking the existing tasks as not currently offered.
-            foreach (var task in DataService.Where<GuildTask>(x => x.IsCurrentlyOffered))
+            foreach (var task in DataService.GuildTask.GetAllByCurrentlyOffered())
             {
                 task.IsCurrentlyOffered = false;
                 DataService.SubmitDataChange(task, DatabaseActionType.Update);
@@ -175,13 +175,11 @@ namespace SWLOR.Game.Server.Service
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
-            foreach (var guild in DataService.GetAll<Guild>())
+            foreach (var guild in DataService.Guild.GetAll())
             {
-                for (int rank = 0; rank <= maxRank; rank++)
+                for (int rank = 0; rank < maxRank; rank++)
                 {
-                    var rank1 = rank; // VS recommends copying the variable. Unsure why.
-                    var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID && 
-                                                                           x.RequiredRank == rank1);
+                    var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
                     IEnumerable<GuildTask> tasks;
                     
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
@@ -218,11 +216,10 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static int CalculateGuildPointsReward(NWPlayer player, int questID)
         {
-            var quest = DataService.Get<Quest>(questID);
+            var quest = DataService.Quest.GetByID(questID);
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return 0;
 
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
-                                                             x.GuildID == quest.RewardGuildID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)quest.RewardGuildID);
             float rankBonus = 0.25f * pcGP.Rank;
             return quest.RewardGuildPoints + (int)(quest.RewardGuildPoints * rankBonus);
         }

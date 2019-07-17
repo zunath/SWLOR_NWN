@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             // VERSION 2: Background items are no longer plot because item level no longer dictates your skill XP gain.
             if (dbPlayer.VersionNumber < 2) 

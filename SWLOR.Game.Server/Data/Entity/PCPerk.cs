@@ -17,5 +17,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime AcquiredDate { get; set; }
         public int PerkID { get; set; }
         public int PerkLevel { get; set; }
+
+        public IEntity Clone()
+        {
+            return new PCPerk
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                AcquiredDate = AcquiredDate,
+                PerkID = PerkID,
+                PerkLevel = PerkLevel
+            };
+        }
     }
 }

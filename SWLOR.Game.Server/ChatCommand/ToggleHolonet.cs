@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            var player = DataService.Get<Player>(user.GlobalID);
+            var player = DataService.Player.GetByID(user.GlobalID);
             player.DisplayHolonet = !player.DisplayHolonet;
             user.SetLocalInt("DISPLAY_HOLONET", player.DisplayHolonet ? 1 : 0);
 

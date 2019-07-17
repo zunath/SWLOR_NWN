@@ -41,8 +41,6 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 int spellTier = data.SpellTier;
                 float armorPenalty = data.ArmorPenalty;
 
-                Console.WriteLine("FinishAbilityUse perkID = " + perkID);
-
                 // Get the relevant perk information from the database.
                 Data.Entity.Perk dbPerk = DataService.Perk.GetByID(perkID);
 

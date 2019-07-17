@@ -104,8 +104,6 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            Stopwatch sw = new Stopwatch();
-
             Player playerEntity = DataService.Player.GetByID(player.GlobalID);
             var association = DataService.Association.GetByID(playerEntity.AssociationID);
 

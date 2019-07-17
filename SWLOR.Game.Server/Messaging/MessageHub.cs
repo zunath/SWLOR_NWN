@@ -76,7 +76,10 @@ namespace SWLOR.Game.Server.Messaging
 #endif
                 try
                 {
-                    subscription.Handle(message);
+                    using (new Profiler(subscription.Type.ToString()))
+                    {
+                        subscription.Handle(message);
+                    }
                 }
                 catch (Exception e)
                 {

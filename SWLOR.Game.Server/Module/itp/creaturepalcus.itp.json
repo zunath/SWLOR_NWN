@@ -1320,6 +1320,25 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
+                            "value": 10.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crystal-Crazed Colossal Warocas"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "crycrazewarocas"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
                             "value": 2.0
                           },
                           "FACTION": {
@@ -1627,6 +1646,30 @@
                       "type": "byte",
                       "value": 101
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 10.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ghost Viper King"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ghostviperking"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 16808676
@@ -1652,6 +1695,25 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 30.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dragon Turtle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dragonturtle"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "CR": {

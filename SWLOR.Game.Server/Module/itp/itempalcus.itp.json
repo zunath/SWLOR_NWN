@@ -2582,6 +2582,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal-Crazed Warocas Beak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crazedwarocasbk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raptor Bite"
                     },
                     "RESREF": {
@@ -2888,6 +2899,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crystal_spider_h"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crystal-Crazed Warocas Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crazedwarocassk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dragon Turtle Shell"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dragonturtleshel"
                     }
                   },
                   {

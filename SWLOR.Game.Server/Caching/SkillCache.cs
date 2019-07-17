@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Caching
                 ByContributesToSkillCap.Remove(entity.ID);
             }
             // Contributes to skill cap and doesn't exist in the dictionary yet.
-            else if (entity.ContributesToSkillCap && !ByContributesToSkillCap.ContainsKey(entity.ID))
+            else if (entity.ContributesToSkillCap)
             {
                 ByContributesToSkillCap[entity.ID] = (Skill)entity.Clone();
             }

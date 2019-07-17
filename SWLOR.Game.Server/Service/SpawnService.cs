@@ -372,15 +372,16 @@ namespace SWLOR.Game.Server.Service
 
                     AreaSpawn areaSpawn = spawn.Value;
                     bool forceSpawn = !areaSpawn.HasSpawned;
+                    int playerCount = NWNXArea.GetNumberOfPlayersInArea(spawn.Key);
 
                     foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
-                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
+                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn, playerCount);
                     }
 
                     foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
-                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
+                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn, playerCount);
                     }
 
                     areaSpawn.SecondsEmpty = 0.0f;
@@ -390,12 +391,11 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private static void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn)
+        private static void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn, int playerCount)
         {
             if (spawn.Spawn.IsValid)
             {
                 bool eventsDisabled = spawn.Spawn.GetLocalInt("SPAWN_EVENTS_DISABLED") == TRUE;
-                int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
                 bool isCreature = spawn.Spawn.IsCreature;
 
                 if(isCreature)

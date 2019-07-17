@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             _aiBehaviours = new Dictionary<string, IAIBehaviour>();
             _areaAICreatures = new Dictionary<NWArea, HashSet<NWCreature>>();
         }
-        
+
         public static void SubscribeEvents()
         {
             // Module Events
@@ -202,14 +202,14 @@ namespace SWLOR.Game.Server.Service
         private static void OnCreatureSpawn()
         {
             NWCreature self = NWGameObject.OBJECT_SELF;
-            
+
             // Don't modify AI behaviour for DM-spawned creatures.
             if (self.GetLocalInt("DM_SPAWNED") == _.TRUE) return;
 
             string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour ai = GetAIBehaviour(script);
-        
+
             if (ai.IgnoreNWNEvents) self.SetLocalInt("IGNORE_NWN_EVENTS", 1);
             if (ai.IgnoreOnBlocked) self.SetLocalInt("IGNORE_NWN_ON_BLOCKED_EVENT", 1);
             if (ai.IgnoreOnCombatRoundEnd) self.SetLocalInt("IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT", 1);
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Service
             _areaAICreatures[self.Area].Add(self);
             ai.OnSpawn(self);
         }
-        
+
         private static void OnCreatureSpellCastAt()
         {
             string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Service
                     if (!_areaAICreatures.ContainsKey(area))
                     {
                         Console.WriteLine("Area " + area.Name + " not registered with AI service. Tag: " + area.Tag + ", Resref = " + area.Resref);
-                        return;
+                        continue;
                     }
 
                     var creatures = _areaAICreatures[area];
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Service
             {
                 NWCreature creature = creatures.ElementAt(x);
                 NWArea area = creature.Area;
-                
+
                 // Limbo check.
                 if (!area.IsValid) continue;
 

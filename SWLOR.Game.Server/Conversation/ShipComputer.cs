@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Conversation
 
                         // Save details of the current dock for later.
                         Guid shipPCBaseID = new Guid(pcBase.ShipLocation);
-                        PCBaseStructure dock = DataService.PCBaseStructure.GetByID(shipPCBaseID);
+                        PCBaseStructure dock = DataService.PCBaseStructure.GetByIDOrDefault(shipPCBaseID);
 
                         pcBase.Fuel -= 1;
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);

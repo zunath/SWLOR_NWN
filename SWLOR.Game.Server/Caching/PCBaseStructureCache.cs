@@ -83,11 +83,15 @@ namespace SWLOR.Game.Server.Caching
 
         public double GetPowerInUseByPCBaseID(Guid pcBaseID)
         {
+            if (!PowerInUseByPCBaseID.ContainsKey(pcBaseID)) return 0.0d;
+
             return PowerInUseByPCBaseID[pcBaseID];
         }
 
         public double GetCPUInUseByPCBaseID(Guid pcBaseID)
         {
+            if (!CPUInUseByPCBaseID.ContainsKey(pcBaseID)) return 0.0d;
+
             return CPUInUseByPCBaseID[pcBaseID];
         }
 

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             int leaseRate = int.Parse(args[0]);
             dbPlayer.LeaseRate = leaseRate;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

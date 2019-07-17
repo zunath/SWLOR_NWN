@@ -41,5 +41,35 @@ namespace SWLOR.Game.Server.Data.Entity
         public string OnKillTargetArgs { get; set; }
         public int? RewardGuildID { get; set; }
         public int RewardGuildPoints { get; set; }
+
+        public IEntity Clone()
+        {
+            return new Quest
+            {
+                ID = ID,
+                Name = Name,
+                JournalTag = JournalTag,
+                FameRegionID = FameRegionID,
+                RequiredFameAmount = RequiredFameAmount,
+                AllowRewardSelection = AllowRewardSelection,
+                RewardGold = RewardGold,
+                RewardKeyItemID = RewardKeyItemID,
+                RewardFame = RewardFame,
+                IsRepeatable = IsRepeatable,
+                MapNoteTag = MapNoteTag,
+                StartKeyItemID = StartKeyItemID,
+                RemoveStartKeyItemAfterCompletion = RemoveStartKeyItemAfterCompletion,
+                OnAcceptRule = OnAcceptRule,
+                OnAdvanceRule = OnAdvanceRule,
+                OnCompleteRule = OnCompleteRule,
+                OnKillTargetRule = OnKillTargetRule,
+                OnAcceptArgs = OnAcceptArgs,
+                OnAdvanceArgs = OnAdvanceArgs,
+                OnCompleteArgs = OnCompleteArgs,
+                OnKillTargetArgs = OnKillTargetArgs,
+                RewardGuildID = RewardGuildID,
+                RewardGuildPoints = RewardGuildPoints
+            };
+        }
     }
 }

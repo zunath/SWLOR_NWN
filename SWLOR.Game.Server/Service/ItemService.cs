@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                Skill skill = DataService.Get<Skill>((int)examinedItem.AssociatedSkillType);
+                Skill skill = DataService.Skill.GetByID((int)examinedItem.AssociatedSkillType);
                 description += ColorTokenService.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)

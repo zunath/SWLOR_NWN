@@ -8,5 +8,14 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Name { get; set; }
+
+        public IEntity Clone()
+        {
+            return new NPCGroup
+            {
+                ID = ID,
+                Name = Name
+            };
+        }
     }
 }

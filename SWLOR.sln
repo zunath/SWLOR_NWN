@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2037
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{F2C6F36D-74FA-489E-8891-51A3B390C55A}"
 EndProject
@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SWLOR.Tools", "SWLOR.Tools"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.LanguageGenerator", "SWLOR.Tools\SWLOR.Tools.LanguageGenerator\SWLOR.Tools.LanguageGenerator.csproj", "{61A4F106-A85A-483A-83BD-882D2B93464A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.Editor", "SWLOR.Tools.Editor\SWLOR.Tools.Editor.csproj", "{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server.Scripts", "SWLOR.Game.Server.Scripts\SWLOR.Game.Server.Scripts.csproj", "{CED9C022-AC60-4F28-A941-96F13B02659D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +31,10 @@ Global
 		{61A4F106-A85A-483A-83BD-882D2B93464A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A4F106-A85A-483A-83BD-882D2B93464A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61A4F106-A85A-483A-83BD-882D2B93464A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

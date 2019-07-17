@@ -76,13 +76,14 @@ namespace SWLOR.Game.Server.Messaging
 #endif
                 try
                 {
-                    using(new Profiler(subscription.Type.ToString()))
+                    using (new Profiler(subscription.Type.ToString()))
                     {
                         subscription.Handle(message);
                     }
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("MessageHub Exception: " + e);
                     _globalErrorHandler?.Invoke(subscription.Token, e);
                 }
             }

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
         
         public static void ApplyBackgroundBonuses(NWPlayer oPC)
         {
-            var dbPlayer = DataService.Single<Player>(x => x.ID == oPC.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             string pcName = oPC.Name;
             int classID = oPC.Class1;
 

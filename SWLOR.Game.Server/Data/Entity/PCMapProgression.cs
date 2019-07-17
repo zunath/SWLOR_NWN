@@ -17,5 +17,16 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid PlayerID { get; set; }
         public string AreaResref { get; set; }
         public string Progression { get; set; }
+
+        public IEntity Clone()
+        {
+            return new PCMapProgression
+            {
+                ID = ID,
+                PlayerID = PlayerID,
+                AreaResref = AreaResref,
+                Progression = Progression
+            };
+        }
     }
 }

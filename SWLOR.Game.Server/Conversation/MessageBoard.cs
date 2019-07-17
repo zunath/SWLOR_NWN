@@ -67,7 +67,9 @@ namespace SWLOR.Game.Server.Conversation
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
             bool isDM = player.IsDM;
-            var messages = DataService.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
+            var messages = DataService.Message
+                .GetAllByBoardID(boardID)
+                .Where(x => x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
@@ -101,8 +103,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             Model model = GetDialogCustomData<Model>();
-            Message message = DataService.Get<Message>(model.MessageID);
-            Player poster = DataService.Get<Player>(message.PlayerID);
+            Message message = DataService.Message.GetByID(model.MessageID);
+            Player poster = DataService.Player.GetByID(message.PlayerID);
             string header = ColorTokenService.Green("Title: ") + message.Title + "\n";
             header += ColorTokenService.Green("Posted By: ") + poster.CharacterName + "\n";
             header += ColorTokenService.Green("Date: ") + message.DatePosted + "\n\n";
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
         private void PostDetailsPageResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            var message = DataService.Get<Message>(model.MessageID);
+            var message = DataService.Message.GetByID(model.MessageID);
 
             switch (responseID)
             {

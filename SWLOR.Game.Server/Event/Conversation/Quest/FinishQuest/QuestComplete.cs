@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-                if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
+                if (!DataService.Quest.ExistsByID(questID))
                 {
                     _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                     return false;
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest
 
                 if (!string.IsNullOrWhiteSpace(rule))
                 {
-                    Data.Entity.Quest quest = DataService.Single<Data.Entity.Quest>(x => x.ID == questID);
+                    Data.Entity.Quest quest = DataService.Quest.GetByID(questID);
                     var ruleAction = QuestService.GetQuestRule(rule);
 
                     string[] argsArray = null;

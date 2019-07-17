@@ -12,5 +12,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Chance { get; set; }
         public int Difficulty { get; set; }
         public int LootTable { get; set; }
+
+        public IEntity Clone()
+        {
+            return new SpaceEncounter
+            {
+                ID = ID,
+                Planet = Planet,
+                Type = Type,
+                Chance = Chance,
+                Difficulty = Difficulty,
+                LootTable = LootTable
+            };
+        }
     }
 }

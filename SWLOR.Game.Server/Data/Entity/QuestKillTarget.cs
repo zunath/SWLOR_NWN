@@ -11,5 +11,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public int NPCGroupID { get; set; }
         public int Quantity { get; set; }
         public int QuestStateID { get; set; }
+
+        public IEntity Clone()
+        {
+            return new QuestKillTarget
+            {
+                ID = ID,
+                QuestID = QuestID,
+                NPCGroupID = NPCGroupID,
+                Quantity = Quantity,
+                QuestStateID = QuestStateID
+            };
+        }
     }
 }

@@ -53,23 +53,23 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
 
             // Get apartments owned by player.
-            var apartments = DataService.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
-                                                         x.ApartmentBuildingID == apartmentBuildingID &&
-                                                         x.DateRentDue > DateTime.UtcNow)
-                                             .OrderBy(o => o.DateInitialPurchase)
-                                             .ToList();
-
+            var apartments = DataService.PCBase.GetApartmentsOwnedByPlayer(player.GlobalID, apartmentBuildingID);
             // Get apartments owned by other players and the current player currently has access to.
-            var permissions = DataService.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
-            var permissionedApartments = DataService.Where<PCBase>(x =>
-            {
-                if (x.ApartmentBuildingID != apartmentBuildingID ||
-                    x.DateRentDue <= DateTime.UtcNow ||
-                    x.PlayerID == player.GlobalID) return false;
-                
-                var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
-                return permission != null && permission.CanEnterBuildings;
-            })
+            var permissions = DataService.PCBasePermission.GetAllByPlayerID(player.GlobalID);
+            
+            
+            
+            var permissionedApartments = DataService.PCBase
+                .GetAll()
+                .Where(x =>
+                {
+                    if (x.ApartmentBuildingID != apartmentBuildingID ||
+                        x.DateRentDue <= DateTime.UtcNow ||
+                        x.PlayerID == player.GlobalID) return false;
+                    
+                    var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
+                    return permission != null && permission.CanEnterBuildings;
+                })
                 .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var apartment in permissionedApartments)
             {
-                var owner = DataService.Get<Player>(apartment.PlayerID);
+                var owner = DataService.Player.GetByID(apartment.PlayerID);
                 string name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))
@@ -116,9 +116,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
 
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
-            var permission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
-                                                                          x.PCBaseID == pcBaseID &&
-                                                                          !x.IsPublicPermission);
+            var permission = DataService.PCBasePermission.GetPlayerPrivatePermissionOrDefault(oPC.GlobalID, pcBaseID);
 
             if (permission == null || !permission.CanEnterBuildings)
             {

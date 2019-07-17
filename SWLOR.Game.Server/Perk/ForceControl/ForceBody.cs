@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
             if (oPC.IsPlayer)
             {
-                var dbPlayer = DataService.Get<Player>(oPC.GlobalID);
+                var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
                 if (dbPlayer.CurrentFP >= dbPlayer.MaxFP)
                     return "Your FP is already at maximum.";
             }

@@ -52,21 +52,21 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
 
             // Get starships owned by player and docked at this starport.
-            var ships = DataService.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
+            var ships = DataService.PCBase.GetAll().Where(x => x.PlayerID == player.GlobalID &&
                                                          x.ShipLocation == starportID.ToLower() &&
                                                          x.DateRentDue > DateTime.UtcNow)
                                              .OrderBy(o => o.DateInitialPurchase)
                                              .ToList();
 
             // Get starships owned by other players and the current player currently has access to.
-            var permissions = DataService.GetAll<PCBaseStructurePermission>().Where(x => x.PlayerID == player.GlobalID);
-            var permissionedShips = DataService.Where<PCBase>(x =>
+            var permissions = DataService.PCBaseStructurePermission.GetAllByPlayerID(player.GlobalID);
+            var permissionedShips = DataService.PCBase.GetAll().Where(x =>
             {
                 if (x.ShipLocation != starportID.ToLower() ||
                     x.DateRentDue <= DateTime.UtcNow ||
                     x.PlayerID == player.GlobalID) return false;
 
-                PCBaseStructure ship = DataService.Single<PCBaseStructure>(s => s.PCBaseID == x.ID && s.ExteriorStyleID > 0);
+                PCBaseStructure ship = DataService.PCBaseStructure.GetStarshipExteriorByPCBaseID(x.ID);
                 var permission = permissions.SingleOrDefault(p => p.PCBaseStructureID == ship.ID);
                 return permission != null && permission.CanEnterBuilding;
             })
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var ship in permissionedShips)
             {
-                var owner = DataService.Get<Player>(ship.PlayerID);
+                var owner = DataService.Player.GetByID(ship.PlayerID);
                 string name = owner.CharacterName + "'s Starship [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(ship.CustomName))
@@ -114,8 +114,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
 
-            var shipBase = DataService.Get<PCBase>(pcBaseID);
-            var ship = DataService.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == shipBase.ID && x.InteriorStyleID != null);
+            var shipBase = DataService.PCBase.GetByID(pcBaseID);
+            var ship = DataService.PCBaseStructure.GetStarshipInteriorByPCBaseIDOrDefault(shipBase.ID);
 
             NWArea instance = BaseService.GetAreaInstance(ship.ID, false);
 

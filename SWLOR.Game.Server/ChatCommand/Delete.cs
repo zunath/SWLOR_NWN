@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                Player dbPlayer = DataService.Get<Player>(user.GlobalID);
+                Player dbPlayer = DataService.Player.GetByID(user.GlobalID);
                 dbPlayer.IsDeleted = true;
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 

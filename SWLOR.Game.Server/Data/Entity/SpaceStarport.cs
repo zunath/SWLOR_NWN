@@ -14,5 +14,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Cost { get; set; }
         public string Name { get; set; }
         public string Waypoint { get; set; }
+
+        public IEntity Clone()
+        {
+            return new SpaceStarport
+            {
+                ID = ID,
+                Planet = Planet,
+                CustomsDC = CustomsDC,
+                Cost = Cost,
+                Name = Name,
+                Waypoint = Waypoint
+            };
+        }
     }
 }

@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            var componentTypes = DataService.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
+            var componentTypes = DataService.ComponentType.GetAllWhereHasReassembledResref();
             foreach (var type in componentTypes)
             {
                 AddResponseToPage("MainPage", type.Name, true, type.ID);
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = CraftService.GetPlayerCraftingData(player);
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = SerializationService.DeserializeItem(model.SerializedSalvageItem, tempStorage);
-            var componentType = DataService.Get<ComponentType>(model.SalvageComponentTypeID);
+            var componentType = DataService.ComponentType.GetByID(model.SalvageComponentTypeID);
             string header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
             header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid playerID = GetPC().GlobalID;
-            long overflowCount = DataService.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
+            long overflowCount = DataService.PCOverflowItem.GetAllByPlayerID(playerID).Count();
 
             if (overflowCount <= 0)
             {
@@ -103,13 +104,14 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            Player playerEntity = DataService.Single<Player>(x => x.ID == player.GlobalID);
-            var association = DataService.Get<Association>(playerEntity.AssociationID);
-            int totalSkillCount = DataService.Where<PCSkill>(x =>
-            {
-                var skill = DataService.Get<Skill>(x.SkillID);
-                return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
-            }).Sum(s => s.Rank);
+            Player playerEntity = DataService.Player.GetByID(player.GlobalID);
+            var association = DataService.Association.GetByID(playerEntity.AssociationID);
+
+            // Get all player skills and then sum them up by the rank.
+            int totalSkillCount = DataService.PCSkill
+                .GetAllByPlayerID(player.GlobalID)
+                .Where(x => DataService.Skill.GetByID(x.SkillID).ContributesToSkillCap)
+                .Sum(s => s.Rank);
 
             string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
             header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
+                Player pc = DataService.Player.GetByID(player.GlobalID);
                 novelStyle = pc.IsUsingNovelEmoteStyle;
             }
 
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
+                Player pc = DataService.Player.GetByID(player.GlobalID);
                 pc.IsUsingNovelEmoteStyle = style == EmoteStyle.Novel;
                 DataService.SubmitDataChange(pc, DatabaseActionType.Update);
             }

@@ -475,15 +475,17 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return 0;
 
-            var perkIDs = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID)
+            var perkIDs = DataService.PCPerk.GetAllByPlayerID(player.GlobalID)
                 .Select(s => new {s.PerkID, s.PerkLevel});
 
             int balance = 0;
             foreach (var perkID in perkIDs)
             {
-                var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID.PerkID);
+                var perk = DataService.Perk.GetByID(perkID.PerkID);
                 if (perk.ForceBalance == ForceBalanceType.Universal) continue;
-                var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID.PerkID && x.Level <= perkID.PerkLevel);
+                var perkLevels = DataService.PerkLevel.GetAllByPerkID(perkID.PerkID)
+                    .Where(x => x.Level <= perkID.PerkLevel);
+
                 foreach (var perkLevel in perkLevels)
                 {
                     int adjustment = perkLevel.Price / 2;

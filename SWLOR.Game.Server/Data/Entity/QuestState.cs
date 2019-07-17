@@ -11,5 +11,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Sequence { get; set; }
         public int QuestTypeID { get; set; }
         public int JournalStateID { get; set; }
+
+        public IEntity Clone()
+        {
+            return new QuestState
+            {
+                ID = ID,
+                QuestID = QuestID,
+                Sequence = Sequence,
+                QuestTypeID = QuestTypeID,
+                JournalStateID = JournalStateID
+            };
+        }
     }
 }

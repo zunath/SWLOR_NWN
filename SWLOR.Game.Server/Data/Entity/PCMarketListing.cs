@@ -30,5 +30,30 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemObject { get; set; }
         public int ItemRecommendedLevel { get; set; }
         public int ItemStackSize { get; set; }
+
+        public IEntity Clone()
+        {
+            return new PCMarketListing
+            {
+                ID = ID,
+                SellerPlayerID = SellerPlayerID,
+                Note = Note,
+                Price = Price,
+                MarketRegionID = MarketRegionID,
+                MarketCategoryID = MarketCategoryID,
+                DatePosted = DatePosted,
+                DateExpires = DateExpires,
+                DateSold = DateSold,
+                DateRemoved = DateRemoved,
+                BuyerPlayerID = BuyerPlayerID,
+                ItemID = ItemID,
+                ItemName = ItemName,
+                ItemTag = ItemTag,
+                ItemResref = ItemResref,
+                ItemObject = ItemObject,
+                ItemRecommendedLevel = ItemRecommendedLevel,
+                ItemStackSize = ItemStackSize
+            };
+        }
     }
 }

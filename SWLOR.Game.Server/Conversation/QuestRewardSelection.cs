@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Conversation
             int questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             GetPC().DeleteLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             Quest quest = QuestService.GetQuestByID(questID);
-            var rewardItems = DataService.Where<QuestRewardItem>(x => x.QuestID == quest.ID).ToList();
+            var rewardItems = DataService.QuestRewardItem.GetAllByQuestID(quest.ID).ToList();
             
             Model model = GetDialogCustomData<Model>();
             model.QuestID = questID;

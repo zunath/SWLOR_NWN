@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Service
     {
         public static void Impound(PCBaseStructureItem pcBaseStructureItem)
         {
-            var pcBaseStructure = DataService.Get<PCBaseStructure>(pcBaseStructureItem.PCBaseStructureID);
-            var pcBase = DataService.Get<PCBase>(pcBaseStructure.PCBaseID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureItem.PCBaseStructureID);
+            var pcBase = DataService.PCBase.GetByID(pcBaseStructure.PCBaseID);
 
             var impoundItem = new PCImpoundedItem
             {

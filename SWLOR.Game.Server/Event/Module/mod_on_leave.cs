@@ -36,11 +36,6 @@ namespace NWN.Scripts
 
 
             MessageHub.Instance.Publish(new OnModuleLeave());
-
-            using (new Profiler(nameof(mod_on_leave) + ":RemovePlayerCache"))
-            {
-                DataService.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
-            }
         }
     }
 }

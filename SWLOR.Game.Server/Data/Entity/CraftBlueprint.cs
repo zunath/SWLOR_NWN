@@ -28,6 +28,34 @@ namespace SWLOR.Game.Server.Data.Entity
         public int SecondaryMaximum { get; set; }
         public int TertiaryMaximum { get; set; }
         public int? BaseStructureID { get; set; }
-    
+
+        public IEntity Clone()
+        {
+            return new CraftBlueprint
+            {
+                ID = ID,
+                CraftCategoryID = CraftCategoryID,
+                BaseLevel = BaseLevel,
+                ItemName = ItemName,
+                ItemResref = ItemResref,
+                Quantity = Quantity,
+                SkillID = SkillID,
+                CraftDeviceID = CraftDeviceID,
+                PerkID = PerkID,
+                RequiredPerkLevel = RequiredPerkLevel,
+                IsActive = IsActive,
+                MainComponentTypeID = MainComponentTypeID,
+                MainMinimum = MainMinimum,
+                SecondaryComponentTypeID = SecondaryComponentTypeID,
+                SecondaryMinimum = SecondaryMinimum,
+                TertiaryComponentTypeID = TertiaryComponentTypeID,
+                TertiaryMinimum = TertiaryMinimum,
+                EnhancementSlots = EnhancementSlots,
+                MainMaximum = MainMaximum,
+                SecondaryMaximum = SecondaryMaximum,
+                TertiaryMaximum = TertiaryMaximum,
+                BaseStructureID = BaseStructureID
+            };
+        }
     }
 }

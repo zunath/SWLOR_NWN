@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             int amount = int.Parse(args[0]);
-            Player dbPlayer = DataService.Get<Player>(target.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
             dbPlayer.RoleplayXP += amount;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             _.SendMessageToPC(target, "A DM has awarded you with " + amount + " roleplay XP.");

@@ -18,5 +18,19 @@ namespace SWLOR.Game.Server.Data.Entity
         public byte Weight { get; set; }
         public bool IsActive { get; set; }
         public string SpawnRule { get; set; }
+
+        public IEntity Clone()
+        {
+            return new LootTableItem
+            {
+                ID = ID,
+                LootTableID = LootTableID,
+                Resref = Resref,
+                MaxQuantity = MaxQuantity,
+                Weight = Weight,
+                IsActive = IsActive,
+                SpawnRule = SpawnRule
+            };
+        }
     }
 }

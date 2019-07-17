@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.QuestRule
             int regionID = Convert.ToInt32(args[0]);
             int amount = Convert.ToInt32(args[1]);
 
-            PCRegionalFame pcFame = DataService.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == player.GlobalID && x.FameRegionID == regionID);
+            PCRegionalFame pcFame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, regionID);
             var action = DatabaseActionType.Update;
 
             if (pcFame == null)

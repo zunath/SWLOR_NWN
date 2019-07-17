@@ -8,12 +8,20 @@ namespace SWLOR.Game.Server.ValueObject
     {
         public Profiler(string name)
         {
-            NWNXProfiler.PushPerfScope(name, "MonoScript", "Script");
+            // Verify the profiler env variable is specified. This prevents our unit tests from failing.
+            if(!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("NWNX_PROFILER_SKIP")))
+            {
+                NWNXProfiler.PushPerfScope(name, "MonoScript", "Script");
+            }
         }
 
         public void Dispose()
         {
-            NWNXProfiler.PopPerfScope();
+            // Verify the profiler env variable is specified. This prevents our unit tests from failing.
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("NWNX_PROFILER_SKIP")))
+            {
+                NWNXProfiler.PopPerfScope();
+            }
         }
     }
 }

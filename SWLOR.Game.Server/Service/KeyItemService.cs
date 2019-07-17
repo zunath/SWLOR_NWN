@@ -20,19 +20,20 @@ namespace SWLOR.Game.Server.Service
 
         public static bool PlayerHasKeyItem(NWObject oPC, int keyItemID)
         {
-            var entity = DataService.GetAll<PCKeyItem>().FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+            var entity = DataService.PCKeyItem.GetByPlayerAndKeyItemIDOrDefault(oPC.GlobalID, keyItemID); 
             return entity != null;
         }
 
         public static bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs)
         {
-            var result = DataService.Where<PCKeyItem>(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID)).ToList();
+            var result = DataService.PCKeyItem.GetAllByPlayerIDAndKeyItemIDs(oPC.GlobalID, keyItemIDs);
             return result.Count() == keyItemIDs.Length;
         }
 
         public static bool PlayerHasAnyKeyItem(NWObject oPC, params int[] keyItemIDs)
         {
-            return DataService.GetAll<PCKeyItem>().Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
+            var pcKeyItems = DataService.PCKeyItem.GetAllByPlayerID(oPC.GlobalID);
+            return pcKeyItems.Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
         }
 
 
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                 };
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
-                KeyItem keyItem = DataService.Single<KeyItem>(x => x.ID == keyItemID);
+                KeyItem keyItem = DataService.KeyItem.GetByID(keyItemID);
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
             }
         }
@@ -58,23 +59,23 @@ namespace SWLOR.Game.Server.Service
             if (PlayerHasKeyItem(oPC, keyItemID))
             {
 
-                PCKeyItem entity = DataService.Single<PCKeyItem>(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+                PCKeyItem entity = DataService.PCKeyItem.GetByPlayerAndKeyItemID(oPC.GlobalID, keyItemID);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Delete);
             }
         }
 
         public static IEnumerable<PCKeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, int categoryID)
         {
-            return DataService.Where<PCKeyItem>(x =>
+            return DataService.PCKeyItem.GetAllByPlayerID(player.GlobalID).Where(x =>
             {
-                var keyItem = DataService.Get<KeyItem>(x.KeyItemID);
-                return x.PlayerID == player.GlobalID && keyItem.KeyItemCategoryID == categoryID;
+                var keyItem = DataService.KeyItem.GetByID(x.KeyItemID);
+                return keyItem.KeyItemCategoryID == categoryID;
             }).ToList();
         }
 
         public static KeyItem GetKeyItemByID(int keyItemID)
         {
-            return DataService.Single<KeyItem>(x => x.ID == keyItemID);
+            return DataService.KeyItem.GetByID(keyItemID);
         }
 
         private static void OnModuleItemAcquired()

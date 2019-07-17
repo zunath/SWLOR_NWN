@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
 
-            var songs = DataService.Where<JukeboxSong>(x => x.IsActive).OrderBy(o => o.DisplayName);
+            var songs = DataService.JukeboxSong.GetAll().Where(x => x.IsActive).OrderBy(o => o.DisplayName);
             foreach (var song in songs)
             {
                 AddResponseToPage("MainPage", song.DisplayName, true, song.ID);
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
             int jukeboxSongID = (int)response.CustomData;
-            JukeboxSong song = DataService.Get<JukeboxSong>(jukeboxSongID);
+            JukeboxSong song = DataService.JukeboxSong.GetByID(jukeboxSongID);
 
             player.FloatingText("Song Selected: " + song.DisplayName);
 

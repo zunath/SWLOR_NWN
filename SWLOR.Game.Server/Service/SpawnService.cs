@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.   
-                        var spawnObjects = DataService.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
+                        var spawnObjects = DataService.SpawnObject.GetAllBySpawnTableID(spawnTableID).ToList();
                         int count = spawnObjects.Count;
                         int index = count <= 0 ? 0 : RandomService.Random(count);
                         var dbSpawn = spawnObjects[index];
@@ -201,8 +201,8 @@ namespace SWLOR.Game.Server.Service
         
         public static Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
-            var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+            Area dbArea = DataService.Area.GetByResref(area.Resref);
+            var walkmeshes = DataService.AreaWalkmesh.GetAllByAreaID(dbArea.ID).ToList();
             int count = walkmeshes.Count;
             var index = count <= 0 ? 0 : RandomService.Random(count);
 
@@ -216,11 +216,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
-            var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == area.Resref);
+            var dbArea = DataService.Area.GetByResref(area.Resref);
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
-            var possibleSpawns = DataService.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
+            var possibleSpawns = DataService.SpawnObject.GetAllBySpawnTableID(dbArea.ResourceSpawnTableID).ToList();
 
             // 1024 size = 32x32
             // 256  size = 16x16
@@ -411,7 +411,7 @@ namespace SWLOR.Game.Server.Service
                 // Look for a spawn out of the database set. Update spawn data if one is found.
                 if (string.IsNullOrWhiteSpace(resref))
                 {
-                    var dbSpawn = DataService.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
+                    var dbSpawn = DataService.SpawnObject.GetAllBySpawnTableID(spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;

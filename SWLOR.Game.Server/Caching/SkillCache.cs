@@ -31,10 +31,12 @@ namespace SWLOR.Game.Server.Caching
             if (!entity.ContributesToSkillCap && ByContributesToSkillCap.ContainsKey(entity.ID))
             {
                 ByContributesToSkillCap.Remove(entity.ID);
-                return;
             }
-
-            ByContributesToSkillCap[entity.ID] = (Skill)entity.Clone();
+            // Contributes to skill cap and doesn't exist in the dictionary yet.
+            else if (entity.ContributesToSkillCap && !ByContributesToSkillCap.ContainsKey(entity.ID))
+            {
+                ByContributesToSkillCap[entity.ID] = (Skill)entity.Clone();
+            }
         }
 
         public Skill GetByID(int id)

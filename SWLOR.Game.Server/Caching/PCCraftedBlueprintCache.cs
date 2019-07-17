@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCraftedBlueprint GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCCraftedBlueprint)ByID[id].Clone();
         }
 
         public bool ExistsByPlayerIDAndCraftedBlueprintID(Guid playerID, int craftBlueprintID)

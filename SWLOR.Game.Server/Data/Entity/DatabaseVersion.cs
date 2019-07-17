@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime VersionDate { get; set; }
         public int VersionNumber { get; set; }
 
-        public DatabaseVersion Clone()
+        public IEntity Clone()
         {
             return new DatabaseVersion
             {

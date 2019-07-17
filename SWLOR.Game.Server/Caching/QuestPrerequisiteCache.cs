@@ -23,15 +23,20 @@ namespace SWLOR.Game.Server.Caching
 
         public QuestPrerequisite GetByID(int id)
         {
-            return ByID[id];
+            return (QuestPrerequisite)ByID[id].Clone();
         }
 
         public IEnumerable<QuestPrerequisite> GetAllByQuestID(int questID)
         {
-            if(!ByQuestID.ContainsKey(questID))
-                return new List<QuestPrerequisite>();
+            var list = new List<QuestPrerequisite>();
+            if (!ByQuestID.ContainsKey(questID))
+                return list;
 
-            return ByQuestID[questID].Values;
+            foreach (var record in ByQuestID[questID].Values)
+            {
+                list.Add((QuestPrerequisite)record.Clone());
+            }
+            return list;
         }
     }
 }

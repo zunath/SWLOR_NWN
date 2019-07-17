@@ -33,22 +33,26 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructurePermission GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCBaseStructurePermission)ByID[id].Clone();
         }
 
         public IEnumerable<PCBaseStructurePermission> GetAllByPlayerID(Guid playerID)
         {
             if (!ByPlayerID.ContainsKey(playerID))
+                return new List<PCBaseStructurePermission>();
+
+            var list = new List<PCBaseStructurePermission>();
+            foreach (var record in ByPlayerID[playerID].Values)
             {
-                ByPlayerID[playerID] = new Dictionary<Guid, PCBaseStructurePermission>();
+                list.Add((PCBaseStructurePermission)record.Clone());
             }
 
-            return ByPlayerID[playerID].Values;
+            return list;
         }
 
         public PCBaseStructurePermission GetPublicPermissionOrDefault(Guid pcBaseStructureID)
         {
-            return ByID.Values.SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission);
+            return (PCBaseStructurePermission)ByID.Values.SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission)?.Clone();
         }
 
         public PCBaseStructurePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseStructureID)
@@ -57,17 +61,24 @@ namespace SWLOR.Game.Server.Caching
                 return default;
 
             var permissions = ByPlayerID[playerID].Values;
-            return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID);
+            return (PCBaseStructurePermission)permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID)?.Clone();
         }
 
         public IEnumerable<PCBaseStructurePermission> GetAllByPCBaseStructureID(Guid pcBaseStructureID)
         {
             if (!ByPCBaseStructureID.ContainsKey(pcBaseStructureID))
             {
-                ByPCBaseStructureID[pcBaseStructureID] = new Dictionary<Guid, PCBaseStructurePermission>(); 
+                return new List<PCBaseStructurePermission>();
             }
 
-            return ByPCBaseStructureID[pcBaseStructureID].Values;
+            var list = new List<PCBaseStructurePermission>();
+
+            foreach (var record in ByPCBaseStructureID[pcBaseStructureID].Values)
+            {
+                list.Add((PCBaseStructurePermission)record.Clone());
+            }
+
+            return list;
         }
     }
 }

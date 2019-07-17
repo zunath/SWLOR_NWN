@@ -58,21 +58,27 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructure GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCBaseStructure)ByID[id].Clone();
         }
 
         public PCBaseStructure GetByIDOrDefault(Guid id)
         {
             if (!ByID.ContainsKey(id))
                 return default;
-            return ByID[id];
+            return (PCBaseStructure)ByID[id].Clone();
         }
 
         public IEnumerable<PCBaseStructure> GetAllByPCBaseID(Guid pcBaseID)
         {
             if(!ByPCBaseID.ContainsKey(pcBaseID))
-                ByPCBaseID[pcBaseID] = new Dictionary<Guid, PCBaseStructure>();
-            return ByPCBaseID[pcBaseID].Values;
+                return new List<PCBaseStructure>();
+
+            var list = new List<PCBaseStructure>();
+            foreach (var record in ByPCBaseID[pcBaseID].Values)
+            {
+                list.Add((PCBaseStructure)record.Clone());
+            }
+            return list;
         }
 
         public double GetPowerInUseByPCBaseID(Guid pcBaseID)
@@ -87,12 +93,12 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructure GetStarshipInteriorByPCBaseIDOrDefault(Guid pcBaseID)
         {
-            return ByPCBaseID[pcBaseID].Values.SingleOrDefault(x => x.InteriorStyleID != null);
+            return (PCBaseStructure)ByPCBaseID[pcBaseID].Values.SingleOrDefault(x => x.InteriorStyleID != null)?.Clone();
         }
 
         public PCBaseStructure GetStarshipExteriorByPCBaseID(Guid pcBaseID)
         {
-            return ByPCBaseID[pcBaseID].Values.SingleOrDefault(x => x.ExteriorStyleID > 0);
+            return (PCBaseStructure)ByPCBaseID[pcBaseID].Values.SingleOrDefault(x => x.ExteriorStyleID > 0)?.Clone();
         }
 
         public IEnumerable<PCBaseStructure> GetAllByParentPCBaseStructureID(Guid parentPCBaseStructureID)
@@ -100,7 +106,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByParentPCBaseStructureID.ContainsKey(parentPCBaseStructureID))
                 return new List<PCBaseStructure>();
 
-            return ByParentPCBaseStructureID[parentPCBaseStructureID].Values;
+            var list = new List<PCBaseStructure>();
+            foreach (var record in ByParentPCBaseStructureID[parentPCBaseStructureID].Values)
+            {
+                list.Add((PCBaseStructure)record.Clone());
+            }
+
+            return list;
         }
     }
 }

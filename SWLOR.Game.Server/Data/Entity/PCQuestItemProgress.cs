@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Remaining { get; set; }
         public bool MustBeCraftedByPlayer { get; set; }
 
-        public PCQuestItemProgress Clone()
+        public IEntity Clone()
         {
             return new PCQuestItemProgress
             {

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? SoutheastLootTableID { get; set; }
         public int MaxResourceQuality { get; set; }
 
-        public Area Clone()
+        public IEntity Clone()
         {
             return new Area
             {

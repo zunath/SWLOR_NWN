@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int SkillCategoryID { get; set; }
         public int Levels { get; set; }
 
-        public PCSkillPool Clone()
+        public IEntity Clone()
         {
             return new PCSkillPool
             {

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Bank GetByID(int id)
         {
-            return ByID[id];
+            return (Bank)ByID[id].Clone();
         }
 
     }

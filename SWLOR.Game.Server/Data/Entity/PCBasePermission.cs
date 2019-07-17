@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanDockStarship { get; set; }
         public bool CanFlyStarship { get; set; }
 
-        public PCBasePermission Clone()
+        public IEntity Clone()
         {
             return new PCBasePermission
             {

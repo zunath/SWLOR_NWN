@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int DeathVFXID { get; set; }
         public AIFlags AIFlags { get; set; }
 
-        public SpawnObject Clone()
+        public IEntity Clone()
         {
             return new SpawnObject
             {

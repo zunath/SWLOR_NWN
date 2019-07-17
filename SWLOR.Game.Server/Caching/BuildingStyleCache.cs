@@ -24,22 +24,22 @@ namespace SWLOR.Game.Server.Caching
 
         public BuildingStyle GetByID(int id)
         {
-            return ByID[id];
+            return (BuildingStyle)ByID[id].Clone();
         }
 
         public BuildingStyle GetDefaultInteriorByBaseStructureID(int baseStructureID)
         {
-            return All.Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int) Enumeration.BuildingType.Interior && x.IsActive);
+            return (BuildingStyle)All.Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int) Enumeration.BuildingType.Interior && x.IsActive).Clone();
         }
 
         public BuildingStyle GetDefaultExteriorByBaseStructureID(int baseStructureID)
         {
-            return All.Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int)Enumeration.BuildingType.Exterior && x.IsActive);
+            return (BuildingStyle)All.Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int)Enumeration.BuildingType.Exterior && x.IsActive).Clone();
         }
 
         public BuildingStyle GetByBaseStructureIDAndBuildingType(int baseStructureID, Enumeration.BuildingType buildingType)
         {
-            return All.Single(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)buildingType);
+            return (BuildingStyle)All.Single(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)buildingType).Clone();
         }
     }
 }

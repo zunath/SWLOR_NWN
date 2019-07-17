@@ -946,7 +946,7 @@ namespace SWLOR.Game.Server.Service
 
             bool hasPerkFeat = false;
             // Retrieve perk feat information for only those feats registered as a perk.
-            var perkFeats = DataService.PerkFeat.GetByIDs(featIDs);
+            var perkFeats = DataService.PerkFeat.GetAllByIDs(featIDs);
 
             // Mark the highest perk level on the creature.
             foreach (var perkFeat in perkFeats)

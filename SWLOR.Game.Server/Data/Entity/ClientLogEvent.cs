@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string AccountName { get; set; }
         public DateTime DateOfEvent { get; set; }
 
-        public ClientLogEvent Clone()
+        public IEntity Clone()
         {
             return new ClientLogEvent
             {

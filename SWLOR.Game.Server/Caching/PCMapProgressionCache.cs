@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMapProgression GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCMapProgression)ByID[id].Clone();
         }
 
         public PCMapProgression GetByPlayerIDAndAreaResrefOrDefault(Guid playerID, string areaResref)

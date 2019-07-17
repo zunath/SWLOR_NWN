@@ -39,14 +39,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBase GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCBase)ByID[id].Clone();
         }
 
         public PCBase GetByIDOrDefault(Guid id)
         {
             if (!ByID.ContainsKey(id))
                 return default;
-            return ByID[id];
+            return (PCBase)ByID[id].Clone();
         }
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
@@ -56,7 +56,13 @@ namespace SWLOR.Game.Server.Caching
                             x.DateRentDue > DateTime.UtcNow)
                 .OrderBy(o => o.DateInitialPurchase);
 
-            return apartments;
+            var list = new List<PCBase>();
+            foreach (var apartment in apartments)
+            {
+                list.Add( (PCBase)apartment.Clone());
+            }
+
+            return list;
         }
 
         public PCBase GetByAreaResrefAndSector(string areaResref, string sector)
@@ -72,7 +78,7 @@ namespace SWLOR.Game.Server.Caching
         public PCBase GetByShipLocationOrDefault(string shipLocation)
         {
             if(string.IsNullOrWhiteSpace(shipLocation)) throw new ArgumentException(nameof(shipLocation) + " cannot be null or whitespace.");
-            return All.SingleOrDefault(x => x.ShipLocation == shipLocation);
+            return (PCBase)All.SingleOrDefault(x => x.ShipLocation == shipLocation)?.Clone();
         }
 
         public IEnumerable<PCBase> GetAllByPlayerID(Guid playerID)
@@ -80,22 +86,34 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerIDAndPCBaseID.ContainsKey(playerID))
                 return new List<PCBase>();
 
-            return ByPlayerIDAndPCBaseID[playerID].Values;
+            var list = new List<PCBase>();
+            foreach(var pcBase in ByPlayerIDAndPCBaseID[playerID].Values)
+            {
+                list.Add((PCBase)pcBase.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCBase> GetAllNonApartmentPCBasesByAreaResref(string areaResref)
         {
+            var list = new List<PCBase>();
             // This could be optimized with an index, but it only runs on module load so I figured we'd save the memory for a slightly longer boot time.
-            return All.Where(x => x.AreaResref == areaResref && x.ApartmentBuildingID == null);
+            foreach(var pcBase in All.Where(x => x.AreaResref == areaResref && x.ApartmentBuildingID == null))
+            {
+                list.Add( (PCBase)pcBase.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCBase> GetAllWhereRentDue()
         {
-            DateTime now = DateTime.UtcNow;
             var list = new List<PCBase>();
+            DateTime now = DateTime.UtcNow;
             foreach (var pcBaseID in RentDueTimes.Where(x => x.Value <= now))
             {
-                list.Add(ByID[pcBaseID.Key]);
+                list.Add((PCBase)ByID[pcBaseID.Key].Clone());
             }
 
             return list;

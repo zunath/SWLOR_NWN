@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Description { get; set; }
 
-        public DMRole Clone()
+        public IEntity Clone()
         {
             return new DMRole
             {

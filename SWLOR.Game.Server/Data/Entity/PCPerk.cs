@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int PerkID { get; set; }
         public int PerkLevel { get; set; }
 
-        public PCPerk Clone()
+        public IEntity Clone()
         {
             return new PCPerk
             {

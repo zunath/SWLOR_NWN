@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateRegistered { get; set; }
 
 
-        public User Clone()
+        public IEntity Clone()
         {
             return new User
             {

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public StructureMode GetByID(int id)
         {
-            return ByID[id];
+            return (StructureMode)ByID[id].Clone();
         }
     }
 }

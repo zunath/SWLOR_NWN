@@ -23,12 +23,21 @@ namespace SWLOR.Game.Server.Caching
 
         public LootTableItem GetByID(int id)
         {
-            return ByID[id];
+            return (LootTableItem)ByID[id].Clone();
         }
 
         public IEnumerable<LootTableItem> GetAllByLootTableID(int lootTableID)
         {
-            return ByLootTableID[lootTableID].Values;
+            var list = new List<LootTableItem>();
+            if (!ByLootTableID.ContainsKey(lootTableID))
+                return list;
+
+            foreach (var table in ByLootTableID[lootTableID].Values)
+            {
+                list.Add((LootTableItem) table.Clone());
+            }
+
+            return list;
         }
     }
 }

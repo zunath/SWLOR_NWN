@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Resref { get; set; }
         public int Quantity { get; set; }
 
-        public QuestRewardItem Clone()
+        public IEntity Clone()
         {
             return new QuestRewardItem
             {

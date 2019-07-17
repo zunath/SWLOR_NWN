@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int RequiredRank { get; set; }
         public bool IsCurrentlyOffered { get; set; }
 
-        public GuildTask Clone()
+        public IEntity Clone()
         {
             return new GuildTask
             {

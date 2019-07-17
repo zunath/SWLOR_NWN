@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateImpounded { get; set; }
         public DateTime? DateRetrieved { get; set; }
 
-        public PCImpoundedItem Clone()
+        public IEntity Clone()
         {
             return new PCImpoundedItem
             {

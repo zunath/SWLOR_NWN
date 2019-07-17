@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public double PositionY { get; set; }
         public string NoteText { get; set; }
 
-        public PCMapPin Clone()
+        public IEntity Clone()
         {
             return new PCMapPin
             {

@@ -24,8 +24,6 @@ namespace SWLOR.Game.Server.Service
         public static string SWLORConnectionString { get; }
         public static SqlConnection Connection { get; private set; }
 
-        private static readonly Dictionary<Type, ICache<dynamic>> _cacheLookup = new Dictionary<Type, ICache<dynamic>>();
-
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
         public static AreaWalkmeshCache AreaWalkmesh { get; } = new AreaWalkmeshCache();
@@ -162,12 +160,11 @@ namespace SWLOR.Game.Server.Service
                 InitializeCache();
         }
 
-        private static void LoadCache<T>(ICache<T> cache)
+        private static void LoadCache<T>()
             where T: class, IEntity
         {
             var sw = new Stopwatch();
             sw.Start();
-            _cacheLookup[typeof(T)] = cache;
 
             var entities = Connection.GetAll<T>();
             foreach(var entity in entities)
@@ -199,97 +196,97 @@ namespace SWLOR.Game.Server.Service
         private static void InitializeCache()
         {
             Console.WriteLine("Initializing the cache...");
-            LoadCache(Area);
-            LoadCache(AreaWalkmesh);
+            LoadCache<Area>();
+            LoadCache<AreaWalkmesh>();
 
-            LoadCache(ApartmentBuilding);
-            LoadCache(Association);
-            LoadCache(Attribute);
-            LoadCache(AuthorizedDM);
-            LoadCache(Bank);
-            LoadCache(BankItem);
-            LoadCache(BaseItemType);
-            LoadCache(BaseStructure);
-            LoadCache(BaseStructureType);
-            LoadCache(BuildingStyle);
-            LoadCache(BuildingType);
-            LoadCache(ChatChannel);
-            LoadCache(ClientLogEventType);
-            LoadCache(ComponentType);
-            LoadCache(CooldownCategory);
-            LoadCache(CraftBlueprint);
-            LoadCache(CraftBlueprintCategory);
-            LoadCache(CraftDevice);
-            LoadCache(CustomEffect);
-            LoadCache(CustomEffectCategory);
-            LoadCache(DMRole);
-            LoadCache(EnmityAdjustmentRule);
-            LoadCache(FameRegion);
-            LoadCache(Guild);
-            LoadCache(GuildTask);
-            LoadCache(ItemType);
-            LoadCache(JukeboxSong);
-            LoadCache(KeyItem);
-            LoadCache(KeyItemCategory);
-            LoadCache(LootTable);
-            LoadCache(LootTableItem);
-            LoadCache(MarketCategory);
-            LoadCache(Message);
-            LoadCache(NPCGroup);
-            LoadCache(PCBase);
-            LoadCache(PCBasePermission);
-            LoadCache(PCBaseStructure);
-            LoadCache(PCBaseStructureItem);
-            LoadCache(PCBaseStructurePermission);
-            LoadCache(PCBaseType);
+            LoadCache<ApartmentBuilding>();
+            LoadCache<Association>();
+            LoadCache<Data.Entity.Attribute>();
+            LoadCache<AuthorizedDM>();
+            LoadCache<Bank>();
+            LoadCache<BankItem>();
+            LoadCache<BaseItemType>();
+            LoadCache<BaseStructure>();
+            LoadCache<Data.Entity.BaseStructureType>();
+            LoadCache<BuildingStyle>();
+            LoadCache<Data.Entity.BuildingType>();
+            LoadCache<ChatChannel>();
+            LoadCache<ClientLogEventType>();
+            LoadCache<Data.Entity.ComponentType>();
+            LoadCache<CooldownCategory>();
+            LoadCache<CraftBlueprint>();
+            LoadCache<CraftBlueprintCategory>();
+            LoadCache<CraftDevice>();
+            LoadCache<Data.Entity.CustomEffect>();
+            LoadCache<CustomEffectCategory>();
+            LoadCache<DMRole>();
+            LoadCache<EnmityAdjustmentRule>();
+            LoadCache<FameRegion>();
+            LoadCache<Guild>();
+            LoadCache<GuildTask>();
+            LoadCache<ItemType>();
+            LoadCache<JukeboxSong>();
+            LoadCache<KeyItem>();
+            LoadCache<KeyItemCategory>();
+            LoadCache<LootTable>();
+            LoadCache<LootTableItem>();
+            LoadCache<MarketCategory>();
+            LoadCache<Message>();
+            LoadCache<NPCGroup>();
+            LoadCache<PCBase>();
+            LoadCache<PCBasePermission>();
+            LoadCache<PCBaseStructure>();
+            LoadCache<PCBaseStructureItem>();
+            LoadCache<PCBaseStructurePermission>();
+            LoadCache<Data.Entity.PCBaseType>();
             LoadPCMarketListingCache();
-            LoadCache(SpaceStarport);
-            LoadCache(SpaceEncounter);
+            LoadCache<SpaceStarport>();
+            LoadCache<SpaceEncounter>();
 
             
-            LoadCache(PCCooldown);
-            LoadCache(PCCraftedBlueprint);
-            LoadCache(PCCustomEffect);
+            LoadCache<PCCooldown>();
+            LoadCache<PCCraftedBlueprint>();
+            LoadCache<PCCustomEffect>();
 
             LoadPCImpoundedItemsCache();
-            LoadCache(PCGuildPoint);
-            LoadCache(PCKeyItem);
-            LoadCache(PCMapPin);
-            LoadCache(PCMapProgression);
-            LoadCache(PCObjectVisibility);
-            LoadCache(PCOutfit);
-            LoadCache(PCOverflowItem);
-            LoadCache(PCPerk);
-            LoadCache(PCQuestItemProgress);
-            LoadCache(PCQuestKillTargetProgress);
-            LoadCache(PCQuestStatus);
-            LoadCache(PCRegionalFame);
-            LoadCache(PCSkill);
-            LoadCache(PCSkillPool);
-            LoadCache(PCPerkRefund);
+            LoadCache<PCGuildPoint>();
+            LoadCache<PCKeyItem>();
+            LoadCache<PCMapPin>();
+            LoadCache<PCMapProgression>();
+            LoadCache<PCObjectVisibility>();
+            LoadCache<PCOutfit>();
+            LoadCache<PCOverflowItem>();
+            LoadCache<PCPerk>();
+            LoadCache<PCQuestItemProgress>();
+            LoadCache<PCQuestKillTargetProgress>();
+            LoadCache<PCQuestStatus>();
+            LoadCache<PCRegionalFame>();
+            LoadCache<PCSkill>();
+            LoadCache<PCSkillPool>();
+            LoadCache<PCPerkRefund>();
 
-            LoadCache(Perk);
-            LoadCache(PerkFeat);
-            LoadCache(PerkCategory);
-            LoadCache(PerkLevel);
-            LoadCache(PerkLevelQuestRequirement);
-            LoadCache(PerkLevelSkillRequirement);
-            LoadCache(Player); 
-            LoadCache(Quest);
-            LoadCache(QuestKillTarget);
-            LoadCache(QuestPrerequisite);
-            LoadCache(QuestRequiredItem);
-            LoadCache(QuestRequiredKeyItem);
-            LoadCache(QuestRewardItem);
-            LoadCache(QuestState);
-            LoadCache(QuestType);
-            LoadCache(ServerConfiguration);
-            LoadCache(Skill);
-            LoadCache(SkillCategory);
-            LoadCache(Spawn);
-            LoadCache(SpawnObject);
-            LoadCache(SpawnObjectType);
-            LoadCache(StructureMode);
+            LoadCache<Data.Entity.Perk>();
+            LoadCache<PerkFeat>();
+            LoadCache<PerkCategory>();
+            LoadCache<PerkLevel>();
+            LoadCache<PerkLevelQuestRequirement>();
+            LoadCache<PerkLevelSkillRequirement>();
+            LoadCache<Player>(); 
+            LoadCache<Quest>();
+            LoadCache<QuestKillTarget>();
+            LoadCache<QuestPrerequisite>();
+            LoadCache<QuestRequiredItem>();
+            LoadCache<QuestRequiredKeyItem>();
+            LoadCache<QuestRewardItem>();
+            LoadCache<QuestState>();
+            LoadCache<Data.Entity.QuestType>();
+            LoadCache<ServerConfiguration>();
+            LoadCache<Skill>();
+            LoadCache<SkillCategory>();
+            LoadCache<Spawn>();
+            LoadCache<SpawnObject>();
+            LoadCache<SpawnObjectType>();
+            LoadCache<StructureMode>();
             Console.WriteLine("Cache initialized!");
         }
 

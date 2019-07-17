@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public int IconID { get; set; }
 
-        public CustomEffect Clone()
+        public IEntity Clone()
         {
             return new CustomEffect
             {

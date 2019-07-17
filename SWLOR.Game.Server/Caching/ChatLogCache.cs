@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ChatLog GetByID(Guid id)
         {
-            return ByID[id];
+            return (ChatLog)ByID[id].Clone();
         }
     }
 }

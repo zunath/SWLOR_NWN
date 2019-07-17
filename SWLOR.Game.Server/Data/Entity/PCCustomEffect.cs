@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CasterNWNObjectID { get; set; }
         public int? StancePerkID { get; set; }
 
-        public PCCustomEffect Clone()
+        public IEntity Clone()
         {
             return new PCCustomEffect
             {

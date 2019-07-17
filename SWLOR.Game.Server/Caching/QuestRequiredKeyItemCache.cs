@@ -23,15 +23,21 @@ namespace SWLOR.Game.Server.Caching
 
         public QuestRequiredKeyItem GetByID(int id)
         {
-            return ByID[id];
+            return (QuestRequiredKeyItem)ByID[id].Clone();
         }
 
         public IEnumerable<QuestRequiredKeyItem> GetAllByQuestStateID(int questStateID)
         {
-            if(!ByQuestStateID.ContainsKey(questStateID))
-                return new List<QuestRequiredKeyItem>();
+            var list = new List<QuestRequiredKeyItem>();
+            if (!ByQuestStateID.ContainsKey(questStateID))
+                return list;
 
-            return ByQuestStateID[questStateID].Values;
+            foreach (var record in ByQuestStateID[questStateID].Values)
+            {
+                list.Add((QuestRequiredKeyItem)record.Clone());
+            }
+
+            return list;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public LootTable GetByID(int id)
         {
-            return ByID[id];
+            return (LootTable)ByID[id].Clone();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public KeyItem Clone()
+        public IEntity Clone()
         {
             return new KeyItem
             {

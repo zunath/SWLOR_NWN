@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCCustomEffect)ByID[id].Clone();
         }
 
         public PCCustomEffect GetByStancePerkOrDefault(Guid playerID, int stancePerkID)
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID == stancePerkID);
+            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID == stancePerkID)?.Clone();
         }
 
         public PCCustomEffect GetByPlayerStanceOrDefault(Guid playerID)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID != null);
+            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID != null)?.Clone();
         }
 
         public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, int customEffectID)
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID);
+            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID).Clone();
         }
 
         public IEnumerable<PCCustomEffect> GetAllByPlayerID(Guid playerID)
@@ -57,16 +57,22 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayer.ContainsKey(playerID))
                 return new List<PCCustomEffect>();
 
-            return ByPlayer[playerID].Values;
+            var list = new List<PCCustomEffect>();
+
+            foreach(var record in ByPlayer[playerID].Values)
+            {
+                list.Add((PCCustomEffect)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCCustomEffect> GetAllByPCCustomEffectID(IEnumerable<Guid> pcCustomEffectIDs)
         {
             var list = new List<PCCustomEffect>();
-
             foreach (var pcCustomEffectID in pcCustomEffectIDs)
             {
-                list.Add(ByID[pcCustomEffectID]);
+                list.Add((PCCustomEffect)ByID[pcCustomEffectID].Clone());
             }
 
             return list;

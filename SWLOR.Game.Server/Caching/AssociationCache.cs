@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Association GetByID(int id)
         {
-            return ByID[id];
+            return (Association)ByID[id].Clone();
         }
     }
 }

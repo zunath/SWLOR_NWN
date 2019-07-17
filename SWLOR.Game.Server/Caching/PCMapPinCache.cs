@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMapPin GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCMapPin)ByID[id].Clone();
         }
 
         public IEnumerable<PCMapPin> GetAllByPlayerID(Guid playerID)
@@ -32,7 +32,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerID.ContainsKey(playerID))
                 return new List<PCMapPin>();
 
-            return ByPlayerID[playerID].Values;
+            var list = new List<PCMapPin>();
+            foreach(var record in ByPlayerID[playerID].Values)
+            {
+                list.Add((PCMapPin)record.Clone());
+            }
+
+            return list;
         }
     }
 }

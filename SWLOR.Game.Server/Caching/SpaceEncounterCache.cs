@@ -20,12 +20,18 @@ namespace SWLOR.Game.Server.Caching
         }
         public SpaceEncounter GetByID(int id)
         {
-            return ByID[id];
+            return (SpaceEncounter)ByID[id].Clone();
         }
 
         public IEnumerable<SpaceEncounter> GetAllByPlanet(string planet)
         {
-            return ByID.Values.Where(x => x.Planet == planet);
+            var list = new List<SpaceEncounter>();
+            foreach (var record in ByID.Values.Where(x => x.Planet == planet))
+            {
+                list.Add((SpaceEncounter)record.Clone());
+            }
+
+            return list;
         }
     }
 }

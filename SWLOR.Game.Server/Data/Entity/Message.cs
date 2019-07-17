@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateExpires { get; set; }
         public DateTime? DateRemoved { get; set; }
 
-        public Message Clone()
+        public IEntity Clone()
         {
             return new Message
             {

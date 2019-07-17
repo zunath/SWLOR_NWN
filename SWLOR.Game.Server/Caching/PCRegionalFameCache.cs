@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCRegionalFame GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCRegionalFame)ByID[id].Clone();
         }
 
         public PCRegionalFame GetByPlayerIDAndFameRegionIDOrDefault(Guid playerID, int fameRegionID)

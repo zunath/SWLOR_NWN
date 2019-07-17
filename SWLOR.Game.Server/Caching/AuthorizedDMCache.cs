@@ -19,12 +19,12 @@ namespace SWLOR.Game.Server.Caching
 
         public AuthorizedDM GetByID(int id)
         {
-            return ByID[id];
+            return (AuthorizedDM)ByID[id].Clone();
         }
 
         public AuthorizedDM GetByCDKeyAndActiveOrDefault(string cdKey)
         {
-            return ByID.Values.SingleOrDefault(x => x.CDKey == cdKey && x.IsActive);
+            return (AuthorizedDM)ByID.Values.SingleOrDefault(x => x.CDKey == cdKey && x.IsActive)?.Clone();
         }
     }
 }

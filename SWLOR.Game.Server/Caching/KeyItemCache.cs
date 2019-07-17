@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public KeyItem GetByID(int id)
         {
-            return ByID[id];
+            return (KeyItem)ByID[id].Clone();
         }
     }
 }

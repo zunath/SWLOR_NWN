@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Tertiary { get; set; }
         public bool ContributesToSkillCap { get; set; }
 
-        public Skill Clone()
+        public IEntity Clone()
         {
             return new Skill
             {

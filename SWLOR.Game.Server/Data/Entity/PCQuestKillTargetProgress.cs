@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int NPCGroupID { get; set; }
         public int RemainingToKill { get; set; }
 
-        public PCQuestKillTargetProgress Clone()
+        public IEntity Clone()
         {
             return new PCQuestKillTargetProgress
             {

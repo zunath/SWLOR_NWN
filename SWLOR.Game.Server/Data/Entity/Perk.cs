@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public SpecializationType Specialization { get; set; }
         public ForceBalanceType ForceBalance { get; set; }
 
-        public Perk Clone()
+        public IEntity Clone()
         {
             return new Perk
             {

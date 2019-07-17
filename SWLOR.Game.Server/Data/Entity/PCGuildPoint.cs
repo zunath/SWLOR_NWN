@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Rank { get; set; }
         public int Points { get; set; }
 
-        public PCGuildPoint Clone()
+        public IEntity Clone()
         {
             return new PCGuildPoint
             {

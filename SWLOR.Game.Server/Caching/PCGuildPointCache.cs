@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCGuildPoint GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCGuildPoint)ByID[id].Clone();
         }
 
         public PCGuildPoint GetByIDOrDefault(Guid id)
         {
             if (!ByID.ContainsKey(id))
                 return default;
-            return ByID[id];
+            return (PCGuildPoint)ByID[id].Clone();
         }
 
         public PCGuildPoint GetByPlayerIDAndGuildID(Guid playerID, int guildID)

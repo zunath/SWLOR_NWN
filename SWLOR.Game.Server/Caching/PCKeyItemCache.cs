@@ -7,19 +7,16 @@ namespace SWLOR.Game.Server.Caching
     public class PCKeyItemCache: CacheBase<PCKeyItem>
     {
         private Dictionary<Guid, Dictionary<int, PCKeyItem>> ByPlayerAndKeyItemID { get; } = new Dictionary<Guid, Dictionary<int, PCKeyItem>>();
-        private Dictionary<Guid, List<PCKeyItem>> ByPlayerID { get; } = new Dictionary<Guid, List<PCKeyItem>>();
 
 
         protected override void OnCacheObjectSet(PCKeyItem entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.KeyItemID, entity, ByPlayerAndKeyItemID);
-            SetEntityIntoDictionary(entity.PlayerID, entity, ByPlayerID);
         }
 
         protected override void OnCacheObjectRemoved(PCKeyItem entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.KeyItemID, ByPlayerAndKeyItemID);
-            RemoveEntityFromDictionary(entity.PlayerID, entity, ByPlayerID);
         }
 
         protected override void OnSubscribeEvents()
@@ -28,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCKeyItem GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCKeyItem)ByID[id].Clone();
         }
 
         public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, int pcKeyItemID)
@@ -43,15 +40,29 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCKeyItem> GetAllByPlayerID(Guid playerID)
         {
-            return GetEntityListFromDictionary(playerID, ByPlayerID);
+            if (!ByPlayerAndKeyItemID.ContainsKey(playerID))
+                return new List<PCKeyItem>();
+
+            var list = new List<PCKeyItem>();
+            foreach (var record in ByPlayerAndKeyItemID[playerID].Values)
+            {
+                list.Add((PCKeyItem)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCKeyItem> GetAllByPlayerIDAndKeyItemIDs(Guid playerID, IEnumerable<int> keyItemIDs)
         {
+            var list = new List<PCKeyItem>();
             foreach (var keyItemID in keyItemIDs)
             {
-                yield return GetEntityFromDictionary(playerID, keyItemID, ByPlayerAndKeyItemID);
+                var record = GetEntityFromDictionaryOrDefault(playerID, keyItemID, ByPlayerAndKeyItemID);
+                if(record != null)
+                    list.Add(record);
             }
+
+            return list;
         }
     }
 }

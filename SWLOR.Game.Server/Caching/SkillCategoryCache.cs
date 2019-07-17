@@ -33,17 +33,23 @@ namespace SWLOR.Game.Server.Caching
             // Exclude zero
             if (entity.ID <= 0) return;
 
-            ByActive[entity.ID] = entity;
+            ByActive[entity.ID] = (SkillCategory)entity.Clone();
         }
 
         public SkillCategory GetByID(int id)
         {
-            return ByID[id];
+            return (SkillCategory)ByID[id].Clone();
         }
 
         public IEnumerable<SkillCategory> GetAllActive()
         {
-            return ByActive.Values;
+            var list = new List<SkillCategory>();
+            foreach (var record in ByActive.Values)
+            {
+                list.Add((SkillCategory) record.Clone());
+            }
+
+            return list;
         }
 
     }

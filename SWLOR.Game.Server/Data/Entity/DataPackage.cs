@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool ImportedSuccessfully { get; set; }
         public string ErrorMessage { get; set; }
 
-        public DataPackage Clone()
+        public IEntity Clone()
         {
             return new DataPackage
             {

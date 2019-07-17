@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string AreaTag { get; set; }
         public string AreaResref { get; set; }
 
-        public Bank Clone()
+        public IEntity Clone()
         {
             return new Bank
             {

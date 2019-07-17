@@ -27,14 +27,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMarketListing GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCMarketListing)ByID[id].Clone();
         }
 
         public PCMarketListing GetByIDOrDefault(Guid id)
         {
             if (!ByID.ContainsKey(id)) return default;
 
-            return ByID[id];
+            return (PCMarketListing)ByID[id].Clone();
         }
 
         public IEnumerable<PCMarketListing> GetAllByMarketRegionID(int marketRegionID)
@@ -42,7 +42,14 @@ namespace SWLOR.Game.Server.Caching
             if(!ByMarketRegionID.ContainsKey(marketRegionID))
                 return new List<PCMarketListing>();
 
-            return ByMarketRegionID[marketRegionID].Values;
+            var list = new List<PCMarketListing>();
+
+            foreach (var record in ByMarketRegionID[marketRegionID].Values)
+            {
+                list.Add((PCMarketListing)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCMarketListing> GetAllBySellerPlayerID(Guid sellerPlayerID)
@@ -50,7 +57,13 @@ namespace SWLOR.Game.Server.Caching
             if(!BySellerPlayerID.ContainsKey(sellerPlayerID))
                 return new List<PCMarketListing>();
 
-            return BySellerPlayerID[sellerPlayerID].Values;
+            var list = new List<PCMarketListing>();
+            foreach (var record in BySellerPlayerID[sellerPlayerID].Values)
+            {
+                list.Add((PCMarketListing)record.Clone());
+            }
+
+            return list;
         }
     }
 }

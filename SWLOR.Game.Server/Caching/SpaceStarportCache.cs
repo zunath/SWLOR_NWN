@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public SpaceStarport GetByID(Guid id)
         {
-            return ByID[id];
+            return (SpaceStarport)ByID[id].Clone();
         }
 
         public SpaceStarport GetByIDOrDefault(Guid id)
@@ -34,15 +34,21 @@ namespace SWLOR.Game.Server.Caching
                 return default;
             }
 
-            return ByID[id];
+            return (SpaceStarport)ByID[id].Clone();
         }
 
         public IEnumerable<SpaceStarport> GetAllByPlanet(string planet)
         {
-            if(!ByPlanet.ContainsKey(planet))
-                return new List<SpaceStarport>();
+            var list = new List<SpaceStarport>();
+            if (!ByPlanet.ContainsKey(planet))
+                return list;
 
-            return ByPlanet[planet].Values;
+            foreach (var record in ByPlanet[planet].Values)
+            {
+                list.Add((SpaceStarport)record.Clone());
+            }
+
+            return list;
         }
     }
 }

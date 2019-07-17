@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemObject { get; set; }
         public DateTime DateStored { get; set; }
 
-        public BankItem Clone()
+        public IEntity Clone()
         {
             return new BankItem
             {

@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Service
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
             foreach (var guild in DataService.Guild.GetAll())
             {
-                for (int rank = 0; rank <= maxRank; rank++)
+                for (int rank = 0; rank < maxRank; rank++)
                 {
                     var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
                     IEnumerable<GuildTask> tasks;

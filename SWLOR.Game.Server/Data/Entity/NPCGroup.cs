@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Name { get; set; }
 
-        public NPCGroup Clone()
+        public IEntity Clone()
         {
             return new NPCGroup
             {

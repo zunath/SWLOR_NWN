@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int PerkLevelID { get; set; }
         public int RequiredQuestID { get; set; }
 
-        public PerkLevelQuestRequirement Clone()
+        public IEntity Clone()
         {
             return new PerkLevelQuestRequirement
             {

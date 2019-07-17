@@ -18,14 +18,14 @@ namespace SWLOR.Game.Server.Caching
 
         public CraftBlueprint GetByID(int id)
         {
-            return ByID[id];
+            return (CraftBlueprint)ByID[id].Clone();
         }
 
         public CraftBlueprint GetByIDOrDefault(int id)
         {
             if (!ByID.ContainsKey(id))
                 return default;
-            return ByID[id];
+            return (CraftBlueprint)ByID[id].Clone();
         }
     }
 }

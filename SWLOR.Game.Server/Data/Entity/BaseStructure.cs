@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int FuelRating { get; set; }
         public int DefaultStructureModeID { get; set; }
 
-        public BaseStructure Clone()
+        public IEntity Clone()
         {
             return new BaseStructure
             {

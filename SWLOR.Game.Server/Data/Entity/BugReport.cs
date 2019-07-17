@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public double SenderLocationOrientation { get; set; }
         public DateTime DateSubmitted { get; set; }
 
-        public BugReport Clone()
+        public IEntity Clone()
         {
             return new BugReport
             {

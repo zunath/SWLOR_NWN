@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Difficulty { get; set; }
         public int LootTable { get; set; }
 
-        public SpaceEncounter Clone()
+        public IEntity Clone()
         {
             return new SpaceEncounter
             {

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public string ReassembledResref { get; set; }
 
-        public ComponentType Clone()
+        public IEntity Clone()
         {
             return new ComponentType
             {

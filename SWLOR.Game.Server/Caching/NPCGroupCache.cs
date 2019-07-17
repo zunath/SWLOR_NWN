@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public NPCGroup GetByID(int id)
         {
-            return ByID[id];
+            return (NPCGroup)ByID[id].Clone();
         }
 
     }

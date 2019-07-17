@@ -24,12 +24,21 @@ namespace SWLOR.Game.Server.Caching
 
         public AreaWalkmesh GetByID(Guid id)
         {
-            return ByID[id];
+            return (AreaWalkmesh)ByID[id].Clone();
         }
 
         public IEnumerable<AreaWalkmesh> GetAllByAreaID(Guid areaID)
         {
-            return ByAreaID[areaID].Values;
+            var list = new List<AreaWalkmesh>();
+            if (!ByAreaID.ContainsKey(areaID))
+                return list;
+
+            foreach (var walkmesh in ByAreaID[areaID].Values)
+            {
+                list.Add( (AreaWalkmesh)walkmesh.Clone());
+            }
+
+            return list;
         }
     }
 }

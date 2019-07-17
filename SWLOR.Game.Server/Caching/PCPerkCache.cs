@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCPerk GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCPerk)ByID[id].Clone();
         }
 
         public PCPerk GetByPlayerAndPerkID(Guid playerID, int perkID)
@@ -41,10 +41,16 @@ namespace SWLOR.Game.Server.Caching
         {
             if (!ByPlayerAndPerkID.ContainsKey(playerID))
             {
-                ByPlayerAndPerkID[playerID] = new Dictionary<int, PCPerk>();
+                return new List<PCPerk>();
             }
 
-            return ByPlayerAndPerkID[playerID].Values;
+            var list = new List<PCPerk>();
+            foreach (var record in ByPlayerAndPerkID[playerID].Values)
+            {
+                list.Add((PCPerk)record.Clone());
+            }
+
+            return list;
         }
     }
 }

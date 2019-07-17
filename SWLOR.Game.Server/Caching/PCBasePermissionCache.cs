@@ -53,12 +53,21 @@ namespace SWLOR.Game.Server.Caching
         /// <returns></returns>
         public PCBasePermission GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCBasePermission)ByID[id].Clone();
         }
 
         public IEnumerable<PCBasePermission> GetAllByPlayerID(Guid id)
         {
-            return ByPlayerID[id].Values;
+            var list = new List<PCBasePermission>();
+            if (!ByPlayerID.ContainsKey(id))
+                return list;
+
+            foreach (var pcBasePermission in ByPlayerID[id].Values)
+            {
+                list.Add((PCBasePermission)pcBasePermission.Clone());
+            }
+
+            return list;
         }
 
         public PCBasePermission GetByPlayerAndPCBaseIDOrDefault(Guid playerID, Guid pcBaseID)
@@ -68,7 +77,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBasePermission GetPublicPermissionOrDefault(Guid pcBaseID)
         {
-            return ByID.Values.SingleOrDefault(x => x.PCBaseID == pcBaseID && x.IsPublicPermission);
+            return (PCBasePermission)ByID.Values.SingleOrDefault(x => x.PCBaseID == pcBaseID && x.IsPublicPermission)?.Clone();
         }
 
         public PCBasePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseID)
@@ -77,17 +86,34 @@ namespace SWLOR.Game.Server.Caching
                 return default;
 
             var permissions = ByPlayerID[playerID].Values;
-            return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseID == pcBaseID);
+            return (PCBasePermission)permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseID == pcBaseID)?.Clone();
         }
 
         public IEnumerable<PCBasePermission> GetAllByHasPrivatePermissionToBase(Guid pcBaseID)
         {
-            return ByPCBaseIDPrivate[pcBaseID].Values;
+            var list = new List<PCBasePermission>();
+            if (!ByPCBaseIDPrivate.ContainsKey(pcBaseID))
+                return list;
+
+            foreach (var record in ByPCBaseIDPrivate[pcBaseID].Values)
+            {
+                list.Add( (PCBasePermission)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCBasePermission> GetAllPermissionsByPCBaseID(Guid pcBaseID)
         {
-            return ByPCBaseIDAll[pcBaseID].Values;
+            var list = new List<PCBasePermission>();
+            if (!ByPCBaseIDAll.ContainsKey(pcBaseID))
+                return list;
+
+            foreach (var record in ByPCBaseIDAll[pcBaseID].Values)
+            {
+                list.Add((PCBasePermission)record.Clone());
+            }
+            return list;
         }
         
     }

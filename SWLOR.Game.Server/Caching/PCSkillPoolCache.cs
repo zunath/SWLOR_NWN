@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCSkillPool GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCSkillPool)ByID[id].Clone();
         }
 
         public PCSkillPool GetByPlayerIDAndSkillCategoryID(Guid playerID, int skillCategoryID)
@@ -43,7 +43,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerIDAndSkillCategoryID.ContainsKey(playerID))
                 return new List<PCSkillPool>();
 
-            return ByPlayerIDAndSkillCategoryID[playerID].Values.Where(x => x.Levels > 0);
+            var list = new List<PCSkillPool>();
+            foreach (var record in ByPlayerIDAndSkillCategoryID[playerID].Values.Where(x => x.Levels > 0))
+            {
+                list.Add((PCSkillPool)record.Clone());
+            }
+
+            return list;
         }
     }
 }

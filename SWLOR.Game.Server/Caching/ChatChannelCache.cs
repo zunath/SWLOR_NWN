@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ChatChannel GetByID(int id)
         {
-            return ByID[id];
+            return (ChatChannel)ByID[id].Clone();
         }
     }
 }

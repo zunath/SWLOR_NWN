@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? SelectedItemRewardID { get; set; }
         public int TimesCompleted { get; set; }
 
-        public PCQuestStatus Clone()
+        public IEntity Clone()
         {
             return new PCQuestStatus
             {

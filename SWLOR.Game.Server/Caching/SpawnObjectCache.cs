@@ -23,15 +23,21 @@ namespace SWLOR.Game.Server.Caching
 
         public SpawnObject GetByID(int id)
         {
-            return ByID[id];
+            return (SpawnObject)ByID[id].Clone();
         }
 
         public IEnumerable<SpawnObject> GetAllBySpawnTableID(int spawnTableID)
         {
-            if(!BySpawnTableID.ContainsKey(spawnTableID))
-                return new List<SpawnObject>();
+            var list = new List<SpawnObject>();
+            if (!BySpawnTableID.ContainsKey(spawnTableID))
+                return list;
 
-            return BySpawnTableID[spawnTableID].Values;
+            foreach (var record in BySpawnTableID[spawnTableID].Values)
+            {
+                list.Add((SpawnObject)record.Clone());
+            }
+
+            return list;
         }
     }
 }

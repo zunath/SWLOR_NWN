@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string DisplayName { get; set; }
         public bool IsActive { get; set; }
 
-        public JukeboxSong Clone()
+        public IEntity Clone()
         {
             return new JukeboxSong
             {

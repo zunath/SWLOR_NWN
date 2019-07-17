@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int DailyUpkeep { get; set; }
         public int FurnitureLimit { get; set; }
 
-        public BuildingStyle Clone()
+        public IEntity Clone()
         {
             return new BuildingStyle
             {

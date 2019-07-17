@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Message GetByID(Guid id)
         {
-            return ByID[id];
+            return (Message)ByID[id].Clone();
         }
 
         public IEnumerable<Message> GetAllByBoardID(Guid boardID)
@@ -32,7 +32,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByBoardID.ContainsKey(boardID))
                 return new List<Message>();
 
-            return ByBoardID[boardID].Values;
+            var list = new List<Message>();
+            foreach (var message in ByBoardID[boardID].Values)
+            {
+                list.Add((Message)message.Clone());
+            }
+
+            return list;
         }
     }
 }

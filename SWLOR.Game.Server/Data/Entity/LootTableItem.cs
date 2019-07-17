@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public string SpawnRule { get; set; }
 
-        public LootTableItem Clone()
+        public IEntity Clone()
         {
             return new LootTableItem
             {

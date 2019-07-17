@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Quantity { get; set; }
         public int QuestStateID { get; set; }
 
-        public QuestKillTarget Clone()
+        public IEntity Clone()
         {
             return new QuestKillTarget
             {

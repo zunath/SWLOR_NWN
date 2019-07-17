@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int DMRole { get; set; }
         public bool IsActive { get; set; }
 
-        public AuthorizedDM Clone()
+        public IEntity Clone()
         {
             return new AuthorizedDM
             {

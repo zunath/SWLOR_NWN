@@ -23,12 +23,21 @@ namespace SWLOR.Game.Server.Caching
 
         public QuestKillTarget GetByID(int id)
         {
-            return ByID[id];
+            return (QuestKillTarget)ByID[id].Clone();
         }
 
         public IEnumerable<QuestKillTarget> GetAllByQuestStateID(int questStateID)
         {
-            return ByQuestStateID[questStateID].Values;
+            var list = new List<QuestKillTarget>();
+            if (!ByQuestStateID.ContainsKey(questStateID))
+                return list;
+
+            foreach(var record in ByQuestStateID[questStateID].Values)
+            {
+                list.Add((QuestKillTarget)record.Clone());
+            }
+
+            return list;
         }
     }
 }

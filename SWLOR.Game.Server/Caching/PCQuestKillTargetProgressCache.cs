@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestKillTargetProgress GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCQuestKillTargetProgress)ByID[id].Clone();
         }
 
         public IEnumerable<PCQuestKillTargetProgress> GetAllByPlayerIDAndPCQuestStatusID(Guid playerID, Guid pcQuestStatusID)
@@ -33,7 +33,14 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayerID.ContainsKey(playerID))
                 return new List<PCQuestKillTargetProgress>();
 
-            return ByPlayerID[playerID].Values.Where(x => x.PCQuestStatusID == pcQuestStatusID);
+            var list = new List<PCQuestKillTargetProgress>();
+
+            foreach (var record in ByPlayerID[playerID].Values.Where(x => x.PCQuestStatusID == pcQuestStatusID))
+            {
+                list.Add((PCQuestKillTargetProgress)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCQuestKillTargetProgress> GetAllByPlayerIDAndNPCGroupID(Guid playerID, int npcGroupID)
@@ -41,7 +48,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerID.ContainsKey(playerID))
                 return new List<PCQuestKillTargetProgress>();
 
-            return ByPlayerID[playerID].Values.Where(x => x.NPCGroupID == npcGroupID);
+            var list = new List<PCQuestKillTargetProgress>();
+            foreach(var record in ByPlayerID[playerID].Values.Where(x => x.NPCGroupID == npcGroupID))
+            {
+                list.Add((PCQuestKillTargetProgress)record.Clone());
+            }
+
+            return list;
         }
     }
 }

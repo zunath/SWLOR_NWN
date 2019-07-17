@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime? DateNextActivity { get; set; }
         public int StructureModeID { get; set; }
 
-        public PCBaseStructure Clone()
+        public IEntity Clone()
         {
             return new PCBaseStructure
             {

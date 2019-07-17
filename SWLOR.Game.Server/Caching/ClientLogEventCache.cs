@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ClientLogEvent GetByID(Guid id)
         {
-            return ByID[id];
+            return (ClientLogEvent)ByID[id].Clone();
         }
     }
 }

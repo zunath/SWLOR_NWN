@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public DMAction GetByID(Guid id)
         {
-            return ByID[id];
+            return (DMAction)ByID[id].Clone();
         }
     }
 }

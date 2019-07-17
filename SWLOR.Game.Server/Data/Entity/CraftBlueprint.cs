@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int TertiaryMaximum { get; set; }
         public int? BaseStructureID { get; set; }
 
-        public CraftBlueprint Clone()
+        public IEntity Clone()
         {
             return new CraftBlueprint
             {

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Caching
 {
     public class GuildTaskCache: CacheBase<GuildTask>
     {
-        private List<GuildTask> ByCurrentlyOffered { get; } = new List<GuildTask>();
+        private Dictionary<int, GuildTask> ByCurrentlyOffered { get; } = new Dictionary<int, GuildTask>();
         private Dictionary<int, Dictionary<int, GuildTask>> ByRequiredRank { get; } = new Dictionary<int, Dictionary<int, GuildTask>>();
 
         protected override void OnCacheObjectSet(GuildTask entity)
@@ -27,31 +27,47 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetByCurrentlyOffered(GuildTask entity)
         {
-            if(!ByCurrentlyOffered.Contains(entity) && entity.IsCurrentlyOffered)
-                ByCurrentlyOffered.Add(entity);
-            else if (ByCurrentlyOffered.Contains(entity) && !entity.IsCurrentlyOffered)
-                ByCurrentlyOffered.Remove(entity);
+            if (!ByCurrentlyOffered.ContainsKey(entity.ID) && entity.IsCurrentlyOffered)
+                ByCurrentlyOffered[entity.ID] = (GuildTask)entity.Clone();
+            else if (ByCurrentlyOffered.ContainsKey(entity.ID) && !entity.IsCurrentlyOffered)
+                ByCurrentlyOffered.Remove(entity.ID);
         }
 
         private void RemoveByCurrentlyOffered(GuildTask entity)
         {
-            if (ByCurrentlyOffered.Contains(entity))
-                ByCurrentlyOffered.Remove(entity);
+            if (ByCurrentlyOffered.ContainsKey(entity.ID))
+                ByCurrentlyOffered.Remove(entity.ID);
         }
 
         public GuildTask GetByID(int id)
         {
-            return ByID[id];
+            return (GuildTask)ByID[id].Clone();
         }
 
         public IEnumerable<GuildTask> GetAllByCurrentlyOffered()
         {
-            return ByCurrentlyOffered;
+            var list = new List<GuildTask>();
+            foreach (var task in ByCurrentlyOffered.Values)
+            {
+                list.Add( (GuildTask) task.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<GuildTask> GetAllByGuildIDAndRequiredRank(int requiredRank, int guildID)
         {
-            return ByRequiredRank[requiredRank].Values.Where(x => x.GuildID == guildID);
+            var list = new List<GuildTask>();
+            if (!ByRequiredRank.ContainsKey(requiredRank))
+                return list;
+
+            var results = ByRequiredRank[requiredRank].Values.Where(x => x.GuildID == guildID);
+            foreach (var result in results)
+            {
+                list.Add( (GuildTask)result.Clone());
+            }
+
+            return list;
         }
     }
 }

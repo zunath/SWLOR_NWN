@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int CooldownCategoryID { get; set; }
         public DateTime DateUnlocked { get; set; }
 
-        public PCCooldown Clone()
+        public IEntity Clone()
         {
             return new PCCooldown
             {

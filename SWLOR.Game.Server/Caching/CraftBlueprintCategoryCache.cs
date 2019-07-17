@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Caching
             if (!entity.IsActive && ByCategoryIDActive.ContainsKey(entity.ID))
                 ByCategoryIDActive.Remove(entity.ID);
             else if (entity.IsActive)
-                ByCategoryIDActive[entity.ID] = entity;
+                ByCategoryIDActive[entity.ID] = (CraftBlueprintCategory)entity.Clone();
 
         }
 
@@ -40,16 +40,18 @@ namespace SWLOR.Game.Server.Caching
 
         public CraftBlueprintCategory GetByID(int id)
         {
-            return ByID[id];
+            return (CraftBlueprintCategory)ByID[id].Clone();
         }
 
         public IEnumerable<CraftBlueprintCategory> GetAllActiveByIDs(IEnumerable<int> craftBlueprintCategoryIDs)
         {
+            var list = new List<CraftBlueprintCategory>();
             foreach (var id in craftBlueprintCategoryIDs)
             {
-                if (ByCategoryIDActive.ContainsKey(id))
-                    yield return ByCategoryIDActive[id];
+                list.Add( (CraftBlueprintCategory)ByCategoryIDActive[id].Clone());
             }
+
+            return list;
         }
     }
 }

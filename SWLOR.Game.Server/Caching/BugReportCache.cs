@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public BugReport GetByID(Guid id)
         {
-            return ByID[id];
+            return (BugReport)ByID[id].Clone();
         }
     }
 }

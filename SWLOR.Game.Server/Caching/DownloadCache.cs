@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Download GetByID(int id)
         {
-            return ByID[id];
+            return (Download)ByID[id].Clone();
         }
     }
 }

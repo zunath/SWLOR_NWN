@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCObjectVisibility GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCObjectVisibility)ByID[id].Clone();
         }
 
         public PCObjectVisibility GetByPlayerIDAndVisibilityObjectIDOrDefault(Guid playerID, string visibilityObjectID)
@@ -38,7 +38,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayer.ContainsKey(playerID))
                 return new List<PCObjectVisibility>();
 
-            return ByPlayer[playerID].Values;
+            var list = new List<PCObjectVisibility>();
+            foreach (var record in ByPlayer[playerID].Values)
+            {
+                list.Add((PCObjectVisibility)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<PCObjectVisibility> GetAllByPlayerIDsAndVisibilityObjectID(IEnumerable<Guid> playerIDs, string visibilityObjectID)
@@ -49,7 +55,7 @@ namespace SWLOR.Game.Server.Caching
             {
                 if (!ByPlayer.ContainsKey(playerID)) continue;
 
-                var results = ByPlayer[playerID].Where(x => x.Key == visibilityObjectID).Select(s => s.Value);
+                var results = ByPlayer[playerID].Where(x => x.Key == visibilityObjectID).Select(s => (PCObjectVisibility)s.Value.Clone());
                 list.AddRange(results);
             }
 

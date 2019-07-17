@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCPerkRefund GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCPerkRefund)ByID[id].Clone();
         }
     }
 }

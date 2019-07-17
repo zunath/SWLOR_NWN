@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public CustomEffectCategory GetByID(int id)
         {
-            return ByID[id];
+            return (CustomEffectCategory)ByID[id].Clone();
         }
     }
 }

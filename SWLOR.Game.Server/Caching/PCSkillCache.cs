@@ -27,17 +27,22 @@ namespace SWLOR.Game.Server.Caching
 
         public PCSkill GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCSkill)ByID[id].Clone();
         }
 
         public IEnumerable<PCSkill> GetAllByPlayerID(Guid playerID)
         {
             if (!ByPlayerID.ContainsKey(playerID))
             {
-                ByPlayerID[playerID] = new Dictionary<Guid, PCSkill>();
+                return new List<PCSkill>();
             }
 
-            var list = ByPlayerID[playerID].Values;
+            var list = new List<PCSkill>();
+            foreach (var record in ByPlayerID[playerID].Values)
+            {
+                list.Add((PCSkill)record.Clone());
+            }
+
             return list;
         }
 
@@ -53,10 +58,13 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCSkill> GetAllByPlayerIDAndSkillIDs(Guid playerID, IEnumerable<int> skillIDs)
         {
+            var list = new List<PCSkill>();
             foreach(var skillID in skillIDs)
             {
-                yield return GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID);
+                list.Add(GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID));
             }
+
+            return list;
         }
     }
 }

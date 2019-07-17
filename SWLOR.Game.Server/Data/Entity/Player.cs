@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? ActiveConcentrationPerkID { get; set; }
         public int ActiveConcentrationTier { get; set; }
 
-        public Player Clone()
+        public IEntity Clone()
         {
             return new Player
             {

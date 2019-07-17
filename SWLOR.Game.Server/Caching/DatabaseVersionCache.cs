@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public DatabaseVersion GetByID(Guid id)
         {
-            return ByID[id];
+            return (DatabaseVersion)ByID[id].Clone();
         }
     }
 }

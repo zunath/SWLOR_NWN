@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ServerConfiguration Get()
         {
-            return ByID[1];
+            return (ServerConfiguration)ByID[1].Clone();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string SenderDMName { get; set; }
         public string ReceiverDMName { get; set; }
 
-        public ChatLog Clone()
+        public IEntity Clone()
         {
             return new ChatLog
             {

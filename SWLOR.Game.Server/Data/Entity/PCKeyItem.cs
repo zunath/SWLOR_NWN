@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int KeyItemID { get; set; }
         public DateTime AcquiredDate { get; set; }
 
-        public PCKeyItem Clone()
+        public IEntity Clone()
         {
             return new PCKeyItem
             {

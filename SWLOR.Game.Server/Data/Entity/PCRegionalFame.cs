@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int FameRegionID { get; set; }
         public int Amount { get; set; }
 
-        public PCRegionalFame Clone()
+        public IEntity Clone()
         {
             return new PCRegionalFame
             {

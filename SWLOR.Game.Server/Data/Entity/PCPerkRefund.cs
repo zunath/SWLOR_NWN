@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateAcquired { get; set; }
         public DateTime DateRefunded { get; set; }
 
-        public PCPerkRefund Clone()
+        public IEntity Clone()
         {
             return new PCPerkRefund
             {

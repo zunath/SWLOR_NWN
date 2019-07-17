@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public EnmityAdjustmentRule GetByID(int id)
         {
-            return ByID[id];
+            return (EnmityAdjustmentRule)ByID[id].Clone();
         }
     }
 }

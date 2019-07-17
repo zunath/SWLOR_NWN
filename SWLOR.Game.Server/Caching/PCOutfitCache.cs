@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCOutfit GetByID(Guid playerID)
         {
-            return ByID[playerID];
+            return (PCOutfit)ByID[playerID].Clone();
         }
     }
 }

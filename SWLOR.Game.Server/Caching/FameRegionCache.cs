@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public FameRegion GetByID(int id)
         {
-            return ByID[id];
+            return (FameRegion)ByID[id].Clone();
         }
     }
 }

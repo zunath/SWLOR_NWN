@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Rank { get; set; }
         public bool IsLocked { get; set; }
 
-        public PCSkill Clone()
+        public IEntity Clone()
         {
             return new PCSkill
             {

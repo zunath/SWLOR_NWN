@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Quest GetByID(int id)
         {
-            return ByID[id];
+            return (Quest)ByID[id].Clone();
         }
 
         public bool ExistsByID(int id)

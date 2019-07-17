@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCImpoundedItem GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCImpoundedItem)ByID[id].Clone();
         }
 
         public IEnumerable<PCImpoundedItem> GetAllByPlayerIDAndNotRetrieved(Guid playerID)
@@ -57,7 +57,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerIDAndNotRetrieved.ContainsKey(playerID))
                 return new List<PCImpoundedItem>();
 
-            return ByPlayerIDAndNotRetrieved[playerID].Values;
+            var list = new List<PCImpoundedItem>();
+            foreach(var record in ByPlayerIDAndNotRetrieved[playerID].Values)
+            {
+                list.Add((PCImpoundedItem)record.Clone());
+            }
+
+            return list;
         }
     }
 }

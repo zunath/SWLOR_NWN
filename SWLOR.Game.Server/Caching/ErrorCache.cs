@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Error GetByID(Guid id)
         {
-            return ByID[id];
+            return (Error)ByID[id].Clone();
         }
     }
 }

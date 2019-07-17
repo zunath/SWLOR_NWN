@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public QuestType GetByID(int id)
         {
-            return ByID[id];
+            return (QuestType)ByID[id].Clone();
         }
     }
 }

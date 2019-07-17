@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PerkCategory entity)
         {
-            ByCategoryID[entity.ID] = entity;
+            ByCategoryID[entity.ID] = (PerkCategory)entity.Clone();
         }
 
         protected override void OnCacheObjectRemoved(PerkCategory entity)
@@ -25,15 +25,18 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkCategory GetByID(int id)
         {
-            return ByID[id];
+            return (PerkCategory)ByID[id].Clone();
         }
 
         public IEnumerable<PerkCategory> GetAllByIDs(IEnumerable<int> perkCategoryIDs)
         {
+            var list = new List<PerkCategory>();
             foreach (var perkCategoryID in perkCategoryIDs)
             {
-                yield return ByCategoryID[perkCategoryID];
+                list.Add((PerkCategory)ByCategoryID[perkCategoryID].Clone());
             }
+
+            return list;
         }
     }
 }

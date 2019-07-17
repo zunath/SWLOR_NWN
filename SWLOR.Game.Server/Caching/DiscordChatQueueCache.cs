@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public DiscordChatQueue GetByID(Guid id)
         {
-            return ByID[id];
+            return (DiscordChatQueue)ByID[id].Clone();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Url { get; set; }
         public bool IsActive { get; set; }
 
-        public Download Clone()
+        public IEntity Clone()
         {
             return new Download
             {

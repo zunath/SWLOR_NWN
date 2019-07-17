@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public BuildingType GetByID(int id)
         {
-            return ByID[id];
+            return (BuildingType)ByID[id].Clone();
         }
     }
 }

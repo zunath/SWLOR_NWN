@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int CraftBlueprintID { get; set; }
         public DateTime DateFirstCrafted { get; set; }
 
-        public PCCraftedBlueprint Clone()
+        public IEntity Clone()
         {
             return new PCCraftedBlueprint
             {

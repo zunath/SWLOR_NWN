@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ShipLocation { get; set; }
         public int? Starcharts { get; set; }
 
-        public PCBase Clone()
+        public IEntity Clone()
         {
             return new PCBase
             {

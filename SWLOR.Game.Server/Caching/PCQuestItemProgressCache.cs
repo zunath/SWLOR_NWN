@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestItemProgress GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCQuestItemProgress)ByID[id].Clone();
         }
 
         public int GetCountByPCQuestStatusID(Guid pcQuestStatusID)
@@ -40,7 +40,16 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCQuestItemProgress> GetAllByPCQuestStatusID(Guid pcQuestStatusID)
         {
-            return ByQuestStatusIDAndResref[pcQuestStatusID].Values;
+            var list = new List<PCQuestItemProgress>();
+            if (!ByQuestStatusIDAndResref.ContainsKey(pcQuestStatusID))
+                return list;
+
+            foreach (var record in ByQuestStatusIDAndResref[pcQuestStatusID].Values)
+            {
+                list.Add((PCQuestItemProgress)record.Clone());
+            }
+
+            return list;
         }
     }
 }

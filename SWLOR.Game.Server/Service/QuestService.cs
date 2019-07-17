@@ -498,7 +498,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Retrieve the quest and state information from the cache.
             var quest = DataService.Quest.GetByID(status.QuestID);
-            var state = DataService.QuestState.GetByQuestIDAndSequence(quest.ID,status.CurrentQuestStateID);
+            var state = DataService.QuestState.GetByID(status.CurrentQuestStateID);
 
             // Retrieve the kill targets and required items necessary for this quest state.
             var killTargets = DataService.QuestKillTarget.GetAllByQuestStateID(state.ID);

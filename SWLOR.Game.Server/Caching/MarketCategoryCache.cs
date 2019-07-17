@@ -19,16 +19,15 @@ namespace SWLOR.Game.Server.Caching
 
         public MarketCategory GetByID(int id)
         {
-            return ByID[id];
+            return (MarketCategory)ByID[id].Clone();
         }
 
         public IEnumerable<MarketCategory> GetAllByIDs(IEnumerable<int> ids)
         {
             var list = new List<MarketCategory>();
-
             foreach (var id in ids)
             {
-                list.Add(ByID[id]);
+                list.Add( (MarketCategory) ByID[id].Clone());
             }
 
             return list;

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(Area entity)
         {
-            ByResref[entity.Resref] = entity;
+            ByResref[entity.Resref] = (Area)entity.Clone();
         }
 
         protected override void OnCacheObjectRemoved(Area entity)
@@ -24,19 +24,20 @@ namespace SWLOR.Game.Server.Caching
 
         public Area GetByID(Guid id)
         {
-            return ByID[id];
+            return (Area)ByID[id].Clone();
         }
 
         public Area GetByResref(string resref)
         {
-            return ByResref[resref];
+            return (Area)ByResref[resref].Clone();
         }
 
         public Area GetByResrefOrDefault(string resref)
         {
             if (!ByResref.ContainsKey(resref))
                 return default;
-            return ByResref[resref];
+
+            return (Area)ByResref[resref].Clone();
         }
     }
 }

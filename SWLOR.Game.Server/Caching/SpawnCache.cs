@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Spawn GetByID(int id)
         {
-            return ByID[id];
+            return (Spawn)ByID[id].Clone();
         }
     }
 }

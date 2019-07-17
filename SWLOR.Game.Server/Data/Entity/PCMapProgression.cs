@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string AreaResref { get; set; }
         public string Progression { get; set; }
 
-        public PCMapProgression Clone()
+        public IEntity Clone()
         {
             return new PCMapProgression
             {

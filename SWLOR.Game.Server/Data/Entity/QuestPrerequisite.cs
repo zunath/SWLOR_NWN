@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int QuestID { get; set; }
         public int RequiredQuestID { get; set; }
 
-        public QuestPrerequisite Clone()
+        public IEntity Clone()
         {
             return new QuestPrerequisite
             {

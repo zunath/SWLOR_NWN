@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public GameTopicCategory GetByID(int id)
         {
-            return ByID[id];
+            return (GameTopicCategory)ByID[id].Clone();
         }
     }
 }

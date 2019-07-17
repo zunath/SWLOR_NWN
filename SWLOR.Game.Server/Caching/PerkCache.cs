@@ -18,14 +18,14 @@ namespace SWLOR.Game.Server.Caching
 
         public Data.Entity.Perk GetByID(int id)
         {
-            return ByID[id];
+            return (Data.Entity.Perk)ByID[id].Clone();
         }
 
         public Data.Entity.Perk GetByIDOrDefault(int id)
         {
             if (!ByID.ContainsKey(id))
                 return default;
-            return ByID[id];
+            return (Data.Entity.Perk)ByID[id].Clone();
         }
     }
 }

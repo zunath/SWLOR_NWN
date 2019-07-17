@@ -19,12 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Guild GetByID(int id)
         {
-            return ByID[id];
-        }
-
-        public IEnumerable<Guild> GetAll()
-        {
-            return ByID.Values;
+            return (Guild)ByID[id].Clone();
         }
     }
 }

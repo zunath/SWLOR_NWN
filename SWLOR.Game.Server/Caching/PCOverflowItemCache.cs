@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCOverflowItem GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCOverflowItem)ByID[id].Clone();
         }
 
         public IEnumerable<PCOverflowItem> GetAllByPlayerID(Guid playerID)
@@ -32,7 +32,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerID.ContainsKey(playerID))
                 return new List<PCOverflowItem>();
 
-            return ByPlayerID[playerID].Values;
+            var list = new List<PCOverflowItem>();
+            foreach (var record in ByPlayerID[playerID].Values)
+            {
+                list.Add((PCOverflowItem)record.Clone());
+            }
+
+            return list;
         }
     }
 }

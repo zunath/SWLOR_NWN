@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ModuleVersion { get; set; }
         public DateTime LastGuildTaskUpdate { get; set; }
 
-        public ServerConfiguration Clone()
+        public IEntity Clone()
         {
             return new ServerConfiguration
             {

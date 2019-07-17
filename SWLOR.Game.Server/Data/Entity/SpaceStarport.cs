@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public string Waypoint { get; set; }
 
-        public SpaceStarport Clone()
+        public IEntity Clone()
         {
             return new SpaceStarport
             {

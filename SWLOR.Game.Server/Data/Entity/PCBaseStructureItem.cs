@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemResref { get; set; }
         public string ItemObject { get; set; }
 
-        public PCBaseStructureItem Clone()
+        public IEntity Clone()
         {
             return new PCBaseStructureItem
             {

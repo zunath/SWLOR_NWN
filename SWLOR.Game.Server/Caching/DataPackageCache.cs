@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public DataPackage GetByID(Guid id)
         {
-            return ByID[id];
+            return (DataPackage)ByID[id].Clone();
         }
     }
 }

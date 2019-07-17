@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public int SpawnObjectTypeID { get; set; }
 
-        public Spawn Clone()
+        public IEntity Clone()
         {
             return new Spawn
             {

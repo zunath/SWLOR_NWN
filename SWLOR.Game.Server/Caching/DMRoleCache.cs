@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public DMRole GetByID(int id)
         {
-            return ByID[id];
+            return (DMRole)ByID[id].Clone();
         }
     }
 }

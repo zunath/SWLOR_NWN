@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Sequence { get; set; }
         public string Icon { get; set; }
 
-        public GameTopic Clone()
+        public IEntity Clone()
         {
             return new GameTopic
             {

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public CraftDevice GetByID(int id)
         {
-            return ByID[id];
+            return (CraftDevice)ByID[id].Clone();
         }
     }
 }

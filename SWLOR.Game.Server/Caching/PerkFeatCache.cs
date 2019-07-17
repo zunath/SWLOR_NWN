@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Caching
         protected override void OnCacheObjectSet(PerkFeat entity)
         {
             SetEntityIntoDictionary(entity.PerkID, entity.PerkLevelUnlocked, entity, ByPerkIDAndLevelUnlocked);
-            ByFeatID[entity.FeatID] = entity;
+            ByFeatID[entity.FeatID] = (PerkFeat)entity.Clone();
         }
 
         protected override void OnCacheObjectRemoved(PerkFeat entity)
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkFeat GetByID(int id)
         {
-            return ByID[id];
+            return (PerkFeat)ByID[id].Clone();
         }
 
         public PerkFeat GetByPerkIDAndLevelUnlocked(int perkID, int levelUnlocked)
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkFeat GetByFeatID(int featID)
         {
-            return ByFeatID[featID];
+            return (PerkFeat)ByFeatID[featID].Clone();
         }
 
         public PerkFeat GetByFeatIDOrDefault(int featID)
@@ -52,18 +52,21 @@ namespace SWLOR.Game.Server.Caching
                 return default;
             }
 
-            return ByFeatID[featID];
+            return (PerkFeat)ByFeatID[featID].Clone();
         }
 
-        public IEnumerable<PerkFeat> GetByIDs(IEnumerable<int> perkIDs)
+        public IEnumerable<PerkFeat> GetAllByIDs(IEnumerable<int> perkIDs)
         {
+            var list = new List<PerkFeat>();
             foreach (var perkID in perkIDs)
             {
                 if (ByFeatID.ContainsKey(perkID))
                 {
-                    yield return ByFeatID[perkID];
+                    list.Add((PerkFeat)ByFeatID[perkID].Clone());
                 }
             }
+
+            return list;
         }
 
         public IEnumerable<PerkFeat> GetAllByPerkID(int perkID)
@@ -71,7 +74,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPerkIDAndLevelUnlocked.ContainsKey(perkID))
                 return new List<PerkFeat>();
 
-            return ByPerkIDAndLevelUnlocked[perkID].Values;
+            var list = new List<PerkFeat>();
+            foreach (var record in ByPerkIDAndLevelUnlocked[perkID].Values)
+            {
+                list.Add((PerkFeat)record.Clone());
+            }
+
+            return list;
         }
     }
 }

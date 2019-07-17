@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? RewardGuildID { get; set; }
         public int RewardGuildPoints { get; set; }
 
-        public Quest Clone()
+        public IEntity Clone()
         {
             return new Quest
             {

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Caching
     public class BankItemCache: CacheBase<BankItem>
     {
         private Dictionary<string, BankItem> ByItemID { get; } = new Dictionary<string, BankItem>();
-        private Dictionary<Guid, Dictionary<int, List<BankItem>>> ByPlayerAndBankID { get; } = new Dictionary<Guid, Dictionary<int, List<BankItem>>>();
+        private Dictionary<Guid, Dictionary<int, Dictionary<Guid, BankItem>>> ByPlayerAndBankID { get; } = new Dictionary<Guid, Dictionary<int, Dictionary<Guid, BankItem>>>();
 
         protected override void OnCacheObjectSet(BankItem entity)
         {
@@ -23,22 +23,24 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetByPlayerAndBankID(BankItem entity)
         {
+            var clone = (BankItem)entity.Clone();
+
             // Add player if missing
-            if(!ByPlayerAndBankID.ContainsKey(entity.PlayerID))
-                ByPlayerAndBankID.Add(entity.PlayerID, new Dictionary<int, List<BankItem>>());
+            if(!ByPlayerAndBankID.ContainsKey(clone.PlayerID))
+                ByPlayerAndBankID.Add(clone.PlayerID, new Dictionary<int, Dictionary<Guid, BankItem>>());
 
             // Add bank if missing
-            if(!ByPlayerAndBankID[entity.PlayerID].ContainsKey(entity.BankID))
-                ByPlayerAndBankID[entity.PlayerID].Add(entity.BankID, new List<BankItem>());
+            if(!ByPlayerAndBankID[clone.PlayerID].ContainsKey(clone.BankID))
+                ByPlayerAndBankID[clone.PlayerID].Add(clone.BankID, new Dictionary<Guid, BankItem>());
 
-            var bankItems = ByPlayerAndBankID[entity.PlayerID][entity.BankID];
-            if(!bankItems.Contains(entity))
-                bankItems.Add(entity);
+            var bankItems = ByPlayerAndBankID[clone.PlayerID][clone.BankID];
+            if(!bankItems.ContainsKey(clone.ID))
+                bankItems[clone.ID] = clone; 
         }
 
         private void RemoveByPlayerAndBankID(BankItem entity)
         {
-            ByPlayerAndBankID[entity.PlayerID][entity.BankID].Remove(entity);
+            ByPlayerAndBankID[entity.PlayerID][entity.BankID].Remove(entity.ID);
         }
 
         protected override void OnSubscribeEvents()
@@ -47,17 +49,28 @@ namespace SWLOR.Game.Server.Caching
 
         public BankItem GetByID(Guid id)
         {
-            return ByID[id];
+            return (BankItem)ByID[id].Clone();
         }
 
         public BankItem GetByItemID(string itemID)
         {
-            return ByItemID[itemID];
+            return (BankItem)ByItemID[itemID].Clone();
         }
 
         public IEnumerable<BankItem> GetAllByPlayerIDAndBankID(Guid playerID, int bankID)
         {
-            return ByPlayerAndBankID[playerID][bankID];
+            if (!ByPlayerAndBankID.ContainsKey(playerID) || !ByPlayerAndBankID[playerID].ContainsKey(bankID))
+                return new List<BankItem>();
+
+            var items = ByPlayerAndBankID[playerID][bankID].Values;
+            var result = new List<BankItem>();
+
+            foreach (var item in items)
+            {
+                result.Add((BankItem)item.Clone());
+            }
+
+            return result;
         }
     }
 }

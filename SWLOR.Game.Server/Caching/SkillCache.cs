@@ -34,27 +34,51 @@ namespace SWLOR.Game.Server.Caching
                 return;
             }
 
-            ByContributesToSkillCap[entity.ID] = entity;
+            ByContributesToSkillCap[entity.ID] = (Skill)entity.Clone();
         }
 
         public Skill GetByID(int id)
         {
-            return ByID[id];
+            return (Skill)ByID[id].Clone();
         }
 
         public IEnumerable<Skill> GetByCategoryIDAndContributesToSkillCap(int skillCategoryID)
         {
-            return ByCategoryID[skillCategoryID].Values.Where(x => x.ContributesToSkillCap);
+            var list = new List<Skill>();
+            if (!ByCategoryID.ContainsKey(skillCategoryID))
+                return list;
+
+            foreach(var record in ByCategoryID[skillCategoryID].Values.Where(x => x.ContributesToSkillCap))
+            {
+                list.Add((Skill)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<Skill> GetAllWhereContributesToSkillCap()
         {
-            return ByContributesToSkillCap.Values;
+            var list = new List<Skill>();
+            foreach (var record in ByContributesToSkillCap.Values)
+            {
+                list.Add((Skill)record.Clone());
+            }
+
+            return list;
         }
 
         public IEnumerable<Skill> GetAllBySkillCategoryIDAndActive(int skillCategoryID)
         {
-            return ByCategoryID[skillCategoryID].Values.Where(x => x.IsActive);
+            var list = new List<Skill>();
+            if (!ByCategoryID.ContainsKey(skillCategoryID))
+                return list;
+
+            foreach(var record in ByCategoryID[skillCategoryID].Values.Where(x => x.IsActive))
+            {
+                list.Add((Skill)record.Clone());
+            }
+
+            return list;
         }
     }
 }

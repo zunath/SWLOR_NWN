@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestStatus GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCQuestStatus)ByID[id].Clone();
         }
 
         public PCQuestStatus GetByPlayerAndQuestID(Guid playerID, int questID)
@@ -42,7 +42,12 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPlayerAndQuestID.ContainsKey(playerID))
                 return new List<PCQuestStatus>();
 
-            return ByPlayerAndQuestID[playerID].Values;
+            var list = new List<PCQuestStatus>();
+            foreach (var record in ByPlayerAndQuestID[playerID].Values)
+            {
+                list.Add((PCQuestStatus)record.Clone());
+            }
+            return list;
         }
 
     }

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int QuestStateID { get; set; }
         public bool MustBeCraftedByPlayer { get; set; }
 
-        public QuestRequiredItem Clone()
+        public IEntity Clone()
         {
             return new QuestRequiredItem
             {

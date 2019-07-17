@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCBaseStructureItem entity)
         {
-            ByItemGlobalID[entity.ItemGlobalID] = entity;
+            ByItemGlobalID[entity.ItemGlobalID] = (PCBaseStructureItem)entity.Clone();
             SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
             SetCountsByPCBaseStructureID(entity);
         }
@@ -44,12 +44,12 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructureItem GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCBaseStructureItem)ByID[id].Clone();
         }
 
         public PCBaseStructureItem GetByItemGlobalID(string itemGlobalID)
         {
-            return ByItemGlobalID[itemGlobalID];
+            return (PCBaseStructureItem)ByItemGlobalID[itemGlobalID].Clone();
         }
 
         public PCBaseStructureItem GetByPCBaseStructureIDAndItemGlobalIDOrDefault(Guid pcBaseStructureID, string itemGlobalID)
@@ -70,7 +70,13 @@ namespace SWLOR.Game.Server.Caching
             if(!ByPCBaseStructureIDAndItemGlobalID.ContainsKey(pcBaseStructureID))
                 return new List<PCBaseStructureItem>();
 
-            return ByPCBaseStructureIDAndItemGlobalID[pcBaseStructureID].Values;
+            var list = new List<PCBaseStructureItem>();
+            foreach (var record in ByPCBaseStructureIDAndItemGlobalID[pcBaseStructureID].Values)
+            {
+                list.Add((PCBaseStructureItem)record.Clone());
+            }
+
+            return list;
         }
     }
 }

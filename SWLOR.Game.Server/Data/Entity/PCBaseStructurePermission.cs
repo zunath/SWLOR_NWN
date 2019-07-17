@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanAdjustPublicPermissions { get; set; }
         public bool CanFlyStarship { get; set; }
 
-        public PCBaseStructurePermission Clone()
+        public IEntity Clone()
         {
             return new PCBaseStructurePermission
             {

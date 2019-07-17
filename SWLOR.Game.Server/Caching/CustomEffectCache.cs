@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Data.Entity.CustomEffect GetByID(int id)
         {
-            return ByID[id];
+            return (Data.Entity.CustomEffect)ByID[id].Clone();
         }
     }
 }

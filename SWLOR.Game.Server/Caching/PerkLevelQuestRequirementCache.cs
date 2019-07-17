@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkLevelQuestRequirement GetByID(int id)
         {
-            return ByID[id];
+            return (PerkLevelQuestRequirement)ByID[id].Clone();
         }
 
         public IEnumerable<PerkLevelQuestRequirement> GetAllByPerkLevelID(int perkLevelID)
@@ -31,7 +31,13 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPerkLevelID.ContainsKey(perkLevelID))
                 return new List<PerkLevelQuestRequirement>();
 
-            return ByPerkLevelID[perkLevelID].Values;
+            var list = new List<PerkLevelQuestRequirement>();
+            foreach (var record in ByPerkLevelID[perkLevelID].Values)
+            {
+                list.Add((PerkLevelQuestRequirement)record.Clone());
+            }
+
+            return list;
         }
     }
 }

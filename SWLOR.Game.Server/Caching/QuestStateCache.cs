@@ -1,22 +1,20 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
 {
     public class QuestStateCache: CacheBase<QuestState>
     {
-        private Dictionary<int, List<QuestState>> ByQuestID { get; } = new Dictionary<int, List<QuestState>>();
         private Dictionary<int, Dictionary<int, QuestState>> ByQuestIDAndSequence { get; } = new Dictionary<int, Dictionary<int, QuestState>>();
 
         protected override void OnCacheObjectSet(QuestState entity)
         {
-            SetEntityIntoDictionary(entity.QuestID, entity, ByQuestID);
             SetEntityIntoDictionary(entity.QuestID, entity.Sequence, entity, ByQuestIDAndSequence);
         }
 
         protected override void OnCacheObjectRemoved(QuestState entity)
         {
-            RemoveEntityFromDictionary(entity.QuestID, entity, ByQuestID);
             RemoveEntityFromDictionary(entity.QuestID, entity.Sequence, ByQuestIDAndSequence);
         }
 
@@ -26,12 +24,22 @@ namespace SWLOR.Game.Server.Caching
 
         public QuestState GetByID(int id)
         {
-            return ByID[id];
+            return (QuestState)ByID[id].Clone();
         }
 
         public IEnumerable<QuestState> GetAllByQuestID(int questID)
         {
-            return GetEntityListFromDictionary(questID, ByQuestID);
+            if(!ByQuestIDAndSequence.ContainsKey(questID))
+                return new List<QuestState>();
+
+            var list = new List<QuestState>();
+
+            foreach (var record in ByQuestIDAndSequence[questID].Values)
+            {
+                list.Add((QuestState)record.Clone());
+            }
+
+            return list;
         }
 
         public QuestState GetByQuestIDAndSequence(int questID, int sequence)
@@ -43,6 +51,5 @@ namespace SWLOR.Game.Server.Caching
         {
             return GetEntityFromDictionaryOrDefault(questID, sequence, ByQuestIDAndSequence);
         }
-
     }
 }

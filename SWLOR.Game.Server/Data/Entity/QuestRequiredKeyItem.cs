@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int KeyItemID { get; set; }
         public int QuestStateID { get; set; }
 
-        public QuestRequiredKeyItem Clone()
+        public IEntity Clone()
         {
             return new QuestRequiredKeyItem
             {

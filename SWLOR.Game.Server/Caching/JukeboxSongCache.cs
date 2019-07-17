@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public JukeboxSong GetByID(int id)
         {
-            return ByID[id];
+            return (JukeboxSong)ByID[id].Clone();
         }
     }
 }

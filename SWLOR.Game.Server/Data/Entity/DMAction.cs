@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DateOfAction { get; set; }
         public string Details { get; set; }
 
-        public DMAction Clone()
+        public IEntity Clone()
         {
             return new DMAction
             {

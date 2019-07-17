@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public bool IsActive { get; set; }
 
-        public CraftBlueprintCategory Clone()
+        public IEntity Clone()
         {
             return new CraftBlueprintCategory
             {

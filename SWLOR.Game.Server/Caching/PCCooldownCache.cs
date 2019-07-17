@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCooldown GetByID(Guid id)
         {
-            return ByID[id];
+            return (PCCooldown)ByID[id].Clone();
         }
 
         public PCCooldown GetByPlayerAndCooldownCategoryIDOrDefault(Guid playerID, int cooldownCategoryID)
@@ -39,10 +39,18 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCCooldown> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayerAndCooldownCategoryID.ContainsKey(playerID))
-                ByPlayerAndCooldownCategoryID[playerID] = new Dictionary<int, PCCooldown>();
+            if (!ByPlayerAndCooldownCategoryID.ContainsKey(playerID))
+            {
+                return new List<PCCooldown>();
+            }
 
-            return ByPlayerAndCooldownCategoryID[playerID].Values;
+            var list = new List<PCCooldown>();
+            foreach (var record in ByPlayerAndCooldownCategoryID[playerID].Values)
+            {
+                list.Add((PCCooldown)record.Clone());
+            }
+
+            return list;
         }
     }
 }

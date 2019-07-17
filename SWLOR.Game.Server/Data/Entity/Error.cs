@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string StackTrace { get; set; }
         public string Caller { get; set; }
 
-        public Error Clone()
+        public IEntity Clone()
         {
             return new Error
             {

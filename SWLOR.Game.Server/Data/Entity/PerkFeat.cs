@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ConcentrationFPCost { get; set; }
         public int ConcentrationTickInterval { get; set; }
 
-        public PerkFeat Clone()
+        public IEntity Clone()
         {
             return new PerkFeat
             {

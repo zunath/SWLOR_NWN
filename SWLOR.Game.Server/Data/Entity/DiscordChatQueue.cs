@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string SenderAccountName { get; set; }
         public string SenderCDKey { get; set; }
 
-        public DiscordChatQueue Clone()
+        public IEntity Clone()
         {
             return new DiscordChatQueue
             {

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ItemRecommendedLevel { get; set; }
         public int ItemStackSize { get; set; }
 
-        public PCMarketListing Clone()
+        public IEntity Clone()
         {
             return new PCMarketListing
             {

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Caching
             if (!ByPlayer.ContainsKey(playerID))
                 return default;
 
-            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID).Clone();
+            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID)?.Clone();
         }
 
         public IEnumerable<PCCustomEffect> GetAllByPlayerID(Guid playerID)

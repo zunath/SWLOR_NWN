@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.AreaSpecific
 {
@@ -26,6 +29,8 @@ namespace SWLOR.Game.Server.AreaSpecific
             {
                 NWArea copy = _.CopyArea(source);
                 copy.SetLocalInt("IS_AREA_INSTANCE", _.TRUE);
+                copy.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
+                MessageHub.Instance.Publish(new OnAreaInstanceCreated(copy));
             }
 
             Console.WriteLine("Created " + CopyCount + " copies of Rimer Cards areas.");

@@ -40,6 +40,24 @@ ADD BaseStructureID INT NULL
 ALTER TABLE dbo.ModuleEvent
 ADD CustomName NVARCHAR(64) NULL
 
+ALTER TABLE dbo.ModuleEvent
+ADD AreaSector CHAR(2) NULL
+
+ALTER TABLE dbo.ModuleEvent
+ADD AreaName NVARCHAR(128) NULL
+
+ALTER TABLE dbo.ModuleEvent
+ADD AreaTag NVARCHAR(32) NULL 
+
+ALTER TABLE dbo.ModuleEvent
+ADD AreaResref NVARCHAR(32) NULL
+
+ALTER TABLE dbo.ModuleEvent
+ADD PCBaseTypeID INT NULL
+
+ALTER TABLE dbo.ModuleEvent
+ADD DateRentDue DATETIME2 NULL
+
 UPDATE dbo.ModuleEventType
 SET Name = 'Player Log In'
 WHERE ID = 1
@@ -82,4 +100,16 @@ INSERT INTO dbo.ModuleEventType ( ID ,
                                   Name )
 VALUES ( 8 , -- ID - int
          N'Structure Item Retrieved' -- Name - nvarchar(30)
+    )
+
+INSERT INTO dbo.ModuleEventType ( ID ,
+                                  Name )
+VALUES ( 9 , -- ID - int
+         N'Land Purchase' -- Name - nvarchar(30)
+    )
+
+INSERT INTO dbo.ModuleEventType ( ID ,
+                                  Name )
+VALUES ( 10 , -- ID - int
+         N'Base Lease Expired' -- Name - nvarchar(30)
     )

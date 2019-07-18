@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
+using PCBaseType = SWLOR.Game.Server.Enumeration.PCBaseType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,6 +28,9 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnRemoveBankItem>(message => OnRemoveBankItem(message.Player, message.Entity));
             MessageHub.Instance.Subscribe<OnStoreStructureItem>(message => OnStoreStructureItem(message.Player, message.Entity));
             MessageHub.Instance.Subscribe<OnRemoveStructureItem>(message => OnRemoveStructureItem(message.Player, message.Entity));
+            MessageHub.Instance.Subscribe<OnPurchaseLand>(OnPurchaseLand);
+            MessageHub.Instance.Subscribe<OnBaseLeaseExpired>(message => OnPCBaseLeaseExpired(message.PCBase));
+            MessageHub.Instance.Subscribe<OnBaseDestroyed>(message => OnPCBaseDestroyed(message.PCBase, message.LastAttacker));
         }
 
         private static void OnModuleEnter()
@@ -184,7 +188,6 @@ namespace SWLOR.Game.Server.Service
                 DMActionTypeID = actionTypeID,
                 Name = dm.Name,
                 CDKey = _.GetPCPublicCDKey(dm),
-                DateOfAction = DateTime.UtcNow,
                 Details = details
             };
 
@@ -239,7 +242,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = player.GlobalID,
                 CDKey = _.GetPCPublicCDKey(player),
                 AccountName = _.GetPCPlayerName(player),
-                DateOfEvent = DateTime.UtcNow,
             };
 
             // Bypass the caching logic
@@ -255,7 +257,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = player.GlobalID,
                 CDKey = _.GetPCPublicCDKey(player),
                 AccountName = _.GetPCPlayerName(player),
-                DateOfEvent = DateTime.UtcNow,
             };
 
             // Bypass the caching logic
@@ -270,7 +271,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = entity.PlayerID,
                 CDKey = _.GetPCPublicCDKey(player),
                 AccountName = _.GetPCPlayerName(player),
-                DateOfEvent = DateTime.UtcNow,
                 BankID = entity.BankID,
                 ItemID = new Guid(entity.ItemID),
                 ItemName = entity.ItemName,
@@ -290,7 +290,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = entity.PlayerID,
                 CDKey = _.GetPCPublicCDKey(player),
                 AccountName = _.GetPCPlayerName(player),
-                DateOfEvent = DateTime.UtcNow,
                 BankID = entity.BankID,
                 ItemID = new Guid(entity.ItemID),
                 ItemName = entity.ItemName,
@@ -312,7 +311,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = player.GlobalID,
                 CDKey = _.GetPCPublicCDKey(player),
                 AccountName = _.GetPCPlayerName(player),
-                DateOfEvent = DateTime.UtcNow,
                 ItemID = new Guid(entity.ItemGlobalID),
                 ItemName = entity.ItemName,
                 ItemTag = entity.ItemTag,
@@ -337,7 +335,6 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = player.GlobalID,
                 CDKey = _.GetPCPublicCDKey(player),
                 AccountName = _.GetPCPlayerName(player),
-                DateOfEvent = DateTime.UtcNow,
                 ItemID = new Guid(entity.ItemGlobalID),
                 ItemName = entity.ItemName,
                 ItemTag = entity.ItemTag,
@@ -346,6 +343,68 @@ namespace SWLOR.Game.Server.Service
                 PCBaseStructureID = entity.PCBaseStructureID,
                 BaseStructureID = pcBaseStructure.BaseStructureID,
                 CustomName = pcBaseStructure.CustomName
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnPurchaseLand(OnPurchaseLand message)
+        {
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 9,
+                PlayerID = message.Player.GlobalID,
+                CDKey = _.GetPCPublicCDKey(message.Player),
+                AccountName = _.GetPCPlayerName(message.Player),
+                AreaSector = message.Sector,
+                AreaName = message.AreaName,
+                AreaTag = message.AreaTag,
+                AreaResref = message.AreaResref,
+                PCBaseTypeID = message.PCBaseType
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnPCBaseLeaseExpired(PCBase pcBase)
+        {
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 10,
+                PlayerID = pcBase.PlayerID,
+                AreaSector = pcBase.Sector,
+                AreaName = dbArea.Name,
+                AreaTag = dbArea.Tag,
+                AreaResref = pcBase.AreaResref,
+                PCBaseTypeID = (PCBaseType)pcBase.PCBaseTypeID, 
+                CustomName = pcBase.CustomName,
+                DateRentDue = pcBase.DateRentDue
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnPCBaseDestroyed(PCBase pcBase, NWCreature lastAttacker)
+        {
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 11,
+                PlayerID = pcBase.PlayerID,
+                AreaSector = pcBase.Sector,
+                AreaName = dbArea.Name,
+                AreaTag = dbArea.Tag,
+                AreaResref = pcBase.AreaResref,
+                PCBaseTypeID = (PCBaseType)pcBase.PCBaseTypeID,
+                CustomName = pcBase.CustomName,
+                DateRentDue = pcBase.DateRentDue,
+                AttackerPlayerID = lastAttacker.IsPlayer ? (Guid?)lastAttacker.GlobalID : null
             };
 
             // Bypass the caching logic

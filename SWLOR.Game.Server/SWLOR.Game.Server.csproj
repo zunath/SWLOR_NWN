@@ -572,6 +572,8 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_4.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
+    <Compile Include="Event\SWLOR\OnBaseDestroyed.cs" />
+    <Compile Include="Event\SWLOR\OnBaseLeaseExpired.cs" />
     <Compile Include="Event\SWLOR\OnCacheObjectSet.cs" />
     <Compile Include="Event\SWLOR\OnCacheObjectDeleted.cs" />
     <Compile Include="Event\SWLOR\OnCompleteSmelt.cs" />
@@ -593,6 +595,7 @@
     <Compile Include="Event\SWLOR\OnFinishActionItem.cs" />
     <Compile Include="Event\SWLOR\OnObjectProcessorRan.cs" />
     <Compile Include="Event\SWLOR\OnPlayerGuildRankUp.cs" />
+    <Compile Include="Event\SWLOR\OnPurchaseLand.cs" />
     <Compile Include="Event\SWLOR\OnQuestAccepted.cs" />
     <Compile Include="Event\SWLOR\OnQuestAdvanced.cs" />
     <Compile Include="Event\SWLOR\OnReassembleComplete.cs" />

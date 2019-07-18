@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Data.Entity
         public ModuleEvent()
         {
             ID = Guid.NewGuid();
+            DateOfEvent = DateTime.UtcNow;
+            CDKey = string.Empty;
+            AccountName = string.Empty;
         }
         [ExplicitKey]
         public Guid ID { get; set; }
@@ -28,6 +31,13 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid? PCBaseStructureID { get; set; }
         public int? BaseStructureID { get; set; }
         public string CustomName { get; set; }
+        public string AreaSector { get; set; }
+        public string AreaName { get; set; }
+        public string AreaTag { get; set; }
+        public string AreaResref { get; set; }
+        public Enumeration.PCBaseType? PCBaseTypeID { get; set; }
+        public DateTime? DateRentDue { get; set; }
+        public Guid? AttackerPlayerID { get; set; }
 
         public IEntity Clone()
         {
@@ -47,7 +57,14 @@ namespace SWLOR.Game.Server.Data.Entity
                 PCBaseID = PCBaseID,
                 PCBaseStructureID = PCBaseStructureID,
                 BaseStructureID = BaseStructureID,
-                CustomName = CustomName
+                CustomName = CustomName,
+                AreaSector = AreaSector,
+                AreaName = AreaName,
+                AreaTag = AreaTag,
+                AreaResref = AreaResref,
+                PCBaseTypeID = PCBaseTypeID,
+                DateRentDue = DateRentDue,
+                AttackerPlayerID = AttackerPlayerID
             };
         }
     }

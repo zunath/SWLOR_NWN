@@ -58,6 +58,9 @@ ADD PCBaseTypeID INT NULL
 ALTER TABLE dbo.ModuleEvent
 ADD DateRentDue DATETIME2 NULL
 
+ALTER TABLE dbo.ModuleEvent
+ADD AttackerPlayerID UNIQUEIDENTIFIER NULL
+
 UPDATE dbo.ModuleEventType
 SET Name = 'Player Log In'
 WHERE ID = 1
@@ -112,4 +115,16 @@ INSERT INTO dbo.ModuleEventType ( ID ,
                                   Name )
 VALUES ( 10 , -- ID - int
          N'Base Lease Expired' -- Name - nvarchar(30)
+    )
+
+INSERT INTO dbo.ModuleEventType ( ID ,
+                                  Name )
+VALUES ( 11 , -- ID - int
+         N'Base Destroyed' -- Name - nvarchar(30)
+    )
+
+INSERT INTO dbo.ModuleEventType ( ID ,
+                                  Name )
+VALUES ( 12 , -- ID - int
+         N'Base Lease Cancelled' -- Name - nvarchar(30)
     )

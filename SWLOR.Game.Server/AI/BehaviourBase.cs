@@ -100,6 +100,10 @@ namespace SWLOR.Game.Server.AI
             if (!self.Area.IsValid || NWNXArea.GetNumberOfPlayersInArea(self.Area) <= 0) return;
 
             var flags = GetAIFlags(self);
+
+            if((flags & AIFlags.ReturnToSpawnPoint) != 0)
+                ReturnToSpawnPoint(self);
+
             if ((flags & AIFlags.RandomWalk) != 0)
                 RandomWalk(self);
         }
@@ -119,6 +123,11 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnSpawn(NWCreature self)
         {
+            var flags = GetAIFlags(self);
+            if ((flags & AIFlags.ReturnToSpawnPoint) != 0)
+            {
+                self.SetLocalLocation("AI_SPAWN_POINT", self.Location);
+            }
         }
 
         public virtual void OnSpellCastAt(NWCreature self)
@@ -340,6 +349,27 @@ namespace SWLOR.Game.Server.AI
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
+            }
+        }
+
+        private void ReturnToSpawnPoint(NWCreature self)
+        {
+            if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
+                return;
+
+            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+                _.IsInConversation(self.Object) == _.FALSE &&
+                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
+            {
+                var flags = GetAIFlags(self);
+                Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
+                // If creature also has the RandomWalk flag, only send them back to the spawn point
+                // if they go outside the range (15 meters)
+                if ((flags & AIFlags.RandomWalk) != 0 &&
+                    _.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
+                    return;
+
+                self.AssignCommand(() => _.ActionMoveToLocation(spawnLocation));
             }
         }
 

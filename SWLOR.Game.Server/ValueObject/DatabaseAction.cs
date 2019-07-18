@@ -21,25 +21,5 @@ namespace SWLOR.Game.Server.ValueObject
             IsEnumerable = false;
         }
 
-        public DatabaseAction(IEnumerable<IEntity> data, DatabaseActionType action)
-        {
-            Data = new List<IEntity>();
-            foreach (var item in data)
-            {
-                if (DataType == null)
-                {
-                    DataType = item.GetType();
-                }
-                else if (item.GetType() != DataType)
-                {
-                    throw new InvalidOperationException("All objects in a single database action must be of the same type.");
-                }
-
-                Data.Add(item);
-            }
-            Action = action;
-
-            IsEnumerable = true;
-        }
     }
 }

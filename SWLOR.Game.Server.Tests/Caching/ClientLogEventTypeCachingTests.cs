@@ -28,10 +28,10 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsClientLogEventType()
         {
             // Arrange
-            ClientLogEventType entity = new ClientLogEventType {ID = 1};
+            ModuleEventType entity = new ModuleEventType {ID = 1};
             
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity));
 
             // Assert
             Assert.AreNotSame(entity, _cache.GetByID(1));
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            ClientLogEventType entity1 = new ClientLogEventType { ID = 1};
-            ClientLogEventType entity2 = new ClientLogEventType { ID = 2};
+            ModuleEventType entity1 = new ModuleEventType { ID = 1};
+            ModuleEventType entity2 = new ModuleEventType { ID = 2};
 
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity2));
 
             // Assert
             Assert.AreNotSame(entity1, _cache.GetByID(1));
@@ -57,13 +57,13 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            ClientLogEventType entity1 = new ClientLogEventType { ID = 1};
-            ClientLogEventType entity2 = new ClientLogEventType { ID = 2};
+            ModuleEventType entity1 = new ModuleEventType { ID = 1};
+            ModuleEventType entity2 = new ModuleEventType { ID = 2};
 
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity2));
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<ClientLogEventType>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<ModuleEventType>(entity1));
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(1); });
@@ -74,14 +74,14 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            ClientLogEventType entity1 = new ClientLogEventType { ID = 1};
-            ClientLogEventType entity2 = new ClientLogEventType { ID = 2};
+            ModuleEventType entity1 = new ModuleEventType { ID = 1};
+            ModuleEventType entity2 = new ModuleEventType { ID = 2};
 
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectSet<ClientLogEventType>(entity2));
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<ClientLogEventType>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<ClientLogEventType>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<ModuleEventType>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<ModuleEventType>(entity2));
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(1); });

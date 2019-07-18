@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
             LoadCache<BuildingStyle>();
             LoadCache<Data.Entity.BuildingType>();
             LoadCache<ChatChannel>();
-            LoadCache<ClientLogEventType>();
+            LoadCache<ModuleEventType>();
             LoadCache<Data.Entity.ComponentType>();
             LoadCache<CooldownCategory>();
             LoadCache<CraftBlueprint>();

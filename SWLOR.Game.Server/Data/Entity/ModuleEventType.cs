@@ -2,8 +2,8 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[ClientLogEventType]")]
-    public class ClientLogEventType: IEntity
+    [Table("[ModuleEventType]")]
+    public class ModuleEventType: IEntity
     {
         [ExplicitKey]
         public int ID { get; set; }
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         public IEntity Clone()
         {
-            return new ClientLogEventType
+            return new ModuleEventType
             {
                 ID = ID,
                 Name = Name

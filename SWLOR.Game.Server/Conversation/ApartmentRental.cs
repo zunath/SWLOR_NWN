@@ -3,7 +3,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -407,7 +409,9 @@ namespace SWLOR.Game.Server.Conversation
             {
                 data.IsConfirming = false;
 
+                PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 BaseService.ClearPCBaseByID(data.PCBaseID);
+                MessageHub.Instance.Publish(new OnBaseLeaseCancelled(pcBase));
 
                 GetPC().FloatingText("Your lease has been canceled. Any property left behind has been delivered to the planetary government. Speak with them to retrieve it.");
                 LoadMainPage();

@@ -4,7 +4,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -68,8 +70,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             // HP is tracked in the database. Heal the placeable so it doesn't get destroyed.
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
 
-            var durability = DurabilityService.GetDurability(weapon) - RandomService.RandomFloat(0.01f, 0.03f);
-            DurabilityService.SetDurability(weapon, durability);
+            if(attacker.IsPlayer)
+            {
+                DurabilityService.RunItemDecay(attacker.Object, weapon, RandomService.RandomFloat(0.01f, 0.03f));
+            }
 
             // If the shields have fallen to zero, the tower will begin to take structure damage.
             if (pcBase.ShieldHP <= 0)
@@ -85,6 +89,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 {
                     structure.Durability = 0.0f;
                     BaseService.ClearPCBaseByID(pcBase.ID, true, false);
+                    MessageHub.Instance.Publish(new OnBaseDestroyed(pcBase, attacker));
                     return;
                 }
             }

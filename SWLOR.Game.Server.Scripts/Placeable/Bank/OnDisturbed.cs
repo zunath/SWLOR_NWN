@@ -3,7 +3,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -62,6 +64,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                     };
 
                     DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
+                    MessageHub.Instance.Publish(new OnStoreBankItem(player, itemEntity));
                 }
             }
             else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
@@ -74,6 +77,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                 {
                     var record = DataService.BankItem.GetByItemID(item.GlobalID.ToString());
                     DataService.SubmitDataChange(record, DatabaseActionType.Delete);
+                    MessageHub.Instance.Publish(new OnRemoveBankItem(player, record));
                 }
             }
 

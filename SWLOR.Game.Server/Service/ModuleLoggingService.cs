@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnPurchaseLand>(OnPurchaseLand);
             MessageHub.Instance.Subscribe<OnBaseLeaseExpired>(message => OnPCBaseLeaseExpired(message.PCBase));
             MessageHub.Instance.Subscribe<OnBaseDestroyed>(message => OnPCBaseDestroyed(message.PCBase, message.LastAttacker));
+            MessageHub.Instance.Subscribe<OnBaseLeaseCancelled>(message => OnPCBaseLeaseCanceled(message.PCBase));
         }
 
         private static void OnModuleEnter()
@@ -405,6 +406,27 @@ namespace SWLOR.Game.Server.Service
                 CustomName = pcBase.CustomName,
                 DateRentDue = pcBase.DateRentDue,
                 AttackerPlayerID = lastAttacker.IsPlayer ? (Guid?)lastAttacker.GlobalID : null
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnPCBaseLeaseCanceled(PCBase pcBase)
+        {
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 12,
+                PlayerID = pcBase.PlayerID,
+                AreaSector = pcBase.Sector,
+                AreaName = dbArea.Name,
+                AreaTag = dbArea.Tag,
+                AreaResref = pcBase.AreaResref,
+                PCBaseTypeID = (PCBaseType)pcBase.PCBaseTypeID,
+                CustomName = pcBase.CustomName,
+                DateRentDue = pcBase.DateRentDue,
             };
 
             // Bypass the caching logic

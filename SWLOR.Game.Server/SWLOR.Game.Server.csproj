@@ -573,6 +573,7 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
     <Compile Include="Event\SWLOR\OnBaseDestroyed.cs" />
+    <Compile Include="Event\SWLOR\OnBaseLeaseCancelled.cs" />
     <Compile Include="Event\SWLOR\OnBaseLeaseExpired.cs" />
     <Compile Include="Event\SWLOR\OnCacheObjectSet.cs" />
     <Compile Include="Event\SWLOR\OnCacheObjectDeleted.cs" />

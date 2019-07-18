@@ -456,8 +456,8 @@
     <Compile Include="Data\Entity\BuildingType.cs" />
     <Compile Include="Data\Entity\ChatChannel.cs" />
     <Compile Include="Data\Entity\ChatLog.cs" />
-    <Compile Include="Data\Entity\ClientLogEvent.cs" />
-    <Compile Include="Data\Entity\ClientLogEventType.cs" />
+    <Compile Include="Data\Entity\ModuleEvent.cs" />
+    <Compile Include="Data\Entity\ModuleEventType.cs" />
     <Compile Include="Data\Entity\ComponentType.cs" />
     <Compile Include="Data\Entity\CooldownCategory.cs" />
     <Compile Include="Data\Entity\CraftBlueprint.cs" />
@@ -572,6 +572,9 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_4.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
+    <Compile Include="Event\SWLOR\OnBaseDestroyed.cs" />
+    <Compile Include="Event\SWLOR\OnBaseLeaseCancelled.cs" />
+    <Compile Include="Event\SWLOR\OnBaseLeaseExpired.cs" />
     <Compile Include="Event\SWLOR\OnCacheObjectSet.cs" />
     <Compile Include="Event\SWLOR\OnCacheObjectDeleted.cs" />
     <Compile Include="Event\SWLOR\OnCompleteSmelt.cs" />
@@ -593,9 +596,14 @@
     <Compile Include="Event\SWLOR\OnFinishActionItem.cs" />
     <Compile Include="Event\SWLOR\OnObjectProcessorRan.cs" />
     <Compile Include="Event\SWLOR\OnPlayerGuildRankUp.cs" />
+    <Compile Include="Event\SWLOR\OnPurchaseLand.cs" />
     <Compile Include="Event\SWLOR\OnQuestAccepted.cs" />
     <Compile Include="Event\SWLOR\OnQuestAdvanced.cs" />
     <Compile Include="Event\SWLOR\OnReassembleComplete.cs" />
+    <Compile Include="Event\SWLOR\OnRemoveBankItem.cs" />
+    <Compile Include="Event\SWLOR\OnRemoveStructureItem.cs" />
+    <Compile Include="Event\SWLOR\OnStoreBankItem.cs" />
+    <Compile Include="Event\SWLOR\OnStoreStructureItem.cs" />
     <Compile Include="Language\TranslatorUgnaught.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />
@@ -803,6 +811,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-07-17.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-18.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-18.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-07-18.3.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
@@ -1385,7 +1394,7 @@
     <Compile Include="QuestRule\RemoveKeyItemsRule.cs" />
     <Compile Include="QuestRule\ShowQuestObjectRule.cs" />
     <Compile Include="Service\AbilityService.cs" />
-    <Compile Include="Service\ActivityLoggingService.cs" />
+    <Compile Include="Service\ModuleLoggingService.cs" />
     <Compile Include="Service\AIService.cs" />
     <Compile Include="Service\AuthorizationService.cs" />
     <Compile Include="Service\BackgroundService.cs" />

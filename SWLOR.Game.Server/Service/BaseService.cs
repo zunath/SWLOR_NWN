@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -366,6 +367,8 @@ namespace SWLOR.Game.Server.Service
             BasePermissionService.GrantBasePermissions(player, pcBase.ID, allPermissions);
 
             player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + purchasePrice + " credits.");
+
+            MessageHub.Instance.Publish(new OnPurchaseLand(player, sector, area.Name, area.Tag, area.Resref, Enumeration.PCBaseType.RegularBase));
         }
 
         private static void OnModuleHeartbeat()
@@ -384,6 +387,7 @@ namespace SWLOR.Game.Server.Service
                     Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
                     playerIDs.Add(new Tuple<Guid, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
                     ClearPCBaseByID(pcBase.ID);
+                    MessageHub.Instance.Publish(new OnBaseLeaseExpired(pcBase));
                 }
 
                 var players = module.Players.ToList();

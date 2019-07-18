@@ -251,8 +251,13 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var area in NWModule.Get().Areas)
                 {
-                    // We don't process AI for empty areas.
-                    if (NWNXArea.GetNumberOfPlayersInArea(area) <= 0) continue;
+                    int lastTickPlayerCount = area.GetLocalInt("AI_PLAYER_COUNT");
+                    int thisTickPlayerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+                    area.SetLocalInt("AI_PLAYER_COUNT", thisTickPlayerCount);
+
+                    // AI gets processed one more time after an area becomes empty.
+                    // We do this so that behaviours can clean up properly.
+                    if (thisTickPlayerCount <= 0 && lastTickPlayerCount <= 0) continue;
 
                     // Safety check - If the area isn't in the cache, report it.
                     if (!_areaAICreatures.ContainsKey(area))
@@ -262,23 +267,20 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var creatures = _areaAICreatures[area];
-                    ProcessCreatureAI(ref creatures);
+                    ProcessCreatureAI(area, ref creatures);
                 }
             }
         }
 
-        private static void ProcessCreatureAI(ref HashSet<NWCreature> creatures)
+        private static void ProcessCreatureAI(NWArea area, ref HashSet<NWCreature> creatures)
         {
             // Iterate backwards so we can remove the creature if it's no longer valid.
             for (int x = creatures.Count - 1; x >= 0; x--)
             {
                 NWCreature creature = creatures.ElementAt(x);
-                NWArea area = creature.Area;
 
                 // Limbo check.
                 if (!area.IsValid) continue;
-
-                bool areaHasPCs = NWNXArea.GetNumberOfPlayersInArea(area) > 0;
 
                 // Is this creature invalid or dead? If so, remove it and move to the next one.
                 if (!creature.IsValid ||
@@ -288,8 +290,8 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
-                if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
+                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this tick. Move to the next one.
+                if (creature.IsPossessedFamiliar || creature.IsDMPossessed)
                     continue;
 
                 string script = GetBehaviourScript(creature);

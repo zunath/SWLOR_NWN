@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    iDamage = (int)(iDamage * 1.6);
+                    iDamage = (int)(iDamage * 1.0);
 
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
 

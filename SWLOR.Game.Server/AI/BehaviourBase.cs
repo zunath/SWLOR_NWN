@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.AI
             if (self.RacialType != nearby.RacialType) return;
 
             // Does the nearby creature have anything on its enmity table?
-            var nearbyEnmityTable = EnmityService.GetEnmityTable(nearby).OrderByDescending(x => x.Value).FirstOrDefault();
+            var nearbyEnmityTable = EnmityService.GetEnmityTable(nearby).OrderByDescending(x => x.Value.TotalAmount).FirstOrDefault();
             if (nearbyEnmityTable.Value == null) return;
 
             var target = nearbyEnmityTable.Value.TargetObject;

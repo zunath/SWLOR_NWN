@@ -832,6 +832,7 @@
     <Compile Include="Event\Creature\OnCreatureSpellCastAt.cs" />
     <Compile Include="Event\Creature\OnCreatureUserDefined.cs" />
     <EmbeddedResource Include="Data\Migrations\2019-07-13.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-07-17.1.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />

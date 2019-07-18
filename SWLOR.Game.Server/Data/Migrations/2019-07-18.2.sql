@@ -7,6 +7,5 @@ GO
 DROP TABLE [dbo].[DiscordChatQueue]
 GO
 DROP TABLE [dbo].[User]
-GO
 
 

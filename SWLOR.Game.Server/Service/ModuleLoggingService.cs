@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.DM;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
@@ -12,7 +13,7 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class ActivityLoggingService
+    public static class ModuleLoggingService
     {
         public static void SubscribeEvents()
         {
@@ -20,6 +21,12 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+            MessageHub.Instance.Subscribe<OnModuleRespawn>(message => OnModuleRespawn());
+            MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
+            MessageHub.Instance.Subscribe<OnStoreBankItem>(message => OnStoreBankItem(message.Player, message.Entity));
+            MessageHub.Instance.Subscribe<OnRemoveBankItem>(message => OnRemoveBankItem(message.Player, message.Entity));
+            MessageHub.Instance.Subscribe<OnStoreStructureItem>(message => OnStoreStructureItem(message.Player, message.Entity));
+            MessageHub.Instance.Subscribe<OnRemoveStructureItem>(message => OnRemoveStructureItem(message.Player, message.Entity));
         }
 
         private static void OnModuleEnter()
@@ -40,11 +47,11 @@ namespace SWLOR.Game.Server.Service
 
             Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") connected to the server.");
             
-            ClientLogEvent entity = new ClientLogEvent
+            ModuleEvent entity = new ModuleEvent
             {
                 AccountName = account,
                 CDKey = cdKey,
-                ClientLogEventTypeID = 1,
+                ModuleEventTypeID = 1,
                 PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
@@ -64,11 +71,11 @@ namespace SWLOR.Game.Server.Service
 
             Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") left the server.");
 
-            ClientLogEvent entity = new ClientLogEvent
+            ModuleEvent entity = new ModuleEvent
             {
                 AccountName = account,
                 CDKey = cdKey,
-                ClientLogEventTypeID = 2,
+                ModuleEventTypeID = 2,
                 PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
@@ -181,7 +188,7 @@ namespace SWLOR.Game.Server.Service
                 Details = details
             };
 
-            // Don't cache DM actions.
+            // Bypass the caching logic
             DataService.DataQueue.Enqueue(new DatabaseAction(record, DatabaseActionType.Insert));
         }
 
@@ -223,6 +230,126 @@ namespace SWLOR.Game.Server.Service
             return details;
         }
 
+        private static void OnModuleDeath()
+        {
+            NWPlayer player = _.GetLastPlayerDied();
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 3,
+                PlayerID = player.GlobalID,
+                CDKey = _.GetPCPublicCDKey(player),
+                AccountName = _.GetPCPlayerName(player),
+                DateOfEvent = DateTime.UtcNow,
+            };
 
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnModuleRespawn()
+        {
+            NWPlayer player = _.GetLastRespawnButtonPresser();
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 4,
+                PlayerID = player.GlobalID,
+                CDKey = _.GetPCPublicCDKey(player),
+                AccountName = _.GetPCPlayerName(player),
+                DateOfEvent = DateTime.UtcNow,
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnStoreBankItem(NWPlayer player, BankItem entity)
+        {
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 5,
+                PlayerID = entity.PlayerID,
+                CDKey = _.GetPCPublicCDKey(player),
+                AccountName = _.GetPCPlayerName(player),
+                DateOfEvent = DateTime.UtcNow,
+                BankID = entity.BankID,
+                ItemID = new Guid(entity.ItemID),
+                ItemName = entity.ItemName,
+                ItemTag = entity.ItemTag,
+                ItemResref = entity.ItemResref
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnRemoveBankItem(NWPlayer player, BankItem entity)
+        {
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 6,
+                PlayerID = entity.PlayerID,
+                CDKey = _.GetPCPublicCDKey(player),
+                AccountName = _.GetPCPlayerName(player),
+                DateOfEvent = DateTime.UtcNow,
+                BankID = entity.BankID,
+                ItemID = new Guid(entity.ItemID),
+                ItemName = entity.ItemName,
+                ItemTag = entity.ItemTag,
+                ItemResref = entity.ItemResref
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnStoreStructureItem(NWPlayer player, PCBaseStructureItem entity)
+        {
+            PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
+
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 7,
+                PlayerID = player.GlobalID,
+                CDKey = _.GetPCPublicCDKey(player),
+                AccountName = _.GetPCPlayerName(player),
+                DateOfEvent = DateTime.UtcNow,
+                ItemID = new Guid(entity.ItemGlobalID),
+                ItemName = entity.ItemName,
+                ItemTag = entity.ItemTag,
+                ItemResref = entity.ItemResref,
+                PCBaseID = pcBaseStructure.PCBaseID,
+                PCBaseStructureID = entity.PCBaseStructureID,
+                BaseStructureID = pcBaseStructure.BaseStructureID,
+                CustomName = pcBaseStructure.CustomName
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
+
+        private static void OnRemoveStructureItem(NWPlayer player, PCBaseStructureItem entity)
+        {
+            PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
+
+            var @event = new ModuleEvent
+            {
+                ModuleEventTypeID = 8,
+                PlayerID = player.GlobalID,
+                CDKey = _.GetPCPublicCDKey(player),
+                AccountName = _.GetPCPlayerName(player),
+                DateOfEvent = DateTime.UtcNow,
+                ItemID = new Guid(entity.ItemGlobalID),
+                ItemName = entity.ItemName,
+                ItemTag = entity.ItemTag,
+                ItemResref = entity.ItemResref,
+                PCBaseID = pcBaseStructure.PCBaseID,
+                PCBaseStructureID = entity.PCBaseStructureID,
+                BaseStructureID = pcBaseStructure.BaseStructureID,
+                CustomName = pcBaseStructure.CustomName
+            };
+
+            // Bypass the caching logic
+            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+        }
     }
 }

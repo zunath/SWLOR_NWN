@@ -3,13 +3,13 @@ using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
 {
-    public class ClientLogEventTypeCache: CacheBase<ClientLogEventType>
+    public class ClientLogEventTypeCache: CacheBase<ModuleEventType>
     {
-        protected override void OnCacheObjectSet(ClientLogEventType entity)
+        protected override void OnCacheObjectSet(ModuleEventType entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(ClientLogEventType entity)
+        protected override void OnCacheObjectRemoved(ModuleEventType entity)
         {
         }
 
@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        public ClientLogEventType GetByID(int id)
+        public ModuleEventType GetByID(int id)
         {
-            return (ClientLogEventType)ByID[id].Clone();
+            return (ModuleEventType)ByID[id].Clone();
         }
     }
 }

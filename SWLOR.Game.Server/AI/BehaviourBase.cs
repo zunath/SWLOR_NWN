@@ -202,6 +202,7 @@ namespace SWLOR.Game.Server.AI
                     }
                 });
             }
+            else self.ClearAllActions();
         }
 
         protected void EquipBestWeapon(NWCreature self)

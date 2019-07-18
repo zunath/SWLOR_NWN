@@ -50,8 +50,6 @@ namespace SWLOR.Game.Server.Service
         public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
         public static CustomEffectCategoryCache CustomEffectCategory { get; } = new CustomEffectCategoryCache();
         public static DatabaseVersionCache DatabaseVersion { get; } = new DatabaseVersionCache();
-        public static DataPackageCache DataPackage { get; } = new DataPackageCache();
-        public static DiscordChatQueueCache DiscordChatQueue { get; } = new DiscordChatQueueCache();
         public static DMActionCache DMAction { get; } = new DMActionCache();
         public static DMActionTypeCache DMActionType { get; } = new DMActionTypeCache();
         public static DMRoleCache DMRole { get; } = new DMRoleCache();
@@ -122,7 +120,6 @@ namespace SWLOR.Game.Server.Service
         public static SpawnObjectCache SpawnObject { get; } = new SpawnObjectCache();
         public static SpawnObjectTypeCache SpawnObjectType { get; } = new SpawnObjectTypeCache();
         public static StructureModeCache StructureMode { get; } = new StructureModeCache();
-        public static UserCache User { get; } = new UserCache();
 
 
         static DataService()

@@ -47,9 +47,6 @@
     <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.8.4.0\lib\net45\FluentValidation.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.1.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -215,8 +212,6 @@
     <Compile Include="Caching\CustomEffectCache.cs" />
     <Compile Include="Caching\CustomEffectCategoryCache.cs" />
     <Compile Include="Caching\DatabaseVersionCache.cs" />
-    <Compile Include="Caching\DataPackageCache.cs" />
-    <Compile Include="Caching\DiscordChatQueueCache.cs" />
     <Compile Include="Caching\DMActionCache.cs" />
     <Compile Include="Caching\DMActionTypeCache.cs" />
     <Compile Include="Caching\DMRoleCache.cs" />
@@ -287,7 +282,6 @@
     <Compile Include="Caching\SpawnObjectCache.cs" />
     <Compile Include="Caching\SpawnObjectTypeCache.cs" />
     <Compile Include="Caching\StructureModeCache.cs" />
-    <Compile Include="Caching\UserCache.cs" />
     <Compile Include="ChatCommand\Blueprints.cs" />
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
@@ -472,8 +466,6 @@
     <Compile Include="Data\Entity\CustomEffect.cs" />
     <Compile Include="Data\Entity\CustomEffectCategory.cs" />
     <Compile Include="Data\Entity\DatabaseVersion.cs" />
-    <Compile Include="Data\Entity\DataPackage.cs" />
-    <Compile Include="Data\Entity\DiscordChatQueue.cs" />
     <Compile Include="Data\Entity\DMAction.cs" />
     <Compile Include="Data\Entity\DMActionType.cs" />
     <Compile Include="Data\Entity\DMRole.cs" />
@@ -544,31 +536,7 @@
     <Compile Include="Data\Entity\SpawnObject.cs" />
     <Compile Include="Data\Entity\SpawnObjectType.cs" />
     <Compile Include="Data\Entity\StructureMode.cs" />
-    <Compile Include="Data\Entity\User.cs" />
     <Compile Include="Data\SqlMapperExtensions.cs" />
-    <Compile Include="Data\Validator\ApartmentBuildingValidator.cs" />
-    <Compile Include="Data\Validator\BaseStructureValidator.cs" />
-    <Compile Include="Data\Validator\BuildingStyleValidator.cs" />
-    <Compile Include="Data\Validator\CooldownCategoryValidator.cs" />
-    <Compile Include="Data\Validator\CraftBlueprintCategoryValidator.cs" />
-    <Compile Include="Data\Validator\CraftBlueprintValidator.cs" />
-    <Compile Include="Data\Validator\CraftDeviceValidator.cs" />
-    <Compile Include="Data\Validator\CustomEffectValidator.cs" />
-    <Compile Include="Data\Validator\DownloadValidator.cs" />
-    <Compile Include="Data\Validator\FameRegionValidator.cs" />
-    <Compile Include="Data\Validator\GameTopicCategoryValidator.cs" />
-    <Compile Include="Data\Validator\GameTopicValidator.cs" />
-    <Compile Include="Data\Validator\KeyItemCategoryValidator.cs" />
-    <Compile Include="Data\Validator\KeyItemValidator.cs" />
-    <Compile Include="Data\Validator\LootTableItemValidator.cs" />
-    <Compile Include="Data\Validator\LootTableValidator.cs" />
-    <Compile Include="Data\Validator\NPCGroupValidator.cs" />
-    <Compile Include="Data\Validator\PerkCategoryValidator.cs" />
-    <Compile Include="Data\Validator\QuestValidator.cs" />
-    <Compile Include="Data\Validator\SkillCategoryValidator.cs" />
-    <Compile Include="Data\Validator\SkillValidator.cs" />
-    <Compile Include="Data\Validator\SpawnObjectValidator.cs" />
-    <Compile Include="Data\Validator\SpawnValidator.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />
@@ -834,6 +802,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-07-13.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-17.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-18.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-07-18.2.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />

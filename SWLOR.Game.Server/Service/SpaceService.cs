@@ -303,8 +303,11 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsLocationPublicStarport(string location)
         {
-            SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(new Guid(location));
-            return (starport != null);
+            if (!Guid.TryParse(location, out var locationGuid)) return false;
+
+            SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(locationGuid);
+            return starport != null;
+
         }
 
         public static string GetPlanetFromLocation(string location)

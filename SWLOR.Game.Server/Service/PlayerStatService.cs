@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void CalculateEffectiveStats(NWPlayer player, NWItem item)
         {
-            if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM) return;
+            if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM || !player.IsInitializedAsPlayer) return;
 
             // Calculating effective stats can be expensive, so we cache it on the item.
             SkillType skill = ItemService.GetSkillTypeForItem(item);

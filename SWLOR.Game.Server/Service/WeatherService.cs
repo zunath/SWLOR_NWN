@@ -1,4 +1,6 @@
-﻿using NWN;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
@@ -781,16 +783,18 @@ namespace SWLOR.Game.Server.Service
 
             if (nHour != nLastHour)
             {
+                if (!oArea.Data.ContainsKey("WEATHER_OBJECTS"))
+                    oArea.Data["WEATHER_OBJECTS"] = new List<NWPlaceable>();
+                List<NWPlaceable> weatherObjects = oArea.Data["WEATHER_OBJECTS"];
+
                 LoggingService.Trace(TraceComponent.Weather, "Cleaning up old weather");
 
                 // Clean up any old weather placeables.
-                foreach (NWObject oPlaceable in oArea.Objects)
+                for(int x = weatherObjects.Count-1; x >= 0; x--)
                 {
-                    if (oPlaceable.ObjectType == _.OBJECT_TYPE_PLACEABLE && 
-                        oPlaceable.GetLocalInt("WEATHER") == 1)
-                    {
-                        _.DestroyObject(oPlaceable);
-                    }
+                    var placeable = weatherObjects.ElementAt(x);
+                    placeable.Destroy();
+                    weatherObjects.RemoveAt(x);
                 }
 
                 // Create new ones depending on the current weather.
@@ -819,12 +823,14 @@ namespace SWLOR.Game.Server.Service
 
                         string sResRef = "x3_plc_mist";
 
-                        NWObject oPlaceable = _.CreateObject(_.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
+                        NWPlaceable oPlaceable = _.CreateObject(_.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
                         _.SetObjectVisualTransform(oPlaceable, _.OBJECT_VISUAL_TRANSFORM_SCALE, _.IntToFloat(200 + _.Random(200)) / 100.0f);
-                        oPlaceable.SetLocalInt("WEATHER", 1);
+                        
+                        weatherObjects.Add(oPlaceable);
                     }
                 }
 
+                oArea.Data["WEATHER_OBJECTS"] = weatherObjects;
                 oArea.SetLocalInt("WEATHER_LAST_HOUR", nHour);
             }
         }

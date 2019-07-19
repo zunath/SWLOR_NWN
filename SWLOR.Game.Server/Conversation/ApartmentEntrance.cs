@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
+            if (!GetPC().IsPlayer)
+            {
+                EndConversation();
+                return;
+            }
+
             LoadMainPage();
         }
 

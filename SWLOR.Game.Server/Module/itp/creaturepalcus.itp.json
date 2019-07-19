@@ -6390,6 +6390,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Defender"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wylan"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wylan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 7.0
                     },
                     "FACTION": {

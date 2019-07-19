@@ -193,10 +193,11 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnActionsTaken(int nodeID)
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken)))
+            NWPlayer player = (_.GetPCSpeaker());
+            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken) + "." + dialog.ActiveDialogName))
             {
-                NWPlayer player = (_.GetPCSpeaker());
-                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
                 IConversation convo = GetConversation(dialog.ActiveDialogName);
                 int selectionNumber = nodeID + 1;
                 int responseID = nodeID + (NumberOfResponsesPerPage * dialog.PageOffset);
@@ -248,14 +249,13 @@ namespace SWLOR.Game.Server.Service
 
         public static bool OnAppearsWhen(int nodeType, int nodeID)
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnAppearsWhen)))
+            NWPlayer player = (_.GetPCSpeaker());
+            bool hasDialog = HasPlayerDialog(player.GlobalID);
+            if (!hasDialog) return false;
+            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnAppearsWhen) + "." + dialog.ActiveDialogName))
             {
-
-                NWPlayer player = (_.GetPCSpeaker());
-                bool hasDialog = HasPlayerDialog(player.GlobalID);
-                if (!hasDialog) return false;
-
-                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
                 DialogPage page = dialog.CurrentPage;
                 var convo = GetConversation(dialog.ActiveDialogName);
                 int currentSelectionNumber = nodeID + 1;
@@ -330,12 +330,13 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnDialogStart()
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart)))
-            {
-                NWPlayer pc = (_.GetLastUsedBy());
-                if (!pc.IsValid) pc = (_.GetPCSpeaker());
+            NWPlayer pc = (_.GetLastUsedBy());
+            if (!pc.IsValid) pc = (_.GetPCSpeaker());
 
-                string conversation = _.GetLocalString(NWGameObject.OBJECT_SELF, "CONVERSATION");
+            string conversation = _.GetLocalString(NWGameObject.OBJECT_SELF, "CONVERSATION");
+
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
+            {
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
@@ -360,12 +361,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnDialogEnd()
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd)))
-            {
-                NWPlayer player = (_.GetPCSpeaker());
-                if (!HasPlayerDialog(player.GlobalID)) return;
+            NWPlayer player = (_.GetPCSpeaker());
+            if (!HasPlayerDialog(player.GlobalID)) return;
 
-                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd) + "." + dialog.ActiveDialogName))
+            {
                 var convo = GetConversation(dialog.ActiveDialogName);
                 convo.EndDialog();
                 RemovePlayerDialog(player.GlobalID);

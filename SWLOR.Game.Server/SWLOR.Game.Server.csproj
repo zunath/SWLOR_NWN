@@ -1472,12 +1472,8 @@
     <Compile Include="ValueObject\ColorNames.cs" />
     <Compile Include="ValueObject\ConcentrationEffect.cs" />
     <Compile Include="ValueObject\DatabaseAction.cs" />
-    <Compile Include="ValueObject\DataPackageFile.cs" />
     <Compile Include="ValueObject\DialogNavigation.cs" />
-    <Compile Include="ValueObject\EffectiveStats.cs" />
-    <Compile Include="ValueObject\ForceDamageResult.cs" />
-    <Compile Include="ValueObject\ForceResistanceResult.cs" />
-    <Compile Include="ValueObject\ForceSpreadDetails.cs" />
+    <Compile Include="ValueObject\EffectiveItemStats.cs" />
     <Compile Include="ValueObject\StoredItemPropertyDetail.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
     <Compile Include="ValueObject\PCMarketData.cs" />
@@ -1492,7 +1488,6 @@
     <Compile Include="ValueObject\EnmityTable.cs" />
     <Compile Include="ValueObject\ItemVO.cs" />
     <Compile Include="ValueObject\MapPin.cs" />
-    <Compile Include="ValueObject\PCPerkHeader.cs" />
     <Compile Include="ValueObject\ModSlots.cs" />
     <Compile Include="ValueObject\Profiler.cs" />
     <Compile Include="ValueObject\ResourceDetails.cs" />

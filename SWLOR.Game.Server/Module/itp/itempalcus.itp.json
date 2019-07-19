@@ -2774,6 +2774,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vellen Flesheater Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vellen_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Vellen King Bite"
                     },
                     "RESREF": {

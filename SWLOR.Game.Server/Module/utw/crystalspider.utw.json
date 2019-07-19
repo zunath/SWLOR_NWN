@@ -78,7 +78,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 0
+          "value": 30
         }
       },
       {
@@ -93,7 +93,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CrystalSpider"
+          "value": ""
         }
       },
       {

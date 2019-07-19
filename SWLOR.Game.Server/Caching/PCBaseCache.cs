@@ -51,12 +51,15 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
         {
+            var list = new List<PCBase>();
+            if (!ByPlayerIDAndPCBaseID.ContainsKey(playerID))
+                return list;
+
             var apartments = ByPlayerIDAndPCBaseID[playerID].Values
                 .Where(x => x.ApartmentBuildingID == apartmentBuildingID &&
                             x.DateRentDue > DateTime.UtcNow)
                 .OrderBy(o => o.DateInitialPurchase);
 
-            var list = new List<PCBase>();
             foreach (var apartment in apartments)
             {
                 list.Add( (PCBase)apartment.Clone());

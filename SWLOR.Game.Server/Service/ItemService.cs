@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -843,7 +845,24 @@ namespace SWLOR.Game.Server.Service
             {
                 ScriptItemEvent.Run(script);
             }
+        }
 
+        public static bool CanHandleChat(NWObject sender)
+        {
+            return sender.GetLocalInt("ITEM_RENAMING_LISTENING") == TRUE;
+        }
+
+        private static void OnModuleNWNXChat()
+        {
+            NWPlayer player = NWNXChat.GetSender().Object;
+
+            if (!CanHandleChat(player)) return;
+            string message = NWNXChat.GetMessage();
+            NWNXChat.SkipMessage();
+
+            message = message.Truncate(50);
+            player.SetLocalString("RENAMED_ITEM_NEW_NAME", message);
+            player.SendMessage("Please click 'Refresh' to see changes, then select 'Change Name' to confirm the changes.");
         }
     }
 }

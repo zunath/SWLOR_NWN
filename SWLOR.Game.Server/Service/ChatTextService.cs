@@ -73,7 +73,8 @@ namespace SWLOR.Game.Server.Service
                 BaseService.CanHandleChat(sender) ||
                 CraftService.CanHandleChat(sender) ||
                 MarketService.CanHandleChat(sender.Object) ||
-                MessageBoardService.CanHandleChat(sender))
+                MessageBoardService.CanHandleChat(sender) ||
+                ItemService.CanHandleChat(sender))
             {
                 // This will be handled by other services, so just bail.
                 return;

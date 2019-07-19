@@ -7577,7 +7577,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.06414136098465e-005
+          "value": -1.111825076804962e-005
         },
         "XPosition": {
           "type": "float",
@@ -8452,7 +8452,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.02454116940498352
+          "value": 0.02454116754233837
         },
         "XPosition": {
           "type": "float",
@@ -10202,7 +10202,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1467404663562775
+          "value": -0.1467409431934357
         },
         "XPosition": {
           "type": "float",
@@ -10210,7 +10210,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.989175021648407
+          "value": -0.9891749620437622
         },
         "YPosition": {
           "type": "float",
@@ -11332,7 +11332,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.748438478443859e-007
+          "value": 1.748438194226765e-007
         },
         "CloseLockDC": {
           "type": "byte",
@@ -11549,7 +11549,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141564846038818
+          "value": -3.14156436920166
         },
         "CloseLockDC": {
           "type": "byte",
@@ -11766,7 +11766,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141564846038818
+          "value": -3.14156436920166
         },
         "CloseLockDC": {
           "type": "byte",
@@ -12200,7 +12200,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141564846038818
+          "value": -3.14156436920166
         },
         "CloseLockDC": {
           "type": "byte",
@@ -12417,7 +12417,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.748438762660953e-007
+          "value": 1.748438478443859e-007
         },
         "CloseLockDC": {
           "type": "byte",
@@ -16386,7 +16386,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141562938690186
+          "value": -3.141562461853027
         },
         "BodyBag": {
           "type": "byte",
@@ -16611,7 +16611,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141562938690186
+          "value": -3.141562461853027
         },
         "BodyBag": {
           "type": "byte",
@@ -16836,7 +16836,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141562938690186
+          "value": -3.141562461853027
         },
         "BodyBag": {
           "type": "byte",
@@ -17061,7 +17061,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141562938690186
+          "value": -3.141562461853027
         },
         "BodyBag": {
           "type": "byte",
@@ -22264,7 +22264,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.914392352104187
+          "value": 1.914392232894898
         },
         "BodyBag": {
           "type": "byte",
@@ -24074,7 +24074,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -24299,7 +24299,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -24524,7 +24524,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -24749,7 +24749,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -26999,7 +26999,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -31756,7 +31756,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141566038131714
+          "value": -3.141565561294556
         },
         "BodyBag": {
           "type": "byte",
@@ -33335,7 +33335,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141566038131714
+          "value": -3.141565561294556
         },
         "BodyBag": {
           "type": "byte",
@@ -36284,7 +36284,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141566038131714
+          "value": -3.141565561294556
         },
         "BodyBag": {
           "type": "byte",
@@ -38540,7 +38540,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -38765,7 +38765,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -38990,7 +38990,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -43265,7 +43265,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -43717,7 +43717,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -48273,7 +48273,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -48498,7 +48498,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -48723,7 +48723,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -49623,7 +49623,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -49848,7 +49848,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -50073,7 +50073,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -50748,7 +50748,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -50975,7 +50975,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14156699180603
+          "value": -3.141566514968872
         },
         "BodyBag": {
           "type": "byte",
@@ -51202,7 +51202,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.896130323410034
+          "value": 2.896129846572876
         },
         "BodyBag": {
           "type": "byte",
@@ -54657,7 +54657,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568422317505
+          "value": -3.141567945480347
         },
         "BodyBag": {
           "type": "byte",
@@ -54919,7 +54919,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568422317505
+          "value": -3.141567945480347
         },
         "BodyBag": {
           "type": "byte",
@@ -63005,7 +63005,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141568422317505
+          "value": -3.141567945480347
         },
         "BodyBag": {
           "type": "byte",
@@ -65180,7 +65180,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.09817401319742203
+          "value": -0.09817399829626083
         },
         "BodyBag": {
           "type": "byte",
@@ -70261,7 +70261,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -71327,7 +71327,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -71634,7 +71634,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -78048,7 +78048,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -82126,7 +82126,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -82351,7 +82351,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -82576,7 +82576,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -83476,7 +83476,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -83701,7 +83701,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -83926,7 +83926,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141565322875977
+          "value": -3.141564846038818
         },
         "BodyBag": {
           "type": "byte",
@@ -84601,7 +84601,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141571998596191
+          "value": -3.141571521759033
         },
         "BodyBag": {
           "type": "byte",
@@ -88530,7 +88530,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141572952270508
+          "value": -3.14157247543335
         },
         "BodyBag": {
           "type": "byte",
@@ -89316,7 +89316,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141572952270508
+          "value": -3.14157247543335
         },
         "BodyBag": {
           "type": "byte",
@@ -93668,7 +93668,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -93893,7 +93893,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -96446,7 +96446,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -96708,7 +96708,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -99975,7 +99975,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.117038726806641
+          "value": -3.117038249969482
         },
         "BodyBag": {
           "type": "byte",
@@ -102902,7 +102902,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -103352,7 +103352,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -104477,7 +104477,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.06795072555542
+          "value": -3.067950487136841
         },
         "BodyBag": {
           "type": "byte",
@@ -106052,7 +106052,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -106277,7 +106277,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -106502,7 +106502,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -106727,7 +106727,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -106952,7 +106952,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -107177,7 +107177,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -108760,7 +108760,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.3926979303359985
+          "value": 0.3926978707313538
         },
         "BodyBag": {
           "type": "byte",
@@ -109210,7 +109210,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963487714529038
+          "value": -0.1963487565517426
         },
         "BodyBag": {
           "type": "byte",
@@ -109889,7 +109889,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.939054489135742
+          "value": 1.939054250717163
         },
         "BodyBag": {
           "type": "byte",
@@ -114881,7 +114881,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.896145343780518
+          "value": -2.896144866943359
         },
         "BodyBag": {
           "type": "byte",
@@ -115335,7 +115335,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.724340677261353
+          "value": 2.724340200424194
         },
         "BodyBag": {
           "type": "byte",
@@ -115562,7 +115562,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.527991771697998
+          "value": 2.52799129486084
         },
         "BodyBag": {
           "type": "byte",
@@ -116243,7 +116243,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.970540285110474
+          "value": 2.970540046691895
         },
         "BodyBag": {
           "type": "byte",
@@ -116470,7 +116470,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.4908723533153534
+          "value": -0.4908722639083862
         },
         "BodyBag": {
           "type": "byte",
@@ -122159,7 +122159,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141588449478149
         },
         "BodyBag": {
           "type": "byte",
@@ -122436,7 +122436,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141588449478149
         },
         "BodyBag": {
           "type": "byte",
@@ -122713,7 +122713,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141588449478149
         },
         "BodyBag": {
           "type": "byte",
@@ -133500,7 +133500,39 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -133525,6 +133557,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_b"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -134806,7 +134873,39 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -134831,6 +134930,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_b"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -137426,6 +137560,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_sm"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140743,6 +140912,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -140769,6 +140969,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_md"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -143531,6 +143766,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -143557,6 +143823,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_lg"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -145701,6 +146002,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -145727,6 +146059,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_ex"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -148601,7 +148968,39 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -148626,6 +149025,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_b"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -150941,6 +151375,41 @@
                       "type": "resref",
                       "value": "bag_sm"
                     },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -153198,6 +153667,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -153224,6 +153724,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_md"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -156007,6 +156542,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -156033,6 +156599,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_lg"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -158486,6 +159087,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -158512,6 +159144,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_ex"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -161895,7 +162562,39 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -161920,6 +162619,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_b"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -163892,6 +164626,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_sm"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -167302,6 +168071,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -167328,6 +168128,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_md"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -170955,6 +171790,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -170981,6 +171847,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_lg"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -174774,6 +175675,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -174800,6 +175732,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_ex"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -184807,7 +185774,39 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -184832,6 +185831,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_b"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -195472,6 +196506,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_sm"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -208014,6 +209083,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -208040,6 +209140,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_md"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -220142,6 +221277,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -220168,6 +221334,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_lg"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -233678,6 +234879,37 @@
                             "type": "word",
                             "value": 0
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
                         }
                       ]
                     },
@@ -233704,6 +234936,41 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "bag_ex"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "CONVERSATION"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "RenameItem"
+                          }
+                        }
+                      ]
                     },
                     "XOrientation": {
                       "type": "float",
@@ -235156,7 +236423,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.517136661277618e-005
+          "value": -1.564820377097931e-005
         },
         "XPosition": {
           "type": "float",
@@ -235457,7 +236724,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.970131961570587e-005
+          "value": 2.0178156773909e-005
         },
         "XPosition": {
           "type": "float",
@@ -236302,7 +237569,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.4496230781078339
+          "value": -0.4496234953403473
         },
         "XPosition": {
           "type": "float",
@@ -236310,7 +237577,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8932183980941773
+          "value": -0.8932181596755981
         },
         "YPosition": {
           "type": "float",
@@ -238197,7 +239464,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.4496135115623474
+          "value": -0.4496139287948608
         },
         "XPosition": {
           "type": "float",
@@ -238205,7 +239472,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8932232260704041
+          "value": -0.893222987651825
         },
         "YPosition": {
           "type": "float",

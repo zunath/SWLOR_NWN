@@ -394,13 +394,9 @@
     "value": [
       {
         "__struct_id": 0,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
         "InventoryRes": {
           "type": "resref",
-          "value": "cred_10"
+          "value": "cell_paralise"
         },
         "Repos_PosX": {
           "type": "word",
@@ -419,7 +415,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Repos_Posy": {
           "type": "word",
@@ -434,7 +430,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 3
+          "value": 2
         },
         "Repos_Posy": {
           "type": "word",
@@ -449,7 +445,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 4
+          "value": 3
         },
         "Repos_Posy": {
           "type": "word",
@@ -464,7 +460,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 5
+          "value": 4
         },
         "Repos_Posy": {
           "type": "word",
@@ -479,7 +475,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 6
+          "value": 5
         },
         "Repos_Posy": {
           "type": "word",
@@ -494,7 +490,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 7
+          "value": 6
         },
         "Repos_Posy": {
           "type": "word",
@@ -509,7 +505,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 8
+          "value": 7
         },
         "Repos_Posy": {
           "type": "word",
@@ -524,7 +520,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 9
+          "value": 8
         },
         "Repos_Posy": {
           "type": "word",
@@ -539,11 +535,11 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 9
         },
         "Repos_Posy": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
@@ -554,7 +550,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 3
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",
@@ -569,7 +565,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 4
+          "value": 1
         },
         "Repos_Posy": {
           "type": "word",
@@ -584,7 +580,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 5
+          "value": 2
         },
         "Repos_Posy": {
           "type": "word",
@@ -599,7 +595,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 6
+          "value": 3
         },
         "Repos_Posy": {
           "type": "word",
@@ -614,7 +610,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 7
+          "value": 4
         },
         "Repos_Posy": {
           "type": "word",
@@ -629,7 +625,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 8
+          "value": 5
         },
         "Repos_Posy": {
           "type": "word",
@@ -644,7 +640,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 9
+          "value": 6
         },
         "Repos_Posy": {
           "type": "word",
@@ -659,11 +655,11 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 0
+          "value": 7
         },
         "Repos_Posy": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -674,11 +670,11 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 1
+          "value": 8
         },
         "Repos_Posy": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -689,11 +685,11 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 9
         },
         "Repos_Posy": {
           "type": "word",
-          "value": 2
+          "value": 1
         }
       },
       {
@@ -704,7 +700,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 3
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",
@@ -713,21 +709,6 @@
       },
       {
         "__struct_id": 21,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_paralise"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 4
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 22,
         "Dropable": {
           "type": "byte",
           "value": 1
@@ -738,7 +719,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 5
+          "value": 1
         },
         "Repos_Posy": {
           "type": "word",

@@ -401,13 +401,9 @@
     "value": [
       {
         "__struct_id": 0,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
         "InventoryRes": {
           "type": "resref",
-          "value": "cred_10"
+          "value": "cell_pistolet_01"
         },
         "Repos_PosX": {
           "type": "word",
@@ -426,7 +422,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 1
         },
         "Repos_Posy": {
           "type": "word",
@@ -441,7 +437,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 3
+          "value": 2
         },
         "Repos_Posy": {
           "type": "word",
@@ -456,7 +452,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 4
+          "value": 3
         },
         "Repos_Posy": {
           "type": "word",
@@ -471,7 +467,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 5
+          "value": 4
         },
         "Repos_Posy": {
           "type": "word",
@@ -486,7 +482,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 6
+          "value": 5
         },
         "Repos_Posy": {
           "type": "word",
@@ -501,7 +497,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 7
+          "value": 6
         },
         "Repos_Posy": {
           "type": "word",
@@ -516,7 +512,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 8
+          "value": 7
         },
         "Repos_Posy": {
           "type": "word",
@@ -531,7 +527,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 9
+          "value": 8
         },
         "Repos_Posy": {
           "type": "word",
@@ -546,30 +542,15 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 9
         },
         "Repos_Posy": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
         "__struct_id": 10,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_pistolet_01"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 3
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 11,
         "Dropable": {
           "type": "byte",
           "value": 1
@@ -580,7 +561,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 4
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",

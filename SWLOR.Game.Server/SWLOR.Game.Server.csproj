@@ -374,6 +374,7 @@
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\CharacterCustomization.cs" />
     <Compile Include="Conversation\CloningTerminal.cs" />
+    <Compile Include="Conversation\RenameItem.cs" />
     <Compile Include="Conversation\ShipComputer.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\CoxxionTerminal.cs" />
@@ -604,6 +605,7 @@
     <Compile Include="Event\SWLOR\OnRemoveStructureItem.cs" />
     <Compile Include="Event\SWLOR\OnStoreBankItem.cs" />
     <Compile Include="Event\SWLOR\OnStoreStructureItem.cs" />
+    <Compile Include="Item\RenameItem.cs" />
     <Compile Include="Language\TranslatorUgnaught.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />

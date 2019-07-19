@@ -8,9 +8,11 @@ using System.Linq;
 using SWLOR.Game.Server.AreaSpecific.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWNX;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -27,6 +29,8 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
         }
         
         private static void RegisterAreaInstances()
@@ -278,5 +282,25 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        private static void OnAreaEnter()
+        {
+            NWArea area = NWGameObject.OBJECT_SELF;
+            int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+            if (playerCount > 0)
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+            else
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+        }
+
+        private static void OnAreaExit()
+        {
+            NWArea area = NWGameObject.OBJECT_SELF;
+            int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+            if (playerCount > 0)
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+            else
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+
+        }
     }
 }

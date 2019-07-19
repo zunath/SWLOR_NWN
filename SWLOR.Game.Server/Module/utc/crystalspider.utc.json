@@ -535,21 +535,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "BEHAVIOR"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "SoundAggroRandomWalkBehaviour"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "LOOT_TABLE_CHANCE_"
         },
         "Type": {
@@ -559,21 +544,6 @@
         "Value": {
           "type": "int",
           "value": 45
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NPC_GROUP"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 16
         }
       }
     ]

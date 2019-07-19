@@ -76,7 +76,15 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vellen_claw"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",

@@ -85,7 +85,9 @@ namespace NWN.Scripts
             {
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_EXIT, "area_on_exit");
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+                // Heartbeat events will be set when players enter the area.
+                // There's no reason to have them firing if no players are in the area.
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_USER_DEFINED_EVENT, "area_on_user");
 
                 area = _.GetNextArea();

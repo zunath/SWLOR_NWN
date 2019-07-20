@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -24,26 +25,32 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnAreaEnter()
         {
-            NWArea area = (NWGameObject.OBJECT_SELF);
-            NWPlayer player = _.GetEnteringObject();
-            
-            if (!player.IsPlayer) return;
-            
-            if (area.GetLocalInt("AUTO_EXPLORED") == TRUE)
+            using (new Profiler("MapService.OnAreaEnter"))
             {
-                _.ExploreAreaForPlayer(area.Object, player);
-            }
+                NWArea area = (NWGameObject.OBJECT_SELF);
+                NWPlayer player = _.GetEnteringObject();
 
-            LoadMapProgression(area, player);
+                if (!player.IsPlayer) return;
+
+                if (area.GetLocalInt("AUTO_EXPLORED") == TRUE)
+                {
+                    _.ExploreAreaForPlayer(area.Object, player);
+                }
+
+                LoadMapProgression(area, player);
+            }
         }
 
         private static void OnAreaExit()
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
-            NWPlayer player = _.GetExitingObject();
-            if (!player.IsPlayer) return;
+            using(new Profiler("MapService.OnAreaExit"))
+            {
+                NWArea area = NWGameObject.OBJECT_SELF;
+                NWPlayer player = _.GetExitingObject();
+                if (!player.IsPlayer) return;
 
-            SaveMapProgression(area, player);
+                SaveMapProgression(area, player);
+            }
         }
 
         private static void OnModuleLeave()
@@ -96,6 +103,11 @@ namespace SWLOR.Game.Server.Service
         {
             var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, area.Resref);
             int areaSize = area.Width * area.Height;
+
+            // Only do the loading process once per player per area.
+            string variableName = "MAP_AREA_LOADED_" + area.Resref;
+            if (player.GetLocalInt(variableName) == TRUE) return;
+            player.SetLocalInt(variableName, TRUE);
 
             // No progression set - do a save which will create the record.
             if (map == null)

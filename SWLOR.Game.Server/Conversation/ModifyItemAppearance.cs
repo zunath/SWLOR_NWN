@@ -523,7 +523,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 12: // Right Shoulder
                     model.Index = ITEM_APPR_ARMOR_MODEL_RSHOULDER;
-                    parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 54, 55, 56, 57, 58, 100, 101, 102, 122, 123, 140, 141, 185, 186, 197, 198, 199, 219, 220, 222, 221, 249, 250, };
+                    parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 54, 55, 56, 57, 58, 100, 101, 102, 122, 123, 140, 141, 185, 186, 197, 198, 199, 219, 220, 221, 222, 249, 250, };
                     break;
                 case 13: // Right Bicep
                     model.Index = ITEM_APPR_ARMOR_MODEL_RBICEP;
@@ -539,7 +539,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 16: // Left Shoulder
                     model.Index = ITEM_APPR_ARMOR_MODEL_LSHOULDER;
-                    parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 54, 55, 56, 57, 58, 100, 101, 102, 122, 123, 140, 141, 185, 186, 197, 198, 199, 219, 220, 222, 221, 249, 250, };
+                    parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 54, 55, 56, 57, 58, 100, 101, 102, 122, 123, 140, 141, 185, 186, 197, 198, 199, 219, 220, 221, 222, 249, 250, };
                     break;
                 case 17: // Left Bicep
                     model.Index = ITEM_APPR_ARMOR_MODEL_LBICEP;

@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DMAction()
         {
             ID = Guid.NewGuid();
+            DateOfAction = DateTime.UtcNow;
         }
 
         [ExplicitKey]

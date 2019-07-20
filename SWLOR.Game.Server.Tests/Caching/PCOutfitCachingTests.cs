@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Tests.Caching
 
 
         [Test]
-        public void GetByID_OneItem_ReturnsPCOutfit()
+        public void GetByIDOrDefault_OneItem_ReturnsPCOutfit()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -36,11 +36,11 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOutfit>(entity));
 
             // Assert
-            Assert.AreNotSame(entity, _cache.GetByID(id));
+            Assert.AreNotSame(entity, _cache.GetByIDOrDefault(id));
         }
 
         [Test]
-        public void GetByID_TwoItems_ReturnsCorrectObject()
+        public void GetByIDOrDefault_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
             var id1 = Guid.NewGuid();
@@ -53,12 +53,12 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOutfit>(entity2));
 
             // Assert
-            Assert.AreNotSame(entity1, _cache.GetByID(id1));
-            Assert.AreNotSame(entity2, _cache.GetByID(id2));
+            Assert.AreNotSame(entity1, _cache.GetByIDOrDefault(id1));
+            Assert.AreNotSame(entity2, _cache.GetByIDOrDefault(id2));
         }
 
         [Test]
-        public void GetByID_RemovedItem_ReturnsCorrectObject()
+        public void GetByIDOrDefault_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
             var id1 = Guid.NewGuid();
@@ -72,12 +72,12 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectDeleted<PCOutfit>(entity1));
 
             // Assert
-            Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
-            Assert.AreNotSame(entity2, _cache.GetByID(id2));
+            Assert.IsNull(_cache.GetByIDOrDefault(id1));
+            Assert.AreNotSame(entity2, _cache.GetByIDOrDefault(id2));
         }
 
         [Test]
-        public void GetByID_NoItems_ThrowsKeyNotFoundException()
+        public void GetByIDOrDefault_NoItems_ReturnsNull()
         {
             // Arrange
             var id1 = Guid.NewGuid();
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             MessageHub.Instance.Publish(new OnCacheObjectDeleted<PCOutfit>(entity2));
 
             // Assert
-            Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
-            Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id2); });
+            Assert.IsNull(_cache.GetByIDOrDefault(id1));
+            Assert.IsNull(_cache.GetByIDOrDefault(id2));
 
         }
     }

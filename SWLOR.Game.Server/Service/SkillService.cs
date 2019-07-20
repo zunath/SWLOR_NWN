@@ -308,10 +308,16 @@ namespace SWLOR.Game.Server.Service
                     pcSkill.XP = req - 1;
                 }
 
+                DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 MessageHub.Instance.Publish(new OnSkillGained(oPC, skillID));
+
+                pcSkill = GetPCSkill(oPC, skillID);
+                player = DataService.Player.GetByID(oPC.GlobalID);
             }
 
             DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+            DataService.SubmitDataChange(player, DatabaseActionType.Update);
 
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != pcSkill.Rank)

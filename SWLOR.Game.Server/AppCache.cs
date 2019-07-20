@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server
         public static Queue<string> UnregisterProcessingEvents { get; set; }
         public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
         public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
-        public static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
         public static Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public static List<Guid> PCEffectsForRemoval { get; set; }
         public static List<NWObject> ConnectedDMs { get; set; }
@@ -37,7 +36,6 @@ namespace SWLOR.Game.Server
             UnregisterProcessingEvents = new Queue<string>();
             NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
             CustomObjectData = new Dictionary<Guid, CustomData>();
-            AreaSpawns = new Dictionary<NWArea, AreaSpawn>();
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<Guid>();
             ConnectedDMs = new List<NWObject>();

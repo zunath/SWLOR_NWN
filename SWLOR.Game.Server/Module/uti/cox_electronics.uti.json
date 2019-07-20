@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 518
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -44,7 +46,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 63
+    "value": 124
   },
   "PaletteID": {
     "type": "byte",
@@ -131,7 +133,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 4
         },
         "Param1": {
           "type": "byte",

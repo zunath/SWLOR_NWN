@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -48,7 +48,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 189
+    "value": 132
   },
   "PaletteID": {
     "type": "byte",
@@ -109,25 +109,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "furniture"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "StructureItem"
-        }
-      }
-    ]
   }
 }

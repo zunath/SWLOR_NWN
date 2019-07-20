@@ -25,15 +25,7 @@ namespace SWLOR.Game.Server.Item
         {
             Location effectLocation;
             NWPlayer player = (user.Object);
-            // Targeted a location or self. Locate nearest resource.
-            if (!target.IsValid || Equals(user, target))
-            {
-                ScanArea(user, targetLocation);
-                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.08f));
-                effectLocation = targetLocation;
-
-            }
-            else if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
+            if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
                 DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.05f, 0.1f));
@@ -52,32 +44,6 @@ namespace SWLOR.Game.Server.Item
                 int scanningBonus = item.ScanningBonus;
                 SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);
                 user.SetLocalInt(target.GlobalID.ToString(), 1 + scanningBonus); 
-            }
-        }
-
-        private void ScanArea(NWCreature user, Location targetLocation)
-        {
-            NWArea area = (_.GetAreaFromLocation(targetLocation));
-            var spawns = SpawnService.GetAreaPlaceableSpawns(area);
-            var spawn = spawns
-                .Where(x => !string.IsNullOrWhiteSpace(x.SpawnPlaceable.GetLocalString("RESOURCE_RESREF")) &&
-                            x.SpawnPlaceable.IsValid)
-                .OrderBy(o => _.GetDistanceBetweenLocations(targetLocation, o.Spawn.Location))
-                .FirstOrDefault();
-            const float BaseScanningRange = 20.0f;
-            if (spawn == null || _.GetDistanceBetweenLocations(targetLocation, spawn.SpawnLocation) > BaseScanningRange)
-            {
-                user.FloatingText("Couldn't locate any nearby resources...");
-            }
-            else
-            {
-                var position = _.GetPositionFromLocation(spawn.SpawnLocation);
-                int cellX = (int)(position.m_X / 10);
-                int cellY = (int)(position.m_Y / 10);
-
-                BiowarePosition.TurnToFaceLocation(spawn.SpawnLocation, user);
-
-                user.FloatingText("Nearest resource is located at coordinates (" + cellX + ", " + cellY + ")");
             }
         }
 

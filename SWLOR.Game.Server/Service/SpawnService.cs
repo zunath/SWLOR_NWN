@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
@@ -19,6 +21,7 @@ namespace SWLOR.Game.Server.Service
     public static class SpawnService
     {
         private static readonly Dictionary<string, ISpawnRule> _spawnRules;
+        private static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; } = new Dictionary<NWArea, AreaSpawn>();
 
         static SpawnService()
         {
@@ -29,6 +32,10 @@ namespace SWLOR.Game.Server.Service
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessSpawns());
+
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents());
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents());
+            MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
         }
 
         private static void OnModuleLoad()
@@ -192,7 +199,7 @@ namespace SWLOR.Game.Server.Service
                 obj = GetNextObjectInArea(area.Object);
             }
 
-            AppCache.AreaSpawns.Add(area, areaSpawn);
+            AreaSpawns.Add(area, areaSpawn);
 
             DelayCommand(1.0f, () =>
             {
@@ -294,16 +301,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
-        {
-            var areaSpawn = AppCache.AreaSpawns[area];
-            return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Placeables);
-        }
-        public static IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
-        {
-            var areaSpawn = AppCache.AreaSpawns[area];
-            return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Creatures);
-        }
 
         public static void AssignScriptEvents(NWCreature creature)
         {
@@ -361,62 +358,76 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void ToggleCreatureEvents()
+        {
+            NWArea area = NWGameObject.OBJECT_SELF;
+            AreaSpawn areaSpawn = AreaSpawns[area];
+            int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+
+            foreach (var creature in areaSpawn.Creatures)
+            {
+                if (creature.Spawn.IsValid)
+                {
+                    bool eventsDisabled = creature.Spawn.GetLocalInt("SPAWN_EVENTS_DISABLED") == TRUE;
+                    bool isCreature = creature.Spawn.IsCreature;
+
+                    if (isCreature)
+                    {
+                        // Currently disabled, but players are in area. Enable them.
+                        if (eventsDisabled && playerCount > 0)
+                        {
+                            EnableCreatureEvents(creature.SpawnCreature);
+                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", FALSE);
+                        }
+                        // Currently enabled, but players are no longer in area. Disable them.
+                        else if (!eventsDisabled && playerCount <= 0)
+                        {
+                            DisableCreatureEvents(creature.SpawnCreature);
+                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", TRUE);
+                        }
+                    }
+                }
+            }
+        }
+
+
         private static void ProcessSpawns()
         {
             using (new Profiler(nameof(SpawnService) + "." + nameof(ProcessSpawns)))
             {
-                foreach (var spawn in AppCache.AreaSpawns)
+                foreach (var spawn in AreaSpawns)
                 {
                     // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
                     if (!spawn.Key.IsValid) continue;
 
+                    // Ignore empty areas.
+                    int playerCount = NWNXArea.GetNumberOfPlayersInArea(spawn.Key);
+                    if (playerCount <= 0) continue;
+
                     AreaSpawn areaSpawn = spawn.Value;
                     bool forceSpawn = !areaSpawn.HasSpawned;
-                    int playerCount = NWNXArea.GetNumberOfPlayersInArea(spawn.Key);
+
 
                     foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
-                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn, playerCount);
+                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
                     }
 
                     foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
-                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn, playerCount);
+                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
                     }
 
                     areaSpawn.SecondsEmpty = 0.0f;
                     areaSpawn.HasSpawned = true;
                 }
             }
+
         }
 
 
-        private static void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn, int playerCount)
+        private static void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn)
         {
-            if (spawn.Spawn.IsValid)
-            {
-                bool eventsDisabled = spawn.Spawn.GetLocalInt("SPAWN_EVENTS_DISABLED") == TRUE;
-                bool isCreature = spawn.Spawn.IsCreature;
-
-                if(isCreature)
-                {
-                    // Currently disabled, but players are in area. Enable them.
-                    if (eventsDisabled && playerCount > 0)
-                    {
-                        EnableCreatureEvents(spawn.SpawnCreature);
-                        spawn.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", FALSE);
-                    }
-                    // Currently enabled, but players are no longer in area. Disable them.
-                    else if (!eventsDisabled && playerCount <= 0)
-                    {
-                        DisableCreatureEvents(spawn.SpawnCreature);
-                        spawn.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", TRUE);
-                    }
-                }
-
-                return;
-            }
-
             spawn.Timer += ObjectProcessingService.ProcessingTickInterval;
 
             // Time to respawn!
@@ -560,5 +571,10 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, string.Empty);
         }
 
+        private static void OnAreaInstanceDestroyed(NWArea instance)
+        {
+            if(AreaSpawns.ContainsKey(instance))
+                AreaSpawns.Remove(instance);
+        }
     }
 }

@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.ChatCommand
             user.SendMessage("UnregisterProcessingEvents: " + AppCache.UnregisterProcessingEvents.Count);
             user.SendMessage("NPCEnmityTables: " + AppCache.NPCEnmityTables.Count);
             user.SendMessage("CustomObjectData: " + AppCache.CustomObjectData.Count);
-            user.SendMessage("AreaSpawns: " + AppCache.AreaSpawns.Count);
             user.SendMessage("VisibilityObjects: " + AppCache.VisibilityObjects.Count);
             user.SendMessage("PCEffectsForRemoval: " + AppCache.PCEffectsForRemoval.Count);
             user.SendMessage("======================================================");

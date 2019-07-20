@@ -17,8 +17,11 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        public PCOutfit GetByID(Guid playerID)
+        public PCOutfit GetByIDOrDefault(Guid playerID)
         {
+            if (!ByID.ContainsKey(playerID))
+                return null;
+
             return (PCOutfit)ByID[playerID].Clone();
         }
     }

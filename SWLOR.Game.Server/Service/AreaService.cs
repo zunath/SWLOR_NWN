@@ -272,11 +272,6 @@ namespace SWLOR.Game.Server.Service
         {
             if (!area.IsInstance) return;
 
-            if (AppCache.AreaSpawns.ContainsKey(area))
-            {
-                AppCache.AreaSpawns.Remove(area);
-            }
-
             MessageHub.Instance.Publish(new OnAreaInstanceDestroyed(area));
             _.DestroyArea(area);
 

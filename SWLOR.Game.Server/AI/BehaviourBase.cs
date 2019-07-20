@@ -202,7 +202,6 @@ namespace SWLOR.Game.Server.AI
                     }
                 });
             }
-            else self.ClearAllActions();
         }
 
         protected void EquipBestWeapon(NWCreature self)
@@ -347,6 +346,7 @@ namespace SWLOR.Game.Server.AI
             if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
                 _.IsInConversation(self.Object) == _.FALSE &&
                 _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
+                _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
@@ -370,6 +370,7 @@ namespace SWLOR.Game.Server.AI
                     _.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
                     return;
 
+                Console.WriteLine("Returning to spawn point. " + self.Name);
                 self.AssignCommand(() => _.ActionMoveToLocation(spawnLocation));
             }
         }

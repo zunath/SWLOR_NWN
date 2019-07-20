@@ -305,6 +305,8 @@ namespace SWLOR.Game.Server.Conversation
                             // We disable residency bonuses, DM bonuses, and skill penalties during this distribution because
                             // those are calculated when we give the player RP XP.
                             SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false, false);
+
+                            dbPlayer = DataService.Player.GetByID(player.GlobalID);
                             dbPlayer.RoleplayXP -= vm.RPXPDistributing;
                             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                             vm.IsConfirming = false;

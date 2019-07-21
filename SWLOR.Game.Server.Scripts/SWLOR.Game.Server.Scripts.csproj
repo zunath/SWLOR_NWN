@@ -91,7 +91,6 @@
     <Compile Include="Placeable\Resource\OnUsed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnClosed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnDisturbed.cs" />
-    <Compile Include="Placeable\ScavengePoint\OnHeartbeat.cs" />
     <Compile Include="Placeable\ScavengePoint\OnOpened.cs" />
     <Compile Include="Placeable\Scrapper\OnClosed.cs" />
     <Compile Include="Placeable\Scrapper\OnDisturbed.cs" />

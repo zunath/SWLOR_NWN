@@ -26,12 +26,6 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
             if (!point.InventoryItems.Any() && isFullyHarvested)
             {
-                string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
-                if (!string.IsNullOrWhiteSpace(seed))
-                {
-                    _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
-                }
-
                 point.Destroy();
             }
         }

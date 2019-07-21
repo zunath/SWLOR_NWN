@@ -815,6 +815,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-07-18.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-18.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-19.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-07-20.1.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />

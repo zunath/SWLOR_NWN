@@ -407,7 +407,6 @@ namespace SWLOR.Game.Server.Service
                     AreaSpawn areaSpawn = spawn.Value;
                     bool forceSpawn = !areaSpawn.HasSpawned;
 
-
                     foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
                         ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
@@ -422,12 +421,14 @@ namespace SWLOR.Game.Server.Service
                     areaSpawn.HasSpawned = true;
                 }
             }
-
         }
 
 
         private static void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn)
         {
+            // Don't process anything that's valid.
+            if (spawn.Spawn.IsValid) return;
+
             spawn.Timer += ObjectProcessingService.ProcessingTickInterval;
 
             // Time to respawn!

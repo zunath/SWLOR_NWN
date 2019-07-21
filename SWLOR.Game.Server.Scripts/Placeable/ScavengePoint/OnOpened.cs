@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
             const int baseChanceToFullyHarvest = 50;
-            bool alwaysDestroys = point.GetLocalInt("SCAVENGE_POINT_ALWAYS_DESTROYS") == 1;
             
             bool hasBeenSearched = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
             if (hasBeenSearched)
@@ -34,13 +33,6 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
                 return;
             }
 
-            // Not fully harvested but the timer hasn't counted down yet.
-            int refillTick = point.GetLocalInt("SCAVENGE_POINT_REFILL_TICKS");
-            if (refillTick > 0)
-            {
-                oPC.SendMessage("You couldn't find anything new here. Check back later...");
-                return;
-            }
 
             if (!oPC.IsPlayer && !oPC.IsDM) return;
             int rank = SkillService.GetPCSkillRank(oPC, SkillType.Scavenging);
@@ -103,16 +95,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
             
             if (chanceToFullyHarvest <= 5) chanceToFullyHarvest = 5;
 
-            if (alwaysDestroys || RandomService.Random(100) + 1 <= chanceToFullyHarvest)
-            {
-                point.SetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED", 1);
-                oPC.SendMessage("This resource has been fully harvested...");
-            }
-            // Otherwise the scavenge point will be refilled in 10-20 minutes.
-            else
-            {
-                point.SetLocalInt("SCAVENGE_POINT_REFILL_TICKS", 100 + RandomService.Random(100));
-            }
+            point.SetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED", 1);
+            oPC.SendMessage("This resource has been fully harvested...");
 
             point.SetLocalInt("SCAVENGE_POINT_DESPAWN_TICKS", 30);
         }

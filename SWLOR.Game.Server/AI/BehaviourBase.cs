@@ -370,7 +370,6 @@ namespace SWLOR.Game.Server.AI
                     _.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
                     return;
 
-                Console.WriteLine("Returning to spawn point. " + self.Name);
                 self.AssignCommand(() => _.ActionMoveToLocation(spawnLocation));
             }
         }

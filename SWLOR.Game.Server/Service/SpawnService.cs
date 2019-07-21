@@ -33,8 +33,8 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessSpawns());
 
-            MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents());
-            MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents());
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents(NWGameObject.OBJECT_SELF));
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents(NWGameObject.OBJECT_SELF));
             MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
         }
 
@@ -358,9 +358,8 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ToggleCreatureEvents()
+        private static void ToggleCreatureEvents(NWArea area)
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
             AreaSpawn areaSpawn = AreaSpawns[area];
             int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
 
@@ -395,6 +394,12 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler(nameof(SpawnService) + "." + nameof(ProcessSpawns)))
             {
+                // On module load, we want to populate all areas with NPCs and disable their AI.
+                // The reason for this is because we don't want lag when players enter an area. 
+                // This'll use more memory but the CPU usage will be very limited as none of the
+                // creatures will have scripts assigned.
+                bool hasRunOnce = NWModule.Get().GetLocalInt("SPAWN_HAS_RUN_ONCE") == TRUE;
+
                 foreach (var spawn in AreaSpawns)
                 {
                     // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
@@ -402,7 +407,7 @@ namespace SWLOR.Game.Server.Service
 
                     // Ignore empty areas.
                     int playerCount = NWNXArea.GetNumberOfPlayersInArea(spawn.Key);
-                    if (playerCount <= 0) continue;
+                    if (playerCount <= 0 && hasRunOnce) continue;
 
                     AreaSpawn areaSpawn = spawn.Value;
                     bool forceSpawn = !areaSpawn.HasSpawned;
@@ -419,7 +424,15 @@ namespace SWLOR.Game.Server.Service
 
                     areaSpawn.SecondsEmpty = 0.0f;
                     areaSpawn.HasSpawned = true;
+
+                    // Toggle creature AI now, if this is the first time we're running this process.
+                    if (!hasRunOnce)
+                    {
+                        ToggleCreatureEvents(spawn.Key);
+                    }
                 }
+
+                NWModule.Get().SetLocalInt("SPAWN_HAS_RUN_ONCE", TRUE);
             }
         }
 

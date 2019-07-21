@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Service
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(a => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnModuleLoad>(a => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(a => OnModuleHeartbeat());
             MessageHub.Instance.Subscribe<OnQuestCompleted>(a => OnQuestCompleted(a.Player, a.QuestID));
         }
 
@@ -151,17 +152,36 @@ namespace SWLOR.Game.Server.Service
             GiveGuildPoints(player, (GuildType)quest.RewardGuildID, gp);
         }
 
+        private static void OnModuleHeartbeat()
+        {
+            // Check if we need to refresh the available guild tasks every 30 minutes
+            var module = NWModule.Get();
+            int ticks = module.GetLocalInt("GUILD_REFRESH_TICKS") + 1;
+            if (ticks >= 300)
+            {
+                RefreshGuildTasks();
+                ticks = 0;
+            }
+
+            module.SetLocalInt("GUILD_REFRESH_TICKS", ticks);
+        }
+
         /// <summary>
         /// Cycle out the available guild tasks if the previous set has been available for 24 hours.
         /// </summary>
         private static void OnModuleLoad()
         {
+            RefreshGuildTasks();
+        }
+
+        private static void RefreshGuildTasks()
+        {
             var config = DataService.ServerConfiguration.Get();
             var now = DateTime.UtcNow;
-            
+
             // 24 hours haven't passed since the last cycle. Bail out now.
             if (now < config.LastGuildTaskUpdate.AddHours(24)) return;
-            
+
             // Start by marking the existing tasks as not currently offered.
             foreach (var task in DataService.GuildTask.GetAllByCurrentlyOffered())
             {
@@ -170,7 +190,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             int maxRank = RankProgression.Keys.Max();
-            
+
             // Active available tasks are grouped by GuildID and RequiredRank. 
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
@@ -181,7 +201,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
                     IEnumerable<GuildTask> tasks;
-                    
+
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
                     if (potentialTasks.Count <= 10)
                     {
@@ -192,7 +212,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         tasks = potentialTasks.OrderBy(o => RandomService.Random()).Take(10);
                     }
-                    
+
                     // We've got our set of tasks. Mark them as currently offered and submit the data change.
                     foreach (var task in tasks)
                     {
@@ -205,6 +225,8 @@ namespace SWLOR.Game.Server.Service
             // Update the server config and mark the timestamp.
             config.LastGuildTaskUpdate = now;
             DataService.SubmitDataChange(config, DatabaseActionType.Update);
+
+
         }
 
         /// <summary>

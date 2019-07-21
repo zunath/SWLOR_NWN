@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             // Penalize the caster
             Effect effect = _.EffectACDecrease(amount);
             effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, creature, 1.1f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
 
 
             NWCreature targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, targetCreature, 1.1f);
+                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, targetCreature, 6.1f);
                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), targetCreature);
                 
                 nth++;

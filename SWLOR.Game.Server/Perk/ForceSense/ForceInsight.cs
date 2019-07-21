@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             }
             
             // Apply the new effect.
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature, 1.1f);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), target);
 
             // Register players to all combat targets for Force Sense.

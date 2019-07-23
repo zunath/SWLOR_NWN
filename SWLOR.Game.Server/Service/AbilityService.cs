@@ -164,6 +164,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // verify activator is commandable. https://github.com/zunath/SWLOR_NWN/issues/940#issue-467175951
+            if (!activator.IsCommandable)
+            {
+                activator.SendMessage("You cannot take actions currently.");
+                return false;
+            }
+
             // If we're executing a concentration ability, check and see if the activator currently has this ability
             // active. If it's active, then we immediately remove its effect and bail out.
             // Any other ability (including other concentration abilities) execute as normal.

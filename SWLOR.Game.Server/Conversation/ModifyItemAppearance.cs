@@ -100,9 +100,12 @@ namespace SWLOR.Game.Server.Conversation
         private bool IsMainValid()
         {
             NWPlayer player = GetPC();
-            NWItem main = player.RightHand;
+            NWItem main = player.RightHand;           
 
-            bool canModifyMain = main.IsValid && !main.IsPlot && !main.IsCursed;
+            bool canModifyMain = main.IsValid && !main.IsPlot && !main.IsCursed &&
+                                 // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
+                                 main.CustomItemType != CustomItemType.Lightsaber && main.GetLocalInt("LIGHTSABER") == FALSE;
+
             if (canModifyMain)
             {
                 int mainModelTypeID = Convert.ToInt32(_.Get2DAString("baseitems", "ModelType", main.BaseItemType));
@@ -116,7 +119,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             NWItem offHand = player.LeftHand;
-            bool canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed;
+
+            bool canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed &&
+                                    // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
+                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalInt("LIGHTSABER") == FALSE;
 
             if (canModifyOffHand)
             {

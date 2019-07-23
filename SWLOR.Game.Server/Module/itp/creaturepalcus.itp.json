@@ -4484,6 +4484,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Telford"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_telford"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -8085,6 +8104,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jedimasterzhar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reference Database"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_database"
                     }
                   },
                   {

@@ -1498,7 +1498,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\2019-06-24.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-07.1.sql" />
-    <Content Include="Module\**\*.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

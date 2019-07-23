@@ -2252,6 +2252,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Telford's Clothing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_telcloth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Thurn Durvi Outfit"
                     },
                     "RESREF": {
@@ -6309,7 +6320,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Raivor Claws"
+                      "value": "Raivor Claw"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16023,6 +16034,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "rifle_s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Telford's Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_telgun"
                           }
                         },
                         {

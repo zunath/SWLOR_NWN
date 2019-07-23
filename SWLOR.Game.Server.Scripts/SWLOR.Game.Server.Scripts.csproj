@@ -109,6 +109,9 @@
     <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
     <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
     <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
+    <Compile Include="Trigger\ExplorationTrigger.cs" />
+    <Compile Include="Trigger\QuestTrigger.cs" />
+    <Compile Include="Trigger\SpaceEncounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj">
@@ -122,6 +125,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
-xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i</PostBuildEvent>
+xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i
+
+xcopy "$(TargetDir)..\..\Trigger" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Trigger" /E /Y /C /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

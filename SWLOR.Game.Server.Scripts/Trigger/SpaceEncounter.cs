@@ -1,14 +1,21 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-
-namespace SWLOR.Game.Server.Trigger
+namespace SWLOR.Game.Server.Scripts.Trigger
 {
-    public class SpaceEncounter: IRegisteredEvent
+    public class SpaceEncounter: IScript
     {
-        public bool Run(params object[] args)
+        public void SubscribeEvents()
+        {
+        }
+
+        public void UnsubscribeEvents()
+        {
+        }
+
+        public void Main()
         {
             // Check for timeout.  Refresh every game hour.
             NWObject self = NWGameObject.OBJECT_SELF;
@@ -26,7 +33,6 @@ namespace SWLOR.Game.Server.Trigger
                 self.SetLocalInt("YEAR", _.GetCalendarYear());
             }
 
-            return true;
         }
     }
 }

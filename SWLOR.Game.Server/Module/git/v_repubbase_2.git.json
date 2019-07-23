@@ -20963,7 +20963,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -21262,7 +21262,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -21561,7 +21561,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "script_1"
         },
         "OnHeartbeat": {
           "type": "resref",

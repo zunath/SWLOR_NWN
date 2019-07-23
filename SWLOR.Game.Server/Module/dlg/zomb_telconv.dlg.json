@@ -684,7 +684,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "[He sighs heavily at that.] \"Given what you said, I'm not sure /why/ you'd want to go back there, but if it helps to learn more about the place, then I suppose it couldn't hurt to lend you that shuttle again. For now, I've got work to do.\" [He returns his attention to the datapad and starts tapping away.]"
+            "0": "[He sighs heavily at that.] \"Given what you said, I'm not sure WHY you'd want to go back there, but if it helps to learn more about the place, then I suppose it couldn't hurt to lend you that shuttle again. For now, I've got work to do.\" [He returns his attention to the datapad and starts tapping away.]"
           }
         }
       },
@@ -797,11 +797,15 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 17
+                "value": 10
               },
               "IsChild": {
                 "type": "byte",
-                "value": 0
+                "value": 1
+              },
+              "LinkComment": {
+                "type": "cexostring",
+                "value": ""
               }
             },
             {
@@ -812,11 +816,15 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 16
+                "value": 9
               },
               "IsChild": {
                 "type": "byte",
-                "value": 0
+                "value": 1
+              },
+              "LinkComment": {
+                "type": "cexostring",
+                "value": ""
               }
             }
           ]
@@ -844,7 +852,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 661
+    "value": 658
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -1323,7 +1331,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "NEVERMIND"
+            "0": "Nevermind"
           }
         }
       },
@@ -1364,7 +1372,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "LETS GO"
+            "0": "Let's Go!"
           }
         }
       },
@@ -1617,89 +1625,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"I can take care of myself. Lets go.\""
-          }
-        }
-      },
-      {
-        "__struct_id": 16,
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": -1
-        },
-        "EntriesList": {
-          "type": "list",
-          "value": []
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Script": {
-          "type": "resref",
-          "value": ""
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "NEVERMIND"
-          }
-        }
-      },
-      {
-        "__struct_id": 17,
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": -1
-        },
-        "EntriesList": {
-          "type": "list",
-          "value": []
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Script": {
-          "type": "resref",
-          "value": ""
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "LETS GO"
+            "0": "\"I can take care of myself. Let's go!\""
           }
         }
       }

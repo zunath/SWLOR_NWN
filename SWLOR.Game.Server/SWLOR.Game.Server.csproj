@@ -570,6 +570,8 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_4.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
+    <Compile Include="Event\Item\item_dec_stack.cs" />
+    <Compile Include="Event\Item\OnItemDecrementStack.cs" />
     <Compile Include="Event\SWLOR\OnBaseDestroyed.cs" />
     <Compile Include="Event\SWLOR\OnBaseLeaseCancelled.cs" />
     <Compile Include="Event\SWLOR\OnBaseLeaseExpired.cs" />
@@ -769,6 +771,7 @@
     <Compile Include="NWNX\NWNXArea.cs" />
     <Compile Include="NWNX\NWNXEffect.cs" />
     <Compile Include="NWNX\NWNXItemProperty.cs" />
+    <Compile Include="NWNX\NWNXEventObjectType.cs" />
     <Compile Include="NWNX\NWNXVisibility.cs" />
     <Compile Include="NWNX\QuickBarSlotType.cs" />
     <Compile Include="Enumeration\ResistanceType.cs" />
@@ -859,6 +862,7 @@
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\NWNXProfiler.cs" />
     <Compile Include="NWNX\NWNXWeapon.cs" />
+    <Compile Include="NWNX\TimingBarType.cs" />
     <Compile Include="NWNX\VisibilityType.cs" />
     <Compile Include="Event\Conversation\credit_check.cs" />
     <Compile Include="Event\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />

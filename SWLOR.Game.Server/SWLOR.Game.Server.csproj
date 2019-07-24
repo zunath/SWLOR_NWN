@@ -566,6 +566,7 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_4.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
+    <Compile Include="Event\Conversation\tel_aban_station.cs" />
     <Compile Include="Event\Item\item_dec_stack.cs" />
     <Compile Include="Event\Item\OnItemDecrementStack.cs" />
     <Compile Include="Event\SWLOR\OnBaseDestroyed.cs" />

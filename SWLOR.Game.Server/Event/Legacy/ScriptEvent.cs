@@ -23,7 +23,10 @@ namespace SWLOR.Game.Server.Event.Legacy
                 if(ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
                 {
                     ScriptService.RunScriptByNamespace(scriptNamespace);
-                    Console.WriteLine("Unable to locate script: " + script);
+                }
+                else
+                {
+                    Console.WriteLine("Unable to locate script: " + scriptNamespace);
                 }
             }
         }

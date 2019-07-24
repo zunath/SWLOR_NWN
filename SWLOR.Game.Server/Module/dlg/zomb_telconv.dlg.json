@@ -1363,7 +1363,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "warp_to_wp"
+          "value": "tel_aban_station"
         },
         "Sound": {
           "type": "resref",

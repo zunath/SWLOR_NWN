@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141589403152466
+          "value": -3.14158821105957
         },
         "CloseLockDC": {
           "type": "byte",
@@ -134,7 +134,7 @@
         },
         "Lockable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Locked": {
           "type": "byte",
@@ -208,7 +208,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -220,7 +220,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "_mdrn_dt_ship5"
+          "value": "aban_director_elevator"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -283,7 +283,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794224739075
         },
         "CloseLockDC": {
           "type": "byte",
@@ -500,7 +500,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795059204102
+          "value": 1.570794463157654
         },
         "CloseLockDC": {
           "type": "byte",
@@ -642,7 +642,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -654,7 +654,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "_mdrn_dt_ship6"
+          "value": "aban_director_exit"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -2544,7 +2544,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.4908733665943146
+          "value": -0.4908731877803803
         },
         "BodyBag": {
           "type": "byte",
@@ -2771,7 +2771,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344846963882446
+          "value": 0.8344843983650208
         },
         "BodyBag": {
           "type": "byte",
@@ -2998,7 +2998,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141587972640991
         },
         "BodyBag": {
           "type": "byte",
@@ -3223,7 +3223,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141587972640991
         },
         "BodyBag": {
           "type": "byte",
@@ -4356,7 +4356,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -6387,7 +6387,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141587972640991
         },
         "BodyBag": {
           "type": "byte",
@@ -6612,7 +6612,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141587972640991
         },
         "BodyBag": {
           "type": "byte",
@@ -6837,7 +6837,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141587972640991
         },
         "BodyBag": {
           "type": "byte",
@@ -8189,7 +8189,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141588926315308
+          "value": -3.141587972640991
         },
         "BodyBag": {
           "type": "byte",
@@ -9089,7 +9089,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794820785523
+          "value": 1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -9314,7 +9314,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794820785523
+          "value": -1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -9766,7 +9766,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795059204102
+          "value": -1.570794463157654
         },
         "BodyBag": {
           "type": "byte",
@@ -10187,25 +10187,6 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 0.5133419632911682
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 0.5133419632911682
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 0.5133419632911682
-            }
-          }
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -10239,7 +10220,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795059204102
+          "value": 1.570794463157654
         },
         "BodyBag": {
           "type": "byte",
@@ -11141,7 +11122,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795059204102
+          "value": 1.570794463157654
         },
         "BodyBag": {
           "type": "byte",
@@ -11212,7 +11193,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Console, Floor Mounted (Red Screens)"
+            "0": "Tractor Beam Control Override"
           }
         },
         "OnClick": {
@@ -11269,7 +11250,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -11281,7 +11262,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -11293,11 +11274,11 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
-          "value": "_mdrn_pl_conso05"
+          "value": "t_beam_override"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11333,7 +11314,42 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Quests.AbandonedStation.TractorBeamOverride"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "QUEST_ID_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 31
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -11368,7 +11384,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795059204102
+          "value": -1.570794463157654
         },
         "BodyBag": {
           "type": "byte",
@@ -11820,7 +11836,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795059204102
+          "value": -1.570794463157654
         },
         "BodyBag": {
           "type": "byte",

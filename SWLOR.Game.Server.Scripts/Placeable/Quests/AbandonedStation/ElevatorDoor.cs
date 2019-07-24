@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWObject door = NWGameObject.OBJECT_SELF;
             NWArea area = door.Area;
             NWPlayer player = GetClickingObject();
+            if (!player.IsValid)
+                player = GetLastUsedBy();
+
             int remainingKeyCards = area.GetLocalInt("KEY_CARDS_REMAINING");
 
             if (remainingKeyCards > 0)

@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 
         public void Main()
         {
-            NWObject door = _.GetNearestObjectByTag("aban_director_exit");
-            NWPlayer player = _.GetLastUsedBy();
             NWPlaceable overridePlaceable = NWGameObject.OBJECT_SELF;
-            _.SetLocked(door, _.FALSE);
+            NWObject door = _.GetNearestObjectByTag("aban_director_exit", overridePlaceable);
+            NWPlayer player = _.GetLastUsedBy();
+            door.AssignCommand(() =>_.SetLocked(door, _.FALSE));
             int questID = overridePlaceable.GetLocalInt("QUEST_ID_1");
 
             _.SpeakString("The tractor beam has been disabled. A door in this room has unlocked.");
@@ -28,6 +28,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWArea mainLevel = overridePlaceable.Area.GetLocalObject("MAIN_LEVEL");
             NWArea restrictedLevel = overridePlaceable.Area.GetLocalObject("RESTRICTED_LEVEL");
             NWArea directorsChambers = overridePlaceable.Area.GetLocalObject("DIRECTORS_CHAMBERS");
+
+            // Enable the shuttle back to Viscara object.
+            NWPlaceable teleportObject = _.GetNearestObjectByTag("aban_shuttle_exit", mainLevel);
+            teleportObject.IsUseable = true;
 
             // Advance each party member's quest progression if they are in one of these three instance areas.
             foreach (var member in player.PartyMembers)

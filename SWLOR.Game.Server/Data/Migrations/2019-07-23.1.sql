@@ -85,7 +85,7 @@ INSERT INTO dbo.QuestState ( QuestID ,
                              JournalStateID )
 VALUES ( 31 , -- QuestID - int
          2 , -- Sequence - int
-         2 , -- QuestTypeID - int
+         0 , -- QuestTypeID - int
          2   -- JournalStateID - int
     )
 

@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.14158821105957
+          "value": -3.141587018966675
         },
         "CloseLockDC": {
           "type": "byte",
@@ -148,7 +148,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnClosed": {
           "type": "resref",
@@ -249,6 +249,56 @@
         "TrapType": {
           "type": "byte",
           "value": 0
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Quests.AbandonedStation.TransitionClick"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION_AREA_TAG"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "RESTRICTED_LEVEL"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "aban_cham_to_res"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -425,7 +475,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -500,7 +550,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794463157654
+          "value": 1.570794224739075
         },
         "CloseLockDC": {
           "type": "byte",
@@ -582,7 +632,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnClosed": {
           "type": "resref",
@@ -683,6 +733,56 @@
         "TrapType": {
           "type": "byte",
           "value": 0
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Quests.AbandonedStation.TransitionClick"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION_AREA_TAG"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MAIN_LEVEL"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "aban_cham_to_main"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -2544,7 +2644,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.4908731877803803
+          "value": -0.4908729493618012
         },
         "BodyBag": {
           "type": "byte",
@@ -2771,7 +2871,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344843983650208
+          "value": 0.8344841599464417
         },
         "BodyBag": {
           "type": "byte",
@@ -2998,7 +3098,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587972640991
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -3223,7 +3323,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587972640991
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -6387,7 +6487,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587972640991
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -6612,7 +6712,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587972640991
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -6837,7 +6937,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587972640991
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -8189,7 +8289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587972640991
+          "value": -3.141586542129517
         },
         "BodyBag": {
           "type": "byte",
@@ -9766,7 +9866,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794463157654
+          "value": -1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -10220,7 +10320,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794463157654
+          "value": 1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -11122,7 +11222,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570794463157654
+          "value": 1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -11384,7 +11484,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794463157654
+          "value": -1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -11836,7 +11936,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570794463157654
+          "value": -1.570794224739075
         },
         "BodyBag": {
           "type": "byte",
@@ -12543,6 +12643,36 @@
               },
               "PointZ": {
                 "type": "float",
+                "value": 0.02500011958181858
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.270289421081543
+              },
+              "PointY": {
+                "type": "float",
+                "value": -1.957818984985352
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500000037252903
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 3.960747718811035
+              },
+              "PointY": {
+                "type": "float",
+                "value": -2.146383285522461
+              },
+              "PointZ": {
+                "type": "float",
                 "value": 0.02499988116323948
               }
             },
@@ -12550,41 +12680,11 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 3.025724411010742
+                "value": 3.305207252502441
               },
               "PointY": {
                 "type": "float",
-                "value": 0.004610061645507813
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": 2.571853637695313
-              },
-              "PointY": {
-                "type": "float",
-                "value": 0.2272052764892578
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500000037252903
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
-                "value": 0.2067594528198242
-              },
-              "PointY": {
-                "type": "float",
-                "value": 0.2272052764892578
+                "value": 0.0
               },
               "PointZ": {
                 "type": "float",
@@ -12728,7 +12828,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 13.47878074645996
+          "value": 13.20466899871826
         },
         "YOrientation": {
           "type": "float",
@@ -12736,7 +12836,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 18.27279472351074
+          "value": 18.5
         },
         "ZOrientation": {
           "type": "float",
@@ -12751,6 +12851,127 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DIRECTORS_QUARTERS_LANDING"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.343088683825044e-006
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 15.2797794342041
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 18.07762718200684
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -4.76837158203125e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "aban_main_to_cham"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 17.98351097106934
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 3.139164732601785e-007
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 5.047073841094971
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      }
+    ]
   }
 }

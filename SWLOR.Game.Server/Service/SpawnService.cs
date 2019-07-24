@@ -35,6 +35,8 @@ namespace SWLOR.Game.Server.Service
 
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents(NWGameObject.OBJECT_SELF));
             MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents(NWGameObject.OBJECT_SELF));
+
+            MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
             MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
         }
 
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void InitializeAreaSpawns(NWArea area)
+        private static void InitializeAreaSpawns(NWArea area)
         {
             var areaSpawn = new AreaSpawn();
 
@@ -205,6 +207,13 @@ namespace SWLOR.Game.Server.Service
             {
                 SpawnResources(area, areaSpawn);
             });
+        }
+
+        private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
+        {
+            NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalInt("IS_AREA_INSTANCE") == FALSE);
+            AreaSpawn originalAreaSpawn = AreaSpawns[originalArea];
+            AreaSpawns.Add(copyArea, originalAreaSpawn);
         }
         
         public static Location GetRandomSpawnPoint(NWArea area)
@@ -583,6 +592,11 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH, string.Empty);
             SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, string.Empty);
             SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, string.Empty);
+        }
+
+        private static void OnAreaInstanceCreated(NWArea instance)
+        {
+            CopyAreaSpawns(instance.Resref, instance);
         }
 
         private static void OnAreaInstanceDestroyed(NWArea instance)

@@ -218,7 +218,6 @@ namespace SWLOR.Game.Server.Service
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
 
-            SpawnService.InitializeAreaSpawns(instance);
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(instance));
             return instance;
         }

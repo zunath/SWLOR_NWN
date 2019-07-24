@@ -71,12 +71,7 @@ namespace NWN.Scripts
             restrictedLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
             mainLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
             directorsChambers.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
-
-            // Register with spawn service.
-            SpawnService.InitializeAreaSpawns(restrictedLevel);
-            SpawnService.InitializeAreaSpawns(mainLevel);
-            SpawnService.InitializeAreaSpawns(directorsChambers);
-
+            
             // Notify of instance creation
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(restrictedLevel));
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(mainLevel));

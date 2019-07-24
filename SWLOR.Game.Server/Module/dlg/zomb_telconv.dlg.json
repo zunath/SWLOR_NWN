@@ -1142,7 +1142,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "accept_quest_1"
         },
         "Sound": {
           "type": "resref",
@@ -1363,7 +1363,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "warp_to_wp"
         },
         "Sound": {
           "type": "resref",
@@ -1372,7 +1372,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Let's Go!"
+            "0": "Let's go!"
           }
         }
       },
@@ -1420,7 +1420,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "finish_quest_1"
         },
         "Sound": {
           "type": "resref",
@@ -1638,7 +1638,7 @@
         "__struct_id": 0,
         "Active": {
           "type": "resref",
-          "value": ""
+          "value": "quest_done_1"
         },
         "Index": {
           "type": "dword",
@@ -1649,7 +1649,7 @@
         "__struct_id": 1,
         "Active": {
           "type": "resref",
-          "value": ""
+          "value": "on_qst1_state_2"
         },
         "Index": {
           "type": "dword",
@@ -1660,7 +1660,7 @@
         "__struct_id": 2,
         "Active": {
           "type": "resref",
-          "value": ""
+          "value": "on_qst1_state_1"
         },
         "Index": {
           "type": "dword",
@@ -1671,7 +1671,7 @@
         "__struct_id": 3,
         "Active": {
           "type": "resref",
-          "value": ""
+          "value": "can_accept_1"
         },
         "Index": {
           "type": "dword",

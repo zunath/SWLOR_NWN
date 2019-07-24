@@ -1,24 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.AreaSpecific
+namespace SWLOR.Game.Server.Scripts.Area
 {
-    public static class CoxxionBase
+    public class CoxxionBase: IScript
     {
-        public static void SubscribeEvents()
+        private Guid _moduleLoadID;
+
+        public void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(msg => LoadDoors());
+            _moduleLoadID = MessageHub.Instance.Subscribe<OnModuleLoad>(msg => LoadDoors());
+        }
+
+        public void UnsubscribeEvents()
+        {
+            MessageHub.Instance.Unsubscribe(_moduleLoadID);
+        }
+
+        public void Main()
+        {
         }
 
         /// <summary>
         /// The Coxxion Base has a set of doors which are opened based on terminals used by the player.
         /// We store these doors in the area's custom data for later use.
         /// </summary>
-        private static void LoadDoors()
+        public void LoadDoors()
         {
             // This area used to be an instance so this code made sense then.
             // Now, however, it would make more sense to refactor and store them as local objects.

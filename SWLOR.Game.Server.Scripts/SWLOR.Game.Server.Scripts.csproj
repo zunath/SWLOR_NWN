@@ -42,6 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Area\CoxxionBase.cs" />
+    <Compile Include="Area\ExitAreaInstance.cs" />
+    <Compile Include="Area\RimerCardsInstance.cs" />
+    <Compile Include="Item\BleedBite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Delayed\CraftCreateItem.cs" />
     <Compile Include="Delayed\FinishAbilityUse.cs" />
@@ -124,9 +128,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
+    <PostBuildEvent>xcopy "$(TargetDir)..\..\Area" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Area" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Item" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Item" /E /Y /C /i
 xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i
-
 xcopy "$(TargetDir)..\..\Trigger" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Trigger" /E /Y /C /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

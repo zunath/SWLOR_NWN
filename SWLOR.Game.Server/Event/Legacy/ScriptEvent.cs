@@ -23,21 +23,8 @@ namespace SWLOR.Game.Server.Event.Legacy
                 if(ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
                 {
                     ScriptService.RunScriptByNamespace(scriptNamespace);
-                    return;
+                    Console.WriteLine("Unable to locate script: " + script);
                 }
-
-                // Otherwise look for a script contained by the app.
-                scriptNamespace = rootNamespace + "." + script;
-                Type type = Type.GetType(scriptNamespace);
-
-                if (type == null)
-                {
-                    Console.WriteLine("Unable to locate type for ScriptEvent: " + script);
-                    return;
-                }
-
-                IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
-                @event?.Run();
             }
         }
     }

@@ -5,7 +5,6 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.AreaSpecific.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
@@ -19,51 +18,15 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AreaService
     {
-        private static readonly Dictionary<string, IAreaInstance> _areaInstances;
-
-        static AreaService()
-        {
-            _areaInstances = new Dictionary<string, IAreaInstance>();
-        }
-
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
         }
-        
-        private static void RegisterAreaInstances()
-        {
-            // Use reflection to get all of Area instance implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(IAreaInstance).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
-            foreach (var type in classes)
-            {
-                IAreaInstance instance = Activator.CreateInstance(type) as IAreaInstance;
-                if (instance == null)
-                {
-                    throw new NullReferenceException("Unable to activate instance of type: " + type);
-                }
-                _areaInstances.Add(type.Name, instance);
-            }
-
-        }
-
-        public static IAreaInstance GetAreaInstance(string key)
-        {
-            if (!_areaInstances.ContainsKey(key))
-            {
-                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
-            }
-
-            return _areaInstances[key];
-        }
 
         private static void OnModuleLoad()
         {
-            RegisterAreaInstances();
             var areas = NWModule.Get().Areas;
             var dbAreas = DataService.Area.GetAll().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
@@ -256,14 +219,6 @@ namespace SWLOR.Game.Server.Service
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
 
             SpawnService.InitializeAreaSpawns(instance);
-            
-            string rule = instance.GetLocalString("INSTANCE_ON_SPAWN");
-            if (!string.IsNullOrWhiteSpace(rule))
-            {
-                IAreaInstance instanceRule = GetAreaInstance(rule);
-                instanceRule.OnSpawn(instance);
-            }
-
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(instance));
             return instance;
         }

@@ -6,18 +6,30 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.AreaSpecific
+namespace SWLOR.Game.Server.Scripts.Area
 {
-    public static class RimerCardsInstance
+    public class RimerCardsInstance: IScript
     {
-        public static void SubscribeEvents()
+        private Guid _moduleLoadID;
+
+        public void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(msg => CreateInstances());
+            _moduleLoadID = MessageHub.Instance.Subscribe<OnModuleLoad>(msg => CreateInstances());
         }
 
-        private static void CreateInstances()
+        public void UnsubscribeEvents()
+        {
+            MessageHub.Instance.Unsubscribe(_moduleLoadID);
+        }
+
+        public void Main()
+        {
+        }
+
+        private void CreateInstances()
         {
             NWArea source = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == "cardgame003");
             if (source == null) return;

@@ -175,10 +175,6 @@
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="AppCache.cs" />
-    <Compile Include="AreaSpecific\Contracts\IAreaInstance.cs" />
-    <Compile Include="AreaSpecific\CoxxionBase.cs" />
-    <Compile Include="AreaSpecific\ExitAreaInstance.cs" />
-    <Compile Include="AreaSpecific\RimerCardsInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
     <Compile Include="Caching\AreaWalkmeshCache.cs" />
@@ -795,7 +791,6 @@
     <Compile Include="Event\Conversation\Quest\CollectQuestItem\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\Quest\FinishQuest\QuestComplete.cs" />
     <Compile Include="Event\Conversation\Quest\QuestIsDone\QuestIsDone.cs" />
-    <Compile Include="Event\Conversation\TransportToMosEisley.cs" />
     <Compile Include="Event\Creature\OnCreatureBlocked.cs" />
     <Compile Include="Event\Creature\OnCreatureCombatRoundEnd.cs" />
     <Compile Include="Event\Creature\OnCreatureConversation.cs" />
@@ -830,7 +825,6 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="GameObject\NWLocation.cs" />
-    <Compile Include="Item\Enemy\BleedBite.cs" />
     <Compile Include="Item\Medicine\ForcePack.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
@@ -1308,7 +1302,6 @@
     <Compile Include="Perk\Weapons\WeaponFocusTwinBlades.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusVibroblades.cs" />
     <Compile Include="Event\Feat\OnHitCastSpell.cs" />
-    <Compile Include="Event\IRegisteredEvent.cs" />
     <Compile Include="Event\Legacy\ScriptEvent.cs" />
     <Compile Include="Event\Module\OnModuleAcquireItem.cs" />
     <Compile Include="Event\Module\OnModuleActivateItem.cs" />

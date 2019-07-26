@@ -75270,6 +75270,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Station Key Card"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "station_key_card"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Teleport Object"
                     },
                     "RESREF": {

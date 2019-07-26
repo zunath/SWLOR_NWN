@@ -120,6 +120,7 @@ namespace NWN.Scripts
             NWNXEvents.SubscribeEvent(EventType.ExamineObjectBefore, "mod_on_examine");
             NWNXEvents.SubscribeEvent(EventType.UseFeatBefore, "mod_on_usefeat");
             NWNXEvents.SubscribeEvent(EventType.EnterStealthAfter, "mod_on_entstlth");
+            NWNXEvents.SubscribeEvent(EventType.DecrementItemStackSizeBefore, "item_dec_stack");
             NWNXDamage.SetDamageEventScript("mod_on_applydmg");
 
             // DM Hooks

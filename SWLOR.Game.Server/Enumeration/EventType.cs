@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿using System.CodeDom;
+
+namespace SWLOR.Game.Server.Enumeration
 {
     public class EventType
     {
@@ -20,11 +22,50 @@
         public const string UseItemBefore = "NWNX_ON_USE_ITEM_BEFORE";
         public const string UseItemAfter = "NWNX_ON_USE_ITEM_AFTER";
 
+        public const string ClientConnectBefore = "NWNX_ON_CLIENT_CONNECT_BEFORE";
+        public const string ClientConnectAfter = "NWNX_ON_CLIENT_CONNECT_AFTER";
+
         public const string ClientDisconnectBefore = "NWNX_ON_CLIENT_DISCONNECT_BEFORE";
         public const string ClientDisconnectAfter = "NWNX_ON_CLIENT_DISCONNECT_AFTER";
 
         public const string CastSpellBefore = "NWNX_ON_CAST_SPELL_BEFORE";
         public const string CastSpellAfter = "NWNX_ON_CAST_SPELL_AFTER";
+
+        public const string DestroyObjectBefore = "NWNX_ON_ITEM_DESTROY_OBJECT_BEFORE";
+        public const string DestroyObjectAfter = "NWNX_ON_ITEM_DESTROY_OBJECT_AFTER";
+
+        public const string ItemInventoryOpenBefore = "NWNX_ON_ITEM_INVENTORY_OPEN_BEFORE";
+        public const string ItemInventoryOpenAfter = "NWNX_ON_ITEM_INVENTORY_OPEN_AFTER";
+
+        public const string ItemInventoryCloseBefore = "NWNX_ON_ITEM_INVENTORY_CLOSE_BEFORE";
+        public const string ItemInventoryCloseAfter = "NWNX_ON_ITEM_INVENTORY_CLOSE_AFTER";
+
+        public const string ItemInventoryAddItemBefore = "NWNX_ON_ITEM_INVENTORY_ADD_ITEM_BEFORE";
+        public const string ItemInventoryAddItemAfter = "NWNX_ON_ITEM_INVENTORY_ADD_ITEM_AFTER";
+
+        public const string ItemInventoryRemoveItemBefore = "NWNX_ON_ITEM_INVENTORY_REMOVE_ITEM_BEFORE";
+        public const string ItemInventoryRemoveItemAfter = "NWNX_ON_ITEM_INVENTORY_REMOVE_ITEM_AFTER";
+
+        public const string ItemAmmoReloadBefore = "NWNX_ON_ITEM_AMMO_RELOAD_BEFORE";
+        public const string ItemAmmoReloadAfter = "NWNX_ON_ITEM_AMMO_RELOAD_AFTER";
+
+        public const string ItemScrollLearnBefore = "NWNX_ON_ITEM_SCROLL_LEARN_BEFORE";
+        public const string ItemScrollLearnAfter = "NWNX_ON_ITEM_SCROLL_LEARN_AFTER";
+
+        public const string ItemEquipBefore = "NWNX_ON_ITEM_EQUIP_BEFORE";
+        public const string ItemEquipAfter = "NWNX_ON_ITEM_EQUIP_AFTER";
+
+        public const string ItemUnequipBefore = "NWNX_ON_ITEM_UNEQUIP_BEFORE";
+        public const string ItemUnequipAfter = "NWNX_ON_ITEM_UNEQUIP_AFTER";
+
+        public const string DecrementItemStackSizeBefore = "NWNX_ON_ITEM_DECREMENT_STACKSIZE_BEFORE";
+        public const string DecrementItemStackSizeAfter = "NWNX_ON_ITEM_DECREMENT_STACKSIZE_AFTER";
+
+        public const string UseLoreBefore = "NWNX_ON_ITEM_USE_LORE_BEFORE";
+        public const string UseLoreAfter = "NWNX_ON_ITEM_USE_LORE_AFTER";
+
+        public const string PayToIdentifyBefore = "NWNX_ON_ITEM_PAY_TO_IDENTIFY_BEFORE";
+        public const string PayToIdentifyAfter = "NWNX_ON_ITEM_PAY_TO_IDENTIFY_AFTER";
 
         public const string UseFeatBefore = "NWNX_ON_USE_FEAT_BEFORE";
         public const string UseFeatAfter = "NWNX_ON_USE_FEAT_AFTER";
@@ -140,6 +181,9 @@
         public const string DMSetDateBefore = "NWNX_ON_DM_SET_DATE_BEFORE";
         public const string DMSetDateAfter = "NWNX_ON_DM_SET_DATE_AFTER";
 
+        public const string UseHealerKitBefore = "NWNX_ON_USE_HEALER_KIT_BEFORE";
+        public const string UseHealerKitAfter = "NWNX_ON_USE_HEALER_KIT_AFTER";
+
         public const string PartyLeaveBefore = "NWNX_ON_PARTY_LEAVE_BEFORE";
         public const string PartyLeaveAfter = "NWNX_ON_PARTY_LEAVE_AFTER";
 
@@ -155,10 +199,103 @@
         public const string PartyIgnoreInvitationBefore = "NWNX_ON_PARTY_IGNORE_INVITATION_BEFORE";
         public const string PartyIgnoreInvitationAfter =  "NWNX_ON_PARTY_IGNORE_INVITATION_AFTER";
 
+        public const string PartyAcceptInvitationBefore = "NWNX_ON_PARTY_ACCEPT_INVITATION_BEFORE";
+        public const string PartyAcceptInvitationAfter = "NWNX_ON_PARTY_ACCEPT_INVITATION_AFTER";
+
         public const string PartyRejectInvitationBefore = "NWNX_ON_PARTY_REJECT_INVITATION_BEFORE";
         public const string PartyRejectInvitationAfter =  "NWNX_ON_PARTY_REJECT_INVITATION_AFTER";
 
         public const string PartyKickHenchmanBefore = "NWNX_ON_PARTY_KICK_HENCHMAN_BEFORE";
         public const string PartyKickHenchmanAfter =  "NWNX_ON_PARTY_KICK_HENCHMAN_AFTER";
+
+        // NOTE: Requires the NWNX_CombatModes plugin to work.
+        public const string CombatModeOn = "NWNX_ON_COMBAT_MODE_ON";
+        public const string CombatModeOff = "NWNX_ON_COMBAT_MODE_OFF";
+
+        public const string UseSkillBefore = "NWNX_ON_USE_SKILL_BEFORE";
+        public const string UseSkillAfter = "NWNX_ON_USE_SKILL_AFTER";
+
+        public const string AddMapPinBefore = "NWNX_ON_MAP_PIN_ADD_PIN_BEFORE";
+        public const string AddMapPinAfter = "NWNX_ON_MAP_PIN_ADD_PIN_AFTER";
+
+        public const string ChangeMapPinBefore = "NWNX_ON_MAP_PIN_CHANGE_PIN_BEFORE";
+        public const string ChangeMapPinAfter = "NWNX_ON_MAP_PIN_CHANGE_PIN_AFTER";
+
+        public const string DestroyMapPinBefore = "NWNX_ON_MAP_PIN_DESTROY_PIN_BEFORE";
+        public const string DestroyMapPinAfter = "NWNX_ON_MAP_PIN_DESTROY_PIN_AFTER";
+
+        public const string DoListenDetectionBefore = "NWNX_ON_DO_LISTEN_DETECTION_BEFORE";
+        public const string DoListenDetectionAfter = "NWNX_ON_DO_LISTEN_DETECTION_AFTER";
+
+        public const string DoSpotDetectionBefore = "NWNX_ON_DO_SPOT_DETECTION_BEFORE";
+        public const string DoSpotDetectionAfter = "NWNX_ON_DO_SPOT_DETECTION_AFTER";
+
+        public const string PolymorphBefore = "NWNX_ON_POLYMORPH_BEFORE";
+        public const string PolymorphAfter = "NWNX_ON_POLYMORPH_AFTER";
+
+        public const string UnPolymorphBefore = "NWNX_ON_UNPOLYMORPH_BEFORE";
+        public const string UnPolymorphAfter = "NWNX_ON_UNPOLYMORPH_AFTER";
+
+        public const string EffectAppliedBefore = "NWNX_ON_EFFECT_APPLIED_BEFORE";
+        public const string EffectAppliedAfter = "NWNX_ON_EFFECT_APPLIED_AFTER";
+
+        public const string EffectRemovedBefore = "NWNX_ON_EFFECT_REMOVED_BEFORE";
+        public const string EffectRemovedAfter = "NWNX_ON_EFFECT_REMOVED_AFTER";
+
+        public const string QuickChatBefore = "NWNX_ON_QUICKCHAT_BEFORE";
+        public const string QuickChatAfter = "NWNX_ON_QUICKCHAT_AFTER";
+
+        public const string InventoryOpenBefore = "NWNX_ON_INVENTORY_OPEN_BEFORE";
+        public const string InventoryOpenAfter = "NWNX_ON_INVENTORY_OPEN_AFTER";
+
+        public const string InventorySelectPanelBefore = "NWNX_ON_INVENTORY_SELECT_PANEL_BEFORE";
+        public const string InventorySelectPanelAfter = "NWNX_ON_INVENTORY_SELECT_PANEL_AFTER";
+
+        public const string BarterStartBefore = "NWNX_ON_BARTER_START_BEFORE";
+        public const string BarterStartAfter = "NWNX_ON_BARTER_START_AFTER";
+
+        public const string TrapDisarmBefore = "NWNX_ON_TRAP_DISARM_BEFORE";
+        public const string TrapDisarmAfter = "NWNX_ON_TRAP_DISARM_AFTER";
+
+        public const string TrapEnterBefore = "NWNX_ON_TRAP_ENTER_BEFORE";
+        public const string TrapEnterAfter = "NWNX_ON_TRAP_ENTER_AFTER";
+
+        public const string TrapExamineBefore = "NWNX_ON_TRAP_EXAMINE_BEFORE";
+        public const string TrapExamineAfter = "NWNX_ON_TRAP_EXAMINE_AFTER";
+
+        public const string TrapFlagBefore = "NWNX_ON_TRAP_FLAG_BEFORE";
+        public const string TrapFlagAfter = "NWNX_ON_TRAP_FLAG_AFTER";
+
+        public const string TrapRecoverBefore = "NWNX_ON_TRAP_RECOVER_BEFORE";
+        public const string TrapRecoverAfter = "NWNX_ON_TRAP_RECOVER_AFTER";
+
+        public const string TrapSetBefore = "NWNX_ON_TRAP_SET_BEFORE";
+        public const string TrapSetAfter = "NWNX_ON_TRAP_SET_AFTER";
+
+        public const string TimingBarStartBefore = "NWNX_ON_TIMING_BAR_START_BEFORE";
+        public const string TimingBarStartAfter = "NWNX_ON_TIMING_BAR_START_AFTER";
+
+        public const string TimingBarStopBefore = "NWNX_ON_TIMING_BAR_STOP_BEFORE";
+        public const string TimingBarStopAfter = "NWNX_ON_TIMING_BAR_STOP_AFTER";
+
+        public const string TimingBarCancelBefore = "NWNX_ON_TIMING_BAR_CANCEL_BEFORE";
+        public const string TimingBarCancelAfter = "NWNX_ON_TIMING_BAR_CANCEL_AFTER";
+
+        // Note: This requires the NWNX_WebHook plugin to work.
+        // We'll likely never need this since we can make web calls directly from C#, but it's included here for completion's sake.
+        public const string WebhookSuccess = "NWNX_ON_WEBHOOK_SUCCESS";
+        public const string WebhookFailure = "NWNX_ON_WEBHOOK_FAILURE";
+
+        public const string CheckStickyPlayerNameReservedBefore = "NWNX_ON_CHECK_STICKY_PLAYER_NAME_RESERVED_BEFORE";
+        public const string CheckStickyPlayerNameReservedAfter = "NWNX_ON_CHECK_STICKY_PLAYER_NAME_RESERVED_AFTER";
+
+        public const string LevelUpBefore = "NWNX_ON_LEVEL_UP_BEFORE";
+        public const string LevelUpAfter = "NWNX_ON_LEVEL_UP_AFTER";
+
+        public const string LevelUpAutomaticBefore = "NWNX_ON_LEVEL_UP_AUTOMATIC_BEFORE";
+        public const string LevelUpAutomaticAfter = "NWNX_ON_LEVEL_UP_AUTOMATIC_AFTER";
+
+        public const string LevelDownBefore = "NWNX_ON_LEVEL_DOWN_BEFORE";
+        public const string LevelDownAfter = "NWNX_ON_LEVEL_DOWN_AFTER";
     }
 }

@@ -216,7 +216,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Enemy.BleedBite"
+          "value": "BleedBite"
         }
       }
     ]

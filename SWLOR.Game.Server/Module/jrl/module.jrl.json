@@ -36246,6 +36246,74 @@
           "type": "dword",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 533,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "EntryList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 1
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Investigate the abandoned station."
+                }
+              }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Return to Telford Brelnak to report your findings."
+                }
+              }
+            }
+          ]
+        },
+        "Name": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "The Abandoned Station"
+          }
+        },
+        "Picture": {
+          "type": "word",
+          "value": 65535
+        },
+        "Priority": {
+          "type": "dword",
+          "value": 4
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "aban_station"
+        },
+        "XP": {
+          "type": "dword",
+          "value": 0
+        }
       }
     ]
   }

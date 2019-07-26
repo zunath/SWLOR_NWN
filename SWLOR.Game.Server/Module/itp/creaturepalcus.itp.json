@@ -2676,6 +2676,125 @@
                       "type": "byte",
                       "value": 33
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 0.25
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Guard"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_guard"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 0.3333333432674408
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Rancor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_rancor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 0.25
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Scientist"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_scientist1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 1.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Commoner"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Wookiee"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_wook"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 0.25
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Worker"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_worker1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 0.25
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Worker"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_worker2"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6725

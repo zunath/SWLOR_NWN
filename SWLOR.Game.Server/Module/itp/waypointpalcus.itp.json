@@ -900,6 +900,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Telford"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_telford_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tristan Talyron"
                     },
                     "RESREF": {

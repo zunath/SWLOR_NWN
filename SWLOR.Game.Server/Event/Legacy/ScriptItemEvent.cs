@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using SWLOR.Game.Server.Scripting;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Legacy
@@ -23,21 +24,11 @@ namespace SWLOR.Game.Server.Event.Legacy
                 if (ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
                 {
                     ScriptService.RunScriptByNamespace(scriptNamespace);
-                    return;
                 }
-
-                // Otherwise look for a script contained by the app.
-                scriptNamespace = rootNamespace + "." + script;
-                Type type = Type.GetType(scriptNamespace);
-
-                if (type == null)
+                else
                 {
-                    Console.WriteLine("Unable to locate type for ScriptItemEvent: " + script);
-                    return;
+                    Console.WriteLine("Unable to locate item script: " + script);
                 }
-
-                IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
-                @event?.Run();
             }
         }
     }

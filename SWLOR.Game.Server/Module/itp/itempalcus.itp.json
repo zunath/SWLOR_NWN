@@ -1724,6 +1724,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Alask's Battle Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alask's Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Armored Heavy Soldier Purple Female"
                     },
                     "RESREF": {
@@ -14111,6 +14133,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Alask's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item020"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Alchemus' Saber"
                           },
                           "RESREF": {
@@ -16156,6 +16189,17 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Alask's Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item019"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {

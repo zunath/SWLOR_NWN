@@ -42,6 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Area\CoxxionBase.cs" />
+    <Compile Include="Area\ExitAreaInstance.cs" />
+    <Compile Include="Area\RimerCardsInstance.cs" />
+    <Compile Include="Creature\AbandonedStationRancor.cs" />
+    <Compile Include="Item\BleedBite.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\ElevatorDoor.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\ShuttleExit.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\StationKeyCard.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\TractorBeamOverride.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\TransitionClick.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Delayed\CraftCreateItem.cs" />
     <Compile Include="Delayed\FinishAbilityUse.cs" />
@@ -109,6 +119,9 @@
     <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
     <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
     <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
+    <Compile Include="Trigger\ExplorationTrigger.cs" />
+    <Compile Include="Trigger\QuestTrigger.cs" />
+    <Compile Include="Trigger\SpaceEncounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj">
@@ -119,9 +132,14 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
-xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)..\..\Area" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Area" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Creature" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Creature" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Item" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Item" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Trigger" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Trigger" /E /Y /C /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

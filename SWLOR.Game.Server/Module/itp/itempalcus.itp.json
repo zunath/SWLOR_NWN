@@ -2252,6 +2252,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Telford's Clothing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_telcloth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Thurn Durvi Outfit"
                     },
                     "RESREF": {
@@ -6309,7 +6320,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Raivor Claws"
+                      "value": "Raivor Claw"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16029,6 +16040,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Telford's Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_telgun"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Trandoshan Blaster Rifle"
                           },
                           "RESREF": {
@@ -16290,6 +16312,121 @@
               "ID": {
                 "type": "byte",
                 "value": 52
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Dart"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_4"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

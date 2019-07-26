@@ -1007,6 +1007,27 @@
           "type": "resref",
           "value": "pref_wildlands"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "zomb_abanstatio2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "zomb_abanstatio3"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "zomb_abanstation"
+        }
       }
     ]
   },

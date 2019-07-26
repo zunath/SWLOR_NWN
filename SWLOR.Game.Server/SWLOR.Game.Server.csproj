@@ -175,10 +175,6 @@
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="AppCache.cs" />
-    <Compile Include="AreaSpecific\Contracts\IAreaInstance.cs" />
-    <Compile Include="AreaSpecific\CoxxionBase.cs" />
-    <Compile Include="AreaSpecific\ExitAreaInstance.cs" />
-    <Compile Include="AreaSpecific\RimerCardsInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
     <Compile Include="Caching\AreaWalkmeshCache.cs" />
@@ -570,6 +566,9 @@
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_4.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_2.cs" />
     <Compile Include="Event\Conversation\RimerCards\rimer_cpu_1.cs" />
+    <Compile Include="Event\Conversation\tel_aban_station.cs" />
+    <Compile Include="Event\Item\item_dec_stack.cs" />
+    <Compile Include="Event\Item\OnItemDecrementStack.cs" />
     <Compile Include="Event\SWLOR\OnBaseDestroyed.cs" />
     <Compile Include="Event\SWLOR\OnBaseLeaseCancelled.cs" />
     <Compile Include="Event\SWLOR\OnBaseLeaseExpired.cs" />
@@ -769,6 +768,7 @@
     <Compile Include="NWNX\NWNXArea.cs" />
     <Compile Include="NWNX\NWNXEffect.cs" />
     <Compile Include="NWNX\NWNXItemProperty.cs" />
+    <Compile Include="NWNX\NWNXEventObjectType.cs" />
     <Compile Include="NWNX\NWNXVisibility.cs" />
     <Compile Include="NWNX\QuickBarSlotType.cs" />
     <Compile Include="Enumeration\ResistanceType.cs" />
@@ -792,7 +792,6 @@
     <Compile Include="Event\Conversation\Quest\CollectQuestItem\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\Quest\FinishQuest\QuestComplete.cs" />
     <Compile Include="Event\Conversation\Quest\QuestIsDone\QuestIsDone.cs" />
-    <Compile Include="Event\Conversation\TransportToMosEisley.cs" />
     <Compile Include="Event\Creature\OnCreatureBlocked.cs" />
     <Compile Include="Event\Creature\OnCreatureCombatRoundEnd.cs" />
     <Compile Include="Event\Creature\OnCreatureConversation.cs" />
@@ -815,6 +814,8 @@
     <EmbeddedResource Include="Data\Migrations\2019-07-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-21.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-21.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-07-23.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-07-23.2.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
@@ -825,7 +826,6 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="GameObject\NWLocation.cs" />
-    <Compile Include="Item\Enemy\BleedBite.cs" />
     <Compile Include="Item\Medicine\ForcePack.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
@@ -858,6 +858,7 @@
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\NWNXProfiler.cs" />
     <Compile Include="NWNX\NWNXWeapon.cs" />
+    <Compile Include="NWNX\TimingBarType.cs" />
     <Compile Include="NWNX\VisibilityType.cs" />
     <Compile Include="Event\Conversation\credit_check.cs" />
     <Compile Include="Event\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
@@ -1302,7 +1303,6 @@
     <Compile Include="Perk\Weapons\WeaponFocusTwinBlades.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusVibroblades.cs" />
     <Compile Include="Event\Feat\OnHitCastSpell.cs" />
-    <Compile Include="Event\IRegisteredEvent.cs" />
     <Compile Include="Event\Legacy\ScriptEvent.cs" />
     <Compile Include="Event\Module\OnModuleAcquireItem.cs" />
     <Compile Include="Event\Module\OnModuleActivateItem.cs" />
@@ -1332,7 +1332,6 @@
     <Compile Include="Service\GuildService.cs" />
     <Compile Include="Service\ModuleMigrationService.cs" />
     <Compile Include="Service\StoreService.cs" />
-    <Compile Include="Trigger\ExplorationTrigger.cs" />
     <Compile Include="Extension\EnumerableExtensions.cs" />
     <Compile Include="Extension\ExceptionExtensions.cs" />
     <Compile Include="GameObject\NWArea.cs" />
@@ -1466,8 +1465,6 @@
     <Compile Include="SpawnRule\OreSpawnRule.cs" />
     <Compile Include="Threading\BackgroundThreadManager.cs" />
     <Compile Include="Threading\DatabaseBackgroundThread.cs" />
-    <Compile Include="Trigger\SpaceEncounter.cs" />
-    <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AbilityResistanceResult.cs" />
     <Compile Include="ValueObject\AIPerkDetails.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
@@ -1501,7 +1498,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\2019-06-24.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-07-07.1.sql" />
-    <Content Include="Module\**\*.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

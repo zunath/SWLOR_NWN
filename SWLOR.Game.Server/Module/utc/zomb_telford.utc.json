@@ -671,6 +671,26 @@
     "type": "resref",
     "value": "zomb_telford"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_ID_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 31
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 4

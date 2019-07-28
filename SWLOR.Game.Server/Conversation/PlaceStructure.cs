@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(string.Empty,
                 "Place Structure",
-                "Rotate",
+                "Rotate/Move",
                 "Preview",
                 "Change Exterior Style",
                 "Change Interior Style");
@@ -36,7 +36,9 @@ namespace SWLOR.Game.Server.Conversation
                 "60 degrees",
                 "75 degrees",
                 "90 degrees",
-                "180 degrees");
+                "180 degrees",
+                "Move up",
+                "Move down");
 
             DialogPage stylePage = new DialogPage();
 
@@ -260,7 +262,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = BaseService.GetPlayerTempData(GetPC());
             float facing = _.GetFacingFromLocation(data.TargetLocation);
-            string header = ColorTokenService.Green("Current Direction: ") + facing;
+            Vector position = _.GetPositionFromLocation(data.TargetLocation);
+            string header = ColorTokenService.Green("Current Direction: ") + facing + "\n\n";
+            header += ColorTokenService.Green("Current Height: ") + position.m_Z;
 
             if (data.StructurePreview == null || !data.StructurePreview.IsValid)
             {
@@ -311,6 +315,12 @@ namespace SWLOR.Game.Server.Conversation
                 case 11: // Rotate 180
                     DoRotate(180.0f, false);
                     break;
+                case 12: // Move Up
+                    DoMoveZ(0.1f, false);
+                    break;
+                case 13: // Move Down
+                    DoMoveZ(-0.1f, false);
+                    break;
             }
         }
 
@@ -340,6 +350,29 @@ namespace SWLOR.Game.Server.Conversation
             data.TargetLocation = _.Location(_.GetAreaFromLocation(data.TargetLocation),
                 _.GetPositionFromLocation(data.TargetLocation),
                 facing);
+            LoadRotatePage();
+        }
+
+        private void DoMoveZ(float degrees, bool isSet)
+        {
+            var data = BaseService.GetPlayerTempData(GetPC());
+            Vector position = _.GetPositionFromLocation(data.TargetLocation);
+            
+            if (position.m_Z > 10.0f || 
+                position.m_Z < -10.0f)
+            {
+                GetPC().SendMessage("This structure cannot be moved any further in this direction.");                
+            }
+            else
+            {
+                position.m_Z += degrees;
+            }
+
+            Preview();
+
+            data.TargetLocation = _.Location(_.GetAreaFromLocation(data.TargetLocation),
+                position,
+                _.GetFacingFromLocation(data.TargetLocation));
             LoadRotatePage();
         }
 

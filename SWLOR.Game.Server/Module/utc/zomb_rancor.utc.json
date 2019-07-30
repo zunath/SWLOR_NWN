@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 11
+    "value": 3
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.3333333432674408
+    "value": 13.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 10
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 6
+    "value": 150
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -78,10 +78,17 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "zomb_bite3"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitemunh"
+          "value": "zomb_hide"
         }
       }
     ]
@@ -92,7 +99,15 @@
   },
   "FeatList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 289
+        }
+      }
+    ]
   },
   "FirstName": {
     "type": "cexolocstring",
@@ -102,7 +117,7 @@
   },
   "fortbonus": {
     "type": "short",
-    "value": 0
+    "value": 5
   },
   "Gender": {
     "type": "byte",
@@ -114,11 +129,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 6
+    "value": 150
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 8
   },
   "Interruptable": {
     "type": "byte",
@@ -148,11 +163,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 6
+    "value": 250
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 15
   },
   "NoPermDeath": {
     "type": "byte",
@@ -176,7 +191,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1297
+    "value": 231
   },
   "Race": {
     "type": "byte",
@@ -184,7 +199,7 @@
   },
   "refbonus": {
     "type": "short",
-    "value": 0
+    "value": 5
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -445,7 +460,23 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 269
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -453,7 +484,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -489,6 +520,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 8
   }
 }

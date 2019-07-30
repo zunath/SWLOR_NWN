@@ -2659,6 +2659,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Station Zombie Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Bite, Rancor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_bite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Bite, Wookiee"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_bite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viper Bite"
                     },
                     "RESREF": {
@@ -2965,6 +2998,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dragonturtleshel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_hide"
                     }
                   },
                   {
@@ -10512,6 +10556,22 @@
               "ID": {
                 "type": "byte",
                 "value": 24
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Experimental Anti-Virus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_avirus"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

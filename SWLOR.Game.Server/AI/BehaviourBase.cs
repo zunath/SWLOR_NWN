@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.AI
                 float aggroRange = GetAggroRange(creature);
                 float linkRange = GetLinkRange(creature);
 
-                float distance = _.GetDistanceBetween(creature, self);
+                float distance = _.GetDistanceBetween(creature, self);                  
                 if (distance > aggroRange && distance > linkRange) break;
 
                 if ((flags & AIFlags.AggroNearby) != 0)
@@ -317,6 +317,9 @@ namespace SWLOR.Game.Server.AI
 
             // Is the nearby creature dead?
             if (nearby.IsDead) return;
+
+            // Does the nearby creature have line of sight to the creature being attacked?
+            if (LineOfSightObject(self, nearby) == FALSE) return;
 
             // Is the nearby creature an enemy?
             if (_.GetIsEnemy(nearby, self) == TRUE) return;

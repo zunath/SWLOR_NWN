@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 1.0
+    "value": 12.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 10
         }
       }
     ]
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 15
+    "value": 50
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -168,7 +168,22 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "zomb_bite2"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "zomb_hide"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -251,6 +266,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 289
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 45
         }
       },
@@ -271,7 +293,7 @@
   },
   "fortbonus": {
     "type": "short",
-    "value": 0
+    "value": 5
   },
   "Gender": {
     "type": "byte",
@@ -279,11 +301,11 @@
   },
   "GoodEvil": {
     "type": "byte",
-    "value": 50
+    "value": 0
   },
   "HitPoints": {
     "type": "short",
-    "value": 15
+    "value": 50
   },
   "Int": {
     "type": "byte",
@@ -295,7 +317,7 @@
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsPC": {
     "type": "byte",
@@ -309,7 +331,7 @@
   },
   "LawfulChaotic": {
     "type": "byte",
-    "value": 50
+    "value": 0
   },
   "Lootable": {
     "type": "byte",
@@ -317,11 +339,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 18
+    "value": 150
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 14
   },
   "NoPermDeath": {
     "type": "byte",
@@ -353,7 +375,7 @@
   },
   "refbonus": {
     "type": "short",
-    "value": 0
+    "value": 5
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -614,7 +636,23 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 422
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 4
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -622,7 +660,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -646,7 +684,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 3
   },
   "willbonus": {
     "type": "short",

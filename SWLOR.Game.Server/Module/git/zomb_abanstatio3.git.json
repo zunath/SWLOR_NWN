@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141587018966675
+          "value": -3.141586065292358
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2644,7 +2644,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.4908729493618012
+          "value": -0.490872859954834
         },
         "BodyBag": {
           "type": "byte",
@@ -2871,7 +2871,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8344841599464417
+          "value": 0.8344838619232178
         },
         "BodyBag": {
           "type": "byte",
@@ -3098,7 +3098,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -3323,7 +3323,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -6487,7 +6487,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -6712,7 +6712,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -6937,7 +6937,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -8289,7 +8289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586542129517
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -10093,7 +10093,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.5154173374176025
+          "value": -0.5148723125457764
         },
         "BodyBag": {
           "type": "byte",
@@ -10287,21 +10287,40 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.6000000238418579
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.6000000238418579
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.6000000238418579
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 10.82782363891602
+          "value": 10.82999992370606
         },
         "Y": {
           "type": "float",
-          "value": 8.408506393432617
+          "value": 8.409999847412109
         },
         "Z": {
           "type": "float",
-          "value": -5.960464477539063e-008
+          "value": 0.0
         }
       },
       {
@@ -11957,7 +11976,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The controls are inaccessible, showing a single message on the screen.\n\n<cÿ  >ATMOSPHERE VENTED | HANGAR LOCKDOWN</c>"
+            "0": "The controls are inaccessible, showing a single message on the screen.\n\n<cÿ  >STATION HANGAR BAY ACCESS | LOCKDOWN WHILE TRACTOR BEAM ACTIVE</c>"
           }
         },
         "DisarmDC": {
@@ -12007,7 +12026,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hangar Access (Lockdown)"
+            "0": "Hangar Access"
           }
         },
         "OnClick": {
@@ -12538,7 +12557,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -12580,6 +12599,25 @@
           "type": "byte",
           "value": 0
         },
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.2354573756456375
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.2354573756456375
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.2354573756456375
+            }
+          }
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -12594,7 +12632,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -3.807830572128296
+          "value": 1.087541341781616
         }
       }
     ]
@@ -12893,7 +12931,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.343088683825044e-006
+          "value": -2.05834453481657e-006
         },
         "XPosition": {
           "type": "float",
@@ -12961,7 +12999,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 3.139164732601785e-007
+          "value": 6.715443419125222e-007
         },
         "YPosition": {
           "type": "float",

@@ -19,8 +19,9 @@ namespace SWLOR.Game.Server.Quest.Objective
             _mustBeCraftedByPlayer = mustBeCraftedByPlayer;
         }
 
-        public void Initialize(NWPlayer player, PCQuestStatus status)
+        public void Initialize(NWPlayer player, int questID)
         {
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
             PCQuestItemProgress itemProgress = new PCQuestItemProgress
             {
                 Resref = _resref,
@@ -32,10 +33,17 @@ namespace SWLOR.Game.Server.Quest.Objective
             DataService.SubmitDataChange(itemProgress, DatabaseActionType.Insert);
         }
 
-        public bool IsComplete(NWPlayer player)
+        public bool IsComplete(NWPlayer player, int questID)
         {
-            // todo: check persistence
-            return false;
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
+            var itemProgress = DataService.PCQuestItemProgress.GetAllByPCQuestStatusID(status.ID);
+            foreach (var progress in itemProgress)
+            {
+                if (progress.Remaining > 0)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

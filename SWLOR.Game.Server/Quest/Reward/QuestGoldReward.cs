@@ -6,16 +6,18 @@ namespace SWLOR.Game.Server.Quest.Reward
 {
     public class QuestGoldReward: IQuestReward
     {
-        private readonly int _amount;
+        public int Amount { get; }
 
         public QuestGoldReward(int amount)
         {
-            _amount = amount;
+            Amount = amount;
         }
+
+        public string MenuName => Amount + " Credits";
 
         public void GiveReward(NWPlayer player)
         {
-            GiveGoldToCreature(player, _amount);
+            GiveGoldToCreature(player, Amount);
         }
     }
 }

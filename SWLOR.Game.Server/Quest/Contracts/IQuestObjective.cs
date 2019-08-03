@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Quest.Contracts
 {
     public interface IQuestObjective
     {
-        void Initialize(NWPlayer player, PCQuestStatus status);
-        bool IsComplete(NWPlayer player);
+        void Initialize(NWPlayer player, int questID);
+        bool IsComplete(NWPlayer player, int questID);
     }
 }

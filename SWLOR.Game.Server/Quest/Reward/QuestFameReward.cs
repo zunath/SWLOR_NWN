@@ -15,7 +15,13 @@ namespace SWLOR.Game.Server.Quest.Reward
         {
             _fameRegionID = fameRegionID;
             _amount = amount;
+
+            var fameRegion = DataService.FameRegion.GetByID(fameRegionID);
+            MenuName = _amount + " " + fameRegion.Name + " Fame";
+
         }
+
+        public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)
         {

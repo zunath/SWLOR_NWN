@@ -3,9 +3,10 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Quest.Objective;
+using SWLOR.Game.Server.Quest.Reward;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using QuestType = SWLOR.Game.Server.Enumeration.QuestType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -228,7 +229,7 @@ namespace SWLOR.Game.Server.Conversation
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in expiredTasks)
             {
-                var quest = DataService.Quest.GetByID(task.QuestID);
+                var quest = QuestService.GetQuestByID(task.QuestID);
                 string status = ColorTokenService.Green("{ACCEPTED}");
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
             }
@@ -241,7 +242,7 @@ namespace SWLOR.Game.Server.Conversation
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in tasks)
             {
-                var quest = DataService.Quest.GetByID(task.QuestID);
+                var quest = QuestService.GetQuestByID(task.QuestID);
                 var questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
 
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
@@ -275,16 +276,31 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
             var task = DataService.GuildTask.GetByID(model.TaskID);
-            var quest = DataService.Quest.GetByID(task.QuestID);
+            var quest = QuestService.GetQuestByID(task.QuestID);
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
             bool showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
             bool showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
-            
+            var gpRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGPReward)).Cast<QuestGPReward>();
+            var goldRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGoldReward)).Cast<QuestGoldReward>();
+
+            int gpAmount = 0;
+            int goldAmount = 0;
+
+            foreach (var gpReward in gpRewards)
+            {
+                gpAmount += gpReward.Amount;
+            }
+
+            foreach (var goldReward in goldRewards)
+            {
+                goldAmount += goldReward.Amount;
+            }
+
             string header = ColorTokenService.Green("Task: ") + quest.Name + "\n\n";
 
             header += "Rewards:\n\n";
-            header += ColorTokenService.Green("Credits: ") + quest.RewardGold + "\n";
-            header += ColorTokenService.Green("Guild Points: ") + quest.RewardGuildPoints;
+            header += ColorTokenService.Green("Credits: ") + goldAmount + "\n";
+            header += ColorTokenService.Green("Guild Points: ") + gpAmount;
             
             SetPageHeader("TaskDetailsPage", header);
             
@@ -295,14 +311,14 @@ namespace SWLOR.Game.Server.Conversation
         private void TaskDetailsPageResponses(int responseID)
         {
             var player = GetPC();
-            var npc = GetDialogTarget();
             var model = GetDialogCustomData<Model>();
             var task = DataService.GuildTask.GetByID(model.TaskID);
-            
+            var quest = QuestService.GetQuestByID(task.QuestID);
+
             switch (responseID)
             {
                 case 1: // Accept Task
-                    QuestService.AcceptQuest(player, npc, task.QuestID);
+                    quest.Accept(player);
                     LoadTaskDetailsPage();
                     LoadTaskListPage();
                     break;
@@ -316,17 +332,19 @@ namespace SWLOR.Game.Server.Conversation
         {
             var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcStatus == null) return;
-            var state = DataService.QuestState.GetByID(pcStatus.CurrentQuestStateID);
-            
-            // Quest is calling for collecting items. Run that method.
-            if (state.QuestTypeID == (int) QuestType.CollectItems)
+            var quest = QuestService.GetQuestByID(questID);
+            var state = quest.GetState(pcStatus.QuestState);
+            var hasItemObjective = state.GetObjectives().FirstOrDefault(x => x.GetType() == typeof(CollectItemObjective)) != null;
+
+            // Quest has at least one "collect item" objective.
+            if (hasItemObjective)
             {
                 QuestService.RequestItemsFromPC(player, GetDialogTarget(), questID);
             }
             // All other quest types
-            else if(QuestService.CanPlayerCompleteQuest(player, questID))
+            else if(quest.CanComplete(player))
             {
-                QuestService.CompleteQuest(player, GetDialogTarget(), questID, null);
+                quest.Complete(player, null);
                 EndConversation();
             }
             // Missing a requirement.

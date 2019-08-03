@@ -19,11 +19,11 @@ namespace SWLOR.Game.Server.Quest
             return Objectives.Values;
         }
 
-        public bool IsComplete(NWPlayer player)
+        public bool IsComplete(NWPlayer player, int questID)
         {
             foreach (var objective in Objectives)
             {
-                if (!objective.Value.IsComplete(player))
+                if (!objective.Value.IsComplete(player, questID))
                 {
                     return false;
                 }

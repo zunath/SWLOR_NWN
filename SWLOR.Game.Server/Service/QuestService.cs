@@ -77,6 +77,11 @@ namespace SWLOR.Game.Server.Service
             return _quests[questID];
         }
 
+        public static bool QuestExistsByID(int questID)
+        {
+            return _quests.ContainsKey(questID);
+        }
+
         /// <summary>
         /// Creates an item temporarily and then returns its details. 
         /// </summary>

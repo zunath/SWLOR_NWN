@@ -18,8 +18,9 @@ namespace SWLOR.Game.Server.Quest.Objective
             _amount = amount;
         }
 
-        public void Initialize(NWPlayer player, PCQuestStatus status)
+        public void Initialize(NWPlayer player, int questID)
         {
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
             PCQuestKillTargetProgress pcKT = new PCQuestKillTargetProgress
             {
                 RemainingToKill = _amount,
@@ -31,10 +32,18 @@ namespace SWLOR.Game.Server.Quest.Objective
 
         }
 
-        public bool IsComplete(NWPlayer player)
+        public bool IsComplete(NWPlayer player, int questID)
         {
-            // todo: check persistence
-            return false;
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
+            var itemProgress = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndNPCGroupID(player.GlobalID, (int)_group);
+
+            foreach (var progress in itemProgress)
+            {
+                if (progress.RemainingToKill > 0)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

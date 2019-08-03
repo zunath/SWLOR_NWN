@@ -15,7 +15,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Quest
 {
-    public class Quest: IQuest
+    public sealed class Quest: IQuest
     {
         private Dictionary<int, IQuestState> QuestStates { get; } = new Dictionary<int, IQuestState>();
         private List<IQuestReward> Rewards { get; } = new List<IQuestReward>();
@@ -53,6 +53,11 @@ namespace SWLOR.Game.Server.Quest
         public IEnumerable<IQuestState> GetStates()
         {
             return QuestStates.OrderBy(o => o.Key).Select(x => x.Value);
+        }
+
+        public IEnumerable<IQuestReward> GetRewards()
+        {
+            return Rewards;
         }
 
         public bool CanAccept(NWPlayer player)
@@ -108,7 +113,7 @@ namespace SWLOR.Game.Server.Quest
             // Are all objectives complete?
             foreach (var objective in state.GetObjectives())
             {
-                if (!objective.IsComplete(player))
+                if (!objective.IsComplete(player, QuestID))
                     return false;
             }
 
@@ -159,7 +164,7 @@ namespace SWLOR.Game.Server.Quest
             var state = GetState(1);
             foreach (var objective in state.GetObjectives())
             {
-                objective.Initialize(player, status);
+                objective.Initialize(player, QuestID);
             }
 
             // Add the journal entry to the player.
@@ -220,7 +225,7 @@ namespace SWLOR.Game.Server.Quest
                 // Create any extended data entries for the next state of the quest.
                 foreach (var objective in nextState.GetObjectives())
                 {
-                    objective.Initialize(player, questStatus);
+                    objective.Initialize(player, QuestID);
                 }
                 
                 // Run any quest-specific code.

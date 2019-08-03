@@ -18,13 +18,14 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-                if (!DataService.Quest.ExistsByID(questID))
+                if (!QuestService.QuestExistsByID(questID))
                 {
                     _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                     return false;
                 }
-                QuestService.AcceptQuest(player, talkTo, questID);
 
+                var quest = QuestService.GetQuestByID(questID);
+                quest.Accept(player);
             }
             return true;
         }

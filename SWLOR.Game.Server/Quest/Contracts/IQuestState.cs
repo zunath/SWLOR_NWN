@@ -7,6 +7,6 @@ namespace SWLOR.Game.Server.Quest.Contracts
     {
         void AddObjective(IQuestObjective objective);
         IEnumerable<IQuestObjective> GetObjectives();
-        bool IsComplete(NWPlayer player);
+        bool IsComplete(NWPlayer player, int questID);
     }
 }

@@ -7,21 +7,26 @@ namespace SWLOR.Game.Server.Quest.Reward
 {
     public class QuestGPReward: IQuestReward
     {
-        private readonly GuildType _guild;
-        private readonly int _amount;
+        public GuildType Guild { get; }
+        public int Amount { get; }
 
         public QuestGPReward(GuildType guild, int amount)
         {
-            _guild = guild;
-            _amount = amount;
+            Guild = guild;
+            Amount = amount;
+
+            var dbGuild = DataService.Guild.GetByID((int) guild);
+            MenuName = Amount + " " + dbGuild.Name + " GP";
         }
+
+        public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)
         {
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)_guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)Guild);
             float rankBonus = 0.25f * pcGP.Rank;
-            int gp = _amount + (int)(_amount * rankBonus);
-            GuildService.GiveGuildPoints(player, _guild, gp);
+            int gp = Amount + (int)(Amount * rankBonus);
+            GuildService.GiveGuildPoints(player, Guild, gp);
         }
     }
 }

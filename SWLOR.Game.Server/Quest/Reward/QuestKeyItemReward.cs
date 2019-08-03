@@ -11,7 +11,12 @@ namespace SWLOR.Game.Server.Quest.Reward
         public QuestKeyItemReward(int keyItemID)
         {
             _keyItemID = keyItemID;
+
+            var keyItem = KeyItemService.GetKeyItemByID(_keyItemID);
+            MenuName = "Key Item: " +  keyItem.Name;
         }
+
+        public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)
         {

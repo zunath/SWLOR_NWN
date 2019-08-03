@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Quest.Contracts
 
         IQuestState GetState(int state);
         IEnumerable<IQuestState> GetStates();
+        IEnumerable<IQuestReward> GetRewards();
         bool CanAccept(NWPlayer player);
         bool CanComplete(NWPlayer player);
         bool IsComplete(NWPlayer player);

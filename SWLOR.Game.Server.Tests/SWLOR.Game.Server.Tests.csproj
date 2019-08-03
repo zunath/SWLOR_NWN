@@ -138,14 +138,6 @@
     <Compile Include="Caching\PerkLevelQuestRequirementCachingTests.cs" />
     <Compile Include="Caching\PerkLevelSkillRequirementCachingTests.cs" />
     <Compile Include="Caching\PlayerCachingTests.cs" />
-    <Compile Include="Caching\QuestCachingTests.cs" />
-    <Compile Include="Caching\QuestKillTargetCachingTests.cs" />
-    <Compile Include="Caching\QuestPrerequisiteCachingTests.cs" />
-    <Compile Include="Caching\QuestRequiredItemCachingTests.cs" />
-    <Compile Include="Caching\QuestRequiredKeyItemCachingTests.cs" />
-    <Compile Include="Caching\QuestRewardItemCachingTests.cs" />
-    <Compile Include="Caching\QuestStateCachingTests.cs" />
-    <Compile Include="Caching\QuestTypeCachingTests.cs" />
     <Compile Include="Caching\ServerConfigurationCachingTests.cs" />
     <Compile Include="Caching\SkillCachingTests.cs" />
     <Compile Include="Caching\SkillCategoryCachingTests.cs" />

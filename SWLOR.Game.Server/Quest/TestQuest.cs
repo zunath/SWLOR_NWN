@@ -4,7 +4,7 @@
     {
         public TestQuest()
         {
-            CreateQuest("my quest name", "my_journal_tag")
+            CreateQuest(9999,"my quest name", "my_journal_tag")
                 .AddObjectiveKillTarget(1, "mynock", 5)
                 .AddRewardGold(100);
 

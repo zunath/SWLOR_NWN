@@ -4,12 +4,11 @@ namespace SWLOR.Game.Server.Quest
 {
     public abstract class AbstractQuest
     {
-        private IQuest _quest;
-
-        protected IQuest CreateQuest(string name, string journalTag)
+        public IQuest Quest { get; private set; }
+        protected IQuest CreateQuest(int id, string name, string journalTag)
         {
-            _quest = new Quest(name, journalTag);
-            return _quest;
+            Quest = new Quest(id, name, journalTag);
+            return Quest;
         }
     }
 }

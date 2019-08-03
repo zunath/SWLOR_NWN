@@ -1,15 +1,20 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Contracts;
 
 namespace SWLOR.Game.Server.Quest.Objective
 {
     public class CollectKeyItemObjective: IQuestObjective
     {
-        private int _keyItemID;
+        public int KeyItemID { get; }
 
         public CollectKeyItemObjective(int keyItemID)
         {
-            _keyItemID = keyItemID;
+            KeyItemID = keyItemID;
+        }
+
+        public void Initialize(NWPlayer player, PCQuestStatus status)
+        {
         }
 
         public bool IsComplete(NWPlayer player)

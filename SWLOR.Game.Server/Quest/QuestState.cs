@@ -14,9 +14,22 @@ namespace SWLOR.Game.Server.Quest
             Objectives[index] = objective;
         }
 
+        public IEnumerable<IQuestObjective> GetObjectives()
+        {
+            return Objectives.Values;
+        }
+
         public bool IsComplete(NWPlayer player)
         {
-            return false;
+            foreach (var objective in Objectives)
+            {
+                if (!objective.Value.IsComplete(player))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

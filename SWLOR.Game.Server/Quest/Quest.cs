@@ -27,9 +27,9 @@ namespace SWLOR.Game.Server.Quest
         private bool _repeatable;
         public bool AllowRewardSelection { get; private set; }
 
-        private Action _onAccept;
-        private Action _onAdvance;
-        private Action _onComplete;
+        private Action<NWPlayer> _onAccept;
+        private Action<NWPlayer> _onAdvance;
+        private Action<NWPlayer> _onComplete;
 
         public Quest(int questID, string name, string journalTag)
         {
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Quest
             player.SendMessage("Quest '" + Name + "' accepted. Refer to your journal for more information on this quest.");
 
             // Run any quest-specific code.
-            _onAccept?.Invoke();
+            _onAccept?.Invoke(player);
 
             // Notify to subscribers that a quest has just been accepted.
             MessageHub.Instance.Publish(new OnQuestAccepted(player, QuestID));
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Quest
                 }
                 
                 // Run any quest-specific code.
-                _onAdvance?.Invoke();
+                _onAdvance?.Invoke(player);
 
                 // Notify to subscribers that the player has advanced to the next state of the quest.
                 MessageHub.Instance.Publish(new OnQuestAdvanced(player, QuestID, questStatus.QuestState));
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Quest
             }
 
             DataService.SubmitDataChange(pcState, DatabaseActionType.Update);
-            _onComplete?.Invoke();
+            _onComplete?.Invoke(player);
             
             player.SendMessage("Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(JournalTag, player, FALSE);
@@ -293,19 +293,19 @@ namespace SWLOR.Game.Server.Quest
             }
         }
 
-        public IQuest OnAccepted(Action action)
+        public IQuest OnAccepted(Action<NWPlayer> action)
         {
             _onAccept = action;
             return this;
         }
 
-        public IQuest OnAdvanced(Action action)
+        public IQuest OnAdvanced(Action<NWPlayer> action)
         {
             _onAdvance = action;
             return this;
         }
 
-        public IQuest OnCompleted(Action action)
+        public IQuest OnCompleted(Action<NWPlayer> action)
         {
             _onComplete = action;
             return this;
@@ -362,6 +362,12 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
+        public IQuest AddObjectiveCollectKeyItem(int state, int keyItemID)
+        {
+            AddObjective(state, new CollectKeyItemObjective(keyItemID));
+            return this;
+        }
+
         // Convenience functions for commonly used rewards
         public IQuest AddRewardGold(int amount)
         {
@@ -372,6 +378,18 @@ namespace SWLOR.Game.Server.Quest
         public IQuest AddRewardItem(string resref, int quantity)
         {
             AddReward(new QuestItemReward(resref, quantity));
+            return this;
+        }
+
+        public IQuest AddRewardKeyItem(int keyItemID)
+        {
+            AddReward(new QuestKeyItemReward(keyItemID));
+            return this;
+        }
+
+        public IQuest AddRewardFame(int regionID, int amount)
+        {
+            AddReward(new QuestFameReward(regionID, amount));
             return this;
         }
 

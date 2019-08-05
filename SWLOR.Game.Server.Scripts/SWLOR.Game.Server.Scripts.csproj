@@ -119,6 +119,8 @@
     <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
     <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
     <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
+    <Compile Include="Quest\OreCollection.cs" />
+    <Compile Include="Quest\SelansRequest.cs" />
     <Compile Include="Trigger\ExplorationTrigger.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="Trigger\SpaceEncounter.cs" />
@@ -140,6 +142,7 @@ xcopy "$(TargetDir)..\..\Creature" "%25USERPROFILE%25\Documents\Neverwinter Nigh
 xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
 xcopy "$(TargetDir)..\..\Item" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Item" /E /Y /C /i
 xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Quest" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Quest" /E /Y /C /i
 xcopy "$(TargetDir)..\..\Trigger" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Trigger" /E /Y /C /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

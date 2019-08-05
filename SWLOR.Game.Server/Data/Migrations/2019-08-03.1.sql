@@ -11,7 +11,14 @@ JOIN dbo.QuestState qs ON qs.ID = pcqs.CurrentQuestStateID
 ALTER TABLE dbo.PCQuestStatus
 DROP CONSTRAINT FK_PCQuesttatus_CurrentQuesttateID
 
-DROP INDEX IX_PCQuestStatus_PlayerID ON dbo.PCQuestStatus
+
+
+IF EXISTS (SELECT *  FROM sys.indexes  WHERE name='IX_PCQuestStatus_PlayerID' 
+	AND object_id = OBJECT_ID('[dbo].[PCQuestStatus]'))
+BEGIN
+	DROP INDEX IX_PCQuestStatus_PlayerID ON dbo.PCQuestStatus;
+END
+
 
 EXEC dbo.ADM_Drop_Constraint @TableName = N'dbo.PCQuestStatus' , -- nvarchar(200)
                              @ColumnName = N'CurrentQuestStateID'  -- nvarchar(200)
@@ -243,5 +250,4 @@ BEGIN
 	 
 END
 
-GO
 

@@ -4134,7 +4134,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.478909254074097
+          "value": -2.478909015655518
         },
         "BodyBag": {
           "type": "byte",
@@ -5359,7 +5359,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Cave Beetle"
+            "0": "Tatooine - Sand Beetle"
           }
         },
         "MapNote": {
@@ -5372,7 +5372,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "tat_sandb"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5423,7 +5423,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "sandbeetle"
               }
             },
             {
@@ -5502,7 +5502,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Cave Beetle"
+            "0": "Tatooine - Sand Beetle"
           }
         },
         "MapNote": {
@@ -5515,7 +5515,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "tat_sandb"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5566,7 +5566,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "beetle"
+                "value": "sandbeetle"
               }
             },
             {
@@ -5645,7 +5645,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Cave Beetle"
+            "0": "Tatooine - Sand Beetle"
           }
         },
         "MapNote": {
@@ -5658,7 +5658,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "tat_sandb"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5709,7 +5709,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "sandbeetle"
               }
             },
             {
@@ -5805,7 +5805,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9807854890823364
+          "value": -0.9807855486869812
         },
         "XPosition": {
           "type": "float",
@@ -5813,7 +5813,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.1950892806053162
+          "value": -0.1950890421867371
         },
         "YPosition": {
           "type": "float",
@@ -5847,7 +5847,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Cave Beetle"
+            "0": "Tatooine - Sand Beetle"
           }
         },
         "MapNote": {
@@ -5860,7 +5860,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "tat_sandb"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5911,7 +5911,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "beetle"
+                "value": "sandbeetle"
               }
             },
             {
@@ -5990,7 +5990,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Cave Beetle"
+            "0": "Tatooine - Sand Beetle"
           }
         },
         "MapNote": {
@@ -6003,7 +6003,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "tat_sandb"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6054,7 +6054,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "beetle"
+                "value": "sandbeetle"
               }
             },
             {
@@ -6133,7 +6133,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Cave Beetle"
+            "0": "Tatooine - Sand Beetle"
           }
         },
         "MapNote": {
@@ -6146,7 +6146,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "tat_sandb"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6197,7 +6197,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "beetle"
+                "value": "sandbeetle"
               }
             },
             {

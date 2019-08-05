@@ -427,7 +427,7 @@
         },
         "InventoryRes": {
           "type": "resref",
-          "value": "cred_10"
+          "value": "equ_piecedroid"
         },
         "Repos_PosX": {
           "type": "word",
@@ -446,49 +446,11 @@
         },
         "InventoryRes": {
           "type": "resref",
-          "value": "equ_piecedroid"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 2
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 2,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cred_25"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 4
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 3,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
-        "InventoryRes": {
-          "type": "resref",
           "value": "equ_capsule_eau"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 6
+          "value": 2
         },
         "Repos_Posy": {
           "type": "word",

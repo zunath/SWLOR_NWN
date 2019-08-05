@@ -10,5 +10,16 @@ namespace SWLOR.Game.Server.Data.Entity
         public int PerkLevelID { get; set; }
         public int SkillID { get; set; }
         public int RequiredRank { get; set; }
+
+        public IEntity Clone()
+        {
+            return new PerkLevelSkillRequirement
+            {
+                ID = ID,
+                PerkLevelID = PerkLevelID,
+                SkillID = SkillID,
+                RequiredRank = RequiredRank
+            };
+        }
     }
 }

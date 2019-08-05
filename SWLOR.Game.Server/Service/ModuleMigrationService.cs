@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void MigrateModuleVersion()
         {
-            var config = DataService.Single<ServerConfiguration>(); // There should only ever be one row in the server configuration table.
+            var config = DataService.ServerConfiguration.Get();
             NWPlaceable storage = _.GetObjectByTag("MIGRATION_STORAGE");
 
             // VERSION 1: Apply new AC rules to all items in persistent storage.
@@ -61,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine("Processed PCBaseStructureItem");
 
                 // PCImpoundedItem
-                foreach (var item in DataService.GetAll<PCImpoundedItem>())
+                foreach (var item in DataService.PCImpoundedItem.GetAll())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);
@@ -73,7 +72,7 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine("Processed PCImpoundedItem");
 
                 // PCMarketListing
-                foreach (var item in DataService.GetAll<PCMarketListing>())
+                foreach (var item in DataService.PCMarketListing.GetAll())
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6_DeflateItemStats(deserialized);

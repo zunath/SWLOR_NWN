@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -70,21 +71,29 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             NWItem offHand = creature.LeftHand;
             CustomItemType mainType = mainHand.CustomItemType;
             CustomItemType offType = offHand.CustomItemType;
-            bool receivesFeat = true;
+            bool receivesFeat = false;
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {
-                mainHand = (new Object());
+                mainHand = (new NWGameObject());
             }
             else if (unequippingItem != null && Equals(unequippingItem, offHand))
             {
-                offHand = (new Object());
+                offHand = (new NWGameObject());
             }
 
-            if ((!mainHand.IsValid && !offHand.IsValid) ||
-                (mainType != CustomItemType.MartialArtWeapon || offType != CustomItemType.MartialArtWeapon))
+            // Main is Martial and off is invalid 
+            // OR
+            // Main is invalid and off is martial
+            if ((mainType == CustomItemType.MartialArtWeapon && !offHand.IsValid) || 
+                (offType == CustomItemType.MartialArtWeapon && !mainHand.IsValid))
             {
-                receivesFeat = false;
+                receivesFeat = true;
+            }
+            // Both main and off are invalid
+            else if (!mainHand.IsValid && !offHand.IsValid)
+            {
+                receivesFeat = true;
             }
 
             if (receivesFeat)

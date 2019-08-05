@@ -1,10 +1,13 @@
-﻿using NWN;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
-using Object = NWN.Object;
+using SWLOR.Game.Server.ValueObject;
+
 /*
     Name: WeatherService
     Author: Mithreas
@@ -282,7 +285,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void SetWeather()
         {
-            SetWeather(Object.OBJECT_SELF);
+            SetWeather(NWGameObject.OBJECT_SELF);
         }
 
         public static void SetWeather(NWObject oArea)
@@ -393,7 +396,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetWeather()
         {
-            return GetWeather(Object.OBJECT_SELF);
+            return GetWeather(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetWeather(NWObject oArea)
@@ -583,7 +586,7 @@ namespace SWLOR.Game.Server.Service
         
         public static int GetHeatIndex()
         {
-            return GetHeatIndex(Object.OBJECT_SELF);
+            return GetHeatIndex(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetHeatIndex(NWObject oArea)
@@ -609,7 +612,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetHumidity()
         {
-            return GetHumidity(Object.OBJECT_SELF);
+            return GetHumidity(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetHumidity(NWObject oArea)
@@ -633,7 +636,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetWindStrength()
         {
-            return GetWindStrength(Object.OBJECT_SELF);
+            return GetWindStrength(NWGameObject.OBJECT_SELF);
         }
 
         public static int GetWindStrength(NWObject oArea)
@@ -769,63 +772,70 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaEnter()
         {
-            SetWeather();
-
-            LoggingService.Trace(TraceComponent.Weather, "Applying weather to creature: " + _.GetName(_.GetEnteringObject()));
-
-            DoWeatherEffects(_.GetEnteringObject());
-
-            NWArea oArea = (Object.OBJECT_SELF);
-            int nHour = _.GetTimeHour();
-            int nLastHour = oArea.GetLocalInt("WEATHER_LAST_HOUR");
-
-            if (nHour != nLastHour)
+            using (new Profiler("WeatherService.OnAreaEnter"))
             {
-                LoggingService.Trace(TraceComponent.Weather, "Cleaning up old weather");
+                SetWeather();
 
-                // Clean up any old weather placeables.
-                foreach (NWObject oPlaceable in oArea.Objects)
+                LoggingService.Trace(TraceComponent.Weather, "Applying weather to creature: " + _.GetName(_.GetEnteringObject()));
+
+                DoWeatherEffects(_.GetEnteringObject());
+
+                NWArea oArea = (NWGameObject.OBJECT_SELF);
+                int nHour = _.GetTimeHour();
+                int nLastHour = oArea.GetLocalInt("WEATHER_LAST_HOUR");
+
+                if (nHour != nLastHour)
                 {
-                    if (oPlaceable.ObjectType == _.OBJECT_TYPE_PLACEABLE && 
-                        oPlaceable.GetLocalInt("WEATHER") == 1)
+                    if (!oArea.Data.ContainsKey("WEATHER_OBJECTS"))
+                        oArea.Data["WEATHER_OBJECTS"] = new List<NWPlaceable>();
+                    List<NWPlaceable> weatherObjects = oArea.Data["WEATHER_OBJECTS"];
+
+                    LoggingService.Trace(TraceComponent.Weather, "Cleaning up old weather");
+
+                    // Clean up any old weather placeables.
+                    for (int x = weatherObjects.Count - 1; x >= 0; x--)
                     {
-                        _.DestroyObject(oPlaceable);
+                        var placeable = weatherObjects.ElementAt(x);
+                        placeable.Destroy();
+                        weatherObjects.RemoveAt(x);
                     }
-                }
 
-                // Create new ones depending on the current weather.
-                int nWeather = GetWeather();
-                LoggingService.Trace(TraceComponent.Weather, "Current weather: " + nWeather.ToString());
-                
-                if (nWeather == WEATHER_FOGGY)
-                {
-                    // Get the size in tiles.
-                    int nSizeX = _.GetAreaSize(_.AREA_WIDTH, oArea);
-                    int nSizeY = _.GetAreaSize(_.AREA_HEIGHT, oArea);
+                    // Create new ones depending on the current weather.
+                    int nWeather = GetWeather();
+                    LoggingService.Trace(TraceComponent.Weather, "Current weather: " + nWeather.ToString());
 
-                    // We want one placeable per 8 tiles.
-                    int nMax = (nSizeX * nSizeY) / 8;
-                    LoggingService.Trace(TraceComponent.Weather, "Creating up to " + nMax.ToString() + " mist objects.");
-
-                    for (int nCount = _.d6() ; nCount < nMax; nCount++)
+                    if (nWeather == WEATHER_FOGGY)
                     {
-                        Vector vPosition = _.GetPosition(_.GetEnteringObject());
+                        // Get the size in tiles.
+                        int nSizeX = _.GetAreaSize(_.AREA_WIDTH, oArea);
+                        int nSizeY = _.GetAreaSize(_.AREA_HEIGHT, oArea);
 
-                        // Vectors are in meters - 10 meters to a tile. 
-                        vPosition.m_X = _.IntToFloat(_.Random(nSizeX * 10));
-                        vPosition.m_Y = _.IntToFloat(_.Random(nSizeY * 10));
+                        // We want one placeable per 8 tiles.
+                        int nMax = (nSizeX * nSizeY) / 8;
+                        LoggingService.Trace(TraceComponent.Weather, "Creating up to " + nMax.ToString() + " mist objects.");
 
-                        float fFacing = _.IntToFloat(_.Random(360));
+                        for (int nCount = _.d6(); nCount < nMax; nCount++)
+                        {
+                            Vector vPosition = _.GetPosition(_.GetEnteringObject());
 
-                        string sResRef = "x3_plc_mist";
+                            // Vectors are in meters - 10 meters to a tile. 
+                            vPosition.m_X = _.IntToFloat(_.Random(nSizeX * 10));
+                            vPosition.m_Y = _.IntToFloat(_.Random(nSizeY * 10));
 
-                        NWObject oPlaceable = _.CreateObject(_.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
-                        _.SetObjectVisualTransform(oPlaceable, _.OBJECT_VISUAL_TRANSFORM_SCALE, _.IntToFloat(200 + _.Random(200)) / 100.0f);
-                        oPlaceable.SetLocalInt("WEATHER", 1);
+                            float fFacing = _.IntToFloat(_.Random(360));
+
+                            string sResRef = "x3_plc_mist";
+
+                            NWPlaceable oPlaceable = _.CreateObject(_.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
+                            _.SetObjectVisualTransform(oPlaceable, _.OBJECT_VISUAL_TRANSFORM_SCALE, _.IntToFloat(200 + _.Random(200)) / 100.0f);
+
+                            weatherObjects.Add(oPlaceable);
+                        }
                     }
-                }
 
-                oArea.SetLocalInt("WEATHER_LAST_HOUR", nHour);
+                    oArea.Data["WEATHER_OBJECTS"] = weatherObjects;
+                    oArea.SetLocalInt("WEATHER_LAST_HOUR", nHour);
+                }
             }
         }
 
@@ -851,7 +861,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnCreatureSpawn()
         {
-            DoWeatherEffects(Object.OBJECT_SELF);
+            DoWeatherEffects(NWGameObject.OBJECT_SELF);
         }
 
         public static void SetAreaHeatModifier(NWObject oArea, int nModifier)

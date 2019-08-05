@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
+            ApplyEffect(creature, target, spellTier);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -83,7 +84,6 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
-            ApplyEffect(creature, target, spellTier);
         }
 
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)

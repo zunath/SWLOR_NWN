@@ -10,7 +10,6 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -101,6 +100,10 @@ namespace SWLOR.Game.Server.AI
             if (!self.Area.IsValid || NWNXArea.GetNumberOfPlayersInArea(self.Area) <= 0) return;
 
             var flags = GetAIFlags(self);
+
+            if((flags & AIFlags.ReturnToSpawnPoint) != 0)
+                ReturnToSpawnPoint(self);
+
             if ((flags & AIFlags.RandomWalk) != 0)
                 RandomWalk(self);
         }
@@ -120,6 +123,11 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnSpawn(NWCreature self)
         {
+            var flags = GetAIFlags(self);
+            if ((flags & AIFlags.ReturnToSpawnPoint) != 0)
+            {
+                self.SetLocalLocation("AI_SPAWN_POINT", self.Location);
+            }
         }
 
         public virtual void OnSpellCastAt(NWCreature self)
@@ -208,14 +216,14 @@ namespace SWLOR.Game.Server.AI
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingRanged(new Object());
+                    ActionEquipMostDamagingRanged(new NWGameObject());
                 });
             }
             else
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingMelee(new Object());
+                    ActionEquipMostDamagingMelee(new NWGameObject());
                 });
             }
         }
@@ -241,7 +249,7 @@ namespace SWLOR.Game.Server.AI
                 float aggroRange = GetAggroRange(creature);
                 float linkRange = GetLinkRange(creature);
 
-                float distance = _.GetDistanceBetween(creature, self);
+                float distance = _.GetDistanceBetween(creature, self);                  
                 if (distance > aggroRange && distance > linkRange) break;
 
                 if ((flags & AIFlags.AggroNearby) != 0)
@@ -310,6 +318,9 @@ namespace SWLOR.Game.Server.AI
             // Is the nearby creature dead?
             if (nearby.IsDead) return;
 
+            // Does the nearby creature have line of sight to the creature being attacked?
+            if (LineOfSightObject(self, nearby) == FALSE) return;
+
             // Is the nearby creature an enemy?
             if (_.GetIsEnemy(nearby, self) == TRUE) return;
 
@@ -317,7 +328,7 @@ namespace SWLOR.Game.Server.AI
             if (self.RacialType != nearby.RacialType) return;
 
             // Does the nearby creature have anything on its enmity table?
-            var nearbyEnmityTable = EnmityService.GetEnmityTable(nearby).OrderByDescending(x => x.Value).FirstOrDefault();
+            var nearbyEnmityTable = EnmityService.GetEnmityTable(nearby).OrderByDescending(x => x.Value.TotalAmount).FirstOrDefault();
             if (nearbyEnmityTable.Value == null) return;
 
             var target = nearbyEnmityTable.Value.TargetObject;
@@ -338,9 +349,31 @@ namespace SWLOR.Game.Server.AI
             if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
                 _.IsInConversation(self.Object) == _.FALSE &&
                 _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
+                _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
+            }
+        }
+
+        private void ReturnToSpawnPoint(NWCreature self)
+        {
+            if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
+                return;
+
+            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+                _.IsInConversation(self.Object) == _.FALSE &&
+                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
+            {
+                var flags = GetAIFlags(self);
+                Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
+                // If creature also has the RandomWalk flag, only send them back to the spawn point
+                // if they go outside the range (15 meters)
+                if ((flags & AIFlags.RandomWalk) != 0 &&
+                    _.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
+                    return;
+
+                self.AssignCommand(() => _.ActionMoveToLocation(spawnLocation));
             }
         }
 

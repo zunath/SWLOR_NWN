@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             int xpBonus = int.Parse(args[0]);
             dbPlayer.XPBonus = xpBonus;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

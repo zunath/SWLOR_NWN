@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -90,7 +89,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Player is offline. Put the gold into their "Till" and give it to them the next time they log on.
-            Player dbPlayer = DataService.Get<Player>(playerID);
+            Player dbPlayer = DataService.Player.GetByID(playerID);
             dbPlayer.GoldTill += amount;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
@@ -104,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             if (dbPlayer.GoldTill > 0)
             {
@@ -359,7 +358,7 @@ namespace SWLOR.Game.Server.Service
             int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             if (baseStructureID > 0)
             {
-                var baseStructure = DataService.Get<BaseStructure>(baseStructureID);
+                var baseStructure = DataService.BaseStructure.GetByID(baseStructureID);
                 var baseStructureType = (BaseStructureType) baseStructure.BaseStructureTypeID;
 
                 switch (baseStructureType)

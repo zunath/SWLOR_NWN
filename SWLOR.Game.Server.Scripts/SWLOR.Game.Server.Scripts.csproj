@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CED9C022-AC60-4F28-A941-96F13B02659D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SWLOR.Game.Server.Scripts</RootNamespace>
+    <AssemblyName>SWLOR.Game.Server.Scripts</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Area\CoxxionBase.cs" />
+    <Compile Include="Area\ExitAreaInstance.cs" />
+    <Compile Include="Area\RimerCardsInstance.cs" />
+    <Compile Include="Creature\AbandonedStationRancor.cs" />
+    <Compile Include="Item\BleedBite.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\ElevatorDoor.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\ShuttleExit.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\StationKeyCard.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\TractorBeamOverride.cs" />
+    <Compile Include="Placeable\Quests\AbandonedStation\TransitionClick.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Delayed\CraftCreateItem.cs" />
+    <Compile Include="Delayed\FinishAbilityUse.cs" />
+    <Compile Include="Delayed\FinishActionItem.cs" />
+    <Compile Include="Placeable\Bank\OnClosed.cs" />
+    <Compile Include="Placeable\Bank\OnDisturbed.cs" />
+    <Compile Include="Placeable\Bank\OnOpened.cs" />
+    <Compile Include="Placeable\ControlTower\OnClicked.cs" />
+    <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
+    <Compile Include="Placeable\ControlTower\OnHeartbeat.cs" />
+    <Compile Include="Placeable\Corpse\OnClosed.cs" />
+    <Compile Include="Placeable\Corpse\OnDisturbed.cs" />
+    <Compile Include="Placeable\CraftingDevice\OnClosed.cs" />
+    <Compile Include="Placeable\CraftingDevice\OnDisturbed.cs" />
+    <Compile Include="Placeable\CraftingDevice\OnOpened.cs" />
+    <Compile Include="Placeable\CraftingDevice\OnUsed.cs" />
+    <Compile Include="Placeable\CraftingForge\CompleteSmelt.cs" />
+    <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
+    <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
+    <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
+    <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
+    <Compile Include="Placeable\FuelBay\OnClosed.cs" />
+    <Compile Include="Placeable\FuelBay\OnDisturbed.cs" />
+    <Compile Include="Placeable\FuelBay\OnOpened.cs" />
+    <Compile Include="Placeable\GenericConversation.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnClosed.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnDisturbed.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnOpened.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnUsed.cs" />
+    <Compile Include="Placeable\MolecularReassembler\OnDisturbed.cs" />
+    <Compile Include="Placeable\MolecularReassembler\OnOpened.cs" />
+    <Compile Include="Placeable\MolecularReassembler\ReassembleComplete.cs" />
+    <Compile Include="Placeable\ObtainKeyItem.cs" />
+    <Compile Include="Placeable\OverflowStorage\OnClosed.cs" />
+    <Compile Include="Placeable\OverflowStorage\OnDisturbed.cs" />
+    <Compile Include="Placeable\OverflowStorage\OnOpened.cs" />
+    <Compile Include="Placeable\PermanentVisualEffect.cs" />
+    <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
+    <Compile Include="Placeable\QuestSystem\ItemCollector\OnDisturbed.cs" />
+    <Compile Include="Placeable\QuestSystem\ItemCollector\OnOpened.cs" />
+    <Compile Include="Placeable\QuestSystem\OnUsed.cs" />
+    <Compile Include="Placeable\Quests\ForceCrystal.cs" />
+    <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
+    <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />
+    <Compile Include="Placeable\ResourceBay\OnOpened.cs" />
+    <Compile Include="Placeable\Resource\OnHeartbeat.cs" />
+    <Compile Include="Placeable\Resource\OnUsed.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnClosed.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnDisturbed.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnOpened.cs" />
+    <Compile Include="Placeable\Scrapper\OnClosed.cs" />
+    <Compile Include="Placeable\Scrapper\OnDisturbed.cs" />
+    <Compile Include="Placeable\Scrapper\OnOpened.cs" />
+    <Compile Include="Placeable\Sit.cs" />
+    <Compile Include="Placeable\Stores\GenericStore.cs" />
+    <Compile Include="Placeable\StructureRubble\OnClosed.cs" />
+    <Compile Include="Placeable\StructureRubble\OnDisturbed.cs" />
+    <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
+    <Compile Include="Placeable\StructureStorage\OnDisturbed.cs" />
+    <Compile Include="Placeable\StructureStorage\OnOpened.cs" />
+    <Compile Include="Placeable\StructureStorage\OnUsed.cs" />
+    <Compile Include="Placeable\TrashCan\OnClosed.cs" />
+    <Compile Include="Placeable\TrashCan\OnDisturbed.cs" />
+    <Compile Include="Placeable\TrashCan\OnOpened.cs" />
+    <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
+    <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
+    <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
+    <Compile Include="Trigger\ExplorationTrigger.cs" />
+    <Compile Include="Trigger\QuestTrigger.cs" />
+    <Compile Include="Trigger\SpaceEncounter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj">
+      <Project>{f2c6f36d-74fa-489e-8891-51a3b390c55a}</Project>
+      <Name>SWLOR.Game.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)..\..\Area" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Area" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Creature" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Creature" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Delayed" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Delayed" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Item" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Item" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Placeable" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Placeable" /E /Y /C /i
+xcopy "$(TargetDir)..\..\Trigger" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono\Scripts\Trigger" /E /Y /C /i</PostBuildEvent>
+  </PropertyGroup>
+</Project>

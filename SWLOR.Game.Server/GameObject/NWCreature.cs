@@ -3,13 +3,12 @@ using System.Linq;
 
 using NWN;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWCreature : NWObject
     {
-        public NWCreature(Object o)
+        public NWCreature(NWGameObject o)
             : base(o)
         {
 
@@ -194,11 +193,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWCreature o)
+        public static implicit operator NWGameObject(NWCreature o)
         {
             return o.Object;
         }
-        public static implicit operator NWCreature(Object o)
+        public static implicit operator NWCreature(NWGameObject o)
         {
             return new NWCreature(o);
         }

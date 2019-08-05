@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -18,6 +17,7 @@ namespace SWLOR.Game.Server.Service
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(a => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnModuleLoad>(a => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(a => OnModuleHeartbeat());
             MessageHub.Instance.Subscribe<OnQuestCompleted>(a => OnQuestCompleted(a.Player, a.QuestID));
         }
 
@@ -30,9 +30,9 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // If player is missing any entries for guild points, add them now.
-            foreach (var guild in DataService.GetAll<Guild>())
+            foreach (var guild in DataService.Guild.GetAll())
             {
-                var pcGP = DataService.SingleOrDefault<PCGuildPoint>(x => x.GuildID == guild.ID && x.PlayerID == player.GlobalID);
+                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildIDOrDefault(player.GlobalID, guild.ID);
 
                 // No GP entry found. Add one now.
                 if (pcGP == null)
@@ -67,10 +67,10 @@ namespace SWLOR.Game.Server.Service
                         // Level, Points Needed
                         { 0, 1000 },
                         { 1, 5000 },
-                        { 2, 10000 },
-                        { 3, 15000 },
-                        { 4, 20000 },
-                        { 5, 25000 }
+                        { 2, 15000 },
+                        { 3, 30000 },
+                        { 4, 45000 },
+                        { 5, 60000 }
                     };
                 }
 
@@ -99,8 +99,8 @@ namespace SWLOR.Game.Server.Service
             int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations) + 1;
             baseAmount *= perkBonus;
 
-            var dbGuild = DataService.Get<Guild>((int) guild);
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int) guild && x.PlayerID == player.GlobalID);
+            var dbGuild = DataService.Guild.GetByID((int) guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) guild);
             pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questID">The ID of the quest</param>
         private static void OnQuestCompleted(NWPlayer player, int questID)
         {
-            var quest = DataService.Get<Quest>(questID);
+            var quest = DataService.Quest.GetByID(questID);
             // GP rewards not specified. Bail out early.
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return;
 
@@ -152,39 +152,56 @@ namespace SWLOR.Game.Server.Service
             GiveGuildPoints(player, (GuildType)quest.RewardGuildID, gp);
         }
 
+        private static void OnModuleHeartbeat()
+        {
+            // Check if we need to refresh the available guild tasks every 30 minutes
+            var module = NWModule.Get();
+            int ticks = module.GetLocalInt("GUILD_REFRESH_TICKS") + 1;
+            if (ticks >= 300)
+            {
+                RefreshGuildTasks();
+                ticks = 0;
+            }
+
+            module.SetLocalInt("GUILD_REFRESH_TICKS", ticks);
+        }
+
         /// <summary>
         /// Cycle out the available guild tasks if the previous set has been available for 24 hours.
         /// </summary>
         private static void OnModuleLoad()
         {
-            var config = DataService.Get<ServerConfiguration>(1);
+            RefreshGuildTasks();
+        }
+
+        private static void RefreshGuildTasks()
+        {
+            var config = DataService.ServerConfiguration.Get();
             var now = DateTime.UtcNow;
-            
+
             // 24 hours haven't passed since the last cycle. Bail out now.
             if (now < config.LastGuildTaskUpdate.AddHours(24)) return;
-            
+
             // Start by marking the existing tasks as not currently offered.
-            foreach (var task in DataService.Where<GuildTask>(x => x.IsCurrentlyOffered))
+            foreach (var task in DataService.GuildTask.GetAllByCurrentlyOffered())
             {
                 task.IsCurrentlyOffered = false;
                 DataService.SubmitDataChange(task, DatabaseActionType.Update);
             }
 
             int maxRank = RankProgression.Keys.Max();
-            
+
             // Active available tasks are grouped by GuildID and RequiredRank. 
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
-            foreach (var guild in DataService.GetAll<Guild>())
+            foreach (var guild in DataService.Guild.GetAll())
             {
-                for (int rank = 0; rank <= maxRank; rank++)
+                for (int rank = 0; rank < maxRank; rank++)
                 {
-                    var rank1 = rank; // VS recommends copying the variable. Unsure why.
-                    var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID && 
-                                                                           x.RequiredRank == rank1);
+                    var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
                     IEnumerable<GuildTask> tasks;
-                    
+
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
                     if (potentialTasks.Count <= 10)
                     {
@@ -195,7 +212,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         tasks = potentialTasks.OrderBy(o => RandomService.Random()).Take(10);
                     }
-                    
+
                     // We've got our set of tasks. Mark them as currently offered and submit the data change.
                     foreach (var task in tasks)
                     {
@@ -208,6 +225,8 @@ namespace SWLOR.Game.Server.Service
             // Update the server config and mark the timestamp.
             config.LastGuildTaskUpdate = now;
             DataService.SubmitDataChange(config, DatabaseActionType.Update);
+
+
         }
 
         /// <summary>
@@ -219,11 +238,10 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static int CalculateGuildPointsReward(NWPlayer player, int questID)
         {
-            var quest = DataService.Get<Quest>(questID);
+            var quest = DataService.Quest.GetByID(questID);
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return 0;
 
-            var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
-                                                             x.GuildID == quest.RewardGuildID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)quest.RewardGuildID);
             float rankBonus = 0.25f * pcGP.Rank;
             return quest.RewardGuildPoints + (int)(quest.RewardGuildPoints * rankBonus);
         }

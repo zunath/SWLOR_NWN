@@ -66,15 +66,38 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            //float radiusSize = _.RADIUS_SIZE_SMALL;
-            int count = 1;
-            const float MaxDistance = _.RADIUS_SIZE_SMALL;
+            const float MaxDistance = 5.0f;
             int nth = 1;
+            int amount;
+
+            switch (perkLevel)
+            {
+                case 1:
+                    amount = 5;
+                    break;
+                case 2:
+                case 3:
+                    amount = 10;
+                    break;
+                default: return;
+            }
+
+            // Penalize the caster
+            Effect effect = _.EffectACDecrease(amount);
+            effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
+
 
             NWCreature targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
             while (targetCreature.IsValid && GetDistanceBetween(creature, targetCreature) <= MaxDistance)
-            {                
-                int amount;
+            {
+                // Skip the caster, if they get picked up.
+                if (targetCreature == creature)
+                {
+                    nth++;
+                    targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+                    continue;
+                }
 
                 // Handle effects for differing spellTier values
                 switch (perkLevel)
@@ -106,8 +129,6 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         throw new ArgumentOutOfRangeException(nameof(perkLevel));
                 }
 
-                Effect effect;
-
                 if (_.GetIsReactionTypeHostile(targetCreature, creature) == 1)
                 {
                     effect = _.EffectACDecrease(amount);
@@ -119,13 +140,9 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
-                var tempCreature = targetCreature; // VS recommends copying to another var due to modified closure.
-                creature.AssignCommand(() =>
-                {
-                    _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, tempCreature, 6.1f);
-                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), tempCreature);
-                });
-
+                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, targetCreature, 6.1f);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), targetCreature);
+                
                 nth++;
                 targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
             }

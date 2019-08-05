@@ -76,11 +76,11 @@ namespace SWLOR.Game.Server.Perk.Weapons
             NWItem offHand = creature.LeftHand;
             if (oItem != null && Equals(oItem, mainHand))
             {
-                mainHand = (new Object());
+                mainHand = (new NWGameObject());
             }
             else if (oItem != null && Equals(oItem, offHand))
             {
-                offHand = (new Object());
+                offHand = (new NWGameObject());
             }
 
             if (!mainHand.IsValid && !offHand.IsValid)

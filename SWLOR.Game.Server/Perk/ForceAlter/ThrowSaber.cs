@@ -118,13 +118,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 }, 2.5f);
 
 
-            _.SendMessageToPC(player, "Level " + spellTier);
-
             // Handle effects for differing spellTier values
             switch (spellTier)
             {
                 case 1:
-                    iDamage = (int)(iDamage * 1.6);
+                    iDamage = (int)(iDamage * 1.0);
 
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
 

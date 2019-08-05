@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             if (!target.IsValid)
             {
-                user.SendMessage("Target is invalid.");
-                return;
+                user.SendMessage("Target is invalid. Targeting area instead.");
+                target = user.Area;
             }
 
             string variableName = Convert.ToString(args[0]);

@@ -17,5 +17,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public double LocationX { get; set; }
         public double LocationY { get; set; }
         public double LocationZ { get; set; }
+
+        public IEntity Clone()
+        {
+            return new AreaWalkmesh
+            {
+                ID = ID,
+                AreaID = AreaID,
+                LocationX = LocationX,
+                LocationY = LocationY,
+                LocationZ = LocationZ
+            };
+        }
     }
 }

@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -31,7 +30,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(mod_on_enter) + ":BiowareDefault"))
             {
                 player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
-                _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
+                _.ExecuteScript("dmfi_onclienter ", NWGameObject.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             }
 
             using (new Profiler(nameof(mod_on_enter) + ":PlayerValidation"))
@@ -46,7 +45,7 @@ namespace NWN.Scripts
 
             using (new Profiler(nameof(mod_on_enter) + ":CachePlayerData"))
             {
-                DataService.CachePlayerData(player);
+                //DataService.CachePlayerData(player);
             }
 
             using (new Profiler(nameof(mod_on_enter) + ":SkillServiceEnter"))

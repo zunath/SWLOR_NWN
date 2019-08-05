@@ -64,7 +64,8 @@ namespace SWLOR.Game.Server.NWNX
 
 
         /// <summary>
-        /// // Skips execution of the currently executing event.
+        /// 
+        /// Skips execution of the currently executing event.
         /// If this is a NWNX event, that means that the base function call won't be called.
         /// This won't impact any other subscribers, nor dispatch for before / after functions.
         /// For example, if you are subscribing to NWNX_ON_EXAMINE_OBJECT_BEFORE, and you skip ...
@@ -83,6 +84,13 @@ namespace SWLOR.Game.Server.NWNX
         /// - Map events
         /// - Listen/Spot Detection events
         /// - Polymorph events
+        /// - DMAction events
+        /// - Client connect event
+        /// - Spell events
+        /// - QuickChat events
+        /// - Barter event (START only)
+        /// - Trap events
+        /// - Sticky Player Name event
         /// </summary>
         public static void SkipEvent()
         {
@@ -96,6 +104,10 @@ namespace SWLOR.Game.Server.NWNX
         /// ONLY WORKS WITH THE FOLLOWING EVENTS:
         /// - Healer's Kit event
         /// - Listen/Spot Detection events -> "1" or "0"
+        /// - OnClientConnectBefore -> Reason for disconnect if skipped
+        /// - Ammo Reload event -> Forced ammunition returned
+        /// - Trap events -> "1" or "0"
+        /// - Sticky Player Name event -> "1" or "0"
         /// </summary>
         /// <param name="data"></param>
         public static void SetEventResult(string data)
@@ -103,7 +115,18 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentString("NWNX_Events", "EVENT_RESULT", data);
             NWNX_CallFunction("NWNX_Events", "EVENT_RESULT");
         }
-        
+
+        /// <summary>
+        /// Returns the current event name
+        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCurrentEvent()
+        {
+            NWNX_CallFunction("NWNX_Events", "GET_CURRENT_EVENT");
+            return NWNX_GetReturnValueString("NWNX_Events", "GET_CURRENT_EVENT");
+        }
+
         private static int GetEventDataInt(string tag)
         {
             string data = GetEventDataString(tag);
@@ -127,6 +150,9 @@ namespace SWLOR.Game.Server.NWNX
             string data = GetEventDataString(tag);
             return NWNXObject.StringToObject(data);
         }
+
+        // The following methods are specific to our implementation which makes the API a little easier to use.
+        // Pattern is: "Event_Action()"
 
         public static int OnFeatUsed_GetFeatID()
         {
@@ -328,17 +354,6 @@ namespace SWLOR.Game.Server.NWNX
         public static float OnDMSpawnObject_GetPositionZ()
         {
             return GetEventDataFloat("POS_Z");
-        }
-
-        /// <summary>
-        /// Returns the current event name
-        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
-        /// </summary>
-        /// <returns></returns>
-        public static string GetCurrentEvent()
-        {
-            NWNX_CallFunction("NWNX_Events", "GET_CURRENT_EVENT");
-            return NWNX_GetReturnValueString("NWNX_Events", "GET_CURRENT_EVENT");
         }
     }
 }

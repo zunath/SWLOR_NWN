@@ -25,7 +25,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Cave Beetle"
+      "0": "Tatooine - Sand Beetle"
     }
   },
   "MapNote": {
@@ -42,7 +42,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "beetle"
+    "value": "tat_sandb"
   },
   "TemplateResRef": {
     "type": "resref",
@@ -93,7 +93,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "beetle"
+          "value": "sandbeetle"
         }
       },
       {

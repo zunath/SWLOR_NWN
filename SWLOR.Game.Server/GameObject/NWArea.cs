@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using NWN;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWArea : NWObject
     {
-        public NWArea(Object o) 
+        public NWArea(NWGameObject o) 
             : base(o)
         {
             
@@ -57,12 +56,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWArea o)
+        public static implicit operator NWGameObject(NWArea o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWArea(Object o)
+        public static implicit operator NWArea(NWGameObject o)
         {
             return new NWArea(o);
         }

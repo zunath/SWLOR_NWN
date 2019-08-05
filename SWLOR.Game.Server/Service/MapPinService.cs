@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             if (oPC.GetLocalInt("MAP_PINS_LOADED") == 1) return;
 
-            List<PCMapPin> pins = DataService.Where<PCMapPin>(x => x.PlayerID == oPC.GlobalID).ToList();
+            List<PCMapPin> pins = DataService.PCMapPin.GetAllByPlayerID(oPC.GlobalID).ToList();
 
             foreach (PCMapPin pin in pins)
             {
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            var mapPins = DataService.Where<PCMapPin>(x => x.PlayerID == oPC.GlobalID).ToList();
+            var mapPins = DataService.PCMapPin.GetAllByPlayerID(oPC.GlobalID).ToList();
             for(int x = mapPins.Count-1; x >= 0; x--)
             {
                 var pin = mapPins.ElementAt(x);

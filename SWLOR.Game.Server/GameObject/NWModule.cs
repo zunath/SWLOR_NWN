@@ -1,14 +1,13 @@
 ﻿
 using System.Collections.Generic;
 using NWN;
-using Object = NWN.Object;
 
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWModule : NWObject
     {
-        public NWModule(Object nwnObject) 
+        public NWModule(NWGameObject nwnObject) 
             : base(nwnObject)
         {
         }
@@ -67,11 +66,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWModule o)
+        public static implicit operator NWGameObject(NWModule o)
         {
             return o.Object;
         }
-        public static implicit operator NWModule(Object o)
+        public static implicit operator NWModule(NWGameObject o)
         {
             return new NWModule(o);
         }

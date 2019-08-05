@@ -1,8 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Placeable.MolecularReassembler;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            var componentTypes = DataService.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
+            var componentTypes = DataService.ComponentType.GetAllWhereHasReassembledResref();
             foreach (var type in componentTypes)
             {
                 AddResponseToPage("MainPage", type.Name, true, type.ID);
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = CraftService.GetPlayerCraftingData(player);
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = SerializationService.DeserializeItem(model.SerializedSalvageItem, tempStorage);
-            var componentType = DataService.Get<ComponentType>(model.SalvageComponentTypeID);
+            var componentType = DataService.ComponentType.GetByID(model.SalvageComponentTypeID);
             string header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
             header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 
@@ -193,7 +193,8 @@ namespace SWLOR.Game.Server.Conversation
                         // Calculate delay, fire off delayed event, and show timing bar.
                         float delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
                         NWNXPlayer.StartGuiTimingBar(player, delay, string.Empty);
-                        player.DelayEvent<ReassembleComplete>(delay, player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
+                        var @event = new OnReassembleComplete(player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
+                        player.DelayEvent(delay, @event);
 
                         // Make the player play an animation.
                         player.AssignCommand(() =>
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Show sparks halfway through the process.
                         _.DelayCommand(1.0f * (delay / 2.0f), () =>
                         {
-                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), Object.OBJECT_SELF);
+                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), NWGameObject.OBJECT_SELF);
                         });
                         
                         // Immobilize the player while crafting.

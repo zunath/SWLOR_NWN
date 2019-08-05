@@ -7,7 +7,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -64,11 +63,13 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWPlayer player = GetPC();
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
             bool isDM = player.IsDM;
-            var messages = DataService.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
+            var messages = DataService.Message
+                .GetAllByBoardID(boardID)
+                .Where(x => x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
@@ -102,8 +103,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             Model model = GetDialogCustomData<Model>();
-            Message message = DataService.Get<Message>(model.MessageID);
-            Player poster = DataService.Get<Player>(message.PlayerID);
+            Message message = DataService.Message.GetByID(model.MessageID);
+            Player poster = DataService.Player.GetByID(message.PlayerID);
             string header = ColorTokenService.Green("Title: ") + message.Title + "\n";
             header += ColorTokenService.Green("Posted By: ") + poster.CharacterName + "\n";
             header += ColorTokenService.Green("Date: ") + message.DatePosted + "\n\n";
@@ -118,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
         private void PostDetailsPageResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            var message = DataService.Get<Message>(model.MessageID);
+            var message = DataService.Message.GetByID(model.MessageID);
 
             switch (responseID)
             {
@@ -146,7 +147,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             Model model = GetDialogCustomData<Model>();
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             int price = terminal.GetLocalInt("PRICE");
             string header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
             header += "Posting a message costs " + price + " credits. Posts last for 30 days (real world time) before they will expire.\n\n";
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Conversation
         private void CreatePostPageResponses(int responseID)
         {
             var player = GetPC();
-            NWPlaceable terminal = Object.OBJECT_SELF;
+            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             var model = GetDialogCustomData<Model>();
             int price = terminal.GetLocalInt("PRICE");
             string text = player.GetLocalString("MESSAGE_BOARD_TEXT");

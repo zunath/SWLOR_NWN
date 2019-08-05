@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
             
-            var visibilities = DataService.Where<PCObjectVisibility>(x => x.PlayerID == player.GlobalID).ToList();
+            var visibilities = DataService.PCObjectVisibility.GetAllByPlayerID(player.GlobalID).ToList();
 
             // Apply visibilities for player
             foreach (var visibility in visibilities)
@@ -89,11 +88,11 @@ namespace SWLOR.Game.Server.Service
             
             var players = NWModule.Get().Players.ToList();
             var concatPlayerIDs = players.Select(x => x.GlobalID);
-            var pcVisibilities = DataService.Where<PCObjectVisibility>(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
+            var pcVisibilities = DataService.PCObjectVisibility.GetAllByPlayerIDsAndVisibilityObjectID(concatPlayerIDs, visibilityObjectID).ToList();
 
             foreach (var player in players)
             {
-                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID);
 
                 if (visibility == null)
                 {
@@ -124,7 +123,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var visibility = DataService.SingleOrDefault<PCObjectVisibility>(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+            var visibility = DataService.PCObjectVisibility.GetByPlayerIDAndVisibilityObjectIDOrDefault(player.GlobalID, visibilityObjectID);
             DatabaseActionType action = DatabaseActionType.Update;
 
             if (visibility == null)

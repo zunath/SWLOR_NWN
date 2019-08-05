@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!user.IsPlayer) return;
-            Player entity = DataService.Get<Player>(user.GlobalID);
+            Player entity = DataService.Player.GetByID(user.GlobalID);
             user.SendMessage(ColorTokenService.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
         }
         public string ValidateArguments(NWPlayer user, params string[] args)

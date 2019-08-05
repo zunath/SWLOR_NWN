@@ -1098,6 +1098,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shadow's Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_shadowhoodanc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sirtu Lieutenant Mask"
                     },
                     "RESREF": {
@@ -1713,6 +1724,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Alask's Battle Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alask's Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Armored Heavy Soldier Purple Female"
                     },
                     "RESREF": {
@@ -1790,6 +1823,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Female Tat Civilian Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_femtatcivoutf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jedi Master Lightsaber [Zhar]"
                     },
                     "RESREF": {
@@ -1828,6 +1872,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jhorensarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Tat Civilian Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_maletatcivout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Merchant Guard Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_merchguardout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nickkell Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_nickkelloutfi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Night Dancer's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_danceroutfit"
                     }
                   },
                   {
@@ -2142,6 +2230,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shadow's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_shadowanchor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sirtu Lieutenant Outfit"
                     },
                     "RESREF": {
@@ -2175,6 +2274,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Telford's Clothing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_telcloth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thurn Durvi Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_thurnoutfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tina's Clothes"
                     },
                     "RESREF": {
@@ -2191,6 +2312,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "turq_npc_breast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twi'lek Triplet Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_twilektripl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wott Rok Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nw_wottrokoutfit"
                     }
                   }
                 ]
@@ -2472,6 +2615,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal-Crazed Warocas Beak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crazedwarocasbk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raptor Bite"
                     },
                     "RESREF": {
@@ -2499,6 +2653,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sandbeetlebite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Bite, Rancor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_bite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Bite, Wookiee"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_bite2"
                     }
                   },
                   {
@@ -2653,6 +2840,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vellen Flesheater Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vellen_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Vellen King Bite"
                     },
                     "RESREF": {
@@ -2778,6 +2976,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crystal_spider_h"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crystal-Crazed Warocas Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crazedwarocassk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dragon Turtle Shell"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dragonturtleshel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Station Zombie Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_hide"
                     }
                   },
                   {
@@ -10174,28 +10405,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crédits : 10"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cred_10"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crédits : 25"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cred_25"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Deck Bag"
                     },
                     "RESREF": {
@@ -10347,6 +10556,22 @@
               "ID": {
                 "type": "byte",
                 "value": 24
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Experimental Anti-Virus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_avirus"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",
@@ -13968,6 +14193,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Alask's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item020"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Alchemus' Saber"
                           },
                           "RESREF": {
@@ -15897,6 +16133,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Telford's Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_telgun"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Trandoshan Blaster Rifle"
                           },
                           "RESREF": {
@@ -16002,6 +16249,17 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Alask's Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item019"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {
@@ -16158,6 +16416,121 @@
               "ID": {
                 "type": "byte",
                 "value": 52
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Dart"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dart IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shuriken IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_4"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

@@ -5,65 +5,30 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class AreaService
     {
-        private static readonly Dictionary<string, IAreaInstance> _areaInstances;
-
-        static AreaService()
-        {
-            _areaInstances = new Dictionary<string, IAreaInstance>();
-        }
-
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
-        }
-        
-        private static void RegisterAreaInstances()
-        {
-            // Use reflection to get all of Area instance implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(IAreaInstance).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
-            foreach (var type in classes)
-            {
-                IAreaInstance instance = Activator.CreateInstance(type) as IAreaInstance;
-                if (instance == null)
-                {
-                    throw new NullReferenceException("Unable to activate instance of type: " + type);
-                }
-                _areaInstances.Add(type.Name, instance);
-            }
-
-        }
-
-        public static IAreaInstance GetAreaInstance(string key)
-        {
-            if (!_areaInstances.ContainsKey(key))
-            {
-                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
-            }
-
-            return _areaInstances[key];
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
         }
 
         private static void OnModuleLoad()
         {
-            RegisterAreaInstances();
             var areas = NWModule.Get().Areas;
-            var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();
+            var dbAreas = DataService.Area.GetAll().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
 
             foreach (var area in areas)
@@ -131,10 +96,6 @@ namespace SWLOR.Game.Server.Service
             {
                 Console.WriteLine("WARNING: Area baking has been disabled. You may encounter errors during normal operations. This should only be disabled for debugging purposes. Please shut down the server and set the AREA_BAKING_ENABLED argument to true for all other scenarios.");
             }
-
-            // Cache both areas and area walkmeshes now that they're built, if they aren't already.
-            DataService.GetAll<Area>();
-            DataService.GetAll<AreaWalkmesh>();
         }
 
         // Area baking process
@@ -145,13 +106,13 @@ namespace SWLOR.Game.Server.Service
         // accuracy I wanted, without too much overhead. Your mileage may vary.
         private static void BakeAreas()
         {
-            var config = DataService.GetAll<ServerConfiguration>().First();
+            var config = DataService.ServerConfiguration.Get();
             int Step = config.AreaBakeStep;
             const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+                var dbArea = DataService.Area.GetByResref(area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
@@ -189,7 +150,7 @@ namespace SWLOR.Game.Server.Service
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+                    var walkmeshes = DataService.AreaWalkmesh.GetAllByAreaID(dbArea.ID).ToList();
                     for(int x = walkmeshes.Count-1; x >= 0; x--)
                     {
                         var mesh = walkmeshes.ElementAt(x);
@@ -251,20 +212,11 @@ namespace SWLOR.Game.Server.Service
             if (!entranceWP.IsValid)
             {
                 owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
-                return new Object();
+                return new NWGameObject();
             }
 
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
-
-            SpawnService.InitializeAreaSpawns(instance);
-            
-            string rule = instance.GetLocalString("INSTANCE_ON_SPAWN");
-            if (!string.IsNullOrWhiteSpace(rule))
-            {
-                IAreaInstance instanceRule = GetAreaInstance(rule);
-                instanceRule.OnSpawn(instance);
-            }
 
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(instance));
             return instance;
@@ -274,15 +226,30 @@ namespace SWLOR.Game.Server.Service
         {
             if (!area.IsInstance) return;
 
-            if (AppCache.AreaSpawns.ContainsKey(area))
-            {
-                AppCache.AreaSpawns.Remove(area);
-            }
-
             MessageHub.Instance.Publish(new OnAreaInstanceDestroyed(area));
             _.DestroyArea(area);
 
         }
 
+        private static void OnAreaEnter()
+        {
+            NWArea area = NWGameObject.OBJECT_SELF;
+            int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+            if (playerCount > 0)
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+            else
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+        }
+
+        private static void OnAreaExit()
+        {
+            NWArea area = NWGameObject.OBJECT_SELF;
+            int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+            if (playerCount > 0)
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+            else
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+
+        }
     }
 }

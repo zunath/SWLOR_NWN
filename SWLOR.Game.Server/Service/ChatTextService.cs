@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -71,10 +70,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (ChatCommandService.CanHandleChat(sender, message) ||
-                BaseService.CanHandleChat(sender, message) ||
-                CraftService.CanHandleChat(sender, message) ||
+                BaseService.CanHandleChat(sender) ||
+                CraftService.CanHandleChat(sender) ||
                 MarketService.CanHandleChat(sender.Object) ||
-                MessageBoardService.CanHandleChat(sender))
+                MessageBoardService.CanHandleChat(sender) ||
+                ItemService.CanHandleChat(sender))
             {
                 // This will be handled by other services, so just bail.
                 return;
@@ -115,8 +115,7 @@ namespace SWLOR.Game.Server.Service
                     m_Translatable = false
                 };
 
-                chatComponents = new List<ChatComponent>();
-                chatComponents.Add(component);
+                chatComponents = new List<ChatComponent> {component};
 
                 if (channel == ChatChannelType.PlayerShout)
                 {
@@ -152,11 +151,9 @@ namespace SWLOR.Game.Server.Service
             // Now, depending on the chat channel, we need to build a list of recipients.
             bool needsAreaCheck = false;
             float distanceCheck = 0.0f;
-
-            List<NWObject> recipients = new List<NWObject>();
-
+            
             // The sender always wants to see their own message.
-            recipients.Add(sender);
+            List<NWObject> recipients = new List<NWObject> {sender};
 
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannelType.PlayerShout)
@@ -325,7 +322,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
         }
         

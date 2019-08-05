@@ -12,7 +12,6 @@ using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
 
             NWPlayer player = data.Damager.Object;
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
@@ -79,7 +78,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWCreature damager = data.Damager.Object;
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
 
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
             NWItem targetWeapon = target.RightHand;
@@ -174,7 +173,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
             NWItem shield = target.LeftHand;
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target);
             double reduction = 0.0f;
@@ -242,7 +241,7 @@ namespace SWLOR.Game.Server.Service
             if (damager.IsPlayer && sneakAttackType > 0)
             {
                 NWPlayer player = damager.Object;
-                NWCreature target = Object.OBJECT_SELF;
+                NWCreature target = NWGameObject.OBJECT_SELF;
                 int perkRank = PerkService.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
                 int perkBonus = 1;
 
@@ -278,7 +277,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWObject target = Object.OBJECT_SELF;
+            NWObject target = NWGameObject.OBJECT_SELF;
             if (!target.IsPlayer) return;
 
             NWPlayer player = target.Object;
@@ -330,7 +329,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWObject self = Object.OBJECT_SELF;
+            NWObject self = NWGameObject.OBJECT_SELF;
 
             // Ignore the first damage because it occurred during the application of the effect.
             if (self.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") > 0)
@@ -476,15 +475,17 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return 0;
 
-            var perkIDs = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID)
+            var perkIDs = DataService.PCPerk.GetAllByPlayerID(player.GlobalID)
                 .Select(s => new {s.PerkID, s.PerkLevel});
 
             int balance = 0;
             foreach (var perkID in perkIDs)
             {
-                var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID.PerkID);
+                var perk = DataService.Perk.GetByID(perkID.PerkID);
                 if (perk.ForceBalance == ForceBalanceType.Universal) continue;
-                var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID.PerkID && x.Level <= perkID.PerkLevel);
+                var perkLevels = DataService.PerkLevel.GetAllByPerkID(perkID.PerkID)
+                    .Where(x => x.Level <= perkID.PerkLevel);
+
                 foreach (var perkLevel in perkLevels)
                 {
                     int adjustment = perkLevel.Price / 2;

@@ -4,10 +4,10 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 namespace SWLOR.Game.Server.Service
 {
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             if (!canReceivePoint) return;
             
             // Player was allowed to gain this RP point.
-            var dbPlayer = DataService.Get<Player>(sender.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(sender.GlobalID);
             dbPlayer.RoleplayPoints++;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             // Only fire for players, not DMs.
             if (!player.IsPlayer) return;
 
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             if (dbPlayer.RoleplayPoints >= 50)
             {
                 const int BaseXP = 500;

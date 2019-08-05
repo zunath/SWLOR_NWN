@@ -2,11 +2,9 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using System;
@@ -16,8 +14,9 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -37,6 +36,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -121,6 +121,10 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
+            // Legacy events follow. We can't remove these because of backwards compatibility issues with existing items.
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_JAVA_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) return;
 
             user.ClearAllActions();
@@ -178,17 +182,9 @@ namespace SWLOR.Game.Server.Service
             });
 
             NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
-            user.DelayEvent<FinishActionItem>(
-                delay,
-                className,
-                user,
-                oItem,
-                target,
-                targetLocation,
-                userPosition,
-                customData);
-        
 
+            var @event = new OnFinishActionItem(className, user, oItem, target, targetLocation, userPosition, customData);
+            user.DelayEvent(delay, @event);
         }
 
         public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
@@ -208,7 +204,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                Skill skill = DataService.Get<Skill>((int)examinedItem.AssociatedSkillType);
+                Skill skill = DataService.Skill.GetByID((int)examinedItem.AssociatedSkillType);
                 description += ColorTokenService.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
@@ -671,60 +667,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
-        {
-            user.IsBusy = false;
-
-            Vector userPosition = user.Position;
-            if (userPosition.m_X != userStartPosition.m_X ||
-                userPosition.m_Y != userStartPosition.m_Y ||
-                userPosition.m_Z != userStartPosition.m_Z)
-            {
-                user.SendMessage("You move and interrupt your action.");
-                return;
-            }
-
-            float maxDistance = actionItem.MaxDistance(user, item, target, targetLocation);
-            if (maxDistance > 0.0f)
-            {
-                if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                    user.Area.Resref != target.Area.Resref))
-                {
-                    user.SendMessage("Your target is too far away.");
-                    return;
-                }
-                else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
-                {
-                    user.SendMessage("That location is too far away.");
-                    return;
-                }
-            }
-
-            if (!target.IsValid && !actionItem.AllowLocationTarget())
-            {
-                user.SendMessage("Unable to locate target.");
-                return;
-            }
-
-            string invalidTargetMessage = actionItem.IsValidTarget(user, item, target, targetLocation);
-            if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
-            {
-                user.SendMessage(invalidTargetMessage);
-                return;
-            }
-
-            actionItem.ApplyEffects(user, item, target, targetLocation, customData);
-
-            if (actionItem.ReducesItemCharge(user, item, target, targetLocation, customData))
-            {
-                if (item.Charges > 0) item.ReduceCharges();
-                else item.Destroy();
-            }
-        }
-
         public static ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
             NWPlaceable container = (_.GetObjectByTag("item_props"));
@@ -892,7 +834,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWObject target = Object.OBJECT_SELF;
+            NWObject target = NWGameObject.OBJECT_SELF;
             if (!target.IsValid) return;
 
             NWObject oSpellOrigin = (_.GetSpellCastItem());
@@ -903,7 +845,24 @@ namespace SWLOR.Game.Server.Service
             {
                 ScriptItemEvent.Run(script);
             }
+        }
 
+        public static bool CanHandleChat(NWObject sender)
+        {
+            return sender.GetLocalInt("ITEM_RENAMING_LISTENING") == TRUE;
+        }
+
+        private static void OnModuleNWNXChat()
+        {
+            NWPlayer player = NWNXChat.GetSender().Object;
+
+            if (!CanHandleChat(player)) return;
+            string message = NWNXChat.GetMessage();
+            NWNXChat.SkipMessage();
+
+            message = message.Truncate(50);
+            player.SetLocalString("RENAMED_ITEM_NEW_NAME", message);
+            player.SendMessage("Please click 'Refresh' to see changes, then select 'Change Name' to confirm the changes.");
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.SpawnRule
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Low Quality";
 
-            var dbArea = DataService.Single<Area>(x => x.Resref == target.Area.Resref);
+            var dbArea = DataService.Area.GetByResref(target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             int maxTier = dbArea.MaxResourceQuality;
 

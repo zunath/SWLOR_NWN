@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.NWN.Events.Creature
+﻿namespace SWLOR.Game.Server.Event.Creature
 {
-    internal class OnCreatureBlocked
+    public class OnCreatureBlocked
     {
     }
 }

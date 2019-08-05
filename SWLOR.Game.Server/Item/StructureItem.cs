@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Item
             else if (!string.IsNullOrWhiteSpace(parentStructureID))
             {
                 var parentStructureGuid = new Guid(parentStructureID);
-                var parentStructure = DataService.Get<PCBaseStructure>(parentStructureGuid);
+                var parentStructure = DataService.PCBaseStructure.GetByID(parentStructureGuid);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureGuid;
 
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Item
             else
             {
                 string sector = BaseService.GetSectorOfLocation(targetLocation);
-                PCBase pcBase = DataService.Single<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
+                PCBase pcBase = DataService.PCBase.GetByAreaResrefAndSector(area.Resref, sector);
                 data.PCBaseID = pcBase.ID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;

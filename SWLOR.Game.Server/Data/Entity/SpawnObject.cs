@@ -22,5 +22,21 @@ namespace SWLOR.Game.Server.Data.Entity
         public string BehaviourScript { get; set; }
         public int DeathVFXID { get; set; }
         public AIFlags AIFlags { get; set; }
+
+        public IEntity Clone()
+        {
+            return new SpawnObject
+            {
+                ID = ID,
+                SpawnID = SpawnID,
+                Resref = Resref,
+                Weight = Weight,
+                SpawnRule = SpawnRule,
+                NPCGroupID = NPCGroupID,
+                BehaviourScript = BehaviourScript,
+                DeathVFXID = DeathVFXID,
+                AIFlags = AIFlags
+            };
+        }
     }
 }

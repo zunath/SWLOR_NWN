@@ -1,8 +1,8 @@
 ﻿using System;
 using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -22,7 +22,7 @@ namespace NWN.Scripts
 
             using (new Profiler(nameof(mod_on_examine)))
             {
-                NWPlayer examiner = (Object.OBJECT_SELF);
+                NWPlayer examiner = (NWGameObject.OBJECT_SELF);
                 NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
                 if (ExaminationService.OnModuleExamine(examiner, examinedObject))
                 {
@@ -30,7 +30,19 @@ namespace NWN.Scripts
                     return;
                 }
 
-                string description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
+                string description;
+
+                if (_.GetIsPC(examinedObject.Object) == _.TRUE)
+                {
+                    // https://github.com/zunath/SWLOR_NWN/issues/853
+                    // safest probably to get the modified (non-original) description only for players
+                    // may want to always get the modified description for later flexibility?
+                    description = _.GetDescription(examinedObject.Object, _.FALSE) + "\n\n";
+                }
+                else
+                {
+                    description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
+                }                
 
                 if (examinedObject.IsCreature)
                 {
@@ -42,7 +54,6 @@ namespace NWN.Scripts
                 description = ModService.OnModuleExamine(description, examiner, examinedObject);
                 description = ItemService.OnModuleExamine(description, examinedObject);
                 description = DurabilityService.OnModuleExamine(description, examinedObject);
-                description = FarmingService.OnModuleExamine(description, examinedObject);
 
                 if (!string.IsNullOrWhiteSpace(description))
                 {

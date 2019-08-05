@@ -14,5 +14,15 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public int NWNValue { get; set; }
         public string Name { get; set; }
+
+        public IEntity Clone()
+        {
+            return new Attribute
+            {
+                ID = ID,
+                NWNValue = NWNValue,
+                Name = Name
+            };
+        }
     }
 }

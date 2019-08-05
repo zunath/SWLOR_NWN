@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public ItemPropertyUnpacked()
         {
-            Creator = new NWObject(Object.OBJECT_INVALID);
+            Creator = new NWObject(NWGameObject.OBJECT_INVALID);
             Tag = string.Empty;
         }
     }

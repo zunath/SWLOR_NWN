@@ -6403,6 +6403,23 @@
                   "0": "The Crafting Terminal Droid operator has requested you create a Basic Resource Scanner. You can use any engineering terminal to make the item. You will find the necessary resources down on the maintenance level."
                 }
               }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to the Crafting Terminal Droid operator for your reward."
+                }
+              }
             }
           ]
         },
@@ -6452,6 +6469,23 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "The Crafting Terminal Droid operator has requested you create a single unit of Power Core. You can use any fabrication terminal to make the item. You will find the necessary resources down on the maintenance level."
+                }
+              }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to the Crafting Terminal Droid operator for your reward."
                 }
               }
             }
@@ -6505,6 +6539,23 @@
                   "0": "The Crafting Terminal Droid operator has requested you gather ten units of scrap metal. You will need to scavenge through junk piles throughout the facility. When you have enough, return to the droid to collect your receipt."
                 }
               }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to the Crafting Terminal Droid operator for your reward."
+                }
+              }
             }
           ]
         },
@@ -6554,6 +6605,23 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "The Crafting Terminal Droid operator has requested you create a single unit of Basic Baton C. You will need to purchase the \"Weaponsmith Blueprints\" perk in order to create this item. Once you have the perk you can use any weaponsmith terminal to make the item. You will find the necessary resources down on the maintenance level."
+                }
+              }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to the Crafting Terminal Droid operator for your reward."
                 }
               }
             }
@@ -27636,6 +27704,23 @@
                   "0": "Defeat Mandalorian raiders and return five of their dog tags to Irene Colsstaad in Veles Colony."
                 }
               }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to Irene Colsstaad for your reward."
+                }
+              }
             }
           ]
         },
@@ -27821,6 +27906,23 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. When you have ten pieces of refined Veldite return to him to give them to him."
+                }
+              }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to Avix Tatham for your reward."
                 }
               }
             }

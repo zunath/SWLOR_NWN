@@ -9,7 +9,7 @@
         Viscara_MandalorianLeader = 5,
         Viscara_MandalorianWarriors = 6,
         Viscara_MandalorianRangers = 7,
-        Viscara_WildwoodsLooters = 8,
+        Viscara_WildwoodsOutlaws = 8,
         Viscara_WildwoodsGimpassas = 9,
         Viscara_WildwoodsKinraths = 10,
         Viscara_ValleyCairnmogs = 11,

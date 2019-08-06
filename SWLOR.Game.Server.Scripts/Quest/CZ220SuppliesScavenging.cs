@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Scripts.Quest
         {
             CreateQuest(6, "CZ-220 Supplies - Scavenging", "cz220_scavenging")
                 
-                .AddObjectiveCollectItem(1, "scrap_metal", 10, true)
+                .AddObjectiveCollectItem(1, "scrap_metal", 10, false)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(50)

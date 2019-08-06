@@ -88,6 +88,15 @@ namespace SWLOR.Game.Server.Scripting
             return _namespacePointers.ContainsKey(@namespace);
         }
 
+        private static bool IsQuestScript(string file)
+        {
+            string baseDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY");
+            string root = baseDirectory + "/Scripts/";
+            string trimmedFilePath = file.Replace(root, string.Empty);
+            
+            return trimmedFilePath.StartsWith("Quest/");
+        }
+
         /// <summary>
         /// Loads a script from disk and compiles it using the Mono compiler.
         /// </summary>
@@ -97,10 +106,8 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
-                string directory = new DirectoryInfo(Path.GetDirectoryName(file)).Name;
-
                 // Quest scripts
-                if (directory == "Quest")
+                if (IsQuestScript(file))
                 {
                     var quest = CSScript.MonoEvaluator.LoadFile<AbstractQuest>(file);
                     _questCache[file] = quest;
@@ -143,9 +150,7 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
-                string directory = new DirectoryInfo(Path.GetDirectoryName(file)).Name;
-
-                if (directory == "Quest") return true;
+                if (IsQuestScript(file)) return true;
 
                 _scriptCache[file].SubscribeEvents();
                 return true;
@@ -166,9 +171,7 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
-                string directory = new DirectoryInfo(Path.GetDirectoryName(file)).Name;
-
-                if (directory == "Quest") return true;
+                if (IsQuestScript(file)) return true;
 
                 IScript script = _scriptCache[file];
                 script.UnsubscribeEvents();
@@ -190,10 +193,8 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
-                string directory = new DirectoryInfo(Path.GetDirectoryName(file)).Name;
-                
                 // Quest scripts
-                if (directory == "Quest")
+                if (IsQuestScript(file))
                 {
                     _questCache.TryRemove(file, out var quest);
                     MessageHub.Instance.Publish(new OnQuestUnloaded(quest));
@@ -221,9 +222,8 @@ namespace SWLOR.Game.Server.Scripting
         /// <returns>true if successful, false otherwise</returns>
         private static bool DoLoadScript(string file)
         {
-            string directory = new DirectoryInfo(Path.GetDirectoryName(file)).Name;
             bool loadedSuccessfully = LoadScript(file);
-            if (directory == "Quest") return true;
+            if (IsQuestScript(file)) return true;
 
             bool subscribedSuccessfully = SubscribeScriptEvents(file);
 

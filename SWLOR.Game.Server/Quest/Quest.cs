@@ -411,6 +411,12 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
+        public IQuest AddRewardGuildPoints(GuildType guild, int amount)
+        {
+            AddReward(new QuestGPReward(guild, amount));
+            return this;
+        }
+
         // Convenience functions for commonly used prerequisites
 
         public IQuest AddPrerequisiteFame(int regionID, int amount)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Quest.Contracts
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest AddRewardItem(string resref, int quantity);
         IQuest AddRewardKeyItem(int keyItemID);
         IQuest AddRewardFame(int regionID, int amount);
+        IQuest AddRewardGuildPoints(GuildType guild, int amount);
 
         IQuest AddPrerequisiteFame(int regionID, int amount);
         IQuest AddPrerequisiteKeyItem(int keyItemID);

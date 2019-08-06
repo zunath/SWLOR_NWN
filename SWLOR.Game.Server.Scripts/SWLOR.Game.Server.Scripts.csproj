@@ -120,6 +120,7 @@
     <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
     <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
     <Compile Include="Quest\BlastTheMandalorianRangers.cs" />
+    <Compile Include="Quest\CoxxionInitiation.cs" />
     <Compile Include="Quest\CZ220SuppliesWeaponsmith.cs" />
     <Compile Include="Quest\CZ220SuppliesScavenging.cs" />
     <Compile Include="Quest\CZ220SuppliesFabrication.cs" />
@@ -128,6 +129,8 @@
     <Compile Include="Quest\DaggersForCrystal.cs" />
     <Compile Include="Quest\DatapadRetrieval.cs" />
     <Compile Include="Quest\FindCaptainNguth.cs" />
+    <Compile Include="Quest\FirstRites.cs" />
+    <Compile Include="Quest\HelpTheTalyronFamily.cs" />
     <Compile Include="Quest\KathHoundHunting.cs" />
     <Compile Include="Quest\KathHoundPartCollection.cs" />
     <Compile Include="Quest\LocateTheMandalorianFacility.cs" />
@@ -135,10 +138,17 @@
     <Compile Include="Quest\MynockMayhem.cs" />
     <Compile Include="Quest\OreCollection.cs" />
     <Compile Include="Quest\RefineryTrainee.cs" />
+    <Compile Include="Quest\RepairingCoxxionEquipment.cs" />
     <Compile Include="Quest\SelansRequest.cs" />
+    <Compile Include="Quest\SithAlchemyQuest.cs" />
+    <Compile Include="Quest\SlicingTheMandalorianFacility.cs" />
+    <Compile Include="Quest\SmuggleRoyMossPackage.cs" />
+    <Compile Include="Quest\StuffKeepsBreaking.cs" />
+    <Compile Include="Quest\TheAbandonedStation.cs" />
     <Compile Include="Quest\TheColicoidExperiment.cs" />
     <Compile Include="Quest\TheMalfunctioningDroids.cs" />
     <Compile Include="Quest\TheMandalorianLeader.cs" />
+    <Compile Include="Quest\VanquishTheVellenRaiders.cs" />
     <Compile Include="Quest\WarWithTheMandalorianWarriors.cs" />
     <Compile Include="Trigger\ExplorationTrigger.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />

@@ -1,10 +1,9 @@
 ﻿using SWLOR.Game.Server.Quest;
-using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Quest
 {
-    public class SelansRequest: AbstractQuest, IScript
+    public class SelansRequest: AbstractQuest
     {
         public SelansRequest()
         {
@@ -16,25 +15,14 @@ namespace SWLOR.Game.Server.Scripts.Quest
 
                 .AddRewardGold(500)
                 .AddRewardFame(2, 15)
+                .AddRewardKeyItem(5)
 
-                .OnCompleted(player =>
+                .OnCompleted((player, questGiver) =>
                 {
                     KeyItemService.RemovePlayerKeyItem(player, 1);
                     KeyItemService.RemovePlayerKeyItem(player, 2);
                     KeyItemService.RemovePlayerKeyItem(player, 3);
                 });
-        }
-
-        public void SubscribeEvents()
-        {
-        }
-
-        public void UnsubscribeEvents()
-        {
-        }
-
-        public void Main()
-        {
         }
     }
 }

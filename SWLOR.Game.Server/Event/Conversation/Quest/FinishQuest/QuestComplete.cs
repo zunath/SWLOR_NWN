@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest
                 }
 
                 var quest = QuestService.GetQuestByID(questID);
-                quest.Complete(player, null);
+                quest.Complete(player, talkTo, null);
                 return true;
             }
         }

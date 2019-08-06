@@ -18,14 +18,14 @@ namespace SWLOR.Game.Server.Quest.Contracts
         bool CanComplete(NWPlayer player);
         bool IsComplete(NWPlayer player);
 
-        void Accept(NWPlayer player);
-        void Advance(NWPlayer player);
-        void Complete(NWPlayer player, IQuestReward selectedReward);
+        void Accept(NWPlayer player, NWObject questSource);
+        void Advance(NWPlayer player, NWObject questSource);
+        void Complete(NWPlayer player, NWObject questSource, IQuestReward selectedReward);
         void GiveRewards(NWPlayer player);
         
-        IQuest OnAccepted(Action<NWPlayer> action);
-        IQuest OnAdvanced(Action<NWPlayer> action);
-        IQuest OnCompleted(Action<NWPlayer> action);
+        IQuest OnAccepted(Action<NWPlayer, NWObject> action);
+        IQuest OnAdvanced(Action<NWPlayer, NWObject> action);
+        IQuest OnCompleted(Action<NWPlayer, NWObject> action);
 
         IQuest IsRepeatable();
         IQuest EnableRewardSelection();
@@ -37,6 +37,9 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest AddObjectiveKillTarget(int state, NPCGroupType group, int amount);
         IQuest AddObjectiveCollectItem(int state, string resref, int quantity, bool mustBeCraftedByPlayer);
         IQuest AddObjectiveCollectKeyItem(int state, int keyItemID);
+        IQuest AddObjectiveTalkToNPC(int state);
+        IQuest AddObjectiveEnterTrigger(int state);
+        IQuest AddObjectiveUseObject(int state);
 
         IQuest AddRewardGold(int amount);
         IQuest AddRewardItem(string resref, int quantity);

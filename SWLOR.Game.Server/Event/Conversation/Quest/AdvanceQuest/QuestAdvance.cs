@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.AdvanceQuest
                 }
 
                 var quest = QuestService.GetQuestByID(questID);
-                quest.Advance(player);
+                quest.Advance(player, talkTo);
             }
 
             return true;

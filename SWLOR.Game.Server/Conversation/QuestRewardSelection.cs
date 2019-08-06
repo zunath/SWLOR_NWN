@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Conversation
             Model model = GetDialogCustomData<Model>();
             var reward = GetResponseByID("MainPage", responseID).CustomData as IQuestReward;
             var quest = QuestService.GetQuestByID(model.QuestID);
-            quest.Complete(GetPC(), reward);
+            quest.Complete(GetPC(), GetPC(), reward);
             EndConversation();
         }
 

@@ -180,36 +180,36 @@ namespace SWLOR.Game.Server.Service
             foreach (var player in playersToAdvance)
             {
                 var quest = GetQuestByID(player.Value);
-                quest.Advance(player.Key);
+                quest.Advance(player.Key, creature);
             }
         }
 
         /// <summary>
         /// Progresses a player to the next state if they meet all requirements to do so.
         /// </summary>
-        /// <param name="oPC">The player object</param>
-        /// <param name="oObject">The trigger or placeable being used/entered.</param>
-        private static void HandleTriggerAndPlaceableQuestLogic(NWPlayer oPC, NWObject oObject)
+        /// <param name="player">The player object</param>
+        /// <param name="trigger">The trigger or placeable being used/entered.</param>
+        private static void HandleTriggerAndPlaceableQuestLogic(NWPlayer player, NWObject trigger)
         {
-            if (!oPC.IsPlayer) return;
-            string questMessage = oObject.GetLocalString("QUEST_MESSAGE");
-            int questID = oObject.GetLocalInt("QUEST_ID");
-            int questState = oObject.GetLocalInt("QUEST_SEQUENCE");
-            string visibilityObjectID = oObject.GetLocalString("VISIBILITY_OBJECT_ID");
+            if (!player.IsPlayer) return;
+            string questMessage = trigger.GetLocalString("QUEST_MESSAGE");
+            int questID = trigger.GetLocalInt("QUEST_ID");
+            int questState = trigger.GetLocalInt("QUEST_SEQUENCE");
+            string visibilityObjectID = trigger.GetLocalString("VISIBILITY_OBJECT_ID");
 
             if (questID <= 0)
             {
-                oPC.SendMessage("QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
+                player.SendMessage("QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
                 return;
             }
 
             if (questState <= 0)
             {
-                oPC.SendMessage("QUEST_SEQUENCE variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
+                player.SendMessage("QUEST_SEQUENCE variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
                 return;
             }
 
-            PCQuestStatus pcQuestStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
+            PCQuestStatus pcQuestStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcQuestStatus == null) return;
 
 
@@ -222,16 +222,16 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(1.0f, () =>
                 {
-                    oPC.SendMessage(questMessage);
+                    player.SendMessage(questMessage);
                 });
             }
 
             var quest = GetQuestByID(questID);
-            quest.Advance(oPC);
+            quest.Advance(player, trigger);
 
             if (!string.IsNullOrWhiteSpace(visibilityObjectID))
             {
-                ObjectVisibilityService.AdjustVisibility(oPC, oObject, false);
+                ObjectVisibilityService.AdjustVisibility(player, trigger, false);
             }
         }
 

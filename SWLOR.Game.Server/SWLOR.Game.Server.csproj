@@ -1315,8 +1315,11 @@
     <Compile Include="Quest\NPCGroupType.cs" />
     <Compile Include="Quest\Objective\CollectItemObjective.cs" />
     <Compile Include="Quest\Objective\CollectKeyItemObjective.cs" />
+    <Compile Include="Quest\Objective\EnterTriggerObjective.cs" />
     <Compile Include="Quest\Objective\KillTargetObjective.cs" />
     <Compile Include="Quest\AbstractQuest.cs" />
+    <Compile Include="Quest\Objective\TalkToNPCObjective.cs" />
+    <Compile Include="Quest\Objective\UseObjectObjective.cs" />
     <Compile Include="Quest\Prerequisite\FamePrerequisite.cs" />
     <Compile Include="Quest\Prerequisite\KeyItemPrerequisite.cs" />
     <Compile Include="Quest\Prerequisite\RequiredQuestPrerequisite.cs" />

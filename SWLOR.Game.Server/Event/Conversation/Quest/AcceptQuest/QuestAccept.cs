@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest
                 }
 
                 var quest = QuestService.GetQuestByID(questID);
-                quest.Accept(player);
+                quest.Accept(player, talkTo);
             }
             return true;
         }

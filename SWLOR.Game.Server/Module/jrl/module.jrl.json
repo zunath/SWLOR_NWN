@@ -6335,6 +6335,23 @@
                   "0": "The Crafting Terminal Droid operator has requested you create a single unit of Fiberplast Padding. You can use any armorsmith terminal to make the item. You will find the necessary resources down on the maintenance level."
                 }
               }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Talk to the Crafting Terminal Droid operator for your reward."
+                }
+              }
             }
           ]
         },
@@ -27736,6 +27753,23 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have ten pieces, return to him to collect the work receipt."
+                }
+              }
+            },
+            {
+              "__struct_id": 1,
+              "End": {
+                "type": "word",
+                "value": 0
+              },
+              "ID": {
+                "type": "dword",
+                "value": 2
+              },
+              "Text": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Speak to Avix Tatham for your reward."
                 }
               }
             }

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
                     area != directorsChambers)
                     continue;
 
-                quest.Advance(member.Object);
+                quest.Advance(member.Object, overridePlaceable);
             }
 
             // Disable this placeable from being used again for this instance.

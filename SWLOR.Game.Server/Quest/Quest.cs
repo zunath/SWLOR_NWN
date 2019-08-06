@@ -27,9 +27,9 @@ namespace SWLOR.Game.Server.Quest
         private bool _repeatable;
         public bool AllowRewardSelection { get; private set; }
 
-        private Action<NWPlayer> _onAccept;
-        private Action<NWPlayer> _onAdvance;
-        private Action<NWPlayer> _onComplete;
+        private Action<NWPlayer, NWObject> _onAccept;
+        private Action<NWPlayer, NWObject> _onAdvance;
+        private Action<NWPlayer, NWObject> _onComplete;
 
         public Quest(int questID, string name, string journalTag)
         {
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Quest
             return pcStatus.QuestState == count;
         }
 
-        public void Accept(NWPlayer player)
+        public void Accept(NWPlayer player, NWObject questSource)
         {
             if (!player.IsPlayer) return;
 
@@ -174,13 +174,13 @@ namespace SWLOR.Game.Server.Quest
             player.SendMessage("Quest '" + Name + "' accepted. Refer to your journal for more information on this quest.");
 
             // Run any quest-specific code.
-            _onAccept?.Invoke(player);
+            _onAccept?.Invoke(player, questSource);
 
             // Notify to subscribers that a quest has just been accepted.
             MessageHub.Instance.Publish(new OnQuestAccepted(player, QuestID));
         }
 
-        public void Advance(NWPlayer player)
+        public void Advance(NWPlayer player, NWObject questSource)
         {
             if (!player.IsPlayer) return;
             
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Quest
             // If this is the last state, the assumption is that it's time to complete the quest.
             if (currentState == lastState)
             {
-                RequestRewardSelectionFromPC(player);
+                RequestRewardSelectionFromPC(player, questSource);
             }
             else
             {
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Quest
                 }
                 
                 // Run any quest-specific code.
-                _onAdvance?.Invoke(player);
+                _onAdvance?.Invoke(player, questSource);
 
                 // Notify to subscribers that the player has advanced to the next state of the quest.
                 MessageHub.Instance.Publish(new OnQuestAdvanced(player, QuestID, questStatus.QuestState));
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Quest
 
         }
 
-        public void Complete(NWPlayer player, IQuestReward selectedReward)
+        public void Complete(NWPlayer player, NWObject questSource, IQuestReward selectedReward)
         {
             if (!player.IsPlayer) return;
             if (!CanComplete(player)) return;
@@ -263,14 +263,14 @@ namespace SWLOR.Game.Server.Quest
             }
 
             DataService.SubmitDataChange(pcState, DatabaseActionType.Update);
-            _onComplete?.Invoke(player);
+            _onComplete?.Invoke(player, questSource);
             
             player.SendMessage("Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(JournalTag, player, FALSE);
             MessageHub.Instance.Publish(new OnQuestCompleted(player, QuestID));
         }
 
-        private void RequestRewardSelectionFromPC(NWPlayer player)
+        private void RequestRewardSelectionFromPC(NWPlayer player, NWObject questGiver)
         {
             if (!player.IsPlayer) return;
 
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Quest
             }
             else
             {
-                Complete(player, null);
+                Complete(player, questGiver, null);
             }
         }
 
@@ -293,19 +293,19 @@ namespace SWLOR.Game.Server.Quest
             }
         }
 
-        public IQuest OnAccepted(Action<NWPlayer> action)
+        public IQuest OnAccepted(Action<NWPlayer, NWObject> action)
         {
             _onAccept = action;
             return this;
         }
 
-        public IQuest OnAdvanced(Action<NWPlayer> action)
+        public IQuest OnAdvanced(Action<NWPlayer, NWObject> action)
         {
             _onAdvance = action;
             return this;
         }
 
-        public IQuest OnCompleted(Action<NWPlayer> action)
+        public IQuest OnCompleted(Action<NWPlayer, NWObject> action)
         {
             _onComplete = action;
             return this;
@@ -365,6 +365,24 @@ namespace SWLOR.Game.Server.Quest
         public IQuest AddObjectiveCollectKeyItem(int state, int keyItemID)
         {
             AddObjective(state, new CollectKeyItemObjective(keyItemID));
+            return this;
+        }
+
+        public IQuest AddObjectiveTalkToNPC(int state)
+        {
+            AddObjective(state, new TalkToNPCObjective());
+            return this;
+        }
+
+        public IQuest AddObjectiveEnterTrigger(int state)
+        {
+            AddObjective(state, new EnterTriggerObjective());
+            return this;
+        }
+
+        public IQuest AddObjectiveUseObject(int state)
+        {
+            AddObjective(state, new UseObjectObjective());
             return this;
         }
 

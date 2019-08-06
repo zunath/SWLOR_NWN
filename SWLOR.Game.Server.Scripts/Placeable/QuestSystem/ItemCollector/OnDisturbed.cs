@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
                     if (remainingCount <= 0)
                     {
                         var quest = QuestService.GetQuestByID(questID);
-                        quest.Advance(player);
+                        quest.Advance(player, owner);
                     }
 
                     player.SendMessage("You need " + progress.Remaining + "x " + item.Name + " for this quest.");

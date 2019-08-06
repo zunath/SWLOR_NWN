@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
+using SWLOR.Game.Server.Scripting;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -29,42 +30,29 @@ namespace SWLOR.Game.Server.Service
 
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+            
+            // Scripting Events
+            MessageHub.Instance.Subscribe<OnQuestLoaded>(message => LoadQuest(message.Quest.Quest));
+            MessageHub.Instance.Subscribe<OnQuestUnloaded>(message => UnloadQuest(message.Quest.Quest));
         }
 
-        /// <summary>
-        /// Registers all of the custom quest rules into memory.
-        /// </summary>
-        private static void OnModuleLoad()
+        private static void LoadQuest(IQuest quest)
         {
-            RegisterQuests();
-        }
-
-        /// <summary>
-        /// Reflects over the codebase, looking for implementations of AbstractQuest.
-        /// Instantiates and registers the quest into the cache when it finds one.
-        /// </summary>
-        private static void RegisterQuests()
-        {
-            // Use reflection to get all of QuestRule implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p =>  p.IsClass && !p.IsAbstract && p.IsSubclassOf(typeof(AbstractQuest))).ToArray();
-            foreach (var type in classes)
+            if (_quests.ContainsKey(quest.QuestID))
             {
-                AbstractQuest instance = Activator.CreateInstance(type) as AbstractQuest;
-                if (instance == null)
-                {
-                    throw new NullReferenceException("Unable to activate quest instance of type: " + type);
-                }
-
-                if (_quests.ContainsKey(instance.Quest.QuestID))
-                {
-                    throw new DuplicateKeyException(instance, "Quest with ID " + instance.Quest.QuestID + " has already been registered. IDs must be unique across all quests.");
-                }
-
-                _quests[instance.Quest.QuestID] = instance.Quest;
+                throw new DuplicateKeyException(quest, "Quest with ID " + quest.QuestID + " has already been registered. IDs must be unique across all quests.");
             }
+
+            _quests[quest.QuestID] = quest;
+            Console.WriteLine("Registered quest: " + quest.Name + " ( " + quest.QuestID + " )");
+        }
+
+        private static void UnloadQuest(IQuest quest)
+        {
+            if (!_quests.ContainsKey(quest.QuestID)) return;
+
+            _quests.Remove(quest.QuestID);
+            Console.WriteLine("Unregistered quest: " + quest.Name + " ( " + quest.QuestID + " )");
         }
 
         /// <summary>

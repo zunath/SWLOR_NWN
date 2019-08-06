@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -36,8 +37,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterModHandlers()
         {
             // Use reflection to get all of IModHandler implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(IModHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {

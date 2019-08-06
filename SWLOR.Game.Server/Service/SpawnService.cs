@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Entity;
@@ -49,8 +50,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterSpawnRules()
         {
             // Use reflection to get all of SpawnRule implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(ISpawnRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {

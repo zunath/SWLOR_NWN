@@ -1328,6 +1328,8 @@
     <Compile Include="Quest\Reward\QuestItemReward.cs" />
     <Compile Include="Quest\Reward\QuestKeyItemReward.cs" />
     <Compile Include="Scripting\Contracts\IScript.cs" />
+    <Compile Include="Scripting\OnQuestLoaded.cs" />
+    <Compile Include="Scripting\OnQuestUnloaded.cs" />
     <Compile Include="Scripting\OnScriptLoaded.cs" />
     <Compile Include="Scripting\OnScriptUnloaded.cs" />
     <Compile Include="Scripting\ScriptService.cs" />

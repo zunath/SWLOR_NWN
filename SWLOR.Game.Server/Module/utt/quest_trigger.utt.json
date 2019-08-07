@@ -155,7 +155,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "QUEST_SEQUENCE"
+          "value": "QUEST_STATE"
         },
         "Type": {
           "type": "dword",

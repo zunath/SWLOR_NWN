@@ -21,8 +21,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(x =>
             {
-                var classes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(s => s.GetTypes())
+                var classes = Assembly.GetCallingAssembly().GetTypes()
                     .Where(p => typeof(IChatCommand).IsAssignableFrom(p) && p.IsClass)
                     .OrderBy(o => o.Name)
                     .ToArray();

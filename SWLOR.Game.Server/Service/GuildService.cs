@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Quest.Reward;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -144,12 +145,21 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questID">The ID of the quest</param>
         private static void OnQuestCompleted(NWPlayer player, int questID)
         {
-            var quest = DataService.Quest.GetByID(questID);
-            // GP rewards not specified. Bail out early.
-            if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return;
+            var quest = QuestService.GetQuestByID(questID);
+            var gpRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGPReward)).Cast<QuestGPReward>().ToList();
 
-            int gp = CalculateGuildPointsReward(player, questID);
-            GiveGuildPoints(player, (GuildType)quest.RewardGuildID, gp);
+            // GP rewards not specified. Bail out early.
+            if (gpRewards.Count <= 0) return;
+            
+            foreach(var reward in gpRewards)
+            {
+                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)reward.Guild);
+                float rankBonus = 0.25f * pcGP.Rank;
+
+                int gp = reward.Amount + (int)(reward.Amount * rankBonus);
+                GiveGuildPoints(player, reward.Guild, gp);
+            }
+
         }
 
         private static void OnModuleHeartbeat()
@@ -227,23 +237,6 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(config, DatabaseActionType.Update);
 
 
-        }
-
-        /// <summary>
-        /// Calculate the baseAmount of GP to give a player for completing a task.
-        /// Amount is adjusted by the player's rank with the guild.
-        /// </summary>
-        /// <param name="player">The player to calculate GP for.</param>
-        /// <param name="questID">The task's quest ID.</param>
-        /// <returns></returns>
-        public static int CalculateGuildPointsReward(NWPlayer player, int questID)
-        {
-            var quest = DataService.Quest.GetByID(questID);
-            if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return 0;
-
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)quest.RewardGuildID);
-            float rankBonus = 0.25f * pcGP.Rank;
-            return quest.RewardGuildPoints + (int)(quest.RewardGuildPoints * rankBonus);
         }
 
     }

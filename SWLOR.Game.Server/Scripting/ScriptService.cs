@@ -8,6 +8,7 @@ using CSScriptLibrary;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using Exception = System.Exception;
@@ -27,30 +28,35 @@ namespace SWLOR.Game.Server.Scripting
         private static readonly ConcurrentDictionary<string, IScript> _scriptCache = new ConcurrentDictionary<string, IScript>();
 
         /// <summary>
+        /// Keeps compiled quests in memory.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, AbstractQuest> _questCache = new ConcurrentDictionary<string, AbstractQuest>();
+
+        /// <summary>
         /// Points a namespace to a compiled script in the cache.
         /// </summary>
         private static readonly ConcurrentDictionary<string, string> _namespacePointers = new ConcurrentDictionary<string, string>();
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(OnModuleLoad);
+            MessageHub.Instance.Subscribe<OnModuleLoad>(OnInfrastructureInitialized);
         }
 
         /// <summary>
         /// Compiles all scripts in the Scripts folder and stores them into the cache.
         /// </summary>
         /// <param name="event">The event raised.</param>
-        private static void OnModuleLoad(OnModuleLoad @event)
+        private static void OnInfrastructureInitialized(OnModuleLoad @event)
         {
             CSScript.EvaluatorConfig.Engine = EvaluatorEngine.Roslyn;
             string scriptsDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY") + "/Scripts/";
             string[] files = Directory.GetFiles(scriptsDirectory, "*.cs", SearchOption.AllDirectories);
 
             Console.WriteLine("Compiling script files...");
-            Parallel.ForEach(files, (file) =>
+            foreach(var file in files)
             {
                 DoLoadScript(file);
-            });
+            }
             Console.WriteLine("Scripts finished compiling!");
 
             StartFileWatcher(scriptsDirectory);
@@ -82,6 +88,15 @@ namespace SWLOR.Game.Server.Scripting
             return _namespacePointers.ContainsKey(@namespace);
         }
 
+        private static bool IsQuestScript(string file)
+        {
+            string baseDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY");
+            string root = baseDirectory + "/Scripts/";
+            string trimmedFilePath = file.Replace(root, string.Empty);
+            
+            return trimmedFilePath.StartsWith("Quest/");
+        }
+
         /// <summary>
         /// Loads a script from disk and compiles it using the Mono compiler.
         /// </summary>
@@ -91,10 +106,22 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
-                var script = CSScript.MonoEvaluator.LoadFile<IScript>(file);
-                _scriptCache[file] = script;
-                string @namespace = script.GetType().FullName;
-                _namespacePointers[@namespace] = file;
+                // Quest scripts
+                if (IsQuestScript(file))
+                {
+                    var quest = CSScript.MonoEvaluator.LoadFile<AbstractQuest>(file);
+                    _questCache[file] = quest;
+                    MessageHub.Instance.Publish(new OnQuestLoaded(quest));
+                }
+                // Regular scripts
+                else
+                {
+                    var script = CSScript.MonoEvaluator.LoadFile<IScript>(file);
+                    _scriptCache[file] = script;
+                    string @namespace = script.GetType().FullName;
+                    _namespacePointers[@namespace] = file;
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -123,6 +150,8 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
+                if (IsQuestScript(file)) return true;
+
                 _scriptCache[file].SubscribeEvents();
                 return true;
             }
@@ -142,6 +171,8 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
+                if (IsQuestScript(file)) return true;
+
                 IScript script = _scriptCache[file];
                 script.UnsubscribeEvents();
                 return true;
@@ -162,9 +193,19 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
-                var namespacePointer = _namespacePointers.Values.Single(x => x == file);
-                _namespacePointers.TryRemove(namespacePointer, out _);
-                _scriptCache.TryRemove(file, out _);
+                // Quest scripts
+                if (IsQuestScript(file))
+                {
+                    _questCache.TryRemove(file, out var quest);
+                    MessageHub.Instance.Publish(new OnQuestUnloaded(quest));
+                }
+                // Regular scripts
+                else
+                {
+                    var namespacePointer = _namespacePointers.Values.Single(x => x == file);
+                    _namespacePointers.TryRemove(namespacePointer, out _);
+                    _scriptCache.TryRemove(file, out _);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -182,6 +223,8 @@ namespace SWLOR.Game.Server.Scripting
         private static bool DoLoadScript(string file)
         {
             bool loadedSuccessfully = LoadScript(file);
+            if (IsQuestScript(file)) return true;
+
             bool subscribedSuccessfully = SubscribeScriptEvents(file);
 
             if (loadedSuccessfully && subscribedSuccessfully)
@@ -201,9 +244,12 @@ namespace SWLOR.Game.Server.Scripting
         /// <returns>true if successful, false otherwise</returns>
         private static bool DoUnloadScript(string file)
         {
-            // If a script fails to compile, it won't be in the cache. Simply return false.
-            if (!_scriptCache.ContainsKey(file)) return false;
-
+            // If a script fails to compile, it won't be in the caches. Simply return false.
+            if (!_scriptCache.ContainsKey(file) && !_questCache.ContainsKey(file))
+            {
+                return false;
+            }
+            
             bool unsubscribedSuccessfully = UnsubscribeScriptEvents(file);
             bool unloadedSuccessfully = UnloadScript(file);
 

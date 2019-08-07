@@ -25,9 +25,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests
 
             // Check player's current quest state. If they aren't on stage 2 of the quest only show a message.
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, QuestID);
-            var currentState = DataService.QuestState.GetByID(status.CurrentQuestStateID);
-
-            if (currentState.Sequence != 2)
+            
+            if (status.QuestState != 2)
             {
                 player.SendMessage("The crystal glows quietly...");
                 return;
@@ -47,7 +46,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests
             }
 
             _.CreateItemOnObject(cluster, player);
-            QuestService.AdvanceQuestState(player, crystal, QuestID);
+
+            var quest = QuestService.GetQuestByID(QuestID);
+            quest.Advance(player, crystal);
 
             // Hide the "Source of Power?" placeable so the player can't use it again.
             ObjectVisibilityService.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);

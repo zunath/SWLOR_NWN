@@ -8,14 +8,16 @@ namespace SWLOR.Game.Server.Quest.Reward
     {
         private readonly int _keyItemID;
 
-        public QuestKeyItemReward(int keyItemID)
+        public QuestKeyItemReward(int keyItemID, bool isSelectable)
         {
             _keyItemID = keyItemID;
+            IsSelectable = isSelectable;
 
             var keyItem = KeyItemService.GetKeyItemByID(_keyItemID);
             MenuName = "Key Item: " +  keyItem.Name;
         }
 
+        public bool IsSelectable { get; }
         public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)

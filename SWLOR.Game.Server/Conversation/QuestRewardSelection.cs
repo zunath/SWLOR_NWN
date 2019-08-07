@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
             int questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             GetPC().DeleteLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             var quest = QuestService.GetQuestByID(questID);
-            var rewardItems = quest.GetRewards();
+            var rewardItems = quest.GetRewards().Where(x => x.IsSelectable);
             
             Model model = GetDialogCustomData<Model>();
             model.QuestID = questID;

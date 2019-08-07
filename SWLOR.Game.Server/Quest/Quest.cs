@@ -250,6 +250,7 @@ namespace SWLOR.Game.Server.Quest
             pcState.CompletionDate = DateTime.UtcNow;
             pcState.TimesCompleted++;
             
+            // No selected reward, simply give all available rewards to the player.
             if (selectedReward == null)
             {
                 foreach (var reward in Rewards)
@@ -257,8 +258,15 @@ namespace SWLOR.Game.Server.Quest
                     reward.GiveReward(player);
                 }
             }
+            // There is a selected reward. Give that reward and any rewards which are not selectable to the player.
             else
             {
+                // Non-selectable rewards (gold, GP, etc) are granted to the player.
+                foreach (var reward in Rewards.Where(x => !x.IsSelectable))
+                {
+                    reward.GiveReward(player);
+                }
+
                 selectedReward.GiveReward(player);
             }
 
@@ -393,15 +401,15 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest AddRewardItem(string resref, int quantity)
+        public IQuest AddRewardItem(string resref, int quantity, bool isSelectable = true)
         {
-            AddReward(new QuestItemReward(resref, quantity));
+            AddReward(new QuestItemReward(resref, quantity, isSelectable));
             return this;
         }
 
-        public IQuest AddRewardKeyItem(int keyItemID)
+        public IQuest AddRewardKeyItem(int keyItemID, bool isSelectable = true)
         {
-            AddReward(new QuestKeyItemReward(keyItemID));
+            AddReward(new QuestKeyItemReward(keyItemID, isSelectable));
             return this;
         }
 

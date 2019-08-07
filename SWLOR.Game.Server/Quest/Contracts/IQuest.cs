@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest AddObjectiveUseObject(int state);
 
         IQuest AddRewardGold(int amount);
-        IQuest AddRewardItem(string resref, int quantity);
-        IQuest AddRewardKeyItem(int keyItemID);
+        IQuest AddRewardItem(string resref, int quantity, bool isSelectable = true);
+        IQuest AddRewardKeyItem(int keyItemID, bool isSelectable = true);
         IQuest AddRewardFame(int regionID, int amount);
         IQuest AddRewardGuildPoints(GuildType guild, int amount);
 

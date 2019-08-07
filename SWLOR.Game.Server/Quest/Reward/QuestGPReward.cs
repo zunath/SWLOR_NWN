@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Quest.Reward
             MenuName = Amount + " " + dbGuild.Name + " GP";
         }
 
+        public bool IsSelectable => false;
         public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Quest.Reward
             Amount = amount;
         }
 
+        public bool IsSelectable => false;
         public string MenuName => Amount + " Credits";
 
         public void GiveReward(NWPlayer player)

@@ -7,14 +7,16 @@ namespace SWLOR.Game.Server.Quest.Reward
 {
     public class QuestItemReward: IQuestReward
     {
+        public bool IsSelectable { get; }
         public string MenuName { get; }
         private readonly string _resref;
         private readonly int _quantity;
 
-        public QuestItemReward(string resref, int quantity)
+        public QuestItemReward(string resref, int quantity, bool isSelectable)
         {
             _resref = resref;
             _quantity = quantity;
+            IsSelectable = isSelectable;
 
             var itemVO = QuestService.GetTempItemInformation(resref, quantity);
 

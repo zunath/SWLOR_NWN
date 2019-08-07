@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Scripts.Quest
 
                 .AddRewardGold(250)
                 .AddRewardFame(2, 20)
+                .AddRewardItem("colicoid_cap_y", 1)
+                .AddRewardItem("colicoid_cap_b", 1)
+                .AddRewardItem("colicoid_cap_r", 1)
+                .AddRewardItem("colicoid_cap_g", 1)
                 
                 .OnAccepted((player, questGiver) =>
                 {

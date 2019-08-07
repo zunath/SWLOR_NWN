@@ -11,17 +11,18 @@ namespace SWLOR.Game.Server.Quest.Reward
         private readonly int _fameRegionID;
         private readonly int _amount;
 
-        public QuestFameReward(int fameRegionID, int amount)
+        public QuestFameReward(int fameRegionID, int amount, bool isSelectable)
         {
             _fameRegionID = fameRegionID;
             _amount = amount;
+            IsSelectable = isSelectable;
 
             var fameRegion = DataService.FameRegion.GetByID(fameRegionID);
             MenuName = _amount + " " + fameRegion.Name + " Fame";
 
         }
 
-        public bool IsSelectable => false;
+        public bool IsSelectable { get; }
         public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)

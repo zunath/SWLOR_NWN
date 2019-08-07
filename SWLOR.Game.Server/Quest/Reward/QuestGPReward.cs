@@ -10,16 +10,17 @@ namespace SWLOR.Game.Server.Quest.Reward
         public GuildType Guild { get; }
         public int Amount { get; }
 
-        public QuestGPReward(GuildType guild, int amount)
+        public QuestGPReward(GuildType guild, int amount, bool isSelectable)
         {
             Guild = guild;
             Amount = amount;
+            IsSelectable = isSelectable;
 
             var dbGuild = DataService.Guild.GetByID((int) guild);
             MenuName = Amount + " " + dbGuild.Name + " GP";
         }
 
-        public bool IsSelectable => false;
+        public bool IsSelectable { get; }
         public string MenuName { get; }
 
         public void GiveReward(NWPlayer player)

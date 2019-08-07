@@ -42,11 +42,11 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest AddObjectiveEnterTrigger(int state);
         IQuest AddObjectiveUseObject(int state);
 
-        IQuest AddRewardGold(int amount);
+        IQuest AddRewardGold(int amount, bool isSelectable = false);
         IQuest AddRewardItem(string resref, int quantity, bool isSelectable = true);
         IQuest AddRewardKeyItem(int keyItemID, bool isSelectable = true);
-        IQuest AddRewardFame(int regionID, int amount);
-        IQuest AddRewardGuildPoints(GuildType guild, int amount);
+        IQuest AddRewardFame(int regionID, int amount, bool isSelectable = false);
+        IQuest AddRewardGuildPoints(GuildType guild, int amount, bool isSelectable = false);
 
         IQuest AddPrerequisiteFame(int regionID, int amount);
         IQuest AddPrerequisiteKeyItem(int keyItemID);

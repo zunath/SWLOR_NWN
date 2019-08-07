@@ -8,12 +8,13 @@ namespace SWLOR.Game.Server.Quest.Reward
     {
         public int Amount { get; }
 
-        public QuestGoldReward(int amount)
+        public QuestGoldReward(int amount, bool isSelectable)
         {
             Amount = amount;
+            IsSelectable = isSelectable;
         }
 
-        public bool IsSelectable => false;
+        public bool IsSelectable { get; }
         public string MenuName => Amount + " Credits";
 
         public void GiveReward(NWPlayer player)

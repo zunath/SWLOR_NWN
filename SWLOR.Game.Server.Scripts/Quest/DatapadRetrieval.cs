@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Scripts.Quest
             CreateQuest(13, "Datapad Retrieval", "datapad_retrieval")
                 .AddObjectiveTalkToNPC(1)
 
+                .EnableRewardSelection()
+                .AddRewardFame(2, 100, true)
+                .AddRewardGold(50, true)
+
                 .OnAccepted((player, questGiver) =>
                 {
                     ObjectVisibilityService.AdjustVisibility(player, questGiver, false);

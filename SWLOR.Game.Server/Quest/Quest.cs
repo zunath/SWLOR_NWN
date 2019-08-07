@@ -395,9 +395,9 @@ namespace SWLOR.Game.Server.Quest
         }
 
         // Convenience functions for commonly used rewards
-        public IQuest AddRewardGold(int amount)
+        public IQuest AddRewardGold(int amount, bool isSelectable = false)
         {
-            AddReward(new QuestGoldReward(amount));
+            AddReward(new QuestGoldReward(amount, isSelectable));
             return this;
         }
 
@@ -413,15 +413,15 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest AddRewardFame(int regionID, int amount)
+        public IQuest AddRewardFame(int regionID, int amount, bool isSelectable = false)
         {
-            AddReward(new QuestFameReward(regionID, amount));
+            AddReward(new QuestFameReward(regionID, amount, isSelectable));
             return this;
         }
 
-        public IQuest AddRewardGuildPoints(GuildType guild, int amount)
+        public IQuest AddRewardGuildPoints(GuildType guild, int amount, bool isSelectable = false)
         {
-            AddReward(new QuestGPReward(guild, amount));
+            AddReward(new QuestGPReward(guild, amount, isSelectable));
             return this;
         }
 

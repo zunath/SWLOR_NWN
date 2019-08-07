@@ -10,7 +10,8 @@ namespace SWLOR.Game.Server.Scripts.Quest
                 .AddObjectiveCollectItem(1, "dagger_b", 5, false)
                 .AddObjectiveTalkToNPC(2)
 
-                .AddRewardFame(3, 15);
+                .AddRewardFame(3, 15)
+                .AddRewardItem("p_crystal_red_qs", 1);
         }
     }
 }

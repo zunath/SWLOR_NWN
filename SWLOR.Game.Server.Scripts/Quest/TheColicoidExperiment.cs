@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Scripts.Quest
                 .AddObjectiveKillTarget(1, NPCGroupType.CZ220_ColicoidExperiment, 1)
                 .AddObjectiveTalkToNPC(2)
 
+                .EnableRewardSelection()
                 .AddRewardGold(250)
                 .AddRewardFame(2, 20)
                 .AddRewardItem("colicoid_cap_y", 1)

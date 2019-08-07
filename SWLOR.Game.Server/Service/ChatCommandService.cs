@@ -14,7 +14,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
-using LoopingAnimationCommand = SWLOR.Game.Server.ChatCommand.LoopingAnimationCommand;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -50,8 +49,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterChatCommandHandlers()
         {
             // Use reflection to get all of IChatCommand handler implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(IChatCommand).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
 
             foreach (var type in classes)

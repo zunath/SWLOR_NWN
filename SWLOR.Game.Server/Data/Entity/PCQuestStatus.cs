@@ -15,9 +15,8 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public int QuestID { get; set; }
-        public int CurrentQuestStateID { get; set; }
+        public int QuestState { get; set; }
         public DateTime? CompletionDate { get; set; }
-        public int? SelectedItemRewardID { get; set; }
         public int TimesCompleted { get; set; }
 
         public IEntity Clone()
@@ -27,9 +26,8 @@ namespace SWLOR.Game.Server.Data.Entity
                 ID = ID,
                 PlayerID = PlayerID,
                 QuestID = QuestID,
-                CurrentQuestStateID = CurrentQuestStateID,
+                QuestState = QuestState,
                 CompletionDate = CompletionDate,
-                SelectedItemRewardID = SelectedItemRewardID,
                 TimesCompleted = TimesCompleted
             };
         }

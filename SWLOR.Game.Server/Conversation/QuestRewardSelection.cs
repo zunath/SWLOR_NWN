@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -30,20 +31,15 @@ namespace SWLOR.Game.Server.Conversation
         {
             int questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             GetPC().DeleteLocalInt("QST_REWARD_SELECTION_QUEST_ID");
-            Quest quest = QuestService.GetQuestByID(questID);
-            var rewardItems = DataService.QuestRewardItem.GetAllByQuestID(quest.ID).ToList();
+            var quest = QuestService.GetQuestByID(questID);
+            var rewardItems = quest.GetRewards().Where(x => x.IsSelectable);
             
             Model model = GetDialogCustomData<Model>();
             model.QuestID = questID;
             
-            foreach (QuestRewardItem reward in rewardItems)
+            foreach (var reward in rewardItems)
             {
-                ItemVO tempItem = QuestService.GetTempItemInformation(reward.Resref, reward.Quantity);
-                string rewardName = tempItem.Name;
-                if (tempItem.Quantity > 1)
-                    rewardName += " x" + tempItem.Quantity;
-                
-                AddResponseToPage("MainPage", rewardName, true, tempItem);
+                AddResponseToPage("MainPage", reward.MenuName, true, reward);
             }
 
         }
@@ -67,9 +63,9 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleRewardSelection(int responseID)
         {
             Model model = GetDialogCustomData<Model>();
-            ItemVO tempItem = (ItemVO)GetResponseByID("MainPage", responseID).CustomData;
-            QuestService.CompleteQuest(GetPC(), null, model.QuestID, tempItem);
-
+            var reward = GetResponseByID("MainPage", responseID).CustomData as IQuestReward;
+            var quest = QuestService.GetQuestByID(model.QuestID);
+            quest.Complete(GetPC(), GetPC(), reward);
             EndConversation();
         }
 

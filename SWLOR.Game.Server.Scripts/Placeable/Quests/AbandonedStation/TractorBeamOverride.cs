@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWPlaceable teleportObject = _.GetNearestObjectByTag("aban_shuttle_exit", mainLevel);
             teleportObject.IsUseable = true;
 
+            var quest = QuestService.GetQuestByID(questID);
             // Advance each party member's quest progression if they are in one of these three instance areas.
             foreach (var member in player.PartyMembers)
             {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
                     area != directorsChambers)
                     continue;
 
-                QuestService.AdvanceQuestState(member.Object, overridePlaceable, questID);
+                quest.Advance(member.Object, overridePlaceable);
             }
 
             // Disable this placeable from being used again for this instance.

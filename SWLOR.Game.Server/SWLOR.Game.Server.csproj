@@ -1537,9 +1537,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-      xcopy "$(TargetDir).\SWLOR.Game.Server.dll" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
-      xcopy "$(TargetDir).\SWLOR.Game.Server.pdb" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
-      xcopy "$(TargetDir).\SWLOR.Game.Server.dll.config" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.dll" "E:\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.pdb" "E:\Documents\Neverwinter Nights\mono" /E /Y /C /i
+      xcopy "$(TargetDir).\SWLOR.Game.Server.dll.config" "E:\Documents\Neverwinter Nights\mono" /E /Y /C /i
 
 </PostBuildEvent>
   </PropertyGroup>

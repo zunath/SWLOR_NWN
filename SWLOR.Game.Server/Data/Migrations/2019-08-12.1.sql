@@ -243,16 +243,22 @@ VALUES (
 		)
 
 
+<<<<<<< HEAD
 dbo.LootTable
 
+=======
+>>>>>>> 0e49ca6a4365324b61d0ea31861b8749776d4c3f
 INSERT INTO dbo.LootTable ( ID ,
                               Name)
 VALUES ( 102 ,   -- ID - int
         'Tatooine Womprat' -- Message
 		)
 
+<<<<<<< HEAD
 dbo.LootTable
 
+=======
+>>>>>>> 0e49ca6a4365324b61d0ea31861b8749776d4c3f
 INSERT INTO dbo.LootTable ( ID ,
                               Name)
 VALUES ( 103 ,   -- ID - int

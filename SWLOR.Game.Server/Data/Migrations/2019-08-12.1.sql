@@ -243,15 +243,11 @@ VALUES (
 		)
 
 
-dbo.LootTable
-
 INSERT INTO dbo.LootTable ( ID ,
                               Name)
 VALUES ( 102 ,   -- ID - int
         'Tatooine Womprat' -- Message
 		)
-
-dbo.LootTable
 
 INSERT INTO dbo.LootTable ( ID ,
                               Name)

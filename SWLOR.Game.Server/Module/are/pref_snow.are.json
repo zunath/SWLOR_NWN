@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Area001"
+    "value": "pref_snow"
   },
   "Tile_List": {
     "type": "list",
@@ -20973,7 +20973,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 3
+    "value": 4
   },
   "Width": {
     "type": "int",

@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 0
+    "value": 1
   },
   "FogClipDist": {
     "type": "float",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "PrefabInteriorFacility"
+    "value": "pref_facilidark"
   },
   "Tile_List": {
     "type": "list",
@@ -20973,7 +20973,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 6
+    "value": 8
   },
   "Width": {
     "type": "int",

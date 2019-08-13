@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Leviathan"
+      "0": "Leviathan, Revan's Flagship, Bridge"
     }
   },
   "NoRest": {
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "PrefabHammerhead"
+    "value": "revan_flagship"
   },
   "Tile_List": {
     "type": "list",
@@ -1193,7 +1193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 5
+    "value": 7
   },
   "Width": {
     "type": "int",

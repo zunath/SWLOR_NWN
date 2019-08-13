@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Hammerhead"
+      "0": "[Prefab] Hammerhead Cruiser"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area001"
+    "value": "pref_hammerhead"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "PrefabHammerhead"
+    "value": "pref_hammerhead"
   },
   "Tile_List": {
     "type": "list",
@@ -677,7 +677,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 3
+    "value": 5
   },
   "Width": {
     "type": "int",

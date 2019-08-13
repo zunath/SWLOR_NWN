@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "PrefabWildlands"
+    "value": "pref_wildlands"
   },
   "Tile_List": {
     "type": "list",
@@ -20973,7 +20973,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 2
+    "value": 3
   },
   "Width": {
     "type": "int",

@@ -7101,6 +7101,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sand Demon Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemonclaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemonhide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sandswimmer Fin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandswimmerfin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sandswimmer Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandswimmerh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sandswimmer Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandswimmerleg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sarnuinch"
                     },
                     "RESREF": {
@@ -7464,6 +7519,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tusken Electronics"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusk_highe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Leather"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusk_leather"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Raider Blaster Parts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_blast_parts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ultranio"
                     },
                     "RESREF": {
@@ -7673,11 +7761,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Womprat Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wompratclaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womprat Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womprathide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womprat Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wompratmeat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Womprat Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "womprattooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wood Baton Frame"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "w_baton_frame"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wraid Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wraidskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wraid Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wraidtooth"
                     }
                   },
                   {

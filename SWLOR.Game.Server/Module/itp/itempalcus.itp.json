@@ -856,6 +856,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Vecten's Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_vectenh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Enforcer Visor"
                     },
                     "RESREF": {
@@ -1823,6 +1834,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Vecten Clothing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_vectencl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Vecten Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_vectenls"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Vecten Lightsaber 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_vectenls2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Vecten's Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_vectenca"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Female Tat Civilian Outfit"
                     },
                     "RESREF": {
@@ -1872,6 +1927,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jhorensarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Landyn's Clothing"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_landyncl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Landyn's Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_landynls"
                     }
                   },
                   {

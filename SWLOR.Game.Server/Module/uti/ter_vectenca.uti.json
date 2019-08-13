@@ -1,0 +1,101 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 80
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 127
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 61
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Darth Vecten's Cloak"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 19
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 58
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "ter_vectenca"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "ter_vectenca"
+  }
+}

@@ -8248,6 +8248,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 42.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Landyn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_landyn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 1.0
                     },
                     "FACTION": {
@@ -8318,6 +8337,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ext_tusken_tr003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 41.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vecten"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ter_vecten"
                     }
                   },
                   {

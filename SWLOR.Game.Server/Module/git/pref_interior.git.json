@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -282,7 +282,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -498,7 +498,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -714,7 +714,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -930,7 +930,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -1362,7 +1362,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -1578,7 +1578,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -1794,7 +1794,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2010,7 +2010,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2226,7 +2226,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2442,7 +2442,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795297622681
+          "value": -1.570795059204102
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2658,7 +2658,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3090,7 +3090,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3306,7 +3306,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3522,7 +3522,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3738,7 +3738,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3954,7 +3954,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -4386,7 +4386,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -4602,7 +4602,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -4818,7 +4818,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5034,7 +5034,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5250,7 +5250,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5466,7 +5466,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5682,7 +5682,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795297622681
+          "value": -1.570795059204102
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5902,7 +5902,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6334,7 +6334,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6766,7 +6766,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6982,7 +6982,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795655250549
+          "value": 1.570795297622681
         },
         "CloseLockDC": {
           "type": "byte",
@@ -7198,7 +7198,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -7630,7 +7630,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -7846,7 +7846,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -8062,7 +8062,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -8278,7 +8278,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -8494,7 +8494,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -8710,7 +8710,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -8926,7 +8926,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -9142,7 +9142,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -9358,7 +9358,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.57079553604126
+          "value": -1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -9574,7 +9574,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -9790,7 +9790,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -10006,7 +10006,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -10222,7 +10222,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -10438,7 +10438,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -10654,7 +10654,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -11086,7 +11086,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.57079553604126
+          "value": 1.570795178413391
         },
         "CloseLockDC": {
           "type": "byte",
@@ -11302,7 +11302,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141590595245361
+          "value": 3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",
@@ -11518,7 +11518,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590595245361
+          "value": -3.141589879989624
         },
         "CloseLockDC": {
           "type": "byte",

@@ -1164,6 +1164,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Taris' Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarismask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Raider Mask"
                     },
                     "RESREF": {
@@ -2367,6 +2378,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "leather_tunic014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Taris' Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarisarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Taris' Disguise"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarisdisguise"
                     }
                   },
                   {
@@ -14633,6 +14666,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Taris' Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tarissaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Training Foil I"
                           },
                           "RESREF": {
@@ -15215,6 +15259,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "club_s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Taris' Cane"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tariscane"
                           }
                         }
                       ]

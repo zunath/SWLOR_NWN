@@ -109,6 +109,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashla's robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlarobes00"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bounty Hunter Outfit Dark Red"
                     },
                     "RESREF": {
@@ -784,6 +795,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "artshood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ashla's hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlashood00"
                     }
                   },
                   {
@@ -11710,6 +11732,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "di_card_69"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ashla's greatsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlasaber00"
                     }
                   },
                   {

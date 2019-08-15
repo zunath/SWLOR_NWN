@@ -6601,6 +6601,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ashla"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashla00"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {

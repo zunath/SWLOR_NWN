@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // Light Crossbow = Blaster Rifle
                         case BASE_ITEM_LIGHTCROSSBOW:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 };
                             break;
                     }
                     break;
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Conversation
                     switch (model.TargetItem.BaseItemType)
                     {
                         case BASE_ITEM_GREATAXE:
-                            parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 25 };
                             break;
                         case BASE_ITEM_BATTLEAXE:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };

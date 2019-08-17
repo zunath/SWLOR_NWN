@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(593, "Hunter's Guild Task: 6x Mandalorian Plexi-plate", "hun_tsk_593")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "m_plexiplate", 6, true)
+                .AddObjectiveCollectItem(1, "m_plexiplate", 6, false)
 
                 .AddRewardGold(83)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 25);

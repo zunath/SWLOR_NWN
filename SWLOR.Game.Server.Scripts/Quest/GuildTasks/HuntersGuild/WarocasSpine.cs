@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(584, "Hunter's Guild Task: 6x Warocas Spine", "hun_tsk_584")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "waro_feathers", 6, true)
+                .AddObjectiveCollectItem(1, "waro_feathers", 6, false)
 
                 .AddRewardGold(68)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 15);

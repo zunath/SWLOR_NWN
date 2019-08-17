@@ -1520,10 +1520,8 @@
     <Content Include="Data\Scripts\WipeUserData.sql" />
     <Content Include="Module\nwn_erf.exe" />
     <Content Include="Module\nwn_gff.exe" />
-    <Content Include="Module\pcre32.dll" />
     <Content Include="Module\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
-    <Content Include="Module\zlib1.dll" />
     <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />
     <Content Include="ServerFiles\Reference\HairColors.jpg" />
     <Content Include="ServerFiles\Reference\MetalColors.jpg" />

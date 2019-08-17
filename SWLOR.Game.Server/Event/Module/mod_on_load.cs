@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
@@ -50,7 +51,8 @@ namespace NWN.Scripts
             {
                 RegisterServiceSubscribeEvents();
             }
-            
+
+            ScriptService.Initialize();
             MessageHub.Instance.Publish(new OnModuleLoad());
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");

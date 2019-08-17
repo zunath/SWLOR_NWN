@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Quest
                 .AddRewardFame(2, 20)
                 .AddRewardItem("rune_cstspd1", 1)
                 .AddRewardItem("rune_mining1", 1)
-                .AddRewardItem("run_dmg1", 1)
+                .AddRewardItem("rune_dmg1", 1)
                 .AddRewardItem("rune_dur1", 1);
 
         }

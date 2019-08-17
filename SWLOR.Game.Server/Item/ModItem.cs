@@ -243,7 +243,8 @@ namespace SWLOR.Game.Server.Item
             BASE_ITEM_HELMET,
             BASE_ITEM_LARGESHIELD,
             BASE_ITEM_SMALLSHIELD,
-            BASE_ITEM_TOWERSHIELD
+            BASE_ITEM_TOWERSHIELD,
+            BASE_ITEM_RING
         };
 
         private static readonly HashSet<int> WeaponsmithBaseItemTypes = new HashSet<int>()

@@ -6800,7 +6800,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Activation Speed I"
+            "0": "Engineering Guild Task: 1x Cooldown Recution I"
           }
         },
         "Picture": {
@@ -6851,7 +6851,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Activation Speed II"
+            "0": "Engineering Guild Task: 1x Cooldown Reduction II"
           }
         },
         "Picture": {
@@ -6902,7 +6902,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Activation Speed III"
+            "0": "Engineering Guild Task: 1x Cooldown Reduction III"
           }
         },
         "Picture": {

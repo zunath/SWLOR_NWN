@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Mod
                 if (type == _.ITEM_PROPERTY_ATTACK_BONUS)
                 {
                     int bonus =  _.GetItemPropertyCostTableValue(ip);
-                    if (bonus > currentAB) currentAB = bonus;
+                    currentAB += bonus;
                 }
             }
 

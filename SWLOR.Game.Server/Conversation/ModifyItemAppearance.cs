@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // parts 23 (lightfoil blade) excluded
                         case BASE_ITEM_KATANA:
-                            parts = new[] { 1, 2, 3, 4 };
+                            parts = new[] { 2, 3, 4 };
                             break;
                         // parts 20 (lightfoil blade) and 24 (cosmic blade) excluded
                         case BASE_ITEM_SHORTSWORD:
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 11, 12, 13, 14, 15, 16 };
                             break;
                         case BASE_ITEM_KATANA:
-                            parts = new[] { 1, 2, 3, 4, 7, 8, 11, 12, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 11, 12, 24, 25 };
                             break;
                         case BASE_ITEM_SHORTSWORD:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 21, 22, 23, 24, 25 };

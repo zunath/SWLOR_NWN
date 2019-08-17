@@ -35,7 +35,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -201,7 +201,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -285,7 +285,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -369,7 +369,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -453,7 +453,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -537,7 +537,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -621,7 +621,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -705,7 +705,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "Quest": {
           "type": "cexostring",
@@ -798,7 +798,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -839,7 +839,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -896,7 +896,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -953,7 +953,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -1010,7 +1010,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -1067,7 +1067,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -1124,7 +1124,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -1181,7 +1181,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",
@@ -1238,7 +1238,7 @@
         },
         "Delay": {
           "type": "dword",
-          "value": -1
+          "value": 4294967295
         },
         "EntriesList": {
           "type": "list",

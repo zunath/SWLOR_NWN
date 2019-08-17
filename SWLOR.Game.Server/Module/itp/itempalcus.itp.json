@@ -14578,6 +14578,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Electroblade Training Foil"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "elec_foil"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Guardian Lightsaber"
                           },
                           "RESREF": {
@@ -14951,17 +14962,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "katana_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Electroblade Training Sword"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lightsaber_t"
                           }
                         },
                         {

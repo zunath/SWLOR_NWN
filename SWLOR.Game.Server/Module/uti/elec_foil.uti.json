@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 10
+    "value": 97
   },
   "BaseItem": {
     "type": "int",
-    "value": 41
+    "value": 1
   },
   "Charges": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 90
+    "value": 127
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,27 +39,26 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 1535,
     "type": "cexolocstring",
     "value": {
-      "0": "Electroblade Training Sword"
+      "0": "Electroblade Training Foil"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 14
+    "value": 11
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 11
+    "value": 131
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 125
+    "value": 181
   },
   "PaletteID": {
     "type": "byte",
-    "value": 37
+    "value": 36
   },
   "Plot": {
     "type": "byte",
@@ -70,6 +67,37 @@
   "PropertiesList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 18
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 9
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 44
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
       {
         "__struct_id": 0,
         "ChanceAppear": {
@@ -109,6 +137,37 @@
         },
         "CostTable": {
           "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
           "value": 0
         },
         "CostValue": {
@@ -129,7 +188,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 5
+          "value": 2
         }
       }
     ]
@@ -144,11 +203,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "lightsaber_t"
+    "value": "elec_foil"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "lightsaber_t"
+    "value": "elec_foil"
   },
   "VarTable": {
     "type": "list",

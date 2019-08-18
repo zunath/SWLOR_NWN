@@ -1,88 +1,12 @@
 {
   "__data_type": "UTC ",
-  "Appearance_Head": {
-    "type": "byte",
-    "value": 139
-  },
   "Appearance_Type": {
     "type": "word",
-    "value": 10004
-  },
-  "ArmorPart_RFoot": {
-    "type": "byte",
-    "value": 1
+    "value": 261
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
-  },
-  "BodyPart_Belt": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LFoot": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_LShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_LThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Neck": {
-    "type": "byte",
-    "value": 254
-  },
-  "BodyPart_Pelvis": {
-    "type": "byte",
-    "value": 238
-  },
-  "BodyPart_RBicep": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RFArm": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RHand": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShin": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_RShoul": {
-    "type": "byte",
-    "value": 0
-  },
-  "BodyPart_RThigh": {
-    "type": "byte",
-    "value": 1
-  },
-  "BodyPart_Torso": {
-    "type": "byte",
-    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -107,22 +31,6 @@
         }
       }
     ]
-  },
-  "Color_Hair": {
-    "type": "byte",
-    "value": 4
-  },
-  "Color_Skin": {
-    "type": "byte",
-    "value": 100
-  },
-  "Color_Tattoo1": {
-    "type": "byte",
-    "value": 24
-  },
-  "Color_Tattoo2": {
-    "type": "byte",
-    "value": 35
   },
   "Comment": {
     "type": "cexostring",
@@ -185,7 +93,7 @@
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -375,7 +283,7 @@
   },
   "Race": {
     "type": "byte",
-    "value": 156
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -672,7 +580,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",

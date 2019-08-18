@@ -6624,7 +6624,7 @@
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Hostile"
+                      "value": "Commoner"
                     },
                     "NAME": {
                       "type": "cexostring",

@@ -9586,6 +9586,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Throwing Weapon Repair Kit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Twin Blade Repair Kit"
                     },
                     "RESREF": {
@@ -10515,6 +10526,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stim_str3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_4"
                     }
                   },
                   {

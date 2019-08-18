@@ -16765,6 +16765,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Throwing Axe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dart I"
                     },
                     "RESREF": {
@@ -16847,6 +16858,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shuriken_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_4"
                     }
                   }
                 ]

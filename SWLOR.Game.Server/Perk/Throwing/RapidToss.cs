@@ -52,16 +52,14 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.LightArmor &&
-                oItem.CustomItemType != CustomItemType.Throwing) return;
+            if (oItem.CustomItemType != CustomItemType.Throwing) return;
 
             ApplyFeatChanges(creature, null);
         }
 
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.LightArmor &&
-                oItem.CustomItemType != CustomItemType.Throwing) return;
+            if (oItem.CustomItemType != CustomItemType.Throwing) return;
 
             ApplyFeatChanges(creature, oItem);
         }
@@ -72,11 +70,9 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equippedArmor = oItem ?? creature.Chest;
             NWItem equippedWeapon = oItem ?? creature.RightHand;
 
-            if (Equals(equippedArmor, oItem) || Equals(equippedWeapon, oItem) ||
-                equippedArmor.CustomItemType != CustomItemType.LightArmor ||
+            if (Equals(equippedWeapon, oItem) ||
                 equippedWeapon.CustomItemType != CustomItemType.Throwing)
             {
                 NWNXCreature.RemoveFeat(creature, _.FEAT_RAPID_SHOT);

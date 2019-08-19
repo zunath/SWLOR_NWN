@@ -13,11 +13,9 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWItem weapon = oPC.RightHand;
-            NWItem armor = oPC.Chest;
-
-            if (weapon.CustomItemType != CustomItemType.FinesseVibroblade &&
-                armor.CustomItemType != CustomItemType.LightArmor)
-                return "You must be equipped with a finesse blade and light armor to use that ability";
+            
+            if (weapon.CustomItemType != CustomItemType.FinesseVibroblade)
+                return "You must be equipped with a finesse blade to use that ability";
 
             return string.Empty;
         }

@@ -117,7 +117,7 @@
         // 114-122 are free
         SneakAttack = 123,
         ArmorBlueprints = 124,
-        Battlemage = 125,
+        // 125 is free
         ForceStun = 126,
         Clarity = 127,
         Sturdiness = 128,

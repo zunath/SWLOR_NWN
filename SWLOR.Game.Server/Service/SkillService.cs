@@ -1,9 +1,13 @@
-﻿using NWN;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
@@ -11,10 +15,6 @@ using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Event.Module;
 using static NWN._;
 
 
@@ -171,10 +171,10 @@ namespace SWLOR.Game.Server.Service
             List<NWCreature> members = player.PartyMembers.ToList();
 
             int nth = 1;
-            NWCreature creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
+            NWCreature creature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             while (creature.IsValid)
             {
-                if (_.GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
+                if (GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
 
                 // Check NPC's enmity table 
                 EnmityTable enmityTable = EnmityService.GetEnmityTable(creature);
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 nth++;
-                creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
+                creature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
 
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Service
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
                 {
-                    NWItem item = _.GetItemInSlot(slot, oPC.Object);
+                    NWItem item = GetItemInSlot(slot, oPC.Object);
                     RemoveWeaponPenalties(item);
                     ApplyWeaponPenalties(oPC, item);
                     RemoveEquipmentPenalties(item);
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Service
                 // Player must be within 30 meters of the creature that just died.
                 if (!preg.Player.IsValid ||
                     preg.Player.Area.Resref != creature.Area.Resref ||
-                        _.GetDistanceBetween(preg.Player.Object, creature.Object) > 40.0f)
+                        GetDistanceBetween(preg.Player.Object, creature.Object) > 40.0f)
                     continue;
 
                 List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();
@@ -473,7 +473,7 @@ namespace SWLOR.Game.Server.Service
 
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
                 {
-                    NWItem item = _.GetItemInSlot(slot, preg.Player.Object);
+                    NWItem item = GetItemInSlot(slot, preg.Player.Object);
                     if (item.CustomItemType == CustomItemType.LightArmor)
                     {
                         lightArmorPoints++;
@@ -529,13 +529,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaExit()
         {
-            NWPlayer oPC = _.GetExitingObject();
+            NWPlayer oPC = GetExitingObject();
             RemovePlayerFromRegistrations(oPC);
         }
 
         public static void OnModuleEnter()
         {
-            NWPlayer oPC = _.GetEnteringObject();
+            NWPlayer oPC = GetEnteringObject();
             if (oPC.IsPlayer)
             {
                 // Add any missing skills the player does not have.
@@ -563,7 +563,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLeave()
         {
-            NWPlayer oPC = _.GetExitingObject();
+            NWPlayer oPC = GetExitingObject();
             if (!oPC.IsPlayer) return;
 
             RemovePlayerFromRegistrations(oPC);
@@ -571,13 +571,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleEquipItem()
         {
-            NWPlayer oPC = _.GetPCItemLastEquippedBy();
+            NWPlayer oPC = GetPCItemLastEquippedBy();
+            NWItem oItem = GetPCItemLastEquipped();
 
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
             if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
             if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
 
-            NWItem oItem = _.GetPCItemLastEquipped();
             PlayerStatService.ApplyStatChanges(oPC, null);
             ApplyWeaponPenalties(oPC, oItem);
             ApplyEquipmentPenalties(oPC, oItem);
@@ -586,10 +586,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer oPC = _.GetPCItemLastUnequippedBy();
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            NWPlayer oPC = GetPCItemLastUnequippedBy();
+            NWItem oItem = GetPCItemLastUnequipped();
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = _.GetPCItemLastUnequipped();
             HandleGlovesUnequipEvent();
             PlayerStatService.ApplyStatChanges(oPC, oItem);
             RemoveWeaponPenalties(oItem);
@@ -610,15 +610,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void ForceEquipFistGlove(NWPlayer oPC)
         {
-            _.DelayCommand(1.0f, () =>
+            DelayCommand(1.0f, () =>
             {
                 if (!oPC.Arms.IsValid)
                 {
                     oPC.ClearAllActions();
-                    NWItem glove = (_.CreateItemOnObject("fist", oPC.Object));
+                    NWItem glove = (CreateItemOnObject("fist", oPC.Object));
                     glove.SetLocalInt("UNBREAKABLE", 1);
 
-                    oPC.AssignCommand(() => _.ActionEquipItem(glove.Object, INVENTORY_SLOT_ARMS));
+                    oPC.AssignCommand(() => ActionEquipItem(glove.Object, INVENTORY_SLOT_ARMS));
                 }
             });
         }
@@ -642,8 +642,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void HandleGlovesUnequipEvent()
         {
-            NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
-            NWItem oItem = (_.GetPCItemLastUnequipped());
+            NWPlayer oPC = (GetPCItemLastUnequippedBy());
+            NWItem oItem = (GetPCItemLastUnequipped());
             int type = oItem.BaseItemType;
 
             if (!oPC.IsPlayer) return;
@@ -805,12 +805,10 @@ namespace SWLOR.Game.Server.Service
             {
                 return AppCache.CreatureSkillRegistrations[creatureUUID];
             }
-            else
-            {
-                var reg = new CreatureSkillRegistration(creatureUUID);
-                AppCache.CreatureSkillRegistrations[creatureUUID] = reg;
-                return reg;
-            }
+
+            var reg = new CreatureSkillRegistration(creatureUUID);
+            AppCache.CreatureSkillRegistrations[creatureUUID] = reg;
+            return reg;
         }
 
 
@@ -818,8 +816,8 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = NWGameObject.OBJECT_SELF;
             if (!oPC.IsValid || !oPC.IsPlayer) return;
-            NWItem oSpellOrigin = (_.GetSpellCastItem());
-            NWCreature oTarget = (_.GetSpellTargetObject());
+            NWItem oSpellOrigin = (GetSpellCastItem());
+            NWCreature oTarget = (GetSpellTargetObject());
 
             SkillType skillType = ItemService.GetSkillTypeForItem(oSpellOrigin);
 
@@ -912,25 +910,25 @@ namespace SWLOR.Game.Server.Service
             // No combat damage penalty
             if (penalty == 99)
             {
-                ItemProperty noDamage = _.ItemPropertyNoDamage();
-                noDamage = _.TagItemProperty(noDamage, IPWeaponPenaltyTag);
+                ItemProperty noDamage = ItemPropertyNoDamage();
+                noDamage = TagItemProperty(noDamage, IPWeaponPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(oItem, noDamage, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 penalty = 5; // Reset to 5 so that the following penalties apply.
             }
 
             // Decreased attack penalty
-            ItemProperty ipPenalty = _.ItemPropertyAttackPenalty(penalty);
-            ipPenalty = _.TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
+            ItemProperty ipPenalty = ItemPropertyAttackPenalty(penalty);
+            ipPenalty = TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
             BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             // Decreased damage penalty
-            ipPenalty = _.ItemPropertyDamagePenalty(penalty);
-            ipPenalty = _.TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
+            ipPenalty = ItemPropertyDamagePenalty(penalty);
+            ipPenalty = TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
             BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             // Decreased enhancement bonus penalty
-            ipPenalty = _.ItemPropertyEnhancementPenalty(penalty);
-            ipPenalty = _.TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
+            ipPenalty = ItemPropertyEnhancementPenalty(penalty);
+            ipPenalty = TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
             BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             oPC.SendMessage("A penalty has been applied to your weapon '" + oItem.Name + "' due to your skill being under the recommended level.");
@@ -947,10 +945,10 @@ namespace SWLOR.Game.Server.Service
 
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
-                string tag = _.GetItemPropertyTag(ip);
+                string tag = GetItemPropertyTag(ip);
                 if (tag == IPWeaponPenaltyTag)
                 {
-                    _.RemoveItemProperty(oItem.Object, ip);
+                    RemoveItemProperty(oItem.Object, ip);
                 }
             }
         }
@@ -973,7 +971,7 @@ namespace SWLOR.Game.Server.Service
                 {IP_CONST_DAMAGETYPE_PIERCING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_PIERCING")},
                 {IP_CONST_DAMAGETYPE_POSITIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_POSITIVE")},
                 {IP_CONST_DAMAGETYPE_SLASHING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SLASHING")},
-                {IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SONIC")},
+                {IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SONIC")}
             };
         }
 
@@ -995,7 +993,7 @@ namespace SWLOR.Game.Server.Service
                 { IP_CONST_DAMAGETYPE_PIERCING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_PIERCING")},
                 { IP_CONST_DAMAGETYPE_POSITIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_POSITIVE")},
                 { IP_CONST_DAMAGETYPE_SLASHING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SLASHING")},
-                { IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SONIC")},
+                { IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SONIC")}
             };
 
         }
@@ -1020,6 +1018,13 @@ namespace SWLOR.Game.Server.Service
             // Player meets or exceeds recommended level. Exit early.
             if (delta <= 0) return;
 
+            // Some NWN methods, like CopyItemAndModify, will run the
+            // item unequip event on the original item and then run
+            // the item equip event on the new item. 
+            // If this happens, we don't want to apply penalties a second time.
+            // An example of where this happens is with item appearance modification.
+            if (item.GetLocalInt("PENALTIES_APPLIED") == TRUE) return;
+
             List<ItemProperty> ipsToApply = new List<ItemProperty>();
 
             // Attributes
@@ -1031,9 +1036,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var ip in item.ItemProperties)
             {
-                int type = _.GetItemPropertyType(ip);
-                int subType = _.GetItemPropertySubType(ip);
-                int value = _.GetItemPropertyCostTableValue(ip);
+                int type = GetItemPropertyType(ip);
+                int subType = GetItemPropertySubType(ip);
+                int value = GetItemPropertyCostTableValue(ip);
 
                 if (type == ITEM_PROPERTY_ABILITY_BONUS)
                 {
@@ -1132,7 +1137,7 @@ namespace SWLOR.Game.Server.Service
                     if (newDR < 1) newDR = 1;
 
                     // Add the modified item property to the list for later application.
-                    ItemProperty newIP = _.ItemPropertyDamageReduction(newPlus, newDR);
+                    ItemProperty newIP = ItemPropertyDamageReduction(newPlus, newDR);
                     ipsToApply.Add(newIP);
 
                     RemoveItemProperty(item, ip);
@@ -1148,8 +1153,8 @@ namespace SWLOR.Game.Server.Service
                 int newStr = 1 + delta / 5;
                 if (newStr > str) newStr = str;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_STRENGTH, newStr);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyDecreaseAbility(ABILITY_STRENGTH, newStr);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (dex > 0)
@@ -1157,8 +1162,8 @@ namespace SWLOR.Game.Server.Service
                 int newDex = 1 + delta / 5;
                 if (newDex > dex) newDex = dex;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_DEXTERITY, newDex);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyDecreaseAbility(ABILITY_DEXTERITY, newDex);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (con > 0)
@@ -1166,8 +1171,8 @@ namespace SWLOR.Game.Server.Service
                 int newCon = 1 + delta / 5;
                 if (newCon > con) newCon = con;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CONSTITUTION, newCon);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyDecreaseAbility(ABILITY_CONSTITUTION, newCon);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (@int > 0)
@@ -1175,8 +1180,8 @@ namespace SWLOR.Game.Server.Service
                 int newInt = 1 + delta / 5;
                 if (newInt > @int) newInt = @int;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_INTELLIGENCE, newInt);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyDecreaseAbility(ABILITY_INTELLIGENCE, newInt);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (wis > 0)
@@ -1184,8 +1189,8 @@ namespace SWLOR.Game.Server.Service
                 int newWis = 1 + delta / 5;
                 if (newWis > wis) newWis = wis;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_WISDOM, newWis);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyDecreaseAbility(ABILITY_WISDOM, newWis);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (cha > 0)
@@ -1193,8 +1198,8 @@ namespace SWLOR.Game.Server.Service
                 int newCha = 1 + delta / 5;
                 if (newCha > cha) newCha = cha;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CHARISMA, newCha);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyDecreaseAbility(ABILITY_CHARISMA, newCha);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (ab > 0)
@@ -1202,8 +1207,8 @@ namespace SWLOR.Game.Server.Service
                 int newAB = 1 + delta / 5;
                 if (newAB > ab) newAB = ab;
 
-                ItemProperty ip = _.ItemPropertyAttackPenalty(newAB);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyAttackPenalty(newAB);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (eb > 0)
@@ -1211,8 +1216,8 @@ namespace SWLOR.Game.Server.Service
                 int newEB = 1 + delta / 5;
                 if (newEB > eb) newEB = eb;
 
-                ItemProperty ip = _.ItemPropertyEnhancementPenalty(newEB);
-                ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
+                ItemProperty ip = ItemPropertyEnhancementPenalty(newEB);
+                ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
 
@@ -1221,6 +1226,8 @@ namespace SWLOR.Game.Server.Service
             {
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
+
+            item.SetLocalInt("PENALTIES_APPLIED", TRUE);
         }
 
         /// <summary>
@@ -1235,19 +1242,19 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var ip in item.ItemProperties)
             {
-                int type = _.GetItemPropertyType(ip);
+                int type = GetItemPropertyType(ip);
                 // Remove any temporary item properties with a matching penalty tag.
-                string tag = _.GetItemPropertyTag(ip);
+                string tag = GetItemPropertyTag(ip);
                 if (tag == IPEquipmentPenaltyTag)
                 {
-                    _.RemoveItemProperty(item, ip);
+                    RemoveItemProperty(item, ip);
                 }
                 // Immunity properties get their value set back to original.
                 else if (type == ITEM_PROPERTY_IMMUNITY_DAMAGE_TYPE)
                 {
                     // Take the existing IP, modify it, then put it in the list for later addition to the item.
                     // We can't directly modify the item property on the item, so we use this as a workaround.
-                    int subType = _.GetItemPropertySubType(ip);
+                    int subType = GetItemPropertySubType(ip);
                     string varName = immunities[subType].VariableName;
                     int costTableID = item.GetLocalInt(varName);
 
@@ -1260,7 +1267,7 @@ namespace SWLOR.Game.Server.Service
                         var packed = NWNXItemProperty.PackIP(unpacked);
                         ipsToApply.Add(packed);
 
-                        _.RemoveItemProperty(item, ip);
+                        RemoveItemProperty(item, ip);
 
                         item.DeleteLocalInt(varName);
                     }
@@ -1274,7 +1281,7 @@ namespace SWLOR.Game.Server.Service
                         ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
                         ipsToApply.Add(newIP);
 
-                        _.RemoveItemProperty(item, ip);
+                        RemoveItemProperty(item, ip);
 
                         item.DeleteLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
                         item.DeleteLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
@@ -1301,6 +1308,8 @@ namespace SWLOR.Game.Server.Service
             {
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
+
+            item.DeleteLocalInt("PENALTIES_APPLIED");
         }
 
     }

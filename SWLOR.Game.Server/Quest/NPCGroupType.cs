@@ -23,6 +23,11 @@
         MonCala_AmphiHydrus = 19,
         MonCala_EcoTerrorist = 20,
         Viscara_VellenFlesheater = 21,
-        AbandonedStation_Boss = 22
+        AbandonedStation_Boss = 22,
+        Tatooine_Womprat = 23,
+        Tatooine_Sandswimmer = 24,
+        Tatooine_Wraid = 25,
+        Tatooine_SandDemon = 26,
+        Tatooine_TuskenRaider = 27
     }
 }

@@ -619,6 +619,7 @@
     <Compile Include="Quest\SithAlchemyQuest.cs" />
     <Compile Include="Quest\SlicingTheMandalorianFacility.cs" />
     <Compile Include="Quest\SmuggleRoyMossPackage.cs" />
+    <Compile Include="Quest\StinkyWomprats.cs" />
     <Compile Include="Quest\StuffKeepsBreaking.cs" />
     <Compile Include="Quest\TheAbandonedStation.cs" />
     <Compile Include="Quest\TheColicoidExperiment.cs" />
@@ -626,6 +627,7 @@
     <Compile Include="Quest\TheMandalorianLeader.cs" />
     <Compile Include="Quest\VanquishTheVellenRaiders.cs" />
     <Compile Include="Quest\WarWithTheMandalorianWarriors.cs" />
+    <Compile Include="Quest\WorkinForTheMan.cs" />
     <Compile Include="Trigger\ExplorationTrigger.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="Trigger\SpaceEncounter.cs" />

@@ -586,6 +586,7 @@
     <Compile Include="Event\SWLOR\OnStoreBankItem.cs" />
     <Compile Include="Event\SWLOR\OnStoreStructureItem.cs" />
     <Compile Include="Item\RenameItem.cs" />
+    <Compile Include="Language\LanguageCommand.cs" />
     <Compile Include="Language\TranslatorUgnaught.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />

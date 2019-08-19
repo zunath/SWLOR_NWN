@@ -7,7 +7,6 @@ namespace SWLOR.Game.Server.Scripts.Quest
         public BlastTheMandalorianRangers()
         {
             CreateQuest(21, "Blast the Mandalorian Rangers", "blast_mand_rangers")
-                .AddPrerequisiteFame(3, 30)
                 .AddPrerequisiteQuest(20)
 
                 .AddObjectiveKillTarget(1, NPCGroupType.Viscara_MandalorianRangers, 9)

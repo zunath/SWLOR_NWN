@@ -1257,7 +1257,6 @@
     <Compile Include="Perk\Throwing\ZenTossing.cs" />
     <Compile Include="Perk\TwinBlade\CrossCut.cs" />
     <Compile Include="Perk\TwinBlade\TwinBladeMastery.cs" />
-    <Compile Include="Perk\OneHanded\Battlemage.cs" />
     <Compile Include="Perk\TwoHanded\Cleave.cs" />
     <Compile Include="Perk\OneHanded\Knockdown.cs" />
     <Compile Include="Perk\TwoHanded\Skewer.cs" />

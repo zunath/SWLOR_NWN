@@ -30,3 +30,7 @@ WHERE ID = 125
 UPDATE dbo.Perk
 SET Description = 'Enables you to evade a blaster shot if you meet the difficulty check. CHA modifier increases chance of evasion. Must be equipped with either a lightsaber or saberstaff.'
 WHERE ID = 154
+
+
+-- Refund the Battlemage perk.
+EXEC dbo.ADM_RefundPlayerPerk @PerkID = 125

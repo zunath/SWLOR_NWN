@@ -134,6 +134,24 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 7;
             }
 
+            // VERSION 8: Remove armor restrictions for a number of perks. Ensure player has the feat if they have the perk purchased.
+            if (dbPlayer.VersionNumber < 8)
+            {
+                // Point Blank Shot
+                if(PerkService.GetPCPerkByID(player.GlobalID, (int)PerkType.PointBlankShot) != null)
+                {
+                    NWNXCreature.AddFeat(player, FEAT_POINT_BLANK_SHOT);
+                }
+
+                // Rapid Reload
+                if (PerkService.GetPCPerkByID(player.GlobalID, (int) PerkType.RapidReload) != null)
+                {
+                    NWNXCreature.AddFeat(player, FEAT_RAPID_RELOAD);
+                }
+
+                dbPlayer.VersionNumber = 8;
+            }
+
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
         

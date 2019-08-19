@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Conversation
             copy.Name = chest.Name;
             copy.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
-            copy.SetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED", copy.Object);
+            chest.SetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED", copy.Object);
             copy.SetLocalObject("STRUCTURE_TEMP_PARENT", chest.Object);
             copy.SetLocalString("PC_BASE_STRUCTURE_ID", structureID);
 

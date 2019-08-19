@@ -9,7 +9,6 @@ namespace SWLOR.Game.Server.Scripts.Quest
         public SlicingTheMandalorianFacility()
         {
             CreateQuest(22, "Slicing the Mandalorian Facility", "mandalorian_slicing")
-                .AddPrerequisiteFame(3, 60)
                 .AddPrerequisiteQuest(20)
                 .AddPrerequisiteQuest(21)
 

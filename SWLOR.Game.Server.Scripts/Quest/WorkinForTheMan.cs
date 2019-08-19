@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Scripts.Quest
     {
         public WorkinForTheMan()
         {
-            CreateQuest(33, "Workin' for the Man", "workin_for_man")
+            CreateQuest(32, "Workin' for the Man", "workin_for_man")
                 .IsRepeatable()
                 .AddObjectiveKillTarget(1, NPCGroupType.Tatooine_TuskenRaider, 20)
                 .AddObjectiveTalkToNPC(2)

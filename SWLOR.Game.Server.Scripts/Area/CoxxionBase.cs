@@ -33,8 +33,6 @@ namespace SWLOR.Game.Server.Scripts.Area
         /// </summary>
         public void LoadDoors()
         {
-            Console.WriteLine("starting LoadDoors");
-
             // This area used to be an instance so this code made sense then.
             // Now, however, it would make more sense to refactor and store them as local objects.
             var area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == "v_cox_base");
@@ -42,7 +40,6 @@ namespace SWLOR.Game.Server.Scripts.Area
 
             var doors = new List<NWObject>();
 
-            Console.WriteLine("iterating area");
             var obj = _.GetFirstObjectInArea(area);
             while (_.GetIsObjectValid(obj) == _.TRUE)
             {
@@ -56,7 +53,6 @@ namespace SWLOR.Game.Server.Scripts.Area
                 obj = _.GetNextObjectInArea(area);
             }
 
-            Console.WriteLine("setting area val");
             area.Data["DOORS"] = doors;
         }
     }

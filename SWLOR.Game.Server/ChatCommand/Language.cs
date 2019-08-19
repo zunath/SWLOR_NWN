@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             string command = args[0].ToLower();
             CustomRaceType race = (CustomRaceType)user.RacialType;
+            var languages = LanguageService.Languages;
 
             if (command == "help")
             {
@@ -23,9 +24,17 @@ namespace SWLOR.Game.Server.ChatCommand
                     "help: Displays this help text."
                 };
 
-                foreach (SkillType language in LanguageService.GetLanguages())
+                foreach (var language in languages)
                 {
-                    commands.Add($"{language.ToString()}: Sets the active language to {language.ToString()}.");
+                    var chatText = language.ChatNames.ElementAt(0);
+                    int count = language.ChatNames.Count();
+
+                    for (int x = 1; x < count; x++)
+                    {
+                        chatText += ", " + language.ChatNames.ElementAt(x);
+                    }
+
+                    commands.Add($"{chatText}: Sets the active language to {language.ProperName}.");
                 }
 
                 user.SendMessage(commands.Aggregate((a, b) => a + '\n' + b));
@@ -41,12 +50,13 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            foreach (SkillType language in LanguageService.GetLanguages())
+
+            foreach (var language in LanguageService.Languages)
             {
-                if (language.ToString().ToLower() == command)
+                if (language.ChatNames.Contains(command))
                 {
-                    LanguageService.SetActiveLanguage(user, language);
-                    user.SendMessage($"Set active language to {language.ToString()}.");
+                    LanguageService.SetActiveLanguage(user, language.Skill);
+                    user.SendMessage($"Set active language to {language.ProperName}.");
                     return;
                 }
             }

@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Plays a victory 1 animation.", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Plays a victory 1 animation.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Victory1 : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

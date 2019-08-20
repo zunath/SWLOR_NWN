@@ -9,7 +9,6 @@ using SWLOR.Game.Server.GameObject;
 
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
@@ -188,11 +187,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            bool isDM = sender.IsDM || AuthorizationService.IsPCRegisteredAsDM(sender);
+            var authorization = AuthorizationService.GetDMAuthorizationType(sender);
 
             if (attribute != null &&
-                (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||
-                 attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM))
+                (attribute.Permissions.HasFlag(CommandPermissionType.Player) && authorization == DMAuthorizationType.None ||
+                 attribute.Permissions.HasFlag(CommandPermissionType.DM) && authorization == DMAuthorizationType.DM ||
+                 attribute.Permissions.HasFlag(CommandPermissionType.Admin) && authorization == DMAuthorizationType.Admin))
             {
                 string[] argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
                 string error = command.ValidateArguments(sender, argsArr);

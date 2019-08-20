@@ -11,11 +11,12 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Displays all chat commands available to you.", CommandPermissionType.DM | CommandPermissionType.Player)]
+    [CommandDetails("Displays all chat commands available to you.", CommandPermissionType.DM | CommandPermissionType.Admin | CommandPermissionType.Player)]
     public class Help: IChatCommand
     {
         private static string _helpTextPlayer = string.Empty;
         private static string _helpTextDM = string.Empty;
+        private static string _helpTextAdmin = string.Empty;
 
         public static void SubscribeEvents()
         {
@@ -36,9 +37,14 @@ namespace SWLOR.Game.Server.ChatCommand
                         _helpTextPlayer += ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description) + "\n";
                     }
 
-                    if (attribute.Permissions.HasFlag(CommandPermissionType.DM))
+                    if (attribute.Permissions.HasFlag(CommandPermissionType.DM | CommandPermissionType.Admin))
                     {
                         _helpTextDM += ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description) + "\n";
+                    }
+                    
+                    if(attribute.Permissions.HasFlag(CommandPermissionType.Admin))
+                    {
+                        _helpTextAdmin += ColorTokenService.Green("/" + @class.Name.ToLower() + ColorTokenService.White(": " + attribute.Description) + "\n");
                     }
                 }
             });
@@ -53,11 +59,15 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            bool isDM = user.IsDM || AuthorizationService.IsPCRegisteredAsDM(user);
+            var authorization = AuthorizationService.GetDMAuthorizationType(user);
 
-            if(isDM)
+            if (authorization == DMAuthorizationType.DM)
             {
                 user.SendMessage(_helpTextDM);
+            }
+            else if (authorization == DMAuthorizationType.Admin)
+            {
+                user.SendMessage(_helpTextAdmin);
             }
             else
             {

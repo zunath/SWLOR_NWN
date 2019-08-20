@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Displays your current coordinates in the area.", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Displays your current coordinates in the area.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Coord : IChatCommand
     {
         /// <summary>

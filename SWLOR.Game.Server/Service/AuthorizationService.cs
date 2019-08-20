@@ -34,15 +34,21 @@ namespace SWLOR.Game.Server.Service
             LogDMAuthorization(dm, true);
         }
 
-        public static bool IsPCRegisteredAsDM(NWPlayer player)
+        public static DMAuthorizationType GetDMAuthorizationType(NWPlayer player)
         {
-            if (player.IsDM) return true;
-            if (!player.IsPlayer) return false;
+            if (!player.IsPlayer) return DMAuthorizationType.None;
 
             string cdKey = GetPCPublicCDKey(player.Object);
 
             AuthorizedDM entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
-            return entity != null;
+            if (entity == null) return DMAuthorizationType.None;
+
+            if (entity.DMRole == 1)
+                return DMAuthorizationType.DM;
+            else if (entity.DMRole == 2)
+                return DMAuthorizationType.Admin;
+
+            return DMAuthorizationType.None;
         }
 
         private static void LogDMAuthorization(NWPlayer dm, bool isAuthorizationSuccessful)

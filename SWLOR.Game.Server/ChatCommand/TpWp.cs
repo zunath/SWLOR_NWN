@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Teleports you to a waypoint with a specified tag.", CommandPermissionType.DM)]
+    [CommandDetails("Teleports you to a waypoint with a specified tag.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class TpWp : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

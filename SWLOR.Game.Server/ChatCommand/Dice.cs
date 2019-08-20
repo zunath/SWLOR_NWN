@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Rolls dice. Use /dice help for more information", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Rolls dice. Use /dice help for more information", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Dice : IChatCommand
     {
         

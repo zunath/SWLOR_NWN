@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Kills your target.", CommandPermissionType.DM)]
+    [CommandDetails("Kills your target.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Kill : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

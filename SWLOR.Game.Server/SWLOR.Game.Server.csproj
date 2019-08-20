@@ -524,6 +524,7 @@
     <Compile Include="Enumeration\CustomAnimation.cs" />
     <Compile Include="Enumeration\CustomItemPropertyDamageType.cs" />
     <Compile Include="Enumeration\CutsceneFadeType.cs" />
+    <Compile Include="Enumeration\DMAuthorizationType.cs" />
     <Compile Include="Enumeration\ForceBalanceType.cs" />
     <Compile Include="Enumeration\GuildType.cs" />
     <Compile Include="Enumeration\MarketBrowseMode.cs" />

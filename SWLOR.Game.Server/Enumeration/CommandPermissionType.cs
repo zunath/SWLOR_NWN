@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Enumeration
     public enum CommandPermissionType
     {
         Player = 1,
-        DM = 2
+        DM = 2,
+        Admin = 3
     }
 }

@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Returns the current UTC server time.", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Returns the current UTC server time.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Time : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

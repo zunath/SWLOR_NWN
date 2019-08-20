@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace SWLOR.Game.Server.Enumeration
 {
@@ -7,6 +8,6 @@ namespace SWLOR.Game.Server.Enumeration
     {
         Player = 1,
         DM = 2,
-        Admin = 3
+        Admin = 4
     }
 }

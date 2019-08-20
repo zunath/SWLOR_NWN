@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.ChatCommand
                         _helpTextPlayer += ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description) + "\n";
                     }
 
-                    if (attribute.Permissions.HasFlag(CommandPermissionType.DM | CommandPermissionType.Admin))
+                    if (attribute.Permissions.HasFlag(CommandPermissionType.DM))
                     {
                         _helpTextDM += ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description) + "\n";
                     }

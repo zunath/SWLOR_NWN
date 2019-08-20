@@ -267,6 +267,7 @@
     <Compile Include="Caching\SpawnObjectCache.cs" />
     <Compile Include="Caching\SpawnObjectTypeCache.cs" />
     <Compile Include="Caching\StructureModeCache.cs" />
+    <Compile Include="ChatCommand\AddDM.cs" />
     <Compile Include="ChatCommand\Blueprints.cs" />
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
@@ -290,12 +291,14 @@
     <Compile Include="ChatCommand\Drunk.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
     <Compile Include="ChatCommand\EmoteStyle.cs" />
+    <Compile Include="ChatCommand\GetDMs.cs" />
     <Compile Include="ChatCommand\GetFP.cs" />
     <Compile Include="ChatCommand\GetLocalFloat.cs" />
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\GetPlot.cs" />
     <Compile Include="ChatCommand\GetXPBonus.cs" />
+    <Compile Include="ChatCommand\RemoveDM.cs" />
     <Compile Include="ChatCommand\SetForceSpecialization.cs" />
     <Compile Include="ChatCommand\GiveRPXP.cs" />
     <Compile Include="ChatCommand\Greet.cs" />

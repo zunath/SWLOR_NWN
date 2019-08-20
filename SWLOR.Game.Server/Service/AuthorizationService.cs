@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Service
 
         public static DMAuthorizationType GetDMAuthorizationType(NWPlayer player)
         {
-            if (!player.IsPlayer) return DMAuthorizationType.None;
+            if (!player.IsPlayer && !player.IsDM) return DMAuthorizationType.None;
 
-            string cdKey = GetPCPublicCDKey(player.Object);
+            string cdKey = GetPCPublicCDKey(player);
 
             AuthorizedDM entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
             if (entity == null) return DMAuthorizationType.None;

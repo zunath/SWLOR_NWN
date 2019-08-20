@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Changes the name of a target.", CommandPermissionType.DM)]
+    [CommandDetails("Changes the name of a target.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Name : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

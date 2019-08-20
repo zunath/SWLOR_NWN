@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Gets a local integer on a target.", CommandPermissionType.DM)]
+    [CommandDetails("Gets a local integer on a target.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class GetLocalInt : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace SWLOR.Game.Server.Enumeration
 {
@@ -6,6 +7,7 @@ namespace SWLOR.Game.Server.Enumeration
     public enum CommandPermissionType
     {
         Player = 1,
-        DM = 2
+        DM = 2,
+        Admin = 4
     }
 }

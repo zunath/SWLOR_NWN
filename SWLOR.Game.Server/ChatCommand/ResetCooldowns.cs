@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Resets a player's cooldowns.", CommandPermissionType.DM)]
+    [CommandDetails("Resets a player's cooldowns.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class ResetCooldowns : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

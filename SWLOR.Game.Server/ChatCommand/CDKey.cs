@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Displays your public CD key.", CommandPermissionType.DM | CommandPermissionType.Player)]
+    [CommandDetails("Displays your public CD key.", CommandPermissionType.DM | CommandPermissionType.Admin | CommandPermissionType.Player)]
     public class CDKey : IChatCommand
     {
         /// <summary>

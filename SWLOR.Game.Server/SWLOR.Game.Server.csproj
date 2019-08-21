@@ -1520,8 +1520,10 @@
     <None Include="Module\PackModule.cmd" />
     <None Include="Module\UnpackModule.cmd" />
     <None Include="packages.config" />
-    <None Include="ServerFiles\docker-linux-startSWLOR.sh" />
-    <None Include="ServerFiles\docker-windows-startSWLOR.cmd" />
+    <None Include="ServerFiles\Docker\docker-compose.yml" />
+    <None Include="ServerFiles\Docker\swlor.env" />
+    <None Include="ServerFiles\NativeDatabase\docker-linux-startSWLOR.sh" />
+    <None Include="ServerFiles\NativeDatabase\docker-windows-startSWLOR.cmd" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.4\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

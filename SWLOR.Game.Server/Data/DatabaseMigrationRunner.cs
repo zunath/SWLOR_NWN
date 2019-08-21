@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Data
         /// Returns the folder name containing the sql migration files.
         /// </summary>
         private static string FolderName => $"{Assembly.GetExecutingAssembly().GetName().Name}.Data.Migrations";
-        
+
         /// <summary>
         /// This is fired automatically by Autofac. It's the entry point to the migration runner.
         /// </summary>
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Data
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection))
+                using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection) { CommandTimeout = 0 })
                 {
                     result = (command.ExecuteScalar() != DBNull.Value);
                 }
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Data
                 string sql = "select top 1 ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
             }
-            
+
             var executingAssembly = Assembly.GetExecutingAssembly();
 
             var fullList = executingAssembly
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Data
                             r != (FolderName + ".Initialization.sql"))
                 .OrderBy(o => o)
                 .ToList();
-            
+
             if (currentVersion == null)
                 return fullList;
 
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Data
                 // Current date but version is greater than currently applied update.
                 if (versionInfo.Item1 == currentVersion.VersionDate)
                     return versionInfo.Item2 > currentVersion.VersionNumber;
-                
+
                 // Older than current version. Ignore this since it's already been applied.
                 return false;
             }).ToList();
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Data
             // Remove file extension (.sql), split by period denoting date and version number.
             string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
             string[] data = fileNameNoExtension.Split('.');
-            
+
             DateTime fileDate = DateTime.ParseExact(data[0], "yyyy-MM-dd", null);
             int fileVersion = int.Parse(data[1]);
 
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Data
                 {
                     string sql = ReadResourceFile(resource);
 
-                    if(!string.IsNullOrWhiteSpace(sql))
+                    if (!string.IsNullOrWhiteSpace(sql))
                     {
                         ExecuteBatchNonQuery(sql, connection);
                     }
@@ -270,6 +270,7 @@ namespace SWLOR.Game.Server.Data
                     if (line.ToUpperInvariant().Trim() == "GO")
                     {
                         cmd.CommandText = sqlBatch;
+                        cmd.CommandTimeout = 0;
                         cmd.ExecuteNonQuery();
                         sqlBatch = string.Empty;
                     }

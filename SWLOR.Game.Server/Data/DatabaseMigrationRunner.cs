@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Data
         private static string FolderName => $"{Assembly.GetExecutingAssembly().GetName().Name}.Data.Migrations";
 
         /// <summary>
-        /// This is fired automatically by Autofac. It's the entry point to the migration runner.
+        /// This is the entry point to the migration runner.
         /// </summary>
         public static void Start()
         {

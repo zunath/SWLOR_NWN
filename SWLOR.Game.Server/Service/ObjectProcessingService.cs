@@ -40,9 +40,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunProcessor()
         {
-            var delta = DateTime.UtcNow - _dateLastRun;
+            var now = DateTime.UtcNow;
+            var delta = now - _dateLastRun;
             if (delta.Seconds < 1) return;
-            _dateLastRun = DateTime.UtcNow;
+            _dateLastRun = now;
             
             MessageHub.Instance.Publish(new OnObjectProcessorRan());
         }

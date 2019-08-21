@@ -373,11 +373,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessConcentrationEffects()
         {
-            // Loop through each player. If they have a concentration ability active,
+            // Loop through each creature. If they have a concentration ability active,
             // process it using that perk's OnConcentrationTick() method.
-            for(int index = ConcentratingCreatures.Count-1; index >= 0; index--)
+            foreach(var creature in ConcentratingCreatures.ToArray())
             {
-                var creature = ConcentratingCreatures[index];
                 var activeAbility = GetActiveConcentrationEffect(creature);
                 int perkID = (int)activeAbility.Type;
                 int tier = activeAbility.Tier;
@@ -386,18 +385,18 @@ namespace SWLOR.Game.Server.Service
                 // If we have an invalid creature for any reason, remove it and move to the next one.
                 if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.Unknown)
                 {
-                    ConcentratingCreatures.RemoveAt(index);
+                    ConcentratingCreatures.Remove(creature);
                     continue;
                 }
-                
+
                 // Track the current tick.
                 int tick = creature.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
                 creature.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
                 
-                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, tier);                
-                
+                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, tier);
+
                 // Are we ready to continue processing this concentration effect?
-                if (tick % perkFeat.ConcentrationTickInterval != 0) return;
+                if (tick % perkFeat.ConcentrationTickInterval != 0) continue;
 
                 // Get the perk handler, FP cost, and the target.
                 var handler = PerkService.GetPerkHandler(perkID);

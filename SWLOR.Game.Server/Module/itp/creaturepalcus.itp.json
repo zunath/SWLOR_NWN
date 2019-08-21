@@ -2683,7 +2683,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 10.0
+                            "value": 13.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -2702,7 +2702,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 13.0
+                            "value": 20.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -2721,7 +2721,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 10.0
+                            "value": 13.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -2740,7 +2740,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 12.0
+                            "value": 14.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -2759,7 +2759,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 10.0
+                            "value": 13.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -2778,7 +2778,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 10.0
+                            "value": 13.0
                           },
                           "FACTION": {
                             "type": "cexostring",

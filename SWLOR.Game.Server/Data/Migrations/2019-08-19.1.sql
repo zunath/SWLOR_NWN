@@ -34,3 +34,28 @@ WHERE ID = 154
 
 -- Refund the Battlemage perk.
 EXEC dbo.ADM_RefundPlayerPerk @PerkID = 125
+
+
+-- Remove the Battlemage perk.
+DELETE FROM dbo.PerkFeat
+WHERE PerkID = 125
+
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel 
+	WHERE PerkID = 125
+)
+
+DELETE FROM dbo.PerkLevelQuestRequirement
+WHERE PerkLevelID IN (
+	SELECT ID
+	FROM dbo.PerkLevel 
+	WHERE PerkID = 125
+)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID = 125
+
+DELETE FROM dbo.Perk
+WHERE ID = 125

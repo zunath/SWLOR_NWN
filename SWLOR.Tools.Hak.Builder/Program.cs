@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SWLOR.Tools.Hak.Builder
 {
     class Program
     {
-        private static volatile int _processesComplete;
         const string OutputFolder = "./output/";
 
         static void Main(string[] args)
         {
+            CreateOutputFolders();
+            CleanOutputFolders();
 
-            // Create the output folder.
-            if(!Directory.Exists(OutputFolder))
-            {
-                Directory.CreateDirectory(OutputFolder);
-            }
-
-            // Copy the TLK to the output folder.
             File.Copy("./swlor_tlk.tlk", $"{OutputFolder}/swlor_tlk.tlk");
 
             // Build non-model haks.
@@ -32,20 +24,61 @@ namespace SWLOR.Tools.Hak.Builder
             });
 
             // Model files need to be compiled before being added to a hak file.
-            if(!Directory.Exists($"{OutputFolder}compiled_models"))
-            {
-                Directory.CreateDirectory($"{OutputFolder}compiled_models");
-            }
-
+            Console.WriteLine("Compiling models. This can take an extended period of time. Please be patient.");
             hakFolders = new string[] { "swlor_mdl", "swlor_mdl_p" };
             Parallel.ForEach(hakFolders, (folder) =>
             {
                 CompileModels(folder);
             });
 
+            MoveCompiledModels();
+
             // Compilation is done. Now we insert the compiled models into the appropriate hak files.
 
+            CompileHak($"{OutputFolder}compiled_models", "swlor_mdl");
+            CompileHak($"{OutputFolder}compiled_models_p", "swlor_mdl_p");
+
             // Clean up the compiled models folder.
+            CleanCompiledModelFolders();
+        }
+
+        private static void CreateOutputFolders()
+        {
+            if (!Directory.Exists(OutputFolder))
+            {
+                Directory.CreateDirectory(OutputFolder);
+            }
+            if (!Directory.Exists($"{OutputFolder}compiled_models"))
+            {
+                Directory.CreateDirectory($"{OutputFolder}compiled_models");
+            }
+            if (!Directory.Exists($"{OutputFolder}compiled_models_p"))
+            {
+                Directory.CreateDirectory($"{OutputFolder}compiled_models_p");
+            }
+        }
+
+        private static void CleanOutputFolders()
+        {
+            Parallel.ForEach(Directory.GetFiles(OutputFolder), (file) =>
+            {
+                File.Delete(file);
+            });
+
+            CleanCompiledModelFolders();
+        }
+
+        private static void CleanCompiledModelFolders()
+        {
+            Parallel.ForEach(Directory.GetFiles($"{OutputFolder}compiled_models"), (file) =>
+            {
+                File.Delete(file);
+            });
+
+            Parallel.ForEach(Directory.GetFiles($"{OutputFolder}compiled_models_p"), (file) =>
+            {
+                File.Delete(file);
+            });
         }
 
         private static Process CreateProcess(string command)
@@ -107,10 +140,13 @@ namespace SWLOR.Tools.Hak.Builder
             };
         }
 
-        private static void CompileHak(string folder)
+        private static void CompileHak(string folder, string outputHakName = "")
         {
-            string command = $"nwn_erf -f \"{OutputFolder}{folder}.hak\" -e HAK -c ./{folder}";
-            Console.WriteLine($"Building hak: {folder}.hak");
+            if (outputHakName == string.Empty)
+                outputHakName = folder;
+
+            string command = $"nwn_erf -f \"{OutputFolder}{outputHakName}.hak\" -e HAK -c ./{folder}";
+            Console.WriteLine($"Building hak: {outputHakName}.hak");
 
             using (var process = CreateProcess(command))
             {
@@ -142,6 +178,16 @@ namespace SWLOR.Tools.Hak.Builder
 
                 process.WaitForExit();
             }
+        }
+
+        private static void MoveCompiledModels()
+        {
+            var files = Directory.GetFiles($"{OutputFolder}compiled_models", "p*");
+            Parallel.ForEach(files, (file) =>
+            {
+                File.Move(file, $"{OutputFolder}compiled_models_p/{Path.GetFileName(file)}");
+            });
+
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,9 +9,12 @@ namespace SWLOR.Tools.Hak.Builder
     class Program
     {
         const string OutputFolder = "./output/";
+        private static bool _isCompiling;
 
         static void Main(string[] args)
         {
+            ProcessArgs(args);
+
             CreateOutputFolders();
             CleanOutputFolders();
 
@@ -23,23 +27,25 @@ namespace SWLOR.Tools.Hak.Builder
                 CompileHak(folder);
             });
 
-            // Model files need to be compiled before being added to a hak file.
-            Console.WriteLine("Compiling models. This can take an extended period of time. Please be patient.");
-            hakFolders = new string[] { "swlor_mdl", "swlor_mdl_p" };
-            Parallel.ForEach(hakFolders, (folder) =>
+            // Model compiling is an optional step. If not compiled, the model haks will simply be added to the .hak files in the previous step.
+            if(_isCompiling)
             {
-                CompileModels(folder);
-            });
+                Console.WriteLine("Compiling models. This can take an extended period of time. Please be patient.");
+                hakFolders = new string[] { "swlor_mdl", "swlor_mdl_p" };
+                Parallel.ForEach(hakFolders, (folder) =>
+                {
+                    CompileModels(folder);
+                });
 
-            MoveCompiledModels();
+                MoveCompiledModels();
 
-            // Compilation is done. Now we insert the compiled models into the appropriate hak files.
+                // Compilation is done. Now we insert the compiled models into the appropriate hak files.
+                CompileHak($"{OutputFolder}compiled_models", "swlor_mdl");
+                CompileHak($"{OutputFolder}compiled_models_p", "swlor_mdl_p");
 
-            CompileHak($"{OutputFolder}compiled_models", "swlor_mdl");
-            CompileHak($"{OutputFolder}compiled_models_p", "swlor_mdl_p");
-
-            // Clean up the compiled models folder.
-            CleanCompiledModelFolders();
+                // Clean up the compiled models folder.
+                CleanCompiledModelFolders();
+            }
         }
 
         private static void CreateOutputFolders()
@@ -98,10 +104,10 @@ namespace SWLOR.Tools.Hak.Builder
             return process;
         }
 
-        private static string[] GetHakFolders()
+        private static IEnumerable<string> GetHakFolders()
         {
             // Most of the haks get imported directly from the folder to the hak file.
-            return new[]
+            var folders = new List<string>()
             {
                 "swlor_2da",
                 "swlor_add_doors",
@@ -123,7 +129,7 @@ namespace SWLOR.Tools.Hak.Builder
                 "swlor_gui",
                 "swlor_ini",
                 "swlor_itp",
-                // Note: swlor_mdl and swlor_mdl_p have some custom processing involved so we skip them for now.
+                // Note: swlor_mdl and swlor_mdl_p will be added to this list only if _isCompiling is false. Otherwise, they get compiled in a later step.
                 "swlor_mtr",
                 "swlor_plt",
                 "swlor_portraits",
@@ -138,6 +144,14 @@ namespace SWLOR.Tools.Hak.Builder
                 "swlor_wav",
                 "swlor_wok"
             };
+
+            if(!_isCompiling)
+            {
+                folders.Add("swlor_mdl");
+                folders.Add("swlor_mdl_p");
+            }
+
+            return folders;
         }
 
         private static void CompileHak(string folder, string outputHakName = "")
@@ -188,6 +202,18 @@ namespace SWLOR.Tools.Hak.Builder
                 File.Move(file, $"{OutputFolder}compiled_models_p/{Path.GetFileName(file)}");
             });
 
+        }
+
+        private static void ProcessArgs(string[] args)
+        {
+            if (args.Length <= 0) return;
+
+            if (args[0] == "c" || args[0] == "compile")
+            {
+                _isCompiling = true;
+
+                Console.WriteLine("Compiling models is enabled. Please be patient as compilation can take a while.");
+            }
         }
     }
 }

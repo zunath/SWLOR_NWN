@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets the Force Specialization of the target player. 0 = None, 1 = Guardian, 2 = Consular, 3 = Sentinel.", CommandPermissionType.DM)]
+    [CommandDetails("Sets the Force Specialization of the target player. 0 = None, 1 = Guardian, 2 = Consular, 3 = Sentinel.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetForceSpecialization: IChatCommand
     {
         private const int MaxAmount = 3;

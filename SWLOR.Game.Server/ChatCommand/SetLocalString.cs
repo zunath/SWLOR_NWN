@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets a local string on a target.", CommandPermissionType.DM)]
+    [CommandDetails("Sets a local string on a target.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetLocalString : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

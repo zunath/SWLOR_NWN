@@ -6,7 +6,7 @@ using NWN;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Makes your character sit down.", CommandPermissionType.DM | CommandPermissionType.Player)]
+    [CommandDetails("Makes your character sit down.", CommandPermissionType.DM | CommandPermissionType.Admin | CommandPermissionType.Player)]
     public class Sit: IChatCommand
     {
         /// <summary>

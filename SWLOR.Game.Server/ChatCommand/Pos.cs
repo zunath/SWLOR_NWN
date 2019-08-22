@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Displays your current position in the area.", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Displays your current position in the area.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Pos: IChatCommand
     {
         /// <summary>

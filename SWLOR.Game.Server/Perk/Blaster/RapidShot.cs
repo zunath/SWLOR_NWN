@@ -51,16 +51,14 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.LightArmor &&
-                oItem.CustomItemType != CustomItemType.BlasterPistol) return;
+            if (oItem.CustomItemType != CustomItemType.BlasterPistol) return;
 
             ApplyFeatChanges(creature, null);
         }
 
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.LightArmor &&
-                oItem.CustomItemType != CustomItemType.BlasterPistol) return;
+            if (oItem.CustomItemType != CustomItemType.BlasterPistol) return;
 
             ApplyFeatChanges(creature, oItem);
         }
@@ -71,11 +69,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equippedArmor = oItem ?? creature.Chest;
             NWItem equippedWeapon = oItem ?? creature.RightHand;
 
-            if (equippedArmor.Equals(oItem) || equippedWeapon.Equals(oItem) || 
-                equippedArmor.CustomItemType != CustomItemType.LightArmor ||
+            if (equippedWeapon.Equals(oItem) || 
                 equippedWeapon.CustomItemType != CustomItemType.BlasterPistol)
             {
                 NWNXCreature.RemoveFeat(creature, _.FEAT_RAPID_SHOT);

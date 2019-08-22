@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Returns cache stats information.", CommandPermissionType.DM)]
+    [CommandDetails("Returns cache stats information.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class GetCacheStats: IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

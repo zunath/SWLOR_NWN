@@ -126,14 +126,16 @@ namespace SWLOR.Game.Server.Service
                 DataSource = ip,
                 InitialCatalog = "MASTER",
                 UserID = user,
-                Password = password
+                Password = password,
+                ConnectTimeout = 300 // 5 minutes
             }.ToString();
             SWLORConnectionString = new SqlConnectionStringBuilder()
             {
                 DataSource = ip,
                 InitialCatalog = database,
                 UserID = user,
-                Password = password
+                Password = password,
+                ConnectTimeout = 300 // 5 minutes
             }.ToString();
 
         }

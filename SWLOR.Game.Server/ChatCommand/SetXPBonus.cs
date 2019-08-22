@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets the XP bonus on a particular player.", CommandPermissionType.DM)]
+    [CommandDetails("Sets the XP bonus on a particular player.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetXPBonus : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

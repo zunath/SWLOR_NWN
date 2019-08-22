@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(582, "Hunter's Guild Task: 6x Warocas Leg", "hun_tsk_582")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "waro_leg", 6, true)
+                .AddObjectiveCollectItem(1, "waro_leg", 6, false)
 
                 .AddRewardGold(67)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 14);

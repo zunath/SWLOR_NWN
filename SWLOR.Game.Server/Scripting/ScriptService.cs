@@ -37,16 +37,10 @@ namespace SWLOR.Game.Server.Scripting
         /// </summary>
         private static readonly ConcurrentDictionary<string, string> _namespacePointers = new ConcurrentDictionary<string, string>();
 
-        public static void SubscribeEvents()
-        {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(OnInfrastructureInitialized);
-        }
-
         /// <summary>
         /// Compiles all scripts in the Scripts folder and stores them into the cache.
         /// </summary>
-        /// <param name="event">The event raised.</param>
-        private static void OnInfrastructureInitialized(OnModuleLoad @event)
+        public static void Initialize()
         {
             CSScript.EvaluatorConfig.Engine = EvaluatorEngine.Roslyn;
             string scriptsDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY") + "/Scripts/";

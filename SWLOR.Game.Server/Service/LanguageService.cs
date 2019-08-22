@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
 
             Type type = typeof(TranslatorGeneric);
             map.TryGetValue(language, out type);
-            ITranslator translator = Activator.CreateInstance(type) as ITranslator;
+            ITranslator translator = (ITranslator)Activator.CreateInstance(type);
 
             if (speaker.IsPC && !speaker.IsDM)
             {
@@ -287,26 +287,36 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static SkillType[] GetLanguages()
+        private static IEnumerable<LanguageCommand> _languages;
+
+        public static IEnumerable<LanguageCommand> Languages
         {
-            // TODO - Can this be improved? DB query based on the category?
-            return new SkillType[]
+            get
             {
-                SkillType.Basic,
-                SkillType.Bothese,
-                SkillType.Catharese,
-                SkillType.Cheunh,
-                SkillType.Dosh,
-                SkillType.Droidspeak,
-                SkillType.Huttese,
-                SkillType.Mandoa,
-                SkillType.Shyriiwook,
-                SkillType.Twileki,
-                SkillType.Zabraki,
-                SkillType.Mirialan,
-                SkillType.MonCalamarian,
-                SkillType.Ugnaught
-            };
+                if (_languages == null)
+                {
+                    var languages = new List<LanguageCommand>
+                    {
+                        new LanguageCommand("Bothese", SkillType.Bothese, new[] {"Bothese"}),
+                        new LanguageCommand("Catharese", SkillType.Catharese, new []{"Catharese"}),
+                        new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"Cheunh"}),
+                        new LanguageCommand("Dosh", SkillType.Dosh, new []{"Dosh"}),
+                        new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"Droidspeak"}),
+                        new LanguageCommand("Huttese", SkillType.Huttese, new []{"Huttese"}),
+                        new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"Mandoa"}),
+                        new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"Mirialan"}),
+                        new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"MonCalamarian", "Moncal"}),
+                        new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"Shyriiwook", "Wookieespeak"}),
+                        new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"Twileki", "Ryl"}),
+                        new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"Ugnaught"}),
+                        new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"Zabraki", "Zabrak"}),
+                    };
+
+                    _languages = languages;
+                }
+
+                return _languages;
+            }
         }
     }
 }

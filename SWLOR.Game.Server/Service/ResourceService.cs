@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
             // Returns an index representing the colour to use for a particular property.
             // AC = Green = 0
             // Skill Up = Blue = 1
-            // Activation Speed = purple = 2
+            // Cooldown Reduction = purple = 2
             // Charges = orange = 3
             // Ability Up = light purple = 4
             // Misc (sneak attack, emnity up/down) = Yellow = 5

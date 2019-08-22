@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(580, "Hunter's Guild Task: 6x Kath Hound Meat", "hun_tsk_580")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "kath_meat_1", 6, true)
+                .AddObjectiveCollectItem(1, "kath_meat_1", 6, false)
 
                 .AddRewardGold(65)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 12);

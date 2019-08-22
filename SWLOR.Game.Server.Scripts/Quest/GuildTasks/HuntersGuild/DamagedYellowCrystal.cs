@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(602, "Hunter's Guild Task: 6x Damaged Yellow Crystal", "hun_tsk_602")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "p_crystal_yellow", 6, true)
+                .AddObjectiveCollectItem(1, "p_crystal_yellow", 6, false)
 
                 .AddRewardGold(122)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 39);

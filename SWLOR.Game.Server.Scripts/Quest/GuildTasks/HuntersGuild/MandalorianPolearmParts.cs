@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(597, "Hunter's Guild Task: 6x Mandalorian Polearm Parts", "hun_tsk_597")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "m_polearm_parts", 6, true)
+                .AddObjectiveCollectItem(1, "m_polearm_parts", 6, false)
 
                 .AddRewardGold(83)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 25);

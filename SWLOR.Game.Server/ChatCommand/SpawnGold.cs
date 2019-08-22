@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Spawns gold of a specific quantity on your character. Example: /spawngold 33", CommandPermissionType.DM)]
+    [CommandDetails("Spawns gold of a specific quantity on your character. Example: /spawngold 33", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SpawnGold : IChatCommand
     {
         /// <summary>

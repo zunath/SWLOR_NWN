@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Revives you, heals you to full, and restores all FP.", CommandPermissionType.DM)]
+    [CommandDetails("Revives you, heals you to full, and restores all FP.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Rez: IChatCommand
     {
         /// <summary>

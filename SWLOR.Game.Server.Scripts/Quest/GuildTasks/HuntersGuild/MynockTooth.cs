@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.HuntersGuild
             CreateQuest(576, "Hunter's Guild Task: 6x Mynock Tooth", "hun_tsk_576")
                 .IsRepeatable()
 
-                .AddObjectiveCollectItem(1, "mynock_tooth", 6, true)
+                .AddObjectiveCollectItem(1, "mynock_tooth", 6, false)
 
                 .AddRewardGold(23)
                 .AddRewardGuildPoints(GuildType.HuntersGuild, 7);

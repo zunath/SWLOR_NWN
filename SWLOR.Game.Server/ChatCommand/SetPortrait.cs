@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)", CommandPermissionType.DM)]
+    [CommandDetails("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetPortrait : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

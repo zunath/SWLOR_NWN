@@ -109,6 +109,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashla's robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlarobes00"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bounty Hunter Outfit Dark Red"
                     },
                     "RESREF": {
@@ -790,6 +801,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashla's hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlashood00"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Force Helmet"
                     },
                     "RESREF": {
@@ -1136,6 +1158,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "item006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Taris' Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarismask"
                     }
                   },
                   {
@@ -2345,6 +2378,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "leather_tunic014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Taris' Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarisarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Taris' Disguise"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarisdisguise"
                     }
                   },
                   {
@@ -9531,6 +9586,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Throwing Weapon Repair Kit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Twin Blade Repair Kit"
                     },
                     "RESREF": {
@@ -10460,6 +10526,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stim_str3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Weapon Repair Kit IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "th_rep_4"
                     }
                   },
                   {
@@ -11710,6 +11820,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "di_card_69"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ashla's greatsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlasaber00"
                     }
                   },
                   {
@@ -14512,6 +14633,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Electroblade Training Foil"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "elec_foil"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Guardian Lightsaber"
                           },
                           "RESREF": {
@@ -14594,6 +14726,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "item003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Taris' Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tarissaber"
                           }
                         },
                         {
@@ -14874,17 +15017,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "katana_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Electroblade Training Sword"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lightsaber_t"
                           }
                         },
                         {
@@ -15182,6 +15314,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "club_s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Taris' Cane"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tariscane"
                           }
                         }
                       ]
@@ -16677,6 +16820,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Throwing Axe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dart I"
                     },
                     "RESREF": {
@@ -16759,6 +16913,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shuriken_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Axe IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_4"
                     }
                   }
                 ]

@@ -11733,6 +11733,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashla's greatsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlasaber00"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "HasteJedi2"
                     },
                     "RESREF": {
@@ -11820,17 +11831,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "di_card_69"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ashla's greatsaber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ashlasaber00"
                     }
                   },
                   {

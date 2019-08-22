@@ -87,7 +87,12 @@ namespace SWLOR.Game.Server.Item
             modItem.Destroy();
 
             SkillType skillType;
-            if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            
+            if(targetItem.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                skillType = SkillType.Engineering;
+            }
+            else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 skillType = SkillType.Armorsmith;
             }
@@ -112,7 +117,11 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            if(targetItem.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+            }
+            else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }

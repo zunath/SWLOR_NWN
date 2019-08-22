@@ -26,3 +26,10 @@ WHERE PerkID = 106
 
 DELETE FROM dbo.Perk
 WHERE ID = 106
+
+
+
+-- Increase medium blade's base level to 2 (up from 1)
+UPDATE dbo.CraftBlueprint
+SET BaseLevel = 2
+WHERE ID = 92

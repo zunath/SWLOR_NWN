@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
-                "If you die, you will return to the last cloning facility you registered at. Would you like to register to this cloning facility?",
+                "If you die, you will return to the last medical facility you registered at. Would you like to register to this medical facility?",
                 ColorTokenService.Green("Register")
             );
 

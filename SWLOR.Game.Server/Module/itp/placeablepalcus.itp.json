@@ -67616,17 +67616,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Medical Registration Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cloning_reg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Concealed Door"
                     },
                     "RESREF": {
@@ -67918,6 +67907,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "c_tower_large"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Medical Registration Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloning_reg"
                     }
                   },
                   {

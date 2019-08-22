@@ -297,6 +297,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var languages = new List<LanguageCommand>
                     {
+                        new LanguageCommand("Basic", SkillType.Basic, new [] { "basic" }),
                         new LanguageCommand("Bothese", SkillType.Bothese, new[] {"bothese"}),
                         new LanguageCommand("Catharese", SkillType.Catharese, new []{"catharese"}),
                         new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"cheunh"}),

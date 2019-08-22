@@ -221,6 +221,7 @@ namespace SWLOR.Game.Server.Conversation
                 currentResident.PrimaryResidencePCBaseID = null;
                 currentResident.PrimaryResidencePCBaseStructureID = null;
                 NotifyPlayer(currentResident.ID);
+                DataService.SubmitDataChange(currentResident, DatabaseActionType.Update);
             }
 
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)

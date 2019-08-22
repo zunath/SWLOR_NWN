@@ -23,7 +23,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Veles Colony General Store"
+      "0": "Mon Cala General Store"
     }
   },
   "MarkDown": {
@@ -48,7 +48,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "veles_gen_merch"
+    "value": "moncala_gen_merc"
   },
   "StoreGold": {
     "type": "int",
@@ -1117,7 +1117,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "VELES_GENERAL_STORE_MERCHANT"
+    "value": "MON_CALA_GENERAL_STORE_MERCHANT"
   },
   "WillNotBuy": {
     "type": "list",

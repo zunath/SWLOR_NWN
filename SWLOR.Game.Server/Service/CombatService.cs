@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Service
             //Console.WriteLine("defenderTotal = " + defenderTotal);
             //Console.WriteLine("divisor = " + divisor);
 
-            result.DC = (int) (attackerTotal / divisor * 100);
+            result.DC = (int) (defenderTotal / divisor * 100);
             result.Roll = RandomService.D100(1);
 
             if (sendRollMessage)

@@ -2,23 +2,23 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 10
+    "value": 100
   },
   "BaseItem": {
     "type": "int",
-    "value": 41
+    "value": 522
   },
   "Charges": {
     "type": "byte",
-    "value": 0
+    "value": 2
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 90
+    "value": 100
   },
   "Cursed": {
     "type": "byte",
@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Repairs item durability. May require the purchase of a perk in order to use."
     }
   },
   "Description": {
@@ -41,27 +41,18 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 1535,
     "type": "cexolocstring",
     "value": {
-      "0": "Electroblade Training Sword"
+      "0": "Throwing Weapon Repair Kit I"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 14
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 11
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 125
+    "value": 80
   },
   "PaletteID": {
     "type": "byte",
-    "value": 37
+    "value": 20
   },
   "Plot": {
     "type": "byte",
@@ -78,11 +69,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 0
+          "value": 3
         },
         "CostValue": {
           "type": "word",
-          "value": 0
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -94,42 +85,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 128
+          "value": 15
         },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 83
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 5
+          "value": 329
         }
       }
     ]
@@ -144,11 +104,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "lightsaber_t"
+    "value": "th_rep_1"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "lightsaber_t"
+    "value": "th_rep_1"
   },
   "VarTable": {
     "type": "list",
@@ -157,7 +117,22 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LIGHTSABER"
+          "value": "SCRIPT"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "RepairKit"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "TECH_LEVEL"
         },
         "Type": {
           "type": "dword",
@@ -166,6 +141,21 @@
         "Value": {
           "type": "int",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "REPAIR_CUSTOM_ITEM_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 14
         }
       }
     ]

@@ -64,6 +64,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
             int type = item.BaseItemType;
             int[] validTypes =
             {
+                _.BASE_ITEM_DART,
+                _.BASE_ITEM_THROWINGAXE,
+                _.BASE_ITEM_SHURIKEN,
                 _.BASE_ITEM_SHORTSWORD,
                 _.BASE_ITEM_LONGSWORD,
                 _.BASE_ITEM_BATTLEAXE,

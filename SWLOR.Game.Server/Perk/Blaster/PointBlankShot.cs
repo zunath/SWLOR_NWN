@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnPurchased(NWCreature creature, int newLevel)
         {
-            ApplyFeatChanges(creature, null);
+            NWNXCreature.AddFeat(creature, FEAT_POINT_BLANK_SHOT);
         }
 
         public void OnRemoved(NWCreature creature)
@@ -50,30 +50,14 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            ApplyFeatChanges(creature, null);
         }
 
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            ApplyFeatChanges(creature, oItem);
         }
 
         public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
-        }
-
-        private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
-        {
-            NWItem armor = oItem ?? creature.Chest;
-            if (armor.BaseItemType != BASE_ITEM_ARMOR) return;
-            
-            if (Equals(armor, oItem) || armor.CustomItemType != CustomItemType.LightArmor)
-            {
-                NWNXCreature.RemoveFeat(creature, FEAT_POINT_BLANK_SHOT);
-                return;
-            }
-
-            NWNXCreature.AddFeat(creature, FEAT_POINT_BLANK_SHOT);
         }
 
         public bool IsHostile()

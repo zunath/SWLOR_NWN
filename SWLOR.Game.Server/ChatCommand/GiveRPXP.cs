@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Gives Roleplay XP to a target player.", CommandPermissionType.DM)]
+    [CommandDetails("Gives Roleplay XP to a target player.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class GiveRPXP: IChatCommand
     {
         private const int MaxAmount = 10000;

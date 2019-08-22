@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets the world time to 8 PM.", CommandPermissionType.DM)]
+    [CommandDetails("Sets the world time to 8 PM.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Night : IChatCommand
     {
         /// <summary>

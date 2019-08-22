@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.GuildTasks.EngineeringGuild
     {
         public ActivationSpeedI()
         {
-            CreateQuest(363, "Engineering Guild Task: 1x Activation Speed I", "eng_tsk_363")
+            CreateQuest(363, "Engineering Guild Task: 1x Cooldown Reduction I", "eng_tsk_363")
                 .IsRepeatable()
 
                 .AddObjectiveCollectItem(1, "rune_cstspd1", 1, true)

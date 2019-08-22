@@ -95,19 +95,17 @@ namespace SWLOR.Game.Server.Service
             int modifier;
             string action;
             // Check target's equipped weapon, armor and perk.
-            if (target.Chest.CustomItemType == CustomItemType.LightArmor &&
-                (targetWeapon.CustomItemType == CustomItemType.MartialArtWeapon ||
-                !target.RightHand.IsValid && !target.LeftHand.IsValid))
+            if (targetWeapon.CustomItemType == CustomItemType.MartialArtWeapon ||
+                !target.RightHand.IsValid && !target.LeftHand.IsValid)
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.EvadeBlasterFire);
                 modifier = target.DexterityModifier;
                 action = "evade";
             }
-            else if (target.Chest.CustomItemType == CustomItemType.ForceArmor &&
-                     (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
+            else if (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
                      targetWeapon.CustomItemType == CustomItemType.Saberstaff ||
-                      targetWeapon.GetLocalInt("LIGHTSABER") == TRUE))
+                     targetWeapon.GetLocalInt("LIGHTSABER") == TRUE)
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);

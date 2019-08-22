@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             string questMessage = trigger.GetLocalString("QUEST_MESSAGE");
             int questID = trigger.GetLocalInt("QUEST_ID");
-            int questState = trigger.GetLocalInt("QUEST_SEQUENCE");
+            int questState = trigger.GetLocalInt("QUEST_STATE");
             string visibilityObjectID = trigger.GetLocalString("VISIBILITY_OBJECT_ID");
 
             if (questID <= 0)
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
 
             if (questState <= 0)
             {
-                player.SendMessage("QUEST_SEQUENCE variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
+                player.SendMessage("QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
                 return;
             }
 

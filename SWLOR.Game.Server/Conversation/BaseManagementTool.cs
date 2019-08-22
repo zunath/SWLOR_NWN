@@ -36,7 +36,9 @@ namespace SWLOR.Game.Server.Conversation
                 "60 degrees",
                 "75 degrees",
                 "90 degrees",
-                "180 degrees");
+                "180 degrees",
+                "Move up",
+                "Move down");
             DialogPage renamePage = new DialogPage("Type a name into the chat box. Once you are done select next.",
                 "Next");
             DialogPage confirmRenamePage = new DialogPage(
@@ -832,6 +834,12 @@ namespace SWLOR.Game.Server.Conversation
                 case 11: // Rotate 180
                     DoRotate(180.0f, false);
                     break;
+                case 12: // Move Up
+                    DoMoveZ(0.1f, false);
+                    break;
+                case 13: // Move Down
+                    DoMoveZ(-0.1f, false);
+                    break;
             }
         }
 
@@ -914,6 +922,52 @@ namespace SWLOR.Game.Server.Conversation
                 areaStructures[doorIndex].Structure = data.ManipulatingStructure.ChildStructure;
             }
 
+            DataService.SubmitDataChange(dbStructure, DatabaseActionType.Update);
+        }
+
+        private void DoMoveZ(float degrees, bool isSet)
+        {
+            var data = BaseService.GetPlayerTempData(GetPC());
+            bool canPlaceEditStructures;
+            var structure = data.ManipulatingStructure.Structure;
+            Vector position = _.GetPositionFromLocation(data.TargetLocation);
+
+            if (data.BuildingType == Enumeration.BuildingType.Interior)
+            {
+                var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                canPlaceEditStructures = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);
+            }
+            else
+            {
+                throw new Exception("BaseManagementTool -> DoMoveZ: Cannot handle building type " + data.BuildingType);
+            }
+
+            if (!canPlaceEditStructures)
+            {
+                GetPC().FloatingText("You don't have permission to edit structures.");
+                return;
+            }
+
+            if (position.m_Z > 10.0f ||
+                position.m_Z < -10.0f)
+            {
+                GetPC().SendMessage("This structure cannot be moved any further in this direction.");
+                return;
+            }
+            else
+            {
+                position.m_Z += degrees;
+            }
+
+            structure.Location = _.Location(_.GetAreaFromLocation(data.TargetLocation),
+                                            position,
+                                            _.GetFacingFromLocation(data.TargetLocation));            
+
+            LoadRotatePage();
+
+            var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
+            dbStructure.LocationZ = position.m_Z;
+            
             DataService.SubmitDataChange(dbStructure, DatabaseActionType.Update);
         }
 

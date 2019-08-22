@@ -297,19 +297,19 @@ namespace SWLOR.Game.Server.Service
                 {
                     var languages = new List<LanguageCommand>
                     {
-                        new LanguageCommand("Bothese", SkillType.Bothese, new[] {"Bothese"}),
-                        new LanguageCommand("Catharese", SkillType.Catharese, new []{"Catharese"}),
-                        new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"Cheunh"}),
-                        new LanguageCommand("Dosh", SkillType.Dosh, new []{"Dosh"}),
-                        new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"Droidspeak"}),
-                        new LanguageCommand("Huttese", SkillType.Huttese, new []{"Huttese"}),
-                        new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"Mandoa"}),
-                        new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"Mirialan"}),
-                        new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"MonCalamarian", "Moncal"}),
-                        new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"Shyriiwook", "Wookieespeak"}),
-                        new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"Twileki", "Ryl"}),
-                        new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"Ugnaught"}),
-                        new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"Zabraki", "Zabrak"}),
+                        new LanguageCommand("Bothese", SkillType.Bothese, new[] {"bothese"}),
+                        new LanguageCommand("Catharese", SkillType.Catharese, new []{"catharese"}),
+                        new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"cheunh"}),
+                        new LanguageCommand("Dosh", SkillType.Dosh, new []{"dosh"}),
+                        new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"droidspeak"}),
+                        new LanguageCommand("Huttese", SkillType.Huttese, new []{"huttese"}),
+                        new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
+                        new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
+                        new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
+                        new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
+                        new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
+                        new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
                     };
 
                     _languages = languages;

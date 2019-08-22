@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clone Registration Terminal"
+      "0": "Medical Registration Terminal"
     }
   },
   "OnClick": {

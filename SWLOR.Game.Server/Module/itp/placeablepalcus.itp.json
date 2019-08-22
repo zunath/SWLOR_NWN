@@ -67616,7 +67616,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Clone Registration Terminal"
+                      "value": "Medical Registration Terminal"
                     },
                     "RESREF": {
                       "type": "resref",

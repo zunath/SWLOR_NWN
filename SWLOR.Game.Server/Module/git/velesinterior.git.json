@@ -88077,7 +88077,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Clone Registration Terminal"
+            "0": "Medical Registration Terminal"
           }
         },
         "OnClick": {
@@ -88339,7 +88339,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Clone Registration Terminal"
+            "0": "Medical Registration Terminal"
           }
         },
         "OnClick": {
@@ -243587,7 +243587,7 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Clone Registration"
+            "0": "Medical Registration"
           }
         },
         "MapNoteEnabled": {
@@ -243650,7 +243650,7 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Clone Registration"
+            "0": "Medical Registration"
           }
         },
         "MapNoteEnabled": {

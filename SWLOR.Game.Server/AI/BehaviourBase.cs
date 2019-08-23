@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
@@ -140,13 +138,35 @@ namespace SWLOR.Game.Server.AI
 
         public void OnProcessObject(NWCreature self)
         {
-            CleanUpEnmity(self);
-            AttackHighestEnmity(self);
-            EquipBestWeapon(self);
-            ProcessNearbyCreatures(self);
-            ProcessPerkFeats(self);
+            using (new Profiler("BehaviourBase.OnProcessObject.CleanUpEnmity"))
+            {
+                CleanUpEnmity(self);
+            }
 
-            OnAIProcessing(self);
+            using (new Profiler("BehaviourBase.OnProcessObject.AttackHighestEnmity"))
+            {
+                AttackHighestEnmity(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.EquipBestWeapon"))
+            {
+                EquipBestWeapon(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.ProcessNearbyCreatures"))
+            {
+                ProcessNearbyCreatures(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.ProcessPerkFeats"))
+            {
+                ProcessPerkFeats(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.OnAIProcessing"))
+            {
+                OnAIProcessing(self);
+            }
         }
 
         protected virtual void OnAIProcessing(NWCreature self)

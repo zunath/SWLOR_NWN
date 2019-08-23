@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Service
 
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
-        public static AreaWalkmeshCache AreaWalkmesh { get; } = new AreaWalkmeshCache();
         public static AssociationCache Association { get; } = new AssociationCache();
         public static AttributeCache Attribute { get; } = new AttributeCache();
         public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();
@@ -185,7 +184,6 @@ namespace SWLOR.Game.Server.Service
         {
             Console.WriteLine("Initializing the cache...");
             LoadCache<Area>();
-            LoadCache<AreaWalkmesh>();
 
             LoadCache<ApartmentBuilding>();
             LoadCache<Association>();

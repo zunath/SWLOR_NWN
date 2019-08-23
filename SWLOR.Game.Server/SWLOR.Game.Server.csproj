@@ -177,7 +177,6 @@
     <Compile Include="AppCache.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
-    <Compile Include="Caching\AreaWalkmeshCache.cs" />
     <Compile Include="Caching\AssociationCache.cs" />
     <Compile Include="Caching\AttributeCache.cs" />
     <Compile Include="Caching\AuthorizedDMCache.cs" />
@@ -431,7 +430,7 @@
     <Compile Include="Data\DatabaseMigrationRunner.cs" />
     <Compile Include="Data\Entity\ApartmentBuilding.cs" />
     <Compile Include="Data\Entity\Area.cs" />
-    <Compile Include="Data\Entity\AreaWalkmesh.cs" />
+    <Compile Include="ValueObject\AreaWalkmesh.cs" />
     <Compile Include="Data\Entity\Association.cs" />
     <Compile Include="Data\Entity\Attribute.cs" />
     <Compile Include="Data\Entity\AuthorizedDM.cs" />
@@ -814,6 +813,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-08-19.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-18.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-22.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-23.1.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />

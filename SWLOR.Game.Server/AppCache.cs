@@ -54,15 +54,18 @@ namespace SWLOR.Game.Server
 
         private static void Clean()
         {
-            foreach (var npcTable in NPCEnmityTables.ToArray())
+            for(int index = NPCEnmityTables.Count-1; index >= 0; index--)
             {
+                var npcTable = NPCEnmityTables.ElementAt(index);
                 if (!npcTable.Value.NPCObject.IsValid)
                 {
                     NPCEnmityTables.Remove(npcTable.Key);
                 }
             }
-            foreach (var customData in CustomObjectData.ToArray())
+            
+            for(int index = CustomObjectData.Count-1; index >= 0; index--)
             {
+                var customData = CustomObjectData.ElementAt(index);
                 NWObject owner = customData.Value.Owner;
                 if (!owner.IsValid)
                 {

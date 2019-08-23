@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
     public static class AreaService
     {
         private static Dictionary<NWArea, List<AreaWalkmesh>> _walkmeshesByArea = new Dictionary<NWArea, List<AreaWalkmesh>>();
-        private const int AreaBakeStep = 2;
+        private const int AreaBakeStep = 5;
 
         public static void SubscribeEvents()
         {

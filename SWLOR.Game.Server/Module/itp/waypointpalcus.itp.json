@@ -208,6 +208,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar - Animals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_animals"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Byysk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_byysk_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Male Bith Musician"
                     },
                     "RESREF": {
@@ -768,6 +790,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cyylani Forevia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cyylan_forevia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Denam Reyholm"
                     },
                     "RESREF": {
@@ -916,6 +949,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tristan_talyron"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voryx Ooang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voryx_ooang"
                     }
                   }
                 ]

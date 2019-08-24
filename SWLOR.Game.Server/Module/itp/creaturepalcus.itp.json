@@ -1494,6 +1494,30 @@
                       "type": "byte",
                       "value": 8
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 9.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Qion Tiger"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qion_tiger"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6698
@@ -1555,6 +1579,25 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mynock"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 10.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Qion Slug"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qion_slug"
                           }
                         },
                         {
@@ -2099,6 +2142,44 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 9.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Warrior"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_warrior"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 9.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Warrior"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_warrior2"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "CR": {
@@ -3129,6 +3210,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cyylani"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cyylan_forevia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Czerka Concierge Helena"
                     },
                     "RESREF": {
@@ -3343,6 +3443,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "femalegambler"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Female Hutlarian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "female_hutlarian"
                     }
                   },
                   {
@@ -3856,6 +3975,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "malebh2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Hutlarian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "male_hutlarian"
                     }
                   },
                   {
@@ -4996,6 +5134,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "colonistwq"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voryx"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voryx_ooang"
                     }
                   },
                   {

@@ -1028,6 +1028,20 @@
           "type": "resref",
           "value": "zomb_abanstation"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_outpost"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_qion"
+        }
       }
     ]
   },

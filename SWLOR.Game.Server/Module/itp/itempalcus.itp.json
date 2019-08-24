@@ -719,6 +719,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "breastplate_byys"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Coxxion Breastplate"
                     },
                     "RESREF": {
@@ -1317,6 +1328,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wpn_uniform_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "force_robe_byysk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tunic_byysk"
                     }
                   },
                   {
@@ -2575,6 +2608,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Flesheater Shield"
                           },
                           "RESREF": {
@@ -3805,6 +3849,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "powerglove_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Power Glove"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "powerglove_byysk"
                           }
                         },
                         {
@@ -6111,6 +6166,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Partially Digested Herb"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_digested"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pawisis"
                     },
                     "RESREF": {
@@ -6402,6 +6468,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "water_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Tiger Fang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_tiger_fang"
                     }
                   },
                   {
@@ -7310,6 +7387,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Slime-Covered Electronics"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "elec_slime"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Slug Bile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_bile"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Slug Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Small Blade"
                     },
                     "RESREF": {
@@ -7546,6 +7656,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "equ_ferraille"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tiger Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_blood"
                     }
                   },
                   {
@@ -9299,6 +9420,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Berserker Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_ber_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Defender Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_def_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Fighter Ring I"
                           },
                           "RESREF": {
@@ -10751,6 +10894,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Bag"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bag_byysk"
                     }
                   },
                   {
@@ -14655,6 +14809,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Vibroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "longsword_byysk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Coxxion Vibroblade LS"
                           },
                           "RESREF": {
@@ -15672,6 +15837,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Quarterstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_byy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Coxxion Twin Vibroblade DA"
                     },
                     "RESREF": {
@@ -16249,6 +16425,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cac_gaderffii"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byssk Polearm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spear_byssk"
                     }
                   },
                   {
@@ -16858,6 +17045,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "axe_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Dart"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_byysk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Throwing Axe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_byysk"
                     }
                   },
                   {

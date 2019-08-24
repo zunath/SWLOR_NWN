@@ -7,7 +7,7 @@
       "__struct_id": 100,
       "AmbientSndDay": {
         "type": "int",
-        "value": 0
+        "value": 91
       },
       "AmbientSndDayVol": {
         "type": "int",
@@ -15,7 +15,7 @@
       },
       "AmbientSndNight": {
         "type": "int",
-        "value": 0
+        "value": 91
       },
       "AmbientSndNitVol": {
         "type": "int",
@@ -2683,6 +2683,21 @@
         "Name": {
           "type": "cexostring",
           "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_QUALITY"
         },
         "Type": {
           "type": "dword",

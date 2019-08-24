@@ -3136,6 +3136,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Slug Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quion_slug_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Tiger Properties"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_cairnmog_pr001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -10839,6 +10861,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "starcharts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starchart Data Disk - Hutlar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starcharts_hutla"
                     }
                   },
                   {

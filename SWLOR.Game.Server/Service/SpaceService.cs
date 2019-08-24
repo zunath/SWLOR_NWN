@@ -496,6 +496,8 @@ namespace SWLOR.Game.Server.Service
                 return (int) Planet.Tatooine;
             if (planet == "Mon Cala")
                 return (int)Planet.MonCala;
+            if (planet == "Hutlar")
+                return (int)Planet.Hutlar;
 
             return 0;
         }
@@ -507,6 +509,7 @@ namespace SWLOR.Game.Server.Service
                 case (int)Planet.Viscara: return "Viscara";
                 case (int)Planet.Tatooine: return "Tatooine";
                 case (int)Planet.MonCala: return "Mon Cala";
+                case (int)Planet.Hutlar: return "Hutlar";
                 default: return "";
             }
         }
@@ -529,6 +532,7 @@ namespace SWLOR.Game.Server.Service
             if (((int)destinations & (int)Planet.Viscara) == (int)Planet.Viscara && PlanetToDestination(planet) != (int)Planet.Viscara) list.Add(DestinationToPlanet((int)Planet.Viscara));
             if (((int)destinations & (int)Planet.Tatooine) == (int)Planet.Tatooine && PlanetToDestination(planet) != (int)Planet.Tatooine) list.Add(DestinationToPlanet((int)Planet.Tatooine));
             if (((int)destinations & (int)Planet.MonCala) == (int)Planet.MonCala && PlanetToDestination(planet) != (int)Planet.MonCala) list.Add(DestinationToPlanet((int)Planet.MonCala));
+            if (((int)destinations & (int)Planet.Hutlar) == (int)Planet.Hutlar && PlanetToDestination(planet) != (int)Planet.Hutlar) list.Add(DestinationToPlanet((int)Planet.Hutlar));
 
             return list.ToArray();
         }

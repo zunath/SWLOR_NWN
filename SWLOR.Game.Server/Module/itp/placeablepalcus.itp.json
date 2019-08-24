@@ -75248,6 +75248,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar Starport: To Ships"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starport_ent_hut"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mos Eisley Starport: To Ships"
                     },
                     "RESREF": {

@@ -933,6 +933,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Kieun Xorxca"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kieun_xorxca"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moira Halaz"
                     },
                     "RESREF": {
@@ -982,6 +993,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "reid_coxxion"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rorrska Buvvien"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rorrska_buvvien"
                     }
                   },
                   {

@@ -78,7 +78,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.02454390004277229
+          "value": -0.0245438925921917
         },
         "BodyBag": {
           "type": "byte",
@@ -305,7 +305,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.685873343149069e-007
+          "value": -1.685872774714881e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -532,7 +532,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.685873343149069e-007
+          "value": -1.685872774714881e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -759,7 +759,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.8835728764533997
+          "value": -0.8835728168487549
         },
         "BodyBag": {
           "type": "byte",
@@ -984,7 +984,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -3.141591310501099
         },
         "BodyBag": {
           "type": "byte",
@@ -1261,7 +1261,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -3.141591310501099
         },
         "BodyBag": {
           "type": "byte",
@@ -1538,7 +1538,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -3.141591310501099
         },
         "BodyBag": {
           "type": "byte",
@@ -1815,7 +1815,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -3.141591310501099
         },
         "BodyBag": {
           "type": "byte",
@@ -2092,7 +2092,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -3.141591310501099
         },
         "BodyBag": {
           "type": "byte",
@@ -2617,7 +2617,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04906740039587021
+          "value": -0.04906739294528961
         },
         "XPosition": {
           "type": "float",
@@ -2775,7 +2775,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8932244777679443
+          "value": 0.8932248950004578
         },
         "XPosition": {
           "type": "float",
@@ -2783,7 +2783,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.4496109485626221
+          "value": -0.4496101140975952
         },
         "YPosition": {
           "type": "float",
@@ -2941,7 +2941,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.09801662713289261
+          "value": -0.09801651537418366
         },
         "YPosition": {
           "type": "float",
@@ -2992,7 +2992,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 3.894143674187944e-007
+          "value": 1.343088683825044e-006
         },
         "XPosition": {
           "type": "float",
@@ -3069,6 +3069,322 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Rorrska Buvvien"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "rorrska_buvvien"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "rorrska_buvvien"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "rorrska_buvvien"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.5555707812309265
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 32.19963455200195
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.8314692378044128
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 47.43063735961914
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Kieun Xorxca"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "kieun_xorxca"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "kieun_xorxca"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "kieun_xorxca"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9972904920578003
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 21.49955177307129
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.07356446236371994
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 33.76375198364258
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.1303019523620606
         }
       }
     ]

@@ -6540,6 +6540,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Enhancement Device"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_enh_device"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Tiger Fang"
                     },
                     "RESREF": {

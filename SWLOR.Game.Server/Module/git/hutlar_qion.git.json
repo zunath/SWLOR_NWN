@@ -305,7 +305,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796251296997
+          "value": 1.570796012878418
         },
         "BodyBag": {
           "type": "byte",
@@ -532,7 +532,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926990628242493
+          "value": -0.3926990032196045
         },
         "BodyBag": {
           "type": "byte",
@@ -759,7 +759,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748893260955811
+          "value": 2.748892784118652
         },
         "BodyBag": {
           "type": "byte",
@@ -959,15 +959,15 @@
         },
         "X": {
           "type": "float",
-          "value": 67.91683959960938
+          "value": 43.32506561279297
         },
         "Y": {
           "type": "float",
-          "value": 19.6568717956543
+          "value": 23.54599380493164
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -0.2283592224121094
         }
       },
       {
@@ -986,7 +986,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.6626796722412109
+          "value": 0.6626796126365662
         },
         "BodyBag": {
           "type": "byte",
@@ -1213,7 +1213,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.988039016723633
+          "value": -1.988038778305054
         },
         "BodyBag": {
           "type": "byte",
@@ -1413,15 +1413,15 @@
         },
         "X": {
           "type": "float",
-          "value": 282.9884948730469
+          "value": 293.5480651855469
         },
         "Y": {
           "type": "float",
-          "value": 75.00126647949219
+          "value": 15.28141593933106
         },
         "Z": {
           "type": "float",
-          "value": -0.2578411102294922
+          "value": -0.2608470916748047
         }
       },
       {
@@ -1440,7 +1440,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.528000116348267
+          "value": -2.527999877929688
         },
         "BodyBag": {
           "type": "byte",
@@ -1665,7 +1665,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.037126302719116
+          "value": 2.037126064300537
         },
         "BodyBag": {
           "type": "byte",
@@ -1890,7 +1890,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570796251296997
+          "value": -1.570796012878418
         },
         "BodyBag": {
           "type": "byte",
@@ -2322,6 +2322,233 @@
         "Z": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20812
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 0.6626796126365662
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Storage Cylinder"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "_mdrn_pl_kyru08"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_pl_kyru08"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 15.66401386260986
+        },
+        "Y": {
+          "type": "float",
+          "value": 219.6704559326172
+        },
+        "Z": {
+          "type": "float",
+          "value": 0.0208282470703125
         }
       }
     ]
@@ -3039,7 +3266,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5758083462715149
+          "value": 0.575808584690094
         },
         "XPosition": {
           "type": "float",
@@ -3047,7 +3274,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8175846934318543
+          "value": -0.8175845742225647
         },
         "YPosition": {
           "type": "float",
@@ -3190,7 +3417,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.07356461137533188
+          "value": 0.07356484979391098
         },
         "YPosition": {
           "type": "float",
@@ -3325,7 +3552,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8819212317466736
+          "value": 0.8819211721420288
         },
         "XPosition": {
           "type": "float",
@@ -3333,7 +3560,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.4713967740535736
+          "value": 0.4713968634605408
         },
         "YPosition": {
           "type": "float",
@@ -3468,7 +3695,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.903989315032959
+          "value": -0.9039893746376038
         },
         "XPosition": {
           "type": "float",
@@ -3476,7 +3703,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.4275550842285156
+          "value": -0.4275548756122589
         },
         "YPosition": {
           "type": "float",
@@ -3762,7 +3989,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.04906776919960976
+          "value": 0.04906788840889931
         },
         "YPosition": {
           "type": "float",
@@ -3905,7 +4132,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.0980171337723732
+          "value": 0.0980173721909523
         },
         "YPosition": {
           "type": "float",
@@ -4040,7 +4267,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7071067690849304
+          "value": 0.7071066498756409
         },
         "XPosition": {
           "type": "float",
@@ -4048,7 +4275,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.7071067690849304
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
@@ -4183,7 +4410,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5758081674575806
+          "value": 0.575808048248291
         },
         "XPosition": {
           "type": "float",
@@ -4191,7 +4418,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.8175848126411438
+          "value": 0.8175849318504334
         },
         "YPosition": {
           "type": "float",
@@ -4469,7 +4696,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.6895406842231751
+          "value": -0.6895409822463989
         },
         "XPosition": {
           "type": "float",
@@ -4477,7 +4704,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.7242469787597656
+          "value": -0.724246621131897
         },
         "YPosition": {
           "type": "float",
@@ -4612,7 +4839,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4052414298057556
+          "value": 0.4052418768405914
         },
         "XPosition": {
           "type": "float",
@@ -4620,7 +4847,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9142097234725952
+          "value": -0.9142094850540161
         },
         "YPosition": {
           "type": "float",
@@ -8204,6 +8431,292 @@
         "ZPosition": {
           "type": "float",
           "value": 0.2997603416442871
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Byysk"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_byysk_spn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_byysk_spn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 31
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9891765117645264
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 52.11081695556641
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.1467304974794388
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 23.63990783691406
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.05320024490356445
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Byysk"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_byysk_spn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_byysk_spn"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 31
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 35.99903106689453
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 28.38957214355469
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.384185791015625e-007
         }
       }
     ]

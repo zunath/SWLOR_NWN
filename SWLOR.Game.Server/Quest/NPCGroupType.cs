@@ -28,6 +28,9 @@
         Tatooine_Sandswimmer = 24,
         Tatooine_Wraid = 25,
         Tatooine_SandDemon = 26,
-        Tatooine_TuskenRaider = 27
+        Tatooine_TuskenRaider = 27,
+        Hutlar_Byysk = 28,
+        Hutlar_QionSlugs = 29,
+        Hutlar_QionTigers = 30
     }
 }

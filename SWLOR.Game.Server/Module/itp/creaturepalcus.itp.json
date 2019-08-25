@@ -3905,6 +3905,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kieun"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kieun_xorxca"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -4697,6 +4716,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rimer_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rorrska"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rorrska_buvvien"
                     }
                   },
                   {

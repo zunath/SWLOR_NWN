@@ -955,6 +955,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moricho Deine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moricho_deine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Orlando Doon"
                     },
                     "RESREF": {

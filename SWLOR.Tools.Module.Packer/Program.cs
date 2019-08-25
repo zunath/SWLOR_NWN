@@ -122,7 +122,7 @@ namespace SWLOR.Tools.Module.Packer
             {
                 Console.WriteLine("Processing file: " + file);
                 string extension = Path.GetExtension(file)?.Replace(".", string.Empty);
-                string command = $"nwn_gff -i {file} -o ./{extension}/{file}.json";
+                string command = $"nwn_gff -i {file} -o ./{extension}/{file}.json -p";
 
                 RunProcess(command);
 

@@ -11175,6 +11175,17 @@
                       "type": "resref",
                       "value": "zomb_avirus"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stupendious Slug Shake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_shake"
+                    }
                   }
                 ]
               },

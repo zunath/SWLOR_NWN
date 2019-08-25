@@ -55,7 +55,17 @@ namespace SWLOR.Game.Server.Service
                 int northeastLootTableID = area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
                 int southwestLootTableID = area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
                 int southeastLootTableID = area.GetLocalInt("RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
-                
+
+                // If the loot tables don't exist, don't assign them to this DB entry or we'll get foreign key reference errors.
+                if (DataService.LootTable.GetByIDOrDefault(northwestLootTableID) == null)
+                    northwestLootTableID = 0;
+                if (DataService.LootTable.GetByIDOrDefault(northeastLootTableID) == null)
+                    northeastLootTableID = 0;
+                if (DataService.LootTable.GetByIDOrDefault(southwestLootTableID) == null)
+                    southwestLootTableID = 0;
+                if (DataService.LootTable.GetByIDOrDefault(southeastLootTableID) == null)
+                    southeastLootTableID = 0;
+
                 dbArea.Name = area.Name;
                 dbArea.Tag = area.Tag;
                 dbArea.ResourceSpawnTableID = area.GetLocalInt("RESOURCE_SPAWN_TABLE_ID");

@@ -44,6 +44,12 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
             MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => RegisterCreaturePerks(message.Self));
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
+        }
+
+        private static void OnRequestCacheStats(NWPlayer player)
+        {
+            player.SendMessage("ConcentratingCreatures = " + ConcentratingCreatures.Count);
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.ActiveConcentrationPerkID != null)
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
-                ConcentratingCreatures.Add(pc);
+                ConcentratingCreatures.Add(pc.Object); // Ensure you use .Object because we need to add it as an NWCreature, not an NWPlayer
             }
         }
 
@@ -340,6 +346,11 @@ namespace SWLOR.Game.Server.Service
             {
                 creature.SetLocalInt("ACTIVE_CONCENTRATION_PERK_ID", perkID);
             }
+
+            // If swapping from one concentration to another, remove any existing entries.
+            if (ConcentratingCreatures.Contains(creature))
+                ConcentratingCreatures.Remove(creature);
+
             ConcentratingCreatures.Add(creature);
         }
 
@@ -375,8 +386,9 @@ namespace SWLOR.Game.Server.Service
         {
             // Loop through each creature. If they have a concentration ability active,
             // process it using that perk's OnConcentrationTick() method.
-            foreach(var creature in ConcentratingCreatures.ToArray())
+            for(int index = ConcentratingCreatures.Count-1; index >= 0; index--)
             {
+                var creature = ConcentratingCreatures.ElementAt(index);
                 var activeAbility = GetActiveConcentrationEffect(creature);
                 int perkID = (int)activeAbility.Type;
                 int tier = activeAbility.Tier;
@@ -385,7 +397,7 @@ namespace SWLOR.Game.Server.Service
                 // If we have an invalid creature for any reason, remove it and move to the next one.
                 if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.Unknown)
                 {
-                    ConcentratingCreatures.Remove(creature);
+                    ConcentratingCreatures.RemoveAt(index);
                     continue;
                 }
 

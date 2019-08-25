@@ -375,8 +375,9 @@ namespace SWLOR.Game.Server.Service
         {
             // Loop through each creature. If they have a concentration ability active,
             // process it using that perk's OnConcentrationTick() method.
-            foreach(var creature in ConcentratingCreatures.ToArray())
+            for(int index = ConcentratingCreatures.Count-1; index >= 0; index--)
             {
+                var creature = ConcentratingCreatures.ElementAt(index);
                 var activeAbility = GetActiveConcentrationEffect(creature);
                 int perkID = (int)activeAbility.Type;
                 int tier = activeAbility.Tier;
@@ -385,7 +386,7 @@ namespace SWLOR.Game.Server.Service
                 // If we have an invalid creature for any reason, remove it and move to the next one.
                 if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.Unknown)
                 {
-                    ConcentratingCreatures.Remove(creature);
+                    ConcentratingCreatures.RemoveAt(index);
                     continue;
                 }
 

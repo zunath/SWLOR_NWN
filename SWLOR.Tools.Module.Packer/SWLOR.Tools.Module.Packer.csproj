@@ -61,4 +61,8 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir).\SWLOR.Tools.Module.Packer.exe" "$(TargetDir)..\..\..\SWLOR.Game.Server\Module\" /E /Y /C /i
+xcopy "$(TargetDir).\SWLOR.Tools.Module.Packer.exe.config" "$(TargetDir)..\..\..\SWLOR.Game.Server\Module\" /E /Y /C /i</PostBuildEvent>
+  </PropertyGroup>
 </Project>

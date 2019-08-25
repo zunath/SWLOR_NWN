@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -88,14 +88,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "shortsword_2"
+          "value": "byyskwarriorswor"
         }
       },
       {
         "__struct_id": 32,
         "EquippedRes": {
           "type": "resref",
-          "value": "shortsword_2"
+          "value": "byyskwarriorswor"
         }
       },
       {
@@ -126,6 +126,27 @@
         "Feat": {
           "type": "word",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 65
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 20
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 723
         }
       },
       {
@@ -182,7 +203,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 12
+    "value": 18
   },
   "Interruptable": {
     "type": "byte",
@@ -212,11 +233,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 143
+    "value": 161
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 11
+    "value": 8
   },
   "NoPermDeath": {
     "type": "byte",
@@ -593,7 +614,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 27
+    "value": 34
   },
   "Subrace": {
     "type": "cexostring",
@@ -769,6 +790,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 18
   }
 }

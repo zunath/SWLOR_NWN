@@ -307,6 +307,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jolee's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_joleerobe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Musician Outfit"
                     },
                     "RESREF": {
@@ -1175,6 +1186,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Taris' Mask"
                     },
                     "RESREF": {
@@ -1548,6 +1570,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictrooper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marauder Robe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithrobe76"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marauder Robe (female)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithrobe_female"
                     }
                   },
                   {
@@ -3180,6 +3224,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Calamari Cruiser Properties"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moncal_cruiser_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Slug Hide"
                     },
                     "RESREF": {
@@ -3240,6 +3295,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "v_nashtah_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Shuttle Properties"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "visc_shutt_props"
                     }
                   }
                 ]
@@ -15347,6 +15413,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Warrior Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byyskwarriorswor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Coxxion Vibroblade SS"
                           },
                           "RESREF": {
@@ -15396,6 +15473,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "shortsword_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_blade"
                           }
                         },
                         {
@@ -15930,6 +16018,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_twinblade"
                     }
                   },
                   {

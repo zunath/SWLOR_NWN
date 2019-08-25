@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3472
+    "value": 2148
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 24
+    "value": 100
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 13.0
+    "value": 308.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,22 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 14
+          "value": 4
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 43
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 1
         }
       }
     ]
@@ -38,19 +49,19 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 100
   },
   "Conversation": {
     "type": "resref",
-    "value": ""
+    "value": "starting_items"
   },
   "CRAdjust": {
     "type": "int",
-    "value": -1
+    "value": -125
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 154
+    "value": 10000
   },
   "DecayTime": {
     "type": "dword",
@@ -62,17 +73,15 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 100
   },
   "Disarmable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Equip_ItemList": {
     "type": "list",
@@ -81,28 +90,14 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "breastplate_2"
-        }
-      },
-      {
-        "__struct_id": 16384,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_crewpsp015"
-        }
-      },
-      {
-        "__struct_id": 131072,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "quion_slug_hide"
+          "value": "czerkauniform"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -111,35 +106,70 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1
+          "value": 2
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 656
+          "value": 3
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 41
+          "value": 4
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 103
+          "value": 10
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 1089
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 28
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 258
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 106
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
         }
       },
       {
@@ -154,16 +184,16 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Qion Slug"
+      "0": "Sal Vulcano"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 0
+    "value": 250
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -171,11 +201,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 154
+    "value": 10000
   },
   "Int": {
     "type": "byte",
-    "value": 18
+    "value": 100
   },
   "Interruptable": {
     "type": "byte",
@@ -183,7 +213,7 @@
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsPC": {
     "type": "byte",
@@ -192,7 +222,7 @@
   "LastName": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "(Starting Supplies)"
     }
   },
   "LawfulChaotic": {
@@ -205,11 +235,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 190
+    "value": 10090
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 9
+    "value": 232
   },
   "NoPermDeath": {
     "type": "byte",
@@ -217,7 +247,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 44
   },
   "PerceptionRange": {
     "type": "byte",
@@ -233,67 +263,67 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 92
+    "value": 129
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 6
   },
   "refbonus": {
     "type": "short",
-    "value": 0
+    "value": 250
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": "x2_def_attacked"
+    "value": ""
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": "x2_def_ondamage"
+    "value": ""
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": "x2_def_ondeath"
+    "value": ""
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "x2_def_onconv"
+    "value": ""
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": "x2_def_ondisturb"
+    "value": ""
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": "x2_def_endcombat"
+    "value": ""
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "x2_def_heartbeat"
+    "value": ""
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": "x2_def_onblocked"
+    "value": ""
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": "x2_def_percept"
+    "value": ""
   },
   "ScriptRested": {
     "type": "resref",
-    "value": "x2_def_rested"
+    "value": ""
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "x2_def_spawn"
+    "value": ""
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": "x2_def_spellcast"
+    "value": ""
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": "x2_def_userdef"
+    "value": ""
   },
   "SkillList": {
     "type": "list",
@@ -372,7 +402,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 12
+          "value": 0
         }
       },
       {
@@ -498,95 +528,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 397
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 76
+    "value": 4
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 100
   },
   "Subrace": {
     "type": "cexostring",
@@ -594,11 +548,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "qion_slug"
+    "value": "MaleEngineer"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",
@@ -606,125 +560,15 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "qion_slug"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 116
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NPC_GROUP"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 29
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 95
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 50
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 116
-        }
-      }
-    ]
+    "value": "sal_vulcano"
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 7
   },
   "willbonus": {
     "type": "short",
-    "value": 0
+    "value": 250
   },
   "Wings_New": {
     "type": "dword",
@@ -732,6 +576,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 100
   }
 }

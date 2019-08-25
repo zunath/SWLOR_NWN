@@ -45,1398 +45,7 @@
   },
   "Creature List": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Appearance_Type": {
-          "type": "word",
-          "value": 5368
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "Cha": {
-          "type": "byte",
-          "value": 10
-        },
-        "ChallengeRating": {
-          "type": "float",
-          "value": 1.0
-        },
-        "ClassList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 2,
-              "Class": {
-                "type": "int",
-                "value": 8
-              },
-              "ClassLevel": {
-                "type": "short",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "Con": {
-          "type": "byte",
-          "value": 10
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": "zomb_dataconvo"
-        },
-        "CRAdjust": {
-          "type": "int",
-          "value": 0
-        },
-        "CurrentHitPoints": {
-          "type": "short",
-          "value": 3
-        },
-        "DecayTime": {
-          "type": "dword",
-          "value": 5000
-        },
-        "Deity": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Description": {
-          "id": 12813,
-          "type": "cexolocstring",
-          "value": {
-            "0": "Click to examine."
-          }
-        },
-        "Dex": {
-          "type": "byte",
-          "value": 10
-        },
-        "Disarmable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Equip_ItemList": {
-          "type": "list",
-          "value": []
-        },
-        "FactionID": {
-          "type": "word",
-          "value": 7
-        },
-        "FeatList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 228
-              }
-            }
-          ]
-        },
-        "FirstName": {
-          "id": 12814,
-          "type": "cexolocstring",
-          "value": {
-            "0": "Reference Database"
-          }
-        },
-        "fortbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "Gender": {
-          "type": "byte",
-          "value": 4
-        },
-        "GoodEvil": {
-          "type": "byte",
-          "value": 50
-        },
-        "HitPoints": {
-          "type": "short",
-          "value": 3
-        },
-        "Int": {
-          "type": "byte",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "IsImmortal": {
-          "type": "byte",
-          "value": 1
-        },
-        "IsPC": {
-          "type": "byte",
-          "value": 0
-        },
-        "LastName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "LawfulChaotic": {
-          "type": "byte",
-          "value": 50
-        },
-        "Lootable": {
-          "type": "byte",
-          "value": 0
-        },
-        "MaxHitPoints": {
-          "type": "short",
-          "value": 3
-        },
-        "NaturalAC": {
-          "type": "byte",
-          "value": 0
-        },
-        "NoPermDeath": {
-          "type": "byte",
-          "value": 0
-        },
-        "PerceptionRange": {
-          "type": "byte",
-          "value": 10
-        },
-        "Phenotype": {
-          "type": "int",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 1
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 129
-        },
-        "Race": {
-          "type": "byte",
-          "value": 20
-        },
-        "refbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "ScriptAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDialogue": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptEndRound": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnBlocked": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnNotice": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptRested": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptSpawn": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptSpellAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptUserDefine": {
-          "type": "resref",
-          "value": ""
-        },
-        "SkillList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 100
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 50
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 100
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 50
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "SoundSetFile": {
-          "type": "word",
-          "value": 65535
-        },
-        "SpecAbilityList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 4,
-              "Spell": {
-                "type": "word",
-                "value": 90
-              },
-              "SpellCasterLevel": {
-                "type": "byte",
-                "value": 1
-              },
-              "SpellFlags": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 4,
-              "Spell": {
-                "type": "word",
-                "value": 90
-              },
-              "SpellCasterLevel": {
-                "type": "byte",
-                "value": 1
-              },
-              "SpellFlags": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 4,
-              "Spell": {
-                "type": "word",
-                "value": 90
-              },
-              "SpellCasterLevel": {
-                "type": "byte",
-                "value": 1
-              },
-              "SpellFlags": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "StartingPackage": {
-          "type": "byte",
-          "value": 8
-        },
-        "Str": {
-          "type": "byte",
-          "value": 10
-        },
-        "Subrace": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "zomb_database"
-        },
-        "Tail_New": {
-          "type": "dword",
-          "value": 0
-        },
-        "TemplateList": {
-          "type": "list",
-          "value": []
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "zomb_database"
-        },
-        "WalkRate": {
-          "type": "int",
-          "value": 7
-        },
-        "willbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "Wings_New": {
-          "type": "dword",
-          "value": 0
-        },
-        "Wis": {
-          "type": "byte",
-          "value": 10
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 33.161376953125
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 28.51979637145996
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Appearance_Type": {
-          "type": "word",
-          "value": 2146
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "Cha": {
-          "type": "byte",
-          "value": 11
-        },
-        "ChallengeRating": {
-          "type": "float",
-          "value": 0.3333333432674408
-        },
-        "ClassList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 2,
-              "Class": {
-                "type": "int",
-                "value": 19
-              },
-              "ClassLevel": {
-                "type": "short",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "Con": {
-          "type": "byte",
-          "value": 10
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CRAdjust": {
-          "type": "int",
-          "value": 0
-        },
-        "CurrentHitPoints": {
-          "type": "short",
-          "value": 6
-        },
-        "DecayTime": {
-          "type": "dword",
-          "value": 5000
-        },
-        "Deity": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Rotting, greyish-green coloured flesh covers what appears to have once been a rancor. A sickly orange-yellow liquid seems to drip from it's major orifices, giving off a sickly smell like a city of the dead. Bits of rotting meat hangs off of deep wounds across its body, even exposing bone in some places. Its eyes lack all colour, appearing as a pale-grey, seemingly focused nowhere in particular. It lets out a gurgled roar as it notices you, before lumbering forth with an opened maw."
-          }
-        },
-        "Dex": {
-          "type": "byte",
-          "value": 12
-        },
-        "Disarmable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Equip_ItemList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 131072,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 73
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 961000
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 0
-              },
-              "LocalizedName": {
-                "id": 13205,
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 1
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 4
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 8
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 9
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 2
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 7
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 3
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 37
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "NW_IT_CREITEMUNH"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "nw_it_creitemunh"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            }
-          ]
-        },
-        "FactionID": {
-          "type": "word",
-          "value": 1
-        },
-        "FeatList": {
-          "type": "list",
-          "value": []
-        },
-        "FirstName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Zombie, Rancor"
-          }
-        },
-        "fortbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "Gender": {
-          "type": "byte",
-          "value": 0
-        },
-        "GoodEvil": {
-          "type": "byte",
-          "value": 0
-        },
-        "HitPoints": {
-          "type": "short",
-          "value": 6
-        },
-        "Int": {
-          "type": "byte",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 0
-        },
-        "IsImmortal": {
-          "type": "byte",
-          "value": 0
-        },
-        "IsPC": {
-          "type": "byte",
-          "value": 0
-        },
-        "LastName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "LawfulChaotic": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lootable": {
-          "type": "byte",
-          "value": 0
-        },
-        "MaxHitPoints": {
-          "type": "short",
-          "value": 6
-        },
-        "NaturalAC": {
-          "type": "byte",
-          "value": 0
-        },
-        "NoPermDeath": {
-          "type": "byte",
-          "value": 0
-        },
-        "PerceptionRange": {
-          "type": "byte",
-          "value": 11
-        },
-        "Phenotype": {
-          "type": "int",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 1297
-        },
-        "Race": {
-          "type": "byte",
-          "value": 24
-        },
-        "refbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "ScriptAttacked": {
-          "type": "resref",
-          "value": "x2_def_attacked"
-        },
-        "ScriptDamaged": {
-          "type": "resref",
-          "value": "x2_def_ondamage"
-        },
-        "ScriptDeath": {
-          "type": "resref",
-          "value": "x2_def_ondeath"
-        },
-        "ScriptDialogue": {
-          "type": "resref",
-          "value": "x2_def_onconv"
-        },
-        "ScriptDisturbed": {
-          "type": "resref",
-          "value": "x2_def_ondisturb"
-        },
-        "ScriptEndRound": {
-          "type": "resref",
-          "value": "x2_def_endcombat"
-        },
-        "ScriptHeartbeat": {
-          "type": "resref",
-          "value": "x2_def_heartbeat"
-        },
-        "ScriptOnBlocked": {
-          "type": "resref",
-          "value": "x2_def_onblocked"
-        },
-        "ScriptOnNotice": {
-          "type": "resref",
-          "value": "x2_def_percept"
-        },
-        "ScriptRested": {
-          "type": "resref",
-          "value": "x2_def_rested"
-        },
-        "ScriptSpawn": {
-          "type": "resref",
-          "value": "x2_def_spawn"
-        },
-        "ScriptSpellAt": {
-          "type": "resref",
-          "value": "x2_def_spellcast"
-        },
-        "ScriptUserDefine": {
-          "type": "resref",
-          "value": "x2_def_userdef"
-        },
-        "SkillList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "SoundSetFile": {
-          "type": "word",
-          "value": 256
-        },
-        "SpecAbilityList": {
-          "type": "list",
-          "value": []
-        },
-        "StartingPackage": {
-          "type": "byte",
-          "value": 81
-        },
-        "Str": {
-          "type": "byte",
-          "value": 10
-        },
-        "Subrace": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "zomb_rancor"
-        },
-        "Tail_New": {
-          "type": "dword",
-          "value": 0
-        },
-        "TemplateList": {
-          "type": "list",
-          "value": []
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "zomb_rancor"
-        },
-        "WalkRate": {
-          "type": "int",
-          "value": 7
-        },
-        "willbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "Wings_New": {
-          "type": "dword",
-          "value": 0
-        },
-        "Wis": {
-          "type": "byte",
-          "value": 10
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.09801946580410004
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 45.02588272094727
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -0.9951844811439514
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 167.1820983886719
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 2.316284053449635e-008
-        }
-      }
-    ]
+    "value": []
   },
   "Door List": {
     "type": "list",
@@ -1891,7 +500,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2108,7 +717,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2325,7 +934,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2542,7 +1151,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2759,7 +1368,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2976,7 +1585,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3193,7 +1802,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141591787338257
+          "value": -3.141591310501099
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3680,7 +2289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -3907,7 +2516,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -4134,7 +2743,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -4361,7 +2970,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582489013672
+          "value": -3.141582012176514
         },
         "BodyBag": {
           "type": "byte",
@@ -4588,7 +3197,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -4815,7 +3424,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -5042,7 +3651,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -5288,7 +3897,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -5534,7 +4143,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -5780,7 +4389,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -6026,7 +4635,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -6272,7 +4881,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -6518,7 +5127,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796012878418
+          "value": 1.570795893669128
         },
         "BodyBag": {
           "type": "byte",
@@ -8240,7 +6849,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -8465,7 +7074,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -8690,7 +7299,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -8915,7 +7524,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -9140,7 +7749,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -9365,7 +7974,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -9590,7 +8199,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -9815,7 +8424,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -10040,7 +8649,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -10490,7 +9099,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -11625,7 +10234,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -11852,7 +10461,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -12533,7 +11142,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -12760,7 +11369,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -12985,7 +11594,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -13887,7 +12496,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -15930,7 +14539,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -16611,7 +15220,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -16836,7 +15445,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -17063,7 +15672,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.692969083786011
+          "value": 1.692968964576721
         },
         "BodyBag": {
           "type": "byte",
@@ -17307,7 +15916,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -17757,7 +16366,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -18432,7 +17041,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -18657,7 +17266,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -18882,7 +17491,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.62671971321106
+          "value": 2.626719236373901
         },
         "BodyBag": {
           "type": "byte",
@@ -19803,7 +18412,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -20938,7 +19547,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -21165,7 +19774,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -21846,7 +20455,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -22073,7 +20682,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -22298,7 +20907,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -25243,7 +23852,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -25924,7 +24533,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581296920776
+          "value": -3.141580820083618
         },
         "BodyBag": {
           "type": "byte",
@@ -26149,7 +24758,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -26601,7 +25210,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -26826,7 +25435,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -27051,7 +25660,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -27726,7 +26335,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -28626,7 +27235,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -28851,7 +27460,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -29076,7 +27685,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -29301,7 +27910,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -29526,7 +28135,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -29751,7 +28360,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -29978,7 +28587,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -30205,7 +28814,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -30432,7 +29041,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -30659,7 +29268,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -30884,7 +29493,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -31559,7 +30168,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -31786,7 +30395,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -32236,7 +30845,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -32463,7 +31072,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -32690,7 +31299,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -32917,7 +31526,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -33144,7 +31753,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -33371,7 +31980,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -33598,7 +32207,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -33825,7 +32434,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -34052,7 +32661,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -35187,7 +33796,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -35412,7 +34021,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -35637,7 +34246,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141581535339356
+          "value": -3.141581296920776
         },
         "BodyBag": {
           "type": "byte",
@@ -35862,7 +34471,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -36087,7 +34696,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -36312,7 +34921,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -36539,7 +35148,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -36766,7 +35375,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -37220,7 +35829,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -37445,7 +36054,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.09249472618103
+          "value": -3.092494249343872
         },
         "BodyBag": {
           "type": "byte",
@@ -37670,7 +36279,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.092712640762329
+          "value": -3.092712163925171
         },
         "BodyBag": {
           "type": "byte",
@@ -37895,7 +36504,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -38120,7 +36729,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.092712640762329
+          "value": -3.092712163925171
         },
         "BodyBag": {
           "type": "byte",
@@ -38345,7 +36954,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -38570,7 +37179,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -38795,7 +37404,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -39020,7 +37629,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -39245,7 +37854,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -39470,7 +38079,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -39695,7 +38304,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.865316390991211
+          "value": -1.865316152572632
         },
         "BodyBag": {
           "type": "byte",
@@ -40389,7 +38998,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -40614,7 +39223,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -40839,7 +39448,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -41064,7 +39673,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -41964,7 +40573,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -47814,7 +46423,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -48039,7 +46648,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -48264,7 +46873,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -48489,7 +47098,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -48716,7 +47325,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -48943,7 +47552,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -49170,7 +47779,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -49397,7 +48006,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -49624,7 +48233,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -49851,7 +48460,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -50078,7 +48687,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -50305,7 +48914,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.963490962982178
+          "value": -1.963490724563599
         },
         "BodyBag": {
           "type": "byte",
@@ -50755,7 +49364,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.963490962982178
+          "value": 1.963490724563599
         },
         "BodyBag": {
           "type": "byte",
@@ -51655,7 +50264,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748885869979858
+          "value": 2.748885631561279
         },
         "BodyBag": {
           "type": "byte",
@@ -52105,7 +50714,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -52330,7 +50939,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -52555,7 +51164,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -53024,7 +51633,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -53249,7 +51858,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -53476,7 +52085,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -54601,7 +53210,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -54828,7 +53437,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -56871,7 +55480,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -57098,7 +55707,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -57325,7 +55934,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -57777,7 +56386,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.371735317614366e-007
+          "value": 3.371734749180178e-007
         },
         "BodyBag": {
           "type": "byte",
@@ -58452,7 +57061,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -58677,7 +57286,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582012176514
+          "value": -3.141581535339356
         },
         "BodyBag": {
           "type": "byte",
@@ -59352,7 +57961,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141582489013672
+          "value": -3.141582012176514
         },
         "BodyBag": {
           "type": "byte",
@@ -105039,7 +103648,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9326580762863159
+          "value": 0.9326580166816711
         },
         "BodyBag": {
           "type": "byte",
@@ -114728,7 +113337,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -119015,7 +117624,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.865752220153809
+          "value": 1.86575198173523
         },
         "BodyBag": {
           "type": "byte",
@@ -127392,7 +126001,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.675582408905029
+          "value": -2.67558217048645
         },
         "BodyBag": {
           "type": "byte",
@@ -127617,7 +126226,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.675255060195923
+          "value": 2.675254821777344
         },
         "BodyBag": {
           "type": "byte",
@@ -131941,7 +130550,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -132168,7 +130777,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -132395,7 +131004,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -133297,7 +131906,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -133972,7 +132581,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -134199,7 +132808,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -136455,7 +135064,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141584396362305
+          "value": -3.141583919525147
         },
         "BodyBag": {
           "type": "byte",
@@ -136680,7 +135289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.4908726811408997
+          "value": -0.4908726215362549
         },
         "BodyBag": {
           "type": "byte",
@@ -136907,7 +135516,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.4904367625713348
+          "value": 0.4904367029666901
         },
         "BodyBag": {
           "type": "byte",
@@ -140539,7 +139148,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9326581954956055
+          "value": 0.9326580762863159
         },
         "BodyBag": {
           "type": "byte",
@@ -141214,7 +139823,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.650711297988892
+          "value": -2.650710821151733
         },
         "BodyBag": {
           "type": "byte",
@@ -142339,7 +140948,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.8590270280838013
+          "value": 0.8590269684791565
         },
         "BodyBag": {
           "type": "byte",
@@ -145943,7 +144552,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9081147909164429
+          "value": 0.9081146717071533
         },
         "BodyBag": {
           "type": "byte",
@@ -146622,7 +145231,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.392698347568512
+          "value": -0.3926983177661896
         },
         "BodyBag": {
           "type": "byte",
@@ -147751,7 +146360,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9081147909164429
+          "value": 0.9081146717071533
         },
         "BodyBag": {
           "type": "byte",
@@ -150684,7 +149293,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -150911,7 +149520,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -151138,7 +149747,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -151365,7 +149974,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -151592,7 +150201,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -151819,7 +150428,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -152046,7 +150655,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141586065292358
+          "value": -3.141585826873779
         },
         "BodyBag": {
           "type": "byte",
@@ -152552,7 +151161,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796251296997
+          "value": 1.570796012878418
         },
         "BodyBag": {
           "type": "byte",
@@ -157420,7 +156029,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.267590846509847e-006
+          "value": 1.50600942561141e-006
         },
         "YPosition": {
           "type": "float",
@@ -157652,7 +156261,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8032070398330689
+          "value": 0.8032069206237793
         },
         "XPosition": {
           "type": "float",
@@ -157660,7 +156269,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5957000255584717
+          "value": 0.5957000851631165
         },
         "YPosition": {
           "type": "float",
@@ -157892,7 +156501,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.02454240247607231
+          "value": -0.02454287931323052
         },
         "XPosition": {
           "type": "float",
@@ -157900,7 +156509,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.99969881772995
+          "value": -0.9996987581253052
         },
         "YPosition": {
           "type": "float",
@@ -157909,6 +156518,164 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Reference Database"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "zomb_database"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "zomb_database"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "zomb_database002"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_NPC_GROUP_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 32.98433685302734
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 28.07678985595703
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.384185791015625e-007
         }
       }
     ]

@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3472
+    "value": 2170
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 24
+    "value": 3
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 13.0
+    "value": 14.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 14
+          "value": 13
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 12
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 10
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -1
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 154
+    "value": 50
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These giant ships are made in the shipyards around Mon Cala."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 3
   },
   "Disarmable": {
     "type": "byte",
@@ -78,83 +78,26 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "breastplate_2"
-        }
-      },
-      {
-        "__struct_id": 16384,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_crewpsp015"
-        }
-      },
-      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "quion_slug_hide"
+          "value": "moncal_cruiser_p"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 656
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 41
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 103
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 289
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 46
-        }
-      }
-    ]
+    "value": []
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Qion Slug"
+      "0": "Mon Calamari Cruiser"
     }
   },
   "fortbonus": {
@@ -163,7 +106,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 4
   },
   "GoodEvil": {
     "type": "byte",
@@ -171,15 +114,15 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 154
+    "value": 50
   },
   "Int": {
     "type": "byte",
-    "value": 18
+    "value": 3
   },
   "Interruptable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsImmortal": {
     "type": "byte",
@@ -205,11 +148,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 190
+    "value": 50
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 9
+    "value": 60
   },
   "NoPermDeath": {
     "type": "byte",
@@ -217,7 +160,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 118
   },
   "PerceptionRange": {
     "type": "byte",
@@ -233,11 +176,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 92
+    "value": 3952
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "refbonus": {
     "type": "short",
@@ -372,7 +315,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 12
+          "value": 15
         }
       },
       {
@@ -498,95 +441,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 397
+    "value": 65535
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 76
+    "value": 75
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 3
   },
   "Subrace": {
     "type": "cexostring",
@@ -594,11 +461,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "qion_slug"
+    "value": "moncal_cruiser"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",
@@ -606,7 +473,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "qion_slug"
+    "value": "moncal_cruiser"
   },
   "VarTable": {
     "type": "list",
@@ -615,22 +482,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 116
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_1"
+          "value": "IS_SHIP"
         },
         "Type": {
           "type": "dword",
@@ -645,52 +497,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "NPC_GROUP"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 29
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 95
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 50
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_2"
+          "value": "HAS_GUNNER"
         },
         "Type": {
           "type": "dword",
@@ -699,28 +506,13 @@
         "Value": {
           "type": "int",
           "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 116
         }
       }
     ]
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -732,6 +524,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 3
   }
 }

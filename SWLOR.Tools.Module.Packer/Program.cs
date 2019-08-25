@@ -69,16 +69,7 @@ namespace SWLOR.Tools.Module.Packer
                 Console.WriteLine("Packing " + fileNameNoJson);
                 string command = $"nwn_gff -i {file} -o ./packing/{fileNameNoJson} -k gff";
 
-                using(var process = CreateProcess(command))
-                {
-                    process.Start();
-
-                    process.StandardInput.Flush();
-                    process.StandardInput.Close();
-
-                    process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                }
+                RunProcess(command);
             });
 
             var scriptFiles = Directory.GetFiles("./ncs/").Union(Directory.GetFiles("./nss/"));
@@ -92,28 +83,66 @@ namespace SWLOR.Tools.Module.Packer
 
             // Finally, use nwn_erf to build a .mod file from the files inside the packing directory.
             Console.WriteLine("Building module...");
-            using (var process = CreateProcess($"nwn_erf -e MOD -c \"./packing/\" -f \"Star Wars LOR.mod\""))
-            {
-                process.Start();
-                process.StandardInput.Flush();
-                process.StandardInput.Close();
-
-                process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-            }
-
+            RunProcess($"nwn_erf -e MOD -c \"./packing/\" -f \"Star Wars LOR.mod\"");
+            
             // Clean up the packing directory.
             Directory.Delete("./packing/", true);
         }
 
         private static void UnpackModule()
         {
+            var folders = GetModuleFolders();
+            // Create any missing folders and clear out any files in existing folders.
+            Parallel.ForEach(folders, (folder) =>
+            {
+                if (Directory.Exists($"./{folder}"))
+                {
+                    Directory.Delete($"./{folder}", true);
+                }
 
+                Directory.CreateDirectory($"./{folder}");
+            });
+
+            // Create any missing script folders and clear out files in existing script folders.
+            if (Directory.Exists($"./nss")) Directory.Delete("./nss", true);
+            if (Directory.Exists($"./ncs")) Directory.Delete("./ncs", true);
+            Directory.CreateDirectory("./nss");
+            Directory.CreateDirectory("./ncs");
+
+            // Run the extraction process.
+            Console.WriteLine("Extracting module...");
+            RunProcess("nwn_erf -f \"Star Wars LOR.mod\" -x");
+
+            // Get all of the files we just unpacked.
+            Console.WriteLine("Getting files...");
+            var files = Directory.EnumerateFiles("./", "*.*")
+                .Where(x => folders.Contains("./" + x.ToLower().Substring(x.Length - 3, 3)));
+
+            Parallel.ForEach(files, (file) =>
+            {
+                Console.WriteLine("Processing file: " + file);
+                string extension = Path.GetExtension(file)?.Replace(".", string.Empty);
+                string command = $"nwn_gff -i {file} -o ./{extension}/{file}.json";
+
+                RunProcess(command);
+
+                // Remove the extracted file.
+                File.Delete(file);
+            });
+
+            files = Directory.GetFiles("./", "*.nss").Union(Directory.GetFiles("./", "*.ncs"));
+            Parallel.ForEach(files, (file) =>
+            {
+                Console.WriteLine("Moving script: " + file);
+                string fileName = Path.GetFileName(file);
+                string extension = Path.GetExtension(file)?.Replace(".", string.Empty);
+                File.Move(file, $"./{extension}/{fileName}");
+            });
         }
 
-        private static Process CreateProcess(string command)
+        private static void RunProcess(string command)
         {
-            var process = new Process
+            using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo("cmd.exe", "/K " + command)
                 {
@@ -123,9 +152,16 @@ namespace SWLOR.Tools.Module.Packer
                     CreateNoWindow = false
                 },
                 EnableRaisingEvents = true
-            };
+            })
+            {
+                process.Start();
 
-            return process;
+                process.StandardInput.Flush();
+                process.StandardInput.Close();
+
+                process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+            }
         }
 
         private static List<string> GetFileList()

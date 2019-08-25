@@ -1055,7 +1055,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Starport Flights Terminal (Edit before using)"
+            "0": "Hutlar Starport Flights Terminal"
           }
         },
         "OnClick": {
@@ -1332,7 +1332,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Starport Flights Terminal (Edit before using)"
+            "0": "Hutlar Starport Flights Terminal"
           }
         },
         "OnClick": {
@@ -1609,7 +1609,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Starport Flights Terminal (Edit before using)"
+            "0": "Hutlar Starport Flights Terminal"
           }
         },
         "OnClick": {
@@ -1886,7 +1886,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Starport Flights Terminal (Edit before using)"
+            "0": "Hutlar Starport Flights Terminal"
           }
         },
         "OnClick": {

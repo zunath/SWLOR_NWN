@@ -50,6 +50,21 @@ namespace SWLOR.Game.Server
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => Clean());
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
+        }
+
+        private static void OnRequestCacheStats(NWPlayer player)
+        {
+            player.SendMessage("PlayerDialogs: " + PlayerDialogs.Count);
+            player.SendMessage("DialogFilesInUse: " + DialogFilesInUse.Count);
+            player.SendMessage("EffectTicks: " + EffectTicks.Count);
+            player.SendMessage("CreatureSkillRegistrations: " + CreatureSkillRegistrations.Count);
+            player.SendMessage("NPCEffects: " + NPCEffects.Count);
+            player.SendMessage("UnregisterProcessingEvents: " + UnregisterProcessingEvents.Count);
+            player.SendMessage("NPCEnmityTables: " + NPCEnmityTables.Count);
+            player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
+            player.SendMessage("VisibilityObjects: " + VisibilityObjects.Count);
+            player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);
         }
 
         private static void Clean()

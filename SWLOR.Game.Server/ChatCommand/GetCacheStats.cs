@@ -1,7 +1,9 @@
 ﻿using System;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -10,18 +12,10 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-
             user.SendMessage("======================================================");
-            user.SendMessage("PlayerDialogs: " + AppCache.PlayerDialogs.Count);
-            user.SendMessage("DialogFilesInUse: " + AppCache.DialogFilesInUse.Count);
-            user.SendMessage("EffectTicks: " + AppCache.EffectTicks.Count);
-            user.SendMessage("CreatureSkillRegistrations: " + AppCache.CreatureSkillRegistrations.Count);
-            user.SendMessage("NPCEffects: " + AppCache.NPCEffects.Count);
-            user.SendMessage("UnregisterProcessingEvents: " + AppCache.UnregisterProcessingEvents.Count);
-            user.SendMessage("NPCEnmityTables: " + AppCache.NPCEnmityTables.Count);
-            user.SendMessage("CustomObjectData: " + AppCache.CustomObjectData.Count);
-            user.SendMessage("VisibilityObjects: " + AppCache.VisibilityObjects.Count);
-            user.SendMessage("PCEffectsForRemoval: " + AppCache.PCEffectsForRemoval.Count);
+
+            MessageHub.Instance.Publish(new OnRequestCacheStats(user));
+
             user.SendMessage("======================================================");
             long memoryInUse = GC.GetTotalMemory(true);
             user.SendMessage("Memory In Use = " + memoryInUse);

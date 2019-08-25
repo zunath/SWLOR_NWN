@@ -44,6 +44,12 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
             MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => RegisterCreaturePerks(message.Self));
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
+        }
+
+        private static void OnRequestCacheStats(NWPlayer player)
+        {
+            player.SendMessage("ConcentratingCreatures = " + ConcentratingCreatures.Count);
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.ActiveConcentrationPerkID != null)
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
-                ConcentratingCreatures.Add(pc);
+                ConcentratingCreatures.Add(pc.Object); // Ensure you use .Object because we need to add it as an NWCreature, not an NWPlayer
             }
         }
 
@@ -340,6 +346,11 @@ namespace SWLOR.Game.Server.Service
             {
                 creature.SetLocalInt("ACTIVE_CONCENTRATION_PERK_ID", perkID);
             }
+
+            // If swapping from one concentration to another, remove any existing entries.
+            if (ConcentratingCreatures.Contains(creature))
+                ConcentratingCreatures.Remove(creature);
+
             ConcentratingCreatures.Add(creature);
         }
 

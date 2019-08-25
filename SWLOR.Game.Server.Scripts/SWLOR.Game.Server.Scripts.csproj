@@ -609,6 +609,7 @@
     <Compile Include="Quest\HelpTheTalyronFamily.cs" />
     <Compile Include="Quest\Hutlar\BeatTheByysk.cs" />
     <Compile Include="Quest\Hutlar\CullTheTundraThreat.cs" />
+    <Compile Include="Quest\Hutlar\StupendiousSlugBile.cs" />
     <Compile Include="Quest\KathHoundHunting.cs" />
     <Compile Include="Quest\KathHoundPartCollection.cs" />
     <Compile Include="Quest\LocateTheMandalorianFacility.cs" />

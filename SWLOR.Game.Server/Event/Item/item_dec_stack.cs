@@ -14,6 +14,7 @@ namespace NWN.Scripts
         private static void Main()
         {
             NWItem item = NWGameObject.OBJECT_SELF;
+            if (item == null || !item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
             if(item.BaseItemType == _.BASE_ITEM_SHURIKEN ||
@@ -23,7 +24,7 @@ namespace NWN.Scripts
                 NWNXEvents.SkipEvent();
             }
 
-            MessageHub.Instance.Publish(new OnItemDecrementStack());
+            MessageHub.Instance.Publish(new OnItemDecrementStack(), false);
         }
     }
 }

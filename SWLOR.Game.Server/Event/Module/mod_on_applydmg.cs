@@ -12,7 +12,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            MessageHub.Instance.Publish(new OnModuleApplyDamage());
+            MessageHub.Instance.Publish(new OnModuleApplyDamage(), false);
         }
     }
 }

@@ -20,5 +20,12 @@ namespace SWLOR.Game.Server.Caching
         {
             return (LootTable)ByID[id].Clone();
         }
+
+        public LootTable GetByIDOrDefault(int id)
+        {
+            if (ByID.ContainsKey(id))
+                return (LootTable)ByID[id].Clone();
+            else return default;
+        }
     }
 }

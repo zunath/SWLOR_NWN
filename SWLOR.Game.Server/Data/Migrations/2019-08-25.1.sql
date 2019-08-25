@@ -442,3 +442,566 @@ VALUES ( 117 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'f_crystal_blue' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'f_crystal_red' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'f_crystal_green' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'f_crystal_yellow' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'c_cluster_blue' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'power_crystal_im' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'raw_croknor' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         20 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'raw_hemorgite' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         15 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'corylus' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 111 ,    -- LootTableID - int
+         'coonlank_blue' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'f_crystal_blue' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'f_crystal_red' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'f_crystal_green' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'f_crystal_yellow' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'c_cluster_red' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'power_crystal_im' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'raw_croknor' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         20 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'raw_hemorgite' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         15 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'corylus' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 113 ,    -- LootTableID - int
+         'coonlank_red' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'f_crystal_blue' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'f_crystal_red' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'f_crystal_green' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'f_crystal_yellow' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'c_cluster_yellow' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'power_crystal_im' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'raw_croknor' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         20 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'raw_hemorgite' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         15 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'corylus' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 112 ,    -- LootTableID - int
+         'coonlank_yellow' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'f_crystal_blue' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'f_crystal_red' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'f_crystal_green' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'f_crystal_yellow' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         40 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'c_cluster_green' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'power_crystal_im' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'raw_croknor' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         20 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'raw_hemorgite' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         15 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'corylus' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 114 ,    -- LootTableID - int
+         'coonlank_green' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )

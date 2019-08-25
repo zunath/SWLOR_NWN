@@ -878,6 +878,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Guylan Verruchi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "guylan_verruchi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Harry Mason"
                     },
                     "RESREF": {

@@ -40,7 +40,6 @@ namespace SWLOR.Game.Server.AI
                     break;
                 case 3:
                     NWObject chair = GetNearestObjectByTag("chair", self);
-                    Console.WriteLine("in chair");
                     ActionSit(chair);
                     break;
                 default:

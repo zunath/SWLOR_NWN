@@ -48,7 +48,10 @@ namespace NWN.Scripts
                 {
                     int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
                     string racialtype = _.GetStringByStrRef(racialID);
-                    description += ColorTokenService.Green("Racial Type: ") + racialtype;
+                    if (!description.Contains(ColorTokenService.Green("Racial Type: ") + racialtype))
+                    {
+                        description += ColorTokenService.Green("Racial Type: ") + racialtype;
+                    }                    
                 }
 
                 description = ModService.OnModuleExamine(description, examiner, examinedObject);

@@ -3975,6 +3975,176 @@
                       "type": "byte",
                       "value": 17
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Force Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Heavy Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Light Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_4"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6746
@@ -9695,106 +9865,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Mage Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Mage Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Mage Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Mage Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_m"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Thief Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_t"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Warrior Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_w"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Ring II"
+                            "value": "Fighter Ring II"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -9805,11 +9876,110 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Warrior Ring III"
+                            "value": "Fighter Ring III"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "warrior_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Ring I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mage_ring_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Ring II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mage_ring_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Ring III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mage_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Ring I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thief_ring_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Ring II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thief_ring_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Ring III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thief_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Prismatic Fighter Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "prism_ring_w"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Prismatic Force Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "prism_ring_m"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Prismatic Light Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "prism_ring_t"
                           }
                         }
                       ]

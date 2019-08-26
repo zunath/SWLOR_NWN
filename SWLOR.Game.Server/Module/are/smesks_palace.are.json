@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Eisley - Smesk's Palace"
+      "0": "Tatooine - Mos Esper - Smesk's Palace"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area004"
+    "value": "smesks_palace"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -6353,7 +6353,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 16
+    "value": 20
   },
   "Width": {
     "type": "int",

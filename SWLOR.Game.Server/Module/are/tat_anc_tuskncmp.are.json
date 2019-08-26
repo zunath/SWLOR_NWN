@@ -74,7 +74,7 @@
   },
   "MoonFogAmount": {
     "type": "byte",
-    "value": 10
+    "value": 5
   },
   "MoonFogColor": {
     "type": "dword",
@@ -125,7 +125,7 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 3
+    "value": 77
   },
   "SunAmbientColor": {
     "type": "dword",
@@ -3645,7 +3645,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 48
+    "value": 55
   },
   "Width": {
     "type": "int",

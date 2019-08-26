@@ -27,7 +27,7 @@
       },
       "MusicBattle": {
         "type": "int",
-        "value": 403
+        "value": 511
       },
       "MusicDay": {
         "type": "int",
@@ -4103,7 +4103,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4118,7 +4118,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4261,7 +4261,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4276,7 +4276,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4419,7 +4419,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4434,7 +4434,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4577,7 +4577,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4592,7 +4592,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4735,7 +4735,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4750,7 +4750,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4893,7 +4893,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4908,7 +4908,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5051,7 +5051,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5066,7 +5066,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5209,7 +5209,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5224,7 +5224,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5367,7 +5367,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5382,7 +5382,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5525,7 +5525,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5540,7 +5540,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5683,7 +5683,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5698,7 +5698,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5841,7 +5841,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5856,7 +5856,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5999,7 +5999,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6014,7 +6014,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -6157,7 +6157,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6172,7 +6172,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -6315,7 +6315,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6330,7 +6330,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -6473,7 +6473,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6488,7 +6488,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -6631,7 +6631,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6646,7 +6646,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -6789,7 +6789,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6804,7 +6804,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -6947,7 +6947,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -6962,7 +6962,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -7105,7 +7105,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -7120,7 +7120,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -7263,7 +7263,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -7278,7 +7278,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -7421,7 +7421,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -7436,7 +7436,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -7579,7 +7579,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -7594,7 +7594,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -7737,7 +7737,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -7752,7 +7752,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -7895,7 +7895,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -7910,7 +7910,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -8053,7 +8053,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -8068,7 +8068,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -8211,7 +8211,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -8226,7 +8226,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -8369,7 +8369,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -8384,7 +8384,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -8527,7 +8527,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -8542,7 +8542,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -8685,7 +8685,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -8700,7 +8700,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -8843,7 +8843,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -8858,7 +8858,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9001,7 +9001,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9016,7 +9016,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9159,7 +9159,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9174,7 +9174,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9317,7 +9317,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9332,7 +9332,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9475,7 +9475,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9490,7 +9490,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9633,7 +9633,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9648,7 +9648,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9791,7 +9791,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9806,7 +9806,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -9949,7 +9949,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -9964,7 +9964,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -10107,7 +10107,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -10122,7 +10122,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -10265,7 +10265,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -10280,7 +10280,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -10423,7 +10423,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -10438,7 +10438,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -10581,7 +10581,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -10596,7 +10596,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -10739,7 +10739,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -10754,7 +10754,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -10897,7 +10897,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -10912,7 +10912,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -11055,7 +11055,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -11070,7 +11070,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -11213,7 +11213,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -11228,7 +11228,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -11371,7 +11371,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -11386,7 +11386,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -11547,6 +11547,2008 @@
         "ZPosition": {
           "type": "float",
           "value": 5.069412231445313
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 69.94325256347656
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 42.48439025878906
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 21.81699943542481
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 81.04243469238281
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.003128051757813
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.41500091552734
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 65.39391326904297
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.96973991394043
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 13.08909416198731
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 32.8081169128418
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.3707395792007446
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 18.84832000732422
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 20.04379653930664
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1303272247314453
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 6.36775016784668
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 16.24975776672363
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.999996185302734
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 29.23759078979492
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 34.89825439453125
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.180971145629883
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 30.08902549743652
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 59.90329742431641
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 55.41564178466797
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 66.26726531982422
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 41.79587554931641
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 76.55633544921875
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 39.46118545532227
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 38.91324615478516
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 28.93630218505859
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 49.97701263427734
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.003362536430358887
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 54.32832717895508
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 82.33830261230469
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.2231540679931641
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Tatooine - Sand Raider Scavenge"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "placeable_spawn"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "v_cox_scaveng001"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 64
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "t_tusk_cmp"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 500.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 74.37443542480469
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 77.36701202392578
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 6.468751907348633
         }
       }
     ]

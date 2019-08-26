@@ -68419,6 +68419,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tusken Raider Camp Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_tusk_cmp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Waste Disposal"
                     },
                     "RESREF": {

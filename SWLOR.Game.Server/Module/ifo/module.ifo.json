@@ -1049,6 +1049,13 @@
           "type": "resref",
           "value": "hutlar_orbit"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "tat_anc_rckpass2"
+        }
       }
     ]
   },

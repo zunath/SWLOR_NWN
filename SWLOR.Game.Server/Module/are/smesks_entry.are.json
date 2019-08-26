@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area005"
+    "value": "smesks_entry"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 4
+    "value": 6
   },
   "Width": {
     "type": "int",

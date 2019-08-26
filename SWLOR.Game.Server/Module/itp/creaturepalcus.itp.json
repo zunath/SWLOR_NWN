@@ -1326,7 +1326,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 28.0
+                      "value": 18.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1718,7 +1718,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 18.0
+                            "value": 14.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -2432,7 +2432,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 37.0
+                            "value": 16.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -4963,6 +4963,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "talgarmeyne"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 34.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Militia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_militia004"
                     }
                   },
                   {
@@ -8747,7 +8766,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 13.0
+                      "value": 18.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -8785,7 +8804,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 27.0
+                      "value": 15.0
                     },
                     "FACTION": {
                       "type": "cexostring",

@@ -1812,6 +1812,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Militia Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Militia Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Reika's Leathers"
                     },
                     "RESREF": {
@@ -1872,6 +1894,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "armored_hs_p_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blaster Bullets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "004"
                     }
                   },
                   {
@@ -2450,6 +2483,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rifle Bullets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shadow's Outfit"
                     },
                     "RESREF": {
@@ -2510,6 +2554,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tarisdisguise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tat Militia Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tat Militia Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "003"
                     }
                   },
                   {
@@ -7849,6 +7915,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tusken Construction Parts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "const_parts_tsk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Electronics"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tsk_electronics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Electronics"
                     },
                     "RESREF": {
@@ -7865,6 +7953,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusk_leather"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Metal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tsk_metal"
                     }
                   },
                   {

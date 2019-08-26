@@ -753,7 +753,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.9817413687705994
+          "value": 0.9817407727241516
         },
         "BodyBag": {
           "type": "byte",
@@ -2992,6 +2992,71 @@
       }
     ]
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "AUTO_SPAWN_RESOURCES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_MAX_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 8
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 30
+        }
+      }
+    ]
+  },
   "WaypointList": {
     "type": "list",
     "value": [
@@ -3045,7 +3110,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -3219,7 +3284,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3234,7 +3299,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3377,7 +3442,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3392,7 +3457,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3535,7 +3600,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3550,7 +3615,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3693,7 +3758,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3708,7 +3773,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3851,7 +3916,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3866,7 +3931,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4009,7 +4074,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4024,7 +4089,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4167,7 +4232,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4182,7 +4247,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4325,7 +4390,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4340,7 +4405,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4483,7 +4548,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4498,7 +4563,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4641,7 +4706,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4656,7 +4721,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4799,7 +4864,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4814,7 +4879,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4957,7 +5022,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4972,7 +5037,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -5115,7 +5180,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -5130,7 +5195,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {

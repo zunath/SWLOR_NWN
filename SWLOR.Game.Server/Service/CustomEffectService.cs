@@ -142,7 +142,6 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
-            Data.Entity.CustomEffect customEffect = DataService.CustomEffect.GetByID(customEffectID);
             PCCustomEffect pcEffect = DataService.PCCustomEffect.GetByPlayerIDAndCustomEffectIDOrDefault(target.GlobalID, customEffectID);
             ICustomEffectHandler handler = GetCustomEffectHandler(customEffectID);
             CustomEffectCategoryType category = handler.CustomEffectCategoryType;

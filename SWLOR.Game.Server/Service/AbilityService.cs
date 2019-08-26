@@ -227,8 +227,8 @@ namespace SWLOR.Game.Server.Service
             if (!CanUsePerkFeat(activator, target, featID)) return;
 
             // Retrieve information necessary for activation of perk feat.
-            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault(featID);
-            Data.Entity.Perk perk = DataService.Perk.GetByIDOrDefault(perkFeat.PerkID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID(featID);
+            Data.Entity.Perk perk = DataService.Perk.GetByID(perkFeat.PerkID);
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 

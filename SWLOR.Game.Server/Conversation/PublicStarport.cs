@@ -116,6 +116,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var shipBase = DataService.PCBase.GetByID(pcBaseID);
             var ship = DataService.PCBaseStructure.GetStarshipInteriorByPCBaseIDOrDefault(shipBase.ID);
+            if (ship == null) return;
 
             NWArea instance = BaseService.GetAreaInstance(ship.ID, false);
 

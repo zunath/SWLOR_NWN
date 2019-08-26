@@ -1304,7 +1304,7 @@ namespace SWLOR.Game.Server.Service
                     target.SetLocalInt("HP", targetHP);
                     attacker.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
 
-                    if (gunner && !attacker.IsPC) pcGunner.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
+                    if (gunner && pcGunner != null && !attacker.IsPC) pcGunner.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
                     target.FloatingText("Hull points: " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
                     if (defenderArea.IsValid && damage > 0) DoImpactFeedback(defenderArea, "Your ship was hit!  Hull points " + targetHP + "/" + target.GetLocalInt("MAX_HP"));
                 }
@@ -1337,7 +1337,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If either ship is part of a base, update the base stronidium reserve and the structure durability.
-            if (attackerArea.IsValid)
+            if (attackerArea != null && attackerArea.IsValid)
             {
                 string baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
                 Guid baseStructureGuid = new Guid(baseStructureID);

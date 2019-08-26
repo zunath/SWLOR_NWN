@@ -7062,7 +7062,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 43.0
+                      "value": 75.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -7132,6 +7132,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "maletrandoshanre"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mpiandry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandry"
                     }
                   },
                   {

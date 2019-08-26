@@ -2087,6 +2087,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mpiandry Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandryhood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mpiandry Robe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandryrobe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nickkell Outfit"
                     },
                     "RESREF": {
@@ -14996,6 +15018,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "NPC Lightsaber (Keyan)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "keyanlightsaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "NPC Lightsaber (Red)"
                           },
                           "RESREF": {
@@ -16452,6 +16485,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kukri_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mpiandry's Soul"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandryssoul"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mpiandry's Torment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandrystorment"
                     }
                   },
                   {

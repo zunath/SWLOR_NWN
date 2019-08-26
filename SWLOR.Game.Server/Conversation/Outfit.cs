@@ -155,6 +155,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int outfitID = (int)response.CustomData;
             PCOutfit entity = GetPlayerOutfits(GetPC());
+            if (entity == null) return;
 
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.Chest;

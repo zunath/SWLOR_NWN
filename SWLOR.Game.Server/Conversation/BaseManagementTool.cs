@@ -635,6 +635,13 @@ namespace SWLOR.Game.Server.Conversation
             int impoundedCount = 0;
 
             var controlTower = BaseService.GetBaseControlTower(pcBase.ID);
+
+            if(controlTower == null)
+            {
+                Console.WriteLine("Could not locate control tower in BaseManagementTool -> DoRetrieveStructure. PCBaseID = " + pcBase.ID);
+                return;
+            }
+
             int maxShields = BaseService.CalculateMaxShieldHP(controlTower);
 
             if (structureType == BaseStructureType.Starship)

@@ -10,7 +10,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 1
+    "value": 201
   },
   "BodyBag": {
     "type": "byte",
@@ -30,15 +30,15 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 1
+    "value": 201
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 1
+    "value": 201
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 1
+    "value": 201
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -66,11 +66,11 @@
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 1
+    "value": 201
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 1
+    "value": 201
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -173,7 +173,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_looter_m_2"
+          "value": "npc_looter_m_t"
         }
       },
       {

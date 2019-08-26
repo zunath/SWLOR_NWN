@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3472
+    "value": 2108
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 24
+    "value": 30
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 12.0
+    "value": 10.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,33 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 14
+          "value": 21
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 20
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 22
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 4
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 20
         }
       }
     ]
@@ -38,7 +60,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +68,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -1
+    "value": -21
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 154
+    "value": 250
   },
   "DecayTime": {
     "type": "dword",
@@ -62,40 +84,31 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Equip_ItemList": {
     "type": "list",
     "value": [
       {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "breastplate_2"
-        }
-      },
-      {
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_crewpsp015"
+          "value": "qionbeastslam"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "quion_slug_hide"
+          "value": "qionbeastskin"
         }
       }
     ]
@@ -111,35 +124,77 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1
+          "value": 2
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 656
+          "value": 3
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 41
+          "value": 4
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 42
+          "value": 584
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 103
+          "value": 759
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 694
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 391
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 697
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 698
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 40
         }
       },
       {
@@ -153,7 +208,49 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 48
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 49
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 50
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 51
         }
       }
     ]
@@ -161,7 +258,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Qion Slug"
+      "0": "Qion Mutation Beast"
     }
   },
   "fortbonus": {
@@ -170,7 +267,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -178,11 +275,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 154
+    "value": 250
   },
   "Int": {
     "type": "byte",
-    "value": 18
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -212,19 +309,19 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 190
+    "value": 745
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 9
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 48
   },
   "PerceptionRange": {
     "type": "byte",
@@ -240,11 +337,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 92
+    "value": 4279
   },
   "Race": {
     "type": "byte",
-    "value": 8
+    "value": 9
   },
   "refbonus": {
     "type": "short",
@@ -379,7 +476,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 12
+          "value": 0
         }
       },
       {
@@ -505,95 +602,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 397
+    "value": 65535
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 875
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 76
+    "value": 83
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -601,11 +622,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "qion_slug"
+    "value": "QionMutationBeast"
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",
@@ -613,121 +634,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "qion_slug"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 116
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NPC_GROUP"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 29
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 95
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 50
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 116
-        }
-      }
-    ]
+    "value": "qionmutationbeas"
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -739,6 +650,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 10
   }
 }

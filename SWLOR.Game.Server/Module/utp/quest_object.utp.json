@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 3910
+    "value": 479
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -247,7 +247,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SEQUENCE"
+          "value": "QUEST_STATE"
         },
         "Type": {
           "type": "dword",
@@ -256,6 +256,51 @@
         "Value": {
           "type": "int",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "VISIBILITY_HIDDEN_DEFAULT"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "VISIBILITY_OBJECT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_MESSAGE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "You interact with the object."
         }
       }
     ]

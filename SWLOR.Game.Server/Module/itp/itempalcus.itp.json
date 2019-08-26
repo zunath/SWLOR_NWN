@@ -300,7 +300,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pil_joleerobes"
+                      "value": "pil_joleerobe"
                     }
                   },
                   {
@@ -311,7 +311,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pil_joleerobe"
+                      "value": "pil_joleerobes"
                     }
                   },
                   {
@@ -2252,6 +2252,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "NPC Outlaw Outfit Male (trando)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m_t"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "NPC Outlaw Outfit Male 2"
                     },
                     "RESREF": {
@@ -3257,6 +3268,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "QionBeastSkin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionbeastskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -3333,6 +3355,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nodamage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "QionBeastSlam"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionbeastslam"
                     }
                   },
                   {

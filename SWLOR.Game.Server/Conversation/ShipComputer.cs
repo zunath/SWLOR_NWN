@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Conversation
             int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
             int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
 
-            string locationDescription = "";
+            string locationDescription;
 
             if (SpaceService.IsLocationSpace(pcBase.ShipLocation))
             {

@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 22
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 0
+    "value": 86
   },
   "Comment": {
     "type": "cexostring",
@@ -46,21 +46,21 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 63
+    "value": 21
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 23
+    "value": 63
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Keyan Zione Hood"
+      "0": "Mpiandry Hood"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 0
+    "value": 24
   },
   "Metal2Color": {
     "type": "byte",
@@ -72,7 +72,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 58
   },
   "Plot": {
     "type": "byte",
@@ -80,7 +80,39 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 2
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 20
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 51
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",
@@ -92,10 +124,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "KeyanZioneHood"
+    "value": "MpiandryHood"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "keyanzionehood"
+    "value": "mpiandryhood"
   }
 }

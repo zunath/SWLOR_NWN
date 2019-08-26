@@ -3248,6 +3248,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Civilian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "civilian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal"
                     },
                     "RESREF": {

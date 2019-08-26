@@ -10,11 +10,11 @@
   },
   "EndConverAbort": {
     "type": "resref",
-    "value": "nw_walk_wp"
+    "value": ""
   },
   "EndConversation": {
     "type": "resref",
-    "value": "nw_walk_wp"
+    "value": ""
   },
   "EntryList": {
     "type": "list",

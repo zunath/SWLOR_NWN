@@ -241,6 +241,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Farmer Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "farmer_outfit002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gambler Blue"
                     },
                     "RESREF": {

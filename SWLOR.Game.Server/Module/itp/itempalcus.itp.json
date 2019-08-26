@@ -2945,6 +2945,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qionslugattack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionslugattack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raptor Bite"
                     },
                     "RESREF": {
@@ -14606,6 +14617,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "battleaxe_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "byyskwarrioraxe"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byyskwarrioraxe"
                           }
                         },
                         {

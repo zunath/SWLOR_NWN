@@ -1042,6 +1042,13 @@
           "type": "resref",
           "value": "hutlar_qion"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_orbit"
+        }
       }
     ]
   },

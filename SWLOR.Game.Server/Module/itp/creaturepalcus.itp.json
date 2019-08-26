@@ -1121,7 +1121,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "starship2170"
+                      "value": "moncal_cruiser"
                     }
                   },
                   {
@@ -1140,7 +1140,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "moncal_cruiser"
+                      "value": "starship2170"
                     }
                   },
                   {
@@ -1235,7 +1235,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "viscarashuttle"
+                      "value": "viscara_shuttle"
                     }
                   },
                   {
@@ -1254,7 +1254,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "viscara_shuttle"
+                      "value": "viscarashuttle"
                     }
                   }
                 ]
@@ -1303,6 +1303,25 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Mutation Beast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionmutationbeas"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "CR": {
@@ -1623,7 +1642,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 13.0
+                            "value": 12.0
                           },
                           "FACTION": {
                             "type": "cexostring",

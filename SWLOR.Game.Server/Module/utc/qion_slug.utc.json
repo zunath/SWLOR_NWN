@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 13.0
+    "value": 12.0
   },
   "ClassList": {
     "type": "list",
@@ -126,6 +126,13 @@
         "Feat": {
           "type": "word",
           "value": 41
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 42
         }
       },
       {
@@ -586,7 +593,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",

@@ -78,20 +78,6 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_crewpsp006"
-        }
-      },
-      {
-        "__struct_id": 32768,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_crewpsp006"
-        }
-      },
-      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",

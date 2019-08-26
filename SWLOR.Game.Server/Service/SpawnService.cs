@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Service
 
             MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
             MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
+
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => message.Player.SendMessage("AreaSpawns: " + AreaSpawns.Count));
         }
 
         private static void OnModuleLoad()

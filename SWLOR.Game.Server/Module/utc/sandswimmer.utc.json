@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 1044
+    "value": 157
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 28.0
+    "value": 18.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 10
         }
       }
     ]
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -26
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 450
   },
   "DecayTime": {
     "type": "dword",
@@ -130,6 +130,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 26
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -147,7 +154,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -155,7 +162,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 450
   },
   "Int": {
     "type": "byte",
@@ -189,7 +196,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 309
+    "value": 540
   },
   "NaturalAC": {
     "type": "byte",
@@ -217,7 +224,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 301
+    "value": 143
   },
   "Race": {
     "type": "byte",
@@ -482,7 +489,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 25
+    "value": 396
   },
   "SpecAbilityList": {
     "type": "list",
@@ -494,7 +501,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 42
+    "value": 55
   },
   "Subrace": {
     "type": "cexostring",
@@ -516,9 +523,44 @@
     "type": "resref",
     "value": "sandswimmer"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 103
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 24
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -530,6 +572,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 20
   }
 }

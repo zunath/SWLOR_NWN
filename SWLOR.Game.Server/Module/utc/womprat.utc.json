@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 14.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -23
+    "value": -26
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "\"Just like hitting Womprats back home...\""
+    }
   },
   "Dex": {
     "type": "byte",
@@ -70,7 +72,7 @@
   },
   "Disarmable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Equip_ItemList": {
     "type": "list",
@@ -165,7 +167,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 7
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -466,7 +468,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 35
   },
   "Subrace": {
     "type": "cexostring",
@@ -487,6 +489,41 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "womprat"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 102
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 23
+        }
+      }
+    ]
   },
   "WalkRate": {
     "type": "int",

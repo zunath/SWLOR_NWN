@@ -595,7 +595,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.07357324659824371
+          "value": -0.07357395440340042
         },
         "XPosition": {
           "type": "float",
@@ -603,7 +603,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9972898364067078
+          "value": -0.997289776802063
         },
         "YPosition": {
           "type": "float",
@@ -686,7 +686,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -701,7 +701,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -829,7 +829,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -844,7 +844,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -972,7 +972,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -987,7 +987,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1115,7 +1115,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1130,7 +1130,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1258,7 +1258,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1273,7 +1273,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1401,7 +1401,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1416,7 +1416,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1544,7 +1544,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1559,7 +1559,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1687,7 +1687,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1702,7 +1702,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {

@@ -310,57 +310,7 @@
   },
   "List": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": "1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      }
-    ]
+    "value": []
   },
   "Placeable List": {
     "type": "list",
@@ -1609,10 +1559,26 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
   }
 }

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 27.0
+    "value": 15.0
   },
   "ClassList": {
     "type": "list",
@@ -149,7 +149,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 12
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -173,7 +173,7 @@
   },
   "Disarmable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Equip_ItemList": {
     "type": "list",
@@ -248,6 +248,20 @@
         "Feat": {
           "type": "word",
           "value": 391
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 226
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1155
         }
       },
       {
@@ -675,6 +689,41 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ext_tusken_tr003"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 106
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 27
+        }
+      }
+    ]
   },
   "WalkRate": {
     "type": "int",

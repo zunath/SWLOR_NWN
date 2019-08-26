@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 0
+    "value": 2
   },
   "Charges": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -37,9 +37,10 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 169,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Warrior Sword"
+      "0": "byyskwarrioraxe"
     }
   },
   "ModelPart1": {
@@ -48,15 +49,15 @@
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 133
+    "value": 92
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 214
+    "value": 173
   },
   "PaletteID": {
     "type": "byte",
-    "value": 38
+    "value": 31
   },
   "Plot": {
     "type": "byte",
@@ -77,7 +78,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 14
         },
         "Param1": {
           "type": "byte",
@@ -139,10 +140,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ByyskWarriorSword"
+    "value": "byyskwarrioraxe"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byyskwarriorswor"
+    "value": "byyskwarrioraxe"
   }
 }

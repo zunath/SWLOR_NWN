@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 9.0
+    "value": 12.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": 1
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 30
+    "value": 40
   },
   "Disarmable": {
     "type": "byte",

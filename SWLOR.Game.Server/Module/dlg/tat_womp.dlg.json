@@ -245,7 +245,7 @@
               "__struct_id": 0,
               "Active": {
                 "type": "resref",
-                "value": "on_qst1_state_2"
+                "value": ""
               },
               "Index": {
                 "type": "dword",
@@ -386,7 +386,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 139
+    "value": 143
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -676,7 +676,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "collect_item_1"
         },
         "Sound": {
           "type": "resref",
@@ -685,7 +685,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "They're dead n' gone!"
+            "0": "They're dead n' gone! Here are the hides!"
           }
         }
       }

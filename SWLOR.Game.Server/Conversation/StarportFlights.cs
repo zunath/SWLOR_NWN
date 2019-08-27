@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Viscara", currentLocation != (int)Planet.Viscara);
             AddResponseToPage("MainPage", "Mon Cala", currentLocation != (int)Planet.MonCala);
             AddResponseToPage("MainPage", "Hutlar", currentLocation != (int)Planet.Hutlar);
+            AddResponseToPage("MainPage", "Tatooine", currentLocation != (int)Planet.Tatooine);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -83,6 +84,11 @@ namespace SWLOR.Game.Server.Conversation
                     planet = "Hutlar";
                     price = 600;
                     destinationTag = "HUTLAR_LANDING";
+                    break;
+                case 4: // Tatooine
+                    planet = "Tatooine";
+                    price = 1000;
+                    destinationTag = "TATOOINE_LANDING";
                     break;
                 default: return;
             }

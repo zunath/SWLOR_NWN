@@ -166,3 +166,47 @@ VALUES ( 84 ,   -- ID - int
          0 ,   -- DeathVFXID - int
          0     -- AIFlags - int
     )
+
+
+	
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 116 ,    -- LootTableID - int
+         'elec_slime' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 116 ,    -- LootTableID - int
+         'slug_bile' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         6 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 116 ,    -- LootTableID - int
+         'slug_tooth' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         8 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )

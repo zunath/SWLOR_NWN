@@ -67763,18 +67763,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "crystal_clustery"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Flawed Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterr"
+                      "value": "crystal_clusterb"
                     }
                   },
                   {
@@ -67796,7 +67785,18 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "crystal_clusterb"
+                      "value": "crystal_clusterr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clustery"
                     }
                   },
                   {

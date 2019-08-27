@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Metal"
+      "0": "Tusken Aiming Modulator"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 249
+    "value": 238
   },
   "PaletteID": {
     "type": "byte",
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -102,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 11
         },
         "Param1": {
           "type": "byte",
@@ -133,7 +133,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 15
         },
         "Param1": {
           "type": "byte",

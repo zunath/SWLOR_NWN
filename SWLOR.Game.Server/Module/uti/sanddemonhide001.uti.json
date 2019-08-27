@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 70
+    "value": 73
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 450000
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Womprat Bite"
+      "0": "Sand Demon Hide"
     }
   },
   "ModelPart1": {
@@ -48,7 +48,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 55
+    "value": 14
   },
   "Plot": {
     "type": "byte",
@@ -65,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 2
+          "value": 6
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -81,7 +81,38 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 56
+          "value": 22
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 14
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 75
         },
         "Subtype": {
           "type": "word",
@@ -96,27 +127,27 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 24
+          "value": 5
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 70
         },
         "Param1": {
           "type": "byte",
-          "value": 6
+          "value": 255
         },
         "Param1Value": {
           "type": "byte",
           "value": 0
         },
         "PropertyName": {
-          "type": "word",
-          "value": 48
-        },
-        "Subtype": {
           "type": "word",
           "value": 20
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 5
         }
       },
       {
@@ -127,27 +158,27 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 24
+          "value": 4
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 13
         },
         "Param1": {
           "type": "byte",
-          "value": 1
+          "value": 255
         },
         "Param1Value": {
           "type": "byte",
-          "value": 3
+          "value": 0
         },
         "PropertyName": {
           "type": "word",
-          "value": 48
+          "value": 74
         },
         "Subtype": {
           "type": "word",
-          "value": 9
+          "value": 0
         }
       }
     ]
@@ -162,10 +193,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "WompBite"
+    "value": "SandDemonHide"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "raptorbite001"
+    "value": "sanddemonhide001"
   }
 }

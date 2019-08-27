@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AreaService
     {
-        private static Dictionary<NWArea, List<AreaWalkmesh>> _walkmeshesByArea = new Dictionary<NWArea, List<AreaWalkmesh>>();
+        private static readonly Dictionary<NWArea, List<AreaWalkmesh>> _walkmeshesByArea = new Dictionary<NWArea, List<AreaWalkmesh>>();
         private const int AreaBakeStep = 5;
 
         public static void SubscribeEvents()
@@ -26,6 +26,12 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
+
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message =>
+            {
+                message.Player.SendMessage("Walkmesh Areas: " + _walkmeshesByArea.Count);
+                message.Player.SendMessage("Walkmeshes: " + _walkmeshesByArea.Values.Count);
+            });
         }
 
         private static void OnModuleLoad()

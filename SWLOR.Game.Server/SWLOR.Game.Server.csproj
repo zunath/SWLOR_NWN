@@ -432,6 +432,7 @@
     <Compile Include="Data\Entity\Area.cs" />
     <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
     <Compile Include="Item\SlugShake.cs" />
+    <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />
     <Compile Include="ValueObject\AreaWalkmesh.cs" />
     <Compile Include="Data\Entity\Association.cs" />
     <Compile Include="Data\Entity\Attribute.cs" />

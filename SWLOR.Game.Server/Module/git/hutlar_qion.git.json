@@ -305,7 +305,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570795297622681
+          "value": 1.570795059204102
         },
         "BodyBag": {
           "type": "byte",
@@ -532,7 +532,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926987946033478
+          "value": -0.3926986753940582
         },
         "BodyBag": {
           "type": "byte",
@@ -759,7 +759,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.748891353607178
+          "value": 2.748890399932861
         },
         "BodyBag": {
           "type": "byte",
@@ -986,7 +986,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.6626793146133423
+          "value": 0.6626792550086975
         },
         "BodyBag": {
           "type": "byte",
@@ -1213,7 +1213,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.988037943840027
+          "value": -1.98803722858429
         },
         "BodyBag": {
           "type": "byte",
@@ -1440,7 +1440,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.527998447418213
+          "value": -2.527997732162476
         },
         "BodyBag": {
           "type": "byte",
@@ -1890,7 +1890,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795297622681
+          "value": -1.570795059204102
         },
         "BodyBag": {
           "type": "byte",
@@ -2340,7 +2340,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.6626793146133423
+          "value": 0.6626792550086975
         },
         "BodyBag": {
           "type": "byte",
@@ -2567,7 +2567,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.374446153640747
+          "value": 1.374445915222168
         },
         "BodyBag": {
           "type": "byte",
@@ -2792,7 +2792,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.3926989436149597
+          "value": -0.3926988244056702
         },
         "BodyBag": {
           "type": "byte",
@@ -3467,7 +3467,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.650717496871948
+          "value": 2.65071702003479
         },
         "BodyBag": {
           "type": "byte",
@@ -3692,7 +3692,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.374446153640747
+          "value": 1.374445915222168
         },
         "BodyBag": {
           "type": "byte",
@@ -4012,7 +4012,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.1963495016098023
+          "value": -0.1963494420051575
         },
         "BodyBag": {
           "type": "byte",
@@ -4332,7 +4332,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.6381359100341797
+          "value": -0.6381356716156006
         },
         "BodyBag": {
           "type": "byte",
@@ -4652,7 +4652,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.527999877929688
+          "value": 2.52799916267395
         },
         "BodyBag": {
           "type": "byte",
@@ -4972,7 +4972,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.4417863786220551
+          "value": 0.4417862892150879
         },
         "BodyBag": {
           "type": "byte",
@@ -5292,7 +5292,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0.4417863786220551
+          "value": 0.4417862892150879
         },
         "BodyBag": {
           "type": "byte",
@@ -5947,7 +5947,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 4
+          "value": 33
         }
       },
       {
@@ -6296,7 +6296,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5758097171783447
+          "value": 0.5758103132247925
         },
         "XPosition": {
           "type": "float",
@@ -6304,7 +6304,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8175837397575378
+          "value": -0.8175833225250244
         },
         "YPosition": {
           "type": "float",
@@ -6447,7 +6447,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.07356555759906769
+          "value": 0.07356591522693634
         },
         "YPosition": {
           "type": "float",
@@ -7019,7 +7019,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.04906872287392616
+          "value": 0.04906884208321571
         },
         "YPosition": {
           "type": "float",
@@ -7154,7 +7154,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9951846599578857
+          "value": 0.995184600353241
         },
         "XPosition": {
           "type": "float",
@@ -7162,7 +7162,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.09801808744668961
+          "value": 0.09801844507455826
         },
         "YPosition": {
           "type": "float",
@@ -7869,7 +7869,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4052431881427765
+          "value": 0.405243843793869
         },
         "XPosition": {
           "type": "float",
@@ -7877,7 +7877,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9142089486122131
+          "value": -0.9142086505889893
         },
         "YPosition": {
           "type": "float",
@@ -11873,7 +11873,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.6895413398742676
+          "value": -0.6895420551300049
         },
         "XPosition": {
           "type": "float",
@@ -11881,7 +11881,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.7242463231086731
+          "value": -0.7242456674575806
         },
         "YPosition": {
           "type": "float",
@@ -12016,7 +12016,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.4052423238754273
+          "value": -0.4052429795265198
         },
         "XPosition": {
           "type": "float",
@@ -12024,7 +12024,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9142093062400818
+          "value": -0.9142090082168579
         },
         "YPosition": {
           "type": "float",
@@ -12033,6 +12033,864 @@
         "ZPosition": {
           "type": "float",
           "value": 0.01369714736938477
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Animals"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_animals"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_animals"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 25.61345863342285
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 290.3345642089844
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.007070779800415039
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Animals"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_animals"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_animals"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 174.1240997314453
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 281.0014038085938
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0133366584777832
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Animals"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_animals"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_animals"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 254.8990783691406
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 136.1789093017578
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0863037109375
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Animals"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_animals"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_animals"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 139.6551361083984
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 93.91703796386719
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.003992974758148193
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Animals"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_animals"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_animals"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 219.6777801513672
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 248.4237518310547
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -1.192092895507813e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Animals"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "hutlar_animals"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "hutlar_animals"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TYPE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_TABLE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESREF"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SPAWN_RESPAWN_SECONDS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 600.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "IS_SPAWN"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 173.431640625
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 211.8855285644531
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.1125895977020264
         }
       }
     ]

@@ -40,7 +40,12 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
             MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
 
-            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => message.Player.SendMessage("AreaSpawns: " + AreaSpawns.Count));
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message =>
+            {
+                message.Player.SendMessage("AreaSpawns: " + AreaSpawns.Count);
+                message.Player.SendMessage("AreaSpawns Creatures: " + AreaSpawns.Values.SelectMany(x => x.Creatures).Count());
+                message.Player.SendMessage("AreaSpawns Placeables: " + AreaSpawns.Values.SelectMany(x => x.Placeables).Count());
+            });
         }
 
         private static void OnModuleLoad()

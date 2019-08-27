@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!Guid.TryParse(location, out var locationGuid)) return false;
 
-            SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(locationGuid);
+            Starport starport = DataService.Starport.GetByStarportIDOrDefault(locationGuid);
             return starport != null;
 
         }
@@ -336,11 +336,11 @@ namespace SWLOR.Game.Server.Service
                 else 
                 {
                     // Not on a PC dock.  Are we on a starport dock?
-                    SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(new Guid(location));
+                    Starport starport = DataService.Starport.GetByStarportIDOrDefault(new Guid(location));
 
                     if (starport != null)
                     {
-                        return starport.Planet;
+                        return starport.PlanetName;
                     }
                 }
 
@@ -543,12 +543,11 @@ namespace SWLOR.Game.Server.Service
             string planet = GetPlanetFromLocation(pcBase.ShipLocation);
             Hashtable landingSpots = new Hashtable();
 
-            // First get any public starports.
-            List<SpaceStarport> starports = DataService.SpaceStarport.GetAllByPlanet(planet).ToList();
-
-            foreach (var starport in starports)
+            // First get any public starport.
+            var starport = DataService.Starport.GetByPlanetNameOrDefault(planet);
+            if (starport != null)
             {
-                landingSpots.Add(starport.Name, starport.ID);
+                landingSpots.Add(starport.Name, starport.StarportID);
             }
 
             // Go through each area in the planet, find all bases for that area, and find any we have permissions to land a ship in.

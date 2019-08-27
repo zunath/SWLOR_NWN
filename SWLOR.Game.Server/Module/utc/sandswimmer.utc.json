@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 17.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 15
         }
       }
     ]
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -26
+    "value": -36
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sandswimmers were spider-like creatures that dwelled on Tatooine. They were among the planet's most deadly predators, as they would \"swim\" underneath the arid sands of the desert before moving up to the surface to drain all fluids from their prey. The Sandswimmer exoskeleton provided a natural resistance to Tatooine's harsh conditions"
+    }
   },
   "Dex": {
     "type": "byte",
@@ -196,11 +198,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 540
+    "value": 585
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "NoPermDeath": {
     "type": "byte",
@@ -493,7 +495,23 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 799
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -560,7 +578,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 6
   },
   "willbonus": {
     "type": "short",

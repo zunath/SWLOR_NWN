@@ -13,13 +13,6 @@
           "type": "cexostring",
           "value": ""
         }
-      },
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": "DesertExit"
-        }
       }
     ]
   },
@@ -88,13 +81,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Campfire - Cauldron"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
         }
       }
     ]

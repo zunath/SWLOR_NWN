@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -38
+    "value": -48
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -90,6 +90,13 @@
           "type": "resref",
           "value": "raptorbite"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sanddemonhide001"
+        }
       }
     ]
   },
@@ -119,6 +126,34 @@
         "Feat": {
           "type": "word",
           "value": 6
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 196
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 332
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 333
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 334
         }
       },
       {
@@ -250,7 +285,7 @@
   },
   "Lootable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "MaxHitPoints": {
     "type": "short",
@@ -258,7 +293,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 23
+    "value": 30
   },
   "NoPermDeath": {
     "type": "byte",
@@ -618,7 +653,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 6
   },
   "willbonus": {
     "type": "short",
@@ -630,6 +665,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 35
   }
 }

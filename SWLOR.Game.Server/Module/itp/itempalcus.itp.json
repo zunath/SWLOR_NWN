@@ -3389,6 +3389,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sand Demon Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemonhide001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -8107,6 +8118,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tusken Aiming Modulator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tsk_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Construction Parts"
                     },
                     "RESREF": {
@@ -8145,17 +8167,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusk_leather"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tusken Metal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tsk_metal"
                     }
                   },
                   {

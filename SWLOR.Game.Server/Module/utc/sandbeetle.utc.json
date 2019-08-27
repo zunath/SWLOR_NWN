@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -24
+    "value": -40
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sand beetles, once a much smaller species of beetle, have evolved to combat the much fiercer predators of Tatooine. They are still scavengers in nature, but they will ambush any easy prey they can find. "
+    }
   },
   "Dex": {
     "type": "byte",
@@ -228,7 +230,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 22
+    "value": 25
   },
   "NoPermDeath": {
     "type": "byte",
@@ -604,7 +606,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 6
   },
   "willbonus": {
     "type": "short",

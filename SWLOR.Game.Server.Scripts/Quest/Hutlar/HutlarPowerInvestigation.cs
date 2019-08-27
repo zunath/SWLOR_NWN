@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Scripts.Quest.Hutlar
                 .AddObjectiveTalkToNPC(8)
                 
                 .AddRewardGold(1200)
+                .AddRewardItem("xp_tome_4", 1)
 
                 .OnAccepted((player, questSource) =>
                 {

@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crystal Cluster"
+      "0": "Flawed Crystal Cluster"
     }
   },
   "OnClick": {
@@ -258,6 +258,21 @@
         "Value": {
           "type": "cexostring",
           "value": "Placeable.Resource.OnHeartbeat"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_RESREF"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "f_crystal_red"
         }
       }
     ]

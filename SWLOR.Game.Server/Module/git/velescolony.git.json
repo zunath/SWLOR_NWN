@@ -312048,7 +312048,7 @@
                       "id": 90756,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Starchart Data Disk - Tattooine"
+                        "0": "Starchart Data Disk - Tatooine"
                       }
                     },
                     "ModelPart1": {
@@ -312113,7 +312113,7 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "starcharts_tattooine"
+                      "value": "starcharts_tatooine"
                     },
                     "TemplateResRef": {
                       "type": "resref",

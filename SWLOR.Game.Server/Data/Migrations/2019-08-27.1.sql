@@ -26,6 +26,10 @@ FROM dbo.SpaceStarport
 
 GO
 
+-- Fixes spelling on Tatooine
+UPDATE dbo.Starport
+SET PlanetName = 'Tatooine', WaypointTag = 'TATOOINE_LANDING' WHERE ID = 2
+
 DROP TABLE dbo.SpaceStarport
 GO
 
@@ -57,13 +61,13 @@ INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTable
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (2, 'Viscara', 1, 4, 20, 53)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (3, 'Viscara', 2, 1, 5, 0)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (4, 'Viscara', 3, 20, 15, 51)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (5, 'Tattooine', 4, 20, 10, 52)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (6, 'Tattooine', 4, 5, 20, 52)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (7, 'Tattooine', 4, 1, 30, 53)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (8, 'Tattooine', 2, 1, 15, 0)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (9, 'Tattooine', 3, 15, 15, 51)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (10, 'Tattooine', 3, 5, 25, 51)
-INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (11, 'Tattooine', 3, 3, 35, 51)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (5, 'Tatooine', 4, 20, 10, 52)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (6, 'Tatooine', 4, 5, 20, 52)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (7, 'Tatooine', 4, 1, 30, 53)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (8, 'Tatooine', 2, 1, 15, 0)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (9, 'Tatooine', 3, 15, 15, 51)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (10, 'Tatooine', 3, 5, 25, 51)
+INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (11, 'Tatooine', 3, 3, 35, 51)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (12, 'Mon Cala', 1, 15, 40, 52)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (13, 'Mon Cala', 2, 1, 40, 0)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (14, 'Mon Cala', 3, 15, 45, 0)
@@ -72,3 +76,93 @@ INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTable
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (15, 'Hutlar', 1, 15, 40, 52)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (16, 'Hutlar', 2, 1, 40, 0)
 INSERT INTO dbo.SpaceEncounter(ID, Planet, TypeID, Chance, Difficulty, LootTableID) VALUES (17, 'Hutlar', 3, 15, 45, 0)
+
+
+GO
+
+
+-- Resource spawn tables for Hutlar Qion Tundra
+INSERT INTO dbo.Spawn ( ID ,
+                        Name ,
+                        SpawnObjectTypeID )
+VALUES ( 33 ,   -- ID - int
+         N'Hutlar - Resources' , -- Name - nvarchar(64)
+         64     -- SpawnObjectTypeID - int
+    )
+
+INSERT INTO dbo.SpawnObject ( ID ,
+                              SpawnID ,
+                              Resref ,
+                              Weight ,
+                              SpawnRule ,
+                              NPCGroupID ,
+                              BehaviourScript ,
+                              DeathVFXID ,
+                              AIFlags )
+VALUES ( 77 ,   -- ID - int
+         33 ,   -- SpawnID - int
+         N'crystal_clusterb' , -- Resref - nvarchar(16)
+         10 ,   -- Weight - int
+         N'ColoredCrystalSpawnRule' , -- SpawnRule - nvarchar(32)
+         NULL ,   -- NPCGroupID - int
+         N'' , -- BehaviourScript - nvarchar(64)
+         0 ,   -- DeathVFXID - int
+         0     -- AIFlags - int
+    )
+INSERT INTO dbo.SpawnObject ( ID ,
+                              SpawnID ,
+                              Resref ,
+                              Weight ,
+                              SpawnRule ,
+                              NPCGroupID ,
+                              BehaviourScript ,
+                              DeathVFXID ,
+                              AIFlags )
+VALUES ( 82 ,   -- ID - int
+         33 ,   -- SpawnID - int
+         N'crystal_clusterr' , -- Resref - nvarchar(16)
+         8 ,   -- Weight - int
+         N'ColoredCrystalSpawnRule' , -- SpawnRule - nvarchar(32)
+         NULL ,   -- NPCGroupID - int
+         N'' , -- BehaviourScript - nvarchar(64)
+         0 ,   -- DeathVFXID - int
+         0     -- AIFlags - int
+    )
+INSERT INTO dbo.SpawnObject ( ID ,
+                              SpawnID ,
+                              Resref ,
+                              Weight ,
+                              SpawnRule ,
+                              NPCGroupID ,
+                              BehaviourScript ,
+                              DeathVFXID ,
+                              AIFlags )
+VALUES ( 83 ,   -- ID - int
+         33 ,   -- SpawnID - int
+         N'crystal_clustery' , -- Resref - nvarchar(16)
+         6 ,   -- Weight - int
+         N'ColoredCrystalSpawnRule' , -- SpawnRule - nvarchar(32)
+         NULL ,   -- NPCGroupID - int
+         N'' , -- BehaviourScript - nvarchar(64)
+         0 ,   -- DeathVFXID - int
+         0     -- AIFlags - int
+    )
+INSERT INTO dbo.SpawnObject ( ID ,
+                              SpawnID ,
+                              Resref ,
+                              Weight ,
+                              SpawnRule ,
+                              NPCGroupID ,
+                              BehaviourScript ,
+                              DeathVFXID ,
+                              AIFlags )
+VALUES ( 84 ,   -- ID - int
+         33 ,   -- SpawnID - int
+         N'crystal_clusterg' , -- Resref - nvarchar(16)
+         12 ,   -- Weight - int
+         N'ColoredCrystalSpawnRule' , -- SpawnRule - nvarchar(32)
+         NULL ,   -- NPCGroupID - int
+         N'' , -- BehaviourScript - nvarchar(64)
+         0 ,   -- DeathVFXID - int
+         0     -- AIFlags - int
+    )

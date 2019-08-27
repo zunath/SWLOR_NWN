@@ -67704,50 +67704,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterb"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterr"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clustery"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Door Control"
                     },
                     "RESREF": {
@@ -67797,6 +67753,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fiberplast_shrub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clustery"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clusterr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clusterg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clusterb"
                     }
                   },
                   {

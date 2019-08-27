@@ -8,14 +8,14 @@ using SWLOR.Game.Server.Messaging;
 
 namespace SWLOR.Game.Server.Tests.Caching
 {
-    public class SpaceStarportCacheTests
+    public class StarportCacheTests
     {
-        private SpaceStarportCache _cache;
+        private StarportCache _cache;
 
         [SetUp]
         public void Setup()
         {
-            _cache = new SpaceStarportCache();
+            _cache = new StarportCache();
         }
 
         [TearDown]
@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsSpaceStarport()
         {
             // Arrange
-            var id = Guid.NewGuid();
-            SpaceStarport entity = new SpaceStarport {ID = id};
+            var id = 555;
+            Starport entity = new Starport { ID = id, PlanetName = "My Planet"};
             
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity));
 
             // Assert
             Assert.AreNotSame(entity, _cache.GetByID(id));
@@ -43,14 +43,14 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            var id1 = Guid.NewGuid();
-            var id2 = Guid.NewGuid();
-            SpaceStarport entity1 = new SpaceStarport { ID = id1};
-            SpaceStarport entity2 = new SpaceStarport { ID = id2};
+            var id1 = 100;
+            var id2 = 500;
+            Starport entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
+            Starport entity2 = new Starport { ID = id2, PlanetName = "My Planet 2" };
 
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity2));
 
             // Assert
             Assert.AreNotSame(entity1, _cache.GetByID(id1));
@@ -61,15 +61,15 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            var id1 = Guid.NewGuid();
-            var id2 = Guid.NewGuid();
-            SpaceStarport entity1 = new SpaceStarport { ID = id1};
-            SpaceStarport entity2 = new SpaceStarport { ID = id2};
+            var id1 = 100;
+            var id2 = 200;
+            Starport entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
+            Starport entity2 = new Starport { ID = id2, PlanetName = "My Planet" };
 
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity2));
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<SpaceStarport>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<Starport>(entity1));
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });
@@ -80,16 +80,16 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            var id1 = Guid.NewGuid();
-            var id2 = Guid.NewGuid();
-            SpaceStarport entity1 = new SpaceStarport { ID = id1};
-            SpaceStarport entity2 = new SpaceStarport { ID = id2};
+            var id1 = 100;
+            var id2 = 200;
+            Starport entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
+            Starport entity2 = new Starport { ID = id2, PlanetName = "My Planet" };
 
             // Act
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceStarport>(entity2));
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<SpaceStarport>(entity1));
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<SpaceStarport>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity2));
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<Starport>(entity1));
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<Starport>(entity2));
 
             // Assert
             Assert.Throws<KeyNotFoundException>(() => { _cache.GetByID(id1); });

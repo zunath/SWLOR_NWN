@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Conversation
                 Guid dockStructureID = dialog.CustomData["LAND_" + response.Text];
 
                 // This could be a public startport ID or a private dock base structure ID.  
-                SpaceStarport starport = DataService.SpaceStarport.GetByIDOrDefault(dockStructureID);
+                Starport starport = DataService.Starport.GetByStarportIDOrDefault(dockStructureID);
                 if (starport != null)
                 {
                     // We have a public starport.  
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Conversation
                         _.TakeGoldFromCreature(starport.Cost, player, 1);
 
                         // Land.
-                        pcBase.ShipLocation = starport.ID.ToString();
+                        pcBase.ShipLocation = starport.StarportID.ToString();
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(1);
                         DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 

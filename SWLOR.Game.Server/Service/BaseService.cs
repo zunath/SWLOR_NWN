@@ -1069,14 +1069,14 @@ namespace SWLOR.Game.Server.Service
                         {
                             // Retrieve the dock waypoint and jump to it.  
                             Guid shipLocationGuid = new Guid(pcBase.ShipLocation);
-                            SpaceStarport starport = DataService.SpaceStarport.GetByID(shipLocationGuid);
+                            Starport starport = DataService.Starport.GetByStarportID(shipLocationGuid);
 
-                            NWObject waypoint = _.GetWaypointByTag(starport.Waypoint);
+                            NWObject waypoint = _.GetWaypointByTag(starport.WaypointTag);
 
                             if (!waypoint.IsValid)
                             {
-                                player.SendMessage("Could not find waypoint " + starport.Waypoint + ". This is a bug, please report it.");
-                                LoggingService.Trace(TraceComponent.Space, "Failed to find waypoint: " + starport.Waypoint);
+                                player.SendMessage("Could not find waypoint " + starport.WaypointTag + ". This is a bug, please report it.");
+                                LoggingService.Trace(TraceComponent.Space, "Failed to find waypoint: " + starport.WaypointTag);
                                 return;
                             }
 

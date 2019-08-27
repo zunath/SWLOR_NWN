@@ -261,7 +261,7 @@
     <Compile Include="Caching\SkillCache.cs" />
     <Compile Include="Caching\SkillCategoryCache.cs" />
     <Compile Include="Caching\SpaceEncounterCache.cs" />
-    <Compile Include="Caching\SpaceStarportCache.cs" />
+    <Compile Include="Caching\StarportCache.cs" />
     <Compile Include="Caching\SpawnCache.cs" />
     <Compile Include="Caching\SpawnObjectCache.cs" />
     <Compile Include="Caching\SpawnObjectTypeCache.cs" />
@@ -470,7 +470,7 @@
     <Compile Include="Data\Entity\PCGuildPoint.cs" />
     <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
-    <Compile Include="Data\Entity\SpaceStarport.cs" />
+    <Compile Include="Data\Entity\Starport.cs" />
     <Compile Include="Data\Entity\FameRegion.cs" />
     <Compile Include="Data\Entity\GameTopic.cs" />
     <Compile Include="Data\Entity\GameTopicCategory.cs" />
@@ -821,6 +821,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-08-26.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-26.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-26.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-27.1.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />

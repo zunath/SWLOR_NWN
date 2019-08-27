@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
         public static SkillCache Skill { get; } = new SkillCache();
         public static SkillCategoryCache SkillCategory { get; } = new SkillCategoryCache();
         public static SpaceEncounterCache SpaceEncounter { get; } = new SpaceEncounterCache();
-        public static SpaceStarportCache SpaceStarport { get; } = new SpaceStarportCache();
+        public static StarportCache Starport { get; } = new StarportCache();
         public static SpawnCache Spawn { get; } = new SpawnCache();
         public static SpawnObjectCache SpawnObject { get; } = new SpawnObjectCache();
         public static SpawnObjectTypeCache SpawnObjectType { get; } = new SpawnObjectTypeCache();
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Service
             LoadCache<PCBaseStructurePermission>();
             LoadCache<Data.Entity.PCBaseType>();
             LoadPCMarketListingCache();
-            LoadCache<SpaceStarport>();
+            LoadCache<Starport>();
             LoadCache<SpaceEncounter>();
 
             

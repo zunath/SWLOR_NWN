@@ -36,6 +36,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
             PCBase pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
             PCBaseStructure tower = BaseService.GetBaseControlTower(pcBase.ID);
 
+            if (tower == null)
+            {
+                Console.WriteLine("Could not locate valid tower in Drill OnHeartbeat. PCBaseID = " + pcBase.ID);
+                return;
+            }
+
             // Check whether there's space in this tower.
             int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
             int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(tower.ID) + 1;
@@ -96,6 +102,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
             pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
 
             var controlTower = BaseService.GetBaseControlTower(pcStructure.PCBaseID);
+
+            if (controlTower == null)
+            {
+                Console.WriteLine("Could not locate control tower in drill heartbeat. PCBaseID = " + pcStructure.PCBaseID);
+                return;
+            }
+
             var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
 
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");

@@ -29,6 +29,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
             var structure = DataService.PCBaseStructure.GetByID(structureGUID);
             var controlTower = BaseService.GetBaseControlTower(structure.PCBaseID);
 
+            if (controlTower == null)
+            {
+                Console.WriteLine("Could not locate control tower in ResourceBay OnDisturbed. PCBaseID = " + structure.PCBaseID);
+                return;
+            }
+
             if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
                 ItemService.ReturnItem(player, item);

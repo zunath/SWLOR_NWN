@@ -52,6 +52,13 @@ namespace SWLOR.Game.Server.Conversation
                 TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
 
                 var tower = BaseService.GetBaseControlTower(pcBaseID);
+
+                if (tower == null)
+                {
+                    Console.WriteLine("Could not locate control tower in ControlTower -> Initialize. PCBaseID = " + pcBaseID);
+                    return;
+                }
+
                 var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;

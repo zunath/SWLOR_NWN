@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (dock != null)
                 {
-                    PCBase parentBase = DataService.PCBase.GetByIDOrDefault(dock.PCBaseID);
+                    PCBase parentBase = DataService.PCBase.GetByID(dock.PCBaseID);
                     IEnumerable<NWArea> areas = NWModule.Get().Areas;
 
                     foreach (var area in areas)
@@ -457,8 +457,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             Guid structureGuid = new Guid(structureID);
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByIDOrDefault(structureGuid);
-            PCBase starkillerBase = DataService.PCBase.GetByIDOrDefault(structure.PCBaseID);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureGuid);
+            PCBase starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
             starkillerBase.ShipLocation = location;
             area.SetLocalString("SHIP_LOCATION", location);
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
@@ -482,7 +482,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Guid structureGuid = new Guid(structureID);
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByIDOrDefault(structureGuid);
+            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureGuid);
             PCBase starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             return starkillerBase.ShipLocation;
@@ -662,7 +662,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             if (location == null)
@@ -699,11 +699,6 @@ namespace SWLOR.Game.Server.Service
             NWCreature shipCreature = ship.GetLocalObject("CREATURE");
             if (shipCreature.IsValid)
             {
-                string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-                Guid shipGuid = new Guid(shipID);
-                PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
-                PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
-                
                 // Remove the ship object.
                 LoggingService.Trace(TraceComponent.Space, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
                 shipCreature.Destroy();
@@ -718,7 +713,7 @@ namespace SWLOR.Game.Server.Service
         {
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
             Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
@@ -756,7 +751,7 @@ namespace SWLOR.Game.Server.Service
             PlayerService.SaveLocation(player);
 
             Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             int shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
@@ -1049,7 +1044,7 @@ namespace SWLOR.Game.Server.Service
 
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
             Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByIDOrDefault(shipGuid);
+            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
@@ -1307,7 +1302,7 @@ namespace SWLOR.Game.Server.Service
                     target.SetLocalInt("HP", targetHP);
                     attacker.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
 
-                    if (gunner && !attacker.IsPC) pcGunner.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
+                    if (gunner && pcGunner != null && !attacker.IsPC) pcGunner.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
                     target.FloatingText("Hull points: " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
                     if (defenderArea.IsValid && damage > 0) DoImpactFeedback(defenderArea, "Your ship was hit!  Hull points " + targetHP + "/" + target.GetLocalInt("MAX_HP"));
                 }
@@ -1340,7 +1335,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If either ship is part of a base, update the base stronidium reserve and the structure durability.
-            if (attackerArea.IsValid)
+            if (attackerArea != null && attackerArea.IsValid)
             {
                 string baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
                 Guid baseStructureGuid = new Guid(baseStructureID);

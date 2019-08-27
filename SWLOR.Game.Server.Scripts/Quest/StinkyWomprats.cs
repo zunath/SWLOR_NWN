@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Scripts.Quest
         public StinkyWomprats()
         {
             CreateQuest(33, "Stinky Womprats", "stinky_womprats")           
-                .AddObjectiveKillTarget(1, NPCGroupType.Tatooine_Womprat, 20)
+                .AddObjectiveCollectItem(1, "womprathide", 10, false)
                 .AddObjectiveTalkToNPC(2)
                 .AddRewardGold(1000)
                 .AddRewardItem("xp_tome_4", 1);

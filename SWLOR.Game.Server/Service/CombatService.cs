@@ -240,7 +240,8 @@ namespace SWLOR.Game.Server.Service
             {
                 NWPlayer player = damager.Object;
                 NWCreature target = NWGameObject.OBJECT_SELF;
-                int perkRank = PerkService.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
+                var pcPerk = PerkService.GetPCPerkByID(damager.GlobalID, (int) PerkType.SneakAttack);
+                int perkRank = pcPerk?.PerkLevel ?? 0;
                 int perkBonus = 1;
 
                 // Rank 4 increases damage bonus by 2x (total: 3x)

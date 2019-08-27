@@ -149,7 +149,8 @@ namespace SWLOR.Game.Server.Service
             var exteriorStyle = pcStructure.ExteriorStyleID == null ? null : DataService.BuildingStyle.GetByID(Convert.ToInt32(pcStructure.ExteriorStyleID));
 
             List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
-            if (string.IsNullOrWhiteSpace(resref) &&
+            if (exteriorStyle != null &&
+                string.IsNullOrWhiteSpace(resref) &&
                 structureType == BaseStructureType.Building)
             {
                 resref = exteriorStyle.Resref;
@@ -179,7 +180,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWPlaceable door = null;
-            if (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship)
+            if (exteriorStyle != null && (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship))
             {
                 door = SpawnBuildingDoor(exteriorStyle.DoorRule, plc);
                 areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, door, false, null));
@@ -428,6 +429,9 @@ namespace SWLOR.Game.Server.Service
         public static double GetMaxBaseCPU(Guid pcBaseID)
         {
             var tower = GetBaseControlTower(pcBaseID);
+
+            if (tower == null) return 0.0d;
+
             var structure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             return structure.CPU + (tower.StructureBonus * 2);
@@ -436,6 +440,9 @@ namespace SWLOR.Game.Server.Service
         public static double GetMaxBasePower(Guid pcBaseID)
         {
             var tower = GetBaseControlTower(pcBaseID);
+
+            if (tower == null) return 0.0d;
+
             var structure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             return structure.Power + (tower.StructureBonus * 3);
@@ -552,7 +559,7 @@ namespace SWLOR.Game.Server.Service
                     return "No more structures can be placed inside this starship.";
                 }
             }
-            else if (buildingType == BuildingType.Apartment)
+            else if (pcBase != null && buildingType == BuildingType.Apartment)
             {
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 var buildingStructureCount = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID).Count();
@@ -657,7 +664,7 @@ namespace SWLOR.Game.Server.Service
                     if (!string.IsNullOrWhiteSpace(dockPCBaseStructureID))
                     {
                         Guid dockPCBaseStructureGuid = new Guid(dockPCBaseStructureID);
-                        PCBaseStructure dockStructure = DataService.PCBaseStructure.GetByIDOrDefault(dockPCBaseStructureGuid);
+                        PCBaseStructure dockStructure = DataService.PCBaseStructure.GetByID(dockPCBaseStructureGuid);
                         BaseStructure dockBaseStructure = DataService.BaseStructure.GetByID(dockStructure.BaseStructureID);
 
                         if (dockBaseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
@@ -819,6 +826,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     // This is a dock with a starship parked.  Clear the docked starship base entry as well.
                     PCBase starkillerBase = DataService.PCBase.GetByShipLocationOrDefault(structure.PCBaseStructureID.ToString());
+
+                    if (starkillerBase == null)
+                    {
+                        Console.WriteLine("Unable to locate base in BaseService -> ClearPCBaseByID. PCBaseStructureID = " + structure.PCBaseStructureID);
+                        continue;
+                    }
+
                     LoggingService.Trace(TraceComponent.Base, "Destroying child starship with base ID: " + starkillerBase.ID);
                     ClearPCBaseByID(starkillerBase.ID);
                 }
@@ -1278,6 +1292,13 @@ namespace SWLOR.Game.Server.Service
         {
             const int siloType = (int)BaseStructureType.FuelSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
+
+            if (tower == null)
+            {
+                Console.WriteLine("Could not find tower in BaseService -> CalculateMaxFuel. PCBaseID = " + pcBaseID);
+                return 0;
+            }
+
             var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
@@ -1303,6 +1324,13 @@ namespace SWLOR.Game.Server.Service
         {
             const int siloType = (int)BaseStructureType.StronidiumSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
+
+            if (tower == null)
+            {
+                Console.WriteLine("Could not find tower in BaseService -> CalculateMaxReinforcedFuel. PCBaseID = " + pcBaseID);
+                return 0;
+            }
+
             var towerBaseStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
             float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
                                   .Where(x =>
@@ -1329,6 +1357,13 @@ namespace SWLOR.Game.Server.Service
         {
             const int siloType = (int)BaseStructureType.ResourceSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
+
+            if (tower == null)
+            {
+                Console.WriteLine("Could not find tower in BaseService -> CalculateResourceCapacity. PCBaseID = " + pcBaseID);
+                return 0;
+            }
+
             var towerBaseStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
             float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
                                   .Where(x =>

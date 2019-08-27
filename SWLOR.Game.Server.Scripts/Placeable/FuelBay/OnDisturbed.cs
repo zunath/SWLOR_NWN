@@ -131,6 +131,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
             DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
             var tower = BaseService.GetBaseControlTower(structure.PCBaseID);
+
+            if (tower == null)
+            {
+                Console.WriteLine("Could not locate tower in Fuel Bay. PCBaseID = " + structure.PCBaseID);
+                return;
+            }
+
             var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             if (towerStructure.BaseStructureTypeID == (int)BaseStructureType.Starship)

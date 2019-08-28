@@ -216,8 +216,8 @@ namespace SWLOR.Game.Server.Service
         private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
         {
             NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalInt("IS_AREA_INSTANCE") == FALSE);
-            AreaSpawn originalAreaSpawn = AreaSpawns[originalArea];
-            AreaSpawns.Add(copyArea, originalAreaSpawn);
+            AreaSpawn copyAreaSpawn = AreaSpawns[originalArea].Clone();
+            AreaSpawns.Add(copyArea, copyAreaSpawn);
         }
         
         public static Location GetRandomSpawnPoint(NWArea area)

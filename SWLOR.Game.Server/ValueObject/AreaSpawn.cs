@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.ValueObject
 {
@@ -13,6 +14,17 @@ namespace SWLOR.Game.Server.ValueObject
         {
             Placeables = new List<ObjectSpawn>();
             Creatures = new List<ObjectSpawn>();
+        }
+
+        public AreaSpawn Clone()
+        {
+            return new AreaSpawn
+            {
+                SecondsEmpty = SecondsEmpty,
+                HasSpawned = HasSpawned,
+                Placeables = Placeables.ToList(),
+                Creatures = Creatures.ToList()
+            };
         }
     }
 }

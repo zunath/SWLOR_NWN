@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 134
+    "value": 115
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
+    "value": 10004
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 30
+    "value": 9
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 15.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -99,30 +99,30 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 52
+          "value": 4
         },
         "ClassLevel": {
           "type": "short",
-          "value": 5
+          "value": 1
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 62
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 2
+    "value": 149
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 46
+    "value": 1
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 46
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -130,11 +130,11 @@
   },
   "Con": {
     "type": "byte",
-    "value": 40
+    "value": 16
   },
   "Conversation": {
     "type": "resref",
-    "value": "nw_convo_moaguar"
+    "value": "smesk_naia"
   },
   "CRAdjust": {
     "type": "int",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 45
   },
   "DecayTime": {
     "type": "dword",
@@ -155,16 +155,16 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "M.O.A (or Merchants of Anchorhead) are an association that was created by all the merchants within Anchorhead. This group is the deciding factor of who or what can trade in Anchorhead as a merchant. As M.O.A grew, they decided they needed to hire guards. The M.O.A Guard's are respected mercenaries or bounty hunters that have decided to slow down and become a guard. They aren't to be messed with and all have different stories / history."
+      "0": "A sickly looking Twi-lekseems to be guarding the gate."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 55
+    "value": 13
   },
   "Disarmable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Equip_ItemList": {
     "type": "list",
@@ -173,7 +173,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_merchguardout"
+          "value": "naia"
         }
       }
     ]
@@ -210,28 +210,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 6
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 10
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 391
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 26
         }
       },
       {
@@ -288,7 +267,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "M.O.A Guard"
+      "0": "Nai-Ah"
     }
   },
   "fortbonus": {
@@ -301,11 +280,11 @@
   },
   "GoodEvil": {
     "type": "byte",
-    "value": 100
+    "value": 50
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 45
   },
   "Int": {
     "type": "byte",
@@ -313,7 +292,7 @@
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -331,7 +310,7 @@
   },
   "LawfulChaotic": {
     "type": "byte",
-    "value": 100
+    "value": 50
   },
   "Lootable": {
     "type": "byte",
@@ -339,11 +318,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 375
+    "value": 48
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -351,7 +330,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 121
+    "value": 45
   },
   "PerceptionRange": {
     "type": "byte",
@@ -363,11 +342,11 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PortraitId": {
     "type": "word",
-    "value": 284
+    "value": 3638
   },
   "Race": {
     "type": "byte",
@@ -379,55 +358,55 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": "x2_def_attacked"
+    "value": ""
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": "x2_def_ondamage"
+    "value": ""
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": "x2_def_ondeath"
+    "value": ""
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "x2_def_onconv"
+    "value": ""
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": "x2_def_ondisturb"
+    "value": ""
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": "x2_def_endcombat"
+    "value": ""
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "x2_def_heartbeat"
+    "value": ""
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": "x2_def_onblocked"
+    "value": ""
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": "x2_def_percept"
+    "value": ""
   },
   "ScriptRested": {
     "type": "resref",
-    "value": "x2_def_rested"
+    "value": ""
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "x2_def_spawn"
+    "value": ""
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": "x2_def_spellcast"
+    "value": ""
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": "x2_def_userdef"
+    "value": ""
   },
   "SkillList": {
     "type": "list",
@@ -632,7 +611,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 138
+    "value": 940
   },
   "SpecAbilityList": {
     "type": "list",
@@ -640,11 +619,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 143
+    "value": 4
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -652,7 +631,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "MOAGuard"
+    "value": "male_twilek"
   },
   "Tail_New": {
     "type": "dword",
@@ -664,7 +643,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "nw_moaguard"
+    "value": "naah"
   },
   "WalkRate": {
     "type": "int",
@@ -672,7 +651,7 @@
   },
   "willbonus": {
     "type": "short",
-    "value": 12
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",
@@ -680,6 +659,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 25
+    "value": 10
   }
 }

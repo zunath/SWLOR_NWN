@@ -13,7 +13,7 @@
         StimFiend = 8,
         MedicalBlueprints = 9,
         SpeedyMedicine = 10,
-        AbsorptionField = 11,
+        MartialFinesse = 11,
         Hide = 12,
         MindShield = 13,
         StronidiumRefining = 14,

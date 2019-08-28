@@ -175,6 +175,8 @@ namespace NWN.Scripts
             NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, _.CREATURE_SIZE_MEDIUM);
             NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, _.CREATURE_SIZE_MEDIUM);
             NWNXWeapon.SetWeaponFinesseSize(_.BASE_ITEM_LONGSWORD, _.CREATURE_SIZE_MEDIUM);
+
+            NWNXWeapon.SetWeaponUnarmed(_.BASE_ITEM_QUARTERSTAFF);
         }
 
 

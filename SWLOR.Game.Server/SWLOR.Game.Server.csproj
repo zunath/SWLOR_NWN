@@ -825,6 +825,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-08-26.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-26.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-27.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-27.2.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
@@ -1155,7 +1156,7 @@
     <Compile Include="Event\Player\pc_on_damaged.cs" />
     <Compile Include="Event\Player\pc_on_heartbeat.cs" />
     <Compile Include="Perk\Armorsmith\ArmorRepair.cs" />
-    <Compile Include="Perk\Armor\AbsorptionField.cs" />
+    <Compile Include="Perk\MartialArts\MartialFinesse.cs" />
     <Compile Include="Perk\Armor\Clarity.cs" />
     <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\Armor\ShieldBoost.cs" />

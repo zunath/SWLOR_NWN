@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service
             {
                 return;
             }
-            
+
             pcSkill.XP = pcSkill.XP + xp;
             oPC.SendMessage("You earned " + skill.Name + " skill experience. (" + xp + ")");
 
@@ -974,7 +974,33 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyEquipmentPenalties(NWPlayer player, NWItem item)
         {
             // Identify whether this item has a skill type. If it doesn't, exit early.
-            SkillType skill = ItemService.GetSkillTypeForItem(item);
+            SkillType skill;
+
+            // Rings/Amulets use the highest skill rank out of the player's armor skills
+            if (item.BaseItemType == BASE_ITEM_RING || item.BaseItemType == BASE_ITEM_AMULET)
+            {
+                int forceArmor = GetPCSkillRank(player, SkillType.ForceArmor);
+                int lightArmor = GetPCSkillRank(player, SkillType.LightArmor);
+                int heavyArmor = GetPCSkillRank(player, SkillType.HeavyArmor);
+                int highest = forceArmor;
+                skill = SkillType.ForceArmor;
+
+                if (lightArmor > highest)
+                {
+                    highest = lightArmor;
+                    skill = SkillType.LightArmor;
+                }
+
+                if (heavyArmor > highest)
+                {
+                    skill = SkillType.HeavyArmor;
+                }
+            }
+            else
+            {
+                skill = ItemService.GetSkillTypeForItem(item);
+            }
+
             if (skill == SkillType.Unknown) return;
 
             // Determine the delta between player's skill and the item's recommended level.
@@ -1058,7 +1084,7 @@ namespace SWLOR.Game.Server.Service
                     // Calculate the new value (minimum of 1).
                     int newImmunity = 1 + (immunity.Amount - delta * 5);
                     if (newImmunity < 1) newImmunity = 1;
-                    
+
                     if (newImmunity > immunity.Amount) newImmunity = immunity.Amount;
 
                     // We have the amount but we need to find the corresponding ID in the 2DA.
@@ -1242,7 +1268,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     int plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
                     int amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
-                    if(plusID > 0 && amountID > 0)
+                    if (plusID > 0 && amountID > 0)
                     {
                         ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
                         ipsToApply.Add(newIP);

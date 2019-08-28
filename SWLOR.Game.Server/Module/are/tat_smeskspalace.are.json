@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_jabba_ext"
+    "value": "tat_smeskspalace"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -129,7 +129,7 @@
   },
   "SunAmbientColor": {
     "type": "dword",
-    "value": 9549311
+    "value": 7579869
   },
   "SunDiffuseColor": {
     "type": "dword",
@@ -11170,7 +11170,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 11
+    "value": 13
   },
   "Width": {
     "type": "int",

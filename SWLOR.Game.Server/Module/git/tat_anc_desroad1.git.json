@@ -66,7 +66,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.107336968037998e-006
+          "value": -2.107333784806542e-006
         },
         "CloseLockDC": {
           "type": "byte",
@@ -936,6 +936,71 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "AUTO_SPAWN_RESOURCES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_MAX_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 8
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 47
         }
       }
     ]
@@ -2280,7 +2345,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -2331,7 +2396,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807850122451782
+          "value": 0.9807849526405335
         },
         "XPosition": {
           "type": "float",
@@ -2339,7 +2404,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.1950915306806564
+          "value": 0.1950918734073639
         },
         "YPosition": {
           "type": "float",
@@ -2452,7 +2517,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2467,7 +2532,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -2610,7 +2675,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2625,7 +2690,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -2768,7 +2833,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2783,7 +2848,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -2926,7 +2991,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2941,7 +3006,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {

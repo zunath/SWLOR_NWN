@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Eisley - South Entrance",
+      "0": "Tatooine - Mos Esper - South Entrance",
       "2": "Mos Eisley - Entrée Sud"
     }
   },
@@ -1710,7 +1710,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 44
+    "value": 45
   },
   "Width": {
     "type": "int",

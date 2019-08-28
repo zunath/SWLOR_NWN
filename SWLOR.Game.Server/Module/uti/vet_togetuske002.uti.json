@@ -62,7 +62,7 @@
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 152
+    "value": 15
   },
   "ArmorPart_RShin": {
     "type": "byte",

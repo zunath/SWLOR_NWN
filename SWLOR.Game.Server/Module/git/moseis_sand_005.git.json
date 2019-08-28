@@ -551,7 +551,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.04907582327723503
+          "value": 0.04907796531915665
         },
         "XPosition": {
           "type": "float",
@@ -559,7 +559,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9987950325012207
+          "value": -0.9987949728965759
         },
         "YPosition": {
           "type": "float",
@@ -614,7 +614,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 34.89567565917969
+          "value": 34.99390411376953
         },
         "YOrientation": {
           "type": "float",
@@ -622,11 +622,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 0.8871688842773438
+          "value": 4.030511856079102
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.02500000037252903
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -701,7 +701,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -716,7 +716,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -844,7 +844,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -859,7 +859,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -987,7 +987,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1002,7 +1002,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1130,7 +1130,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1145,7 +1145,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1273,7 +1273,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1288,7 +1288,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1416,7 +1416,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1431,7 +1431,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1559,7 +1559,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1574,7 +1574,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1702,7 +1702,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1717,7 +1717,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1845,7 +1845,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1860,7 +1860,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1988,7 +1988,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2003,7 +2003,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2131,7 +2131,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2146,7 +2146,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2274,7 +2274,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2289,7 +2289,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2417,7 +2417,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2432,7 +2432,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2560,7 +2560,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2575,7 +2575,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {

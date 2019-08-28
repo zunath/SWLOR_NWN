@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3300
+    "value": 422
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 13.0
+    "value": 18.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -43
+    "value": -48
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The sand demon was a species of semi-sentient, six-legged insectoid that was native to the planet Tatooine. Feared by all other life on the desert world, sand demons preyed on a wide variety of creatures, including the legendary krayt dragon. Sand demons often lived for centuries, gliding beneath the surface of the desert as though the sand was an ocean and boring through rock with its razor-sharp legs. Tatooine's native Tusken Raiders believed that sand demons devoured their victims' life essences to grow stronger with each kill. Physically similar to the tentacled lyleks native to the planet Ryloth, sand demons were often tracked by members of the Jedi Order as part of the Tusken Raiders' Demon's Blood ritual, and while brave hunters occasionally sought to bring down one of the beasts, the creatures' ferocity and rarity left them shrouded in legends and myths. "
+    }
   },
   "Dex": {
     "type": "byte",
@@ -88,6 +90,13 @@
           "type": "resref",
           "value": "raptorbite"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sanddemonhide001"
+        }
       }
     ]
   },
@@ -102,7 +111,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1174
+          "value": 1157
         }
       },
       {
@@ -116,7 +125,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1020
+          "value": 6
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 196
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 332
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 333
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 334
         }
       },
       {
@@ -124,6 +161,55 @@
         "Feat": {
           "type": "word",
           "value": 10
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 545
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 565
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 555
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 575
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 292
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 23
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 746
         }
       },
       {
@@ -199,7 +285,7 @@
   },
   "Lootable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "MaxHitPoints": {
     "type": "short",
@@ -207,7 +293,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 20
+    "value": 30
   },
   "NoPermDeath": {
     "type": "byte",
@@ -231,7 +317,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 309
+    "value": 718
   },
   "Race": {
     "type": "byte",
@@ -496,7 +582,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 0
+    "value": 390
   },
   "SpecAbilityList": {
     "type": "list",
@@ -508,7 +594,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 90
+    "value": 80
   },
   "Subrace": {
     "type": "cexostring",
@@ -530,9 +616,44 @@
     "type": "resref",
     "value": "sanddemon"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 105
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 26
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 6
   },
   "willbonus": {
     "type": "short",
@@ -544,6 +665,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 35
   }
 }

@@ -196,6 +196,71 @@
     "type": "list",
     "value": []
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "AUTO_SPAWN_RESOURCES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_MAX_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 8
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 30
+        }
+      }
+    ]
+  },
   "WaypointList": {
     "type": "list",
     "value": [
@@ -271,7 +336,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -286,7 +351,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -414,7 +479,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -429,7 +494,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -557,7 +622,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -572,7 +637,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -700,7 +765,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -715,7 +780,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -843,7 +908,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -858,7 +923,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -986,7 +1051,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1001,7 +1066,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {

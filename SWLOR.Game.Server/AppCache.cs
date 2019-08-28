@@ -65,6 +65,8 @@ namespace SWLOR.Game.Server
             player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
             player.SendMessage("VisibilityObjects: " + VisibilityObjects.Count);
             player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);
+            player.SendMessage("ConnectedDMs: " + ConnectedDMs.Count);
+            player.SendMessage("PlayerEffectivePerkLevels: " + PlayerEffectivePerkLevels.Count);
         }
 
         private static void Clean()

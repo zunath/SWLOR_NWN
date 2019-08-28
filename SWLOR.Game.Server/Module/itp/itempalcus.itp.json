@@ -1662,6 +1662,671 @@
                 "type": "byte",
                 "value": 7
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_helm"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6669

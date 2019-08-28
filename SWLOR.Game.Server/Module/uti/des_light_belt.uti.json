@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 31
+    "value": 50
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 21
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 31
+    "value": 51
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Gross."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Slug Bile"
+      "0": "Destroyed Light Belt"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 41
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 7
   },
   "Plot": {
     "type": "byte",
@@ -69,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 62
+          "value": 42
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -85,26 +83,26 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 137
+          "value": 109
         },
         "Subtype": {
           "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
           "value": 33
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 61
         },
         "CostValue": {
           "type": "word",
-          "value": 11
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -116,38 +114,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 104
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
           "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 60
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 136
         },
         "Subtype": {
           "type": "word",
@@ -166,10 +133,30 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "slug_bile"
+    "value": "des_light_belt"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "slug_bile"
+    "value": "des_light_belt"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CUSTOM_ITEM_PROPERTY_DEXTERITY_BONUS"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   }
 }

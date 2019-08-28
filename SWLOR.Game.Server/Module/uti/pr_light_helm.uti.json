@@ -2,13 +2,21 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 31
+    "value": 50
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 17
   },
   "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth2Color": {
     "type": "byte",
     "value": 0
   },
@@ -18,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 31
+    "value": 53
   },
   "Cursed": {
     "type": "byte",
@@ -26,9 +34,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Gross."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -40,19 +46,35 @@
     "type": "byte",
     "value": 1
   },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 0
+  },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Slug Bile"
+      "0": "Poor Light Helmet"
     }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 0
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 41
+    "value": 177
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 7
   },
   "Plot": {
     "type": "byte",
@@ -69,11 +91,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 62
+          "value": 50
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -85,38 +107,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 137
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 33
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 61
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 11
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
+          "value": 117
         },
         "Subtype": {
           "type": "word",
@@ -131,7 +122,38 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 60
+          "value": 49
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 116
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 42
         },
         "CostValue": {
           "type": "word",
@@ -147,7 +169,38 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 136
+          "value": 109
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 30
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
         },
         "Subtype": {
           "type": "word",
@@ -166,10 +219,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "slug_bile"
+    "value": "des_helm"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "slug_bile"
+    "value": "pr_light_helm"
   }
 }

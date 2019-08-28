@@ -196,7 +196,12 @@ namespace SWLOR.Game.Server.Service
 
             if (examinedItem.RecommendedLevel > 0)
             {
-                description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
+                description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel;
+
+                if (examinedItem.BaseItemType == BASE_ITEM_RING || examinedItem.BaseItemType == BASE_ITEM_AMULET)
+                    description += " (Uses your highest armor skill)";
+
+                description += "\n";
             }
             if (examinedItem.LevelIncrease > 0)
             {

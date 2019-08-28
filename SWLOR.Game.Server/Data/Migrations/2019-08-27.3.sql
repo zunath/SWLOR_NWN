@@ -831,3 +831,25 @@ VALUES ( 110 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+
+	
+INSERT INTO dbo.SpawnObject ( ID ,
+                              SpawnID ,
+                              Resref ,
+                              Weight ,
+                              SpawnRule ,
+                              NPCGroupID ,
+                              BehaviourScript ,
+                              DeathVFXID ,
+                              AIFlags )
+VALUES ( 85 ,   -- ID - int
+         33 ,   -- SpawnID - int
+         N'ore_vein' , -- Resref - nvarchar(16)
+         8 ,   -- Weight - int
+         N'OreSpawnRule' , -- SpawnRule - nvarchar(32)
+         NULL ,   -- NPCGroupID - int
+         N'' , -- BehaviourScript - nvarchar(64)
+         0 ,   -- DeathVFXID - int
+         0     -- AIFlags - int
+    )

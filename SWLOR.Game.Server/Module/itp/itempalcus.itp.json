@@ -3203,6 +3203,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smuggler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "naia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Smuggler Outfit"
                     },
                     "RESREF": {

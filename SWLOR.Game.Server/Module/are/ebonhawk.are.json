@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 0
+    "value": 3
   },
   "FogClipDist": {
     "type": "float",
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area002"
+    "value": "ebonhawk"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 13
+    "value": 14
   },
   "Width": {
     "type": "int",

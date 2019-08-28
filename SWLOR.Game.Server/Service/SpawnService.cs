@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.AI;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -39,6 +36,13 @@ namespace SWLOR.Game.Server.Service
 
             MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
             MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
+
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message =>
+            {
+                message.Player.SendMessage("AreaSpawns: " + AreaSpawns.Count);
+                message.Player.SendMessage("AreaSpawns Creatures: " + AreaSpawns.Values.SelectMany(x => x.Creatures).Count());
+                message.Player.SendMessage("AreaSpawns Placeables: " + AreaSpawns.Values.SelectMany(x => x.Placeables).Count());
+            });
         }
 
         private static void OnModuleLoad()
@@ -212,8 +216,8 @@ namespace SWLOR.Game.Server.Service
         private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
         {
             NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalInt("IS_AREA_INSTANCE") == FALSE);
-            AreaSpawn originalAreaSpawn = AreaSpawns[originalArea];
-            AreaSpawns.Add(copyArea, originalAreaSpawn);
+            AreaSpawn copyAreaSpawn = AreaSpawns[originalArea].Clone();
+            AreaSpawns.Add(copyArea, copyAreaSpawn);
         }
         
         public static Location GetRandomSpawnPoint(NWArea area)

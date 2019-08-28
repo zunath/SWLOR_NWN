@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 1187
+    "value": 17
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 37.0
+    "value": 16.0
   },
   "ClassList": {
     "type": "list",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -40
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 500
+    "value": 520
   },
   "DecayTime": {
     "type": "dword",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sand beetles, once a much smaller species of beetle, have evolved to combat the much fiercer predators of Tatooine. They are still scavengers in nature, but they will ambush any easy prey they can find. "
+    }
   },
   "Dex": {
     "type": "byte",
@@ -102,6 +104,69 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 543
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 544
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 545
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 546
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 551
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 547
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 548
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 549
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 550
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -127,7 +192,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 500
+    "value": 520
   },
   "Int": {
     "type": "byte",
@@ -161,11 +226,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 500
+    "value": 520
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 22
+    "value": 25
   },
   "NoPermDeath": {
     "type": "byte",
@@ -189,7 +254,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 236
+    "value": 154
   },
   "Race": {
     "type": "byte",
@@ -458,7 +523,23 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 0
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 8
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -466,7 +547,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 50
+    "value": 70
   },
   "Subrace": {
     "type": "cexostring",
@@ -488,9 +569,44 @@
     "type": "resref",
     "value": "sandbeetle"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 104
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 25
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 6
   },
   "willbonus": {
     "type": "short",

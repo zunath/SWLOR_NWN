@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Quest
         public bool AllowRewardSelection { get; private set; }
 
         private Action<NWPlayer, NWObject> _onAccept;
-        private Action<NWPlayer, NWObject> _onAdvance;
+        private Action<NWPlayer, NWObject, int> _onAdvance;
         private Action<NWPlayer, NWObject> _onComplete;
 
         public Quest(int questID, string name, string journalTag)
@@ -229,13 +229,11 @@ namespace SWLOR.Game.Server.Quest
                 }
                 
                 // Run any quest-specific code.
-                _onAdvance?.Invoke(player, questSource);
+                _onAdvance?.Invoke(player, questSource, questStatus.QuestState);
 
                 // Notify to subscribers that the player has advanced to the next state of the quest.
                 MessageHub.Instance.Publish(new OnQuestAdvanced(player, QuestID, questStatus.QuestState));
             }
-
-
         }
 
         public void Complete(NWPlayer player, NWObject questSource, IQuestReward selectedReward)
@@ -307,7 +305,7 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest OnAdvanced(Action<NWPlayer, NWObject> action)
+        public IQuest OnAdvanced(Action<NWPlayer, NWObject, int> action)
         {
             _onAdvance = action;
             return this;

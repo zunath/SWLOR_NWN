@@ -207,6 +207,12 @@ namespace SWLOR.Game.Server.Service
                 climate.special_warm_windy = "The wind is picking up, a warm front rolling over.  There could be a storm soon.";
                 climate.special_windy = "A strong wind sweeps in.  The sea is choppy, waves crashing onto the beach.";
             }
+            else if (planetName == "Hutlar")
+            {
+                LoggingService.Trace(TraceComponent.Weather, "Planet is Hutlar.");
+                climate.Heat_Modifier = -5;
+                climate.Humidity_Modifier = -8;
+            }
 
             return climate;
         }

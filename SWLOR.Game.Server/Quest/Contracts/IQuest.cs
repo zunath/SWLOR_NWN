@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Quest.Contracts
         void GiveRewards(NWPlayer player);
         
         IQuest OnAccepted(Action<NWPlayer, NWObject> action);
-        IQuest OnAdvanced(Action<NWPlayer, NWObject> action);
+        IQuest OnAdvanced(Action<NWPlayer, NWObject, int> action);
         IQuest OnCompleted(Action<NWPlayer, NWObject> action);
 
         IQuest IsRepeatable();

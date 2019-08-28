@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Eisley - Cantina Quarter",
+      "0": "Tatooine - Mos Esper - Cantina Quarter",
       "2": "Mos Eisley - Nouveaux Quartiers"
     }
   },
@@ -5365,7 +5365,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 42
+    "value": 43
   },
   "Width": {
     "type": "int",

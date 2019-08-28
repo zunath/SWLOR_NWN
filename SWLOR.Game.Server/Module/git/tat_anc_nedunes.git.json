@@ -600,6 +600,273 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "__struct_id": 1,
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 1
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 10
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.025000095367432
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.5843849182128906
+              },
+              "PointY": {
+                "type": "float",
+                "value": -4.281234741210938
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.47598123550415
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 18.75322723388672
+              },
+              "PointY": {
+                "type": "float",
+                "value": -3.264404296875
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.660744190216065
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 19.00342559814453
+              },
+              "PointY": {
+                "type": "float",
+                "value": -0.3013992309570313
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 5.061145782470703
+              }
+            }
+          ]
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 3.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": "WP_trigger_moseis_sand005_002"
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 2
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Area trans"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "todunes"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "areatrans"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 10
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.66278839111328
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 89.49507141113281
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "AUTO_SPAWN_RESOURCES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_MAX_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 8
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 47
+        }
       }
     ]
   },
@@ -717,7 +984,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 7.907536314633035e-007
+          "value": 1.625218715162191e-006
         },
         "YPosition": {
           "type": "float",
@@ -732,13 +999,11 @@
         "__struct_id": 5,
         "Appearance": {
           "type": "byte",
-          "value": 2
+          "value": 3
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
+          "value": {}
         },
         "HasMapNote": {
           "type": "byte",
@@ -751,7 +1016,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine - Sand Worm"
+            "0": "Area Enter"
           }
         },
         "MapNote": {
@@ -764,126 +1029,31 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandworm"
+          "value": "WP_anchor_vtochee_mos"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "tat_sandworm"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "sandworm"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            }
-          ]
+          "value": "areatrans"
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.7409513592720032
+          "value": 0.02454168722033501
         },
         "XPosition": {
           "type": "float",
-          "value": 65.14904022216797
+          "value": 65.63677978515625
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.671558678150177
+          "value": -0.99969881772995
         },
         "YPosition": {
           "type": "float",
-          "value": 69.26567077636719
+          "value": 83.69931793212891
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": 4.99999475479126
         }
       }
     ]

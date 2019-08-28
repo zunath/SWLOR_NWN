@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Eisley - Dowager Queen",
+      "0": "Tatooine - Mos Esper - Dowager Queen",
       "2": "Mos Eisley - Dowager Queen"
     }
   },
@@ -11170,7 +11170,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 47
+    "value": 48
   },
   "Width": {
     "type": "int",

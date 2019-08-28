@@ -43,11 +43,6 @@ namespace NWN.Scripts
                 PlayerService.InitializePlayer(player);
             }
 
-            using (new Profiler(nameof(mod_on_enter) + ":CachePlayerData"))
-            {
-                //DataService.CachePlayerData(player);
-            }
-
             using (new Profiler(nameof(mod_on_enter) + ":SkillServiceEnter"))
             {
                 SkillService.OnModuleEnter();

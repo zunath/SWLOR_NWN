@@ -95,7 +95,8 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             // Check if Mind Shield is on target.
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-            if (concentrationEffect.Type == PerkType.MindShield)
+            if (concentrationEffect.Type == PerkType.MindShield ||
+                GetIsImmune(target, IMMUNITY_TYPE_MIND_SPELLS) == TRUE)
             {
                 creature.SendMessage("Your target is immune to tranquilization effects.");
             }

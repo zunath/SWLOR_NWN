@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.AI
                     target.Area.Resref != self.Area.Resref ||
                     target.CurrentHP <= -11 ||
                     target.IsDead ||
-                    GetDistanceBetween(self, target) > 30.0f)
+                    GetDistanceBetween(self, target) > 40.0f)
                 {
                     EnmityService.GetEnmityTable(self).Remove(enmity.Key);
                     continue;

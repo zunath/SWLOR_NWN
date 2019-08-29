@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // parts 16 (lightfoil blade) excluded
                         case BASE_ITEM_GREATSWORD:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 22, 23, 24 };
+                            parts = new[] { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 22, 23, 24 };
                             break;
                         // parts 21 (lightfoil blade) and 24 (cosmic blade) excluded
                         case BASE_ITEM_LONGSWORD:

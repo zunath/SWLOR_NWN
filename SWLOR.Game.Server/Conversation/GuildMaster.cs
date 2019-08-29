@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var gpReward in gpRewards)
             {
-                gpAmount += gpReward.Amount;
+                gpAmount += GuildService.CalculateGPReward(player, gpReward.Guild, gpReward.Amount);
             }
 
             foreach (var goldReward in goldRewards)

@@ -96,10 +96,6 @@ namespace SWLOR.Game.Server.Service
             if (baseAmount > 1000)
                 baseAmount = 1000;
 
-            // Grant a bonus based on the player's guild relations perk rank. Always offset by 1 so we don't end up with multiplication by zero.
-            int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations) + 1;
-            baseAmount *= perkBonus;
-
             var dbGuild = DataService.Guild.GetByID((int) guild);
             var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) guild);
             pcGP.Points += baseAmount;
@@ -153,13 +149,21 @@ namespace SWLOR.Game.Server.Service
             
             foreach(var reward in gpRewards)
             {
-                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)reward.Guild);
-                float rankBonus = 0.25f * pcGP.Rank;
-
-                int gp = reward.Amount + (int)(reward.Amount * rankBonus);
+                int gp = CalculateGPReward(player, reward.Guild, reward.Amount);
                 GiveGuildPoints(player, reward.Guild, gp);
             }
+        }
 
+        public static int CalculateGPReward(NWPlayer player, GuildType guild, int baseAmount)
+        {
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)guild);
+            float rankBonus = 0.25f * pcGP.Rank;
+
+            // Grant a bonus based on the player's guild relations perk rank.
+            int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations);
+            baseAmount = baseAmount + (perkBonus * baseAmount);
+
+            return baseAmount + (int)(baseAmount * rankBonus);
         }
 
         private static void OnModuleHeartbeat()

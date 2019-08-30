@@ -759,6 +759,13 @@ namespace SWLOR.Game.Server.Conversation
             else if (structureType == BaseStructureType.ResourceSilo)
             {
                 int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
+
+                if (controlTower == null)
+                {
+                    Console.WriteLine("Could not locate control tower in BaseManagementTool -> DoRetrieveStructure. PCBaseID = " + pcBase.ID);
+                    return;
+                }
+
                 var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(controlTower.ID).ToList();
 
                 while (items.Count > maxResources)

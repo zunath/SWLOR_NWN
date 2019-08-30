@@ -313,7 +313,31 @@ namespace SWLOR.Game.Server.Service
             if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM || !player.IsInitializedAsPlayer) return;
 
             // Calculating effective stats can be expensive, so we cache it on the item.
-            SkillType skill = ItemService.GetSkillTypeForItem(item);
+            SkillType skill; 
+            
+            if(item.BaseItemType == BASE_ITEM_AMULET || item.BaseItemType == BASE_ITEM_RING)
+            {
+                var forceArmor = SkillService.GetPCSkill(player, (int)SkillType.ForceArmor);
+                var lightArmor = SkillService.GetPCSkill(player, (int)SkillType.LightArmor);
+                var heavyArmor = SkillService.GetPCSkill(player, (int)SkillType.HeavyArmor);
+                var highest = forceArmor.Rank;
+                skill = SkillType.ForceArmor;
+
+                if (lightArmor.Rank > highest)
+                {
+                    highest = lightArmor.Rank;
+                    skill = SkillType.LightArmor;
+                }
+                if (heavyArmor.Rank > highest)
+                {
+                    skill = SkillType.HeavyArmor;
+                }
+            }
+            else
+            {
+                skill = ItemService.GetSkillTypeForItem(item);
+            }
+                
             var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalculateEffectiveStats"))
             {

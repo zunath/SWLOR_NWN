@@ -11,7 +11,7 @@
       },
       "AmbientSndDayVol": {
         "type": "int",
-        "value": 255
+        "value": 127
       },
       "AmbientSndNight": {
         "type": "int",
@@ -19,7 +19,7 @@
       },
       "AmbientSndNitVol": {
         "type": "int",
-        "value": 255
+        "value": 127
       },
       "EnvAudio": {
         "type": "int",
@@ -27,11 +27,11 @@
       },
       "MusicBattle": {
         "type": "int",
-        "value": 0
+        "value": 511
       },
       "MusicDay": {
         "type": "int",
-        "value": 0
+        "value": 607
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 537
       }
     }
   },
@@ -57,7 +57,491 @@
   },
   "List": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "AddCost": {
+          "type": "dword",
+          "value": 25
+        },
+        "BaseItem": {
+          "type": "int",
+          "value": 513
+        },
+        "Charges": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cost": {
+          "type": "dword",
+          "value": 25
+        },
+        "Cursed": {
+          "type": "byte",
+          "value": 0
+        },
+        "DescIdentified": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Use this anywhere within a claimable area sector to identify which materials can be retrieved with a base drill."
+          }
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "Identified": {
+          "type": "byte",
+          "value": 1
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Basic Mineral Scanner"
+          }
+        },
+        "ModelPart1": {
+          "type": "byte",
+          "value": 254
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertiesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ChanceAppear": {
+                "type": "byte",
+                "value": 100
+              },
+              "CostTable": {
+                "type": "byte",
+                "value": 3
+              },
+              "CostValue": {
+                "type": "word",
+                "value": 13
+              },
+              "Param1": {
+                "type": "byte",
+                "value": 255
+              },
+              "Param1Value": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertyName": {
+                "type": "word",
+                "value": 15
+              },
+              "Subtype": {
+                "type": "word",
+                "value": 329
+              }
+            }
+          ]
+        },
+        "StackSize": {
+          "type": "word",
+          "value": 1
+        },
+        "Stolen": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "scanner_m_b"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "scanner_m_b"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MineralScanner"
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 80.14947509765625
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 60.55992889404297
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "AddCost": {
+          "type": "dword",
+          "value": 25
+        },
+        "BaseItem": {
+          "type": "int",
+          "value": 513
+        },
+        "Charges": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cost": {
+          "type": "dword",
+          "value": 25
+        },
+        "Cursed": {
+          "type": "byte",
+          "value": 0
+        },
+        "DescIdentified": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Use this on a resource to harvest it."
+          }
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "Identified": {
+          "type": "byte",
+          "value": 1
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Basic Resource Harvester"
+          }
+        },
+        "ModelPart1": {
+          "type": "byte",
+          "value": 20
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertiesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ChanceAppear": {
+                "type": "byte",
+                "value": 100
+              },
+              "CostTable": {
+                "type": "byte",
+                "value": 3
+              },
+              "CostValue": {
+                "type": "word",
+                "value": 13
+              },
+              "Param1": {
+                "type": "byte",
+                "value": 255
+              },
+              "Param1Value": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertyName": {
+                "type": "word",
+                "value": 15
+              },
+              "Subtype": {
+                "type": "word",
+                "value": 329
+              }
+            }
+          ]
+        },
+        "StackSize": {
+          "type": "word",
+          "value": 1
+        },
+        "Stolen": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "harvest_r_b"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "harvest_r_b"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "ResourceHarvester"
+              }
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 78.04585266113281
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 60.64056396484375
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "AddCost": {
+          "type": "dword",
+          "value": 40
+        },
+        "BaseItem": {
+          "type": "int",
+          "value": 63
+        },
+        "Charges": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cost": {
+          "type": "dword",
+          "value": 40
+        },
+        "Cursed": {
+          "type": "byte",
+          "value": 0
+        },
+        "DescIdentified": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "Identified": {
+          "type": "byte",
+          "value": 1
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Basic Axe"
+          }
+        },
+        "ModelPart1": {
+          "type": "byte",
+          "value": 11
+        },
+        "ModelPart2": {
+          "type": "byte",
+          "value": 11
+        },
+        "ModelPart3": {
+          "type": "byte",
+          "value": 11
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertiesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ChanceAppear": {
+                "type": "byte",
+                "value": 100
+              },
+              "CostTable": {
+                "type": "byte",
+                "value": 0
+              },
+              "CostValue": {
+                "type": "word",
+                "value": 0
+              },
+              "Param1": {
+                "type": "byte",
+                "value": 255
+              },
+              "Param1Value": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertyName": {
+                "type": "word",
+                "value": 127
+              },
+              "Subtype": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ChanceAppear": {
+                "type": "byte",
+                "value": 100
+              },
+              "CostTable": {
+                "type": "byte",
+                "value": 0
+              },
+              "CostValue": {
+                "type": "word",
+                "value": 0
+              },
+              "Param1": {
+                "type": "byte",
+                "value": 255
+              },
+              "Param1Value": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertyName": {
+                "type": "word",
+                "value": 127
+              },
+              "Subtype": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ChanceAppear": {
+                "type": "byte",
+                "value": 100
+              },
+              "CostTable": {
+                "type": "byte",
+                "value": 33
+              },
+              "CostValue": {
+                "type": "word",
+                "value": 0
+              },
+              "Param1": {
+                "type": "byte",
+                "value": 255
+              },
+              "Param1Value": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertyName": {
+                "type": "word",
+                "value": 100
+              },
+              "Subtype": {
+                "type": "word",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "StackSize": {
+          "type": "word",
+          "value": 1
+        },
+        "Stolen": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "axe_b"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "axe_b"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 78.83573913574219
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 55.95244598388672
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      }
+    ]
   },
   "Placeable List": {
     "type": "list",
@@ -482,6 +966,71 @@
       }
     ]
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "AUTO_SPAWN_RESOURCES"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_MAX_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 47
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_QUALITY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 8
+        }
+      }
+    ]
+  },
   "WaypointList": {
     "type": "list",
     "value": [
@@ -533,7 +1082,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.148381556959066e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -592,7 +1141,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.029172267408285e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -675,7 +1224,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -690,7 +1239,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -818,7 +1367,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -833,7 +1382,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -961,7 +1510,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -976,7 +1525,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1104,7 +1653,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1119,7 +1668,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1247,7 +1796,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1262,7 +1811,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1390,7 +1939,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1405,7 +1954,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1533,7 +2082,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1548,7 +2097,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1676,7 +2225,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1691,7 +2240,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1819,7 +2368,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1834,7 +2383,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -1962,7 +2511,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -1977,7 +2526,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2105,7 +2654,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2120,7 +2669,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2248,7 +2797,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 42
               }
             },
             {
@@ -2263,7 +2812,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "womprat"
+                "value": ""
               }
             },
             {
@@ -2421,7 +2970,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2436,7 +2985,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -2579,7 +3128,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2594,7 +3143,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -2737,7 +3286,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2752,7 +3301,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -2895,7 +3444,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -2910,7 +3459,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3053,7 +3602,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3068,7 +3617,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3211,7 +3760,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3226,7 +3775,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3369,7 +3918,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3384,7 +3933,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3527,7 +4076,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3542,7 +4091,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3685,7 +4234,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3700,7 +4249,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -3843,7 +4392,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -3858,7 +4407,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {
@@ -4001,7 +4550,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "ext_tusken_tr003"
+                "value": ""
               }
             },
             {
@@ -4016,7 +4565,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 46
               }
             },
             {

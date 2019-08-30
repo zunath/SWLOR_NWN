@@ -34,7 +34,7 @@
   },
   "FogClipDist": {
     "type": "float",
-    "value": 70.0
+    "value": 90.0
   },
   "Height": {
     "type": "int",
@@ -11170,7 +11170,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 39
+    "value": 42
   },
   "Width": {
     "type": "int",

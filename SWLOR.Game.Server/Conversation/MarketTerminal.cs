@@ -832,6 +832,7 @@ namespace SWLOR.Game.Server.Conversation
             if (model.IsListingExpired)
             {
                 header += ColorTokenService.Red("This listing has expired.");
+                SetResponseVisible("MarketListingDetailsPage", 1, false);
             }
             else
             {
@@ -839,6 +840,7 @@ namespace SWLOR.Game.Server.Conversation
                 var delta = model.ListingExpirationDate - now;
                 string expirationTime = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 header += ColorTokenService.Green("This listing expires in " + expirationTime + ".");
+                SetResponseVisible("MarketListingDetailsPage", 1, true);
             }
 
             SetPageHeader("MarketListingDetailsPage", header);

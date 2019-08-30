@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using System;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -140,13 +139,35 @@ namespace SWLOR.Game.Server.AI
 
         public void OnProcessObject(NWCreature self)
         {
-            CleanUpEnmity(self);
-            AttackHighestEnmity(self);
-            EquipBestWeapon(self);
-            ProcessNearbyCreatures(self);
-            ProcessPerkFeats(self);
+            using (new Profiler("BehaviourBase.OnProcessObject.CleanUpEnmity"))
+            {
+                CleanUpEnmity(self);
+            }
 
-            OnAIProcessing(self);
+            using (new Profiler("BehaviourBase.OnProcessObject.AttackHighestEnmity"))
+            {
+                AttackHighestEnmity(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.EquipBestWeapon"))
+            {
+                EquipBestWeapon(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.ProcessNearbyCreatures"))
+            {
+                ProcessNearbyCreatures(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.ProcessPerkFeats"))
+            {
+                ProcessPerkFeats(self);
+            }
+
+            using (new Profiler("BehaviourBase.OnProcessObject.OnAIProcessing"))
+            {
+                OnAIProcessing(self);
+            }
         }
 
         protected virtual void OnAIProcessing(NWCreature self)
@@ -170,7 +191,8 @@ namespace SWLOR.Game.Server.AI
                     !target.IsValid ||
                     target.Area.Resref != self.Area.Resref ||
                     target.CurrentHP <= -11 ||
-                    target.IsDead)
+                    target.IsDead ||
+                    GetDistanceBetween(self, target) > 40.0f)
                 {
                     EnmityService.GetEnmityTable(self).Remove(enmity.Key);
                     continue;
@@ -190,16 +212,23 @@ namespace SWLOR.Game.Server.AI
                 .OrderByDescending(o => o.TotalAmount)
                 .FirstOrDefault(x => x.TargetObject.IsValid &&
                                      x.TargetObject.Area.Equals(self.Area));
+            var currentAttackTarget = GetAttackTarget(self.Object);
 
-            if(target != null)
+            // We have a target and it's not who we're currently attacking. Switch to attacking them.
+            if (target != null && currentAttackTarget != target.TargetObject.Object)
             {
                 self.AssignCommand(() =>
                 {
-                    if (GetAttackTarget(self.Object) != target.TargetObject.Object)
-                    {
-                        ClearAllActions();
-                        ActionAttack(target.TargetObject.Object);
-                    }
+                    ClearAllActions();
+                    ActionAttack(target.TargetObject.Object);
+                });
+            }
+            // We don't have a valid target but we're still attacking someone. We shouldn't be attacking them anymore. Clear all actions.
+            else if(target == null && GetCurrentAction(self) == ACTION_ATTACKOBJECT)
+            {
+                self.AssignCommand(() =>
+                {
+                    ClearAllActions();
                 });
             }
         }
@@ -291,14 +320,14 @@ namespace SWLOR.Game.Server.AI
             // Is creature dead?
             if (nearby.IsDead) return;
 
-            // Does the nearby creature have line of sight to the creature being attacked?
-            if (LineOfSightObject(self, nearby) == FALSE) return;
-
             // Is the nearby creature not an enemy?
             if (GetIsEnemy(nearby, self.Object) == FALSE) return;
 
             // Does the nearby creature have sanctuary?
             if (nearby.HasAnyEffect(EFFECT_TYPE_SANCTUARY)) return;
+
+            // Does the nearby creature have line of sight to the creature being attacked?
+            if (LineOfSightObject(self, nearby) == FALSE) return;
 
             // Success. Increase enmity on the nearby target.
             EnmityService.AdjustEnmity(self, nearby, 0, 1);
@@ -318,9 +347,6 @@ namespace SWLOR.Game.Server.AI
             // Is the nearby creature dead?
             if (nearby.IsDead) return;
 
-            // Does the nearby creature have line of sight to the creature being attacked?
-            if (LineOfSightObject(self, nearby) == FALSE) return;
-
             // Is the nearby creature an enemy?
             if (_.GetIsEnemy(nearby, self) == TRUE) return;
 
@@ -334,7 +360,10 @@ namespace SWLOR.Game.Server.AI
             var target = nearbyEnmityTable.Value.TargetObject;
             // Is the target dead?
             if (target.IsDead) return;
-            
+
+            // Does the nearby creature have line of sight to the creature being attacked?
+            if (LineOfSightObject(self, nearby) == FALSE) return;
+
             // Add the target of the nearby creature to this creature's enmity table.
             EnmityService.AdjustEnmity(self, target, 0, 1);
         }

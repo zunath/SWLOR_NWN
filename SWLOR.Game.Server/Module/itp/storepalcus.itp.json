@@ -38,6 +38,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Mon Cala General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "moncala_gen_merc"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Veles Colony General Store"
               },
               "RESREF": {

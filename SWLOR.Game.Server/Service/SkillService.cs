@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="enableResidencyBonus">If enabled, a player's primary residence will be factored into the XP gain.</param>
         /// <param name="enableTotalSkillPointPenalty">If enabled, penalties will be applied to the XP if the player falls into the ranges of the skill penalties.</param>
         /// <param name="enableDMBonus">If enabled, bonuses granted by DMs will be applied.</param>
-        public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true, bool enableDMBonus = true)
+        public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableDMBonus = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
@@ -247,13 +247,6 @@ namespace SWLOR.Game.Server.Service
             if (xpBonusModifier > 0.25)
                 xpBonusModifier = 0.25f;
 
-            // An XP penalty will be applied depending on how many skill points a player has earned so far.
-            // This can be disabled with the enableTotalSkillPointPenalty flag.
-            if (enableTotalSkillPointPenalty)
-            {
-                xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
-            }
-
             // Characters can receive permanent XP bonuses from DMs. If this skill XP distribution
             // shouldn't grant that bonus, it can be disabled with the enableDMBonus flag.
             if (enableDMBonus)
@@ -268,7 +261,7 @@ namespace SWLOR.Game.Server.Service
             {
                 return;
             }
-            
+
             pcSkill.XP = pcSkill.XP + xp;
             oPC.SendMessage("You earned " + skill.Name + " skill experience. (" + xp + ")");
 
@@ -410,17 +403,17 @@ namespace SWLOR.Game.Server.Service
             int delta = enemyLevel - partyLevel;
             float baseXP = 0;
 
-            if (delta >= 6) baseXP = 400;
-            else if (delta == 5) baseXP = 350;
-            else if (delta == 4) baseXP = 325;
-            else if (delta == 3) baseXP = 300;
-            else if (delta == 2) baseXP = 250;
-            else if (delta == 1) baseXP = 225;
-            else if (delta == 0) baseXP = 200;
-            else if (delta == -1) baseXP = 150;
-            else if (delta == -2) baseXP = 100;
-            else if (delta == -3) baseXP = 50;
-            else if (delta == -4) baseXP = 25;
+            if (delta >= 6) baseXP = 600;
+            else if (delta == 5) baseXP = 525;
+            else if (delta == 4) baseXP = 488;
+            else if (delta == 3) baseXP = 450;
+            else if (delta == 2) baseXP = 375;
+            else if (delta == 1) baseXP = 338;
+            else if (delta == 0) baseXP = 300;
+            else if (delta == -1) baseXP = 225;
+            else if (delta == -2) baseXP = 150;
+            else if (delta == -3) baseXP = 75;
+            else if (delta == -4) baseXP = 38;
 
             float bonusXPPercentage = creature.GetLocalFloat("BONUS_XP_PERCENTAGE");
             if (bonusXPPercentage > 1) bonusXPPercentage = 1;
@@ -663,33 +656,6 @@ namespace SWLOR.Game.Server.Service
 
             // Check in 1 second to see if PC has a glove equipped. If they don't, create a fist glove and equip it.
             ForceEquipFistGlove(oPC);
-        }
-
-
-        private static int CalculateTotalSkillPointsPenalty(int totalSkillPoints, int xp)
-        {
-            if (totalSkillPoints >= 450)
-            {
-                xp = (int)(xp * 0.70f);
-            }
-            else if (totalSkillPoints >= 400)
-            {
-                xp = (int)(xp * 0.80f);
-            }
-            else if (totalSkillPoints >= 350)
-            {
-                xp = (int)(xp * 0.85f);
-            }
-            else if (totalSkillPoints >= 300)
-            {
-                xp = (int)(xp * 0.90f);
-            }
-            else if (totalSkillPoints >= 250)
-            {
-                xp = (int)(xp * 0.95f);
-            }
-
-            return xp;
         }
 
         private static bool ApplySkillDecay(NWPlayer oPC, PCSkill levelingSkill, int xp)
@@ -1008,7 +974,33 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyEquipmentPenalties(NWPlayer player, NWItem item)
         {
             // Identify whether this item has a skill type. If it doesn't, exit early.
-            SkillType skill = ItemService.GetSkillTypeForItem(item);
+            SkillType skill;
+
+            // Rings/Amulets use the highest skill rank out of the player's armor skills
+            if (item.BaseItemType == BASE_ITEM_RING || item.BaseItemType == BASE_ITEM_AMULET)
+            {
+                int forceArmor = GetPCSkillRank(player, SkillType.ForceArmor);
+                int lightArmor = GetPCSkillRank(player, SkillType.LightArmor);
+                int heavyArmor = GetPCSkillRank(player, SkillType.HeavyArmor);
+                int highest = forceArmor;
+                skill = SkillType.ForceArmor;
+
+                if (lightArmor > highest)
+                {
+                    highest = lightArmor;
+                    skill = SkillType.LightArmor;
+                }
+
+                if (heavyArmor > highest)
+                {
+                    skill = SkillType.HeavyArmor;
+                }
+            }
+            else
+            {
+                skill = ItemService.GetSkillTypeForItem(item);
+            }
+
             if (skill == SkillType.Unknown) return;
 
             // Determine the delta between player's skill and the item's recommended level.
@@ -1092,7 +1084,7 @@ namespace SWLOR.Game.Server.Service
                     // Calculate the new value (minimum of 1).
                     int newImmunity = 1 + (immunity.Amount - delta * 5);
                     if (newImmunity < 1) newImmunity = 1;
-                    
+
                     if (newImmunity > immunity.Amount) newImmunity = immunity.Amount;
 
                     // We have the amount but we need to find the corresponding ID in the 2DA.
@@ -1276,7 +1268,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     int plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
                     int amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
-                    if(plusID > 0 && amountID > 0)
+                    if (plusID > 0 && amountID > 0)
                     {
                         ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
                         ipsToApply.Add(newIP);

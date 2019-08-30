@@ -137,7 +137,7 @@
   },
   "SunFogAmount": {
     "type": "byte",
-    "value": 10
+    "value": 5
   },
   "SunFogColor": {
     "type": "dword",
@@ -3645,7 +3645,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 26
+    "value": 30
   },
   "Width": {
     "type": "int",

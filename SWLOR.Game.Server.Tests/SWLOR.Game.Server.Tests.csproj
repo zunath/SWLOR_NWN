@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="Caching\ApartmentBuildingCacheTests.cs" />
     <Compile Include="Caching\AreaCachingTests.cs" />
-    <Compile Include="Caching\AreaWalkmeshCachingTests.cs" />
     <Compile Include="Caching\AssociationCachingTests.cs" />
     <Compile Include="Caching\AttributeCachingTests.cs" />
     <Compile Include="Caching\AuthorizedDMCachingTests.cs" />

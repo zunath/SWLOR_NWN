@@ -34,7 +34,7 @@
   },
   "FogClipDist": {
     "type": "float",
-    "value": 45.0
+    "value": 90.0
   },
   "Height": {
     "type": "int",
@@ -124,11 +124,11 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 0
+    "value": 77
   },
   "SunAmbientColor": {
     "type": "dword",
-    "value": 6566450
+    "value": 7579869
   },
   "SunDiffuseColor": {
     "type": "dword",
@@ -140,7 +140,7 @@
   },
   "SunFogColor": {
     "type": "dword",
-    "value": 9535080
+    "value": 7579869
   },
   "SunShadows": {
     "type": "byte",
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 6
+    "value": 9
   },
   "Width": {
     "type": "int",

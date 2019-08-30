@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 1044
+    "value": 157
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 28.0
+    "value": 17.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 15
         }
       }
     ]
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -36
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 450
   },
   "DecayTime": {
     "type": "dword",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sandswimmers were spider-like creatures that dwelled on Tatooine. They were among the planet's most deadly predators, as they would \"swim\" underneath the arid sands of the desert before moving up to the surface to drain all fluids from their prey. The Sandswimmer exoskeleton provided a natural resistance to Tatooine's harsh conditions"
+    }
   },
   "Dex": {
     "type": "byte",
@@ -130,6 +132,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 26
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -147,7 +156,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -155,7 +164,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 450
   },
   "Int": {
     "type": "byte",
@@ -189,11 +198,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 309
+    "value": 585
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "NoPermDeath": {
     "type": "byte",
@@ -217,7 +226,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 301
+    "value": 143
   },
   "Race": {
     "type": "byte",
@@ -482,11 +491,27 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 25
+    "value": 396
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 799
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      }
+    ]
   },
   "StartingPackage": {
     "type": "byte",
@@ -494,7 +519,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 42
+    "value": 55
   },
   "Subrace": {
     "type": "cexostring",
@@ -516,9 +541,44 @@
     "type": "resref",
     "value": "sandswimmer"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 103
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 24
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
-    "value": 5
+    "value": 6
   },
   "willbonus": {
     "type": "short",
@@ -530,6 +590,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 20
   }
 }

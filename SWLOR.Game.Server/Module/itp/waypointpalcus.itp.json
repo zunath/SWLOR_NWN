@@ -208,6 +208,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar - Animals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_animals"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Byysk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutlar_byysk_spn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Male Bith Musician"
                     },
                     "RESREF": {
@@ -428,6 +450,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Calamari Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moncal_cruiser"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nerf"
                     },
                     "RESREF": {
@@ -521,6 +554,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "malepatron3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Female"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_female"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Male"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_male"
                     }
                   },
                   {
@@ -665,6 +720,17 @@
                       "type": "resref",
                       "value": "v_wildwd_looter"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Shuttle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "viscara_shuttle"
+                    }
                   }
                 ]
               },
@@ -768,6 +834,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cyylani Forevia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cyylan_forevia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Denam Reyholm"
                     },
                     "RESREF": {
@@ -790,11 +867,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Frank"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frank_bartender"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guylan Verruchi"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "guylan_verruchi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Harry Mason"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "harry_mason_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Henry"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "henry_cz220"
                     }
                   },
                   {
@@ -823,11 +933,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jolee Bindo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "joleebindo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kieun Xorxca"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kieun_xorxca"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moira Halaz"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "moirahalaz_spawn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Moricho Deine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moricho_deine"
                     }
                   },
                   {
@@ -856,6 +999,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Reference Database"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zomb_database"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Reid Coxxion"
                     },
                     "RESREF": {
@@ -867,11 +1021,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rorrska Buvvien"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rorrska_buvvien"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Roy Moss"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "roy_moss_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sal Vulcano"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sal_vulcano"
                     }
                   },
                   {
@@ -916,6 +1092,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tristan_talyron"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voryx Ooang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voryx_ooang"
                     }
                   }
                 ]

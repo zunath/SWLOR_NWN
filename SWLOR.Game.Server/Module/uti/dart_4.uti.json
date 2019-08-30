@@ -402,7 +402,7 @@
   },
   "StackSize": {
     "type": "word",
-    "value": 50
+    "value": 1
   },
   "Stolen": {
     "type": "byte",

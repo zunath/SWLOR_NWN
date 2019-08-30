@@ -67616,17 +67616,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Clone Registration Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cloning_reg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Concealed Door"
                     },
                     "RESREF": {
@@ -67715,50 +67704,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterb"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clusterr"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Crystal Cluster"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_clustery"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Door Control"
                     },
                     "RESREF": {
@@ -67808,6 +67753,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fiberplast_shrub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clusterb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clusterg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clusterr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flawed Crystal Cluster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_clustery"
                     }
                   },
                   {
@@ -67918,6 +67907,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "c_tower_large"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Medical Registration Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cloning_reg"
                     }
                   },
                   {
@@ -68413,6 +68413,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tree_prop"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Raider Camp Crate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_tusk_cmp"
                     }
                   },
                   {
@@ -75242,6 +75253,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tut_exit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Starport: To Ships"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starport_ent_hut"
                     }
                   },
                   {

@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Perk.Blaster
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-            if (concentrationEffect.Type == PerkType.MindShield)
+            if (concentrationEffect.Type == PerkType.MindShield ||
+                GetIsImmune(target, IMMUNITY_TYPE_MIND_SPELLS) == TRUE)
             {
                 creature.SendMessage("Your target is immune to tranquilization effects.");
                 return;

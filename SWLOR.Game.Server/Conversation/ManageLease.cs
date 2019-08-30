@@ -143,8 +143,8 @@ namespace SWLOR.Game.Server.Conversation
                 if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
                 {
                     var shipLocationGuid = new Guid(pcBase.ShipLocation);
-                    SpaceStarport starport = DataService.SpaceStarport.GetByID(shipLocationGuid);
-                    header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.Planet + ")\n";
+                    Starport starport = DataService.Starport.GetByStarportID(shipLocationGuid);
+                    header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.PlanetName + ")\n";
                     header += ColorTokenService.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
                     header += ColorTokenService.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
                 }
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Conversation
             if (pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
             {
                 Guid shipLocationGuid = new Guid(pcBase.ShipLocation);
-                SpaceStarport starport = DataService.SpaceStarport.GetByID(shipLocationGuid);
+                Starport starport = DataService.Starport.GetByStarportID(shipLocationGuid);
                 dailyUpkeep = starport.Cost + (int)(starport.Cost * (owner.LeaseRate * 0.01f));
             }
 

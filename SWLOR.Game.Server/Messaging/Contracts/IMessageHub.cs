@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Messaging.Contracts
         /// Publishes the <paramref name="message"/> on the <see cref="IMessageHub"/>.
         /// </summary>
         /// <param name="message">The message to published</param>
-        void Publish<T>(T message);
+        /// <param name="useProfiler">If true, use the profiler. If false, leave it disabled. Some actions in NWNX conflict with the profiler so this is necessary. Leave it on for all other scenarios.</param>
+        void Publish<T>(T message, bool useProfiler = true);
 
         /// <summary>
         /// Subscribes a callback against the <see cref="IMessageHub"/> for a specific type of message.

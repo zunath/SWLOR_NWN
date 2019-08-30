@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Conversation
                             // Give the distributed XP to a particular skill.
                             // We disable residency bonuses, DM bonuses, and skill penalties during this distribution because
                             // those are calculated when we give the player RP XP.
-                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false, false);
+                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false);
 
                             dbPlayer = DataService.Player.GetByID(player.GlobalID);
                             dbPlayer.RoleplayXP -= vm.RPXPDistributing;

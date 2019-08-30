@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public Area()
         {
             ID = Guid.NewGuid();
-            DateLastBaked = DateTime.UtcNow;
         }
 
         [ExplicitKey]
@@ -29,8 +28,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public int PurchasePrice { get; set; }
         public int DailyUpkeep { get; set; }
-        public string Walkmesh { get; set; }
-        public DateTime DateLastBaked { get; set; }
         public bool AutoSpawnResources { get; set; }
         public int ResourceQuality { get; set; }
         public int? NorthwestLootTableID { get; set; }
@@ -58,8 +55,6 @@ namespace SWLOR.Game.Server.Data.Entity
                 IsActive = IsActive,
                 PurchasePrice = PurchasePrice,
                 DailyUpkeep = DailyUpkeep,
-                Walkmesh = Walkmesh,
-                DateLastBaked = DateLastBaked,
                 AutoSpawnResources = AutoSpawnResources,
                 ResourceQuality = ResourceQuality,
                 NorthwestLootTableID = NorthwestLootTableID,

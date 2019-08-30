@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Quest
                     ObjectVisibilityService.AdjustVisibility(player, obj, true);
                 })
                 
-                .OnAdvanced((player, questSource) =>
+                .OnAdvanced((player, questSource, state) =>
                 {
                     ObjectVisibilityService.AdjustVisibility(player, questSource, false);
                 });

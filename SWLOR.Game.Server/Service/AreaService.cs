@@ -18,11 +18,20 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AreaService
     {
+        private static readonly Dictionary<NWArea, List<AreaWalkmesh>> _walkmeshesByArea = new Dictionary<NWArea, List<AreaWalkmesh>>();
+        private const int AreaBakeStep = 5;
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
+
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message =>
+            {
+                message.Player.SendMessage("Walkmesh Areas: " + _walkmeshesByArea.Count);
+                message.Player.SendMessage("Walkmeshes: " + _walkmeshesByArea.Values.Count);
+            });
         }
 
         private static void OnModuleLoad()
@@ -52,7 +61,17 @@ namespace SWLOR.Game.Server.Service
                 int northeastLootTableID = area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
                 int southwestLootTableID = area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
                 int southeastLootTableID = area.GetLocalInt("RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
-                
+
+                // If the loot tables don't exist, don't assign them to this DB entry or we'll get foreign key reference errors.
+                if (DataService.LootTable.GetByIDOrDefault(northwestLootTableID) == null)
+                    northwestLootTableID = 0;
+                if (DataService.LootTable.GetByIDOrDefault(northeastLootTableID) == null)
+                    northeastLootTableID = 0;
+                if (DataService.LootTable.GetByIDOrDefault(southwestLootTableID) == null)
+                    southwestLootTableID = 0;
+                if (DataService.LootTable.GetByIDOrDefault(southeastLootTableID) == null)
+                    southeastLootTableID = 0;
+
                 dbArea.Name = area.Name;
                 dbArea.Tag = area.Tag;
                 dbArea.ResourceSpawnTableID = area.GetLocalInt("RESOURCE_SPAWN_TABLE_ID");
@@ -83,112 +102,57 @@ namespace SWLOR.Game.Server.Service
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
                 DataService.SubmitDataChange(dbArea, action);
+                
+                BakeArea(area);
             }
             
-            string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
-            bool bakingEnabled =  arg == null || Convert.ToBoolean(arg);
-            
-            if(bakingEnabled)
-            {
-                BakeAreas();
-            }
-            else
-            {
-                Console.WriteLine("WARNING: Area baking has been disabled. You may encounter errors during normal operations. This should only be disabled for debugging purposes. Please shut down the server and set the AREA_BAKING_ENABLED argument to true for all other scenarios.");
-            }
         }
 
         // Area baking process
-        // Check if walkmesh matches what's in the database.
-        // If it doesn't, run through and look for valid locations for later use by the spawn system.
+        // Run through and look for valid locations for later use by the spawn system.
         // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
-        // If you adjust this to get finer precision your database may explode with a ton of records. I chose a value that got me the 
-        // accuracy I wanted, without too much overhead. Your mileage may vary.
-        private static void BakeAreas()
+        private static void BakeArea(NWArea area)
         {
-            var config = DataService.ServerConfiguration.Get();
-            int Step = config.AreaBakeStep;
+            _walkmeshesByArea[area] = new List<AreaWalkmesh>();
+
             const float MinDistance = 6.0f;
+            var dbArea = DataService.Area.GetByResref(area.Resref);
 
-            foreach (var area in NWModule.Get().Areas)
+            int arraySizeX = dbArea.Width * (10 / AreaBakeStep);
+            int arraySizeY = dbArea.Height * (10 / AreaBakeStep);
+
+            for (int x = 0; x < arraySizeX; x++)
             {
-                var dbArea = DataService.Area.GetByResref(area.Resref);
-
-                int arraySizeX = dbArea.Width * (10 / Step);
-                int arraySizeY = dbArea.Height * (10 / Step);
-                Tuple<bool, float>[,] locations = new Tuple<bool, float>[arraySizeX, arraySizeY];
-                string walkmesh = string.Empty;
-
-                for (int x = 0; x < arraySizeX; x++)
+                for (int y = 0; y < arraySizeY; y++)
                 {
-                    for (int y = 0; y < arraySizeY; y++)
+                    Location checkLocation = _.Location(area.Object, _.Vector(x * AreaBakeStep, y * AreaBakeStep), 0.0f);
+                    int material = _.GetSurfaceMaterial(checkLocation);
+                    bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
+
+                    // Location is not walkable if another object exists nearby.
+                    NWObject nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE | OBJECT_TYPE_TRIGGER, checkLocation));
+                    float distance = _.GetDistanceBetweenLocations(checkLocation, nearest.Location);
+                    if (nearest.IsValid && distance <= MinDistance)
                     {
-                        Location checkLocation = _.Location(area.Object, _.Vector(x * Step, y * Step), 0.0f);
-                        int material = _.GetSurfaceMaterial(checkLocation);
-                        bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
+                        isWalkable = false;
+                    }
 
-                        // Location is not walkable if another object exists nearby.
-                        NWObject nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE | OBJECT_TYPE_TRIGGER, checkLocation));
-                        float distance = _.GetDistanceBetweenLocations(checkLocation, nearest.Location);
-                        if (nearest.IsValid && distance <= MinDistance)
+                    if(isWalkable)
+                    {
+                        AreaWalkmesh mesh = new AreaWalkmesh()
                         {
-                            isWalkable = false;
-                        }
+                            AreaID = dbArea.ID,
+                            LocationX = x * AreaBakeStep,
+                            LocationY = y * AreaBakeStep,
+                            LocationZ = _.GetGroundHeight(checkLocation)
+                        };
 
-
-                        locations[x, y] = new Tuple<bool, float>(isWalkable, _.GetGroundHeight(checkLocation));
-
-                        walkmesh += isWalkable ? "1" : "0";
+                        _walkmeshesByArea[area].Add(mesh);
                     }
                 }
-
-                if (dbArea.Walkmesh != walkmesh)
-                {
-                    dbArea.Walkmesh = walkmesh;
-                    dbArea.DateLastBaked = DateTime.UtcNow;
-                    DataService.SubmitDataChange(dbArea, DatabaseActionType.Update);
-
-                    Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
-
-                    var walkmeshes = DataService.AreaWalkmesh.GetAllByAreaID(dbArea.ID).ToList();
-                    for(int x = walkmeshes.Count-1; x >= 0; x--)
-                    {
-                        var mesh = walkmeshes.ElementAt(x);
-                        DataService.SubmitDataChange(mesh, DatabaseActionType.Delete);
-                    }
-                    
-                    Console.WriteLine("Cleared old walkmesh. Adding new one now.");
-                    
-                    int records = 0;
-                    for (int x = 0; x < arraySizeX; x++)
-                    {
-                        for (int y = 0; y < arraySizeY; y++)
-                        {
-                            // Ignore any points in the area that aren't walkable.
-                            bool isWalkable = locations[x, y].Item1;
-                            if (!isWalkable) continue;
-
-                            float z = locations[x, y].Item2;
-                            
-                            AreaWalkmesh mesh = new AreaWalkmesh()
-                            {
-                                AreaID = dbArea.ID,
-                                LocationX = x * Step,
-                                LocationY = y * Step,
-                                LocationZ = z
-                            };
-
-                            DataService.SubmitDataChange(mesh, DatabaseActionType.Insert);
-
-                            records++;
-                        }
-                    }
-
-                    Console.WriteLine("Saved " + records + " records.");
-                }
-                Console.WriteLine("Area walkmesh up to date: " + area.Name);
-
             }
+
+            Console.WriteLine("Area walkmesh up to date: " + area.Name);
         }
         
         public static NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
@@ -249,7 +213,11 @@ namespace SWLOR.Game.Server.Service
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
             else
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+        }
 
+        public static List<AreaWalkmesh> GetAreaWalkmeshes(NWArea area)
+        {
+            return _walkmeshesByArea[area].ToList();
         }
     }
 }

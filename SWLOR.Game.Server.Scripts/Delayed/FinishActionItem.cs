@@ -71,10 +71,12 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
                 if (actionItem.ReducesItemCharge(data.Player, data.Item, data.Target, data.TargetLocation, data.CustomData))
                 {
-                    if (data.Item.Charges > 0) data.Item.ReduceCharges();
-                    else data.Item.Destroy();
-                }
+                    if (data.Item.Charges > 0)
+                        data.Item.ReduceCharges();
 
+                    if (data.Item.Charges <= 0)
+                        data.Item.Destroy();
+                }
             }
         }
 

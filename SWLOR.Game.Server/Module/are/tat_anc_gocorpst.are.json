@@ -117,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "anchor_transport"
+    "value": "tat_anc_gocorpst"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -506,7 +506,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 20
+    "value": 21
   },
   "Width": {
     "type": "int",

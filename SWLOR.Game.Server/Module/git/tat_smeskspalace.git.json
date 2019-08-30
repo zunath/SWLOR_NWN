@@ -821,7 +821,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7242456674575806
+          "value": 0.7242454886436462
         },
         "XPosition": {
           "type": "float",
@@ -829,7 +829,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895420551300049
+          "value": 0.6895422339439392
         },
         "YPosition": {
           "type": "float",
@@ -861,7 +861,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570795178413391
+          "value": -1.570794820785523
         },
         "CloseLockDC": {
           "type": "byte",
@@ -917,11 +917,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": ""
+          "value": "smesk_entry"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 0
+          "value": 2
         },
         "LoadScreenID": {
           "type": "word",
@@ -3746,7 +3746,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.07356706261634827
+          "value": -0.07356801629066467
         },
         "XPosition": {
           "type": "float",
@@ -3754,7 +3754,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9972902536392212
+          "value": -0.9972901940345764
         },
         "YPosition": {
           "type": "float",
@@ -3763,6 +3763,67 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Area Enter"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "smesk_exit"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "areatrans"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9569402933120728
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 94.74057006835938
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.2902847528457642
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 61.07662200927734
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.999997138977051
         }
       }
     ]

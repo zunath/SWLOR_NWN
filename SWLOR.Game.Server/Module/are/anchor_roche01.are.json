@@ -70,7 +70,7 @@
   },
   "MoonDiffuseColor": {
     "type": "dword",
-    "value": 13132900
+    "value": 7579869
   },
   "MoonFogAmount": {
     "type": "byte",
@@ -129,7 +129,7 @@
   },
   "SunAmbientColor": {
     "type": "dword",
-    "value": 6566450
+    "value": 7579869
   },
   "SunDiffuseColor": {
     "type": "dword",
@@ -141,7 +141,7 @@
   },
   "SunFogColor": {
     "type": "dword",
-    "value": 9535080
+    "value": 7579869
   },
   "SunShadows": {
     "type": "byte",
@@ -3645,7 +3645,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 9
+    "value": 13
   },
   "Width": {
     "type": "int",

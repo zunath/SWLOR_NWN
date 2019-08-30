@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string ServerName { get; set; }
         public string MessageOfTheDay { get; set; }
-        public int AreaBakeStep { get; set; }
         public int ModuleVersion { get; set; }
         public DateTime LastGuildTaskUpdate { get; set; }
 
@@ -27,7 +26,6 @@ namespace SWLOR.Game.Server.Data.Entity
                 ID = ID,
                 ServerName = ServerName,
                 MessageOfTheDay = MessageOfTheDay,
-                AreaBakeStep = AreaBakeStep,
                 ModuleVersion = ModuleVersion,
                 LastGuildTaskUpdate = LastGuildTaskUpdate
             };

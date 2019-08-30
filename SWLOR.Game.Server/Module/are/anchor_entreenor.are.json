@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Ancherhead - North Entrance",
+      "0": "Tatooine - Anchorhead - North Entrance",
       "2": "Anchorhead - Portes du désert"
     }
   },
@@ -11170,7 +11170,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 54
+    "value": 56
   },
   "Width": {
     "type": "int",

@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Service
 
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
-        public static AreaWalkmeshCache AreaWalkmesh { get; } = new AreaWalkmeshCache();
         public static AssociationCache Association { get; } = new AssociationCache();
         public static AttributeCache Attribute { get; } = new AttributeCache();
         public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();
@@ -104,7 +103,7 @@ namespace SWLOR.Game.Server.Service
         public static SkillCache Skill { get; } = new SkillCache();
         public static SkillCategoryCache SkillCategory { get; } = new SkillCategoryCache();
         public static SpaceEncounterCache SpaceEncounter { get; } = new SpaceEncounterCache();
-        public static SpaceStarportCache SpaceStarport { get; } = new SpaceStarportCache();
+        public static StarportCache Starport { get; } = new StarportCache();
         public static SpawnCache Spawn { get; } = new SpawnCache();
         public static SpawnObjectCache SpawnObject { get; } = new SpawnObjectCache();
         public static SpawnObjectTypeCache SpawnObjectType { get; } = new SpawnObjectTypeCache();
@@ -185,7 +184,6 @@ namespace SWLOR.Game.Server.Service
         {
             Console.WriteLine("Initializing the cache...");
             LoadCache<Area>();
-            LoadCache<AreaWalkmesh>();
 
             LoadCache<ApartmentBuilding>();
             LoadCache<Association>();
@@ -228,7 +226,7 @@ namespace SWLOR.Game.Server.Service
             LoadCache<PCBaseStructurePermission>();
             LoadCache<Data.Entity.PCBaseType>();
             LoadPCMarketListingCache();
-            LoadCache<SpaceStarport>();
+            LoadCache<Starport>();
             LoadCache<SpaceEncounter>();
 
             

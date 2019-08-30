@@ -50,19 +50,39 @@ namespace SWLOR.Game.Server
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => Clean());
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
+        }
+
+        private static void OnRequestCacheStats(NWPlayer player)
+        {
+            player.SendMessage("PlayerDialogs: " + PlayerDialogs.Count);
+            player.SendMessage("DialogFilesInUse: " + DialogFilesInUse.Count);
+            player.SendMessage("EffectTicks: " + EffectTicks.Count);
+            player.SendMessage("CreatureSkillRegistrations: " + CreatureSkillRegistrations.Count);
+            player.SendMessage("NPCEffects: " + NPCEffects.Count);
+            player.SendMessage("UnregisterProcessingEvents: " + UnregisterProcessingEvents.Count);
+            player.SendMessage("NPCEnmityTables: " + NPCEnmityTables.Count);
+            player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
+            player.SendMessage("VisibilityObjects: " + VisibilityObjects.Count);
+            player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);
+            player.SendMessage("ConnectedDMs: " + ConnectedDMs.Count);
+            player.SendMessage("PlayerEffectivePerkLevels: " + PlayerEffectivePerkLevels.Count);
         }
 
         private static void Clean()
         {
-            foreach (var npcTable in NPCEnmityTables.ToArray())
+            for(int index = NPCEnmityTables.Count-1; index >= 0; index--)
             {
+                var npcTable = NPCEnmityTables.ElementAt(index);
                 if (!npcTable.Value.NPCObject.IsValid)
                 {
                     NPCEnmityTables.Remove(npcTable.Key);
                 }
             }
-            foreach (var customData in CustomObjectData.ToArray())
+            
+            for(int index = CustomObjectData.Count-1; index >= 0; index--)
             {
+                var customData = CustomObjectData.ElementAt(index);
                 NWObject owner = customData.Value.Owner;
                 if (!owner.IsValid)
                 {

@@ -171,13 +171,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIFlags.cs" />
+    <Compile Include="AI\BarBehaviour.cs" />
     <Compile Include="AI\DancerBehaviour.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
+    <Compile Include="AI\WaypointBehaviour.cs" />
     <Compile Include="AppCache.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
-    <Compile Include="Caching\AreaWalkmeshCache.cs" />
     <Compile Include="Caching\AssociationCache.cs" />
     <Compile Include="Caching\AttributeCache.cs" />
     <Compile Include="Caching\AuthorizedDMCache.cs" />
@@ -262,7 +263,7 @@
     <Compile Include="Caching\SkillCache.cs" />
     <Compile Include="Caching\SkillCategoryCache.cs" />
     <Compile Include="Caching\SpaceEncounterCache.cs" />
-    <Compile Include="Caching\SpaceStarportCache.cs" />
+    <Compile Include="Caching\StarportCache.cs" />
     <Compile Include="Caching\SpawnCache.cs" />
     <Compile Include="Caching\SpawnObjectCache.cs" />
     <Compile Include="Caching\SpawnObjectTypeCache.cs" />
@@ -431,7 +432,10 @@
     <Compile Include="Data\DatabaseMigrationRunner.cs" />
     <Compile Include="Data\Entity\ApartmentBuilding.cs" />
     <Compile Include="Data\Entity\Area.cs" />
-    <Compile Include="Data\Entity\AreaWalkmesh.cs" />
+    <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
+    <Compile Include="Item\SlugShake.cs" />
+    <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />
+    <Compile Include="ValueObject\AreaWalkmesh.cs" />
     <Compile Include="Data\Entity\Association.cs" />
     <Compile Include="Data\Entity\Attribute.cs" />
     <Compile Include="Data\Entity\AuthorizedDM.cs" />
@@ -469,7 +473,7 @@
     <Compile Include="Data\Entity\PCGuildPoint.cs" />
     <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
-    <Compile Include="Data\Entity\SpaceStarport.cs" />
+    <Compile Include="Data\Entity\Starport.cs" />
     <Compile Include="Data\Entity\FameRegion.cs" />
     <Compile Include="Data\Entity\GameTopic.cs" />
     <Compile Include="Data\Entity\GameTopicCategory.cs" />
@@ -813,6 +817,16 @@
     <EmbeddedResource Include="Data\Migrations\2019-08-19.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-19.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-08-18.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-22.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-23.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-25.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-24.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-26.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-26.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-26.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-27.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-27.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-08-27.3.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />
@@ -1143,7 +1157,7 @@
     <Compile Include="Event\Player\pc_on_damaged.cs" />
     <Compile Include="Event\Player\pc_on_heartbeat.cs" />
     <Compile Include="Perk\Armorsmith\ArmorRepair.cs" />
-    <Compile Include="Perk\Armor\AbsorptionField.cs" />
+    <Compile Include="Perk\MartialArts\MartialFinesse.cs" />
     <Compile Include="Perk\Armor\Clarity.cs" />
     <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\Armor\ShieldBoost.cs" />

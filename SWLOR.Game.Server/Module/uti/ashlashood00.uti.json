@@ -48,7 +48,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 0
+    "value": 63
   },
   "Leather2Color": {
     "type": "byte",

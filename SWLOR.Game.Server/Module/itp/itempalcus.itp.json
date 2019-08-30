@@ -241,6 +241,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Farmer Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "farmer_outfit002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gambler Blue"
                     },
                     "RESREF": {
@@ -290,6 +301,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vet_togetusken01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jolee's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_joleerobe"
                     }
                   },
                   {
@@ -713,6 +735,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "breastplate_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "breastplate_byys"
                     }
                   },
                   {
@@ -1164,6 +1197,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Taris' Mask"
                     },
                     "RESREF": {
@@ -1317,6 +1361,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wpn_uniform_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "force_robe_byysk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tunic_byysk"
                     }
                   },
                   {
@@ -1521,6 +1587,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Marauder Robe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithrobe76"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marauder Robe (female)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithrobe_female"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Weaponsmith Uniform I"
                     },
                     "RESREF": {
@@ -1573,6 +1661,671 @@
               "ID": {
                 "type": "byte",
                 "value": 7
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Destroyed Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "des_light_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_light_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quality Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qa_light_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_force_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_heavy_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Amulet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_amm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_belt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Boots"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_boots"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruined Light Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_light_helm"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",
@@ -1735,6 +2488,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Militia Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Militia Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Reika's Leathers"
                     },
                     "RESREF": {
@@ -1795,6 +2570,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "armored_hs_p_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blaster Bullets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "004"
                     }
                   },
                   {
@@ -2010,6 +2796,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mpiandry Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandryhood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mpiandry Robe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandryrobe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nickkell Outfit"
                     },
                     "RESREF": {
@@ -2169,6 +2977,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "npc_looter_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Outlaw Outfit Male (trando)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npc_looter_m_t"
                     }
                   },
                   {
@@ -2340,6 +3159,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rifle Bullets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shadow's Outfit"
                     },
                     "RESREF": {
@@ -2373,6 +3203,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smuggler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "naia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Smuggler Outfit"
                     },
                     "RESREF": {
@@ -2400,6 +3241,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tarisdisguise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tat Militia Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tat Militia Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "003"
                     }
                   },
                   {
@@ -2569,6 +3432,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "small_shield_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_shield"
                           }
                         },
                         {
@@ -2752,6 +3626,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "crazedwarocasbk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qionslugattack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionslugattack"
                     }
                   },
                   {
@@ -3136,6 +4021,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mon Calamari Cruiser Properties"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "moncal_cruiser_p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Slug Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quion_slug_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Tiger Properties"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_cairnmog_pr001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "QionBeastSkin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionbeastskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Demon Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemonhide001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Hide"
                     },
                     "RESREF": {
@@ -3175,6 +4115,17 @@
                       "type": "resref",
                       "value": "v_nashtah_p"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Shuttle Properties"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "visc_shutt_props"
+                    }
                   }
                 ]
               },
@@ -3201,6 +4152,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nodamage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "QionBeastSlam"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionbeastslam"
                     }
                   },
                   {
@@ -3711,6 +4673,176 @@
                       "type": "byte",
                       "value": 17
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Force Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Heavy Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Light Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_force_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Heavy Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_heavy_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bracer_light_4"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6746
@@ -3783,6 +4915,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "powerglove_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Power Glove"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "powerglove_byysk"
                           }
                         },
                         {
@@ -6089,6 +7232,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Partially Digested Herb"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "herb_digested"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pawisis"
                     },
                     "RESREF": {
@@ -6380,6 +7534,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "water_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Enhancement Device"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_enh_device"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Tiger Fang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_tiger_fang"
                     }
                   },
                   {
@@ -7288,6 +8464,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Slime-Covered Electronics"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "elec_slime"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Slug Bile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_bile"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Slug Tooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_tooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Small Blade"
                     },
                     "RESREF": {
@@ -7530,6 +8739,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tiger Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tiger_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tinnuchi"
                     },
                     "RESREF": {
@@ -7568,6 +8788,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "turret"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Aiming Modulator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tsk_metal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Construction Parts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "const_parts_tsk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Electronics"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tsk_electronics"
                     }
                   },
                   {
@@ -9277,6 +10530,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Berserker Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_ber_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Defender Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_def_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Fighter Ring I"
                           },
                           "RESREF": {
@@ -9288,106 +10563,7 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Mage Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Mage Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Mage Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Mage Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_m"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Thief Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_t"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Warrior Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_w"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Ring II"
+                            "value": "Fighter Ring II"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -9398,11 +10574,110 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Warrior Ring III"
+                            "value": "Fighter Ring III"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "warrior_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Ring I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mage_ring_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Ring II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mage_ring_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Force Ring III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mage_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Ring I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thief_ring_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Ring II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thief_ring_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Light Ring III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thief_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Prismatic Fighter Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "prism_ring_w"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Prismatic Force Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "prism_ring_m"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Prismatic Light Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "prism_ring_t"
                           }
                         }
                       ]
@@ -10735,6 +12010,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Bag"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bag_byysk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Capsule remplie d'eau"
                     },
                     "RESREF": {
@@ -10845,6 +12131,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Starchart Data Disk - Hutlar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starcharts_hutla"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Starchart Data Disk - Mon Cala"
                     },
                     "RESREF": {
@@ -10856,7 +12153,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Starchart Data Disk - Tattooine"
+                      "value": "Starchart Data Disk - Tatooine"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -10910,6 +12207,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zomb_avirus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stupendious Slug Shake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "slug_shake"
                     }
                   }
                 ]
@@ -11733,6 +13041,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashla's greatsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashlasaber00"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "HasteJedi2"
                     },
                     "RESREF": {
@@ -11820,17 +13139,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "di_card_69"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ashla's greatsaber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ashlasaber00"
                     }
                   },
                   {
@@ -14183,6 +15491,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "byyskwarrioraxe"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byyskwarrioraxe"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Vibroblade BA1"
                           },
                           "RESREF": {
@@ -14622,6 +15941,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Vibroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "longsword_byysk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Coxxion Vibroblade LS"
                           },
                           "RESREF": {
@@ -14671,6 +16001,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "item001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Lightsaber (Keyan)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "keyanlightsaber"
                           }
                         },
                         {
@@ -15149,6 +16490,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Warrior Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byyskwarriorswor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Coxxion Vibroblade SS"
                           },
                           "RESREF": {
@@ -15198,6 +16550,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "shortsword_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_blade"
                           }
                         },
                         {
@@ -15639,6 +17002,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Quarterstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarterstaff_byy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Coxxion Twin Vibroblade DA"
                     },
                     "RESREF": {
@@ -15721,6 +17095,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_s"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_twinblade"
                     }
                   },
                   {
@@ -16095,6 +17480,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mpiandry's Soul"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandryssoul"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mpiandry's Torment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mpiandrystorment"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Trandoshan Finesse Vibroblade K"
                     },
                     "RESREF": {
@@ -16216,6 +17623,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cac_gaderffii"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byssk Polearm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spear_byssk"
                     }
                   },
                   {
@@ -16825,6 +18243,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "axe_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Dart"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_byysk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Throwing Axe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_byysk"
                     }
                   },
                   {

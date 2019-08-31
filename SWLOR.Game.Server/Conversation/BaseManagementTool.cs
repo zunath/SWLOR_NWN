@@ -938,6 +938,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canPlaceEditStructures;
             var structure = data.ManipulatingStructure.Structure;
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
+            Vector playerposition = _.GetPositionFromLocation(GetPC().Location); 
 
             if (data.BuildingType == Enumeration.BuildingType.Interior)
             {
@@ -955,8 +956,8 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (position.m_Z > 10.0f ||
-                position.m_Z < -10.0f)
+            if (playerposition.m_Z + position.m_Z > 10.0f ||
+                playerposition.m_Z + position.m_Z < -10.0f)
             {
                 GetPC().SendMessage("This structure cannot be moved any further in this direction.");
                 return;
@@ -968,8 +969,13 @@ namespace SWLOR.Game.Server.Conversation
 
             structure.Location = _.Location(_.GetAreaFromLocation(data.TargetLocation),
                                             position,
-                                            _.GetFacingFromLocation(data.TargetLocation));            
+                                            _.GetFacingFromLocation(data.TargetLocation));
 
+            structure.AssignCommand(() =>
+            {
+                _.ActionJumpToLocation(structure.Location);
+            });
+            
             LoadRotatePage();
 
             var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);

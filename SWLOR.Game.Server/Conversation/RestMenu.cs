@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Conversation
                 "View Key Items",
                 "Modify Item Appearance",
                 "Character Management",
-                "Open Trash Can (Destroy Items)");
+                "Open Trash Can (Destroy Items)",
+                "HoloCom");
 
             dialog.AddPage("MainPage", mainPage);
 
@@ -87,6 +88,10 @@ namespace SWLOR.Game.Server.Conversation
 
                             player.AssignCommand(() => _.ActionInteractObject(trashCan.Object));
                             _.DelayCommand(0.2f, () => trashCan.IsUseable = false);
+                            break;
+                        // HoloCom
+                        case 9:
+                            SwitchConversation("HoloCom");
                             break;
                     }
                     break;

@@ -29,197 +29,115 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         public void LoadMainMenu()
-        {
+        {            
             ClearPageResponses("MainPage");
 
             string header = ColorTokenService.Green("HoloCom Menu\n\n");
-
             SetPageHeader("MainPage", header);
 
-            NWPlayer sourcePlayer = GetPC();
-            NWPlayer destinationPlayer = GetLocalObject(sourcePlayer, "HOLOCOM_DESTINATION");
+            NWPlayer user = GetPC();
+            Console.WriteLine("LoadMainMenu: user = " + user.Name + ", receiver = " + HoloComService.GetCallReceiver(user).Name);
+            Console.WriteLine("LoadMainMenu: user = " + user.Name + ", sender = " + HoloComService.GetCallSender(user).Name);
 
-            Console.WriteLine("LoadMainMenu: source = " + sourcePlayer.Name + ", dest = " + destinationPlayer.Name);
+            Console.WriteLine("SENDERS PERSPECTIVE:");
+            Console.WriteLine("Sender Name:            " + HoloComService.GetCallSender(user).Name);
+            Console.WriteLine("Receiver Name:          " + HoloComService.GetCallReceiver(user).Name);
+            Console.WriteLine("Sender Call Attempts:   " + HoloComService.GetCallAttempt(user));
+            Console.WriteLine("Sender Connected With:  " + HoloComService.GetTargetForActiveCall(user));
+            Console.WriteLine("RECEIVERS PERSPECTIVE:");
+            Console.WriteLine("Sender Name:            " + HoloComService.GetCallSender(HoloComService.GetCallReceiver(user)).Name);
+            Console.WriteLine("Receiver Name:          " + HoloComService.GetCallReceiver(HoloComService.GetCallReceiver(user)).Name);
+            Console.WriteLine("Sender Call Attempts:   " + HoloComService.GetCallAttempt(HoloComService.GetCallSender(HoloComService.GetCallReceiver(user))));
+            Console.WriteLine("Receiver Connected With:" + HoloComService.GetTargetForActiveCall(HoloComService.GetCallReceiver(user)));
 
-            if (GetLocalInt(sourcePlayer, "HOLOCOM_CALL_CONNECTED") == 1)
-            {
-                AddResponseToPage("MainPage", "End current call with " + GetName(destinationPlayer), true);
-                return;
-            }
+            AddResponseToPage("MainPage", "End current call with " + HoloComService.GetTargetForActiveCall(user).Name, HoloComService.IsInCall(user), HoloComService.GetTargetForActiveCall(user));
+            AddResponseToPage("MainPage", "Answer incoming call from " + HoloComService.GetCallSender(user).Name, HoloComService.IsCallReceiver(user) && !HoloComService.IsInCall(user), HoloComService.GetCallSender(user));
+            AddResponseToPage("MainPage", "Decline incoming call from " + HoloComService.GetCallSender(user).Name, HoloComService.IsCallReceiver(user) && !HoloComService.IsInCall(user), HoloComService.GetCallSender(user));
 
-            if (GetIsObjectValid(destinationPlayer) == TRUE)
+            if (HoloComService.IsCallReceiver(user) || HoloComService.IsInCall(user) || HoloComService.IsCallSender(user)) return;
+
+            foreach (var player in NWModule.Get().Players)
             {
-                Console.WriteLine("Adding accept/decline to menu.");
-                AddResponseToPage("MainPage", "Answer incoming call from " + GetName(destinationPlayer), true, sourcePlayer);
-                AddResponseToPage("MainPage", "Decline incoming call from " + GetName(destinationPlayer), true, sourcePlayer);
-            }
-            else
-            {
-                foreach (var player in NWModule.Get().Players)
+                if (player == user || !player.IsPlayer) continue;
+                string message = "Call " + player.Name;
+                if (HoloComService.IsInCall(player))
                 {
-                    if (player == sourcePlayer || !player.IsPlayer) continue;
-
-                    string message = "Call " + player.Name;
-                    if (GetLocalInt(player, "HOLOCOM_CALL_CONNECTED") == 1)
-                    {
-                        message += ColorTokenService.Red(" (LINE BUSY)");
-                    }
-                    AddResponseToPage("MainPage", message, true, player);
+                    message += ColorTokenService.Red(" (LINE BUSY)");
                 }
-            }
+                AddResponseToPage("MainPage", message, true, player);
+            }            
         }
 
-        public void CallPlayer(NWPlayer sourcePlayer, NWPlayer destinationPlayer)
+        public void CallPlayer(NWPlayer sender, NWPlayer receiver)
         {     
-            if (GetLocalInt(sourcePlayer, "HOLOCOM_CALL_CONNECTED") == 1 || 
-                GetLocalInt(destinationPlayer, "HOLOCOM_CALL_CONNECTED") == 1)
-            {
-                EndDialog();
-                return;
-            }
+            if (HoloComService.IsInCall(sender) || HoloComService.IsInCall(receiver)) return;
+
+            if (!HoloComService.IsCallSender(sender)) return;
+
+            SendMessageToPC(sender, "You wait for " + receiver.Name + " to answer their HoloCom.");
+
+            HoloComService.SetIsCallSender(sender);
+            HoloComService.SetIsCallSender(receiver, false);
+            HoloComService.SetCallSender(sender, sender);
+            HoloComService.SetCallSender(receiver, sender);
+            HoloComService.SetIsCallReceiver(sender, false);
+            HoloComService.SetIsCallReceiver(receiver);
+            HoloComService.SetCallReceiver(sender, receiver);
+            HoloComService.SetCallReceiver(receiver, receiver);
+
             string message = "Your HoloCom buzzes as you are receiving a call.";
             if (Random(10) == 1)
             {
                 message += " " + ColorTokenService.Green("Maybe you should answer it.");
-            }
-            SendMessageToPC(sourcePlayer, "You wait for " + GetName(destinationPlayer) + " to answer their HoloCom.");
-            SendMessageToPC(destinationPlayer, message);
+            }            
+            SendMessageToPC(receiver, message);
 
-            if ((NWPlayer)GetLocalObject(sourcePlayer, "HOLOCOM_DESTINATION") == destinationPlayer &&
-                GetLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT") <= 15 &&
-                (NWPlayer)GetLocalObject(destinationPlayer, "HOLOCOM_DESTINATION") == sourcePlayer &&
-                GetLocalInt(destinationPlayer, "HOLOCOM_ATTEMPT") <= 15
-                )
+            if (HoloComService.GetCallAttempt(sender) <= 15)
             {
-
-                SetLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT", GetLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT") + 1);
-                SetLocalInt(destinationPlayer, "HOLOCOM_DESTINATION", GetLocalInt(destinationPlayer, "HOLOCOM_DESTINATION") + 1);
-
-                DelayCommand(5.0f, () => { CallPlayer(sourcePlayer, destinationPlayer); });
+                HoloComService.SetCallAttempt(sender, HoloComService.GetCallAttempt(sender) + 1);                
+                DelayCommand(5.0f, () => { CallPlayer(sender, receiver); });
             }
             else
             {
-                SendMessageToPC(sourcePlayer, "Your HoloCom call went unanswered.");
-                SendMessageToPC(destinationPlayer, "Your HoloCom stops buzzing.");
+                SendMessageToPC(sender, "Your HoloCom call went unanswered.");
+                SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
 
-                DeleteLocalObject(sourcePlayer, "HOLOCOM_DESTINATION");
-                DeleteLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT");
-                DeleteLocalObject(destinationPlayer, "HOLOCOM_DESTINATION");
-                DeleteLocalInt(destinationPlayer, "HOLOCOM_ATTEMPT");
-            }            
+                // the following call cleans everything up even if a call isn't currently connected.
+                HoloComService.SetIsInCall(sender, receiver, false);
+            }
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
-            NWPlayer sourcePlayer = player;
-            NWPlayer destinationPlayer = GetLocalObject(sourcePlayer, "HOLOCOM_DESTINATION");
-
-            if (response.CustomData == null)
+            switch (responseID)
             {
-                RemoveEffect(sourcePlayer, EffectCutsceneImmobilize());
-                RemoveEffect(destinationPlayer, EffectCutsceneImmobilize());
-
-                sourcePlayer.AssignCommand(() =>
-                {
-                    PlaySound("hologram_off");
-                });
-                destinationPlayer.AssignCommand(() =>
-                {
-                    PlaySound("hologram_off");
-                });
-                //AssignCommand(GetLocalObject(sourcePlayer, "HOLOGRAM_DESTINATION"), () => PlaySound("hologram_off"));
-                //AssignCommand(GetLocalObject(destinationPlayer, "HOLOGRAM_DESTINATION"), () => PlaySound("hologram_off"));
-
-                DestroyObject(GetLocalObject(sourcePlayer, "HOLOGRAM_DESTINATION"));
-                DestroyObject(GetLocalObject(destinationPlayer, "HOLOGRAM_DESTINATION"));
-
-                DeleteLocalObject(sourcePlayer, "HOLOCOM_DESTINATION");
-                DeleteLocalObject(sourcePlayer, "HOLOGRAM_DESTINATION");
-                DeleteLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT");
-                DeleteLocalInt(sourcePlayer, "HOLOCOM_CALL_CONNECTED");
-                DeleteLocalObject(destinationPlayer, "HOLOCOM_DESTINATION");
-                DeleteLocalObject(destinationPlayer, "HOLOGRAM_DESTINATION");
-                DeleteLocalInt(destinationPlayer, "HOLOCOM_ATTEMPT");
-                DeleteLocalInt(destinationPlayer, "HOLOCOM_CALL_CONNECTED");
-                return;
-            }
-
-            if (player == (NWPlayer)response.CustomData)
-            {
-                // holos are duplicating and swapped also need position offset slightly.
-                // accepting or declining a call.
-                switch (responseID)
-                {
-                    case 1: // Accept Call
-                        string message = "Call Connected. (Use chat command /endcall to terminate the call)";
-                        SendMessageToPC(sourcePlayer, message);
-                        SendMessageToPC(destinationPlayer, message);
-                        //ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneImmobilize(), sourcePlayer);
-                        //ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneImmobilize(), destinationPlayer);
-                        SetLocalInt(sourcePlayer, "HOLOCOM_CALL_CONNECTED", 1);
-                        SetLocalInt(destinationPlayer, "HOLOCOM_CALL_CONNECTED", 1);
-
-                        var holoreceiver = CopyObject(sourcePlayer, GetLocation(destinationPlayer));
-                        var holosender = CopyObject(destinationPlayer, GetLocation(sourcePlayer));
-                        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, FALSE), holosender);
-                        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, FALSE), holoreceiver);
-                        SetPlotFlag(holoreceiver, TRUE);
-                        SetPlotFlag(holosender, TRUE);
-
-                        sourcePlayer.AssignCommand(() =>
-                        {
-                            PlaySound("hologram_on");
-                        });
-                        destinationPlayer.AssignCommand(() =>
-                        {
-                            PlaySound("hologram_on");
-                        });
-                        //AssignCommand(holoreceiver, () => PlaySound("hologram_on"));
-                        //AssignCommand(holosender, () => PlaySound("hologram_on"));
-
-                        SetLocalObject(sourcePlayer, "HOLOGRAM_DESTINATION", holoreceiver);
-                        SetLocalObject(destinationPlayer, "HOLOGRAM_DESTINATION", holosender);
-
-                        SetLocalObject(holoreceiver, "HOLOGRAM_SOURCE", sourcePlayer);
-                        SetLocalObject(holosender, "HOLOGRAM_SOURCE", destinationPlayer);
-
-                        EndDialog();
-                        break;
-                    case 2: // Decline call
-
-                        SendMessageToPC(destinationPlayer, "Your HoloCom call was declined.");
-
-                        DeleteLocalObject(sourcePlayer, "HOLOCOM_DESTINATION");
-                        DeleteLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT");
-                        DeleteLocalObject(destinationPlayer, "HOLOCOM_DESTINATION");
-                        DeleteLocalInt(destinationPlayer, "HOLOCOM_ATTEMPT");
-                        LoadMainMenu();
-                        break;
-                }
-            }
-            else
-            {                
-                // Make call
-                destinationPlayer = (NWPlayer)response.CustomData;
-
-                if (GetLocalInt(destinationPlayer, "HOLOCOM_CALL_CONNECTED") != 1)
-                {
-                    SetLocalObject(sourcePlayer, "HOLOCOM_DESTINATION", destinationPlayer);
-                    SetLocalInt(sourcePlayer, "HOLOCOM_ATTEMPT", 1);
-                    SetLocalObject(destinationPlayer, "HOLOCOM_DESTINATION", sourcePlayer);
-                    SetLocalInt(destinationPlayer, "HOLOCOM_ATTEMPT", 1);
-
-                    DelayCommand(1.0f, () => { CallPlayer(sourcePlayer, destinationPlayer); });
-                    //LoadMainMenu();
-                }
+                case 1: // End current call
+                    HoloComService.SetIsInCall(player, HoloComService.GetTargetForActiveCall(player), false);
+                    EndConversation();
+                    break;
+                case 2: // Accept incoming call
+                    HoloComService.SetIsInCall(player, HoloComService.GetCallSender(player), true);
+                    EndConversation();
+                    break;
+                case 3: // Decline incoming call
+                    HoloComService.SetIsInCall(player, HoloComService.GetCallSender(player), false);
+                    SendMessageToPC(player, "Your HoloCom call was declined.");
+                    EndConversation();
+                    break;
+                default: // Make a call to (NWPlayer) response.CustomData
+                    if (!HoloComService.IsInCall((NWPlayer)response.CustomData))
+                    {
+                        HoloComService.SetIsCallSender(player);
+                        DelayCommand(1.0f, () => { CallPlayer(player, (NWPlayer)response.CustomData); });
+                    }
+                    EndConversation();                    
+                    break;
             }
         }
-
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
         }
-
         public override void EndDialog()
         {
         }

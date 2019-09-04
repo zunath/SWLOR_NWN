@@ -73,77 +73,6 @@ namespace SWLOR.Game.Server.Service
                 ActionSpeakString(text, talkvolume);
             },0.3f);
 
-            /* animation stuff
- 
-                                givemedeathToday at 5:20 PM
-                                anyone know of a way to get a creature's current animation id?
- 
-                                sherincallToday at 5:27 PM
-                                Yes. It's used for the NWNX_Creature_GetMovementType (or whatever it's called)
-                                That includes all animations, including combat ones.
- 
-                                givemedeathToday at 5:28 PM
-                                oh, nice!
-                                thanks
- 
-                                sherincallToday at 5:28 PM
-                                But the ID used by the engine is not the same as the script constants. There's a translation table somewhere.
- 
-                                givemedeathToday at 5:28 PM
-                                if i'm copying them to another creature do i need the translation?
- 
-                                sherincallToday at 5:30 PM
-                                Oh, you don't ever want to set the animation directly.
-                                Reading it is okay, but never change it.
-                                So many things are tied to an animation, and changing it directly causes all sorts of issues.
- 
-                                givemedeathToday at 5:30 PM
-                                ah, ok. so i'll have to get the id using GetMovementType, translate, and then play translated value on the target
- 
-                                sherincallToday at 5:32 PM
-                                GetMovementType only works for movement, you'll need a new NWNX function that reads the same field as that.
-                                I think it might already exist.. lemme check.
-                                No, there's just the translation layer for nwscript->engine animation constants.. https://github.com/nwnxee/unified/blob/master/Core/NWScript/nwnx_consts.nss#L10-L78
-                                GitHub
-                                nwnxee/unified
-                                Binaries available under the Releases tab on Github: https://github.com/nwnxee/unified/releases - nwnxee/unified
-
- 
-                                givemedeathToday at 5:36 PM
-                                hmm dang, i've no idea how to add a new nwnx function
- 
-                                sherincallToday at 5:36 PM
-                                If you're already set up to build nwnx from source, it's pretty easy and there's a good tutorial.
-                                If not, file an issue on github and Daz or Orth or someone can do it for you in 5 minutes.
-                                https://github.com/nwnxee/unified/blob/master/Plugins/Creature/Creature.cpp#L1434 this is the field you want to read
-                                GitHub
-                                nwnxee/unified
-                                Binaries available under the Releases tab on Github: https://github.com/nwnxee/unified/releases - nwnxee/unified
-
- 
-                                givemedeathToday at 5:37 PM
-                                cool thanks! where can i find the tutorial?
- 
-                                sherincallToday at 5:37 PM
-                                https://github.com/BhaalM/stuff/blob/master/simple_nwnxee_tutorial.md
-                                GitHub
-                                BhaalM/stuff
-                                Contribute to BhaalM/stuff development by creating an account on GitHub.
-
- 
-                                sherincallToday at 5:38 PM
-                                That one does a Set function, you're doing a Get, so look at one of the Get functions in nwnx_creature for how to return a value
-                        */
-
-
-
-        //SetCommandable(FALSE, receiver);
-
-        //AssignCommand(receiver, () => ActionPlayAnimation(ANIMATION_LOOPING_TALK_NORMAL));
-        //AssignCommand(receiver, () => ActionSpeakString(text, TALKVOLUME_TALK));
-
-        // Might be nice to loop through nearby players that are in a holocom chat and send the string as background noise. 
-        // This could end up getting expensive though?
     }
 
     public static bool IsInCall(NWPlayer player)
@@ -168,9 +97,6 @@ namespace SWLOR.Game.Server.Service
                 TagEffect(effectImmobilized, "HOLOCOM_CALL_IMMOBILIZE");
                 ApplyEffectToObject(DURATION_TYPE_PERMANENT, effectImmobilized, sender);
                 ApplyEffectToObject(DURATION_TYPE_PERMANENT, effectImmobilized, receiver);
-
-                //Vector vSender = GetPosition(sender);
-                //Vector vReceiver = GetPosition(receiver);
 
                 var holosender = CopyObject(sender, VectorService.MoveLocation(receiver.Location, GetFacing(receiver), 2.0f, 180));
                 var holoreceiver = CopyObject(receiver, VectorService.MoveLocation(sender.Location, GetFacing(sender), 2.0f, 180));

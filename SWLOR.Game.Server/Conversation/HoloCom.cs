@@ -36,19 +36,6 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             NWPlayer user = GetPC();
-            Console.WriteLine("LoadMainMenu: user = " + user.Name + ", receiver = " + HoloComService.GetCallReceiver(user).Name);
-            Console.WriteLine("LoadMainMenu: user = " + user.Name + ", sender = " + HoloComService.GetCallSender(user).Name);
-
-            Console.WriteLine("SENDERS PERSPECTIVE:");
-            Console.WriteLine("Sender Name:            " + HoloComService.GetCallSender(user).Name);
-            Console.WriteLine("Receiver Name:          " + HoloComService.GetCallReceiver(user).Name);
-            Console.WriteLine("Sender Call Attempts:   " + HoloComService.GetCallAttempt(user));
-            Console.WriteLine("Sender Connected With:  " + HoloComService.GetTargetForActiveCall(user));
-            Console.WriteLine("RECEIVERS PERSPECTIVE:");
-            Console.WriteLine("Sender Name:            " + HoloComService.GetCallSender(HoloComService.GetCallReceiver(user)).Name);
-            Console.WriteLine("Receiver Name:          " + HoloComService.GetCallReceiver(HoloComService.GetCallReceiver(user)).Name);
-            Console.WriteLine("Sender Call Attempts:   " + HoloComService.GetCallAttempt(HoloComService.GetCallSender(HoloComService.GetCallReceiver(user))));
-            Console.WriteLine("Receiver Connected With:" + HoloComService.GetTargetForActiveCall(HoloComService.GetCallReceiver(user)));
 
             AddResponseToPage("MainPage", "End current call with " + HoloComService.GetTargetForActiveCall(user).Name, HoloComService.IsInCall(user), HoloComService.GetTargetForActiveCall(user));
             AddResponseToPage("MainPage", "Answer incoming call from " + HoloComService.GetCallSender(user).Name, HoloComService.IsCallReceiver(user) && !HoloComService.IsInCall(user), HoloComService.GetCallSender(user));

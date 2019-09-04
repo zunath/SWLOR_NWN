@@ -436,6 +436,7 @@
     <Compile Include="Data\Entity\Area.cs" />
     <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
     <Compile Include="Item\SlugShake.cs" />
+    <Compile Include="Item\Grenade.cs" />
     <Compile Include="Service\HoloComService.cs" />
     <Compile Include="Service\VectorService.cs" />
     <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />

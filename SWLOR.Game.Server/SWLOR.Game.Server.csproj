@@ -274,6 +274,7 @@
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
     <Compile Include="ChatCommand\Conc.cs" />
+    <Compile Include="ChatCommand\EndCall.cs" />
     <Compile Include="ChatCommand\Concentration.cs" />
     <Compile Include="ChatCommand\CopyItem.cs" />
     <Compile Include="ChatCommand\Customise.cs" />
@@ -354,6 +355,7 @@
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
     <Compile Include="Conversation\GuildMaster.cs" />
+    <Compile Include="Conversation\HoloCom.cs" />
     <Compile Include="Conversation\MessageBoard.cs" />
     <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
@@ -434,6 +436,9 @@
     <Compile Include="Data\Entity\Area.cs" />
     <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
     <Compile Include="Item\SlugShake.cs" />
+    <Compile Include="Item\Grenade.cs" />
+    <Compile Include="Service\HoloComService.cs" />
+    <Compile Include="Service\VectorService.cs" />
     <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />
     <Compile Include="ValueObject\AreaWalkmesh.cs" />
     <Compile Include="Data\Entity\Association.cs" />

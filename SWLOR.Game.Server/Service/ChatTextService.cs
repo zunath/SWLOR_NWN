@@ -267,7 +267,14 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
-                        text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
+                        if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
+                        {
+                            text = LanguageService.TranslateSnippetForListener(HoloComService.GetHoloGramOwner(sender), obj.Object, language, component.m_Text);
+                        }
+                        else
+                        {
+                            text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
+                        }
 
                         if (colour != 0)
                         {

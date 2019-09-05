@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             // Play VFX
                             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), target);
                         });
-                        if (creature.IsPlayer)
+                        if (!creature.IsPlayer)
                         {
                             SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
                         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), targetCreatureCopy);
                             });
 
-                            if (creature.IsPlayer)
+                            if (!creature.IsPlayer)
                             {
                                 SkillService.RegisterPCToNPCForSkill(creature.Object, targetCreature, SkillType.ForceAlter);
                             }

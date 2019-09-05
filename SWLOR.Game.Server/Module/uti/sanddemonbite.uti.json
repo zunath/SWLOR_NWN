@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 25
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 70
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 25
+    "value": 50000
   },
   "Cursed": {
     "type": "byte",
@@ -34,21 +34,21 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Wraid Tooth"
+      "0": "Sand Demon Bite"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 58
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 55
   },
   "Plot": {
     "type": "byte",
@@ -65,7 +65,38 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 62
+          "value": 4
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 16
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 24
         },
         "CostValue": {
           "type": "word",
@@ -73,112 +104,19 @@
         },
         "Param1": {
           "type": "byte",
-          "value": 255
+          "value": 1
         },
         "Param1Value": {
           "type": "byte",
-          "value": 0
+          "value": 4
         },
         "PropertyName": {
           "type": "word",
-          "value": 137
+          "value": 48
         },
         "Subtype": {
           "type": "word",
-          "value": 29
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 62
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 3
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 137
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 29
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 61
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 11
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 60
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 136
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 2
         }
       }
     ]
@@ -193,10 +131,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "WraidTooth"
+    "value": "SandDemonBite"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "wraidtooth"
+    "value": "sanddemonbite"
   }
 }

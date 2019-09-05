@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 157
+    "value": 2037
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 3
+    "value": 9
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 16.0
+    "value": 0.5
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 26
+          "value": 4
         },
         "ClassLevel": {
           "type": "short",
-          "value": 15
+          "value": 1
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 28
+    "value": 16
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -38
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 450
+    "value": 10
   },
   "DecayTime": {
     "type": "dword",
@@ -62,40 +62,23 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Sandswimmers were spider-like creatures that dwelled on Tatooine. They were among the planet's most deadly predators, as they would \"swim\" underneath the arid sands of the desert before moving up to the surface to drain all fluids from their prey. The Sandswimmer exoskeleton provided a natural resistance to Tatooine's harsh conditions"
-    }
+    "value": {}
   },
   "Dex": {
     "type": "byte",
-    "value": 35
+    "value": 13
   },
   "Disarmable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 16384,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "sandswimmerclaw"
-        }
-      },
-      {
-        "__struct_id": 131072,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_creitem005"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -104,42 +87,77 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 196
+          "value": 2
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 332
+          "value": 3
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 333
+          "value": 4
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 334
+          "value": 10
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 26
+          "value": 1089
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 28
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 258
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 106
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
         }
       }
     ]
@@ -147,16 +165,16 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sandswimmer"
+      "0": "Maintenance Droid"
     }
   },
   "fortbonus": {
     "type": "short",
-    "value": 30
+    "value": 0
   },
   "Gender": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -164,7 +182,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 450
+    "value": 10
   },
   "Int": {
     "type": "byte",
@@ -194,23 +212,23 @@
   },
   "Lootable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 585
+    "value": 13
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 48
+    "value": 0
   },
   "PerceptionRange": {
     "type": "byte",
@@ -222,19 +240,19 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PortraitId": {
     "type": "word",
-    "value": 143
+    "value": 235
   },
   "Race": {
     "type": "byte",
-    "value": 25
+    "value": 157
   },
   "refbonus": {
     "type": "short",
-    "value": 30
+    "value": 0
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -491,50 +509,19 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 396
+    "value": 416
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 90
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 10
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 799
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 88
+    "value": 4
   },
   "Str": {
     "type": "byte",
-    "value": 55
+    "value": 16
   },
   "Subrace": {
     "type": "cexostring",
@@ -542,7 +529,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Sandswimmer"
+    "value": "dro_maintenance"
   },
   "Tail_New": {
     "type": "dword",
@@ -554,7 +541,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sandswimmer"
+    "value": "dro_maintenan"
   },
   "VarTable": {
     "type": "list",
@@ -563,41 +550,26 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID"
+          "value": "BEHAVIOUR"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 103
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
           "type": "cexostring",
-          "value": "NPC_GROUP"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 24
+          "value": "WaypointBehaviour"
         }
       }
     ]
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 7
   },
   "willbonus": {
     "type": "short",
-    "value": 30
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",
@@ -605,6 +577,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 10
   }
 }

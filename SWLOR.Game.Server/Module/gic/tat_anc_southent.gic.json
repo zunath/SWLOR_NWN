@@ -23,13 +23,6 @@
           "type": "cexostring",
           "value": "Generic human smuggler NPC"
         }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Generic human smuggler NPC"
-        }
       }
     ]
   },
@@ -156,6 +149,13 @@
   "WaypointList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
       {
         "__struct_id": 5,
         "Comment": {

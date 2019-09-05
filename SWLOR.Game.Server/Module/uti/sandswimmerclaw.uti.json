@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 69
   },
   "Charges": {
     "type": "byte",
@@ -30,25 +30,27 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Womprat Hide"
+      "0": "Sandswimmer Claw"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 7
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 13
   },
   "Plot": {
     "type": "byte",
@@ -65,74 +67,12 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 62
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 7
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 137
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 6
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 61
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 13
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 60
-        },
-        "CostValue": {
-          "type": "word",
           "value": 4
         },
+        "CostValue": {
+          "type": "word",
+          "value": 20
+        },
         "Param1": {
           "type": "byte",
           "value": 255
@@ -143,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 136
+          "value": 16
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 2
         }
       }
     ]
@@ -162,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "WompratHide"
+    "value": "SandswimmerClaw"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "womprathide"
+    "value": "sandswimmerclaw"
   }
 }

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 16.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -48
+    "value": -50
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -89,6 +89,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "raptorbite"
+        }
+      },
+      {
+        "__struct_id": 65536,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sanddemonbite"
         }
       },
       {

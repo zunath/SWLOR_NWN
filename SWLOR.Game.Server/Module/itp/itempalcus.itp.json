@@ -3676,6 +3676,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sand Demon Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sanddemonbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Bite"
                     },
                     "RESREF": {
@@ -3807,6 +3818,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mynock_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sandswimmer Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandswimmerclaw"
                     }
                   },
                   {

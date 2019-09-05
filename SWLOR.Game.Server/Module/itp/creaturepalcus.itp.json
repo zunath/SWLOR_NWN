@@ -1326,7 +1326,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 17.0
+                      "value": 16.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -6327,6 +6327,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Client"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "neu_clientbar006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 3.0
                     },
                     "FACTION": {
@@ -6492,6 +6511,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "koboldmine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Maintenance Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dro_maintenan"
                     }
                   },
                   {
@@ -8804,7 +8842,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 18.0
+                      "value": 16.0
                     },
                     "FACTION": {
                       "type": "cexostring",

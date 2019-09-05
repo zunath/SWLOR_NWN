@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleChat>(message => OnModuleChat());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
         }
 
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private static void OnModuleChat()
+        private static void OnModuleNWNXChat()
         {
             NWPlayer sender = GetPCChatSpeaker();
             int talkvolume = GetPCChatVolume();
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             if (channel != ChatChannelType.PlayerTalk) return;
             if (channel != ChatChannelType.PlayerWhisper) return;
             if (channel != ChatChannelType.PlayerParty) return;
-
+           
             //if (talkvolume == TALKVOLUME_SHOUT) return;
 
             NWPlayer receiver = GetHoloGram(sender);

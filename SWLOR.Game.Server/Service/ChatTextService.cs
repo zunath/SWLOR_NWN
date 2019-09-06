@@ -239,11 +239,18 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
+                var originalSender = sender;
+                // temp set sender to hologram owner for holocoms
+                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
+                {
+                    sender = HoloComService.GetHoloGramOwner(sender);
+                }
+
                 SkillType language = LanguageService.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);
+                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);                
                 if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
@@ -267,14 +274,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
-                        if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
-                        {
-                            text = LanguageService.TranslateSnippetForListener(HoloComService.GetHoloGramOwner(sender), obj.Object, language, component.m_Text);
-                        }
-                        else
-                        {
-                            text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
-                        }
+                        text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 
                         if (colour != 0)
                         {
@@ -317,6 +317,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     finalMessageColoured = ColorTokenService.Orange(finalMessageColoured);
                 }
+
+                // set back to original sender, if it was changed by holocom connection
+                sender = originalSender;
 
                 NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }

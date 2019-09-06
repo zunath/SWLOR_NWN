@@ -19,14 +19,16 @@ namespace SWLOR.Game.Server.Service
         -- retest -- calling someone who's busy borks you.
         -- retest -- if player dies while in call they resurrect without cutscene immobile.
         -- retest -- only allow talk, whisper and party channels for holograms. NO DM or SHOUT 
+        ??? onclientexit, end call for exiting player
         ??? can limbo holograms but they dont show in limbo.
          * 
          */
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+            MessageHub.Instance.Subscribe<OnModuleChat>(message => OnModuleChat());
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
         }
 
         private static void OnModuleDeath()
@@ -35,20 +37,31 @@ namespace SWLOR.Game.Server.Service
             if (HoloComService.IsInCall(player)) HoloComService.SetIsInCall(player, HoloComService.GetTargetForActiveCall(player), false);
 
         }
+        private static void OnModuleLeave()
+        {
+            NWPlayer player = _.GetExitingObject();
+            if (HoloComService.IsInCall(player)) HoloComService.SetIsInCall(player, HoloComService.GetTargetForActiveCall(player), false);
 
-        private static void OnModuleNWNXChat()
+        }
+
+        private static void OnModuleChat()
         {
             NWPlayer sender = GetPCChatSpeaker();
             int talkvolume = GetPCChatVolume();
 
+            /*
             ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
 
             if (!IsInCall(sender)) return;
             if (channel != ChatChannelType.PlayerTalk) return;
             if (channel != ChatChannelType.PlayerWhisper) return;
             if (channel != ChatChannelType.PlayerParty) return;
+            */
            
-            //if (talkvolume == TALKVOLUME_SHOUT) return;
+            if (talkvolume == TALKVOLUME_SHOUT) return;
+            if (talkvolume == TALKVOLUME_TELL) return;
+            if (talkvolume == TALKVOLUME_SILENT_SHOUT) return;            
+            if (talkvolume == TALKVOLUME_SILENT_TALK) return;
 
             NWPlayer receiver = GetHoloGram(sender);
 
@@ -119,6 +132,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     PlaySound("hologram_on");
                 });
+                
                 /*
                 Console.WriteLine("SENDERS PERSPECTIVE:");
                 Console.WriteLine("Sender Name:            " + HoloComService.GetCallSender(sender).Name);

@@ -44,6 +44,9 @@ namespace SWLOR.Game.Server.Item
             }, 0.1f);
             */
 
+            //user.ClearAllActions();
+            //user.AssignCommand(()=>ActionCastFakeSpellAtLocation(974, targetLocation));
+
             user.DelayAssignCommand(() =>
             {
                 PlaySound("explosion2");
@@ -54,15 +57,16 @@ namespace SWLOR.Game.Server.Item
                 ApplyEffectAtLocation(DURATION_TYPE_INSTANT, impactEffect, targetLocation);
             }, delay + 0.5f);
 
+            
             DelayCommand(delay+0.75f,
                          () =>
                          {
-                             DoImpact(targetLocation, RandomService.D6(4), 0, 0, DAMAGE_TYPE_FIRE, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE);
+                             DoImpact((NWCreature) user, targetLocation, RandomService.D6(4), 0, 0, DAMAGE_TYPE_FIRE, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE);
                          });
 
         }
 
-        public void DoImpact(Location targetLocation, int nDamage, int vSmallHit, int vRingHit, int nDamageType, float fExplosionRadius, int nObjectFilter, int nRacialType = RACIAL_TYPE_ALL)
+        public void DoImpact(NWCreature creature, Location targetLocation, int nDamage, int vSmallHit, int vRingHit, int nDamageType, float fExplosionRadius, int nObjectFilter, int nRacialType = RACIAL_TYPE_ALL)
         {
             Effect damageEffect = EffectDamage(nDamage, nDamageType);           
             // Target the next nearest creature and do the same thing.
@@ -70,8 +74,10 @@ namespace SWLOR.Game.Server.Item
             while (targetCreature.IsValid)
             {
                 Console.WriteLine("Grenade hit on " + targetCreature.Name);
-                ApplyEffectToObject(DURATION_TYPE_INSTANT, damageEffect, targetCreature);
-
+                creature.AssignCommand(() =>
+                {
+                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(nDamage, nDamageType), targetCreature);
+                });
                 // why doesn't this work???
                 /*
                 DelayCommand(delay, () =>

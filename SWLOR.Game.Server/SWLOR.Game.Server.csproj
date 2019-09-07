@@ -434,9 +434,13 @@
     <Compile Include="Data\DatabaseMigrationRunner.cs" />
     <Compile Include="Data\Entity\ApartmentBuilding.cs" />
     <Compile Include="Data\Entity\Area.cs" />
+    <Compile Include="Event\Item\item_use_after.cs" />
+    <Compile Include="Event\Item\item_use_before.cs" />
+    <Compile Include="Event\Item\OnItemUsed.cs" />
     <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
     <Compile Include="Item\SlugShake.cs" />
     <Compile Include="Item\Grenade.cs" />
+    <Compile Include="NWNX\FeedbackMessages.cs" />
     <Compile Include="Service\HoloComService.cs" />
     <Compile Include="Service\VectorService.cs" />
     <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Item
 
             NWPlaceable tempPlaceable = CreateObject(OBJECT_TYPE_PLACEABLE, "grenade_obj001", user.Location);
 
-
+            EffectAreaOfEffect(1, "OnEnter", "OnHeartbeat", "OnExit");
 
             if (targetLocation == null) targetLocation = GetLocation(target);
 
@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Item
 
             tempPlaceable.DelayAssignCommand(() =>
             {
-                ActionCastSpellAtLocation(974, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
+                ActionCastSpellAtLocation(974, targetLocation, METAMAGIC_ANY, FALSE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
             }, delay + 0.1f);
 
             delay += 0.75f;
 
-            DelayCommand(delay, () =>
+            DelayCommand(delay+ 0.5f, () =>
             {
                 DestroyObject(tempPlaceable);
             });
@@ -64,11 +64,11 @@ namespace SWLOR.Game.Server.Item
             }, delay + 0.5f);
 
             
-            DelayCommand(delay+0.75f,
+            user.DelayAssignCommand(
                          () =>
                          {
                              DoImpact(user, targetLocation, RandomService.D6(4), 0, 0, DAMAGE_TYPE_FIRE, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE);
-                         });
+                         }, delay + 0.75f);
 
         }
 
@@ -79,11 +79,12 @@ namespace SWLOR.Game.Server.Item
             NWObject targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
             while (targetCreature.IsValid)
             {
+                ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damageEffect, targetCreature);
                 Console.WriteLine("Grenade hit on " + targetCreature.Name);
-                creature.AssignCommand(() =>
-                {
-                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damageEffect, targetCreature);
-                });
+                //creature.AssignCommand(() =>
+                //{
+                //    ApplyEffectToObject(_.DURATION_TYPE_INSTANT, EffectDamage(100, _.DAMAGE_TYPE_ELECTRICAL), targetCreature);
+                //});
 
                 targetCreature = GetNextObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
             }

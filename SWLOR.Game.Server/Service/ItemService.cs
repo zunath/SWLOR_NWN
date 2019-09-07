@@ -11,8 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             // Module Events
-            MessageHub.Instance.Subscribe<OnModuleActivateItem>(message => OnModuleActivatedItem());
+            MessageHub.Instance.Subscribe<OnItemUsed>(message => OnItemUsed());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
@@ -84,13 +84,13 @@ namespace SWLOR.Game.Server.Service
 
         public static string GetNameByResref(string resref)
         {
-            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
             {
                 Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
                 return null;
             }
-            NWItem item = (_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem item = (CreateItemOnObject(resref, tempStorage.Object));
             string name = item.Name;
             item.Destroy();
             return name;
@@ -98,24 +98,24 @@ namespace SWLOR.Game.Server.Service
 
         public static CustomItemType GetCustomItemTypeByResref(string resref)
         {
-            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
             {
                 Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
                 return CustomItemType.None;
             }
-            NWItem item = (_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem item = (CreateItemOnObject(resref, tempStorage.Object));
             var itemType = item.CustomItemType;
             item.Destroy();
             return itemType;
         }
 
-        private static void OnModuleActivatedItem()
+        private static void OnItemUsed()
         {
-            NWPlayer user = (_.GetItemActivator());
-            NWItem oItem = (_.GetItemActivated());
-            NWObject target = (_.GetItemActivatedTarget());
-            Location targetLocation = _.GetItemActivatedTargetLocation();
+            NWPlayer user = NWGameObject.OBJECT_SELF;
+            NWItem oItem = NWNXEvents.OnItemUsed_GetItem();
+            NWObject target = NWNXEvents.OnItemUsed_GetTarget();
+            Location targetLocation = NWNXEvents.OnItemUsed_GetTargetLocation();
 
             string className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
@@ -126,6 +126,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_JAVA_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) return;
+
+            // Bypass the NWN "item use" animation.
+            NWNXEvents.SkipEvent();
 
             user.ClearAllActions();
 
@@ -139,7 +142,7 @@ namespace SWLOR.Game.Server.Service
             if (className.StartsWith("Item."))
                 className = className.Substring(5);
             IActionItem item = GetActionItemHandler(className);
-        
+
             string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
             if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
             {
@@ -151,15 +154,15 @@ namespace SWLOR.Game.Server.Service
             if (maxDistance > 0.0f)
             {
                 if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
+                    (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
                     user.Area.Resref != target.Area.Resref))
                 {
                     user.SendMessage("Your target is too far away.");
                     return;
                 }
                 else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
+                         (GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
+                         user.Area.Resref != ((NWArea)GetAreaFromLocation(targetLocation)).Resref))
                 {
                     user.SendMessage("That location is too far away.");
                     return;
@@ -176,12 +179,15 @@ namespace SWLOR.Game.Server.Service
             {
                 user.IsBusy = true;
                 if (faceTarget)
-                    _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
+                    SetFacingPoint(!target.IsValid ? GetPositionFromLocation(targetLocation) : target.Position);
                 if (animationID > 0)
-                    _.ActionPlayAnimation(animationID, 1.0f, delay);
+                    ActionPlayAnimation(animationID, 1.0f, delay);
             });
 
-            NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
+            if(delay > 0.0f)
+            {
+                NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
+            }
 
             var @event = new OnFinishActionItem(className, user, oItem, target, targetLocation, userPosition, customData);
             user.DelayEvent(delay, @event);
@@ -374,12 +380,12 @@ namespace SWLOR.Game.Server.Service
             // Check for properties that can only be applied to limited things, and flag them here.
             // Attack bonus, damage, base attack bonus: weapons only
             // AC - armor items only.
-            ItemProperty ip = _.GetFirstItemProperty(examinedItem);
-            while (_.GetIsItemPropertyValid(ip) == TRUE)
+            ItemProperty ip = GetFirstItemProperty(examinedItem);
+            while (GetIsItemPropertyValid(ip) == TRUE)
             {
-                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
+                if (GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
                 {
-                    switch (_.GetItemPropertySubType(ip))
+                    switch (GetItemPropertySubType(ip))
                     {
                         case (int)ComponentBonusType.ACUp:
                         {
@@ -396,7 +402,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                ip = _.GetNextItemProperty(examinedItem);
+                ip = GetNextItemProperty(examinedItem);
             }
 
             return existingDescription + "\n" + description;
@@ -468,15 +474,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer player = _.GetPCItemLastUnequippedBy();
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            NWPlayer player = GetPCItemLastUnequippedBy();
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = _.GetPCItemLastUnequipped();
+            NWItem oItem = GetPCItemLastUnequipped();
 
             // Remove lightsaber hum effect.
-            foreach (var effect in player.Effects.Where(x => _.GetEffectTag(x) == "LIGHTSABER_HUM"))
+            foreach (var effect in player.Effects.Where(x => GetEffectTag(x) == "LIGHTSABER_HUM"))
             {
-                _.RemoveEffect(player, effect);
+                RemoveEffect(player, effect);
             }
 
             // Handle lightsaber sounds
@@ -486,7 +492,7 @@ namespace SWLOR.Game.Server.Service
 
                 player.AssignCommand(() =>
                 {
-                    _.PlaySound("saberoff");
+                    PlaySound("saberoff");
                 });
             }
 
@@ -497,8 +503,8 @@ namespace SWLOR.Game.Server.Service
         // To work around this I force them to clear all actions.
         private static void HandleEquipmentSwappingDelay()
         {
-            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWPlayer oPC = (GetPCItemLastEquippedBy());
+            NWItem oItem = (GetPCItemLastEquipped());
             NWItem rightHand = oPC.RightHand;
             NWItem leftHand = oPC.LeftHand;
 
@@ -570,23 +576,23 @@ namespace SWLOR.Game.Server.Service
 
             };
 
-            NWPlayer player = _.GetPCItemLastEquippedBy();
+            NWPlayer player = GetPCItemLastEquippedBy();
 
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWItem oItem = (GetPCItemLastEquipped());
             int baseItemType = oItem.BaseItemType;
-            Effect eEffect = _.EffectVisualEffect(579);
-            eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+            Effect eEffect = EffectVisualEffect(579);
+            eEffect = TagEffect(eEffect, "LIGHTSABER_HUM");
 
             // Handle lightsaber sounds
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
                 player.AssignCommand(() =>
                 {
-                    _.PlaySound("saberon");
+                    PlaySound("saberon");
                 });
             }
 
@@ -634,9 +640,9 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
+                if (GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
                 {
-                    if (_.GetItemPropertySubType(ip) == IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
+                    if (GetItemPropertySubType(ip) == IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }
@@ -644,22 +650,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            BiowareXP2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
         public static void ReturnItem(NWObject target, NWItem item)
         {
-            if (_.GetHasInventory(item) == TRUE)
+            if (GetHasInventory(item) == TRUE)
             {
                 NWObject possessor = item.Possessor;
                 possessor.AssignCommand(() =>
                 {
-                    _.ActionGiveItem(item, target);
+                    ActionGiveItem(item, target);
                 });
             }
             else
             {
-                _.CopyItem(item.Object, target.Object, TRUE);
+                CopyItem(item.Object, target.Object, TRUE);
                 item.Destroy();
             }
         }
@@ -668,13 +674,13 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var ip in item.ItemProperties)
             {
-                _.RemoveItemProperty(item.Object, ip);
+                RemoveItemProperty(item.Object, ip);
             }
         }
 
         public static ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
-            NWPlaceable container = (_.GetObjectByTag("item_props"));
+            NWPlaceable container = (GetObjectByTag("item_props"));
             NWItem item = container.InventoryItems.SingleOrDefault(x => x.Tag == tag);
             if (item == null)
             {
@@ -842,7 +848,7 @@ namespace SWLOR.Game.Server.Service
             NWObject target = NWGameObject.OBJECT_SELF;
             if (!target.IsValid) return;
 
-            NWObject oSpellOrigin = (_.GetSpellCastItem());
+            NWObject oSpellOrigin = (GetSpellCastItem());
             // Item specific
             string script = oSpellOrigin.GetLocalString("SCRIPT");
 

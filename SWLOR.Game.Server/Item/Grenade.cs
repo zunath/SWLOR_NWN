@@ -12,7 +12,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
-    public class Grenade: IActionItem
+    public class Grenade : IActionItem
     {
         public string CustomKey => null;
 
@@ -23,77 +23,140 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            Effect damageEffect = damageEffect = EffectDamage(RandomService.D6(6), _.DAMAGE_TYPE_PIERCING);
             Effect impactEffect = null;
+            int spellId = SPELL_GRENADE_FIRE;
+            string soundName = "explosion2";
+            int perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);          
 
-            if (targetLocation == null) targetLocation = GetLocation(target);
+            string grenadeType = item.GetLocalString("TYPE");
 
-            float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 20.0f;
+            Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
 
-            if (item.GetLocalString("TYPE") == "FRAG")
+            switch (grenadeType)
             {
-                damageEffect = EffectDamage(RandomService.D6(6), _.DAMAGE_TYPE_PIERCING);
+                case "FRAG":
+                    impactEffect = EffectVisualEffect(VFX_FNF_FIREBALL);
+                    spellId = SPELL_GRENADE_FIRE;
+                    soundName = "explosion2";
+                    break;
+                case "CONCUSSION":
+                    impactEffect = EffectVisualEffect(VFX_FNF_SOUND_BURST_SILENT);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "FLASHBANG":
+                    impactEffect = EffectVisualEffect(VFX_FNF_MYSTICAL_EXPLOSION);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "ION":
+                    impactEffect = EffectVisualEffect(VFX_FNF_ELECTRIC_EXPLOSION);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "BACTA":
+                    impactEffect = EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "ADHESIVE":
+                    impactEffect = EffectVisualEffect(VFX_FNF_DISPEL_GREATER);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "SMOKE":
+                    impactEffect = EffectVisualEffect(VFX_FNF_SMOKE_PUFF);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "BACTABOMB":
+                    impactEffect = EffectVisualEffect(VFX_FNF_SOUND_BURST_SILENT);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "INCENDIARY":
+                    impactEffect = EffectVisualEffect(VFX_FNF_SOUND_BURST_SILENT);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                case "GAS":
+                    impactEffect = EffectVisualEffect(VFX_FNF_SOUND_BURST_SILENT);
+                    spellId = 974;
+                    soundName = "explosion1";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(grenadeType));
+            }           
 
-                impactEffect = EffectVisualEffect(VFX_FNF_FIREBALL);
-            }
-
-            /* causes exception for some reason?
+            float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
+            user.ClearAllActions();
+            user.AssignCommand(() =>
+            {
+                ActionCastSpellAtLocation(spellId, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
+                //ActionCastFakeSpellAtLocation(spellId, targetLocation, PROJECTILE_PATH_TYPE_BALLISTIC);
+            });
+            
             user.DelayAssignCommand(() =>
             {
-                PlaySound("grenadefire1");
-            }, 0.1f);
-            */
-
-            //user.ClearAllActions();
-            //user.AssignCommand(()=>ActionCastFakeSpellAtLocation(974, targetLocation));
-
-            user.DelayAssignCommand(() =>
-            {
-                PlaySound("explosion2");
+                PlaySound(soundName);
             }, delay);
 
             user.DelayAssignCommand(() =>
             {
                 ApplyEffectAtLocation(DURATION_TYPE_INSTANT, impactEffect, targetLocation);
-            }, delay + 0.5f);
+            }, delay);
 
-            
-            DelayCommand(delay+0.75f,
+            user.DelayAssignCommand(
                          () =>
                          {
-                             DoImpact((NWCreature) user, targetLocation, RandomService.D6(4), 0, 0, DAMAGE_TYPE_FIRE, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE);
-                         });
+                             DoImpact(targetLocation, grenadeType, perkLevel, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE);
+                         }, delay + 0.75f);
 
         }
 
-        public void DoImpact(NWCreature creature, Location targetLocation, int nDamage, int vSmallHit, int vRingHit, int nDamageType, float fExplosionRadius, int nObjectFilter, int nRacialType = RACIAL_TYPE_ALL)
+        public void DoImpact(Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, int nObjectFilter)
         {
-            Effect damageEffect = EffectDamage(nDamage, nDamageType);           
+            Effect damageEffect = EffectDamage(0, DAMAGE_TYPE_NEGATIVE); 
             // Target the next nearest creature and do the same thing.
             NWObject targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
             while (targetCreature.IsValid)
             {
-                Console.WriteLine("Grenade hit on " + targetCreature.Name);
-                creature.AssignCommand(() =>
+                switch (grenadeType)
                 {
-                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(nDamage, nDamageType), targetCreature);
-                });
-                // why doesn't this work???
-                /*
-                DelayCommand(delay, () =>
-                {
-                    ApplyEffectToObject(DURATION_TYPE_INSTANT, damageEffect, targetCreature);
-                });
-                */
-
-                /*
-                if (targetCreature != target)
-                {
-                    // Apply to nearest other creature, then exit loop.
-                    RunEffect(creature, target);
-                    break;
+                    case "FRAG":
+                        damageEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_FIRE);
+                        damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel), _.DAMAGE_TYPE_PIERCING), damageEffect);
+                        if (RandomService.D6(1) > 4)
+                        {
+                            // apply burning and or bleeding here
+                        }
+                        break;
+                    case "CONCUSSION":
+                        damageEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_SONIC);
+                        break;
+                    case "FLASHBANG":
+                        break;
+                    case "ION":
+                        damageEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_ELECTRICAL);
+                        break;
+                    case "BACTA":
+                        damageEffect = EffectRegenerate(perkLevel, perkLevel * 6.0f);
+                        break;
+                    case "ADHESIVE":
+                        break;
+                    case "SMOKE":
+                        break;
+                    case "BACTABOMB":
+                        break;
+                    case "INCENDIARY":
+                        break;
+                    case "GAS":
+                        break;
+                    default:                        
+                        throw new ArgumentOutOfRangeException(nameof(grenadeType));
                 }
-                */
+                ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damageEffect, targetCreature);
+                Console.WriteLine("Grenade hit on " + targetCreature.Name);
 
                 targetCreature = GetNextObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
             }

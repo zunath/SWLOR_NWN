@@ -1098,6 +1098,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nova Pilot Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republictroop001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nulaa's Hood"
                     },
                     "RESREF": {
@@ -1202,6 +1213,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithhood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_thelmet"
                     }
                   },
                   {
@@ -1548,6 +1570,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "leather_tunic_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Prima's Garbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "primagarb"
                     }
                   },
                   {
@@ -2510,6 +2543,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Neph's Diggs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nephsdiggs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Reika's Leathers"
                     },
                     "RESREF": {
@@ -2834,6 +2878,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nw_danceroutfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Support Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "novauniformsup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "novauniform"
                     }
                   },
                   {
@@ -3203,6 +3269,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Trooper Armour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_tarmour"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Smuggler"
                     },
                     "RESREF": {
@@ -3318,6 +3395,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nw_twilektripl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Valerius' Robe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "valerobe"
                     }
                   },
                   {
@@ -5003,6 +5091,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "powerglove_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Teras Kasi Master's Glove"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "primaglove"
                           }
                         },
                         {
@@ -13431,6 +13530,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hohen's Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hohensstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hook Horror (3/1), cost 5"
                     },
                     "RESREF": {
@@ -16040,6 +16150,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "NPC Lightsaber (Neph Offhand)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nephsaber2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Lightsaber (Neph)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nephsaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "NPC Lightsaber (Red)"
                           },
                           "RESREF": {
@@ -17941,6 +18073,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "rifle_s"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_tblaster"
                           }
                         },
                         {

@@ -440,7 +440,10 @@
     <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
     <Compile Include="Item\SlugShake.cs" />
     <Compile Include="Item\Grenade.cs" />
-    <Compile Include="NWNX\FeedbackMessages.cs" />
+    <Compile Include="NWNX\CombatLogMessageType.cs" />
+    <Compile Include="NWNX\FeedbackMessageType.cs" />
+    <Compile Include="NWNX\NWNXFeedback.cs" />
+    <Compile Include="Service\FeedbackService.cs" />
     <Compile Include="Service\HoloComService.cs" />
     <Compile Include="Service\VectorService.cs" />
     <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />

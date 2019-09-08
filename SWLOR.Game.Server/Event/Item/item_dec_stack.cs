@@ -13,8 +13,10 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
+            if (NWGameObject.OBJECT_SELF == null) return;
+
             NWItem item = NWGameObject.OBJECT_SELF;
-            if (item == null || !item.IsValid) return;
+            if (!item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
             if(item.BaseItemType == _.BASE_ITEM_SHURIKEN ||

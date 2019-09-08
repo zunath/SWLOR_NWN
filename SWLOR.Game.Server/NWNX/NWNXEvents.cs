@@ -198,14 +198,25 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataFloat("TARGET_POSITION_Z");
         }
 
-        public static NWObject OnItemUsed_GetItem()
+        public static NWItem OnItemUsed_GetItem()
         {
-            return GetEventDataObject("ITEM_OBJECT_ID");
+            return GetEventDataObject("ITEM_OBJECT_ID").Object;
         }
 
         public static NWObject OnItemUsed_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
+        }
+
+        public static NWLocation OnItemUsed_GetTargetLocation()
+        {
+            NWObject user = NWGameObject.OBJECT_SELF;
+            var x = GetEventDataFloat("TARGET_POSITION_X");
+            var y = GetEventDataFloat("TARGET_POSITION_Y");
+            var z = GetEventDataFloat("TARGET_POSITION_Z");
+            var vector = _.Vector(x, y, z);
+
+            return _.Location(user.Area, vector, 0.0f);
         }
 
         public static int OnItemUsed_GetItemPropertyIndex()

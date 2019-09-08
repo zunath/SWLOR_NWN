@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Item
             {
                 case "FRAG":
                     impactEffect = EffectVisualEffect(VFX_FNF_FIREBALL);
-                    spellId = SPELL_GRENADE_FIRE;
+                    spellId = 974;
                     soundName = "explosion2";
                     break;
                 case "CONCUSSION":

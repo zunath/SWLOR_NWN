@@ -157,8 +157,11 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var item in self.InventoryItems)
             {
-                CopyItem(item, container, TRUE);
-                item.Destroy();
+                if (item.IsValid && !item.IsCursed && item.IsDroppable)
+                {
+                    CopyItem(item, container, TRUE);
+                    item.Destroy();
+                }
             }
 
             DelayCommand(360.0f, () =>

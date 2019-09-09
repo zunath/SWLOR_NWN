@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Enables or disables holonet chat channel.", CommandPermissionType.Player)]
+    [CommandDetails("Enables or disables holonet chat channel.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class ToggleHolonet : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -29,6 +29,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
+            if (!user.IsPlayer)
+                return "You can only toggle the holonet on a player character.";
+
             return string.Empty;
         }
 

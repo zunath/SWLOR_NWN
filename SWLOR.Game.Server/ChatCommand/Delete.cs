@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player)]
+    [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Delete : IChatCommand
     {
         /// <summary>
@@ -59,6 +59,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
+            if (!user.IsPlayer)
+                return "You can only toggle the holonet on a player character.";
+
             string cdKey = _.GetPCPublicCDKey(user);
             string enteredCDKey = args.Length > 0 ? args[0] : string.Empty;
 

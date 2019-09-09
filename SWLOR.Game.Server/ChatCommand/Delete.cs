@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
             if (!user.IsPlayer)
-                return "You can only toggle the holonet on a player character.";
+                return "You can only delete a player character.";
 
             string cdKey = _.GetPCPublicCDKey(user);
             string enteredCDKey = args.Length > 0 ? args[0] : string.Empty;

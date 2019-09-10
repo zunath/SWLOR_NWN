@@ -6,6 +6,7 @@ using System.Linq;
 
 /**
  * Used in Pazaak games, mainly to keep track of the contents of the deck. 
+ * TODO: track 9-card victory.
  */
 namespace SWLOR.Game.Server.ValueObject
 {

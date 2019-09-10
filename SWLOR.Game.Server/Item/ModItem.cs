@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Item
                     else usePrismatic = true;
                     break;
                 case CustomItemPropertyType.GreenMod:
-                    if (slots.FilledBlueSlots < slots.GreenSlots)
+                    if (slots.FilledGreenSlots < slots.GreenSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Item
                     else usePrismatic = true;
                     break;
                 case CustomItemPropertyType.YellowMod:
-                    if (slots.FilledBlueSlots < slots.YellowSlots)
+                    if (slots.FilledYellowSlots < slots.YellowSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
@@ -87,7 +87,12 @@ namespace SWLOR.Game.Server.Item
             modItem.Destroy();
 
             SkillType skillType;
-            if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            
+            if(targetItem.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                skillType = SkillType.Engineering;
+            }
+            else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 skillType = SkillType.Armorsmith;
             }
@@ -112,17 +117,21 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            if(targetItem.GetLocalInt("LIGHTSABER") == TRUE)
             {
-                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+            }
+            else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            {
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
             else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
             }
             else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
             }
 
 
@@ -180,68 +189,17 @@ namespace SWLOR.Game.Server.Item
             if (modType == CustomItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
 
             // Get the perk level based on target item type and mod type.
-            if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (targetItem.GetLocalInt("LIGHTSABER") == FALSE && WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationWeapons);
-                        break;
-                    default:
-                        perkLevel = 0;
-                        break;
-                }
+                perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.WeaponModInstallation);
             }
             else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationArmors);
-                        break;
-                    default:
-                        perkLevel = 0;
-                        break;
-                }
+                perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ArmorModInstallation);
             }
-            else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (targetItem.GetLocalInt("LIGHTSABER") == TRUE || EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationEngineering);
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationEngineering);
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationEngineering);
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationEngineering);
-                        break;
-                    default:
-                        perkLevel = 0;
-                        break;
-                }
+                perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.EngineeringModInstallation);
             }
 
             // Ensure item isn't equipped.
@@ -261,6 +219,10 @@ namespace SWLOR.Game.Server.Item
 
             // Item must be in the user's inventory.
             if (!targetItem.Possessor.Equals(player)) return "Targeted item must be in your inventory.";
+
+            // It's possible that this mod is no longer usable. Notify the player if we can't find one registered.
+            if (!ModService.IsModHandlerRegistered(modID))
+                return "Unfortunately, this mod can no longer be used.";
 
             var handler = ModService.GetModHandler(modID);
             // Run the individual mod's rules for application. Will return the error message or a null.
@@ -290,7 +252,8 @@ namespace SWLOR.Game.Server.Item
             BASE_ITEM_HELMET,
             BASE_ITEM_LARGESHIELD,
             BASE_ITEM_SMALLSHIELD,
-            BASE_ITEM_TOWERSHIELD
+            BASE_ITEM_TOWERSHIELD,
+            BASE_ITEM_RING
         };
 
         private static readonly HashSet<int> WeaponsmithBaseItemTypes = new HashSet<int>()

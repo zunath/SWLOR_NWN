@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return DataService.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
+            return DataService.PCOutfit.GetByIDOrDefault(oPC.GlobalID);
         }
 
         private bool CanModifyClothes()
@@ -156,6 +155,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int outfitID = (int)response.CustomData;
             PCOutfit entity = GetPlayerOutfits(GetPC());
+            if (entity == null) return;
 
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.Chest;
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 
-            Object oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
+            NWGameObject oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
             oCopy = _.CopyItemAndModify(oCopy, ITEM_APPR_TYPE_ARMOR_MODEL, ITEM_APPR_ARMOR_MODEL_LBICEP, _.GetItemAppearance(storedClothes.Object, ITEM_APPR_TYPE_ARMOR_MODEL, ITEM_APPR_ARMOR_MODEL_LBICEP), TRUE);
             oCopy = _.CopyItemAndModify(oCopy, ITEM_APPR_TYPE_ARMOR_COLOR, ITEM_APPR_ARMOR_MODEL_LBICEP, _.GetItemAppearance(storedClothes.Object, ITEM_APPR_TYPE_ARMOR_COLOR, ITEM_APPR_ARMOR_MODEL_LBICEP), TRUE);
 

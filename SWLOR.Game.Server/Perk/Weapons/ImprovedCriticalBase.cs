@@ -13,86 +13,81 @@ namespace SWLOR.Game.Server.Perk.Weapons
     {
         public abstract PerkType PerkType { get; }
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            return false;
+            return string.Empty;
         }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return null;
-        }
-
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            ApplyFeatChanges(oPC, oItem);
+            ApplyFeatChanges(creature, oItem);
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
-        private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
+        private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? oPC.RightHand;
-            RemoveAllFeats(oPC);
+            NWItem equipped = oItem ?? creature.RightHand;
+            RemoveAllFeats(creature);
 
             // Unarmed check
-            NWItem mainHand = oPC.RightHand;
-            NWItem offHand = oPC.LeftHand;
+            NWItem mainHand = creature.RightHand;
+            NWItem offHand = creature.LeftHand;
             if (oItem != null && Equals(oItem, mainHand))
             {
-                mainHand = (new Object());
+                mainHand = (new NWGameObject());
             }
             else if (oItem != null && Equals(oItem, offHand))
             {
-                offHand = (new Object());
+                offHand = (new NWGameObject());
             }
 
             if (!mainHand.IsValid && !offHand.IsValid)
             {
-                if (PerkService.GetPCPerkLevel(oPC, PerkType.ImprovedCriticalMartialArts) > 0)
+                if (PerkService.GetCreaturePerkLevel(creature, PerkType.ImprovedCriticalMartialArts) > 0)
                 {
-                    NWNXCreature.AddFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
+                    NWNXCreature.AddFeat(creature, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
                 }
                 return;
             }
@@ -123,59 +118,59 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 perkType = PerkType.ImprovedCriticalLightsabers;
             }
             
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, perkType);
+            int perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
             int type = equipped.BaseItemType;
             if (perkLevel > 0)
             {
-                AddCriticalFeat(oPC, type);
+                AddCriticalFeat(creature, type);
             }
         }
 
-        private void RemoveAllFeats(NWPlayer oPC)
+        private void RemoveAllFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_BASTARD_SWORD);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_BATTLE_AXE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_CLUB);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DAGGER);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DART);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DIRE_MACE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DOUBLE_AXE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DWAXE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_GREAT_AXE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_GREAT_SWORD);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HALBERD);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HAND_AXE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HEAVY_CROSSBOW);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HEAVY_FLAIL);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KAMA);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KATANA);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KUKRI);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_CROSSBOW);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_FLAIL);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_HAMMER);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_MACE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LONGBOW);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_MORNING_STAR);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_RAPIER);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SCIMITAR);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SCYTHE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHORTBOW);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHORT_SWORD);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHURIKEN);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SICKLE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SLING);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SPEAR);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_STAFF);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_THROWING_AXE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_TRIDENT);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_WAR_HAMMER);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_WHIP);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_BASTARD_SWORD);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_BATTLE_AXE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_CLUB);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_DAGGER);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_DART);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_DIRE_MACE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_DOUBLE_AXE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_DWAXE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_GREAT_AXE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_GREAT_SWORD);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_HALBERD);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_HAND_AXE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_HEAVY_CROSSBOW);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_HEAVY_FLAIL);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_KAMA);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_KATANA);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_KUKRI);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_LIGHT_CROSSBOW);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_LIGHT_FLAIL);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_LIGHT_HAMMER);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_LIGHT_MACE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_LONGBOW);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_MORNING_STAR);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_RAPIER);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SCIMITAR);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SCYTHE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SHORTBOW);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SHORT_SWORD);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SHURIKEN);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SICKLE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SLING);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_SPEAR);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_STAFF);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_THROWING_AXE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_TRIDENT);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_WAR_HAMMER);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_CRITICAL_WHIP);
         }
 
-        private void AddCriticalFeat(NWPlayer oPC, int type)
+        private void AddCriticalFeat(NWCreature creature, int type)
         {
             int feat;
 
@@ -226,12 +221,17 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 default: return;
             }
 
-            NWNXCreature.AddFeat(oPC, feat);
+            NWNXCreature.AddFeat(creature, feat);
         }
 
         public bool IsHostile()
         {
             return false;
+        }
+
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
+        {
+            
         }
     }
 }

@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation.Quest.HasQuest
 {
@@ -16,18 +15,18 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.HasQuest
             {
                 int index = (int) args[0];
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = Object.OBJECT_SELF;
+                NWObject talkingTo = NWGameObject.OBJECT_SELF;
                 int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 
-                if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
+                if (!QuestService.QuestExistsByID(questID))
                 {
                     _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                     return false;
                 }
 
-                var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-                return status != null && status.CurrentQuestStateID > 0;
+                var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
+                return status != null && status.QuestState > 0;
             }
         }
     }

@@ -1,0 +1,79 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 74
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A reference manual for voice commands for players and DMs\n\nUnlike previous releases of the DMFI tools, there is no requirement for an NPC, summoned creature, familiar or \"voice\" to be within range for these functions to work.\n\nRepeated text is ALWAYS ignored (ie in testing hi, hi, hi)\n\nBASIC VOICE FUNCTIONS:\n-----------------------------------------\n**DM channel no longer used**\nThere is no longer a requirement to speak your special command on the DM channel. You may use the special modifiers below on the Talk, Whisper, or Party channel.\n\n[your typing here]\n\nEnclosing text in square brackets will speak your \"native\" language.  If you have more than one, use the language widgets to set the language you will be speaking.\n\n;your text here\n\nStarting your text with a semicolon will cause your familiar or companion to say your text.\n\n,your text here\n\nStarting your text with a semicolon will cause your summoned creature will say your text.\n\n\n*emotes*\n--------------\nBracketing text between two * will attempt to perform an emote.  This applies to simple spoken text by the PC.\n\nThis will work for DM possessed creatures or for players.  The action will be taken by the speaker.\n\nTwo uses:  \n\n1) is for skill checks or ability checks - ie *uses strength to move rock*\n\n2) is for emotes - ie *bows to the leader of the town*\n\nTwo emotes animation shortcuts:\n\n.emon  - animations NO\n.emoy  - animations YES\n\nAppropriate actions include:\n\nAll abilities and all skills (spell them just like the actual skill or ability - ie use magic device)\n\nEmote animations:\n\nagree\nbeg, plead\nbends, stoops\nbored, scratch\nbow\ncantrip\ncheer, hooray, celebrate\ndemand, threaten\ndrink , sip\ndrunk, woozy\nducks, dodge\nfall back\nfiddle\nfidget, shift\nflop, prone\ngiggle\ngreet\nhum\nlaugh, chuckle\nnap\nnod\npeers, scans\npray, meditate\nread\nsalute\nsearch\nshakes head\nsing\nsit\nsits on floor or ground\nsmokes\nsnore\nspasm\nspellcast\nsteal\nswipe\ntalks, chats\ntaunt, mock\ntired, fatigue, exhausted\nwave\nwhistles\nworship\nyawn, stretch\n\n\n.broadcast commands\n-----------------------------------\n\nThese commands will change how dicerolls are reported for .skill rolls and for rolls performed by the DMFI DM Dicebag\n\n.dm           - DM send only\n.private     - DM and player\n.local         - roll is given via TALK\n.global       - roll is given via SHOUT\n\nTwo dice-roll animation shortcuts:\n\n.anin  - animations NO\n.aniy  - animations YES\n\n.lan commands\n------------------------\n\nSet yourself or associate to speak a particular language\nEX:  .lan drow\n"
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Book of Player Voice Commands"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 4
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 4
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 1
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "dmfi_playerbook"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "dmfi_playerbook"
+  }
+}

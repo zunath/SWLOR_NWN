@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
                     Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
-                    var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+                    var structure = DataService.PCBaseStructure.GetByID(structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Conversation
             copy.Name = chest.Name;
             copy.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
-            copy.SetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED", copy.Object);
+            chest.SetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED", copy.Object);
             copy.SetLocalObject("STRUCTURE_TEMP_PARENT", chest.Object);
             copy.SetLocalString("PC_BASE_STRUCTURE_ID", structureID);
 

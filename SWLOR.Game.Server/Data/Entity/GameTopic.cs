@@ -18,5 +18,19 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public int Sequence { get; set; }
         public string Icon { get; set; }
+
+        public IEntity Clone()
+        {
+            return new GameTopic
+            {
+                ID = ID,
+                Name = Name,
+                Text = Text,
+                GameTopicCategoryID = GameTopicCategoryID,
+                IsActive = IsActive,
+                Sequence = Sequence,
+                Icon = Icon
+            };
+        }
     }
 }

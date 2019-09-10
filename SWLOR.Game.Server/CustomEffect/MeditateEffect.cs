@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
+            AbilityService.EndConcentrationEffect(oCaster);
+
             NWPlayer player = oTarget.Object;
             int meditateTick = oTarget.GetLocalInt("MEDITATE_TICK") + 1;
 
@@ -69,7 +71,7 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 int amount = CalculateAmount(player);
 
-                AbilityService.RestoreFP(player, amount);
+                AbilityService.RestorePlayerFP(player, amount);
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
                 meditateTick = 0;
@@ -88,20 +90,20 @@ namespace SWLOR.Game.Server.CustomEffect
         private int CalculateAmount(NWPlayer player)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Meditate);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Meditate);
             int amount;
             switch (perkLevel)
             {
                 default:
-                    amount = 2;
+                    amount = 6;
                     break;
                 case 4:
                 case 5:
                 case 6:
-                    amount = 3;
+                    amount = 10;
                     break;
                 case 7:
-                    amount = 4;
+                    amount = 14;
                     break;
             }
             amount += effectiveStats.Meditate;
@@ -109,14 +111,14 @@ namespace SWLOR.Game.Server.CustomEffect
             return amount;
         }
 
-        public static bool CanMeditate(NWPlayer oPC)
+        public static bool CanMeditate(NWCreature meditator)
         {
-            bool canMeditate = !oPC.IsInCombat;
+            bool canMeditate = !meditator.IsInCombat;
 
-            NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.PartyMembers)
+            NWArea area = meditator.Area;
+            foreach (NWCreature member in meditator.PartyMembers)
             {
-                if (!member.Area.Equals(pcArea)) continue;
+                if (!member.Area.Equals(area)) continue;
 
                 if (member.IsInCombat)
                 {

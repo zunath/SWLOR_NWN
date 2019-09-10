@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class MedicineMod : IModHandler
     {
         public int ModTypeID => 23;
+        private const int MaxValue = 17;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.MedicineBonus >= 50)
+            if (target.MedicineBonus >= MaxValue)
                 return "You cannot improve that item's medicine bonus any further.";
 
             return null;
@@ -18,9 +19,9 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.MedicineBonus + value;
-            if (newValue > 50) newValue = 50;
+            int amount = Convert.ToInt32(args[0]);
+            int newValue = target.MedicineBonus + amount;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.MedicineBonus = newValue;
         }
 

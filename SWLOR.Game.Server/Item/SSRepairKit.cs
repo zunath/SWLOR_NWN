@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -24,9 +25,10 @@ namespace SWLOR.Game.Server.Item
             NWArea area = user.Area;
             NWPlayer player = new NWPlayer(user);
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
+            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
+            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
             int repair = SkillService.GetPCSkillRank(player, SkillType.Piloting);
             int maxRepair = (int)structure.Durability - (int)pcbs.Durability;
@@ -52,7 +54,7 @@ namespace SWLOR.Game.Server.Item
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
+            if (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
             {
                 return 6.0f;
             }
@@ -90,17 +92,18 @@ namespace SWLOR.Game.Server.Item
             }
 
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
+            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
+            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
             if (structure.Durability == pcbs.Durability)
             {
                 return "This starship is already fully repaired.";
             }
 
-            bool canRepair = (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
-            PCBase pcBase = DataService.Get<PCBase>(pcbs.PCBaseID);
+            bool canRepair = (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
+            PCBase pcBase = DataService.PCBase.GetByID(pcbs.PCBaseID);
 
             if (!canRepair && SpaceService.IsLocationSpace(pcBase.ShipLocation))
             {

@@ -5,15 +5,15 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets a local float on a target.", CommandPermissionType.DM)]
+    [CommandDetails("Sets a local float on a target.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetLocalFloat : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsValid)
             {
-                user.SendMessage("Target is invalid.");
-                return;
+                user.SendMessage("Target is invalid. Targeting area instead.");
+                target = user.Area;
             }
 
             string variableName = args[0];

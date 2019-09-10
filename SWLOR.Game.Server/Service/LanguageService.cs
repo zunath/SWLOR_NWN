@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SWLOR.Game.Server.Data.Entity;
+﻿using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Language;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 
 namespace SWLOR.Game.Server.Service
@@ -27,12 +27,13 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Twileki, typeof(TranslatorTwileki) },
                 { SkillType.Zabraki, typeof(TranslatorZabraki) },
                 { SkillType.Mirialan, typeof(TranslatorMirialan) },
-                {SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) }
+                { SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) },
+                { SkillType.Ugnaught, typeof(TranslatorUgnaught) }
             };
 
             Type type = typeof(TranslatorGeneric);
             map.TryGetValue(language, out type);
-            ITranslator translator = Activator.CreateInstance(type) as ITranslator;
+            ITranslator translator = (ITranslator)Activator.CreateInstance(type);
 
             if (speaker.IsPC && !speaker.IsDM)
             {
@@ -68,6 +69,20 @@ namespace SWLOR.Game.Server.Service
             NWPlayer listenerAsPlayer = listener.Object;
             int rank = SkillService.GetPCSkillRank(listenerAsPlayer, language);
             int maxRank = SkillService.GetSkill(language).MaxRank;
+
+            // Check for the Comprehend Speech concentration ability.
+            Player dbPlayer = DataService.Player.GetByID(listenerAsPlayer.GlobalID);
+            bool grantSenseXP = false;
+            if (dbPlayer.ActiveConcentrationPerkID == (int)PerkType.ComprehendSpeech)
+            {
+                int bonus = 5 * dbPlayer.ActiveConcentrationTier;
+                rank += bonus;
+                grantSenseXP = true;
+            }
+
+            // Ensure we don't go over the maximum.
+            if (rank > maxRank)
+                rank = maxRank;
 
             if (rank == maxRank || speaker == listener)
             {
@@ -114,8 +129,14 @@ namespace SWLOR.Game.Server.Service
 
             if (differenceInSeconds / 60 >= 5)
             {
+                int amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
-                SkillService.GiveSkillXP(listenerAsPlayer, language, Math.Max(10, Math.Min(150, snippet.Length) / 3));
+                SkillService.GiveSkillXP(listenerAsPlayer, language, amount);
+
+                // Grant Sense XP if player is concentrating Comprehend Speech.
+                if (grantSenseXP)
+                    SkillService.GiveSkillXP(listenerAsPlayer, SkillType.ForceSense, amount * 10);
+
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
             }
@@ -143,6 +164,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
+                case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
             }
 
             return r << 24 | g << 16 | b << 8;
@@ -164,6 +186,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Zabraki: return "Zabraki";
                 case SkillType.Mirialan: return "Mirialan";
                 case SkillType.MonCalamarian: return "Mon Calamarian";
+                case SkillType.Ugnaught: return "Ugnaught";
             }
 
             return "Basic";
@@ -207,6 +230,9 @@ namespace SWLOR.Game.Server.Service
                 case CustomRaceType.MonCalamari:
                     languages.Add(SkillType.MonCalamarian);
                     break;
+                case CustomRaceType.Ugnaught:
+                    languages.Add(SkillType.Ugnaught);
+                    break;
             }
 
             switch (background)
@@ -219,24 +245,22 @@ namespace SWLOR.Game.Server.Service
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
-            var pcSkills = DataService.Where<PCSkill>
-                (x => x.PlayerID == player.GlobalID &&
-                            languages.Contains((SkillType)x.SkillID))
-                .ToList();
-            
+
+            List<int> languageSkillIDs = languages.ConvertAll(x => (int) x);
+            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languageSkillIDs).ToList();
+
             foreach (var pcSkill in pcSkills)
             {
-                var skill = DataService.Get<Skill>(pcSkill.SkillID);
+                var skill = DataService.Skill.GetByID(pcSkill.SkillID);
                 int maxRank = skill.MaxRank;
-                int skillID = skill.ID;
-                var xpRecord = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == maxRank);
+                int maxRankXP = SkillService.SkillXPRequirements[maxRank];
 
                 pcSkill.Rank = maxRank;
-                pcSkill.XP = xpRecord.XP - 1;
+                pcSkill.XP = maxRankXP - 1;
 
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
             }
-            
+
         }
 
         public static SkillType GetActiveLanguage(NWObject obj)
@@ -263,25 +287,37 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static SkillType[] GetLanguages()
+        private static IEnumerable<LanguageCommand> _languages;
+
+        public static IEnumerable<LanguageCommand> Languages
         {
-            // TODO - Can this be improved? DB query based on the category?
-            return new SkillType[]
+            get
             {
-                SkillType.Basic,
-                SkillType.Bothese,
-                SkillType.Catharese,
-                SkillType.Cheunh,
-                SkillType.Dosh,
-                SkillType.Droidspeak,
-                SkillType.Huttese,
-                SkillType.Mandoa,
-                SkillType.Shyriiwook,
-                SkillType.Twileki,
-                SkillType.Zabraki,
-                SkillType.Mirialan,
-                SkillType.MonCalamarian
-            };
+                if (_languages == null)
+                {
+                    var languages = new List<LanguageCommand>
+                    {
+                        new LanguageCommand("Basic", SkillType.Basic, new [] { "basic" }),
+                        new LanguageCommand("Bothese", SkillType.Bothese, new[] {"bothese"}),
+                        new LanguageCommand("Catharese", SkillType.Catharese, new []{"catharese"}),
+                        new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"cheunh"}),
+                        new LanguageCommand("Dosh", SkillType.Dosh, new []{"dosh"}),
+                        new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"droidspeak"}),
+                        new LanguageCommand("Huttese", SkillType.Huttese, new []{"huttese"}),
+                        new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
+                        new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
+                        new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
+                        new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
+                        new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
+                        new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
+                    };
+
+                    _languages = languages;
+                }
+
+                return _languages;
+            }
         }
     }
 }

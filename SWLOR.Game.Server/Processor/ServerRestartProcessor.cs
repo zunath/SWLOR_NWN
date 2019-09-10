@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Processor
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => Run());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => Run());
         }
 
         static ServerRestartProcessor()   
@@ -86,8 +87,9 @@ namespace SWLOR.Game.Server.Processor
                         player.FloatingText(message);
 
                         // If the player has a lease which is expiring in <= 24 hours, notify them.
-                        int leasesExpiring = DataService.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
-
+                        int leasesExpiring = DataService.PCBase
+                            .GetAllByPlayerID(player.GlobalID)
+                            .Count(x => x.DateRentDue.AddHours(-24) <= now);
                         if (leasesExpiring > 0)
                         {
                             string leaseDetails = leasesExpiring == 1 ? "1 lease" : leasesExpiring + " leases";

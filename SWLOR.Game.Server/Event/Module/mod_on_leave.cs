@@ -1,7 +1,7 @@
 ﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -36,11 +36,6 @@ namespace NWN.Scripts
 
 
             MessageHub.Instance.Publish(new OnModuleLeave());
-
-            using (new Profiler(nameof(mod_on_leave) + ":RemovePlayerCache"))
-            {
-                DataService.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
-            }
         }
     }
 }

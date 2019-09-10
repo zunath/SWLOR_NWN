@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
+using SWLOR.Game.Server.Event.Creature;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -25,16 +25,16 @@ namespace SWLOR.Game.Server.Service
             _aiBehaviours = new Dictionary<string, IAIBehaviour>();
             _areaAICreatures = new Dictionary<NWArea, HashSet<NWCreature>>();
         }
-        
+
         public static void SubscribeEvents()
         {
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
 
             // SWLOR Events
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessAreaAI());
-            MessageHub.Instance.Subscribe<AreaInstanceCreatedMessage>(message => OnAreaInstanceCreated(message.Instance));
-            MessageHub.Instance.Subscribe<AreaInstanceDestroyedMessage>(message => OnAreaInstanceDestroyed(message.Instance));
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessAreaAI());
+            MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
+            MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
 
             // Creature Events
             MessageHub.Instance.Subscribe<OnCreaturePhysicalAttacked>(message => OnCreaturePhysicalAttacked());
@@ -109,31 +109,31 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureBlocked()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnBlocked(Object.OBJECT_SELF);
+            behaviour.OnBlocked(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureConversation()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnConversation(Object.OBJECT_SELF);
+            behaviour.OnConversation(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureDamaged()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnDamaged(Object.OBJECT_SELF);
+            behaviour.OnDamaged(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureDeath()
         {
-            NWCreature self = Object.OBJECT_SELF;
+            NWCreature self = NWGameObject.OBJECT_SELF;
 
             // Remove any custom object data from the cache.
             if (AppCache.CustomObjectData.ContainsKey(self.GlobalID))
@@ -141,75 +141,75 @@ namespace SWLOR.Game.Server.Service
                 AppCache.CustomObjectData.Remove(self.GlobalID);
             }
 
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnDeath(Object.OBJECT_SELF);
+            behaviour.OnDeath(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureDisturbed()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnDisturbed(Object.OBJECT_SELF);
+            behaviour.OnDisturbed(NWGameObject.OBJECT_SELF);
         }
 
 
         private static void OnCreatureHeartbeat()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnHeartbeat(Object.OBJECT_SELF);
+            behaviour.OnHeartbeat(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreaturePerception()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnPerception(Object.OBJECT_SELF);
+            behaviour.OnPerception(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreaturePhysicalAttacked()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnPhysicalAttacked(Object.OBJECT_SELF);
+            behaviour.OnPhysicalAttacked(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureRested()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnRested(Object.OBJECT_SELF);
+            behaviour.OnRested(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureCombatRoundEnd()
         {
-            NWCreature self = Object.OBJECT_SELF;
+            NWCreature self = NWGameObject.OBJECT_SELF;
             WeatherService.OnCombatRoundEnd(self);
 
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnCombatRoundEnd(Object.OBJECT_SELF);
+            behaviour.OnCombatRoundEnd(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureSpawn()
         {
-            NWCreature self = Object.OBJECT_SELF;
-            
+            NWCreature self = NWGameObject.OBJECT_SELF;
+
             // Don't modify AI behaviour for DM-spawned creatures.
             if (self.GetLocalInt("DM_SPAWNED") == _.TRUE) return;
 
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour ai = GetAIBehaviour(script);
-        
+
             if (ai.IgnoreNWNEvents) self.SetLocalInt("IGNORE_NWN_EVENTS", 1);
             if (ai.IgnoreOnBlocked) self.SetLocalInt("IGNORE_NWN_ON_BLOCKED_EVENT", 1);
             if (ai.IgnoreOnCombatRoundEnd) self.SetLocalInt("IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT", 1);
@@ -228,21 +228,21 @@ namespace SWLOR.Game.Server.Service
             _areaAICreatures[self.Area].Add(self);
             ai.OnSpawn(self);
         }
-        
+
         private static void OnCreatureSpellCastAt()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnSpellCastAt(Object.OBJECT_SELF);
+            behaviour.OnSpellCastAt(NWGameObject.OBJECT_SELF);
         }
 
         private static void OnCreatureUserDefined()
         {
-            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            string script = GetBehaviourScript(NWGameObject.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
             IAIBehaviour behaviour = GetAIBehaviour(script);
-            behaviour.OnUserDefined(Object.OBJECT_SELF);
+            behaviour.OnUserDefined(NWGameObject.OBJECT_SELF);
         }
 
         private static void ProcessAreaAI()
@@ -251,34 +251,36 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var area in NWModule.Get().Areas)
                 {
-                    // We don't process AI for empty areas.
-                    if (NWNXArea.GetNumberOfPlayersInArea(area) <= 0) continue;
+                    int lastTickPlayerCount = area.GetLocalInt("AI_PLAYER_COUNT");
+                    int thisTickPlayerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+                    area.SetLocalInt("AI_PLAYER_COUNT", thisTickPlayerCount);
+
+                    // AI gets processed one more time after an area becomes empty.
+                    // We do this so that behaviours can clean up properly.
+                    if (thisTickPlayerCount <= 0 && lastTickPlayerCount <= 0) continue;
 
                     // Safety check - If the area isn't in the cache, report it.
                     if (!_areaAICreatures.ContainsKey(area))
                     {
                         Console.WriteLine("Area " + area.Name + " not registered with AI service. Tag: " + area.Tag + ", Resref = " + area.Resref);
-                        return;
+                        continue;
                     }
 
                     var creatures = _areaAICreatures[area];
-                    ProcessCreatureAI(ref creatures);
+                    ProcessCreatureAI(area, ref creatures);
                 }
             }
         }
 
-        private static void ProcessCreatureAI(ref HashSet<NWCreature> creatures)
+        private static void ProcessCreatureAI(NWArea area, ref HashSet<NWCreature> creatures)
         {
             // Iterate backwards so we can remove the creature if it's no longer valid.
             for (int x = creatures.Count - 1; x >= 0; x--)
             {
                 NWCreature creature = creatures.ElementAt(x);
-                NWArea area = creature.Area;
-                
+
                 // Limbo check.
                 if (!area.IsValid) continue;
-
-                bool areaHasPCs = NWNXArea.GetNumberOfPlayersInArea(area) > 0;
 
                 // Is this creature invalid or dead? If so, remove it and move to the next one.
                 if (!creature.IsValid ||
@@ -288,8 +290,8 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
-                if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
+                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this tick. Move to the next one.
+                if (creature.IsPossessedFamiliar || creature.IsDMPossessed)
                     continue;
 
                 string script = GetBehaviourScript(creature);

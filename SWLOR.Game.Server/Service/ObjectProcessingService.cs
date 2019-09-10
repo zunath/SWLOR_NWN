@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using NWN;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -40,11 +40,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunProcessor()
         {
-            var delta = DateTime.UtcNow - _dateLastRun;
+            var now = DateTime.UtcNow;
+            var delta = now - _dateLastRun;
             if (delta.Seconds < 1) return;
-            _dateLastRun = DateTime.UtcNow;
+            _dateLastRun = now;
             
-            MessageHub.Instance.Publish(new ObjectProcessorMessage());
+            MessageHub.Instance.Publish(new OnObjectProcessorRan());
         }
     }
 }

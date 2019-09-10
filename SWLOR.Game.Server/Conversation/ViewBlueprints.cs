@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
             model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
             model.TertiaryMaximum = model.Blueprint.TertiaryMaximum;
 
-            string header = CraftService.BuildBlueprintHeader(GetPC(), blueprintID, false);
+            string header = CraftService.BuildBlueprintHeader(GetPC(), false);
 
             SetPageHeader("BlueprintDetailsPage", header);
             ChangePage("BlueprintDetailsPage");

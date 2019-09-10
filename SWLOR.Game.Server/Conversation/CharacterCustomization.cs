@@ -208,13 +208,14 @@ namespace SWLOR.Game.Server.Conversation
             int[] CyborgSkinColors = { 0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 17, 18, 19 };
             int[] CatharSkinColors = { 6, 7, 10, 11, 117, 118, 119, 130, 131 };
             int[] TrandoshanSkinColors = { 4, 5, 6, 18, 19, 34, 35, 36, 38, 39, 172 };
-            int[] MirialanSkinColors = { 36, 37, 38, 52, 53 };
+            int[] MirialanSkinColors = { 33, 34, 36, 37, 38, 52, 53, 54, 55, 93, 94 };
             int[] EchaniSkinColors = { 16, 20, 40, 164 };
             int[] MonCalamariSkinColors =
             {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 60, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
                 80, 81, 82, 83, 84, 85, 86, 87, 94, 95, 97, 98, 99, 105, 106, 107, 109, 110, 111, 113, 114, 115, 117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 129, 130, 131, 137, 138, 139, 141, 142, 143, 145, 146, 147, 148, 149, 151, 153, 155, 157, 158, 159, 160, 161, 162, 165, 171, 172, 175
             };
+            int[] UgnaughtSkinColors = { 0, 1, 2, 3, 4, 5, 10, 12, 13, 14, 116, 117 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int[] colorsToUse;
@@ -253,6 +254,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case CustomRaceType.MonCalamari:
                     colorsToUse = MonCalamariSkinColors;
+                    break;
+                case CustomRaceType.Ugnaught:
+                    colorsToUse = UgnaughtSkinColors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -332,7 +336,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             int association = model.AssociationID;
             var player = GetPC();
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             dbPlayer.AssociationID = association;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
@@ -356,7 +360,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("ChangeHeadPage");
 
-            int[] MaleHumanHeads = { 1, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 47, 100, 102, 110, 116, 126, 129, 130, 131, 132, 134, 135, 136, 137, 138, 140, 141, 142, 145, 146, 150, 152, 153, 160, 161, 164, 165, 166, 167, 171, 176, 177, 182, 183, 184, 186, 190, 191, 194, 195, 196, 197, 198, 199, 231 };
+            int[] MaleHumanHeads = { 1, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 47, 100, 102, 110, 116, 121, 126, 129, 130, 131, 132, 134, 135, 136, 137, 138, 140, 141, 142, 145, 146, 150, 152, 153, 160, 161, 164, 165, 166, 167, 171, 176, 177, 182, 183, 184, 186, 190, 191, 194, 195, 196, 197, 198, 199, 231 };
             int[] MaleBothanHeads = { 40, 41, 43, };
             int[] MaleChissHeads = { };
             int[] MaleZabrakHeads = { 103, };
@@ -365,11 +369,12 @@ namespace SWLOR.Game.Server.Conversation
             int[] MaleEchaniHeads = { };
             int[] MaleCyborgHeads = { 74, 88, 156, 168, 181, 187 };
             int[] MaleCatharHeads = { 26, 27, 28, 29, };
-            int[] MaleTrandoshanHeads = { 2, 101, 111, 123, 124, 125, 143 };
+            int[] MaleTrandoshanHeads = { 2, 101, 111, 123, 124, 125, 143, 162 };
             int[] MaleWookieeHeads = {119, 192, 193};
-            int[] MaleMonCalamariHeads = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 119, 127 };
+            int[] MaleMonCalamariHeads = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 119, 120, 127 };
+            int[] MaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
 
-            int[] FemaleHumanHeads = { 1, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 44, 45, 46, 48, 49, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 116, 117, 118, 121, 123, 124, 125, 127, 130, 132, 134, 136, 137, 138, 140, 141, 164, 167, 168, 171, 172, 173, 174, 175, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 199 };
+            int[] FemaleHumanHeads = { 1, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20, 22, 23, 25, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 44, 45, 46, 48, 49, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 116, 117, 118, 121, 123, 124, 125, 127, 130, 132, 134, 136, 137, 138, 140, 141, 164, 167, 168, 171, 172, 173, 174, 175, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 199 };
             int[] FemaleBothanHeads = { 109, 162, };
             int[] FemaleChissHeads = { };
             int[] FemaleZabrakHeads = { 38, 120 };
@@ -378,9 +383,10 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleEchaniHeads = { };
             int[] FemaleCyborgHeads = { 41, 109 };
             int[] FemaleCatharHeads = { 13, 14 };
-            int[] FemaleTrandoshanHeads = { 126, 128, 135, 150, 157 };
+            int[] FemaleTrandoshanHeads = { 24, 126, 128, 135, 150, 157 };
             int[] FemaleWookieeHeads = {110, 185, 186, 192, 193, 195};
-            int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 110, 115, 119, 122 };
+            int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122 };
+            int[] FemaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int gender = GetPC().Gender;
@@ -432,6 +438,9 @@ namespace SWLOR.Game.Server.Conversation
                 case CustomRaceType.MonCalamari:
                     headsToUse = gender == GENDER_MALE ? MaleMonCalamariHeads : FemaleMonCalamariHeads;
                     break;
+                case CustomRaceType.Ugnaught:
+                    headsToUse = gender == GENDER_MALE ? MaleUgnaughtHeads : FemaleUgnaughtHeads;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -460,6 +469,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] TrandoshanEyeColors = { }; // All
             int[] WookieeHairColors = {0, 1, 2, 3, 14, 49, 51};
             int[] MonCalamariHairColors = { }; // All
+            int[] UgnaughtHairColors = { 16, 17, 18, 19, 62, 120, 128, 164, 166, 168 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int[] colorsToUse;
@@ -501,6 +511,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case CustomRaceType.MonCalamari:
                     colorsToUse = MonCalamariHairColors;
+                    break;
+                case CustomRaceType.Ugnaught:
+                    colorsToUse = UgnaughtHairColors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

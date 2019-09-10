@@ -11,5 +11,17 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CDKey { get; set; }
         public int DMRole { get; set; }
         public bool IsActive { get; set; }
+
+        public IEntity Clone()
+        {
+            return new AuthorizedDM
+            {
+                ID = ID,
+                Name = Name,
+                CDKey = CDKey,
+                DMRole = DMRole,
+                IsActive = IsActive
+            };
+        }
     }
 }

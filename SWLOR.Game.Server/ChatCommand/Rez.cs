@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Revives you, heals you to full, and restores all FP.", CommandPermissionType.DM)]
+    [CommandDetails("Revives you, heals you to full, and restores all FP.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Rez: IChatCommand
     {
         /// <summary>
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(999), user.Object);
-            AbilityService.RestoreFP(user, 9999);
+            AbilityService.RestorePlayerFP(user, 9999);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

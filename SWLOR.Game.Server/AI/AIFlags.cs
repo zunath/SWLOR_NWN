@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.AI
         None = 0,
         AggroNearby = 1,
         Link = 2,
-        RandomWalk = 4
+        RandomWalk = 4,
+        ReturnToSpawnPoint = 8
 
     }
 }

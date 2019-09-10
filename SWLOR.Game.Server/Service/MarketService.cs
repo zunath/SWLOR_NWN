@@ -3,10 +3,10 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Player is offline. Put the gold into their "Till" and give it to them the next time they log on.
-            Player dbPlayer = DataService.Get<Player>(playerID);
+            Player dbPlayer = DataService.Player.GetByID(playerID);
             dbPlayer.GoldTill += amount;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             if (dbPlayer.GoldTill > 0)
             {
@@ -235,16 +235,16 @@ namespace SWLOR.Game.Server.Service
             if (item.GetLocalString("SCRIPT") == "RepairKit")
                 return 104;
             // Check for Stim Packs
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.StimPack")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.StimPack")
                 return 105;
             // Check for Force Packs
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.ForcePack")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.ForcePack")
                 return 106;
             // Check for Healing Kits
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.HealingKit")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.HealingKit")
                 return 107;
             // Check for Resuscitation Devices
-            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.ResuscitationKit")
+            if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.ResuscitationKit")
                 return 108;
             // Check for Starcharts
             if (item.GetLocalString("SCRIPT") == "StarchartDisk" &&
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Service
             int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             if (baseStructureID > 0)
             {
-                var baseStructure = DataService.Get<BaseStructure>(baseStructureID);
+                var baseStructure = DataService.BaseStructure.GetByID(baseStructureID);
                 var baseStructureType = (BaseStructureType) baseStructure.BaseStructureTypeID;
 
                 switch (baseStructureType)

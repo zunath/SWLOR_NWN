@@ -53,7 +53,8 @@ namespace SWLOR.Game.Server.Messaging
         /// Publishes the <paramref name="message"/> on the <see cref="MessageHub"/>.
         /// </summary>
         /// <param name="message">The message to published</param>
-        public void Publish<T>(T message)
+        /// <param name="useProfiler"></param>
+        public void Publish<T>(T message, bool useProfiler = true)
         {
             var localSubscriptions = _subscriptions.GetTheLatestSubscriptions();
 
@@ -76,13 +77,18 @@ namespace SWLOR.Game.Server.Messaging
 #endif
                 try
                 {
-                    using(new Profiler(subscription.Type.ToString()))
+                    if (useProfiler)
                     {
-                        subscription.Handle(message);
+                        using (new Profiler(subscription.Type.ToString()))
+                        {
+                            subscription.Handle(message);
+                        }
                     }
+                    else subscription.Handle(message);
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("MessageHub Exception: " + e);
                     _globalErrorHandler?.Invoke(subscription.Token, e);
                 }
             }

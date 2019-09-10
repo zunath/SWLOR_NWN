@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -8,10 +9,8 @@ using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Mod.Contracts;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -38,8 +37,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterModHandlers()
         {
             // Use reflection to get all of IModHandler implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(IModHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
@@ -50,6 +48,11 @@ namespace SWLOR.Game.Server.Service
                 }
                 _modHandlers.Add(instance.ModTypeID, instance);
             }
+        }
+
+        public static bool IsModHandlerRegistered(int modTypeID)
+        {
+            return _modHandlers.ContainsKey(modTypeID);
         }
 
         public static IModHandler GetModHandler(int modTypeID)
@@ -190,7 +193,7 @@ namespace SWLOR.Game.Server.Service
 
             NWObject damager = data.Damager;
             if (!damager.IsPlayer) return;
-            NWCreature target = Object.OBJECT_SELF;
+            NWCreature target = NWGameObject.OBJECT_SELF;
 
             // Check that this was a normal attack, and not (say) a damage over time effect.
             if (target.GetLocalInt(AbilityService.LAST_ATTACK + damager.GlobalID) != AbilityService.ATTACK_PHYSICAL) return;

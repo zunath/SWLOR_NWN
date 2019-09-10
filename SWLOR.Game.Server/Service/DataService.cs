@@ -1,43 +1,118 @@
-﻿
-using Dapper;
-
+﻿using Dapper;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using SWLOR.Game.Server.Data;
-using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
-using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
-using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
-using PCBaseType = SWLOR.Game.Server.Data.Entity.PCBaseType;
-using PerkExecutionType = SWLOR.Game.Server.Data.Entity.PerkExecutionType;
-using QuestType = SWLOR.Game.Server.Data.Entity.QuestType;
+using SWLOR.Game.Server.Caching;
+using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Messaging;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class DataService
     {
         public static ConcurrentQueue<DatabaseAction> DataQueue { get; }
-        private static bool _cacheInitialized;
         public static string MasterConnectionString { get; }
-        public static string SWLORConnectionString { get; private set; }
-        public static Dictionary<Type, Dictionary<object, object>> Cache { get; }
-        private static SqlConnection _connection;
+        public static string SWLORConnectionString { get; }
+        public static SqlConnection Connection { get; private set; }
+
+        public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
+        public static AreaCache Area { get; } = new AreaCache();
+        public static AssociationCache Association { get; } = new AssociationCache();
+        public static AttributeCache Attribute { get; } = new AttributeCache();
+        public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();
+        public static BankCache Bank { get; } = new BankCache();
+        public static BankItemCache BankItem { get; } = new BankItemCache();
+        public static BaseItemTypeCache BaseItemType { get; } = new BaseItemTypeCache();
+        public static BaseStructureCache BaseStructure { get; } = new BaseStructureCache();
+        public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
+        public static BugReportCache BugReport { get; } = new BugReportCache();
+        public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
+        public static BuildingTypeCache BuildingType { get; } = new BuildingTypeCache();
+        public static ChatChannelCache ChatChannel { get; } = new ChatChannelCache();
+        public static ChatLogCache ChatLog { get; } = new ChatLogCache();
+        public static ClientLogEventCache ClientLogEvent { get; } = new ClientLogEventCache();
+        public static ClientLogEventTypeCache ClientLogEventType { get; } = new ClientLogEventTypeCache();
+        public static ComponentTypeCache ComponentType { get; } = new ComponentTypeCache();
+        public static CooldownCategoryCache CooldownCategory { get; } = new CooldownCategoryCache();
+        public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
+        public static CraftBlueprintCategoryCache CraftBlueprintCategory { get; } = new CraftBlueprintCategoryCache();
+        public static CraftDeviceCache CraftDevice { get; } = new CraftDeviceCache();
+        public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
+        public static CustomEffectCategoryCache CustomEffectCategory { get; } = new CustomEffectCategoryCache();
+        public static DatabaseVersionCache DatabaseVersion { get; } = new DatabaseVersionCache();
+        public static DMActionCache DMAction { get; } = new DMActionCache();
+        public static DMActionTypeCache DMActionType { get; } = new DMActionTypeCache();
+        public static DMRoleCache DMRole { get; } = new DMRoleCache();
+        public static DownloadCache Download { get; } = new DownloadCache();
+        public static EnmityAdjustmentRuleCache EnmityAdjustmentRule { get; } = new EnmityAdjustmentRuleCache();
+        public static ErrorCache Error { get; } = new ErrorCache();
+        public static FameRegionCache FameRegion { get; } = new FameRegionCache();
+        public static GameTopicCache GameTopic { get; } = new GameTopicCache();
+        public static GameTopicCategoryCache GameTopicCategory { get; } = new GameTopicCategoryCache();
+        public static GuildCache Guild { get; } = new GuildCache();
+        public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();
+        public static ItemTypeCache ItemType { get; } = new ItemTypeCache();
+        public static JukeboxSongCache JukeboxSong { get; } = new JukeboxSongCache();
+        public static KeyItemCache KeyItem { get; } = new KeyItemCache();
+        public static KeyItemCategoryCache KeyItemCategory { get; } = new KeyItemCategoryCache();
+        public static LootTableCache LootTable { get; } = new LootTableCache();
+        public static LootTableItemCache LootTableItem { get; } = new LootTableItemCache();
+        public static MarketCategoryCache MarketCategory { get; } = new MarketCategoryCache();
+        public static MessageCache Message { get; } = new MessageCache();
+        public static NPCGroupCache NPCGroup { get; } = new NPCGroupCache();
+        public static PCBaseCache PCBase { get; } = new PCBaseCache();
+        public static PCBasePermissionCache PCBasePermission { get; } = new PCBasePermissionCache();
+        public static PCBaseStructureCache PCBaseStructure { get; } = new PCBaseStructureCache();
+        public static PCBaseStructureItemCache PCBaseStructureItem { get; } = new PCBaseStructureItemCache();
+        public static PCBaseStructurePermissionCache PCBaseStructurePermission { get; } = new PCBaseStructurePermissionCache();
+        public static PCBaseTypeCache PCBaseType { get; } = new PCBaseTypeCache();
+        public static PCCooldownCache PCCooldown { get; } = new PCCooldownCache();
+        public static PCCraftedBlueprintCache PCCraftedBlueprint { get; } = new PCCraftedBlueprintCache();
+        public static PCCustomEffectCache PCCustomEffect { get; } = new PCCustomEffectCache();
+        public static PCGuildPointCache PCGuildPoint { get; } = new PCGuildPointCache();
+        public static PCImpoundedItemCache PCImpoundedItem { get; } = new PCImpoundedItemCache();
+        public static PCKeyItemCache PCKeyItem { get; } = new PCKeyItemCache();
+        public static PCMapPinCache PCMapPin { get; } = new PCMapPinCache();
+        public static PCMapProgressionCache PCMapProgression { get; } = new PCMapProgressionCache();
+        public static PCMarketListingCache PCMarketListing { get; } = new PCMarketListingCache();
+        public static PCObjectVisibilityCache PCObjectVisibility { get; } = new PCObjectVisibilityCache();
+        public static PCOutfitCache PCOutfit { get; } = new PCOutfitCache();
+        public static PCOverflowItemCache PCOverflowItem { get; } = new PCOverflowItemCache();
+        public static PCPerkCache PCPerk { get; } = new PCPerkCache();
+        public static PCPerkRefundCache PCPerkRefund { get; } = new PCPerkRefundCache();
+        public static PCQuestItemProgressCache PCQuestItemProgress { get; } = new PCQuestItemProgressCache();
+        public static PCQuestKillTargetProgressCache PCQuestKillTargetProgress { get; } = new PCQuestKillTargetProgressCache();
+        public static PCQuestStatusCache PCQuestStatus { get; } = new PCQuestStatusCache();
+        public static PCRegionalFameCache PCRegionalFame { get; } = new PCRegionalFameCache();
+        public static PCSkillCache PCSkill { get; } = new PCSkillCache();
+        public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
+        public static PerkCache Perk { get; } = new PerkCache();
+        public static PerkCategoryCache PerkCategory { get; } = new PerkCategoryCache();
+        public static PerkFeatCache PerkFeat { get; } = new PerkFeatCache();
+        public static PerkLevelCache PerkLevel { get; } = new PerkLevelCache();
+        public static PerkLevelQuestRequirementCache PerkLevelQuestRequirement { get; } = new PerkLevelQuestRequirementCache();
+        public static PerkLevelSkillRequirementCache PerkLevelSkillRequirement { get; } = new PerkLevelSkillRequirementCache();
+        public static PlayerCache Player { get; } = new PlayerCache();
+        public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
+        public static SkillCache Skill { get; } = new SkillCache();
+        public static SkillCategoryCache SkillCategory { get; } = new SkillCategoryCache();
+        public static SpaceEncounterCache SpaceEncounter { get; } = new SpaceEncounterCache();
+        public static StarportCache Starport { get; } = new StarportCache();
+        public static SpawnCache Spawn { get; } = new SpawnCache();
+        public static SpawnObjectCache SpawnObject { get; } = new SpawnObjectCache();
+        public static SpawnObjectTypeCache SpawnObjectType { get; } = new SpawnObjectTypeCache();
+        public static StructureModeCache StructureMode { get; } = new StructureModeCache();
+
 
         static DataService()
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
-            Cache = new Dictionary<Type, Dictionary<object, object>>();
 
             var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
             var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
@@ -50,41 +125,56 @@ namespace SWLOR.Game.Server.Service
                 DataSource = ip,
                 InitialCatalog = "MASTER",
                 UserID = user,
-                Password = password
+                Password = password,
+                ConnectTimeout = 300 // 5 minutes
             }.ToString();
             SWLORConnectionString = new SqlConnectionStringBuilder()
             {
                 DataSource = ip,
                 InitialCatalog = database,
                 UserID = user,
-                Password = password
+                Password = password,
+                ConnectTimeout = 300 // 5 minutes
             }.ToString();
 
         }
 
         public static void Initialize(bool initializeCache)
         {
-            _connection = new SqlConnection(SWLORConnectionString);
+            Connection = new SqlConnection(SWLORConnectionString);
 
             if (initializeCache)
                 InitializeCache();
         }
 
-        public static void Initialize(string ip, string database, string user, string password, bool initializeCache)
+        private static void LoadCache<T>()
+            where T: class, IEntity
         {
-            SWLORConnectionString = new SqlConnectionStringBuilder()
+            var sw = new Stopwatch();
+            sw.Start();
+
+            var entities = Connection.GetAll<T>();
+            foreach(var entity in entities)
             {
-                DataSource = ip,
-                InitialCatalog = database,
-                UserID = user,
-                Password = password
-            }.ToString();
+                MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
+            }
 
-            _connection = new SqlConnection(SWLORConnectionString);
-
-            if (initializeCache)
-                InitializeCache();
+            sw.Stop();
+            Console.WriteLine("Loaded Cache: " + typeof(T).Name + " (" + sw.ElapsedMilliseconds + "ms)");
         }
+
+        private static void SetIntoCache<T>(T entity)
+            where T: class, IEntity
+        {
+            MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
+        }
+
+        private static void RemoveFromCache<T>(T entity)
+            where T: class, IEntity
+        {
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<T>(entity));
+        }
+
 
         /// <summary>
         /// Retrieves all objects in frequently accessed data from the database and stores them into the cache.
@@ -92,102 +182,90 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void InitializeCache()
         {
-            if (_cacheInitialized) return;
-
             Console.WriteLine("Initializing the cache...");
-            GetAll<ApartmentBuilding>();
-            // Note: Area and AreaWalkmesh get cached in the AreaService
-            GetAll<Association>();
-            GetAll<Attribute>();
-            GetAll<AuthorizedDM>();
-            GetAll<Bank>();
-            RegisterEmptyCacheSet<BankItem>();
-            GetAll<BaseItemType>();
-            GetAll<BaseStructure>();
-            GetAll<BaseStructureType>();
-            GetAll<BuildingStyle>();
-            GetAll<Data.Entity.BuildingType>();
-            GetAll<ChatChannel>();
-            GetAll<ClientLogEventType>();
-            GetAll<ComponentType>();
-            GetAll<CooldownCategory>();
-            GetAll<CraftBlueprint>();
-            GetAll<CraftBlueprintCategory>();
-            GetAll<CraftDevice>();
-            GetAll<Data.Entity.CustomEffect>();
-            GetAll<CustomEffectCategory>();
-            GetAll<DMRole>();
-            GetAll<EnmityAdjustmentRule>();
-            GetAll<FameRegion>();
-            GetAll<GrowingPlant>();
-            GetAll<ItemType>();
-            GetAll<JukeboxSong>();
-            GetAll<KeyItem>();
-            GetAll<KeyItemCategory>();
-            GetAll<LootTable>();
-            GetAll<LootTableItem>();
-            GetAll<MarketCategory>();
-            GetAll<Message>();
-            GetAll<NPCGroup>();
-            GetAll<PCBase>();
-            GetAll<PCBasePermission>();
-            GetAll<PCBaseStructure>();
-            GetAll<PCBaseStructureItem>();
-            GetAll<PCBaseStructurePermission>();
-            GetAll<PCBaseType>();
+            LoadCache<Area>();
+
+            LoadCache<ApartmentBuilding>();
+            LoadCache<Association>();
+            LoadCache<Data.Entity.Attribute>();
+            LoadCache<AuthorizedDM>();
+            LoadCache<Bank>();
+            LoadCache<BankItem>();
+            LoadCache<BaseItemType>();
+            LoadCache<BaseStructure>();
+            LoadCache<Data.Entity.BaseStructureType>();
+            LoadCache<BuildingStyle>();
+            LoadCache<Data.Entity.BuildingType>();
+            LoadCache<ChatChannel>();
+            LoadCache<ModuleEventType>();
+            LoadCache<Data.Entity.ComponentType>();
+            LoadCache<CooldownCategory>();
+            LoadCache<CraftBlueprint>();
+            LoadCache<CraftBlueprintCategory>();
+            LoadCache<CraftDevice>();
+            LoadCache<Data.Entity.CustomEffect>();
+            LoadCache<CustomEffectCategory>();
+            LoadCache<DMRole>();
+            LoadCache<EnmityAdjustmentRule>();
+            LoadCache<FameRegion>();
+            LoadCache<Guild>();
+            LoadCache<GuildTask>();
+            LoadCache<ItemType>();
+            LoadCache<JukeboxSong>();
+            LoadCache<KeyItem>();
+            LoadCache<KeyItemCategory>();
+            LoadCache<LootTable>();
+            LoadCache<LootTableItem>();
+            LoadCache<MarketCategory>();
+            LoadCache<Message>();
+            LoadCache<NPCGroup>();
+            LoadCache<PCBase>();
+            LoadCache<PCBasePermission>();
+            LoadCache<PCBaseStructure>();
+            LoadCache<PCBaseStructureItem>();
+            LoadCache<PCBaseStructurePermission>();
+            LoadCache<Data.Entity.PCBaseType>();
             LoadPCMarketListingCache();
-            GetAll<SpaceStarport>();
-            GetAll<SpaceEncounter>();
+            LoadCache<Starport>();
+            LoadCache<SpaceEncounter>();
 
-            RegisterEmptyCacheSet<PCCooldown>();
-            RegisterEmptyCacheSet<PCCraftedBlueprint>();
-            RegisterEmptyCacheSet<PCCustomEffect>();
-            RegisterEmptyCacheSet<PCImpoundedItem>();
-            RegisterEmptyCacheSet<PCKeyItem>();
-            RegisterEmptyCacheSet<PCMapPin>();
-            RegisterEmptyCacheSet<PCMapProgression>();
-            RegisterEmptyCacheSet<PCObjectVisibility>();
-            RegisterEmptyCacheSet<PCOutfit>();
-            RegisterEmptyCacheSet<PCOverflowItem>();
-            RegisterEmptyCacheSet<PCPerk>();
-            RegisterEmptyCacheSet<PCQuestItemProgress>();
-            RegisterEmptyCacheSet<PCQuestKillTargetProgress>();
-            RegisterEmptyCacheSet<PCQuestStatus>();
-            RegisterEmptyCacheSet<PCRegionalFame>();
-            RegisterEmptyCacheSet<PCSearchSite>();
-            RegisterEmptyCacheSet<PCSearchSiteItem>();
-            RegisterEmptyCacheSet<PCSkill>();
-            RegisterEmptyCacheSet<PCSkillPool>();
-            RegisterEmptyCacheSet<PCPerkRefund>();
+            
+            LoadCache<PCCooldown>();
+            LoadCache<PCCraftedBlueprint>();
+            LoadCache<PCCustomEffect>();
 
-            GetAll<Data.Entity.Perk>();
-            GetAll<PerkFeat>();
-            GetAll<PerkCategory>();
-            GetAll<PerkExecutionType>();
-            GetAll<PerkLevel>();
-            GetAll<PerkLevelQuestRequirement>();
-            GetAll<PerkLevelSkillRequirement>();
-            GetAll<Plant>();
-            GetAll<Player>(); // Load all player data as it's referenced in other systems even if player isn't online.
-            GetAll<Quest>();
-            GetAll<QuestKillTarget>();
-            GetAll<QuestPrerequisite>();
-            GetAll<QuestRequiredItem>();
-            GetAll<QuestRequiredKeyItem>();
-            GetAll<QuestRewardItem>();
-            GetAll<QuestState>();
-            GetAll<QuestType>();
-            GetAll<ServerConfiguration>();
-            GetAll<Skill>();
-            GetAll<SkillCategory>();
-            GetAll<SkillXPRequirement>();
-            GetAll<Spawn>();
-            GetAll<SpawnObject>();
-            GetAll<SpawnObjectType>();
-            GetAll<StructureMode>();
+            LoadPCImpoundedItemsCache();
+            LoadCache<PCGuildPoint>();
+            LoadCache<PCKeyItem>();
+            LoadCache<PCMapPin>();
+            LoadCache<PCMapProgression>();
+            LoadCache<PCObjectVisibility>();
+            LoadCache<PCOutfit>();
+            LoadCache<PCOverflowItem>();
+            LoadCache<PCPerk>();
+            LoadCache<PCQuestItemProgress>();
+            LoadCache<PCQuestKillTargetProgress>();
+            LoadCache<PCQuestStatus>();
+            LoadCache<PCRegionalFame>();
+            LoadCache<PCSkill>();
+            LoadCache<PCSkillPool>();
+            LoadCache<PCPerkRefund>();
+
+            LoadCache<Data.Entity.Perk>();
+            LoadCache<PerkFeat>();
+            LoadCache<PerkCategory>();
+            LoadCache<PerkLevel>();
+            LoadCache<PerkLevelQuestRequirement>();
+            LoadCache<PerkLevelSkillRequirement>();
+            LoadCache<Player>(); 
+            LoadCache<ServerConfiguration>();
+            LoadCache<Skill>();
+            LoadCache<SkillCategory>();
+            LoadCache<Spawn>();
+            LoadCache<SpawnObject>();
+            LoadCache<SpawnObjectType>();
+            LoadCache<StructureMode>();
             Console.WriteLine("Cache initialized!");
-
-            _cacheInitialized = true;
         }
 
         /// <summary>
@@ -195,165 +273,35 @@ namespace SWLOR.Game.Server.Service
         /// 1.) Haven't been sold already
         /// 2.) Haven't been removed by the seller.
         /// This method will retrieve these specific records and store them into the cache.
-        /// Should be called in the InitializeCache() method.
+        /// Should be called in the InitializeCache() method one time.
         /// </summary>
         private static void LoadPCMarketListingCache()
         {
             const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
 
-            var results = _connection.Query<PCMarketListing>(Sql);
+            var results = Connection.Query<PCMarketListing>(Sql);
             
             foreach (var result in results)
             {
-                object id = GetEntityKey(result);
-                SetIntoCache<PCMarketListing>(id, result);
+                MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(result));
             }
         }
 
         /// <summary>
-        /// Caches a player's data. Be sure to call RemoveCachedPlayerData when the player exits the game.
+        /// PC Impounded Items should only be loaded into the cache if they:
+        /// 1.) Haven't been retrieved.
+        /// 2.) Haven't expired (30 days after the date they were impounded.)
+        /// Should be called in the InitializeCache() method one time.
         /// </summary>
-        /// <param name="player"></param>
-        public static void CachePlayerData(NWPlayer player)
+        private static void LoadPCImpoundedItemsCache()
         {
-            if (!player.IsPlayer) return;
-            
-            Console.WriteLine("Starting CachePlayerData for ID = " + player.GlobalID);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            using (var multi = _connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
+            const string Sql = "SELECT * FROM dbo.PCImpoundedItem WHERE DateRetrieved IS NULL AND GETUTCDATE() < DATEADD(DAY, 30, CAST(DateImpounded AS DATE))";
+
+            var results = Connection.Query<PCImpoundedItem>(Sql);
+            foreach (var result in results)
             {
-                foreach (var item in multi.Read<PCCooldown>())
-                    SetIntoCache<PCCooldown>(item.ID, item);
-                foreach (var item in multi.Read<PCCraftedBlueprint>())
-                    SetIntoCache<PCCraftedBlueprint>(item.ID, item);
-
-                foreach (var item in multi.Read<PCCustomEffect>())
-                    SetIntoCache<PCCustomEffect>(item.ID, item);
-                foreach (var item in multi.Read<PCImpoundedItem>())
-                    SetIntoCache<PCImpoundedItem>(item.ID, item);
-                foreach (var item in multi.Read<PCKeyItem>())
-                    SetIntoCache<PCKeyItem>(item.ID, item);
-                foreach (var item in multi.Read<PCMapPin>())
-                    SetIntoCache<PCMapPin>(item.ID, item);
-                foreach (var item in multi.Read<PCMapProgression>())
-                    SetIntoCache<PCMapProgression>(item.ID, item);
-                foreach (var item in multi.Read<PCObjectVisibility>())
-                    SetIntoCache<PCObjectVisibility>(item.ID, item);
-
-                var outfit = multi.Read<PCOutfit>().SingleOrDefault();
-
-                if (outfit != null)
-                    SetIntoCache<PCOutfit>(outfit.PlayerID, outfit);
-
-                foreach (var item in multi.Read<PCOverflowItem>())
-                    SetIntoCache<PCOverflowItem>(item.ID, item);
-                foreach (var item in multi.Read<PCPerk>())
-                    SetIntoCache<PCPerk>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestItemProgress>())
-                    SetIntoCache<PCQuestItemProgress>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestKillTargetProgress>())
-                    SetIntoCache<PCQuestKillTargetProgress>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestStatus>())
-                    SetIntoCache<PCQuestStatus>(item.ID, item);
-                foreach (var item in multi.Read<PCRegionalFame>())
-                    SetIntoCache<PCRegionalFame>(item.ID, item);
-                foreach (var item in multi.Read<PCSearchSite>())
-                    SetIntoCache<PCSearchSite>(item.ID, item);
-                foreach (var item in multi.Read<PCSearchSiteItem>())
-                    SetIntoCache<PCSearchSiteItem>(item.ID, item);
-                foreach (var item in multi.Read<PCSkill>())
-                    SetIntoCache<PCSkill>(item.ID, item);
-                foreach (var item in multi.Read<BankItem>())
-                    SetIntoCache<BankItem>(item.ID, item);
-                foreach (var item in multi.Read<PCSkillPool>())
-                    SetIntoCache<PCSkillPool>(item.ID, item);
+                MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(result));
             }
-            sw.Stop();
-            Console.WriteLine("CachePlayerData took " + sw.ElapsedMilliseconds + " ms to run. Player ID = " + player.GlobalID);
-
-            Get<Player>(player.GlobalID);
-        }
-
-        /// <summary>
-        /// Removes a player's cached data. Be sure to call this ONLY on the OnClientLeave event.
-        /// </summary>
-        /// <param name="player"></param>
-        public static void RemoveCachedPlayerData(NWPlayer player)
-        {
-            if (!player.IsPlayer) return;
-
-            Guid id = player.GlobalID;
-            
-            foreach(var item in Where<PCCooldown>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCCooldown>(item.ID);
-            foreach (var item in Where<PCCraftedBlueprint>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCCraftedBlueprint>(item.ID);
-            foreach (var item in Where<PCCustomEffect>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCCustomEffect>(item.ID);
-            foreach (var item in Where<PCImpoundedItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCImpoundedItem>(item.ID);
-            foreach (var item in Where<PCKeyItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCKeyItem>(item.ID);
-            foreach (var item in Where<PCMapPin>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCMapPin>(item.ID);
-            foreach (var item in Where<PCMapProgression>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCMapProgression>(item.ID);
-            foreach (var item in Where<PCObjectVisibility>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCObjectVisibility>(item.ID);
-            foreach (var item in Where<PCOutfit>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCOutfit>(item.PlayerID);
-            foreach (var item in Where<PCOverflowItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCOverflowItem>(item.ID);
-            foreach (var item in Where<PCPerk>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCPerk>(item.ID);
-            foreach (var item in Where<PCPerkRefund>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCPerkRefund>(item.ID);
-            foreach (var item in Where<PCQuestItemProgress>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCQuestItemProgress>(item.ID);
-            foreach (var item in Where<PCQuestKillTargetProgress>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCQuestKillTargetProgress>(item.ID);
-            foreach (var item in Where<PCQuestStatus>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCQuestStatus>(item.ID);
-            foreach (var item in Where<PCRegionalFame>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCRegionalFame>(item.ID);
-            foreach (var item in Where<PCSearchSite>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSearchSite>(item.ID);
-            foreach (var item in Where<PCSearchSiteItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSearchSiteItem>(item.ID);
-            foreach(var item in Where<PCSkill>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSkill>(item.ID);
-            foreach(var item in Where<BankItem>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<BankItem>(item.ID);
-            foreach(var item in Where<PCSkillPool>(x => x.PlayerID == id).ToList())
-                DeleteFromCache<PCSkillPool>(item.ID);
-        }
-
-        /// <summary>
-        /// Sends a request to change data into the database queue. Processing is asynchronous
-        /// and you cannot reliably retrieve the data directly from the database immediately afterwards.
-        /// However, data in the cache will be up to date as soon as a value is changed.
-        /// </summary>
-        public static void SubmitDataChange(DatabaseAction action)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            if(action.Data == null) throw new ArgumentNullException(nameof(action.Data));
-
-            var actionType = action.Action;
-
-            foreach(var item in action.Data)
-            {
-                if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
-                {
-                    SetIntoCache(item.GetType(), GetEntityKey(item), item);
-                }
-                else if (actionType == DatabaseActionType.Delete)
-                {
-                    DeleteFromCache(item.GetType(), GetEntityKey(item));
-                }
-            }
-
-            DataQueue.Enqueue(action);
         }
 
         /// <summary>
@@ -363,285 +311,21 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="data">The data to submit for processing</param>
         /// <param name="actionType">The type (Insert, Update, Delete, etc.) of change to make.</param>
-        public static void SubmitDataChange(IEntity data, DatabaseActionType actionType)
+        public static void SubmitDataChange<T>(T data, DatabaseActionType actionType)
+            where T: class, IEntity
         {
             if(data == null) throw new ArgumentNullException(nameof(data));
 
             if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
             {
-                SetIntoCache(data.GetType(), GetEntityKey(data), data);
+                SetIntoCache(data);
             }
             else if (actionType == DatabaseActionType.Delete)
             {
-                DeleteFromCache(data.GetType(), GetEntityKey(data));
+                RemoveFromCache(data);
             }
 
             DataQueue.Enqueue(new DatabaseAction(data, actionType));
-        }
-
-        private static T GetFromCache<T>(object key)
-            where T : IEntity
-        {
-            if (!Cache.TryGetValue(typeof(T), out var cachedSet))
-            {
-                cachedSet = new Dictionary<object, object>();
-                Cache.Add(typeof(T), cachedSet);
-            }
-
-            if (cachedSet.TryGetValue(key, out object cachedObject))
-            {
-                return (T)cachedObject;
-            }
-            
-            return default(T);
-        }
-
-        private static void SetIntoCache<T>(object key, object value)
-            where T : IEntity
-        {
-            SetIntoCache(typeof(T), key, value);
-        }
-
-        private static void SetIntoCache(Type type, object key, object value)
-        {
-            if (!type.GetInterfaces().Contains(typeof(IEntity)))
-                throw new ArgumentException("Only objects which implement " + nameof(IEntity) + " may be set into the cache.");
-
-            if (!Cache.TryGetValue(type, out var cachedSet))
-            {
-                cachedSet = new Dictionary<object, object>();
-                Cache.Add(type, cachedSet);
-            }
-
-            // Safety check to ensure all key types are the same for a given type.
-            if (cachedSet.Count > 0)
-            {
-                var first = cachedSet.Keys.First();
-                if (first.GetType() != key.GetType())
-                {
-                    throw new Exception("Cannot set key of type " + key.GetType() + " into cache because the established type is already defined as " + first.GetType());
-                }
-            }
-
-            if (cachedSet.ContainsKey(key))
-            {
-                cachedSet[key] = value;
-            }
-            else
-            {
-                cachedSet.Add(key, value);
-            }
-            
-        }
-
-        private static void DeleteFromCache<T>(object key)
-            where T : IEntity
-        {
-            DeleteFromCache(typeof(T), key);
-        }
-
-        private static void DeleteFromCache(Type type, object key)
-        {
-            if (!Cache.ContainsKey(type)) return;
-
-            var cachedSet = Cache[type];
-
-            if (cachedSet.ContainsKey(key))
-            {
-                cachedSet.Remove(key);
-            }
-
-        }
-
-        /// <summary>
-        /// Returns a single entity of a given type from the database or cache.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static T Get<T>(object id)
-            where T : class, IEntity
-        {
-            var cached = GetFromCache<T>(id);
-            if (cached != null)
-                return cached;
-
-            cached = _connection.Get<T>(id);
-            SetIntoCache<T>(id, cached);
-            
-            return cached;
-        }
-
-        private static void RegisterEmptyCacheSet<T>()
-            where T: class, IEntity
-        {
-            if (Cache.ContainsKey(typeof(T)))
-            {
-                throw new Exception("Cannot register an empty cacheset because it already exists! Did you call " + nameof(RegisterEmptyCacheSet) + " more than once? Type = " + typeof(T));
-            }
-
-            var cachedSet = new Dictionary<object, object>();
-            Cache.Add(typeof(T), cachedSet);
-        }
-
-        /// <summary>
-        /// Returns all entities of a given type from the database or cache.
-        /// Keep in mind that if you don't build the cache up-front (i.e: at load time) you will only retrieve records which have been cached so far.
-        /// For example, if Get() is called first, then subsequent GetAll() will only retrieve that one object.
-        /// To fix this, you should call GetAll() at load time to retrieve everything from the database for that object type.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
-        /// <returns></returns>
-        public static IEnumerable<T> GetAll<T>()
-            where T : class, IEntity
-        {
-            // Cache already built. Return everything that's cached so far.
-            if (Cache.ContainsKey(typeof(T)))
-            {
-                var cacheSet = Cache[typeof(T)];
-                return cacheSet.Values.Cast<T>();
-            }
-
-            // Can't find anything in the cache so pull back the records from the database.
-            IEnumerable<T> results = _connection.GetAll<T>();
-            
-            // Add the records to the cache.
-            foreach (var result in results)
-            {
-                object id = GetEntityKey(result);
-                SetIntoCache<T>(id, result);
-            }
-            
-            // Send back the results if we know they exist in the cache.
-            if (Cache.TryGetValue(typeof(T), out var set))
-            {
-                return new HashSet<T>(set.Values.Cast<T>());
-            }
-
-            // If there's no data in the database for that table, return an empty list.
-            return new HashSet<T>();
-        }
-
-        public static T Single<T>()
-            where T : class, IEntity
-        {
-            return GetAll<T>().Single();
-        }
-
-        public static T Single<T>(Func<T, bool> predicate)
-            where T : class, IEntity
-        {
-            return GetAll<T>().Single(predicate);
-        }
-
-        public static T SingleOrDefault<T>()
-            where T : class, IEntity
-        {
-            return GetAll<T>().SingleOrDefault();
-        }
-
-        public static T SingleOrDefault<T>(Func<T, bool> predicate)
-            where T : class, IEntity
-        {
-            return GetAll<T>().SingleOrDefault(predicate);
-        }
-
-        public static HashSet<T> Where<T>(Func<T, bool> predicate)
-            where T : class, IEntity
-        {
-            return new HashSet<T>(GetAll<T>().Where(predicate));
-        }
-
-        private static object GetEntityKey(IEntity entity)
-        {
-            // Locate a Key or ExplicitKey attribute on this type. These are Dapper attributes which determine if the key
-            // is auto-generated (Key) or manually set (ExplicitKey) on the entity.
-            // We will reuse these attributes for identifying cache items.
-            var properties = entity.GetType().GetProperties();
-            PropertyInfo propertyWithKey = null;
-
-            foreach (var prop in properties)
-            {
-                var autoGenKey = prop.GetCustomAttributes(typeof(KeyAttribute), false).FirstOrDefault();
-                if (autoGenKey != null)
-                {
-                    propertyWithKey = prop;
-                    break;
-                }
-
-                var explicitKey = prop.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).FirstOrDefault();
-                if (explicitKey != null)
-                {
-                    propertyWithKey = prop;
-                    break;
-                }
-            }
-
-            if (propertyWithKey == null)
-            {
-                throw new NullReferenceException("Unable to find a Key or ExplicitKey attribute on the entity provided (" + entity.GetType() + "). Make sure you add the Key attribute for a database-generated IDs or an ExplicitKey attribute for manually-set IDs.");
-            }
-
-            return propertyWithKey.GetValue(entity);
-        }
-
-        public static void StoredProcedure(string procedureName, params SqlParameter[] args)
-        {
-            _connection.Execute(BuildSQLQuery(procedureName, args), args);
-        }
-
-        public static IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
-        {
-            return _connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, T7, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, T7, TResult> map, string splitOn, SqlParameter arg)
-        {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-        }
-
-        public static T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args)
-        {
-            return _connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
-        }
-
-        private static string BuildSQLQuery(string procedureName, params SqlParameter[] args)
-        {
-            string sql = procedureName;
-
-            for (int x = 0; x < args.Length; x++)
-            {
-                sql += " " + args[x].ParameterName;
-
-                if (x + 1 < args.Length) sql += ",";
-            }
-
-            return sql;
         }
     }
 }

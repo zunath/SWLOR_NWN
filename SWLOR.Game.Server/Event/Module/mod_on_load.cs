@@ -4,9 +4,11 @@ using System.Reflection;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Scripting;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
 
@@ -43,13 +45,14 @@ namespace NWN.Scripts
 
             }
             // Bioware default
-            _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
 
             using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
             {
                 RegisterServiceSubscribeEvents();
             }
-            
+
+            ScriptService.Initialize();
             MessageHub.Instance.Publish(new OnModuleLoad());
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
@@ -62,7 +65,10 @@ namespace NWN.Scripts
             // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
             var typesInNamespace = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.Namespace != null && x.Namespace.StartsWith("SWLOR.Game.Server"))
+                .Where(x => x.Namespace != null && 
+                            x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
+                            !typeof(IScript).IsAssignableFrom(x) && // Exclude scripts
+                            x.IsClass) // Classes only.
                 .ToArray();
             foreach (var type in typesInNamespace)
             {
@@ -76,12 +82,14 @@ namespace NWN.Scripts
 
         private static void SetAreaEventScripts()
         {
-            Object area = _.GetFirstArea();
+            NWGameObject area = _.GetFirstArea();
             while (_.GetIsObjectValid(area) == _.TRUE)
             {
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_EXIT, "area_on_exit");
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+                // Heartbeat events will be set when players enter the area.
+                // There's no reason to have them firing if no players are in the area.
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_USER_DEFINED_EVENT, "area_on_user");
 
                 area = _.GetNextArea();
@@ -114,6 +122,9 @@ namespace NWN.Scripts
             NWNXEvents.SubscribeEvent(EventType.ExamineObjectBefore, "mod_on_examine");
             NWNXEvents.SubscribeEvent(EventType.UseFeatBefore, "mod_on_usefeat");
             NWNXEvents.SubscribeEvent(EventType.EnterStealthAfter, "mod_on_entstlth");
+            NWNXEvents.SubscribeEvent(EventType.DecrementItemStackSizeBefore, "item_dec_stack");
+            NWNXEvents.SubscribeEvent(EventType.UseItemBefore, "item_use_before");
+            NWNXEvents.SubscribeEvent(EventType.UseItemAfter, "item_use_after");
             NWNXDamage.SetDamageEventScript("mod_on_applydmg");
 
             // DM Hooks
@@ -165,6 +176,9 @@ namespace NWN.Scripts
 
             NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, _.CREATURE_SIZE_MEDIUM);
             NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, _.CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(_.BASE_ITEM_LONGSWORD, _.CREATURE_SIZE_MEDIUM);
+
+            NWNXWeapon.SetWeaponUnarmed(_.BASE_ITEM_QUARTERSTAFF);
         }
 
 

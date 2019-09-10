@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -38,8 +38,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterConversations()
         {
             // Use reflection to get all of the conversation implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(IConversation).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
@@ -155,7 +154,7 @@ namespace SWLOR.Game.Server.Service
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                _.BeginConversation("dialog" + dialog.DialogNumber, new Object());
+                _.BeginConversation("dialog" + dialog.DialogNumber, new NWGameObject());
             }
             // Everything else
             else
@@ -194,10 +193,11 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnActionsTaken(int nodeID)
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken)))
+            NWPlayer player = (_.GetPCSpeaker());
+            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken) + "." + dialog.ActiveDialogName))
             {
-                NWPlayer player = (_.GetPCSpeaker());
-                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
                 IConversation convo = GetConversation(dialog.ActiveDialogName);
                 int selectionNumber = nodeID + 1;
                 int responseID = nodeID + (NumberOfResponsesPerPage * dialog.PageOffset);
@@ -249,14 +249,13 @@ namespace SWLOR.Game.Server.Service
 
         public static bool OnAppearsWhen(int nodeType, int nodeID)
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnAppearsWhen)))
+            NWPlayer player = (_.GetPCSpeaker());
+            bool hasDialog = HasPlayerDialog(player.GlobalID);
+            if (!hasDialog) return false;
+            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnAppearsWhen) + "." + dialog.ActiveDialogName))
             {
-
-                NWPlayer player = (_.GetPCSpeaker());
-                bool hasDialog = HasPlayerDialog(player.GlobalID);
-                if (!hasDialog) return false;
-
-                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
                 DialogPage page = dialog.CurrentPage;
                 var convo = GetConversation(dialog.ActiveDialogName);
                 int currentSelectionNumber = nodeID + 1;
@@ -331,24 +330,25 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnDialogStart()
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart)))
-            {
-                NWPlayer pc = (_.GetLastUsedBy());
-                if (!pc.IsValid) pc = (_.GetPCSpeaker());
+            NWPlayer pc = (_.GetLastUsedBy());
+            if (!pc.IsValid) pc = (_.GetPCSpeaker());
 
-                string conversation = _.GetLocalString(Object.OBJECT_SELF, "CONVERSATION");
+            string conversation = _.GetLocalString(NWGameObject.OBJECT_SELF, "CONVERSATION");
+
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
+            {
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    int objectType = _.GetObjectType(Object.OBJECT_SELF);
+                    int objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
                     if (objectType == _.OBJECT_TYPE_PLACEABLE)
                     {
-                        NWPlaceable talkTo = (Object.OBJECT_SELF);
+                        NWPlaceable talkTo = (NWGameObject.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                     else
                     {
-                        NWCreature talkTo = (Object.OBJECT_SELF);
+                        NWCreature talkTo = (NWGameObject.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                 }
@@ -361,12 +361,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnDialogEnd()
         {
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd)))
-            {
-                NWPlayer player = (_.GetPCSpeaker());
-                if (!HasPlayerDialog(player.GlobalID)) return;
+            NWPlayer player = (_.GetPCSpeaker());
+            if (!HasPlayerDialog(player.GlobalID)) return;
 
-                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd) + "." + dialog.ActiveDialogName))
+            {
                 var convo = GetConversation(dialog.ActiveDialogName);
                 convo.EndDialog();
                 RemovePlayerDialog(player.GlobalID);

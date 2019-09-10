@@ -32,19 +32,19 @@ namespace SWLOR.Game.Server.Item
             if (skillType == SkillType.Armorsmith)
             {
                 skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusArmorsmith + (PerkService.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
+                repairAmount += item.CraftBonusArmorsmith + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.ArmorRepair) * 2);
                 delta = level - skillRank;
             }
             else if (skillType == SkillType.Weaponsmith)
             {
                 skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusWeaponsmith + (PerkService.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
+                repairAmount += item.CraftBonusWeaponsmith + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.WeaponRepair) * 2);
                 delta = level - skillRank;
             }
             else if (skillType == SkillType.Engineering)
             {
                 skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusEngineering + (PerkService.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
+                repairAmount += item.CraftBonusEngineering + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
                 delta = level - skillRank;
             }
             float minReduction = 0.05f * tech;
@@ -65,8 +65,13 @@ namespace SWLOR.Game.Server.Item
             DurabilityService.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
-        private SkillType GetSkillType(NWItem item)
+        private static SkillType GetSkillType(NWItem item)
         {
+            if (item.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                return SkillType.Engineering;
+            }
+
             CustomItemType repairItemType = (CustomItemType)item.GetLocalInt("REPAIR_CUSTOM_ITEM_TYPE_ID");
             switch (repairItemType)
             {
@@ -83,6 +88,7 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.Polearm:
                 case CustomItemType.TwinBlade:
                 case CustomItemType.MartialArtWeapon:
+                case CustomItemType.Throwing:
                     return SkillType.Weaponsmith;
 
                 case CustomItemType.Lightsaber:
@@ -90,11 +96,6 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.BlasterRifle:
                 case CustomItemType.Saberstaff:
                     return SkillType.Engineering;
-            }
-
-            if (item.GetLocalInt("LIGHTSABER") == TRUE)
-            {
-                return SkillType.Engineering;
             }
 
             return SkillType.Unknown;

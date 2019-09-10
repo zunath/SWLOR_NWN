@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class FPRegenMod : IModHandler
     {
         public int ModTypeID => 12;
+        private const int MaxValue = 20;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.FPRegenBonus >= 20)
+            if (target.FPRegenBonus >= MaxValue)
                 return "You cannot improve that item's FP regen bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.FPRegenBonus + value;
-            if (newValue > 20) newValue = 20;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.FPRegenBonus = newValue;
         }
 

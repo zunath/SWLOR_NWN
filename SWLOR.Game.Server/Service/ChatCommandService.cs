@@ -9,13 +9,10 @@ using SWLOR.Game.Server.GameObject;
 
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
-using LoopingAnimationCommand = SWLOR.Game.Server.ChatCommand.LoopingAnimationCommand;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -51,8 +48,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterChatCommandHandlers()
         {
             // Use reflection to get all of IChatCommand handler implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(IChatCommand).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
 
             foreach (var type in classes)
@@ -88,7 +84,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = Object.OBJECT_SELF;
+            NWPlayer sender = NWGameObject.OBJECT_SELF;
             string originalMessage = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
@@ -154,7 +150,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = Object.OBJECT_SELF;
+            NWPlayer pc = NWGameObject.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.ChatCommandTargeter) return;
@@ -182,7 +178,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (target == null)
             {
-                target = new Object();
+                target = new NWGameObject();
             }
 
             if (targetLocation == null)
@@ -191,11 +187,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            bool isDM = sender.IsDM || AuthorizationService.IsPCRegisteredAsDM(sender);
+            var authorization = AuthorizationService.GetDMAuthorizationType(sender);
 
             if (attribute != null &&
-                (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||
-                 attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM))
+                (attribute.Permissions.HasFlag(CommandPermissionType.Player) && authorization == DMAuthorizationType.None ||
+                 attribute.Permissions.HasFlag(CommandPermissionType.DM) && authorization == DMAuthorizationType.DM ||
+                 attribute.Permissions.HasFlag(CommandPermissionType.Admin) && authorization == DMAuthorizationType.Admin))
             {
                 string[] argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
                 string error = command.ValidateArguments(sender, argsArr);

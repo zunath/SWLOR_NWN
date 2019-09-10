@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class WeaponsmithMod : IModHandler
     {
         public int ModTypeID => 18;
+        private const int MaxValue = 17;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CraftBonusWeaponsmith >= 30)
+            if (target.CraftBonusWeaponsmith >= MaxValue)
                 return "You cannot improve that item's weaponsmith bonus any further.";
 
             return null;
@@ -18,9 +19,9 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.CraftBonusWeaponsmith + value;
-            if (newValue > 30) newValue = 30;
+            int amount = Convert.ToInt32(args[0]);
+            int newValue = target.CraftBonusWeaponsmith + amount;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.CraftBonusWeaponsmith = newValue;
         }
 

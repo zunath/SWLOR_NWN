@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class FabricationMod : IModHandler
     {
         public int ModTypeID => 28;
+        private const int MaxValue = 17;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CraftBonusFabrication >= 30)
+            if (target.CraftBonusFabrication >= MaxValue)
                 return "You cannot improve that item's fabrication bonus any further.";
 
             return null;
@@ -18,9 +19,9 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.CraftBonusFabrication + value;
-            if (newValue > 30) newValue = 30;
+            int amount = Convert.ToInt32(args[0]);
+            int newValue = target.CraftBonusFabrication + amount;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.CraftBonusFabrication = newValue;
         }
 

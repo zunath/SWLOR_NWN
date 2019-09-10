@@ -2,21 +2,22 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.ChatCommand.Contracts;
+using System.Reflection;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.Event.Legacy;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -32,10 +33,11 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             // Module Events
-            MessageHub.Instance.Subscribe<OnModuleActivateItem>(message => OnModuleActivatedItem());
+            MessageHub.Instance.Subscribe<OnItemUsed>(message => OnItemUsed());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -49,8 +51,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterActionItemHandlers()
         {
             // Use reflection to get all of IChatCommand handler implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(IActionItem).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
 
             foreach (var type in classes)
@@ -83,13 +84,13 @@ namespace SWLOR.Game.Server.Service
 
         public static string GetNameByResref(string resref)
         {
-            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
             {
                 Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
                 return null;
             }
-            NWItem item = (_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem item = (CreateItemOnObject(resref, tempStorage.Object));
             string name = item.Name;
             item.Destroy();
             return name;
@@ -97,30 +98,37 @@ namespace SWLOR.Game.Server.Service
 
         public static CustomItemType GetCustomItemTypeByResref(string resref)
         {
-            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
             {
                 Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
                 return CustomItemType.None;
             }
-            NWItem item = (_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem item = (CreateItemOnObject(resref, tempStorage.Object));
             var itemType = item.CustomItemType;
             item.Destroy();
             return itemType;
         }
 
-        private static void OnModuleActivatedItem()
+        private static void OnItemUsed()
         {
-            NWPlayer user = (_.GetItemActivator());
-            NWItem oItem = (_.GetItemActivated());
-            NWObject target = (_.GetItemActivatedTarget());
-            Location targetLocation = _.GetItemActivatedTargetLocation();
+            NWPlayer user = NWGameObject.OBJECT_SELF;
+            NWItem oItem = NWNXEvents.OnItemUsed_GetItem();
+            NWObject target = NWNXEvents.OnItemUsed_GetTarget();
+            Location targetLocation = NWNXEvents.OnItemUsed_GetTargetLocation();
 
-            string className = oItem.GetLocalString("JAVA_SCRIPT");
+            string className = oItem.GetLocalString("SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTION_SCRIPT");
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
+            // Legacy events follow. We can't remove these because of backwards compatibility issues with existing items.
+            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_JAVA_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_ACTION_SCRIPT");
-            if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) return;
+
+            // Bypass the NWN "item use" animation.
+            NWNXEvents.SkipEvent();
 
             user.ClearAllActions();
 
@@ -134,7 +142,7 @@ namespace SWLOR.Game.Server.Service
             if (className.StartsWith("Item."))
                 className = className.Substring(5);
             IActionItem item = GetActionItemHandler(className);
-        
+
             string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
             if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
             {
@@ -146,15 +154,15 @@ namespace SWLOR.Game.Server.Service
             if (maxDistance > 0.0f)
             {
                 if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
+                    (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
                     user.Area.Resref != target.Area.Resref))
                 {
                     user.SendMessage("Your target is too far away.");
                     return;
                 }
                 else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
+                         (GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
+                         user.Area.Resref != ((NWArea)GetAreaFromLocation(targetLocation)).Resref))
                 {
                     user.SendMessage("That location is too far away.");
                     return;
@@ -171,26 +179,21 @@ namespace SWLOR.Game.Server.Service
             {
                 user.IsBusy = true;
                 if (faceTarget)
-                    _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
+                    SetFacingPoint(!target.IsValid ? GetPositionFromLocation(targetLocation) : target.Position);
                 if (animationID > 0)
-                    _.ActionPlayAnimation(animationID, 1.0f, delay);
+                    ActionPlayAnimation(animationID, 1.0f, delay);
             });
 
-            NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
-            user.DelayEvent<FinishActionItem>(
-                delay,
-                className,
-                user,
-                oItem,
-                target,
-                targetLocation,
-                userPosition,
-                customData);
-        
+            if(delay > 0.0f)
+            {
+                NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
+            }
 
+            var @event = new OnFinishActionItem(className, user, oItem, target, targetLocation, userPosition, customData);
+            user.DelayEvent(delay, @event);
         }
 
-        public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
@@ -199,7 +202,12 @@ namespace SWLOR.Game.Server.Service
 
             if (examinedItem.RecommendedLevel > 0)
             {
-                description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
+                description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel;
+
+                if (examinedItem.BaseItemType == BASE_ITEM_RING || examinedItem.BaseItemType == BASE_ITEM_AMULET)
+                    description += " (Uses your highest armor skill)";
+
+                description += "\n";
             }
             if (examinedItem.LevelIncrease > 0)
             {
@@ -207,12 +215,23 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                Skill skill = DataService.Get<Skill>((int)examinedItem.AssociatedSkillType);
+                Skill skill = DataService.Skill.GetByID((int)examinedItem.AssociatedSkillType);
                 description += ColorTokenService.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
             {
-                description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + "\n";
+                if (ShieldBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("Damage Immunity: " ) + (10 + examinedItem.CustomAC / 3) + "\n";
+                }
+                else if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + "\n";
+                }
+                else
+                {
+                    description += ColorTokenService.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + "\n";
+                }
             }
             if (examinedItem.HPBonus > 0)
             {
@@ -250,13 +269,13 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + "\n";
             }
-            if (examinedItem.CastingSpeed > 0)
+            if (examinedItem.CooldownRecovery > 0)
             {
-                description += ColorTokenService.Orange("Activation Speed: +") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Cooldown Recovery: +") + examinedItem.CooldownRecovery + "%\n";
             }
-            else if (examinedItem.CastingSpeed < 0)
+            else if (examinedItem.CooldownRecovery < 0)
             {
-                description += ColorTokenService.Orange("Activation Penalty: -") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Cooldown Recovery: -") + examinedItem.CooldownRecovery + "%\n";
             }
             if (examinedItem.HarvestingBonus > 0)
             {
@@ -290,50 +309,6 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
-            if (examinedItem.ForcePotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Potency Bonus: ") + examinedItem.ForcePotencyBonus + "\n";
-            }
-            if (examinedItem.ForceAccuracyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Accuracy Bonus: ") + examinedItem.ForceAccuracyBonus + "\n";
-            }
-            if (examinedItem.ForceDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Defense Bonus: ") + examinedItem.ForceDefenseBonus + "\n";
-            }
-            if (examinedItem.ElectricalPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Electrical Potency Bonus: ") + examinedItem.ElectricalPotencyBonus + "\n";
-            }
-            if (examinedItem.MindPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Mind Potency Bonus: ") + examinedItem.MindPotencyBonus + "\n";
-            }
-            if (examinedItem.LightPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Light Potency Bonus: ") + examinedItem.LightPotencyBonus + "\n";
-            }
-            if (examinedItem.DarkPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Dark Potency Bonus: ") + examinedItem.DarkPotencyBonus + "\n";
-            }
-            if (examinedItem.ElectricalDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Electrical Defense Bonus: ") + examinedItem.ElectricalDefenseBonus + "\n";
-            }
-            if (examinedItem.MindDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Mind Defense Bonus: ") + examinedItem.MindDefenseBonus + "\n";
-            }
-            if (examinedItem.LightDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Light Defense Bonus: ") + examinedItem.LightDefenseBonus + "\n";
-            }
-            if (examinedItem.DarkDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Dark Defense Bonus: ") + examinedItem.DarkDefenseBonus + "\n";
-            }
             if (examinedItem.LuckBonus > 0)
             {
                 description += ColorTokenService.Orange("Luck Bonus: ") + examinedItem.LuckBonus + "\n";
@@ -366,9 +341,20 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
             }
+            if (examinedItem.PilotingBonus > 0)
+            {
+                description += ColorTokenService.Orange("Piloting Bonus: ") + examinedItem.PilotingBonus + "\n";
+            }
             if (examinedItem.BaseAttackBonus > 0)
             {
-                description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
+                if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
+                }
+                else
+                {
+                    description += ColorTokenService.Red("Base Attack Bonus (ignored due to item type): ") + examinedItem.BaseAttackBonus + "\n";
+                }
             }
             if (examinedItem.SneakAttackBonus > 0)
             {
@@ -376,7 +362,14 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.DamageBonus > 0)
             {
-                description += ColorTokenService.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
+                if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += ColorTokenService.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
+                }
+                else
+                {
+                    description += ColorTokenService.Red("Damage Bonus (ignored due to item type): ") + examinedItem.DamageBonus + "\n";
+                }
             }
             if (examinedItem.CustomItemType != CustomItemType.None)
             {
@@ -384,20 +377,45 @@ namespace SWLOR.Game.Server.Service
                 description += ColorTokenService.Orange("Item Type: ") + itemTypeProper + "\n";
             }
 
+            // Check for properties that can only be applied to limited things, and flag them here.
+            // Attack bonus, damage, base attack bonus: weapons only
+            // AC - armor items only.
+            ItemProperty ip = GetFirstItemProperty(examinedItem);
+            while (GetIsItemPropertyValid(ip) == TRUE)
+            {
+                if (GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
+                {
+                    switch (GetItemPropertySubType(ip))
+                    {
+                        case (int)ComponentBonusType.ACUp:
+                        {
+                            description += ColorTokenService.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
+                            break;
+                        }
+                        case (int)ComponentBonusType.DamageUp:
+                        case (int)ComponentBonusType.AttackBonusUp:
+                        case (int)ComponentBonusType.BaseAttackBonusUp:
+                        {
+                            description += ColorTokenService.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
+                            break;
+                        }
+                    }
+                }
+
+                ip = GetNextItemProperty(examinedItem);
+            }
+
             return existingDescription + "\n" + description;
         }
 
-
         public static HashSet<int> ArmorBaseItemTypes = new HashSet<int>()
         {
-            BASE_ITEM_AMULET,
             BASE_ITEM_ARMOR,
-            BASE_ITEM_BRACER,
-            BASE_ITEM_BELT,
-            BASE_ITEM_BOOTS,
-            BASE_ITEM_CLOAK,
-            BASE_ITEM_GLOVES,
-            BASE_ITEM_HELMET,
+            BASE_ITEM_HELMET
+        };
+
+        public static HashSet<int> ShieldBaseItemTypes = new HashSet<int>()
+        {
             BASE_ITEM_LARGESHIELD,
             BASE_ITEM_SMALLSHIELD,
             BASE_ITEM_TOWERSHIELD
@@ -456,15 +474,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer player = _.GetPCItemLastUnequippedBy();
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            NWPlayer player = GetPCItemLastUnequippedBy();
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = _.GetPCItemLastUnequipped();
+            NWItem oItem = GetPCItemLastUnequipped();
 
             // Remove lightsaber hum effect.
-            foreach (var effect in player.Effects.Where(x => _.GetEffectTag(x) == "LIGHTSABER_HUM"))
+            foreach (var effect in player.Effects.Where(x => GetEffectTag(x) == "LIGHTSABER_HUM"))
             {
-                _.RemoveEffect(player, effect);
+                RemoveEffect(player, effect);
             }
 
             // Handle lightsaber sounds
@@ -474,7 +492,7 @@ namespace SWLOR.Game.Server.Service
 
                 player.AssignCommand(() =>
                 {
-                    _.PlaySound("saberoff");
+                    PlaySound("saberoff");
                 });
             }
 
@@ -485,8 +503,8 @@ namespace SWLOR.Game.Server.Service
         // To work around this I force them to clear all actions.
         private static void HandleEquipmentSwappingDelay()
         {
-            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWPlayer oPC = (GetPCItemLastEquippedBy());
+            NWItem oItem = (GetPCItemLastEquipped());
             NWItem rightHand = oPC.RightHand;
             NWItem leftHand = oPC.LeftHand;
 
@@ -558,23 +576,23 @@ namespace SWLOR.Game.Server.Service
 
             };
 
-            NWPlayer player = _.GetPCItemLastEquippedBy();
+            NWPlayer player = GetPCItemLastEquippedBy();
 
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWItem oItem = (GetPCItemLastEquipped());
             int baseItemType = oItem.BaseItemType;
-            Effect eEffect = _.EffectVisualEffect(579);
-            eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+            Effect eEffect = EffectVisualEffect(579);
+            eEffect = TagEffect(eEffect, "LIGHTSABER_HUM");
 
             // Handle lightsaber sounds
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
                 player.AssignCommand(() =>
                 {
-                    _.PlaySound("saberon");
+                    PlaySound("saberon");
                 });
             }
 
@@ -622,9 +640,9 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
+                if (GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
                 {
-                    if (_.GetItemPropertySubType(ip) == IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
+                    if (GetItemPropertySubType(ip) == IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }
@@ -632,22 +650,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            BiowareXP2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
         public static void ReturnItem(NWObject target, NWItem item)
         {
-            if (_.GetHasInventory(item) == TRUE)
+            if (GetHasInventory(item) == TRUE)
             {
                 NWObject possessor = item.Possessor;
                 possessor.AssignCommand(() =>
                 {
-                    _.ActionGiveItem(item, target);
+                    ActionGiveItem(item, target);
                 });
             }
             else
             {
-                _.CopyItem(item.Object, target.Object, TRUE);
+                CopyItem(item.Object, target.Object, TRUE);
                 item.Destroy();
             }
         }
@@ -656,67 +674,13 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var ip in item.ItemProperties)
             {
-                _.RemoveItemProperty(item.Object, ip);
-            }
-        }
-
-        public static void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
-        {
-            user.IsBusy = false;
-
-            Vector userPosition = user.Position;
-            if (userPosition.m_X != userStartPosition.m_X ||
-                userPosition.m_Y != userStartPosition.m_Y ||
-                userPosition.m_Z != userStartPosition.m_Z)
-            {
-                user.SendMessage("You move and interrupt your action.");
-                return;
-            }
-
-            float maxDistance = actionItem.MaxDistance(user, item, target, targetLocation);
-            if (maxDistance > 0.0f)
-            {
-                if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                    user.Area.Resref != target.Area.Resref))
-                {
-                    user.SendMessage("Your target is too far away.");
-                    return;
-                }
-                else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
-                {
-                    user.SendMessage("That location is too far away.");
-                    return;
-                }
-            }
-
-            if (!target.IsValid && !actionItem.AllowLocationTarget())
-            {
-                user.SendMessage("Unable to locate target.");
-                return;
-            }
-
-            string invalidTargetMessage = actionItem.IsValidTarget(user, item, target, targetLocation);
-            if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
-            {
-                user.SendMessage(invalidTargetMessage);
-                return;
-            }
-
-            actionItem.ApplyEffects(user, item, target, targetLocation, customData);
-
-            if (actionItem.ReducesItemCharge(user, item, target, targetLocation, customData))
-            {
-                if (item.Charges > 0) item.ReduceCharges();
-                else item.Destroy();
+                RemoveItemProperty(item.Object, ip);
             }
         }
 
         public static ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
-            NWPlaceable container = (_.GetObjectByTag("item_props"));
+            NWPlaceable container = (GetObjectByTag("item_props"));
             NWItem item = container.InventoryItems.SingleOrDefault(x => x.Tag == tag);
             if (item == null)
             {
@@ -857,7 +821,7 @@ namespace SWLOR.Game.Server.Service
                 int type = item.BaseItemType;
 
                 // Check for explicit override.
-                if (item.AssociatedSkillType > 0) return (SkillType)item.AssociatedSkillType;
+                if (item.AssociatedSkillType > 0) return item.AssociatedSkillType;
 
                 // Armor has to specifically be set on the item in order to count.
                 // Look for an item type property first.
@@ -881,18 +845,35 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWObject target = Object.OBJECT_SELF;
+            NWObject target = NWGameObject.OBJECT_SELF;
             if (!target.IsValid) return;
 
-            NWObject oSpellOrigin = (_.GetSpellCastItem());
+            NWObject oSpellOrigin = (GetSpellCastItem());
             // Item specific
-            string script = oSpellOrigin.GetLocalString("JAVA_SCRIPT");
+            string script = oSpellOrigin.GetLocalString("SCRIPT");
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                LegacyJVMItemEvent.Run(script);
+                ScriptItemEvent.Run(script);
             }
+        }
 
+        public static bool CanHandleChat(NWObject sender)
+        {
+            return sender.GetLocalInt("ITEM_RENAMING_LISTENING") == TRUE;
+        }
+
+        private static void OnModuleNWNXChat()
+        {
+            NWPlayer player = NWNXChat.GetSender().Object;
+
+            if (!CanHandleChat(player)) return;
+            string message = NWNXChat.GetMessage();
+            NWNXChat.SkipMessage();
+
+            message = message.Truncate(50);
+            player.SetLocalString("RENAMED_ITEM_NEW_NAME", message);
+            player.SendMessage("Please click 'Refresh' to see changes, then select 'Change Name' to confirm the changes.");
         }
     }
 }

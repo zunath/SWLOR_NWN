@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public Area()
         {
             ID = Guid.NewGuid();
-            DateLastBaked = DateTime.UtcNow;
         }
 
         [ExplicitKey]
@@ -29,8 +28,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public int PurchasePrice { get; set; }
         public int DailyUpkeep { get; set; }
-        public string Walkmesh { get; set; }
-        public DateTime DateLastBaked { get; set; }
         public bool AutoSpawnResources { get; set; }
         public int ResourceQuality { get; set; }
         public int? NorthwestLootTableID { get; set; }
@@ -38,5 +35,34 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? SouthwestLootTableID { get; set; }
         public int? SoutheastLootTableID { get; set; }
         public int MaxResourceQuality { get; set; }
+
+        public IEntity Clone()
+        {
+            return new Area
+            {
+                ID = ID,
+                Resref = Resref,
+                Name = Name,
+                Tag = Tag,
+                ResourceSpawnTableID = ResourceSpawnTableID,
+                Width = Width,
+                Height = Height,
+                IsBuildable = IsBuildable,
+                NorthwestOwner = NorthwestOwner,
+                NortheastOwner = NortheastOwner,
+                SouthwestOwner = SouthwestOwner,
+                SoutheastOwner = SoutheastOwner,
+                IsActive = IsActive,
+                PurchasePrice = PurchasePrice,
+                DailyUpkeep = DailyUpkeep,
+                AutoSpawnResources = AutoSpawnResources,
+                ResourceQuality = ResourceQuality,
+                NorthwestLootTableID = NorthwestLootTableID,
+                NortheastLootTableID = NortheastLootTableID,
+                SouthwestLootTableID = SouthwestLootTableID,
+                SoutheastLootTableID = SoutheastLootTableID,
+                MaxResourceQuality = MaxResourceQuality
+            };
+        }
     }
 }

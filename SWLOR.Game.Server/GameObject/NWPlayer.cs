@@ -1,24 +1,16 @@
 ﻿using System.Collections.Generic;
 using NWN;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWPlayer : NWCreature
     {
-        public NWPlayer(Object nwnObject)
+        public NWPlayer(NWGameObject nwnObject)
             : base(nwnObject)
         {
         }
 
-        public virtual bool IsBusy
-        {
-            get => GetLocalInt("IS_BUSY") == 1;
-            set => SetLocalInt("IS_BUSY", value ? 1 : 0);
-        }
-
-
-        public virtual IEnumerable<NWPlayer> PartyMembers
+        public override IEnumerable<NWCreature> PartyMembers
         {
             get
             {
@@ -56,12 +48,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWPlayer o)
+        public static implicit operator NWGameObject(NWPlayer o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWPlayer(Object o)
+        public static implicit operator NWPlayer(NWGameObject o)
         {
             return new NWPlayer(o);
         }

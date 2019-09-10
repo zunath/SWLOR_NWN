@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Gets the amount of time before the next restart.", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Gets the amount of time before the next restart.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class RestartTime : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

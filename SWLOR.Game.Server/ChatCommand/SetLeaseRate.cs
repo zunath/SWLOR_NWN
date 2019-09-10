@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets the lease bonus or penalty on a particular player. Range must be between -99 and 500.", CommandPermissionType.DM)]
+    [CommandDetails("Sets the lease bonus or penalty on a particular player. Range must be between -99 and 500.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetLeaseRate : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             int leaseRate = int.Parse(args[0]);
             dbPlayer.LeaseRate = leaseRate;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

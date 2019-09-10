@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.SpawnRule
     {
         public void Run(NWObject target, params object[] args)
         {
-            var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == target.Area.Resref);
+            var dbArea = DataService.Area.GetByResref(target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             
             if (tier <= 0)

@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Copies the targeted item.", CommandPermissionType.DM)]
+    [CommandDetails("Copies the targeted item.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class CopyItem : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

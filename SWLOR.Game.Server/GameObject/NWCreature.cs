@@ -3,13 +3,12 @@ using System.Linq;
 
 using NWN;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWCreature : NWObject
     {
-        public NWCreature(Object o)
+        public NWCreature(NWGameObject o)
             : base(o)
         {
 
@@ -150,6 +149,23 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+        public virtual IEnumerable<NWCreature> PartyMembers
+        {
+            get
+            {
+                for (NWPlayer member = _.GetFirstFactionMember(Object, FALSE); member.IsValid; member = _.GetNextFactionMember(Object, FALSE))
+                {
+                    yield return member;
+                }
+            }
+        }
+
+        public virtual bool IsBusy
+        {
+            get => GetLocalInt("IS_BUSY") == 1;
+            set => SetLocalInt("IS_BUSY", value ? 1 : 0);
+        }
+
         //
         // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
         //
@@ -177,11 +193,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator Object(NWCreature o)
+        public static implicit operator NWGameObject(NWCreature o)
         {
             return o.Object;
         }
-        public static implicit operator NWCreature(Object o)
+        public static implicit operator NWCreature(NWGameObject o)
         {
             return new NWCreature(o);
         }

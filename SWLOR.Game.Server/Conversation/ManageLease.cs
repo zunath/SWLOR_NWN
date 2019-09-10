@@ -3,7 +3,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -50,10 +52,10 @@ namespace SWLOR.Game.Server.Conversation
             // Look for any bases for which the player has permissions to manage leases or cancel leases.
             // Owners are included in this since they automatically get all permissions for their own bases.
             // Apartments are excluded from this list as they are canceled from terminals outside individual apartment buildings.
-            var bases = DataService
-                .Where<PCBase>(x =>
+            var bases = DataService.PCBase.GetAll()
+                .Where(x =>
                 {
-                    var pcBasePermissions = DataService.Where<PCBasePermission>(p => p.PCBaseID == x.ID);
+                    var pcBasePermissions = DataService.PCBasePermission.GetAllPermissionsByPCBaseID(x.ID);
                     return x.Sector != "AP" &&
                            pcBasePermissions
                                .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease));
@@ -63,7 +65,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("MainPage");
             foreach (var @base in bases)
             {
-                Area dbArea = DataService.Single<Area>(x => x.Resref == @base.AreaResref);
+                Area dbArea = DataService.Area.GetByResref(@base.AreaResref);
                 string status = @base.PlayerID == playerID ? " [OWNER]" : " [GUEST]";
 
                 AddResponseToPage("MainPage", dbArea.Name + " (" + @base.Sector + ")" + status, true, @base.ID);
@@ -117,9 +119,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadBaseDetailsPage()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
-            Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
-            var owner = DataService.Get<Player>(pcBase.PlayerID);
+            PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+            var owner = DataService.Player.GetByID(pcBase.PlayerID);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
             bool canCancelLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanCancelLease);
 
@@ -140,8 +142,9 @@ namespace SWLOR.Game.Server.Conversation
 
                 if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
                 {
-                    SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
-                    header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.Planet + ")\n";
+                    var shipLocationGuid = new Guid(pcBase.ShipLocation);
+                    Starport starport = DataService.Starport.GetByStarportID(shipLocationGuid);
+                    header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.PlanetName + ")\n";
                     header += ColorTokenService.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
                     header += ColorTokenService.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
                 }
@@ -187,10 +190,10 @@ namespace SWLOR.Game.Server.Conversation
         private void ExtendLease(int days, int responseID, string optionText)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
-            Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
-            var owner = DataService.Get<Player>(pcBase.PlayerID);
+            var owner = DataService.Player.GetByID(pcBase.PlayerID);
 
             if (!canExtendLease)
             {
@@ -203,7 +206,8 @@ namespace SWLOR.Game.Server.Conversation
             // Starship override.
             if (pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
             {
-                SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
+                Guid shipLocationGuid = new Guid(pcBase.ShipLocation);
+                Starport starport = DataService.Starport.GetByStarportID(shipLocationGuid);
                 dailyUpkeep = starport.Cost + (int)(starport.Cost * (owner.LeaseRate * 0.01f));
             }
 
@@ -256,7 +260,9 @@ namespace SWLOR.Game.Server.Conversation
             if (data.IsConfirming)
             {
                 data.IsConfirming = false;
+                PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 BaseService.ClearPCBaseByID(data.PCBaseID);
+                MessageHub.Instance.Publish(new OnBaseLeaseCancelled(pcBase));
                 GetPC().FloatingText("Your lease has been canceled. Any property left behind has been delivered to the planetary government. Speak with them to retrieve it.");
                 
                 BuildMainPage();

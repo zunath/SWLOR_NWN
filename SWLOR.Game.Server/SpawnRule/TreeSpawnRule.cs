@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.SpawnRule
             const int HighQualityChance = 10;
             const int VeryHighQualityChance = 2;
 
-            var dbArea = DataService.Single<Area>(x => x.Resref == target.Area.Resref);
+            var dbArea = DataService.Area.GetByResref(target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             int maxTier = dbArea.MaxResourceQuality;
             

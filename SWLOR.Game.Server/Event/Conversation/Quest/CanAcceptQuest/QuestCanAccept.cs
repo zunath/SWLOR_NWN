@@ -14,17 +14,18 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.CanAcceptQuest
             {
                 int index = (int)args[0];
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkTo = Object.OBJECT_SELF;
+                NWObject talkTo = NWGameObject.OBJECT_SELF;
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-                if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
+                if (!QuestService.QuestExistsByID(questID))
                 {
                     _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                     return false;
                 }
 
-                return QuestService.CanAcceptQuest(player, questID, false);
+                var quest = QuestService.GetQuestByID(questID);
+                return quest.CanAccept(player);
             }
         }
     }

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoSlice()
         {
-            NWPlaceable self = Object.OBJECT_SELF;
+            NWPlaceable self = NWGameObject.OBJECT_SELF;
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
 
             if (keyItemID <= 0)

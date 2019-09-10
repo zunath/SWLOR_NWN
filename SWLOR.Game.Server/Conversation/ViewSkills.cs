@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("CategoryPage");
 
             // If player has skill levels to distribute, display the option to distribute them.
-            var showDistribution = DataService.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
+            var showDistribution = DataService.PCSkillPool.GetByPlayerIDWithLevelsUndistributed(GetPC().GlobalID).Any();
             AddResponseToPage("CategoryPage", ColorTokenService.Green("Distribute Skill Ranks"), showDistribution);
             
             foreach (SkillCategory category in categories)
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
             PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
+            int req = SkillService.SkillXPRequirements[pcSkill.Rank];
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
@@ -103,9 +104,9 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
+        private string CreateSkillDetailsHeader(PCSkill pcSkill, int req)
         {
-            Player player = DataService.Get<Player>(pcSkill.PlayerID);
+            Player player = DataService.Player.GetByID(pcSkill.PlayerID);
             Skill skill = SkillService.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
@@ -138,9 +139,9 @@ namespace SWLOR.Game.Server.Conversation
 
             string rpXP = ColorTokenService.Green("Roleplay XP: ") + player.RoleplayXP + "\n";
 
-            Attribute primaryAttribute = DataService.Get<Attribute>(skill.Primary);
-            Attribute secondaryAttribute = DataService.Get<Attribute>(skill.Secondary);
-            Attribute tertiaryAttribute = DataService.Get<Attribute>(skill.Tertiary);
+            Attribute primaryAttribute = DataService.Attribute.GetByID(skill.Primary);
+            Attribute secondaryAttribute = DataService.Attribute.GetByID(skill.Secondary);
+            Attribute tertiaryAttribute = DataService.Attribute.GetByID(skill.Tertiary);
             string primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
             string secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
             string tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
@@ -148,7 +149,7 @@ namespace SWLOR.Game.Server.Conversation
             return
                     ColorTokenService.Green("Skill: ") + skill.Name + "\n" +
                     ColorTokenService.Green("Rank: ") + title + "\n" +
-                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req.XP, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
+                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
                     rpXP +
                     primary +
                     secondary +
@@ -232,7 +233,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadDistributeRPXPPage()
         {
             NWPlayer player = GetPC();
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Model vm = GetDialogCustomData<Model>();
             Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
 
@@ -256,7 +257,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleDistributeRPXPResponse(int responseID)
         {
             NWPlayer player = GetPC();
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Model vm = GetDialogCustomData<Model>();
 
             switch (responseID)
@@ -303,7 +304,9 @@ namespace SWLOR.Game.Server.Conversation
                             // Give the distributed XP to a particular skill.
                             // We disable residency bonuses, DM bonuses, and skill penalties during this distribution because
                             // those are calculated when we give the player RP XP.
-                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false, false);
+                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false);
+
+                            dbPlayer = DataService.Player.GetByID(player.GlobalID);
                             dbPlayer.RoleplayXP -= vm.RPXPDistributing;
                             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                             vm.IsConfirming = false;

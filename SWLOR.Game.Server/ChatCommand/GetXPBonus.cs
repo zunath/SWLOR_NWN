@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Gets the XP bonus on a particular player.", CommandPermissionType.DM)]
+    [CommandDetails("Gets the XP bonus on a particular player.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class GetXPBonus : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             user.SendMessage(player.Name +  " XP Bonus = " + dbPlayer.XPBonus);
         }

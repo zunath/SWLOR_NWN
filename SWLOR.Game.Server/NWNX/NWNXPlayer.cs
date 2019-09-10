@@ -1,8 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
-using System;
-using System.Reflection;
 using static NWN._;
 
 namespace SWLOR.Game.Server.NWNX
@@ -51,28 +49,28 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts displaying a timing bar.
         /// Will run a script at the end of the timing bar, if specified.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="seconds"></param>
-        /// <param name="script"></param>
-        public static void StartGuiTimingBar(NWPlayer player, float seconds, string script)
+        /// <param name="creature">The creature who will see the timing bar.</param>
+        /// <param name="seconds">How long the timing bar should come on screen.</param>
+        /// <param name="script">The script to run at the end of the timing bar.</param>
+        public static void StartGuiTimingBar(NWCreature creature, float seconds, string script)
         {
             // only one timing bar at a time!
-            if (_.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
+            if (_.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
                 return;
 
             string sFunc = "StartGuiTimingBar";
             NWNX_PushArgumentFloat(NWNX_Player, sFunc, seconds);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature.Object);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
 
-            int id = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
-            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
-            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
+            int id = _.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
+            _.SetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
+            _.SetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
 
             _.DelayCommand(seconds, () =>
             {
-                StopGuiTimingBar(player, script, -1);
+                StopGuiTimingBar(creature, script, -1);
             });
         }
 
@@ -80,12 +78,12 @@ namespace SWLOR.Game.Server.NWNX
         /// Stops displaying a timing bar.
         /// Runs a script if specified.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="script"></param>
-        /// <param name="id"></param>
-        public static void StopGuiTimingBar(NWPlayer player, string script, int id)
+        /// <param name="creature">The creature's timing bar to stop.</param>
+        /// <param name="script">The script to run once ended.</param>
+        /// <param name="id">ID number of this timing bar.</param>
+        public static void StopGuiTimingBar(NWCreature creature, string script, int id)
         {
-            int activeId = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            int activeId = _.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
             if (activeId == 0)
                 return;
@@ -94,15 +92,15 @@ namespace SWLOR.Game.Server.NWNX
             if (id != -1 && id != activeId)
                 return;
 
-            _.DeleteLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            _.DeleteLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
 
             string sFunc = "StopGuiTimingBar";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature.Object);
             NWNX_CallFunction(NWNX_Player, sFunc);
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                _.ExecuteScript(script, player.Object);
+                _.ExecuteScript(script, creature.Object);
             }
         }
 
@@ -423,5 +421,134 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
 
+        /// <summary>
+        /// Get player's area exploration state
+        /// </summary>
+        /// <param name="player">The player object</param>
+        /// <param name="area">The area</param>
+        /// <returns></returns>
+        public static string GetAreaExplorationState(NWPlayer player, NWArea area)
+        {
+            string sFunc = "GetAreaExplorationState";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, area);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Set player's area exploration state (str is an encoded string obtained with NWNX_Player_GetAreaExplorationState)
+        /// </summary>
+        /// <param name="player">The player object</param>
+        /// <param name="area">The area</param>
+        /// <param name="str">The encoded exploration state string</param>
+        public static void SetAreaExplorationState(NWPlayer player, NWArea area, string str)
+        {
+            string sFunc = "SetAreaExplorationState";
+            NWNX_PushArgumentString(NWNX_Player, sFunc, str);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, area);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Override oPlayer's rest animation to nAnimation
+        ///
+        /// NOTE: nAnimation does not take ANIMATION_LOOPING_* or ANIMATION_FIREFORGET_* constants
+        ///       Use NWNX_Consts_TranslateNWScriptAnimation() in nwnx_consts.nss to get their NWNX equivalent
+        ///       -1 to clear the override
+        /// </summary>
+        /// <param name="oPlayer">The player object</param>
+        /// <param name="nAnimation">The rest animation</param>
+        public static void SetRestAnimation(NWPlayer oPlayer, int nAnimation)
+        {
+            string sFunc = "SetRestAnimation";
+
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, nAnimation);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oPlayer);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Override a visual transform on the given object that only oPlayer will see.
+        /// - oObject can be any valid Creature, Placeable, Item or Door.
+        /// - nTransform is one of OBJECT_VISUAL_TRANSFORM_* or -1 to remove the override
+        /// - fValue depends on the transformation to apply.
+        /// </summary>
+        /// <param name="oPlayer">The player object</param>
+        /// <param name="oObject">The object to transform</param>
+        /// <param name="nTransform">The transformation type</param>
+        /// <param name="fValue">The amount to transform by</param>
+        public static void SetObjectVisualTransformOverride(NWPlayer oPlayer, NWObject oObject, int nTransform, float fValue)
+        {
+            string sFunc = "SetObjectVisualTransformOverride";
+
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, fValue);
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, nTransform);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oObject);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oPlayer);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Apply a looping visualeffect to target that only player can see
+        /// visualeffect: VFX_DUR_*, call again to remove an applied effect
+        ///               -1 to remove all effects
+        ///
+        /// Note: Only really works with looping effects: VFX_DUR_*
+        ///       Other types *kind* of work, they'll play when reentering the area and the object is in view
+        ///       or when they come back in view range.
+        /// </summary>
+        /// <param name="player">The player object</param>
+        /// <param name="target">The target to apply the visual effect to</param>
+        /// <param name="visualeffect">The visual effect to use</param>
+        public static void ApplyLoopingVisualEffectToObject(NWPlayer player, NWObject target, int visualeffect)
+        {
+            string sFunc = "ApplyLoopingVisualEffectToObject";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, visualeffect);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, target);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Override the name of placeable for player only
+        /// "" to clear the override
+        /// </summary>
+        /// <param name="player">The player object</param>
+        /// <param name="placeable">The placeable object</param>
+        /// <param name="name">The new name to use</param>
+        public static void SetPlaceableNameOverride(NWPlayer player, NWPlaceable placeable, string name)
+        {
+            string sFunc = "SetPlaceableNameOverride";
+
+            NWNX_PushArgumentString(NWNX_Player, sFunc, name);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Gets whether a quest has been completed by a player
+        /// Returns -1 if they don't have the journal entry
+        /// </summary>
+        /// <param name="player">The player object</param>
+        /// <param name="sQuestName">The name of the quest</param>
+        /// <returns></returns>
+        public static int GetQuestCompleted(NWPlayer player, string sQuestName)
+        {
+            string sFunc = "GetQuestCompleted";
+            NWNX_PushArgumentString(NWNX_Player, sFunc, sQuestName);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Player, sFunc);
+        }
     }
 }

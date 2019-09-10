@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player)]
+    [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Delete : IChatCommand
     {
         /// <summary>
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                Player dbPlayer = DataService.Get<Player>(user.GlobalID);
+                Player dbPlayer = DataService.Player.GetByID(user.GlobalID);
                 dbPlayer.IsDeleted = true;
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
@@ -59,6 +59,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
+            if (!user.IsPlayer)
+                return "You can only delete a player character.";
+
             string cdKey = _.GetPCPublicCDKey(user);
             string enteredCDKey = args.Length > 0 ? args[0] : string.Empty;
 

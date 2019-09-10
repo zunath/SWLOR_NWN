@@ -10,7 +10,7 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Report a bug to the developers. Please include as much detail as possible.", CommandPermissionType.Player | CommandPermissionType.DM)]
+    [CommandDetails("Report a bug to the developers. Please include as much detail as possible.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Bug : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 SenderPlayerID = user.IsPlayer ? new Guid?(user.GlobalID): null,
                 CDKey = _.GetPCPublicCDKey(user),
                 Text = message,
-                TargetName = target.IsValid ? target.Name : string.Empty,
+                TargetName = target.IsValid ? target.Name : user.Name,
                 AreaResref = user.Area.Resref,
                 SenderLocationX = user.Location.X,
                 SenderLocationY = user.Location.Y,
@@ -58,6 +58,6 @@ namespace SWLOR.Game.Server.ChatCommand
             return string.Empty;
         }
 
-        public bool RequiresTarget => true;
+        public bool RequiresTarget => false;
     }
 }

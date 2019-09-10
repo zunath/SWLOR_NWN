@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = user.Object;
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int skillRank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ResuscitationDevices);
             int rank = item.GetLocalInt("RANK");
             int baseHeal;
 
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (target.IsPlayer)
             {
                 baseHeal = (int)(baseHeal * effectivenessPercent);
-                Player dbPlayer = DataService.Single<Player>(x => x.ID == target.GlobalID);
+                Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
                 int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
                 int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -107,12 +107,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetCreaturePerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            int consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
             return RandomService.Random(100) + 1 > consumeChance;
         }
 
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "You are in combat.";
             }
 
-            int perkLevel = PerkService.GetPCPerkLevel(user.Object, PerkType.ResuscitationDevices);
+            int perkLevel = PerkService.GetCreaturePerkLevel(user.Object, PerkType.ResuscitationDevices);
             int requiredLevel = item.GetLocalInt("RANK");
 
             if (perkLevel < requiredLevel)

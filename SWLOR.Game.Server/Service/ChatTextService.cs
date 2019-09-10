@@ -7,9 +7,9 @@ using SWLOR.Game.Server.GameObject;
 using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -70,10 +70,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (ChatCommandService.CanHandleChat(sender, message) ||
-                BaseService.CanHandleChat(sender, message) ||
-                CraftService.CanHandleChat(sender, message) ||
+                BaseService.CanHandleChat(sender) ||
+                CraftService.CanHandleChat(sender) ||
                 MarketService.CanHandleChat(sender.Object) ||
-                MessageBoardService.CanHandleChat(sender))
+                MessageBoardService.CanHandleChat(sender) ||
+                ItemService.CanHandleChat(sender))
             {
                 // This will be handled by other services, so just bail.
                 return;
@@ -114,8 +115,7 @@ namespace SWLOR.Game.Server.Service
                     m_Translatable = false
                 };
 
-                chatComponents = new List<ChatComponent>();
-                chatComponents.Add(component);
+                chatComponents = new List<ChatComponent> {component};
 
                 if (channel == ChatChannelType.PlayerShout)
                 {
@@ -151,11 +151,9 @@ namespace SWLOR.Game.Server.Service
             // Now, depending on the chat channel, we need to build a list of recipients.
             bool needsAreaCheck = false;
             float distanceCheck = 0.0f;
-
-            List<NWObject> recipients = new List<NWObject>();
-
+            
             // The sender always wants to see their own message.
-            recipients.Add(sender);
+            List<NWObject> recipients = new List<NWObject> {sender};
 
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannelType.PlayerShout)
@@ -217,9 +215,9 @@ namespace SWLOR.Game.Server.Service
 
                         int count = 0;
                         NWPlayer player = sender.Object;
-                        List<NWPlayer> partyMembers = player.PartyMembers.ToList();
+                        List<NWCreature> partyMembers = player.PartyMembers.ToList();
 
-                        foreach (NWPlayer otherPlayer in partyMembers)
+                        foreach (NWCreature otherPlayer in partyMembers)
                         {
                             string name = otherPlayer.Name;
                             finalMessage.Append(name.Substring(0, Math.Min(name.Length, 10)));
@@ -241,11 +239,18 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
+                var originalSender = sender;
+                // temp set sender to hologram owner for holocoms
+                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
+                {
+                    sender = HoloComService.GetHoloGramOwner(sender);
+                }
+
                 SkillType language = LanguageService.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);
+                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);                
                 if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
@@ -313,10 +318,13 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColoured = ColorTokenService.Orange(finalMessageColoured);
                 }
 
+                // set back to original sender, if it was changed by holocom connection
+                sender = originalSender;
+
                 NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }
 
-            MessageHub.Instance.Publish(new ChatProcessedMessage(sender, channel, isOOC));
+            MessageHub.Instance.Publish(new OnChatProcessed(sender, channel, isOOC));
         }
 
         private static void OnModuleEnter()
@@ -324,7 +332,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
         }
         

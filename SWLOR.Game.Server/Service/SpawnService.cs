@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.AI;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
-using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     public static class SpawnService
     {
         private static readonly Dictionary<string, ISpawnRule> _spawnRules;
+        private static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; } = new Dictionary<NWArea, AreaSpawn>();
 
         static SpawnService()
         {
@@ -27,7 +29,20 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessSpawns());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessSpawns());
+
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents(NWGameObject.OBJECT_SELF));
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents(NWGameObject.OBJECT_SELF));
+
+            MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
+            MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
+
+            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message =>
+            {
+                message.Player.SendMessage("AreaSpawns: " + AreaSpawns.Count);
+                message.Player.SendMessage("AreaSpawns Creatures: " + AreaSpawns.Values.SelectMany(x => x.Creatures).Count());
+                message.Player.SendMessage("AreaSpawns Placeables: " + AreaSpawns.Values.SelectMany(x => x.Placeables).Count());
+            });
         }
 
         private static void OnModuleLoad()
@@ -39,8 +54,7 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterSpawnRules()
         {
             // Use reflection to get all of SpawnRule implementations.
-            var classes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var classes = Assembly.GetCallingAssembly().GetTypes()
                 .Where(p => typeof(ISpawnRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
@@ -71,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void InitializeAreaSpawns(NWArea area)
+        private static void InitializeAreaSpawns(NWArea area)
         {
             var areaSpawn = new AreaSpawn();
 
@@ -102,7 +116,7 @@ namespace SWLOR.Game.Server.Service
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.   
-                        var spawnObjects = DataService.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
+                        var spawnObjects = DataService.SpawnObject.GetAllBySpawnTableID(spawnTableID).ToList();
                         int count = spawnObjects.Count;
                         int index = count <= 0 ? 0 : RandomService.Random(count);
                         var dbSpawn = spawnObjects[index];
@@ -191,18 +205,24 @@ namespace SWLOR.Game.Server.Service
                 obj = GetNextObjectInArea(area.Object);
             }
 
-            AppCache.AreaSpawns.Add(area, areaSpawn);
+            AreaSpawns.Add(area, areaSpawn);
 
             DelayCommand(1.0f, () =>
             {
                 SpawnResources(area, areaSpawn);
             });
         }
+
+        private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
+        {
+            NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalInt("IS_AREA_INSTANCE") == FALSE);
+            AreaSpawn copyAreaSpawn = AreaSpawns[originalArea].Clone();
+            AreaSpawns.Add(copyArea, copyAreaSpawn);
+        }
         
         public static Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
-            var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+            var walkmeshes = AreaService.GetAreaWalkmeshes(area);
             int count = walkmeshes.Count;
             var index = count <= 0 ? 0 : RandomService.Random(count);
 
@@ -216,11 +236,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
-            var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == area.Resref);
+            var dbArea = DataService.Area.GetByResref(area.Resref);
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
-            var possibleSpawns = DataService.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
+            var possibleSpawns = DataService.SpawnObject.GetAllBySpawnTableID(dbArea.ResourceSpawnTableID).ToList();
 
             // 1024 size = 32x32
             // 256  size = 16x16
@@ -293,16 +313,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
-        {
-            var areaSpawn = AppCache.AreaSpawns[area];
-            return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Placeables);
-        }
-        public static IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
-        {
-            var areaSpawn = AppCache.AreaSpawns[area];
-            return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Creatures);
-        }
 
         public static void AssignScriptEvents(NWCreature creature)
         {
@@ -360,14 +370,56 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void ToggleCreatureEvents(NWArea area)
+        {
+            AreaSpawn areaSpawn = AreaSpawns[area];
+            int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
+
+            foreach (var creature in areaSpawn.Creatures)
+            {
+                if (creature.Spawn.IsValid)
+                {
+                    bool eventsDisabled = creature.Spawn.GetLocalInt("SPAWN_EVENTS_DISABLED") == TRUE;
+                    bool isCreature = creature.Spawn.IsCreature;
+
+                    if (isCreature)
+                    {
+                        // Currently disabled, but players are in area. Enable them.
+                        if (eventsDisabled && playerCount > 0)
+                        {
+                            EnableCreatureEvents(creature.SpawnCreature);
+                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", FALSE);
+                        }
+                        // Currently enabled, but players are no longer in area. Disable them.
+                        else if (!eventsDisabled && playerCount <= 0)
+                        {
+                            DisableCreatureEvents(creature.SpawnCreature);
+                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", TRUE);
+                        }
+                    }
+                }
+            }
+        }
+
+
         private static void ProcessSpawns()
         {
             using (new Profiler(nameof(SpawnService) + "." + nameof(ProcessSpawns)))
             {
-                foreach (var spawn in AppCache.AreaSpawns)
+                // On module load, we want to populate all areas with NPCs and disable their AI.
+                // The reason for this is because we don't want lag when players enter an area. 
+                // This'll use more memory but the CPU usage will be very limited as none of the
+                // creatures will have scripts assigned.
+                bool hasRunOnce = NWModule.Get().GetLocalInt("SPAWN_HAS_RUN_ONCE") == TRUE;
+
+                foreach (var spawn in AreaSpawns)
                 {
                     // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
                     if (!spawn.Key.IsValid) continue;
+
+                    // Ignore empty areas.
+                    int playerCount = NWNXArea.GetNumberOfPlayersInArea(spawn.Key);
+                    if (playerCount <= 0 && hasRunOnce) continue;
 
                     AreaSpawn areaSpawn = spawn.Value;
                     bool forceSpawn = !areaSpawn.HasSpawned;
@@ -384,7 +436,15 @@ namespace SWLOR.Game.Server.Service
 
                     areaSpawn.SecondsEmpty = 0.0f;
                     areaSpawn.HasSpawned = true;
+
+                    // Toggle creature AI now, if this is the first time we're running this process.
+                    if (!hasRunOnce)
+                    {
+                        ToggleCreatureEvents(spawn.Key);
+                    }
                 }
+
+                NWModule.Get().SetLocalInt("SPAWN_HAS_RUN_ONCE", TRUE);
             }
         }
 
@@ -411,7 +471,7 @@ namespace SWLOR.Game.Server.Service
                 // Look for a spawn out of the database set. Update spawn data if one is found.
                 if (string.IsNullOrWhiteSpace(resref))
                 {
-                    var dbSpawn = DataService.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
+                    var dbSpawn = DataService.SpawnObject.GetAllBySpawnTableID(spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;
@@ -440,7 +500,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!spawn.Spawn.IsValid)
                 {
-                    Console.WriteLine("ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
+                    Console.WriteLine("SPAWN SERVICE ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
                     return;
                 }
 
@@ -469,6 +529,83 @@ namespace SWLOR.Game.Server.Service
 
                 spawn.Timer = 0.0f;
             }
+        }
+
+
+        /// <summary>
+        /// Sets event scripts base on local variables and deletes the local variables when done.
+        /// </summary>
+        /// <param name="creature">The creatures whose events we're enabling</param>
+        private static void EnableCreatureEvents(NWCreature creature)
+        {
+            // NOTE: Don't disable the spawn-in event because it's necessary for AI to work.
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_HEARTBEAT"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_NOTICE"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_SPELLCASTAT"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_MELEE_ATTACKED"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_DAMAGED"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_DISTURBED"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_END_COMBATROUND"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_DIALOGUE"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_RESTED"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_DEATH"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_USER_DEFINED_EVENT"));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, creature.GetLocalString("SPAWN_CREATURE_EVENT_ON_BLOCKED_BY_DOOR"));
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_HEARTBEAT");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_NOTICE");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_SPELLCASTAT");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_MELEE_ATTACK");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_DAMAGED");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_DISTURBED");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_END_COMBATROUND");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_DIALOGUE");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_RESTED");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_DEATH");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_USER_DEFINED_EVENT");
+            creature.DeleteLocalString("SPAWN_CREATURE_EVENT_ON_BLOCKED_BY_DOOR");
+        }
+
+        /// <summary>
+        /// Sets the current script names as local variables on the creature and then disables all events.
+        /// </summary>
+        /// <param name="creature">The creatures whose events we're disabling.</param>
+        private static void DisableCreatureEvents(NWCreature creature)
+        {
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_HEARTBEAT", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_NOTICE", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_SPELLCASTAT", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_MELEE_ATTACKED", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_DAMAGED", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_DISTURBED", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_END_COMBATROUND", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_DIALOGUE", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_RESTED", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_DEATH", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_USER_DEFINED_EVENT", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT));
+            creature.SetLocalString("SPAWN_CREATURE_EVENT_ON_BLOCKED_BY_DOOR", GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR));
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, string.Empty);
+            SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, string.Empty);
+        }
+
+        private static void OnAreaInstanceCreated(NWArea instance)
+        {
+            CopyAreaSpawns(instance.Resref, instance);
+        }
+
+        private static void OnAreaInstanceDestroyed(NWArea instance)
+        {
+            if(AreaSpawns.ContainsKey(instance))
+                AreaSpawns.Remove(instance);
         }
     }
 }

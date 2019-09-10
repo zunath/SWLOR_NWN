@@ -8,7 +8,6 @@ using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -22,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         public static ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
-            var lootTableItems = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
+            var lootTableItems = DataService.LootTableItem.GetAllByLootTableID(lootTableID).ToList();
 
             if (lootTableItems.Count <= 0) return null;
             int[] weights = new int[lootTableItems.Count];
@@ -52,7 +51,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessLoot()
         {
-            NWCreature creature = Object.OBJECT_SELF;
+            NWCreature creature = NWGameObject.OBJECT_SELF;
             
             // Single loot table (without an index)
             int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
@@ -115,7 +114,7 @@ namespace SWLOR.Game.Server.Service
         {
             SetIsDestroyable(FALSE);
 
-            NWObject self = Object.OBJECT_SELF;
+            NWObject self = NWGameObject.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
             Vector lootPosition = Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
@@ -158,8 +157,11 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var item in self.InventoryItems)
             {
-                CopyItem(item, container, TRUE);
-                item.Destroy();
+                if (item.IsValid && !item.IsCursed && item.IsDroppable)
+                {
+                    CopyItem(item, container, TRUE);
+                    item.Destroy();
+                }
             }
 
             DelayCommand(360.0f, () =>

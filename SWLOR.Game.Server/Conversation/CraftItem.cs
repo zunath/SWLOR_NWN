@@ -38,32 +38,22 @@ namespace SWLOR.Game.Server.Conversation
                 switch ((SkillType)model.Blueprint.SkillID)
                 {
                     case SkillType.Armorsmith:
-                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.ArmorBlueprints);
-                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithEfficiency);
-                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithOptimization);
+                        model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.ArmorBlueprints);
                         break;
                     case SkillType.Engineering:
-                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.EngineeringBlueprints);
-                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.EngineeringEfficiency);
-                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.EngineeringOptimization);
+                        model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.EngineeringBlueprints);
                         break;
                     case SkillType.Weaponsmith:
-                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.WeaponBlueprints);
-                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithEfficiency);
-                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithOptimization);
+                        model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.WeaponBlueprints);
                         break;
                     case SkillType.Fabrication:
-                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.FabricationBlueprints);
-                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.FabricationEfficiency);
-                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.FabricationOptimization);
+                        model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.FabricationBlueprints);
                         break;
                     case SkillType.Medicine:
-                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.MedicalBlueprints);
-                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.MedicineEfficiency);
-                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.MedicineOptimization);
+                        model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.MedicalBlueprints);
                         break;
                     case SkillType.Lightsaber:
-                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.LightsaberBlueprints);
+                        model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.LightsaberBlueprints);
 						// Lightsabers do not have Optimisation or Efficiency perks. 
                         break;
                     default:
@@ -72,13 +62,13 @@ namespace SWLOR.Game.Server.Conversation
 
                 }
                 GetDevice().IsLocked = true;
-                model.MainMinimum = model.Blueprint.MainMinimum - model.EfficiencyLevel;
-                model.SecondaryMinimum = model.Blueprint.SecondaryMinimum - model.EfficiencyLevel;
-                model.TertiaryMinimum = model.Blueprint.TertiaryMinimum - model.EfficiencyLevel;
+                model.MainMinimum = model.Blueprint.MainMinimum ;
+                model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;
+                model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
 
-                model.MainMaximum = model.Blueprint.MainMaximum + model.OptimizationLevel;
-                model.SecondaryMaximum = model.Blueprint.SecondaryMaximum > 0 ? model.Blueprint.SecondaryMaximum + model.OptimizationLevel : 0;
-                model.TertiaryMaximum = model.Blueprint.TertiaryMaximum > 0 ? model.Blueprint.TertiaryMaximum + model.OptimizationLevel : 0;
+                model.MainMaximum = model.Blueprint.MainMaximum;
+                model.SecondaryMaximum = model.Blueprint.SecondaryMaximum > 0 ? model.Blueprint.SecondaryMaximum : 0;
+                model.TertiaryMaximum = model.Blueprint.TertiaryMaximum > 0 ? model.Blueprint.TertiaryMaximum : 0;
 
                 if (model.MainMinimum <= 0)
                     model.MainMinimum = 1;
@@ -93,14 +83,14 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.Access = CraftingAccessType.None;
 
-                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
+                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
                 _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
                 _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
                 _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
             }
 
 
-            SetPageHeader("MainPage", CraftService.BuildBlueprintHeader(GetPC(), model.BlueprintID, true));
+            SetPageHeader("MainPage", CraftService.BuildBlueprintHeader(GetPC(), true));
             BuildMainPageOptions();
         }
 
@@ -214,13 +204,13 @@ namespace SWLOR.Game.Server.Conversation
             model.IsAccessingStorage = true;
 
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "jvm_script_2");
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "jvm_script_3");
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "jvm_script_4");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "script_2");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "script_3");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "script_4");
 
-            device.SetLocalString("JAVA_SCRIPT_2", "Placeable.CraftingDevice.OnOpened");
-            device.SetLocalString("JAVA_SCRIPT_3", "Placeable.CraftingDevice.OnClosed");
-            device.SetLocalString("JAVA_SCRIPT_4", "Placeable.CraftingDevice.OnDisturbed");
+            device.SetLocalString("SCRIPT_2", "Placeable.CraftingDevice.OnOpened");
+            device.SetLocalString("SCRIPT_3", "Placeable.CraftingDevice.OnClosed");
+            device.SetLocalString("SCRIPT_4", "Placeable.CraftingDevice.OnDisturbed");
 
             GetPC().AssignCommand(() => _.ActionInteractObject(device.Object));
             EndConversation();

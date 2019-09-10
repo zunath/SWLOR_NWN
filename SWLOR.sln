@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2037
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{F2C6F36D-74FA-489E-8891-51A3B390C55A}"
 EndProject
@@ -11,7 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SWLOR.Tools", "SWLOR.Tools"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.LanguageGenerator", "SWLOR.Tools\SWLOR.Tools.LanguageGenerator\SWLOR.Tools.LanguageGenerator.csproj", "{61A4F106-A85A-483A-83BD-882D2B93464A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.Editor", "SWLOR.Tools.Editor\SWLOR.Tools.Editor.csproj", "{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server.Scripts", "SWLOR.Game.Server.Scripts\SWLOR.Game.Server.Scripts.csproj", "{CED9C022-AC60-4F28-A941-96F13B02659D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.Hak.Builder", "SWLOR.Tools.Hak.Builder\SWLOR.Tools.Hak.Builder.csproj", "{EE21CA40-6065-46ED-9EA6-6AB1B8194477}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.Module.Packer", "SWLOR.Tools.Module.Packer\SWLOR.Tools.Module.Packer.csproj", "{FDA0955E-75C6-4E11-A31C-A9A869ED1B03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,16 +35,26 @@ Global
 		{61A4F106-A85A-483A-83BD-882D2B93464A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A4F106-A85A-483A-83BD-882D2B93464A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61A4F106-A85A-483A-83BD-882D2B93464A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DE73E32-4F9F-495B-9FBA-995C6D1A80F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CED9C022-AC60-4F28-A941-96F13B02659D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE21CA40-6065-46ED-9EA6-6AB1B8194477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE21CA40-6065-46ED-9EA6-6AB1B8194477}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE21CA40-6065-46ED-9EA6-6AB1B8194477}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE21CA40-6065-46ED-9EA6-6AB1B8194477}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA0955E-75C6-4E11-A31C-A9A869ED1B03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA0955E-75C6-4E11-A31C-A9A869ED1B03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA0955E-75C6-4E11-A31C-A9A869ED1B03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA0955E-75C6-4E11-A31C-A9A869ED1B03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{61A4F106-A85A-483A-83BD-882D2B93464A} = {3E2D3A7E-E4D2-433E-97D1-738405D27026}
+		{EE21CA40-6065-46ED-9EA6-6AB1B8194477} = {3E2D3A7E-E4D2-433E-97D1-738405D27026}
+		{FDA0955E-75C6-4E11-A31C-A9A869ED1B03} = {3E2D3A7E-E4D2-433E-97D1-738405D27026}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {902BBAC8-60B1-4926-8236-DEB906E81C45}

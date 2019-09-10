@@ -1,8 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Placeable.MolecularReassembler;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -47,12 +47,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             string header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
             header += "This device can be used to salvage equipment and reassemble them into components.\n\n";
-            header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n\n";
+            header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n";
+            header += "A 'Reassembly Power Unit' must be in your inventory in order to reassemble an item. This will be consumed when you start the process.\n\n";
             header += "Start by selecting a component type now.";
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            var componentTypes = DataService.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
+            var componentTypes = DataService.ComponentType.GetAllWhereHasReassembledResref();
             foreach (var type in componentTypes)
             {
                 AddResponseToPage("MainPage", type.Name, true, type.ID);
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = CraftService.GetPlayerCraftingData(player);
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = SerializationService.DeserializeItem(model.SerializedSalvageItem, tempStorage);
-            var componentType = DataService.Get<ComponentType>(model.SalvageComponentTypeID);
+            var componentType = DataService.ComponentType.GetByID(model.SalvageComponentTypeID);
             string header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
             header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 
@@ -96,12 +97,11 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             // Now check specific custom properties which are stored as local variables on the item.
-            header += ProcessPropertyDetails(item.CustomAC, componentType.Name, "AC", 3);
             header += ProcessPropertyDetails(item.HarvestingBonus, componentType.Name, "Harvesting Bonus", 3);
             header += ProcessPropertyDetails(item.PilotingBonus, componentType.Name, "Piloting Bonus", 3);
             header += ProcessPropertyDetails(item.ScanningBonus, componentType.Name, "Scanning Bonus", 3);
             header += ProcessPropertyDetails(item.ScavengingBonus, componentType.Name, "Scavenging Bonus", 3);
-            header += ProcessPropertyDetails(item.CastingSpeed, componentType.Name, "Activation Speed", 3);
+            header += ProcessPropertyDetails(item.CooldownRecovery, componentType.Name, "Cooldown Recovery", 3);
             header += ProcessPropertyDetails(item.CraftBonusArmorsmith, componentType.Name, "Armorsmith", 3);
             header += ProcessPropertyDetails(item.CraftBonusWeaponsmith, componentType.Name, "Weaponsmith", 3);
             header += ProcessPropertyDetails(item.CraftBonusCooking, componentType.Name, "Cooking", 3);
@@ -110,24 +110,12 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.HPBonus, componentType.Name, "HP", 5, 0.5f);
             header += ProcessPropertyDetails(item.FPBonus, componentType.Name, "FP", 5, 0.5f);
             header += ProcessPropertyDetails(item.EnmityRate, componentType.Name, "Enmity", 3);
-            header += ProcessPropertyDetails(item.ForcePotencyBonus, componentType.Name, "Force Potency", 3);
-            header += ProcessPropertyDetails(item.ForceAccuracyBonus, componentType.Name, "Force Accuracy", 3);
-            header += ProcessPropertyDetails(item.ForceDefenseBonus, componentType.Name, "Force Defense", 3);
-            header += ProcessPropertyDetails(item.ElectricalPotencyBonus, componentType.Name, "Electrical Potency", 3);
-            header += ProcessPropertyDetails(item.MindPotencyBonus, componentType.Name, "Mind Potency", 3);
-            header += ProcessPropertyDetails(item.LightPotencyBonus, componentType.Name, "Light Potency", 3);
-            header += ProcessPropertyDetails(item.DarkPotencyBonus, componentType.Name, "Dark Potency", 3);
-            header += ProcessPropertyDetails(item.ElectricalDefenseBonus, componentType.Name, "Electrical Defense", 3);
-            header += ProcessPropertyDetails(item.MindDefenseBonus, componentType.Name, "Mind Defense", 3);
-            header += ProcessPropertyDetails(item.LightDefenseBonus, componentType.Name, "Light Defense", 3);
-            header += ProcessPropertyDetails(item.DarkDefenseBonus, componentType.Name, "Dark Defense", 3);
             header += ProcessPropertyDetails(item.LuckBonus, componentType.Name, "Luck", 3);
             header += ProcessPropertyDetails(item.MeditateBonus, componentType.Name, "Meditate", 3);
             header += ProcessPropertyDetails(item.RestBonus, componentType.Name, "Rest", 3);
             header += ProcessPropertyDetails(item.MedicineBonus, componentType.Name, "Medicine", 3);
             header += ProcessPropertyDetails(item.HPRegenBonus, componentType.Name, "HP Regen", 3);
             header += ProcessPropertyDetails(item.FPRegenBonus, componentType.Name, "FP Regen", 3);
-            header += ProcessPropertyDetails(item.BaseAttackBonus, componentType.Name, "BAB", 3, 6);
             header += ProcessPropertyDetails(item.StructureBonus, componentType.Name, "Structure Bonus", 3);
             header += ProcessPropertyDetails(item.SneakAttackBonus, componentType.Name, "Sneak Attack", 3);
             header += ProcessPropertyDetails(item.DamageBonus, componentType.Name, "Damage", 3);
@@ -191,12 +179,22 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Reassemble Component(s)
+
+                    NWItem fuel = _.GetItemPossessedBy(player, "ass_power");
+                    // Look for reassembly fuel in the player's inventory.
+                    if (!fuel.IsValid)
+                    {
+                        player.SendMessage(ColorTokenService.Red("You must have a 'Reassembly Fuel Cell' in your inventory in order to start this process."));
+                        return;
+                    }
+
                     if (model.IsConfirmingReassemble)
                     {
                         // Calculate delay, fire off delayed event, and show timing bar.
                         float delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
                         NWNXPlayer.StartGuiTimingBar(player, delay, string.Empty);
-                        player.DelayEvent<ReassembleComplete>(delay, player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
+                        var @event = new OnReassembleComplete(player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
+                        player.DelayEvent(delay, @event);
 
                         // Make the player play an animation.
                         player.AssignCommand(() =>
@@ -208,7 +206,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Show sparks halfway through the process.
                         _.DelayCommand(1.0f * (delay / 2.0f), () =>
                         {
-                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), Object.OBJECT_SELF);
+                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), NWGameObject.OBJECT_SELF);
                         });
                         
                         // Immobilize the player while crafting.

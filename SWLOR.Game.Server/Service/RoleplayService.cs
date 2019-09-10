@@ -4,10 +4,10 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 namespace SWLOR.Game.Server.Service
 {
@@ -23,11 +23,11 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<ChatProcessedMessage>(OnChatProcessed);
+            MessageHub.Instance.Subscribe<OnChatProcessed>(OnChatProcessed);
             MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
         }
 
-        private static void OnChatProcessed(ChatProcessedMessage message)
+        private static void OnChatProcessed(OnChatProcessed message)
         {
             var sender = message.Sender;
             var channel = message.Channel;
@@ -65,11 +65,9 @@ namespace SWLOR.Game.Server.Service
             if (!canReceivePoint) return;
             
             // Player was allowed to gain this RP point.
-            var dbPlayer = DataService.Get<Player>(sender.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(sender.GlobalID);
             dbPlayer.RoleplayPoints++;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
-
-            Console.WriteLine("RP Points = " + dbPlayer.RoleplayPoints);
         }
 
         private static void OnModuleHeartbeat()
@@ -96,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             // Only fire for players, not DMs.
             if (!player.IsPlayer) return;
 
-            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             if (dbPlayer.RoleplayPoints >= 50)
             {
                 const int BaseXP = 500;

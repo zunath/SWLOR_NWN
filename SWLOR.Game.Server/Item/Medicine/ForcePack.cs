@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = (user.Object);
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
-            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
-            int perkDurationBonus = PerkService.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
+            int luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
+            int perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
             float duration = 30.0f + (rank * 0.4f) + perkDurationBonus;
             int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + item.MedicineBonus;
             int delta = item.RecommendedLevel - rank;
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             restoreAmount = (int)(restoreAmount * effectivenessPercent);
 
-            int perkBlastBonus = PerkService.GetPCPerkLevel(player, PerkType.ImmediateForcePack);
+            int perkBlastBonus = PerkService.GetCreaturePerkLevel(player, PerkType.ImmediateForcePack);
             if (perkBlastBonus > 0)
             {
                 int blastHeal = restoreAmount * perkBlastBonus;
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                     blastHeal *= 2;
                 }
 
-                AbilityService.RestoreFP(target.Object, blastHeal);
+                AbilityService.RestorePlayerFP(target.Object, blastHeal);
             }
 
             float interval = 6.0f;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if ( RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if ( RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -91,12 +91,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetCreaturePerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            int consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
             BackgroundType background = (BackgroundType) user.Class1;
 
             if (background == BackgroundType.Medic)
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            var dbTarget = DataService.Single<Player>(x => x.ID == target.GlobalID);
+            var dbTarget = DataService.Player.GetByID(target.GlobalID);
             if (dbTarget.CurrentFP >= dbTarget.MaxFP)
             {
                 return "Your target's FP is at their maximum.";

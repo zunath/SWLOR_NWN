@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class RestMod : IModHandler
     {
         public int ModTypeID => 15;
+        private const int MaxValue = 20;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.RestBonus >= 2)
+            if (target.RestBonus >= MaxValue)
                 return "You cannot improve that item's rest bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.RestBonus + value;
-            if (newValue > 2) newValue = 2;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.RestBonus = newValue;
         }
 

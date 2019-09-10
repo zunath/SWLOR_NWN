@@ -8,7 +8,7 @@
 
 //namespace SWLOR.Game.Server.ChatCommand
 //{
-//    [CommandDetails("debugging.", CommandPermissionType.DM)]
+//    [CommandDetails("debugging.", CommandPermissionType.DM | CommandPermissionType.Admin)]
 //    public class MoveDoor : IChatCommand
 //    {
 //        

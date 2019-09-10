@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Gets whether an object is marked plot.", CommandPermissionType.DM)]
+    [CommandDetails("Gets whether an object is marked plot.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class GetPlot : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

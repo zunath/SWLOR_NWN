@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using System.Linq;
+using static NWN._;
 
 /**
  * Used in Pazaak games, mainly to keep track of the contents of the deck. 
@@ -54,8 +55,16 @@ namespace SWLOR.Game.Server.ValueObject
             {
                 int c1 = DrawCard();
                 int c2 = DrawCard();
-                _.FloatingTextStringOnCreature("Draws " + c1 + " to start", player1, 0);
-                _.FloatingTextStringOnCreature("Draws " + c2 + " to start", player2, 0);
+                FloatingTextStringOnCreature("Draws " + c1 + " for first player (highest plays first)", player1, 0);
+
+                if (GetIsPC(player2) == 1)
+                {
+                    FloatingTextStringOnCreature("Draws " + c2 + " for first player (highest plays first)", player2, 0);
+                }
+                else
+                {
+                    DelayCommand(1.0f, () => { FloatingTextStringOnCreature(player2.Name + " draws " + c2 + " to start", player1, 0); });
+                }
 
                 if (c1 > c2) startedThisRound = player1;
                 else if (c2 > c1) startedThisRound = player2;
@@ -200,6 +209,6 @@ namespace SWLOR.Game.Server.ValueObject
             lastCardPlayed = 0;
 
             // Don't reshuffle the deck - we are now ready for the next round (or if one player has 3 sets, game over).
-    }
+        }
     }
 }

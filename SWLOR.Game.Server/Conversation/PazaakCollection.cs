@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Conversation
                 int deckCard = PazaakService.GetCardInDeck(jj, collection);
                 deckCards.Add(jj, collectedCards[deckCard]);
                 mainHeader += " " + PazaakService.Display(collectedCards[deckCard]) + " ";
+                AddResponseToPage("SelectDeckSlotPage", "Slot " + jj + " (" + PazaakService.Display(collectedCards[deckCard]) + ")", true, jj);
                 collectedCards.Remove(deckCard);
-                AddResponseToPage("SelectDeckSlotPage", "Slot " + jj + " (" + PazaakService.Display(deckCard) + ")", true, jj);
             }
 
             mainHeader += "\n\nCards in your sideboard:";

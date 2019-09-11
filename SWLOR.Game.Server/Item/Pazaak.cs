@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Item
         {
             if (item.Tag == "PazaakCard" && target.Tag == "PazaakCollection")
             {
-                PazaakService.AddCardToCollection(item, (NWItem)target);
+                user.ClearAllActions(); // In case they are in the manage collection dialog, avoid conflicts.
+                PazaakService.AddCardToCollection(item, target);
                 return;
             }
 
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Item
             if (item.Tag == "PazaakCollection" &&(!target.IsValid || target == user))
             {
                 user.SetLocalObject("ACTIVE_COLLECTION", item);
-                DialogService.StartConversation(user, item, "PazaakCollection");
+                DialogService.StartConversation(user, user, "PazaakCollection");
                 return;
             }
         }
@@ -69,13 +70,13 @@ namespace SWLOR.Game.Server.Item
         {
             if (item.Tag == "PazaakCard")
             {
-                if (target.Tag=="PazaakCollection")
+                if (target.Tag == "PazaakCollection")
                 {
                     return "";
                 }
                 else
                 {
-                    return "You may only use cards on a Pazaak Collection.  Buy one from a merchanct if you don't have one.";
+                    return "You may only use cards on a Pazaak Collection.  Buy one from a merchant if you don't have one.";
                 }
             }
 

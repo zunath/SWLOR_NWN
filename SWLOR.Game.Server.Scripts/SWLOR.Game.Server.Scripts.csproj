@@ -47,6 +47,7 @@
     <Compile Include="Area\RimerCardsInstance.cs" />
     <Compile Include="Creature\AbandonedStationRancor.cs" />
     <Compile Include="Item\BleedBite.cs" />
+    <Compile Include="Placeable\PazaakTable\OnUsed.cs" />
     <Compile Include="Placeable\Quests\AbandonedStation\ElevatorDoor.cs" />
     <Compile Include="Placeable\Quests\AbandonedStation\ShuttleExit.cs" />
     <Compile Include="Placeable\Quests\AbandonedStation\StationKeyCard.cs" />

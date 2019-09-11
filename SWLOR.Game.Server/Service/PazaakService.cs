@@ -47,19 +47,20 @@ namespace SWLOR.Game.Server.Service
     {
         private static Dictionary<NWObject, PazaakGame> ActiveGames;
 
-        public static int AddCardToCollection(NWItem card, NWItem collection)
+        public static int AddCardToCollection(NWItem card, NWObject collection)
         {
             // Adds the card represented by card to collection, destroying the card item and returning its new index in the collection. 
             int CardType = card.GetLocalInt("PAZAAK_CARD_TYPE");
 
             // Find the first available slot in the collection. 
             int index = 1;
-            while (collection.GetLocalInt("CARD_" + index) > 0)
+            while (collection.GetLocalInt("CARD_" + index) != 0)
             {
                 index++;
             }
 
             collection.SetLocalInt("CARD_" + index, CardType);
+            card.Destroy();
             
             return index;
         }
@@ -81,6 +82,7 @@ namespace SWLOR.Game.Server.Service
             // All good - extract it.
             NWItem card = _.CreateItemOnObject("pazaakcard", _.GetItemPossessor(collection));
             card.SetLocalInt("PAZAAK_CARD_TYPE", collection.GetLocalInt("CARD_" + index));
+            card.Name = "Pazaak Card (" + Display(collection.GetLocalInt("CARD_" + index)) + ")";
             collection.DeleteLocalInt("CARD_" + index);
             return;
         }
@@ -113,10 +115,22 @@ namespace SWLOR.Game.Server.Service
             return collection.GetLocalInt("DECK_" + index);
         }
 
-        public static PazaakGame GetCurrentGame(NWObject player)
+        public static PazaakGame GetCurrentGame(NWObject table)
         {
             // Return the game currently being played by player.  This allows them to be interrupted while playing and resume seamlessly. 
-            return ActiveGames[player];
+            if (ActiveGames == null) ActiveGames = new Dictionary<NWObject, PazaakGame>();
+
+            try
+            {
+                PazaakGame game = ActiveGames[table];
+                return game;
+            }
+            catch (System.Collections.Generic.KeyNotFoundException e)
+            {
+                // This table has no current game. 
+            }
+
+            return null;
         }
 
         public static PazaakGame StartGame(NWObject table, NWObject player1, NWObject player2)
@@ -134,6 +148,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void EndGame(NWObject table, PazaakGame game)
         {
+            if (ActiveGames == null) ActiveGames = new Dictionary<NWObject, PazaakGame>();
             ActiveGames.Remove(game.player1);
             ActiveGames.Remove(game.player2);
             ActiveGames.Remove(table);           

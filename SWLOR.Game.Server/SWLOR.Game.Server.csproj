@@ -1349,7 +1349,6 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
-    <Compile Include="Placeable\PazaakTable\OnUsed.cs" />
     <Compile Include="Service\PazaakService.cs" />
     <Compile Include="Quest\Contracts\IQuest.cs" />
     <Compile Include="Quest\Contracts\IQuestObjective.cs" />

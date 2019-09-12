@@ -13,9 +13,10 @@ namespace SWLOR.Game.Server.ValueObject
 {
     class PazaakGame
     {
+        private List<int> deck;
+
         public readonly NWObject player1;
         public readonly NWObject player2;
-        public readonly List<int> deck;
 
         // Track the score this round and across the game.
         public int player1Score;
@@ -149,6 +150,12 @@ namespace SWLOR.Game.Server.ValueObject
 
         public int DrawCard()
         {
+            if (deck.Count == 0)
+            {
+                deck = new List<int> { 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10 };
+                SpeakString("Deck empty! Reshuffling.");
+            }
+
             int card = RandomService.Random(deck.Count);
             int retVal = deck.ElementAt(card);
             deck.RemoveAt(card);
@@ -158,7 +165,13 @@ namespace SWLOR.Game.Server.ValueObject
         public void EndRound()
         {
             // Determine winner.
-            if (player1Score > 20)
+            if (player1Score > 20 && player2Score > 20)
+            {
+                // Set is tied.  Switch first player and reset.
+                if (startedThisRound == player1) startedThisRound = player2;
+                else startedThisRound = player1;
+            }
+            else if (player1Score > 20)
             {
                 player2Sets++;
                 startedThisRound = player2;

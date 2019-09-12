@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Conversation
 {
     class PazaakTable : ConversationBase
     {
+        PazaakGame game;
+
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -28,7 +30,6 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            player.SendMessage("DEBUG: Got response " + responseID.ToString());
             MainPageResponses(responseID);
         }
 
@@ -41,8 +42,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWObject table = NWGameObject.OBJECT_SELF;
             NWPlayer pc = GetPC();
-            PazaakGame game = PazaakService.GetCurrentGame(table);
-            pc.SendMessage("DEBUG: loading main page");
+            game = PazaakService.GetCurrentGame(table);
 
             if (game == null && table.GetLocalInt("IN_GAME") == 2)
             {
@@ -53,14 +53,24 @@ namespace SWLOR.Game.Server.Conversation
             // Check whether we have a game, or whether we should create one.
             if (table.GetLocalInt("IN_GAME") == 2)
             {
+                CheckEndRound(table);
+
                 if (game.nextTurn == pc)
                 {
-                    pc.SendMessage("DEBUG: In a game, PC's turn");
-                    BuildTurnOptions(pc, game);
+                    // Our turn.
+                    BuildTurnOptions(pc);
+                }
+                else if (game.player2.IsNPC)
+                {
+                    // NPC turn.  Handle some 
+                    DoNPCTurn(game);
+                    CheckEndRound(table);
+                    if (game.nextTurn == game.player2) DoNPCTurn(game);
+                    BuildTurnOptions(pc);
                 }
                 else
                 {
-                    pc.SendMessage("DEBUG: In a game, not PC's turn");
+                    // Other player turn.
                     SetPageHeader("MainPage", "It is not currently your turn.");
                     ClearPageResponses("MainPage");
                 }
@@ -68,27 +78,23 @@ namespace SWLOR.Game.Server.Conversation
             // Table is open for a second player.
             else if (table.GetLocalInt("IN_GAME") == 1)
             {
+                NWObject collection = pc.GetLocalObject("ACTIVE_COLLECTION");
+
                 if (GetName(table.GetLocalObject("PLAYER_1")) == pc.Name)
                 {
-                    pc.SendMessage("DEBUG: Waiting for an opponent");
                     SetPageHeader("MainPage", "You are waiting for an opponent here.  Or play against the host.");
                     ClearPageResponses("MainPage");
                     AddResponseToPage("MainPage", "Table host (NPC)");
-                    return;
                 }
-
-                NWObject collection = pc.GetLocalObject("ACTIVE_COLLECTION");
                 // Check that the player has an active Pazaak deck.
-                if (collection.IsValid)
+                else if (collection.IsValid)
                 {
-                    pc.SendMessage("DEBUG: May join game");
                     SetPageHeader("MainPage", GetName(table.GetLocalObject("PLAYER_1")) + " is waiting for an opponent.  Join game?");
                     ClearPageResponses("MainPage");
                     AddResponseToPage("MainPage", "Join game");
                 }
                 else
                 {
-                    pc.SendMessage("DEBUG: Need a collection");
                     SetPageHeader("MainPage", "Use your Pazaak Collection on this table to join the game.");
                     ClearPageResponses("MainPage");
                 }
@@ -100,7 +106,6 @@ namespace SWLOR.Game.Server.Conversation
                 // Check that the player has an active Pazaak deck.
                 if (collection.IsValid)
                 {
-                    pc.SendMessage("DEBUG: No game, open one");
                     table.SetLocalInt("IN_GAME", 1);
                     table.SetLocalObject("PLAYER_1", pc);
                     table.DeleteLocalObject("PLAYER_2");
@@ -112,14 +117,13 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else
                 {
-                    pc.SendMessage("DEBUG: No game, no collection");
                     SetPageHeader("MainPage", "Use your Pazaak Collection on this table to join the game.");
                     ClearPageResponses("MainPage");
                 }
             }
         }
 
-        private void BuildTurnOptions(NWPlayer pc, PazaakGame game)
+        private void BuildTurnOptions(NWPlayer pc)
         {
             // Draw a card.
             int score = pc == game.player1 ? game.player1Score : game.player2Score;
@@ -142,8 +146,13 @@ namespace SWLOR.Game.Server.Conversation
 
             string header = "Your score is at " + score + ". " + (bStand ? "The other player is standing. " : "") +
                 "What do you want to do?";
+            SpeakString(pc.Name + " draws a " + card + " from the deck.  Their score is now " + score);
 
-            header += "\n\n(Reminder: highest score under 20 wins, ending your turn at 20 wins you the round, ending your turn at 21+ loses you the round.  You may play up to one card from your hand each turn. A standing player does not get to play again, but ending your turn means you will have to draw at least one more card.)";
+            if (pc.GetLocalInt("PAZAAK_REMINDED") == 0)
+            {
+                pc.SendMessage("(Pazaak Rules Reminder: highest score under 21 wins, ending your turn at 21+ loses you the round.  You may play up to one card from your hand each turn. A standing player does not get to play again, but ending your turn means you will have to draw at least one more card.)");
+                pc.SetLocalInt("PAZAAK_REMINDED", 1);
+            }
 
             SetPageHeader("MainPage", header);
             ClearPageResponses("MainPage");
@@ -174,7 +183,7 @@ namespace SWLOR.Game.Server.Conversation
             var response = GetResponseByID("MainPage", responseID);
             NWObject table = NWGameObject.OBJECT_SELF;
             NWPlayer pc = GetPC();
-            PazaakGame game = PazaakService.GetCurrentGame(table);
+            game = PazaakService.GetCurrentGame(table);
 
             if (response.Text == "A player")
             {
@@ -183,16 +192,12 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (response.Text == "Table host (NPC)")
             {
-                pc.SendMessage("1");
-                NWCreature NPC = CreateObject(OBJECT_TYPE_CREATURE, "femalegambler", table.Location.Location);
-                pc.SendMessage("2");
+                NWCreature NPC = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, pc.Object, 1, CREATURE_TYPE_PLAYER_CHAR, FALSE); 
 
-                // NWCreature NPC = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, pc.Object, 1, CREATURE_TYPE_PLAYER_CHAR, FALSE); -- this call causes a segfault.
                 if (NPC.IsValid)
                 {
                     AssignCommand(NPC, () => { ActionMoveToObject(table); });
-                    pc.SendMessage("3");
-                    PazaakService.StartGame(table, pc, NPC);
+                    game = PazaakService.StartGame(table, pc, NPC);
                     table.SetLocalInt("IN_GAME", 2);
 
                     if (game.nextTurn == game.player2)
@@ -279,6 +284,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 pc.FloatingText(cardText + ". Your score is now " + score);
+                SpeakString(pc.Name + " plays a " + cardText + ", taking their score to " + score);
 
                 // Since we're having a turn, we can't be the one standing... 
                 bool bStand = game.player1Standing || game.player2Standing;
@@ -293,6 +299,9 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (response.Text == "End Turn" || response.Text == "Stand")
             {
+                // Whatever happens, end the dialog.
+                EndConversation();
+
                 // Process end turn responses, then do NPC turn if it's an NPC game.
                 if (response.Text == "Stand")
                 {
@@ -300,28 +309,36 @@ namespace SWLOR.Game.Server.Conversation
                     else game.player2Standing = true;
                 }
 
-                // Record that it is time for the next player to take their turn. 
-                game.nextTurn = pc == game.player1 ? game.player2 : game.player1;
-                
+                // Record that it is time for the next player to take their turn, unless they are standing. 
+                if (pc == game.player1 && !game.player2Standing) game.nextTurn = game.player2;
+                else if (pc == game.player2 && !game.player1Standing) game.nextTurn = game.player1;
+
                 // If both players are PCs, we shouldn't have to do anything more now.  But if we're playing with an NPC, now the NPC needs 
                 // to take their turn. 
-                if (!CheckEndGame(table, game) && game.player2.IsNPC && !game.player2Standing)
+                float delay = 1.0f;
+
+                if (!CheckEndRound(table) && game.player2.IsNPC && !game.player2Standing)
                 {
-                    DoNPCTurn(game);
+                    game = DoNPCTurn(game);
+
+                    while (game.player2.IsNPC && game.player1Standing && !game.player2Standing && !CheckEndRound(table, delay))
+                    {
+                        // PC is standing, so keep playing NPC turns until the round ends. 
+                        game = DoNPCTurn(game, delay);
+                        delay += 1.0f;
+                    }
                 }
 
-                CheckEndGame(table, game);
-
-                EndConversation();
+                CheckEndRound(table, delay);
             }
         }
 
-        private void DoNPCTurn(PazaakGame game)
+        private PazaakGame DoNPCTurn(PazaakGame game, float delay = 0.0f)
         {
             int card = game.DrawCard();
             game.player2Score += card;
             int score = game.player2Score;
-            DelayCommand(0.5f, () => { SpeakString(GetName(game.player2) + " plays a " + card + " from the deck.  Their score is now " + score); });
+            DelayCommand(0.5f + delay, () => { SpeakString(GetName(game.player2) + " draws a " + card + " from the deck.  Their score is now " + score); });
 
             // Decide what to do next.
             // If higher than 20, see if any cards in our hand will rescue us.
@@ -329,22 +346,25 @@ namespace SWLOR.Game.Server.Conversation
             // If the PC has stood and we are higher, stand.
             // If we have a card that will put us to 20, play it.
             // If the PC has stood and we have a card that will put us above them, play it.
-            // If we have 18 or more points, stand.
+            // If we have 18 or more points (and aren't losing), stand.
             // Else end turn. 
             bool bStand = false;
 
-            if (score > 20) PlayNPCCard(game);
+            if (score > 20) PlayNPCCard(delay);
             else if (score == 20) bStand = true;
             else if (game.player1Standing && score > game.player1Score) bStand = true;
-            else if (game.player1Standing && PlayNPCCard(game) > game.player1Score) bStand = true;
-            else if (PlayNPCCard(game) == 20) bStand = true;
-            else if (score >= 18) bStand = true;
+            else if (game.player1Standing && PlayNPCCard(delay) > game.player1Score) bStand = true;
+            else if (PlayNPCCard(delay) == 20) bStand = true;
+
+            if (game.player2Score >= 18 && game.player2Score >= game.player1Score) bStand = true;
 
             if (bStand) game.player2Standing = true;
-            game.nextTurn = game.player1;
+            if (!game.player1Standing) game.nextTurn = game.player1;
+
+            return game;
         }
 
-        private int PlayNPCCard(PazaakGame game)
+        private int PlayNPCCard(float delay)
         {
             // We'll call this method to do one of three things.
             // - If our score is over 20, rescue it to sub 20.
@@ -363,14 +383,16 @@ namespace SWLOR.Game.Server.Conversation
                     if (game.player2Score + adjust < 21)
                     {
                         game.player2Score += adjust;
-                        SpeakString(GetName(game.player2) + " plays " + PazaakService.Display(card) + " from hand.  Score is now " + game.player2Score);
+                        int score = game.player2Score;
+                        DelayCommand(1.0f + delay, () => { SpeakString(GetName(game.player2) + " plays " + PazaakService.Display(card) + " from hand.  Score is now " + score); });
                         game.player2SideDeck.Remove(card);
+                        break;
                     }
                 }
             }
             else
             {
-                int targetScore = game.player1Standing ? game.player1Score : 20;
+                int targetScore = game.player1Standing ? game.player1Score : 19;
 
                 foreach (int card in game.player2SideDeck)
                 {
@@ -379,21 +401,23 @@ namespace SWLOR.Game.Server.Conversation
                     if (card > 100 && card < 107) adjust = card - 100;
                     if (card < 0) continue;
 
-                    if (game.player2Score + adjust < 21 && game.player2Score + adjust >= targetScore)
+                    if (game.player2Score + adjust < 21 && game.player2Score + adjust > targetScore)
                     {
                         game.player2Score += adjust;
-                        SpeakString(GetName(game.player2) + " plays " + PazaakService.Display(card) + " from hand.  Score is now " + game.player2Score);
+                        int score = game.player2Score;
+                        DelayCommand(1.0f + delay, () => { SpeakString(GetName(game.player2) + " plays " + PazaakService.Display(card) + " from hand.  Score is now " + score); });
                         game.player2SideDeck.Remove(card);
+                        break;
                     }
                 }
             }
 
-
             return game.player2Score;
         }
 
-        private bool CheckEndGame(NWObject table, PazaakGame game)
+        private bool CheckEndRound(NWObject table, float delay = 0.0f)
         {
+            // SpeakString("DEBUG: Checking end round.  Player 1 standing? " + game.player1Standing + " Player 2 standing? " + game.player2Standing + " Scores: " + game.player1Score + "/" + game.player2Score);
             // If the game is already over, skip the rest.
             if (table.GetLocalInt("IN_GAME") == 0) return true;
 
@@ -403,20 +427,29 @@ namespace SWLOR.Game.Server.Conversation
 
                 if (game.player1Sets == 3)
                 {
-                    SpeakString(GetName(game.player1) + " wins!");
+                    DelayCommand(0.5f + delay, () =>
+                    {
+                        SpeakString(GetName(game.player1) + " wins, 3 sets to " + game.player2Sets + "!");
+                    });
                     PazaakService.EndGame(table, game);
                     table.DeleteLocalInt("IN_GAME");
                 }
                 else if (game.player2Sets == 3)
                 {
-                    SpeakString(GetName(game.player2) + " wins!");
+                    DelayCommand(1.5f + delay, () =>
+                    {
+                        SpeakString(GetName(game.player2) + " wins, 3 sets to " + game.player1Sets + "!");
+                    });
                     PazaakService.EndGame(table, game);
                     table.DeleteLocalInt("IN_GAME");
                 }
                 else
                 {
-                    SpeakString("New set beginning.  " + GetName(game.player1) + " has won " + game.player1Sets + " sets, " +
-                        GetName(game.player2) + " has won " + game.player2Sets + " sets. " + GetName(game.nextTurn) + " to play.");
+                    DelayCommand(1.5f + delay, () =>
+                    {
+                        SpeakString("New set beginning.  " + GetName(game.player1) + " has won " + game.player1Sets + " sets, " +
+   GetName(game.player2) + " has won " + game.player2Sets + " sets. " + GetName(game.nextTurn) + " to play.");
+                    });
                 }
 
                 return true;

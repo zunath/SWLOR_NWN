@@ -3,6 +3,8 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using static NWN._;
+
 /**
  * Pazaak item activation code, used for both individual cards and for card collections.
  * Does some basic policing and then starts the relevant dialogs.
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Item
 
         public int AnimationID()
         {
-            return 0;
+            return ANIMATION_LOOPING_GET_MID;            
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

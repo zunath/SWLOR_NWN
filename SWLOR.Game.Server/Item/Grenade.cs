@@ -26,10 +26,6 @@ namespace SWLOR.Game.Server.Item
             Effect damageEffect = damageEffect = EffectDamage(RandomService.D6(6), _.DAMAGE_TYPE_PIERCING);
             Effect impactEffect = null;
 
-            NWPlaceable tempPlaceable = CreateObject(OBJECT_TYPE_PLACEABLE, "grenade_obj001", user.Location);
-
-            EffectAreaOfEffect(1, "OnEnter", "OnHeartbeat", "OnExit");
-
             if (targetLocation == null) targetLocation = GetLocation(target);
 
             float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 20.0f;
@@ -41,17 +37,15 @@ namespace SWLOR.Game.Server.Item
                 impactEffect = EffectVisualEffect(VFX_FNF_FIREBALL);
             }
 
-            tempPlaceable.DelayAssignCommand(() =>
+            /* causes exception for some reason?
+            user.DelayAssignCommand(() =>
             {
-                ActionCastSpellAtLocation(974, targetLocation, METAMAGIC_ANY, FALSE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
-            }, delay + 0.1f);
+                PlaySound("grenadefire1");
+            }, 0.1f);
+            */
 
-            delay += 0.75f;
-
-            DelayCommand(delay+ 0.5f, () =>
-            {
-                DestroyObject(tempPlaceable);
-            });
+            //user.ClearAllActions();
+            //user.AssignCommand(()=>ActionCastFakeSpellAtLocation(974, targetLocation));
 
             user.DelayAssignCommand(() =>
             {
@@ -64,11 +58,11 @@ namespace SWLOR.Game.Server.Item
             }, delay + 0.5f);
 
             
-            user.DelayAssignCommand(
+            DelayCommand(delay+0.75f,
                          () =>
                          {
-                             DoImpact(user, targetLocation, RandomService.D6(4), 0, 0, DAMAGE_TYPE_FIRE, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE);
-                         }, delay + 0.75f);
+                             DoImpact((NWCreature) user, targetLocation, RandomService.D6(4), 0, 0, DAMAGE_TYPE_FIRE, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE);
+                         });
 
         }
 
@@ -79,12 +73,27 @@ namespace SWLOR.Game.Server.Item
             NWObject targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
             while (targetCreature.IsValid)
             {
-                ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damageEffect, targetCreature);
                 Console.WriteLine("Grenade hit on " + targetCreature.Name);
-                //creature.AssignCommand(() =>
-                //{
-                //    ApplyEffectToObject(_.DURATION_TYPE_INSTANT, EffectDamage(100, _.DAMAGE_TYPE_ELECTRICAL), targetCreature);
-                //});
+                creature.AssignCommand(() =>
+                {
+                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(nDamage, nDamageType), targetCreature);
+                });
+                // why doesn't this work???
+                /*
+                DelayCommand(delay, () =>
+                {
+                    ApplyEffectToObject(DURATION_TYPE_INSTANT, damageEffect, targetCreature);
+                });
+                */
+
+                /*
+                if (targetCreature != target)
+                {
+                    // Apply to nearest other creature, then exit loop.
+                    RunEffect(creature, target);
+                    break;
+                }
+                */
 
                 targetCreature = GetNextObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
             }

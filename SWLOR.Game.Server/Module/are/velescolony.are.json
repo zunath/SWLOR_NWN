@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 103
+    "value": 105
   },
   "Width": {
     "type": "int",

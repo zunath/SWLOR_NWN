@@ -440,6 +440,15 @@
     <Compile Include="Event\SWLOR\OnRequestCacheStats.cs" />
     <Compile Include="Item\SlugShake.cs" />
     <Compile Include="Item\Grenade.cs" />
+    <Compile Include="NWNX\FeedbackMessages.cs" />
+    <Compile Include="NWScript\grenade_gas_en.cs" />
+    <Compile Include="NWScript\grenade_incen_en.cs" />
+    <Compile Include="NWScript\grenade_gas_hb.cs" />
+    <Compile Include="NWScript\grenade_incen_hb.cs" />
+    <Compile Include="NWScript\grenade_bbomb_en.cs" />
+    <Compile Include="NWScript\grenade_bbomb_hb.cs" />
+    <Compile Include="NWScript\grenade_smoke_hb.cs" />
+    <Compile Include="NWScript\grenade_smoke_en.cs" />
     <Compile Include="NWNX\CombatLogMessageType.cs" />
     <Compile Include="NWNX\FeedbackMessageType.cs" />
     <Compile Include="NWNX\NWNXFeedback.cs" />

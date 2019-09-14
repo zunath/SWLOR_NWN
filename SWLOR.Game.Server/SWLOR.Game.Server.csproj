@@ -449,7 +449,7 @@
     <Compile Include="NWScript\grenade_bbomb_hb.cs" />
     <Compile Include="NWScript\grenade_smoke_hb.cs" />
     <Compile Include="NWScript\grenade_smoke_en.cs" />
-	<Compile Include="NWNX\CombatLogMessageType.cs" />
+    <Compile Include="NWNX\CombatLogMessageType.cs" />
     <Compile Include="NWNX\FeedbackMessageType.cs" />
     <Compile Include="NWNX\NWNXFeedback.cs" />
     <Compile Include="Service\FeedbackService.cs" />

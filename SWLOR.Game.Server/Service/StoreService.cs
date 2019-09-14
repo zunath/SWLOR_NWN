@@ -67,6 +67,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     CleanStore(store);
                 }
+
+                ticks = 0;
             }
 
             module.SetLocalInt("STORE_SERVICE_TICKS", ticks);

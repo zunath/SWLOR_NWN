@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 17.0
+    "value": 16.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -36
+    "value": -38
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -81,7 +81,7 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "raptorbite"
+          "value": "sandswimmerclaw"
         }
       },
       {
@@ -202,7 +202,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 16
+    "value": 25
   },
   "NoPermDeath": {
     "type": "byte",
@@ -496,6 +496,21 @@
   "SpecAbilityList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 90
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 10
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 4,
         "Spell": {

@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 15, 16, 17, 19, 21, 24, 25 };
                             break;
                         case BASE_ITEM_BATTLEAXE:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 19, 20, 21, 23, 24, 25 };
                             break;
                         // parts 20 (lightfoil blade) and 24 (wind fire wheel?) excluded
                         case BASE_ITEM_BASTARDSWORD:
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
                             break;
                         case BASE_ITEM_DOUBLEAXE:
-                            parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14 };
+                            parts = new[] { 1, 2, 3, 6, 8, 11, 13, 14 };
                             break;
                         case BASE_ITEM_TWOBLADEDSWORD:
                             parts = new[] { 1, 2, 3 };
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // Light Crossbow = Blaster Rifle
                         case BASE_ITEM_LIGHTCROSSBOW:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 };
                             break;
                         case BASE_ITEM_THROWINGAXE:
                             parts = new[] { 1, 2, 3, 4 };
@@ -333,10 +333,10 @@ namespace SWLOR.Game.Server.Conversation
                     switch (model.TargetItem.BaseItemType)
                     {
                         case BASE_ITEM_GREATAXE:
-                            parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 25 };
                             break;
                         case BASE_ITEM_BATTLEAXE:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 15, 16, 18, 24 };
                             break;
                         case BASE_ITEM_BASTARDSWORD:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 20, 21, 22 };
                             break;
                         case BASE_ITEM_GREATSWORD:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_LONGSWORD:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25 };
@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_CLUB:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23, 25 };
                             break;
                         case BASE_ITEM_LIGHTMACE:
                             parts = new[] { 1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 25 };
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 6, 8, 11, 12 };
                             break;
                         case BASE_ITEM_TWOBLADEDSWORD:
-                            parts = new[] { 1, 2, 3, 5 };
+                            parts = new[] { 1, 2, 3 };
                             break;
                         case BASE_ITEM_KUKRI:
                             parts = new[] { 1 };
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 15, 16, 17, 18, 24, 25 };
                             break;
                         case BASE_ITEM_BATTLEAXE:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 24 };
                             break;
                         case BASE_ITEM_BASTARDSWORD:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 24, 25 };
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 20, 21, 22 };
                             break;
                         case BASE_ITEM_GREATSWORD:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_LONGSWORD:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Conversation
                             parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 21, 22, 23, 24, 25 };
                             break;
                         case BASE_ITEM_CLUB:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 13, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 13, 21, 22, 23, 25 };
                             break;
                         case BASE_ITEM_LIGHTMACE:
                             parts = new[] { 1, 2, 3, 4, 5, 11, 25 };
@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // Light Crossbow = Blaster Rifle
                         case BASE_ITEM_LIGHTCROSSBOW:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
                             break;
                         case BASE_ITEM_THROWINGAXE:
                             parts = new[] { 1, 2, 3, 4 };

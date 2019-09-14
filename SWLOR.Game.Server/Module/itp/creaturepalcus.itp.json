@@ -5007,6 +5007,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Militia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tat_militia02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 4.0
                     },
                     "FACTION": {
@@ -5872,6 +5891,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "utilitydroid6"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 75.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assault Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithpatroldroi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_troop"
                     }
                   },
                   {
@@ -6913,6 +6970,234 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 248.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord Nephthyra"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordneph"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 225.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord Valerius"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordvalerius"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Agent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 21.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Agent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Engineer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Engineer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector019"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Pilot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector020"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Pilot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Recruit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Recruit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Recruit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nova Recruit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thedirector015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 3.0
                     },
                     "FACTION": {
@@ -6926,6 +7211,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ormandfosz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 69.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Prima"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "primadonna"
                     }
                   },
                   {
@@ -7078,6 +7382,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zhettathorne"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 152.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zyl"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "generalyaan"
                     }
                   }
                 ]

@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Item
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            return 0.0f;
+            return 6.0f;
         }
 
         public bool FaceTarget()
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Item
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            return false;
+            return true;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)

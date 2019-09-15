@@ -23,20 +23,23 @@ namespace SWLOR.Game.Server.Item
 
             if (perkLevel < 5)
             {
-                unlockTime = unlockTime.AddSeconds(6);
+                //unlockTime = unlockTime.AddSeconds(6);
+                unlockTime = unlockTime.AddMinutes(1);
             }
             else if (perkLevel < 10)
             {
-                unlockTime = unlockTime.AddSeconds(3);
+                //unlockTime = unlockTime.AddSeconds(3);
+                unlockTime = unlockTime.AddMinutes(1);
             }
             else
             {
-                unlockTime = unlockTime.AddSeconds(2);
+                //unlockTime = unlockTime.AddSeconds(2);
+                unlockTime = unlockTime.AddMinutes(1);
             }
 
             SetLocalString(user, "GRENADE_UNLOCKTIME", unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("Grenade Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
 
             return null;
         }
@@ -64,14 +67,16 @@ namespace SWLOR.Game.Server.Item
             {
                 unlockDateTime = DateTime.ParseExact(GetLocalString(user, "GRENADE_UNLOCKTIME"), "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
             }
-            Console.WriteLine("ApplyEffect -  Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("ApplyEffect -  Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("ApplyEffects -  Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("ApplyEffects -  Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+
+            Console.WriteLine("DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
 
             // Check if we've passed the unlock date. Exit early if we have not.
-            if (unlockDateTime > now)
+            if (DateTime.Compare(unlockDateTime,now) > 0)
             {
                 string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                Console.WriteLine("ApplyEffect - That ability can be used in " + timeToWait + ".");                
+                Console.WriteLine("ApplyEffects - That ability can be used in " + timeToWait + ".");                
             }
 
             int roll = RandomService.D100(1);
@@ -381,14 +386,15 @@ namespace SWLOR.Game.Server.Item
             {
                 unlockDateTime = DateTime.ParseExact(GetLocalString(user, "GRENADE_UNLOCKTIME"), "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
             }
-            Console.WriteLine("Grenade Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("Grenade Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("IsValidTarget - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("IsValidTarget - Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("IsValidTarget - DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
 
             // Check if we've passed the unlock date. Exit early if we have not.
-            if (unlockDateTime > now)
+            if (DateTime.Compare(unlockDateTime,now) > 0)
             {                
                 string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                Console.WriteLine("That ability can be used in " + timeToWait + ".");
+                Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
                 return "That ability can be used in " + timeToWait + ".";
             }
             else

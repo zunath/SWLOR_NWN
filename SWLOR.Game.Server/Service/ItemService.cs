@@ -150,12 +150,24 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // NOTE - these checks are duplicated in FinishActionItem.  Keep both in sync.
             float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
             if (maxDistance > 0.0f)
             {
-                if (target.IsValid &&
-                    (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                    user.Area.Resref != target.Area.Resref))
+                NWObject owner = GetItemPossessor(target);
+
+                if (target.IsValid && owner.IsValid)
+                {
+                    // We are okay - we have targeted an item in our inventory (we can't target someone
+                    // else's inventory, so no need to actually check distance).
+                }
+                else if (target.Object == NWGameObject.OBJECT_SELF)
+                {
+                    // Also okay.
+                }
+                else if (target.IsValid && 
+                         (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
+                          user.Area.Resref != target.Area.Resref))
                 {
                     user.SendMessage("Your target is too far away.");
                     return;

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Scripts.Delayed
 {
@@ -38,7 +39,18 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 float maxDistance = actionItem.MaxDistance(data.Player, data.Item, data.Target, data.TargetLocation);
                 if (maxDistance > 0.0f)
                 {
-                    if (data.Target.IsValid &&
+                    NWObject owner = GetItemPossessor(data.Target);
+
+                    if (data.Target.IsValid && owner.IsValid)
+                    {
+                        // We are okay - we have targeted an item in our inventory (we can't target someone
+                        // else's inventory, so no need to actually check distance).
+                    }
+                    else if (data.Target.Object == NWGameObject.OBJECT_SELF)
+                    {
+                        // Also okay.
+                    }
+                    else if(data.Target.IsValid &&
                         (_.GetDistanceBetween(data.Player, data.Target) > maxDistance ||
                         data.Player.Area.Resref != data.Target.Area.Resref))
                     {

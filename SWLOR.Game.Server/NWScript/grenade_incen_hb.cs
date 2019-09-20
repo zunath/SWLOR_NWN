@@ -1,4 +1,5 @@
 ﻿using NWN;
+using System;
 using static NWN._;
 using SWLOR.Game.Server.GameObject;
 
@@ -11,14 +12,14 @@ namespace NWN.Scripts
     {
         // ReSharper disable once UnusedMember.Local
         private static void Main()
-        {
-            NWObject oTarget;
-            oTarget = GetFirstInPersistentObject();
+        {            
+            NWObject oTarget;            
+            oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
             while (GetIsObjectValid(oTarget) == TRUE)
-            {
+            {         
                 SWLOR.Game.Server.Item.Grenade.grenadeAoe(oTarget, "INCENDIARY");
                 //Get the next target in the AOE
-                oTarget = GetNextInPersistentObject();
+                oTarget = GetNextInPersistentObject(NWGameObject.OBJECT_SELF);
             }
         }
     }

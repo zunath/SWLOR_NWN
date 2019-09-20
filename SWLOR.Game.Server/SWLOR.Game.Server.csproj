@@ -359,6 +359,8 @@
     <Compile Include="Conversation\MessageBoard.cs" />
     <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
+    <Compile Include="Conversation\PazaakCollection.cs" />
+    <Compile Include="Conversation\PazaakTable.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
     <Compile Include="Conversation\ApartmentRental.cs" />
@@ -556,6 +558,7 @@
     <Compile Include="Enumeration\ForceBalanceType.cs" />
     <Compile Include="Enumeration\GuildType.cs" />
     <Compile Include="Enumeration\MarketBrowseMode.cs" />
+    <Compile Include="Enumeration\PazaakCard.cs" />
     <Compile Include="Enumeration\Planet.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
@@ -597,6 +600,7 @@
     <Compile Include="Event\Store\OnOpenStore.cs" />
     <Compile Include="Event\Store\on_close_store.cs" />
     <Compile Include="Event\Store\on_open_store.cs" />
+    <Compile Include="Item\Pazaak.cs" />
     <Compile Include="Event\SWLOR\OnAbilityConcentration.cs" />
     <Compile Include="Event\SWLOR\OnAreaInstanceCreated.cs" />
     <Compile Include="Event\SWLOR\OnAreaInstanceDestroyed.cs" />
@@ -1354,6 +1358,7 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
+    <Compile Include="Service\PazaakService.cs" />
     <Compile Include="Quest\Contracts\IQuest.cs" />
     <Compile Include="Quest\Contracts\IQuestObjective.cs" />
     <Compile Include="Quest\Contracts\IQuestPrerequisite.cs" />
@@ -1525,6 +1530,7 @@
     <Compile Include="ValueObject\EffectiveItemStats.cs" />
     <Compile Include="ValueObject\StoredItemPropertyDetail.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
+    <Compile Include="ValueObject\PazaakGame.cs" />
     <Compile Include="ValueObject\PCMarketData.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />
     <Compile Include="ValueObject\PCCraftingData.cs" />

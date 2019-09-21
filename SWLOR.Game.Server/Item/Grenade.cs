@@ -54,9 +54,10 @@ namespace SWLOR.Game.Server.Item
             if (GetIsObjectValid(target) == TRUE) targetLocation = GetLocation(target);
             string grenadeType = item.GetLocalString("TYPE");
             Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
+            Location originalLocation = targetLocation;
 
             int roll = RandomService.D100(1);
-
+            
             SendMessageToPC(user, roll + " vs. DC " + (100 - skillLevel));
             if (roll < (100 - skillLevel))
             {
@@ -66,9 +67,12 @@ namespace SWLOR.Game.Server.Item
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
                     targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
-                    while (GetSurfaceMaterial(targetLocation) == FALSE ||
-                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE)
+                    int count = 0;
+                    while ((GetSurfaceMaterial(targetLocation) == FALSE ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE) &&
+                           count < 10)
                     {
+                        count += 1;
                         targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                     RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     }
@@ -79,12 +83,21 @@ namespace SWLOR.Game.Server.Item
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
                     targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
-                    while (GetSurfaceMaterial(targetLocation) == FALSE ||
-                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE)
+                    int count = 0;
+                    while ((GetSurfaceMaterial(targetLocation) == FALSE ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE) &&
+                           count < 10)
                     {
+                        count += 1;
                         targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                     RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     }
+                }
+
+                if (GetSurfaceMaterial(targetLocation) == FALSE ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE)
+                {
+                    targetLocation = originalLocation;
                 }
             }
 

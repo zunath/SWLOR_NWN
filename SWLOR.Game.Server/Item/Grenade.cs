@@ -154,14 +154,15 @@ namespace SWLOR.Game.Server.Item
             }
 
             float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
+            delay += 0.4f; // added for animation
             user.ClearAllActions();
-            user.AssignCommand(() => _.ActionPlayAnimation(32));
+            //user.AssignCommand(() => _.ActionPlayAnimation(32));
             //user.DelayAssignCommand(() => _.ActionPlayAnimation(32), 0.0f);
             user.AssignCommand(() =>
             {
-                //ActionPlayAnimation(32);
-                //ActionCastSpellAtLocation(spellId, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
-                ActionCastFakeSpellAtLocation(spellId, targetLocation, PROJECTILE_PATH_TYPE_BALLISTIC);
+                ActionPlayAnimation(32);
+                ActionCastSpellAtLocation(spellId, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
+                //ActionCastFakeSpellAtLocation(spellId, targetLocation, PROJECTILE_PATH_TYPE_BALLISTIC);
             });            
 
             if (soundName != null)

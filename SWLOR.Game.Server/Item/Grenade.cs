@@ -16,47 +16,11 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            int perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
-
-            DateTime now = DateTime.UtcNow;
-            DateTime unlockTime = now;
-
-            if (perkLevel < 5)
-            {
-                //unlockTime = unlockTime.AddSeconds(6);
-                unlockTime = unlockTime.AddMinutes(1);
-            }
-            else if (perkLevel < 10)
-            {
-                //unlockTime = unlockTime.AddSeconds(3);
-                unlockTime = unlockTime.AddMinutes(1);
-            }
-            else
-            {
-                //unlockTime = unlockTime.AddSeconds(2);
-                unlockTime = unlockTime.AddMinutes(1);
-            }
-
-            SetLocalString(user, "GRENADE_UNLOCKTIME", unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-
             return null;
         }
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            Effect impactEffect = null;
-            int spellId = SPELL_GRENADE_FIRE;
-            string soundName = null;
-            int perkLevel = 1 + PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
-            int skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Throwing);
-            if (perkLevel == 0) perkLevel += 1;
-
-            if (GetIsObjectValid(target) == TRUE) targetLocation = GetLocation(target);
-            string grenadeType = item.GetLocalString("TYPE");
-            Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
-
             DateTime now = DateTime.UtcNow;
             DateTime unlockDateTime = now;
             if (string.IsNullOrWhiteSpace(GetLocalString(user, "GRENADE_UNLOCKTIME")))
@@ -67,17 +31,29 @@ namespace SWLOR.Game.Server.Item
             {
                 unlockDateTime = DateTime.ParseExact(GetLocalString(user, "GRENADE_UNLOCKTIME"), "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
             }
-            Console.WriteLine("ApplyEffects -  Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("ApplyEffects -  Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-
-            Console.WriteLine("DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
+            Console.WriteLine("IsValidTarget - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("IsValidTarget - Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("IsValidTarget - DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
 
             // Check if we've passed the unlock date. Exit early if we have not.
-            if (DateTime.Compare(unlockDateTime,now) > 0)
+            if (DateTime.Compare(unlockDateTime, now) > 0 || unlockDateTime > now)
             {
                 string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                Console.WriteLine("ApplyEffects - That ability can be used in " + timeToWait + ".");                
+                Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
+                SendMessageToPC(user, "That ability can be used in " + timeToWait + ".");
+                return;
             }
+
+            Effect impactEffect = null;
+            int spellId = 0;
+            string soundName = null;
+            int perkLevel = 1 + PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
+            int skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Throwing);
+            if (perkLevel == 0) perkLevel += 1;
+
+            if (GetIsObjectValid(target) == TRUE) targetLocation = GetLocation(target);
+            string grenadeType = item.GetLocalString("TYPE");
+            Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
 
             int roll = RandomService.D100(1);
 
@@ -88,14 +64,14 @@ namespace SWLOR.Game.Server.Item
                 {
                     SendMessageToPC(user, "You threw... poorly.");
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
-                    targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, (RandomService.D6(4) - 10) * 1.0f,
+                    targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                 }
                 else
                 {
                     SendMessageToPC(user, "Your throw was a bit off the mark.");
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
-                    targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, (RandomService.D6(4) - 10) * 1.0f,
+                    targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                 }
             }
@@ -104,58 +80,66 @@ namespace SWLOR.Game.Server.Item
             {
                 case "FRAG":                    
                     impactEffect = EffectVisualEffect(VFX_FNF_FIREBALL);
+                    // force a specific spell id (for projectile model) for this grenade.
                     spellId = 974;
                     soundName = "explosion2";                    
                     break;
                 case "CONCUSSION":
                     impactEffect = EffectVisualEffect(VFX_FNF_SOUND_BURST_SILENT);
                     impactEffect = EffectLinkEffects(EffectVisualEffect(VFX_FNF_SCREEN_SHAKE), impactEffect);
-                    spellId = 974;
+                    //spellId = 974;
                     soundName = "explosion1";
                     break;
                 case "FLASHBANG":
                     impactEffect = EffectVisualEffect(VFX_FNF_MYSTICAL_EXPLOSION);
-                    spellId = 974;
+                    //spellId = 974;
                     soundName = "explosion1";
                     break;
                 case "ION":
                     impactEffect = EffectVisualEffect(VFX_FNF_ELECTRIC_EXPLOSION);
-                    spellId = 974;
+                    //spellId = 974;
                     soundName = "explosion1";
                     break;
                 case "BACTA":
                     impactEffect = EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE);
-                    spellId = 974;
+                    //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 case "ADHESIVE":
                     impactEffect = EffectVisualEffect(VFX_FNF_DISPEL_GREATER);
-                    spellId = 974;
+                    //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 case "SMOKE":
                     impactEffect = null;
-                    spellId = 974;
+                    //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 case "BACTABOMB":
                     impactEffect = null;
-                    spellId = 974;
+                    //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 case "INCENDIARY":
                     impactEffect = null;
-                    spellId = 974;
+                    //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 case "GAS":
                     impactEffect = null;                    
-                    spellId = 974;
+                    //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(grenadeType));
             }           
+
+            if (spellId == 0)
+            {
+                // start 974 through 979 in spells.2da for grenades
+                // lets randomly assign a projectile appearance for flavor?
+                spellId = RandomService.D6(1) + 973;
+            }
 
             float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
             user.ClearAllActions();
@@ -185,6 +169,29 @@ namespace SWLOR.Game.Server.Item
                          {
                              DoImpact(user, targetLocation, grenadeType, perkLevel, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE);
                          }, delay + 0.75f);
+
+
+            perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
+
+            now = DateTime.UtcNow;
+            DateTime unlockTime = now;
+
+            if (perkLevel < 5)
+            {
+                unlockTime = unlockTime.AddSeconds(6);
+            }
+            else if (perkLevel < 10)
+            {
+                unlockTime = unlockTime.AddSeconds(3);                
+            }
+            else
+            {
+                unlockTime = unlockTime.AddSeconds(2);
+            }
+
+            SetLocalString(user, "GRENADE_UNLOCKTIME", unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
 
         }
 
@@ -376,31 +383,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            DateTime now = DateTime.UtcNow;
-            DateTime unlockDateTime = now;
-            if (string.IsNullOrWhiteSpace(GetLocalString(user, "GRENADE_UNLOCKTIME")))
-            {
-                unlockDateTime = unlockDateTime.AddSeconds(-1);
-            }
-            else
-            {
-                unlockDateTime = DateTime.ParseExact(GetLocalString(user, "GRENADE_UNLOCKTIME"), "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
-            }
-            Console.WriteLine("IsValidTarget - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("IsValidTarget - Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("IsValidTarget - DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
-
-            // Check if we've passed the unlock date. Exit early if we have not.
-            if (DateTime.Compare(unlockDateTime,now) > 0)
-            {                
-                string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
-                return "That ability can be used in " + timeToWait + ".";
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public bool AllowLocationTarget()

@@ -106,6 +106,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             player.AssignCommand(() => _.ActionPlayAnimation(30, 2));
 
+            /*
             // reset phenotype
                 player.DelayAssignCommand(() =>
                 {
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 {
                     _.SetPhenoType(iPheno, player);
                 }, 2.5f);
-
+                */
 
             // Handle effects for differing spellTier values
             switch (spellTier)

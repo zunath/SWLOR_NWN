@@ -268,6 +268,7 @@
     <Compile Include="Caching\SpawnObjectCache.cs" />
     <Compile Include="Caching\SpawnObjectTypeCache.cs" />
     <Compile Include="Caching\StructureModeCache.cs" />
+    <Compile Include="ChatCommand\Crawl.cs" />
     <Compile Include="ChatCommand\AddDM.cs" />
     <Compile Include="ChatCommand\Blueprints.cs" />
     <Compile Include="ChatCommand\Bored.cs" />

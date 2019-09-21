@@ -66,6 +66,12 @@ namespace SWLOR.Game.Server.Item
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
                     targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                    while (GetSurfaceMaterial(targetLocation) == FALSE ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE)
+                    {
+                        targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
+                                                                    RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                    }
                 }
                 else
                 {
@@ -73,6 +79,12 @@ namespace SWLOR.Game.Server.Item
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
                     targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                    while (GetSurfaceMaterial(targetLocation) == FALSE ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE)
+                    {
+                        targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
+                                                                    RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                    }
                 }
             }
 
@@ -143,10 +155,14 @@ namespace SWLOR.Game.Server.Item
 
             float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
             user.ClearAllActions();
+            user.AssignCommand(() => _.ActionPlayAnimation(32));
+            //user.DelayAssignCommand(() => _.ActionPlayAnimation(32), 0.0f);
             user.AssignCommand(() =>
             {
-                ActionCastSpellAtLocation(spellId, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
-            });
+                //ActionPlayAnimation(32);
+                //ActionCastSpellAtLocation(spellId, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
+                ActionCastFakeSpellAtLocation(spellId, targetLocation, PROJECTILE_PATH_TYPE_BALLISTIC);
+            });            
 
             if (soundName != null)
             {

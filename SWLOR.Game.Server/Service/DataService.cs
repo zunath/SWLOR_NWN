@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Service
         public static PCMarketListingCache PCMarketListing { get; } = new PCMarketListingCache();
         public static PCObjectVisibilityCache PCObjectVisibility { get; } = new PCObjectVisibilityCache();
         public static PCOutfitCache PCOutfit { get; } = new PCOutfitCache();
+        public static PCHelmetCache PCHelmet { get; } = new PCHelmetCache();
         public static PCOverflowItemCache PCOverflowItem { get; } = new PCOverflowItemCache();
         public static PCPerkCache PCPerk { get; } = new PCPerkCache();
         public static PCPerkRefundCache PCPerkRefund { get; } = new PCPerkRefundCache();
@@ -241,6 +242,7 @@ namespace SWLOR.Game.Server.Service
             LoadCache<PCMapProgression>();
             LoadCache<PCObjectVisibility>();
             LoadCache<PCOutfit>();
+            LoadCache<PCHelmet>();
             LoadCache<PCOverflowItem>();
             LoadCache<PCPerk>();
             LoadCache<PCQuestItemProgress>();

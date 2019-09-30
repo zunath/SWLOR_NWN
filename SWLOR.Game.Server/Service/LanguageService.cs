@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             lastSkillUp = (lastSkillUp << 32) | (uint)lastSkillUpLow;
             long differenceInSeconds = (now - lastSkillUp) / 10000000;
 
-            if (differenceInSeconds / 60 >= 5)
+            if (differenceInSeconds / 60 >= 2)
             {
                 int amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.

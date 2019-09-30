@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Service
                 int perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.ShieldProficiency);
                 float perkBonus = 0.02f * perkLevel;
 
-                // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
-                reduction = (0.1 + 0.01 * shield.AC / 3) + perkBonus;
+                // DI = 10% + 1% / 3 AC bonuses on the shield + Item AC(Damage Immunity Bonus) + 2% per perk bonus. 
+                reduction = (0.1 + 0.01 * shield.AC / 3) + (shield.GetLocalInt("CUSTOM_ITEM_PROPERTY_AC") * .01) + perkBonus;
             }
             // Calculate Absorb Energy concentration effect reduction.
             if (concentrationEffect.Type == PerkType.AbsorbEnergy)
@@ -205,7 +205,14 @@ namespace SWLOR.Game.Server.Service
                     _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
                 }
             }
-
+            NWPlayer player = NWGameObject.OBJECT_SELF;
+            if (target.IsPC)
+            {
+                if (CustomEffectService.GetCurrentStanceType(player) == CustomEffectType.ShieldOath)
+                {
+                    reduction += 0.2f;
+                }
+            }
             // No reduction found. Bail out early.
             if (reduction <= 0.0f) return;
 

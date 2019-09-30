@@ -227,21 +227,70 @@ namespace SWLOR.Game.Server.Service
         public static float CalculateCraftingDelay(NWPlayer oPC, int skillID)
         {
             int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
-            PerkType perkType;
             float adjustedSpeed = 1.0f;
             SkillType skillType = (SkillType)skillID;
+            PerkType perkType = PerkType.SpeedyCrafting;
 
-            // Identify which perk to use for this skill.
-            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyWeaponsmith;
-            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
-            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
-            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
-            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
-            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
-            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
+
+            // Check for Craft Skill Type then check for Speedy Perks.
+            
+
+            if (skillType == SkillType.Weaponsmith)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyWeaponsmith))
+                {
+                    perkType = PerkType.SpeedyWeaponsmith;
+                }
+            }
+
+            else if (skillType == SkillType.Armorsmith)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyArmorsmith))
+                {
+                    perkType = PerkType.SpeedyArmorsmith;
+                }
+            }
+
+            else if (skillType == SkillType.Cooking)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCooking))
+                {
+                    perkType = PerkType.SpeedyCooking;
+                }
+            }
+
+            else if (skillType == SkillType.Engineering)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyEngineering))
+                {
+                    perkType = PerkType.SpeedyEngineering;
+                }
+            }
+            else if (skillType == SkillType.Fabrication)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyFabrication))
+                {
+                    perkType = PerkType.SpeedyFabrication;
+                }
+            }
+            else if (skillType == SkillType.Medicine)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyMedicine))
+                {
+                    perkType = PerkType.SpeedyMedicine;
+                }
+            }
+            else if (skillType == SkillType.Harvesting)
+            {
+                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyHarvester))
+                {
+                    perkType = PerkType.SpeedyHarvester;
+                }
+            }
             else return BaseCraftDelay;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
+           
 
             // Each perk level reduces crafting speed by 10%.
             switch (perkLevel)

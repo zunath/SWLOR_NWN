@@ -90,7 +90,7 @@
         ScavengingExpert = 85,
         ForceInsight = 86,
         WeaponFocusLightsaber = 87,
-        // 88 is free
+        SpeedyCrafting = 88,
         Dash = 89,
         CarefulScavenger = 90,
         FarmingEfficiency = 91,

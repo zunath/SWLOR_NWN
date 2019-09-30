@@ -1313,7 +1313,7 @@ namespace SWLOR.Game.Server.Service
                                       if (x == null) return 0;
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                                       return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
+                                  }) * 0.1f;
 
             var fuelMax = towerStructure.Storage;
 
@@ -1346,7 +1346,7 @@ namespace SWLOR.Game.Server.Service
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
 
                                       return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
+                                  }) * 0.1f;
 
             var fuelMax = towerBaseStructure.ReinforcedStorage;
 
@@ -1380,7 +1380,7 @@ namespace SWLOR.Game.Server.Service
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
 
                                       return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
+                                  }) * 0.03f;
 
             var resourceMax = towerBaseStructure.ResourceStorage;
 

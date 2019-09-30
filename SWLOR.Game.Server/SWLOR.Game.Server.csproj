@@ -456,6 +456,7 @@
     <Compile Include="NWScript\grenade_bbomb_hb.cs" />
     <Compile Include="NWScript\grenade_smoke_hb.cs" />
     <Compile Include="NWScript\grenade_smoke_en.cs" />
+    <Compile Include="Perk\General\SpeedyCrafting.cs" />
     <Compile Include="Service\HoloComService.cs" />
     <Compile Include="Service\VectorService.cs" />
     <Compile Include="SpawnRule\ColoredCrystalSpawnRule.cs" />
@@ -855,6 +856,8 @@
     <EmbeddedResource Include="Data\Migrations\2019-08-27.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-09-21.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-09-21.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-09-23.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-09-23.2.sql" />
     <Content Include="Module\**\*.json" />
     <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\ScriptItemEvent.cs" />

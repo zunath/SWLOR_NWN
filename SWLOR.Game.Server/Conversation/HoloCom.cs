@@ -78,6 +78,10 @@ namespace SWLOR.Game.Server.Conversation
                 message += " " + ColorTokenService.Green("Maybe you should answer it.");
             }            
             SendMessageToPC(receiver, message);
+            if (HoloComService.GetCallAttempt(sender) % 5 == 0)
+            {
+                FloatingTextStringOnCreature(message, receiver);
+            }
 
             if (HoloComService.GetCallAttempt(sender) <= 15)
             {

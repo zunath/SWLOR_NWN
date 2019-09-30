@@ -109,6 +109,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
                         }
                     }
+                    else
+                    {
+                        creature.SendMessage("Confusion failed.");
+                    }
                     break;
                 case 2:
                     NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
@@ -135,6 +139,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 SkillService.RegisterPCToNPCForSkill(creature.Object, targetCreature, SkillType.ForceAlter);
                             }
+                        }
+                        else
+                        {
+                            creature.SendMessage("Confusion failed.");
                         }
 
                         targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);

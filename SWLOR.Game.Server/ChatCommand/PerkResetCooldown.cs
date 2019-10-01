@@ -21,9 +21,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            var now = DateTime.UtcNow;
             Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
-            dbPlayer.DatePerkRefundAvailable = null;
+            dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             NWPlayer targetPlayer = target.Object;
             user.SendMessage("You have reset" + target.Name + "'s refund cooldown.");

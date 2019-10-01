@@ -303,6 +303,7 @@
     <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\GetPlot.cs" />
     <Compile Include="ChatCommand\GetXPBonus.cs" />
+    <Compile Include="ChatCommand\PerkResetCooldown.cs" />
     <Compile Include="ChatCommand\RemoveDM.cs" />
     <Compile Include="ChatCommand\SetForceSpecialization.cs" />
     <Compile Include="ChatCommand\GiveRPXP.cs" />

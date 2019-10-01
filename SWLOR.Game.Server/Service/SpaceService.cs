@@ -1055,14 +1055,14 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var encounter in encounters)
             {
-                LoggingService.Trace(TraceComponent.Space, "Found encounter: " + encounter.TypeID + " with base chance " + encounter.Chance);
+                LoggingService.Trace(TraceComponent.Space, "Found encounter: " + encounter.Type + " with base chance " + encounter.Chance);
 
-                if (encounter.TypeID == 1 || encounter.TypeID == 4)
+                if (encounter.Type == 1 || encounter.Type == 4)
                 {
                     encounter.Chance += PerkService.GetCreaturePerkLevel(player, PerkType.Hunter);
                     encounter.Chance -= PerkService.GetCreaturePerkLevel(player, PerkType.Sneak);
                 }
-                else if (encounter.TypeID == 3)
+                else if (encounter.Type == 3)
                 {
                     encounter.Chance += PerkService.GetCreaturePerkLevel(player, PerkType.Scavenger);
                 }
@@ -1080,7 +1080,7 @@ namespace SWLOR.Game.Server.Service
                 if (random < encounter.Chance)
                 {
                     // Process the encounter.
-                    if (encounter.TypeID == 1 || encounter.TypeID == 4)
+                    if (encounter.Type == 1 || encounter.Type == 4)
                     {
                         // For now, do pirates (4) instead of customs (1).
                         string resref = _.d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
@@ -1089,7 +1089,7 @@ namespace SWLOR.Game.Server.Service
                         pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTable);
                         // TODO - play proximity alert sound.
                     }
-                    else if (encounter.TypeID == 2)
+                    else if (encounter.Type == 2)
                     {
                         // Asteroid!
                         if (DoPilotingSkillCheck(player, encounter.Difficulty))
@@ -1124,7 +1124,7 @@ namespace SWLOR.Game.Server.Service
                             DoImpactFeedback(ship, "Something hit the hull! Hull points: " + (targetHP) + "/" + player.GetLocalInt("MAX_HP"));
                         }
                     }
-                    else if (encounter.TypeID == 3)
+                    else if (encounter.Type == 3)
                     { 
                         // Salvage.
                         if (DoPilotingSkillCheck(player, encounter.Difficulty))

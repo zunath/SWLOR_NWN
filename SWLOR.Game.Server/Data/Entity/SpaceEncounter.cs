@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Planet { get; set; }
-        public int Type { get; set; }
+        public int TypeID { get; set; }
         public int Chance { get; set; }
         public int Difficulty { get; set; }
         public int LootTable { get; set; }
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
             {
                 ID = ID,
                 Planet = Planet,
-                Type = Type,
+                TypeID = TypeID,
                 Chance = Chance,
                 Difficulty = Difficulty,
                 LootTable = LootTable

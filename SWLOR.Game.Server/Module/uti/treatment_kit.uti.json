@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Removes poison and disease from your target. Use speed is increased based on your Medicine rank."
+      "0": "Removes poison, disease and ability drains from your target. Use speed is increased based on your Medicine rank."
     }
   },
   "Description": {

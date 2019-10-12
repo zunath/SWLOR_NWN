@@ -18381,11 +18381,242 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Adhesive Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_adhes002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adhesive Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_adhes003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adhesive Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_adhes004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adhesive Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_adhes005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Bomb I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bactb002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Bomb II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bactb003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Bomb III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bactb004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Bomb IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bactb005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bacta002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bacta003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bacta004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bacta Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bacta005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Adhesive Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_adhes001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Bacta Bomb"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bactb001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Bacta Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_bacta001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Concussion Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_concu001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Dart"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "dart_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Flashbang"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_flash001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Frag Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_frag001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Gas Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_gas001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Incendiary Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_incen001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Ion Grenade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_ion001"
                     }
                   },
                   {
@@ -18436,6 +18667,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Concussion Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_concu002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Concussion Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_concu003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Concussion Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_concu004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Concussion Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_concu005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dart I"
                     },
                     "RESREF": {
@@ -18480,6 +18755,226 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Flashbang I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_flash002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flashbang II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_flash003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flashbang III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_flash004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flashbang IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_flash005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frag Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_frag002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frag Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_frag003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frag Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_frag004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frag Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_frag005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gas Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_gas002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gas Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_gas003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gas Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_gas004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gas Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_gas005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Incendiary Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_incen002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Incendiary Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_incen003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Incendiary Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_incen004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Incendiary Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_incen005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_ion002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_ion003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_ion004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_ion005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shuriken I"
                     },
                     "RESREF": {
@@ -18518,6 +19013,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shuriken_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smoke Grenade I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_smoke002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smoke Grenade II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_smoke003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smoke Grenade III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_smoke004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smoke Grenade IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "grenade_smoke005"
                     }
                   },
                   {

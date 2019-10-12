@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
                 float dmBonusModifier = dbPlayer.XPBonus * 0.01f;
                 if (dmBonusModifier > 0.25f)
                     dmBonusModifier = 0.25f;
-                xp += (int)(xp * dmBonusModifier + (dbPlayer.RoleplayPoints * 50));
+                xp += (int)(xp * dmBonusModifier + (dbPlayer.RoleplayPoints - 50) * 50);
 
                 dbPlayer.RoleplayXP += xp;
                 dbPlayer.RoleplayPoints = 0;

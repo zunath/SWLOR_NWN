@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Service
                 climate.Humidity_Modifier = -8;
 
                 climate.special_freezing = "A wave of cold air rolls in, stinging exposed flesh.";
-                climate.special_snow = "It's Snowing....Again....";
+                climate.special_snow = "It's snowing... again...";
                 climate.special_windy = "A cold wind sweeps in.";
                 climate.special_cold_windy = "A freezing wind stings exposed flesh";
                 climate.special_cloudy = "Clouds build over head, and there is a occasional strong gust of wind.";

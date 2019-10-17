@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             effect = _.TagEffect(effect, "EFFECT_FORCE_INSIGHT");
 
             // Remove any existing force insight effects.
-            foreach(var existing in creature.Effects.Where(x => _.GetEffectTag(effect) == "EFFECT_FORCE_INSIGHT"))
+            foreach(var existing in creature.Effects.Where(x => _.GetEffectTag(x) == "EFFECT_FORCE_INSIGHT"))
             {
                 _.RemoveEffect(creature, existing);
             }

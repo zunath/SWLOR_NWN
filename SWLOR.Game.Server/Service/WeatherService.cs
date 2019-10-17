@@ -127,6 +127,7 @@ namespace SWLOR.Game.Server.Service
             public bool Acid_Rain;
             public bool Dust_Storm;
             public bool Sand_Storm;
+            //public bool Snow_Storm;
 
             // Allow overrides of text on different planets.
             public string special_cloudy;
@@ -212,6 +213,15 @@ namespace SWLOR.Game.Server.Service
                 LoggingService.Trace(TraceComponent.Weather, "Planet is Hutlar.");
                 climate.Heat_Modifier = -5;
                 climate.Humidity_Modifier = -8;
+
+                climate.special_freezing = "A wave of cold air rolls in, stinging exposed flesh.";
+                climate.special_snow = "It's snowing... again...";
+                climate.special_windy = "A cold wind sweeps in.";
+                climate.special_cold_windy = "A freezing wind stings exposed flesh";
+                climate.special_cloudy = "Clouds build over head, and there is a occasional strong gust of wind.";
+                climate.special_cold_cloudy = "The clouds over head build, a cold wind stings exposed flesh. Looks like it is going to snow.";
+                climate.special_cold_mild = "It is cold, the sky is clear, and there is a gentle breeze.";
+                //climate.Snow_Storm = true;
             }
 
             return climate;

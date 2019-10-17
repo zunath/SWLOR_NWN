@@ -500,8 +500,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (itemAC > maxAC)
                     {
-                        //itemAC = maxAC;
-                        item.SetLocalInt("CUSTOM_ITEM_PROPERTY_AC",itemAC = maxAC);
+                        item.CustomAC = maxAC;
                     }
                     stats.AC += itemAC;
 

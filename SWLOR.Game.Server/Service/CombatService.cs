@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service
                 float perkBonus = 0.02f * perkLevel;
 
                 // DI = 10% + 1% / 3 AC bonuses on the shield + Item AC(Damage Immunity Bonus) + 2% per perk bonus. 
-                reduction = (0.1 + 0.01 * shield.AC / 3) + (shield.GetLocalInt("CUSTOM_ITEM_PROPERTY_AC") * .01) + perkBonus;
+                reduction = (0.1 + 0.01 * shield.AC / 3) + (shield.CustomAC * .01) + perkBonus;
             }
             // Calculate Absorb Energy concentration effect reduction.
             if (concentrationEffect.Type == PerkType.AbsorbEnergy)

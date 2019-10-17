@@ -1225,10 +1225,8 @@
     <Compile Include="Perk\Engineering\EngineeringModInstallation.cs" />
     <Compile Include="Perk\Engineering\ElectronicRepair.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
-    <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
     <Compile Include="Perk\Harvesting\MolecularReassemblyProficiency.cs" />
-    <Compile Include="Perk\Harvesting\SpeedyReassembly.cs" />
     <Compile Include="Perk\Lightsaber\DeflectBlasterFire.cs" />
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />
     <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
@@ -1239,7 +1237,6 @@
     <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
     <Compile Include="Perk\Medicine\RangedHealing.cs" />
     <Compile Include="Perk\Medicine\ResuscitationDevices.cs" />
-    <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />
     <Compile Include="Perk\Medicine\StimFiend.cs" />
     <Compile Include="Perk\General\Rest.cs" />
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
@@ -1251,14 +1248,12 @@
     <Compile Include="Perk\Blaster\RapidReload.cs" />
     <Compile Include="Perk\Blaster\RapidShot.cs" />
     <Compile Include="Perk\Blaster\ZenMarksmanship.cs" />
-    <Compile Include="Perk\Armorsmith\SpeedyArmorsmith.cs" />
     <Compile Include="Perk\Armor\DeflectDamage.cs" />
     <Compile Include="Perk\Armor\Dodge.cs" />
     <Compile Include="Perk\Armor\Evasiveness.cs" />
     <Compile Include="Perk\Armor\Expertise.cs" />
     <Compile Include="Perk\Armor\Mobility.cs" />
     <Compile Include="Perk\Cooking\FoodRecipes.cs" />
-    <Compile Include="Perk\Cooking\SpeedyCooking.cs" />
     <Compile Include="Perk\Medicine\FrugalMedic.cs" />
     <Compile Include="Perk\Medicine\HealingKitExpert.cs" />
     <Compile Include="Perk\Medicine\ImmediateImprovement.cs" />
@@ -1313,7 +1308,6 @@
     <Compile Include="Perk\Engineering\LightsaberBlueprints.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponModInstallation.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponBlueprints.cs" />
-    <Compile Include="Perk\Weaponsmith\SpeedyWeaponsmith.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponRepair.cs" />
     <Compile Include="Perk\Weapons\ImprovedCriticalBatons.cs" />
     <Compile Include="Perk\Weapons\ImprovedCriticalBlasterPistols.cs" />
@@ -1329,7 +1323,6 @@
     <Compile Include="Perk\Weapons\ImprovedCriticalVibroblades.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusBase.cs" />
     <Compile Include="Perk\Weapons\ImprovedCriticalBase.cs" />
-    <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusBatons.cs" />
     <Compile Include="Perk\Weapons\WeaponFocusBlasterPistols.cs" />

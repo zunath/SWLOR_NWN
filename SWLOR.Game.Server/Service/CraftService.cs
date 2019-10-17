@@ -233,60 +233,15 @@ namespace SWLOR.Game.Server.Service
 
 
             // Check for Craft Skill Type then check for Speedy Perks.
-            
 
-            if (skillType == SkillType.Weaponsmith)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyWeaponsmith))
-                {
-                    perkType = PerkType.SpeedyWeaponsmith;
-                }
-            }
 
-            else if (skillType == SkillType.Armorsmith)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyArmorsmith))
-                {
-                    perkType = PerkType.SpeedyArmorsmith;
-                }
-            }
-
-            else if (skillType == SkillType.Cooking)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCooking))
-                {
-                    perkType = PerkType.SpeedyCooking;
-                }
-            }
-
-            else if (skillType == SkillType.Engineering)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyEngineering))
-                {
-                    perkType = PerkType.SpeedyEngineering;
-                }
-            }
-            else if (skillType == SkillType.Fabrication)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyFabrication))
-                {
-                    perkType = PerkType.SpeedyFabrication;
-                }
-            }
-            else if (skillType == SkillType.Medicine)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyMedicine))
-                {
-                    perkType = PerkType.SpeedyMedicine;
-                }
-            }
-            else if (skillType == SkillType.Harvesting)
-            {
-                if (PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyCrafting) < PerkService.GetCreaturePerkLevel(oPC, PerkType.SpeedyHarvester))
-                {
-                    perkType = PerkType.SpeedyHarvester;
-                }
-            }
+            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyCrafting;
             else return BaseCraftDelay;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -14,8 +15,14 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SWLOR.Game.Server.runtimeconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)SWLOR.Game.Server.dll&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i&#xD;&#xA;xcopy &quot;$(TargetDir)SWLOR.Game.Server.pdb&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i&#xD;&#xA;xcopy &quot;$(TargetDir)SWLOR.Game.Server.deps.json&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i" />
+    <Exec Command="xcopy &quot;$(TargetDir)SWLOR.Game.Server.dll&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i&#xD;&#xA;xcopy &quot;$(TargetDir)SWLOR.Game.Server.pdb&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i&#xD;&#xA;xcopy &quot;$(TargetDir)SWLOR.Game.Server.deps.json&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i&#xD;&#xA;xcopy &quot;$(TargetDir)SWLOR.Game.Server.runtimeconfig.json&quot; &quot;%25USERPROFILE%25\Documents\Neverwinter Nights\mono&quot; /E /Y /C /i" />
   </Target>
 
 </Project>

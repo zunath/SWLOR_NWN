@@ -6,11 +6,11 @@ using SWLOR.Game.Server.Messaging;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class mod_on_dying
+    public static class mod_on_dying
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             // Bioware Default
             _.ExecuteScript("nw_o0_dying", NWGameObject.OBJECT_SELF); 

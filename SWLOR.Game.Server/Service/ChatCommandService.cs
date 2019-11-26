@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Service
 
             if (targetLocation == null)
             {
-                targetLocation = new Location();
+                targetLocation = new Location(IntPtr.Zero);
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();

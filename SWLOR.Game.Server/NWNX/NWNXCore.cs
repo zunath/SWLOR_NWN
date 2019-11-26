@@ -1,4 +1,5 @@
 ﻿
+using System;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 
@@ -68,13 +69,13 @@ namespace SWLOR.Game.Server.NWNX
 
         public static Effect NWNX_GetReturnValueEffect(string pluginName, string functionName)
         {
-            Effect e = new Effect();
+            Effect e = new Effect(IntPtr.Zero);
             return _.TagEffect(e, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         public static ItemProperty NWNX_GetReturnValueItemProperty(string pluginName, string functionName)
         {
-            ItemProperty ip = new ItemProperty();
+            ItemProperty ip = new ItemProperty(IntPtr.Zero);
             return _.TagItemProperty(ip, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
     }

@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -28,10 +29,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Events.MainLoopTick += Events_MainLoopTick;
+            Internal.OnMainLoopEvent += Events_MainLoopTick;
         }
         
-        private static void Events_MainLoopTick(ulong frame)
+        private static void Events_MainLoopTick(object sender, MainLoopEventArgs e)
         {
             RunProcessor();
         }

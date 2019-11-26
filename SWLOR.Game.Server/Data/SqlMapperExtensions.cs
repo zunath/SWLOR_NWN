@@ -598,11 +598,7 @@ namespace SWLOR.Game.Server.Data
 
             private static AssemblyBuilder GetAsmBuilder(string name)
             {
-#if NETSTANDARD1_3 || NETSTANDARD2_0
                 return AssemblyBuilder.DefineDynamicAssembly(new AssemblyName { Name = name }, AssemblyBuilderAccess.Run);
-#else
-                return Thread.GetDomain().DefineDynamicAssembly(new AssemblyName { Name = name }, AssemblyBuilderAccess.Run);
-#endif
             }
 
             public static T GetInterfaceProxy<T>()

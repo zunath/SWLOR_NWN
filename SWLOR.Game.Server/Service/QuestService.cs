@@ -7,7 +7,6 @@ using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Quest;
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (_quests.ContainsKey(quest.QuestID))
             {
-                throw new DuplicateKeyException(quest, "Quest with ID " + quest.QuestID + " has already been registered. IDs must be unique across all quests.");
+                throw new Exception("Quest with ID " + quest.QuestID + " has already been registered. IDs must be unique across all quests.");
             }
 
             _quests[quest.QuestID] = quest;

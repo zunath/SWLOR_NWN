@@ -6,24 +6,13 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Gets the lease rate for a particular player.", CommandPermissionType.DM)]
     public class GetLeaseRate : IChatCommand
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-
-        public GetLeaseRate(
-            INWScript script,
-            IDataService data)
-        {
-            _ = script;
-            _data = data;
-        }
-        
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsPlayer)
@@ -33,7 +22,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             user.SendMessage(player.Name +  " Lease Rate = " + dbPlayer.LeaseRate);
         }

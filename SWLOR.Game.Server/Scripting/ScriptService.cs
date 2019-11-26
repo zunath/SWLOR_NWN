@@ -3,14 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using CSScriptLibrary;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Module;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Scripting.Contracts;
-using SWLOR.Game.Server.Service;
 using Exception = System.Exception;
 
 namespace SWLOR.Game.Server.Scripting
@@ -42,7 +39,6 @@ namespace SWLOR.Game.Server.Scripting
         /// </summary>
         public static void Initialize()
         {
-            CSScript.EvaluatorConfig.Engine = EvaluatorEngine.Roslyn;
             string scriptsDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY") + "/Scripts/";
             string[] files = Directory.GetFiles(scriptsDirectory, "*.cs", SearchOption.AllDirectories);
 
@@ -100,18 +96,19 @@ namespace SWLOR.Game.Server.Scripting
         {
             try
             {
+                var content = File.ReadAllText(file);
                 // Quest scripts
                 if (IsQuestScript(file))
                 {
-                    var quest = CSScript.MonoEvaluator.LoadFile<AbstractQuest>(file);
-                    _questCache[file] = quest;
-                    MessageHub.Instance.Publish(new OnQuestLoaded(quest));
+                    var quest = CSharpScript.EvaluateAsync<AbstractQuest>(content);
+                    _questCache[file] = quest.Result;
+                    MessageHub.Instance.Publish(new OnQuestLoaded(quest.Result));
                 }
                 // Regular scripts
                 else
                 {
-                    var script = CSScript.MonoEvaluator.LoadFile<IScript>(file);
-                    _scriptCache[file] = script;
+                    var script = CSharpScript.EvaluateAsync<IScript>(content);
+                    _scriptCache[file] = script.Result;
                     string @namespace = script.GetType().FullName;
                     _namespacePointers[@namespace] = file;
                 }

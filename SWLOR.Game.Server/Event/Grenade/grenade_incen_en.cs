@@ -5,11 +5,11 @@ using static NWN._;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class grenade_incen_en
+    public class grenade_incen_en
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public void Main()
         {
             //MessageHub.Instance.Publish(new OnItemUsed());
             SWLOR.Game.Server.Item.Grenade.grenadeAoe(GetEnteringObject(), "INCENDIARY");

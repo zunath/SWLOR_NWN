@@ -6,11 +6,11 @@ using SWLOR.Game.Server.Messaging;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public static class mod_on_attack
+    public class mod_on_attack
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        public static void Main()
+        public void Main()
         {
             MessageHub.Instance.Publish(new OnModuleAttack());
         }

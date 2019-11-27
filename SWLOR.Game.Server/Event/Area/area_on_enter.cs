@@ -7,10 +7,10 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal static class area_on_enter
+    public class area_on_enter
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static void Main()
+        public void Main()
         {
             using (new Profiler(nameof(area_on_enter)))
             {

@@ -16,11 +16,11 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public static class mod_on_load
+    public class mod_on_load
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        public static void Main(uint oidSelf)
+        public void Main()
         {
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");

@@ -13,7 +13,7 @@ namespace NWN
         public delegate void ScriptDelegate(uint oidSelf);
         public const int SCRIPT_HANDLED = 0;
         public const int SCRIPT_NOT_HANDLED = -1;
-        private static Dictionary<string, ScriptDelegate> _scripts = new Dictionary<string, ScriptDelegate>();
+        private static readonly Dictionary<string, Type> _scripts = new Dictionary<string, Type>();
         
         // This is called once every main loop frame, outside of object context
         public static void OnMainLoop(ulong frame)
@@ -33,16 +33,14 @@ namespace NWN
         {
             try
             {
-                Console.WriteLine("Script = " + script);
                 if (_scripts.ContainsKey(script))
                 {
-                    _scripts[script].Invoke(oidSelf);
-                    //Console.WriteLine("Invoking: " + script + ", type = " + instance.GetType());
-                    //var method = instance.GetType().GetMethod("Main", BindingFlags.Public | BindingFlags.Instance);
-                    //if(method == null)
-                    //    throw new Exception("Could not locate Main method on script instance: " + script);
+                    var instance = Activator.CreateInstance(_scripts[script]);
+                    var method = instance.GetType().GetMethod("Main", BindingFlags.Public | BindingFlags.Instance);
+                    if (method == null)
+                        throw new Exception("Could not locate Main method on script instance: " + script);
 
-                    //method.Invoke(_scripts[script], null);
+                    method.Invoke(instance, null);
                     return SCRIPT_HANDLED;
                 }
             }
@@ -68,19 +66,11 @@ namespace NWN
             foreach (var type in types)
             {
                 var name = type.Name;
-                var method = type.GetMethod("Main", BindingFlags.Static | BindingFlags.Public);
-                if (method == null)
-                {
-                    Console.WriteLine("Skipping: " + name);
-                    continue;
-                }
-
-                if (method.GetParameters().Length != 1)
-                    continue;
+                var method = type.GetMethod("Main", BindingFlags.Public | BindingFlags.Instance);
 
                 if (method != null)
                 {
-                    _scripts[name] = (ScriptDelegate) Delegate.CreateDelegate(typeof(ScriptDelegate), method);
+                    _scripts[name] = type;
                     Console.WriteLine("Registered script: " + name);
                 }
             }

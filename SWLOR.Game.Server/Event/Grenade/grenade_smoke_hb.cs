@@ -6,11 +6,11 @@ using SWLOR.Game.Server.GameObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class grenade_smoke_hb
+    public class grenade_smoke_hb
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public void Main()
         {
             NWObject oTarget;
             oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);

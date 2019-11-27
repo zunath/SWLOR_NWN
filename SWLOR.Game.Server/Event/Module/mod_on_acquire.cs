@@ -7,14 +7,15 @@ using SWLOR.Game.Server.Messaging;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public static class mod_on_acquire
+    public class mod_on_acquire
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        public static void Main()
+        public void Main()
         {
             // Bioware Default
-            _.ExecuteScript("x2_mod_def_aqu", NWGameObject.OBJECT_SELF);
+            //_.ExecuteScript("x2_mod_def_aqu", NWGameObject.OBJECT_SELF); // todo: why is this crashing the server?
+
             MessageHub.Instance.Publish(new OnModuleAcquireItem());
         }
     }

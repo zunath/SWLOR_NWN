@@ -8,10 +8,10 @@ using SWLOR.Game.Server.NWN.Events.Creature;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class crea_on_blocked
+    public class crea_on_blocked
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static void Main()
+        public void Main()
         {
             MessageHub.Instance.Publish(new OnCreatureBlocked());
         }

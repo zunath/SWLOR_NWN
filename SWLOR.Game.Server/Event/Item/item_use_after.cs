@@ -6,11 +6,11 @@ using SWLOR.Game.Server.NWNX;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class item_use_after
+    public class item_use_after
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public void Main()
         {
             // Already handled in the item_use_before script. No need for anything else to run at this point.
             NWNXEvents.SkipEvent();

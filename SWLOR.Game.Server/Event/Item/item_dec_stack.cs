@@ -7,11 +7,11 @@ using SWLOR.Game.Server.NWNX;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class item_dec_stack
+    public class item_dec_stack
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public void Main()
         {
             if (NWGameObject.OBJECT_SELF == null) return;
 

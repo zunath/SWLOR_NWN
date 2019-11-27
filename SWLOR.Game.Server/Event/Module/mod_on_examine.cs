@@ -11,11 +11,11 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public static class mod_on_examine
+    public class mod_on_examine
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        public static void Main()
+        public void Main()
         {
             // Breaking the rules for the examine event because the result of the services is used in the following 
             // service call. We still signal an event for this, but in general all of the logic should go into this method.

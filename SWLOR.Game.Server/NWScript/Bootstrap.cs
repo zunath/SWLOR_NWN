@@ -44,7 +44,7 @@ namespace NWN
         public delegate void StackPushObjectDelegate(uint value);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushVectorDelegate(NWN.Vector value);
+        public delegate void StackPushVectorDelegate(Vector value);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void StackPushEffectDelegate(IntPtr value);
@@ -77,7 +77,7 @@ namespace NWN
         public delegate uint StackPopObjectDelegate();
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate NWN.Vector StackPopVectorDelegate();
+        public delegate Vector StackPopVectorDelegate();
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate IntPtr StackPopEffectDelegate();
@@ -220,12 +220,14 @@ namespace NWN
             public nwnxCallFunctionDelegate nwnxCallFunction;
         }
         public static BootstrapArgs NativeFunctions;
+        private static AllHandlers _handlers;
 
         public static void RegisterHandlers(AllHandlers handlers)
         {
-            var size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(AllHandlers));
+            _handlers = handlers;
+            var size = Marshal.SizeOf(typeof(AllHandlers));
             IntPtr ptr = Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(handlers, ptr, false);
+            Marshal.StructureToPtr(_handlers, ptr, false);
             NativeFunctions.RegisterHandlers(ptr, (uint)size);
             Marshal.FreeHGlobal(ptr);
         }
@@ -237,7 +239,7 @@ namespace NWN
                 Console.WriteLine("Received NULL bootstrap structure");
                 return 1;
             }
-            int expectedLength = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BootstrapArgs));
+            int expectedLength = Marshal.SizeOf(typeof(BootstrapArgs));
             if (argLength < expectedLength)
             {
                 Console.WriteLine($"Received bootstrap structure too small - actual={argLength}, expected={expectedLength}");
@@ -252,14 +254,14 @@ namespace NWN
             NativeFunctions = Marshal.PtrToStructure<BootstrapArgs>(arg);
 
             AllHandlers handlers;
-            handlers.MainLoop = NWN.Internal.OnMainLoop;
-            handlers.RunScript = NWN.Internal.OnRunScript;
-            handlers.Closure = NWN.Internal.OnClosure;
+            handlers.MainLoop = OnMainLoop;
+            handlers.RunScript = OnRunScript;
+            handlers.Closure = OnClosure;
             RegisterHandlers(handlers);
 
             try
             {
-                NWN.Entrypoints.OnStart();
+                Entrypoints.OnStart();
             }
             catch (Exception e)
             {

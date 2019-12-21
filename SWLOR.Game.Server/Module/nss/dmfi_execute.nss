@@ -124,7 +124,7 @@ void RollDemBones(object oUser, int iBroadcast, int iMod = 0, string sAbility = 
         case 83: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_TAUNT, 1.0)); break;
         case 84: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_LISTEN, 1.0, 5.0f)); break;
         case 85: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_PAUSE_SCRATCH_HEAD, 1.0)); break;
-        case 89: AssignCommand(oUser, ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BARD_SONG), oUser, 6.0f)); break;
+        case 89: AssignCommand(oUser, ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BARD_SONG), oUser, 6.0f)); break;
         case 91: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_TALK_PLEADING, 1.0, 5.0f)); break;
         case 95: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_CONJURE2, 1.0, 5.0f)); break;
         case 97: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_TAUNT, 1.0)); break;
@@ -164,12 +164,12 @@ void DoDiceBagFunction(int iDice, object oUser, int iDMOverride = 0)
     int iRight = StringToInt(GetStringRight(IntToString(iDice), 1));
     switch (iDice)
     {
-    case 61: iNum = 1; iSide = 20; sAbility="Strength Check, "; iMod = GetAbilityModifier(ABILITY_STRENGTH, oUser); break;
-    case 62: iNum = 1; iSide = 20; sAbility="Dexterity Check, "; iMod = GetAbilityModifier(ABILITY_DEXTERITY, oUser); break;
-    case 63: iNum = 1; iSide = 20; sAbility="Constitution Check, "; iMod = GetAbilityModifier(ABILITY_CONSTITUTION, oUser); break;
-    case 64: iNum = 1; iSide = 20; sAbility="Intelligence Check, "; iMod = GetAbilityModifier(ABILITY_INTELLIGENCE, oUser); break;
-    case 65: iNum = 1; iSide = 20; sAbility="Wisdom Check, "; iMod = GetAbilityModifier(ABILITY_WISDOM, oUser); break;
-    case 66: iNum = 1; iSide = 20; sAbility="Charisma Check, "; iMod = GetAbilityModifier(ABILITY_CHARISMA, oUser); break;
+    case 61: iNum = 1; iSide = 20; sAbility="Strength Check, "; iMod = GetAbilityModifier(Ability.Strength, oUser); break;
+    case 62: iNum = 1; iSide = 20; sAbility="Dexterity Check, "; iMod = GetAbilityModifier(Ability.Dexterity, oUser); break;
+    case 63: iNum = 1; iSide = 20; sAbility="Constitution Check, "; iMod = GetAbilityModifier(Ability.Constitution, oUser); break;
+    case 64: iNum = 1; iSide = 20; sAbility="Intelligence Check, "; iMod = GetAbilityModifier(Ability.Intelligence, oUser); break;
+    case 65: iNum = 1; iSide = 20; sAbility="Wisdom Check, "; iMod = GetAbilityModifier(Ability.Wisdom, oUser); break;
+    case 66: iNum = 1; iSide = 20; sAbility="Charisma Check, "; iMod = GetAbilityModifier(Ability.Charisma, oUser); break;
     case 67: iNum = 1; iSide = 20; sAbility="Fortitude Save, "; iMod = GetFortitudeSavingThrow(oUser); break;
     case 68: iNum = 1; iSide = 20; sAbility="Reflex Save, "; iMod = GetReflexSavingThrow(oUser); break;
     case 69: iNum = 1; iSide = 20; sAbility="Will Save, "; iMod = GetWillSavingThrow(oUser); break;
@@ -249,41 +249,41 @@ void DestroyAllItems()
             DestroyObject(oItem);
             oItem = GetNextItemInInventory();
         }
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_ARMS)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Arms)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_ARROWS)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Arrows)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BELT)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Belt)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BOLTS)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Bolts)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BOOTS)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Boots)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BULLETS)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Bullets)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CARMOUR)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureSkin)))
             DestroyObject(oItem);
         if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Chest)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CLOAK)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Cloak)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CWEAPON_B)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureWeaponBite)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CWEAPON_L)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureWeaponLeft)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CWEAPON_R)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureWeaponRight)))
             DestroyObject(oItem);
         if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Head)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_LEFTHAND)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.LeftHand)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_LEFTRING)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.LeftRing)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_NECK)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Neck)))
             DestroyObject(oItem);
         if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.RightHand)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_RIGHTRING)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.RightRing)))
             DestroyObject(oItem);
     }
 }
@@ -506,7 +506,7 @@ void DoControlFunction(int iFaction, object oUser)
             }
             oChange = GetNextObjectInArea(oArea);
         } nMessage = -1;break;
-    case 69: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectDisappear(), oTarget);
+    case 69: ApplyEffectToObject(DurationType.Instant, EffectDisappear(), oTarget);
         DestroyObject(oTarget, 1.0); nMessage = -1;break;
     case 70: DestroyCreature(oTarget); nMessage = -1;break;
     case 71: AssignCommand(oTarget, SetIsDestroyable(false, true, true)); nMessage = -1;break;
@@ -514,13 +514,13 @@ void DoControlFunction(int iFaction, object oUser)
     case 73: AssignCommand(oTarget, SetIsDestroyable(false, false, false));nMessage = -1; break;
     case 74: AssignCommand(oTarget, SetIsDestroyable(true, false, false));nMessage = -1; break;
     case 75: AssignCommand(oTarget, SetIsDestroyable(false, true, true));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget))); nMessage = -1;break;
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget))); nMessage = -1;break;
     case 76: AssignCommand(oTarget, SetIsDestroyable(false, false, true));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget))); nMessage = -1;break;
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget))); nMessage = -1;break;
     case 77: AssignCommand(oTarget, SetIsDestroyable(false, false, false));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget))); nMessage = -1;break;
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget))); nMessage = -1;break;
     case 78: AssignCommand(oTarget, SetIsDestroyable(true, false, false));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget)));nMessage = -1; break;
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget)));nMessage = -1; break;
     case 79: AssignCommand(oTarget, DestroyAllItems());
         DelayCommand(1.0, DestroyCreature(oTarget));nMessage = -1;break;
     case 81:  //AdjustReputation(oAlignTarget, oTarget, nAlignShift);
@@ -570,7 +570,7 @@ void DoControlFunction(int iFaction, object oUser)
         else
         {
             effect eInvis =EffectBlindness();
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInvis, oTarget, 6.1);
+            ApplyEffectToObject(DurationType.Temporary, eInvis, oTarget, 6.1);
             FloatingTextStringOnCreature("Faction Adjusted - Perception event will fire in 6 seconds", oUser);
         }
     }
@@ -602,24 +602,24 @@ void TakeStuff(int Level, object oTarget, object oUser)
 
     if (Level == 1)
     {
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_ARMS,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_ARROWS,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BELT,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BOLTS,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BOOTS,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BULLETS,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CARMOUR,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Arms,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Arrows,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Belt,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Bolts,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Boots,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Bullets,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.CreatureSkin,oTarget));
         DestroyObject(GetItemInSlot(InventorySlot.Chest,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CLOAK,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CWEAPON_B,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CWEAPON_L,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CWEAPON_R,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Cloak,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.CreatureWeaponBite,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.CreatureWeaponLeft,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.CreatureWeaponRight,oTarget));
         DestroyObject(GetItemInSlot(InventorySlot.Head,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_LEFTRING,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_NECK,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.LeftHand,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.LeftRing,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.Neck,oTarget));
         DestroyObject(GetItemInSlot(InventorySlot.RightHand,oTarget));
-        DestroyObject(GetItemInSlot(INVENTORY_SLOT_RIGHTRING,oTarget));
+        DestroyObject(GetItemInSlot(InventorySlot.RightRing,oTarget));
     }
     FloatingTextStringOnCreature("DM Intervention:  Inventory Destroyed by DM", oTarget);
 }
@@ -1905,19 +1905,19 @@ void DoAfflictFunction(int iAfflict, object oUser)
     if ((GetEffectType(eD)!= EFFECT_TYPE_INVALIDEFFECT) ||
         (GetEffectType(eVis) != EFFECT_TYPE_INVALIDEFFECT))
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eD, oTarget);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eVis, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eD, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eVis, oTarget);
         return;
     }
     if (GetEffectType(eA)!= EFFECT_TYPE_INVALIDEFFECT)
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eA, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eA, oTarget);
         DelayCommand(5.0, CheckForEffect(eA, oTarget, oUser));
         return;
     }
     if ((GetEffectType(eT)!= EFFECT_TYPE_INVALIDEFFECT) || (nBug ==1))
     {
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eT, oTarget, fDuration);
+        ApplyEffectToObject(DurationType.Temporary, eT, oTarget, fDuration);
 
         if ((GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_INCREASE) ||
             (GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_DECREASE))
@@ -1940,9 +1940,9 @@ void DoAfflictFunction(int iAfflict, object oUser)
         if (!GetIsObjectValid(oFollowMe))
             oFollowMe = oUser;
 
-        AssignCommand(oFollowMe, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneDominated(), oTarget));
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), oTarget);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
+        AssignCommand(oFollowMe, ApplyEffectToObject(DurationType.Permanent, EffectCutsceneDominated(), oTarget));
+        ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), oTarget);
+        ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
     }
 
     return;
@@ -2177,7 +2177,7 @@ void CopyMon(object oMon, location lEncounter)
     effect eEffect = GetFirstEffect(oMon);
     while (GetIsEffectValid(eEffect))
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, oCreature);
+        ApplyEffectToObject(DurationType.Permanent, eEffect, oCreature);
         eEffect = GetNextEffect(oMon);
     }
 }
@@ -2770,8 +2770,8 @@ void FXWand_Firestorm(object oDM)
 
 
     // tell the DM object to rain fire and destruction
-    AssignCommand ( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_METEOR_SWARM), lDMLoc));
-    AssignCommand ( oDM, DelayCommand (1.0, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect (VFX_FNF_SCREEN_SHAKE), lDMLoc)));
+    AssignCommand ( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_METEOR_SWARM), lDMLoc));
+    AssignCommand ( oDM, DelayCommand (1.0, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect (VFX_FNF_SCREEN_SHAKE), lDMLoc)));
 
     // create some fires
     object oTargetArea = GetArea(oDM);
@@ -2803,11 +2803,11 @@ void FXWand_Earthquake(object oDM)
     location lDMLoc = GetLocation ( oDM);
 
     // tell the DM object to shake the screen
-    AssignCommand( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SCREEN_SHAKE), lDMLoc));
-    AssignCommand ( oDM, DelayCommand( 2.8, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
-    AssignCommand ( oDM, DelayCommand( 3.0, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_SHAKE), lDMLoc)));
-    AssignCommand ( oDM, DelayCommand( 4.5, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
-    AssignCommand ( oDM, DelayCommand( 5.8, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
+    AssignCommand( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect(VFX_FNF_SCREEN_SHAKE), lDMLoc));
+    AssignCommand ( oDM, DelayCommand( 2.8, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
+    AssignCommand ( oDM, DelayCommand( 3.0, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_SHAKE), lDMLoc)));
+    AssignCommand ( oDM, DelayCommand( 4.5, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
+    AssignCommand ( oDM, DelayCommand( 5.8, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
     // tell the DM object to play an earthquake sound
     AssignCommand ( oDM, PlaySound ("as_cv_boomdist1"));
     AssignCommand ( oDM, DelayCommand ( 2.0, PlaySound ("as_wt_thunderds3")));
@@ -2836,7 +2836,7 @@ void FXWand_Lightning(object oDM, location lDMLoc)
 {
     // Lightning Strike by Jhenne. 06/29/02
     // tell the DM object to create a Lightning visual effect at targetted location
-    AssignCommand( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_LIGHTNING_M), lDMLoc));
+    AssignCommand( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect(VFX_IMP_LIGHTNING_M), lDMLoc));
     // tell the DM object to play a thunderclap
     AssignCommand ( oDM, PlaySound ("as_wt_thundercl3"));
     // create a scorch mark where the lightning hit
@@ -2853,7 +2853,7 @@ void FXWand_Lightning(object oDM, location lDMLoc)
         vNewVector.y += nYPos;
 
         location lNewLoc = Location(oTargetArea, vNewVector, 0.0);
-        AssignCommand( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_LIGHTNING_S), lNewLoc));
+        AssignCommand( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect(VFX_IMP_LIGHTNING_S), lNewLoc));
     }
     DelayCommand ( 20.0, DestroyObject ( oScorch));
 }
@@ -2862,7 +2862,7 @@ void FXWand_Lightning(object oDM, location lDMLoc)
 void FnFEffect(object oUser, int iVFX, location lEffect, float fDelay)
 {
     if (fDelay>2.0) FloatingTextStringOnCreature("Delay effect created", oUser, false);
-    DelayCommand( fDelay, ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(iVFX),lEffect));
+    DelayCommand( fDelay, ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(iVFX),lEffect));
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -2893,20 +2893,20 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     switch (iEffect)
     {
     //SoU/HotU Duration Effects(must have a target)
-    case 101: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_CLENCHED_FIST), oTarget, fDuration); break;
-    case 102: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_CRUSHING_HAND), oTarget, fDuration); break;
-    case 103: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_GRASPING_HAND), oTarget, fDuration); break;
-    case 104: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_INTERPOSING_HAND), oTarget, fDuration); break;
-    case 105: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ICESKIN), oTarget, fDuration); break;
-    case 106: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_INFERNO), oTarget, fDuration); break;
-    case 107: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PIXIEDUST), oTarget, fDuration); break;
-    case 108: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget, fDuration); break;
-    case 109: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_FREEZE_ANIMATION), oTarget, fDuration); break;
-    case 100: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_GHOSTLY_PULSE), oTarget, fDuration); break;
+    case 101: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_CLENCHED_FIST), oTarget, fDuration); break;
+    case 102: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_CRUSHING_HAND), oTarget, fDuration); break;
+    case 103: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_GRASPING_HAND), oTarget, fDuration); break;
+    case 104: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_INTERPOSING_HAND), oTarget, fDuration); break;
+    case 105: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ICESKIN), oTarget, fDuration); break;
+    case 106: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_INFERNO), oTarget, fDuration); break;
+    case 107: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PIXIEDUST), oTarget, fDuration); break;
+    case 108: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget, fDuration); break;
+    case 109: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_FREEZE_ANIMATION), oTarget, fDuration); break;
+    case 100: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_GHOSTLY_PULSE), oTarget, fDuration); break;
         //Magical Duration Effects
-    case 10: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_CALTROPS),lEffect, fDuration); break;
-    case 11: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_TENTACLE),lEffect, fDuration); break;
-    case 12: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_WEB_MASS),lEffect, fDuration); break;
+    case 10: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_CALTROPS),lEffect, fDuration); break;
+    case 11: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_TENTACLE),lEffect, fDuration); break;
+    case 12: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_WEB_MASS),lEffect, fDuration); break;
     case 13: FnFEffect(oUser, VFX_FNF_GAS_EXPLOSION_MIND,lEffect, fDelay); break;
     case 14: FnFEffect(oUser, VFX_FNF_LOS_HOLY_30,lEffect, fDelay); break;
     case 15: FnFEffect(oUser, VFX_FNF_LOS_EVIL_30,lEffect, fDelay); break;
@@ -2915,16 +2915,16 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     case 18: FnFEffect(oUser, VFX_FNF_DISPEL_DISJUNCTION,lEffect, fDelay); break;
     case 19: FnFEffect(oUser, VFX_FNF_GAS_EXPLOSION_EVIL,lEffect, fDelay); break;
         //Magical Status Effects (must have a target)
-    case 21: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, fDuration); break;
-    case 22: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, fDuration); break;
-    case 23: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ENTANGLE), oTarget, fDuration); break;
-    case 24: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ETHEREAL_VISAGE), oTarget, fDuration); break;
-    case 25: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), oTarget, fDuration); break;
-    case 26: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_INVISIBILITY), oTarget, fDuration); break;
-    case 27: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BARD_SONG), oTarget, fDuration); break;
-    case 28: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_GLOBE_INVULNERABILITY), oTarget, fDuration); break;
-    case 29: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PARALYZED), oTarget, fDuration); break;
-    case 20: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_SHADOW_ARMOR), oTarget, fDuration); break;
+    case 21: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, fDuration); break;
+    case 22: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, fDuration); break;
+    case 23: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ENTANGLE), oTarget, fDuration); break;
+    case 24: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ETHEREAL_VISAGE), oTarget, fDuration); break;
+    case 25: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), oTarget, fDuration); break;
+    case 26: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_INVISIBILITY), oTarget, fDuration); break;
+    case 27: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BARD_SONG), oTarget, fDuration); break;
+    case 28: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_GLOBE_INVULNERABILITY), oTarget, fDuration); break;
+    case 29: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PARALYZED), oTarget, fDuration); break;
+    case 20: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_SHADOW_ARMOR), oTarget, fDuration); break;
         //Magical Burst Effects
     case 31: FnFEffect(oUser, VFX_FNF_FIREBALL,lEffect, fDelay); break;
     case 32: FnFEffect(oUser, VFX_FNF_FIRESTORM,lEffect, fDelay); break;
@@ -2937,33 +2937,33 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     case 39: FnFEffect(oUser, VFX_FNF_STRIKE_HOLY,lEffect, fDelay); break;
     case 30: FnFEffect(oUser, VFX_FNF_WORD,lEffect, fDelay); break;
         //Lighting Effects
-    case 41: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLACKOUT),lEffect, fDuration); break;
-    case 42: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ANTI_LIGHT_10),oTarget, fDuration); break;
-    case 43: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_BLUE_20),oTarget, fDuration); break;
-    case 44: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_GREY_20),oTarget, fDuration); break;
-    case 45: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_ORANGE_20),oTarget, fDuration); break;
-    case 46: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_PURPLE_20),oTarget, fDuration); break;
-    case 47: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_RED_20),oTarget, fDuration); break;
-    case 48: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_WHITE_20),oTarget, fDuration); break;
-    case 49: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_YELLOW_20),oTarget, fDuration); break;
+    case 41: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BLACKOUT),lEffect, fDuration); break;
+    case 42: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ANTI_LIGHT_10),oTarget, fDuration); break;
+    case 43: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_BLUE_20),oTarget, fDuration); break;
+    case 44: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_GREY_20),oTarget, fDuration); break;
+    case 45: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_ORANGE_20),oTarget, fDuration); break;
+    case 46: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_PURPLE_20),oTarget, fDuration); break;
+    case 47: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_RED_20),oTarget, fDuration); break;
+    case 48: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_WHITE_20),oTarget, fDuration); break;
+    case 49: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_YELLOW_20),oTarget, fDuration); break;
         //Beam Effects
-    case 50: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_CHAIN, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 51: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 52: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 53: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 54: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 55: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 56: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 57: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 58: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 59: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 50: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_CHAIN, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 51: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 52: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 53: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 54: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 55: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 56: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 57: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 58: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 59: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
+        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
 
         //Environmental Effects
     case 60: FnFEffect(oUser, VFX_FNF_NATURES_BALANCE,lEffect, fDelay);break;
@@ -2988,11 +2988,11 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     case 79: FnFEffect(oUser, VFX_FNF_UNDEAD_DRAGON,lEffect, fDelay); break;
     case 70: FnFEffect(oUser, VFX_FNF_WAIL_O_BANSHEES,lEffect, fDelay); break;
         //SoU/HotU Effects
-    case 80: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(322), oTarget, fDuration); break;
-    case 81: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(132), oTarget, fDuration); break;
-    case 82: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(133), oTarget, fDuration); break;
-    case 83: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(136), oTarget, fDuration); break;
-    case 84: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(137), oTarget, fDuration); break;
+    case 80: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(322), oTarget, fDuration); break;
+    case 81: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(132), oTarget, fDuration); break;
+    case 82: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(133), oTarget, fDuration); break;
+    case 83: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(136), oTarget, fDuration); break;
+    case 84: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(137), oTarget, fDuration); break;
     case 85: FnFEffect(oUser, VFX_FNF_DEMON_HAND,lEffect, fDelay); break;
     case 86: FnFEffect(oUser, VFX_FNF_ELECTRIC_EXPLOSION,lEffect, fDelay); break;
     case 87: FnFEffect(oUser, VFX_FNF_GREATER_RUIN,lEffect, fDelay); break;

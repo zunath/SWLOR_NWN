@@ -96,11 +96,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    if ((creature.Wisdom > _.GetAbilityModifier(_.ABILITY_WISDOM, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
+                    if ((creature.Wisdom > _.GetAbilityModifier(_.Ability.Wisdom, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
                     {
                         creature.AssignCommand(() =>
                         {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
+                            _.ApplyEffectToObject(_.DurationType.Temporary, confusionEffect, target, 6.1f);
                             // Play VFX
                             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), target);
                         });
@@ -115,13 +115,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     }
                     break;
                 case 2:
-                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.ObjectType.Creature);
+                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, ObjectType.Creature);
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(targetCreature, creature) == 0)
                         {
                             // Do nothing against droids or non-hostile creatures, skip object
-                            targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.ObjectType.Creature);
+                            targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, ObjectType.Creature);
                             continue;
                         }
 
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var targetCreatureCopy = targetCreature; // Closure can modify the iteration variable so we copy it first.
                             creature.AssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, targetCreatureCopy, 6.1f);
+                                _.ApplyEffectToObject(_.DurationType.Temporary, confusionEffect, targetCreatureCopy, 6.1f);
                                 // Play VFX
                                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), targetCreatureCopy);
                             });
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             creature.SendMessage("Confusion failed.");
                         }
 
-                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.ObjectType.Creature);
+                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, ObjectType.Creature);
                     }
                     break;
                 default:

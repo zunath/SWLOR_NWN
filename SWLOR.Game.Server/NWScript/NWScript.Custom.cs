@@ -483,7 +483,7 @@ namespace NWN
                         if (GetItemPropertySubType(prop) == nItemPropertySubType || nItemPropertySubType == -1)
                         {
                             // Put a warning into the logfile if someone tries to remove a permanent ip with a temporary one!
-                            /*if (nItemPropertyDuration == DURATION_TYPE_TEMPORARY &&  GetItemPropertyDurationType(ip) == DURATION_TYPE_PERMANENT)
+                            /*if (nItemPropertyDuration == DurationType.Temporary &&  GetItemPropertyDurationType(ip) == DurationType.Permanent)
                             {
                                WriteTimestampedLogEntry("x2_inc_itemprop:: IPRemoveMatchingItemProperties() - WARNING: Permanent item property removed by temporary on "+GetTag(oItem));
                             }
@@ -547,7 +547,6 @@ namespace NWN
             }
         }
 
-
         /// <summary>
         /// Cause the action subject to play an animation
         ///  - nAnimation: ANIMATION_*
@@ -555,29 +554,10 @@ namespace NWN
         ///  - fDurationSeconds: Duration of the animation (this is not used for Fire and
         ///    Forget animations)
         /// </summary>
-        /// <param name="nAnimation"></param>
-        /// <param name="fSpeed"></param>
-        public static void ActionPlayAnimation(AnimationFireForget nAnimation, float fSpeed = 1.0f)
-        {
-            ActionPlayAnimation((int)nAnimation, fSpeed, 0.0f);
-        }
-
-        /// <summary>
-        /// Cause the action subject to play an animation
-        ///  - nAnimation: ANIMATION_*
-        ///  - fSpeed: Speed of the animation
-        ///  - fDurationSeconds: Duration of the animation (this is not used for Fire and
-        ///    Forget animations)
-        /// </summary>
-        /// <param name="nAnimation"></param>
-        /// <param name="fSpeed"></param>
-        /// <param name="fDurationSeconds"></param>
-        public static void ActionPlayAnimation(AnimationLooping nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
-        {
-            ActionPlayAnimation((int)nAnimation, fSpeed, fDurationSeconds);
-        }
-
-        private static void ActionPlayAnimation(int nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
+        /// <param name="nAnimation">The animation to play</param>
+        /// <param name="fSpeed">The speed to play the animation at</param>
+        /// <param name="fDurationSeconds">How long to play the animation</param>
+        public static void ActionPlayAnimation(Animation nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationSeconds);
             Internal.NativeFunctions.StackPushFloat(fSpeed);

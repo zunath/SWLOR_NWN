@@ -42,7 +42,7 @@
 
      object oFan24 = CopyObject(oPC,nLoc10,OBJECT_INVALID,"rivalClone"); //Clone creature in his location
      effect nEff24 = EffectVisualEffect(560   ,false); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff24,oFan24); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
+     ApplyEffectToObject(DurationType.Permanent,nEff24,oFan24); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
      AssignCommand(oFan24,SetFacing(90.0));
     int nSlot;
     object oItem = GetFirstItemInInventory(oFan24);
@@ -51,7 +51,7 @@
         oItem = GetNextItemInInventory(oFan24);
     }
     // Destroy equipped items.
-    for ( nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot )
+    for ( nSlot = 0; nSlot < NWNConstants.NumberOfInventorySlots; ++nSlot )
         DestroyObject(GetItemInSlot(nSlot, oFan24));
 
     // Remove all gold.

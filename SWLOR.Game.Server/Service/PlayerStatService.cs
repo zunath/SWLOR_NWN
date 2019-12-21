@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillGained(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NWNConstants.NumberOfInventorySlots; itemSlot++)
             {
                 NWItem item = _.GetItemInSlot(itemSlot, player);
                 CalculateEffectiveStats(player, item);
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillDecayed(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NWNConstants.NumberOfInventorySlots; itemSlot++)
             {
                 NWItem item = _.GetItemInSlot(itemSlot, player);
                 CalculateEffectiveStats(player, item);
@@ -151,12 +151,12 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > 55) chaBonus = 55;
 
             // Apply attributes
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
+            NWNXCreature.SetRawAbilityScore(player, Ability.Strength, (int)strBonus + pcEntity.STRBase);
+            NWNXCreature.SetRawAbilityScore(player, Ability.Dexterity, (int)dexBonus + pcEntity.DEXBase);
+            NWNXCreature.SetRawAbilityScore(player, Ability.Constitution, (int)conBonus + pcEntity.CONBase);
+            NWNXCreature.SetRawAbilityScore(player, Ability.Intelligence, (int)intBonus + pcEntity.INTBase);
+            NWNXCreature.SetRawAbilityScore(player, Ability.Wisdom, (int)wisBonus + pcEntity.WISBase);
+            NWNXCreature.SetRawAbilityScore(player, Ability.Charisma, (int)chaBonus + pcEntity.CHABase);
 
             // Apply AC
             int ac = EffectiveArmorClass(player, ignoreItem, itemBonuses);
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int amount = player.CurrentHP - player.MaxHP;
                 Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
+                _.ApplyEffectToObject(DurationType.Instant, damage, player.Object);
             }
 
             // Apply FP
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Service
             stats.EnmityRate = 1.0f;
 
             HashSet<NWItem> processed = new HashSet<NWItem>();
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NWNConstants.NumberOfInventorySlots; itemSlot++)
             {
                 NWItem item = _.GetItemInSlot(itemSlot, player);
 

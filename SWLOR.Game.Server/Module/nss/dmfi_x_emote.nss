@@ -65,11 +65,11 @@ void SmokePipe(object oActivator)
         case 3: AssignCommand(oActivator, ActionSpeakString(sEmote3));break;
     }
     // glow red
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
     // wait a moment
     AssignCommand(oActivator, ActionWait(3.0));
     // puff of smoke above and in front of head
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
     // if female, turn head to left
     if ((GetGender(oActivator) == GENDER_FEMALE) && (GetRacialType(oActivator) != RACIAL_TYPE_DWARF))
         AssignCommand(oActivator, ActionPlayAnimation(ANIMATION_FIREFORGET_HEAD_TURN_LEFT, 1.0, 5.0));
@@ -78,7 +78,7 @@ void SmokePipe(object oActivator)
 void EmoteDance(object oPC)
 {
     object oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
-    object oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
+    object oLeftHand =  GetItemInSlot(InventorySlot.LeftHand,oPC);
 
     AssignCommand(oPC,ActionUnequipItem(oRightHand));
     AssignCommand(oPC,ActionUnequipItem(oLeftHand));
@@ -99,7 +99,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
 
-    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,INVENTORY_SLOT_LEFTHAND)));
+    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,InventorySlot.LeftHand)));
     AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,InventorySlot.RightHand)));
 }
 
@@ -162,7 +162,7 @@ void SitInNearestChair(object oPC)
      if (GetSittingCreature(oSit) == OBJECT_INVALID)
          {
            oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
-           oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
+           oLeftHand =  GetItemInSlot(InventorySlot.LeftHand,oPC);
            AssignCommand(oPC,ActionMoveToObject(oSit,false,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
            ActionUnequipItem(oRightHand); //:: Added to resolve clipping issues when seated
            ActionUnequipItem(oLeftHand);  //:: Added to resolve clipping issues when seated

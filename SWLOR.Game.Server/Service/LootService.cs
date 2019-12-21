@@ -130,12 +130,12 @@ namespace SWLOR.Game.Server.Service
             });
 
             // Dump equipped items in container
-            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            for (int slot = 0; slot < NWNConstants.NumberOfInventorySlots; slot++)
             {
-                if (slot == INVENTORY_SLOT_CARMOUR ||
-                    slot == INVENTORY_SLOT_CWEAPON_B ||
-                    slot == INVENTORY_SLOT_CWEAPON_L ||
-                    slot == INVENTORY_SLOT_CWEAPON_R)
+                if (slot == InventorySlot.CreatureSkin ||
+                    slot == InventorySlot.CreatureWeaponBite ||
+                    slot == InventorySlot.CreatureWeaponLeft ||
+                    slot == InventorySlot.CreatureWeaponRight)
                     continue;
 
                 NWItem item = GetItemInSlot(slot, self);

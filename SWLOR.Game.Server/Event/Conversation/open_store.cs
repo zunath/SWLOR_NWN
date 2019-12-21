@@ -21,7 +21,7 @@ namespace NWN.Scripts
 
                 if (string.IsNullOrWhiteSpace(storeTag))
                 {
-                    store = _.GetNearestObject(_.OBJECT_TYPE_STORE, self);
+                    store = _.GetNearestObject(_.ObjectType.Store, self);
                 }
                 else
                 {

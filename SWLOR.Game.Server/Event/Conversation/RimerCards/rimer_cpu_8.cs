@@ -17,7 +17,7 @@ namespace NWN.Scripts
             {
                 RimerDeckType deck = RandomService.Random(4) <= 3 ? RimerDeckType.Undead : RimerDeckType.Random;
                 RimerCPU.ConfigureGameSettings(NWGameObject.OBJECT_SELF, deck, RimerAIDifficulty.Hard);
-                return _.false;
+                return false;
             }
         }
     }

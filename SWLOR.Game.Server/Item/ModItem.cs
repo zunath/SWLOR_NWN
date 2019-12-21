@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Ensure item isn't equipped.
-            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            for (int slot = 0; slot < NWNConstants.NumberOfInventorySlots; slot++)
             {
                 if (_.GetItemInSlot(slot, user.Object) == targetItem.Object)
                 {

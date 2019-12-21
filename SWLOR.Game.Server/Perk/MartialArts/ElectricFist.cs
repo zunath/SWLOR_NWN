@@ -89,9 +89,9 @@ namespace SWLOR.Game.Server.Perk.MartialArts
                 default: return;
             }
             
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectStunned(), target, duration);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL), target);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_SUNSTRIKE), target);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectStunned(), target, duration);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_SUNSTRIKE), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

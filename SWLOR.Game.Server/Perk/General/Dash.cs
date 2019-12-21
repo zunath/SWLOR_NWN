@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Perk.General
             Effect movement = _.EffectMovementSpeedIncrease(speed);
             movement = _.TagEffect(movement, "DASH");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, movement, target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, movement, target, duration);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

@@ -601,7 +601,7 @@ namespace SWLOR.Game.Server.Service
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                ApplyEffectToObject(DurationType.Permanent, eEffect, player);
                 player.AssignCommand(() =>
                 {
                     PlaySound("saberon");

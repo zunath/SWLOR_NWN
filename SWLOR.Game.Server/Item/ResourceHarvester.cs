@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
+            ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Item
                 target.SetLocalInt("RESOURCE_COUNT", remaining);
             }
 
-            ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
         }
         
 

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             healAmount += item.MedicineBonus;
             if (rank >= item.RecommendedLevel && item.MedicineBonus > 0)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(healAmount), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(healAmount), target);
             }
             if(target.IsPlayer){
                 int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);

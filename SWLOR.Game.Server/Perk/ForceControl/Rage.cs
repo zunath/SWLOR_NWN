@@ -129,8 +129,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
             // Build a linked effect which handles applying these bonuses and penalties.
             Effect visualEffect = _.EffectVisualEffect(_.VFX_DUR_AURA_RED);
-            Effect strEffect = _.EffectAbilityIncrease(_.ABILITY_STRENGTH, strBonus);
-            Effect conEffect = _.EffectAbilityIncrease(_.ABILITY_CONSTITUTION, conBonus);
+            Effect strEffect = _.EffectAbilityIncrease(_.Ability.Strength, strBonus);
+            Effect conEffect = _.EffectAbilityIncrease(_.Ability.Constitution, conBonus);
             Effect acEffect = _.EffectACDecrease(acPenalty);
             Effect attackEffect = _.EffectModifyAttacks(attacks);
             Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);
@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             creature.AssignCommand(() =>
             {
                 _.ApplyEffectToObject(DurationType.Instant, damageEffect, creature.Object);
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, finalEffect, creature.Object, 6.1f);
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, visualEffect, creature.Object, 6.1f);
+                _.ApplyEffectToObject(_.DurationType.Temporary, finalEffect, creature.Object, 6.1f);
+                _.ApplyEffectToObject(_.DurationType.Temporary, visualEffect, creature.Object, 6.1f);
             });
         }
     }

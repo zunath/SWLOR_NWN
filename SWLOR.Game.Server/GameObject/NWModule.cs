@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == _.true; area = _.GetNextArea())
+                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == true; area = _.GetNextArea())
                 {
                     yield return area;
                 }

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
         {
             NWPlayer oPC = _.GetLastUsedBy();
 
-            if (_.GetIsInCombat(oPC) == _.true)
+            if (_.GetIsInCombat(oPC) == true)
             {
                 _.SendMessageToPC(oPC, "You are in combat.");
                 return;
@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
             int visualEffectID = self.GetLocalInt("VISUAL_EFFECT");
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
             string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
-            bool isInstance = self.GetLocalInt("INSTANCE") == _.true;
-            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == _.true;
+            bool isInstance = self.GetLocalInt("INSTANCE") == true;
+            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == true;
 
             if (keyItemID > 0)
             {

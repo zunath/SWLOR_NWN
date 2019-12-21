@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Conversation
                     else
                     {
                         model.TargetItem = player.LeftHand;
-                        model.InventorySlotID = INVENTORY_SLOT_LEFTHAND;
+                        model.InventorySlotID = InventorySlot.LeftHand;
                         ChangePage("WeaponPartPage");
                     }
 

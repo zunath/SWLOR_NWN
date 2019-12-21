@@ -14,9 +14,12 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
+using Skill = SWLOR.Game.Server.NWScript.Enumerations.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -64,7 +67,7 @@ namespace SWLOR.Game.Server.Service
             Player dbPlayer = DataService.Player.GetByID(pc.GlobalID);
             if (dbPlayer.ActiveConcentrationPerkID != null)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(Skill.UseMagicDevice, 1), pc);
                 ConcentratingCreatures.Add(pc.Object); // Ensure you use .Object because we need to add it as an NWCreature, not an NWPlayer
             }
         }
@@ -81,9 +84,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target of the perk feat.</param>
         /// <param name="featID">The ID number of the feat being used.</param>
         /// <returns>true if able to use perk feat on target, false otherwise.</returns>
-        public static bool CanUsePerkFeat(NWCreature activator, NWObject target, int featID)
+        public static bool CanUsePerkFeat(NWCreature activator, NWObject target, Feat featID)
         {
-            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault(featID);
+            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault((int)featID);
 
             // There's no matching feat in the DB for this ability. Exit early.
             if (perkFeat == null) return false;
@@ -220,14 +223,14 @@ namespace SWLOR.Game.Server.Service
             // Activator is the creature who used the feat.
             // Target is who the activator selected to use this feat on.
             NWCreature activator = NWGameObject.OBJECT_SELF;
-            NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            NWCreature target = NWNXEvents.OnFeatUsed_GetTarget();
+            var featID = NWNXEvents.OnFeatUsed_GetFeat();
 
             // Ensure this perk feat can be activated.
             if (!CanUsePerkFeat(activator, target, featID)) return;
 
             // Retrieve information necessary for activation of perk feat.
-            var perkFeat = DataService.PerkFeat.GetByFeatID(featID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID((int)featID);
             Data.Entity.Perk perk = DataService.Perk.GetByID(perkFeat.PerkID);
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
@@ -377,7 +380,7 @@ namespace SWLOR.Game.Server.Service
 
             creature.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
             creature.DeleteLocalObject("CONCENTRATION_TARGET");
-            creature.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+            creature.RemoveEffect(EffectType.SkillIncrease); // Remove the effect icon.
 
             ConcentratingCreatures.Remove(creature);
         }
@@ -501,8 +504,8 @@ namespace SWLOR.Game.Server.Service
             string uuid = Guid.NewGuid().ToString();
             float baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
-            int vfxID = -1;
-            int animationID = -1;
+            var vfxID = Vfx.None;
+            var animationID = AnimationLooping.Invalid;
             
             if (baseActivationTime > 0f && activationTime < 1.0f)
                 activationTime = 1.0f;
@@ -537,8 +540,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If player is in stealth mode, force them out of stealth mode.
-            if (_.GetActionMode(activator.Object, ACTION_MODE_STEALTH) == 1)
-                _.SetActionMode(activator.Object, ACTION_MODE_STEALTH, 0);
+            if (_.GetActionMode(activator.Object, ActionMode.Stealth) == 1)
+                _.SetActionMode(activator.Object, ActionMode.Stealth, 0);
 
             // Make the player face their target.
             _.ClearAllActions();
@@ -548,8 +551,8 @@ namespace SWLOR.Game.Server.Service
             if (executionType == PerkExecutionType.ForceAbility || 
                 executionType == PerkExecutionType.ConcentrationAbility)
             {
-                vfxID = VFX_DUR_IOUNSTONE_YELLOW;
-                animationID = ANIMATION_LOOPING_CONJURE1;
+                vfxID = Vfx.Vfx_Dur_Iounstone_Yellow;
+                animationID = AnimationLooping.Conjure1;
             }
 
             if (executionType == PerkExecutionType.ConcentrationAbility)
@@ -558,16 +561,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If a VFX ID has been specified, play that effect instead of the default one.
-            if (vfxID > -1)
+            if (vfxID != Vfx.None)
             {
                 var vfx = _.EffectVisualEffect(vfxID);
                 vfx = _.TagEffect(vfx, "ACTIVATION_VFX");
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, activator.Object, activationTime + 0.2f);
+                _.ApplyEffectToObject(DurationType.Temporary, vfx, activator.Object, activationTime + 0.2f);
             }
 
             // If an animation has been specified, make the player play that animation now.
             // bypassing if perk is throw saber due to couldn't get the animation to work via db table edit
-            if (animationID > -1 && entity.ID != (int) PerkType.ThrowSaber)                
+            if (animationID != AnimationLooping.Invalid && entity.ID != (int) PerkType.ThrowSaber)                
             {
                 activator.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
@@ -660,15 +663,15 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
-        private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
+        private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, Feat spellFeatID)
         {
-            var perkFeat = DataService.PerkFeat.GetByFeatID(spellFeatID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID((int)spellFeatID);
             int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.CooldownCategory.GetByID(Convert.ToInt32(cooldownCategoryID));
             string queueUUID = Guid.NewGuid().ToString();
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
-            activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
+            activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", (int)spellFeatID);
             activator.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
             SendAOEMessage(activator, activator.Name + " readies weapon skill '" + entity.Name + "'.");
 
@@ -802,7 +805,7 @@ namespace SWLOR.Game.Server.Service
             NWItem oItem = _.GetSpellCastItem();
 
             // If this method was triggered by our own armor (from getting hit), return. 
-            if (oItem.BaseItemType == BASE_ITEM_ARMOR) return;
+            if (oItem.BaseItemType == BaseItemType.Armor) return;
 
             // Flag this attack as physical so that the damage scripts treat it properly.
             LoggingService.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
@@ -841,12 +844,12 @@ namespace SWLOR.Game.Server.Service
         public static void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
         {
             if (!player.IsPlayer) return;
-            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == false) return;  // Check if player has the perk
+            if (_.GetHasFeat(Feat.PlasmaCell, player) == false) return;  // Check if player has the perk
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
                 player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; // Check if player has the right weapons
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.true) return;   // Check if Tranquilizer is on to avoid conflict
-            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.true) return;  // Check if Plasma Cell toggle is on or off
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.true) return;
+            if (target.GetLocalBoolean("TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;   // Check if Tranquilizer is on to avoid conflict
+            if (player.GetLocalBoolean("PLASMA_CELL_TOGGLE_OFF") == true) return;  // Check if Plasma Cell toggle is on or off
+            if (target.GetLocalBoolean("TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.PlasmaCell);
             int chance;
@@ -910,7 +913,7 @@ namespace SWLOR.Game.Server.Service
         private static void HandleGrenadeProficiency(NWPlayer oPC, NWObject target)
         {
             NWItem weapon = _.GetSpellCastItem();
-            if (weapon.BaseItemType != BASE_ITEM_GRENADE) return;
+            if (weapon.BaseItemType != BaseItemType.Grenade) return;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.GrenadeProficiency);
             int chance = 10 * perkLevel;
@@ -937,7 +940,7 @@ namespace SWLOR.Game.Server.Service
 
             if (RandomService.D100(1) <= chance)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target, duration);
             }
         }
 
@@ -952,13 +955,13 @@ namespace SWLOR.Game.Server.Service
         private static void RegisterCreaturePerks(NWCreature self)
         {
             var perkFeatCache = new Dictionary<int, AIPerkDetails>();
-            var featIDs = new List<int>();
+            var featIDs = new List<Feat>();
 
             // Add all feats the creature has to the list.
             int featCount = NWNXCreature.GetFeatCount(self);
             for (int x = 0; x <= featCount - 1; x++)
             {
-                int featID = NWNXCreature.GetFeatByIndex(self, x);
+                var featID = NWNXCreature.GetFeatByIndex(self, x);
                 featIDs.Add(featID);
             }
 
@@ -1004,12 +1007,12 @@ namespace SWLOR.Game.Server.Service
         {
             const float MaxDistance = 10.0f;
             int nth = 1;
-            NWCreature nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, sender, nth);
+            NWCreature nearby = _.GetNearestCreature((int)CreatureType.IsAlive, 1, sender, nth);
             while (nearby.IsValid && GetDistanceBetween(sender, nearby) <= MaxDistance)
             {
                 nearby.SendMessage(message);
                 nth++;
-                nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, sender, nth);
+                nearby = _.GetNearestCreature((int)CreatureType.IsAlive, 1, sender, nth);
             }
         }
     }

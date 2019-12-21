@@ -957,7 +957,7 @@ namespace SWLOR.Game.Server.Service
                 if (displayExplosion)
                 {
                     Location location = structure.Structure.Location;
-                    _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
+                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
                 }
             }
         }

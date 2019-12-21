@@ -23,12 +23,12 @@ namespace SWLOR.Game.Server.Item
             int hp = user.MaxHP;
 
             // Restores HP to max
-            ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectHeal(hp), user);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), user);
 
             // But reduces one random attribute by 50 for 2 minutes.
             int stat = RandomService.D6(1)-1;
             var effect = EffectAbilityDecrease(stat, 50);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, user, 120f);
+            ApplyEffectToObject(DurationType.Temporary, effect, user, 120f);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -55,14 +56,14 @@ namespace SWLOR.Game.Server.Caching
             return (PerkFeat)ByFeatID[featID].Clone();
         }
 
-        public IEnumerable<PerkFeat> GetAllByIDs(IEnumerable<int> perkIDs)
+        public IEnumerable<PerkFeat> GetAllByIDs(IEnumerable<Feat> perkIDs)
         {
             var list = new List<PerkFeat>();
             foreach (var perkID in perkIDs)
             {
-                if (ByFeatID.ContainsKey(perkID))
+                if (ByFeatID.ContainsKey((int)perkID))
                 {
-                    list.Add((PerkFeat)ByFeatID[perkID].Clone());
+                    list.Add((PerkFeat)ByFeatID[(int)perkID].Clone());
                 }
             }
 

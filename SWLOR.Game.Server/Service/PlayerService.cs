@@ -53,12 +53,12 @@ namespace SWLOR.Game.Server.Service
                 });
 
                 // Capture original stats before we level up the player.
-                int str = NWNXCreature.GetRawAbilityScore(player, ABILITY_STRENGTH);
-                int con = NWNXCreature.GetRawAbilityScore(player, ABILITY_CONSTITUTION);
-                int dex = NWNXCreature.GetRawAbilityScore(player, ABILITY_DEXTERITY);
-                int @int = NWNXCreature.GetRawAbilityScore(player, ABILITY_INTELLIGENCE);
-                int wis = NWNXCreature.GetRawAbilityScore(player, ABILITY_WISDOM);
-                int cha = NWNXCreature.GetRawAbilityScore(player, ABILITY_CHARISMA);
+                int str = NWNXCreature.GetRawAbilityScore(player, Ability.Strength);
+                int con = NWNXCreature.GetRawAbilityScore(player, Ability.Constitution);
+                int dex = NWNXCreature.GetRawAbilityScore(player, Ability.Dexterity);
+                int @int = NWNXCreature.GetRawAbilityScore(player, Ability.Intelligence);
+                int wis = NWNXCreature.GetRawAbilityScore(player, Ability.Wisdom);
+                int cha = NWNXCreature.GetRawAbilityScore(player, Ability.Charisma);
 
                 // Take player to level 5 in NWN levels so that we have access to more HP slots
                 _.GiveXPToCreature(player, 10000);
@@ -69,12 +69,12 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Set stats back to how they were on entry.
-                NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, str);
-                NWNXCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, con);
-                NWNXCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, dex);
-                NWNXCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, @int);
-                NWNXCreature.SetRawAbilityScore(player, ABILITY_WISDOM, wis);
-                NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, cha);
+                NWNXCreature.SetRawAbilityScore(player, Ability.Strength, str);
+                NWNXCreature.SetRawAbilityScore(player, Ability.Constitution, con);
+                NWNXCreature.SetRawAbilityScore(player, Ability.Dexterity, dex);
+                NWNXCreature.SetRawAbilityScore(player, Ability.Intelligence, @int);
+                NWNXCreature.SetRawAbilityScore(player, Ability.Wisdom, wis);
+                NWNXCreature.SetRawAbilityScore(player, Ability.Charisma, cha);
 
                 NWItem knife = (_.CreateItemOnObject("survival_knife", player));
                 knife.Name = player.Name + "'s Survival Knife";
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerStatService.ApplyStatChanges(player, null, true);
                 LanguageService.InitializePlayerLanguages(player);
 
-                _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
+                _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(999), player));
 
                 InitializeHotBar(player);
             }
@@ -239,12 +239,12 @@ namespace SWLOR.Game.Server.Service
                 RespawnLocationOrientation = 0.0f,
                 DateSanctuaryEnds = DateTime.UtcNow + TimeSpan.FromDays(3),
                 IsSanctuaryOverrideEnabled = false,
-                STRBase = NWNXCreature.GetRawAbilityScore(player, ABILITY_STRENGTH),
-                DEXBase = NWNXCreature.GetRawAbilityScore(player, ABILITY_DEXTERITY),
-                CONBase = NWNXCreature.GetRawAbilityScore(player, ABILITY_CONSTITUTION),
-                INTBase = NWNXCreature.GetRawAbilityScore(player, ABILITY_INTELLIGENCE),
-                WISBase = NWNXCreature.GetRawAbilityScore(player, ABILITY_WISDOM),
-                CHABase = NWNXCreature.GetRawAbilityScore(player, ABILITY_CHARISMA),
+                STRBase = NWNXCreature.GetRawAbilityScore(player, Ability.Strength),
+                DEXBase = NWNXCreature.GetRawAbilityScore(player, Ability.Dexterity),
+                CONBase = NWNXCreature.GetRawAbilityScore(player, Ability.Constitution),
+                INTBase = NWNXCreature.GetRawAbilityScore(player, Ability.Intelligence),
+                WISBase = NWNXCreature.GetRawAbilityScore(player, Ability.Wisdom),
+                CHABase = NWNXCreature.GetRawAbilityScore(player, Ability.Charisma),
                 TotalSPAcquired = 0,
                 DisplayHelmet = true,
                 PrimaryResidencePCBaseStructureID = null,
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Service
 
             if (damage != 0)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage), player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), player);
             }
 
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Service
             if (appearance > 0 && appearance != _.GetAppearanceType(player))
             {
                 _.SetCreatureAppearanceType(player, appearance);
-                _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
+                _.SetObjectVisualTransform(player, ObjectVisualTransform.Scale, 1.0f);
             }
         }
 
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Service
 
             Effect eGhostWalk = _.EffectCutsceneGhost();
             eGhostWalk = _.TagEffect(eGhostWalk, "GHOST_WALK");
-            _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, eGhostWalk, oPC.Object);
+            _.ApplyEffectToObject(_.DurationType.Permanent, eGhostWalk, oPC.Object);
 
         }
 

@@ -308,8 +308,8 @@ void main()
         eConceal = ExtraordinaryEffect(eConceal);
         effect eGhost = EffectCutsceneGhost();
         eGhost = ExtraordinaryEffect(eGhost);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eConceal, OBJECT_SELF);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eGhost, OBJECT_SELF);
+        ApplyEffectToObject(DurationType.Permanent, eConceal, OBJECT_SELF);
+        ApplyEffectToObject(DurationType.Permanent, eGhost, OBJECT_SELF);
 
     }
 

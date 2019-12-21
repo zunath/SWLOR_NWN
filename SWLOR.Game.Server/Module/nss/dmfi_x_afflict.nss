@@ -333,19 +333,19 @@ void main()
     if ((GetEffectType(eD)!= EFFECT_TYPE_INVALIDEFFECT) ||
     (GetEffectType(eVis) != EFFECT_TYPE_INVALIDEFFECT))
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eD, oTarget);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eVis, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eD, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eVis, oTarget);
         return;
     }
     if (GetEffectType(eA)!= EFFECT_TYPE_INVALIDEFFECT)
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eA, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eA, oTarget);
         DelayCommand(5.0, CheckForEffect(eA, oTarget, oUser));
         return;
     }
     if ((GetEffectType(eT)!= EFFECT_TYPE_INVALIDEFFECT) || (nBug ==1))
     {
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eT, oTarget, fDuration);
+        ApplyEffectToObject(DurationType.Temporary, eT, oTarget, fDuration);
 
         if ((GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_INCREASE) ||
         (GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_DECREASE))
@@ -368,9 +368,9 @@ void main()
         if (!GetIsObjectValid(oFollowMe))
             oFollowMe = oUser;
 
-        AssignCommand(oFollowMe, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneDominated(), oTarget));
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), oTarget);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
+        AssignCommand(oFollowMe, ApplyEffectToObject(DurationType.Permanent, EffectCutsceneDominated(), oTarget));
+        ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), oTarget);
+        ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
     }
 
     return;

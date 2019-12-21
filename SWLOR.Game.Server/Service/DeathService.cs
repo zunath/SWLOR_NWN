@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyDurabilityLoss(NWPlayer player)
         {
-            for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
+            for (int index = 0; index < NWNConstants.NumberOfInventorySlots; index++)
             {
                 NWItem equipped = _.GetItemInSlot(index, player);
                 DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
@@ -59,8 +59,8 @@ namespace SWLOR.Game.Server.Service
             ApplyDurabilityLoss(oPC);
 
             int amount = oPC.MaxHP / 2;
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), oPC.Object);
 
             NWArea area = oPC.Area;
             

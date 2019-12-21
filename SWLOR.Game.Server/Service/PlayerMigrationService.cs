@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var serialized in serializedItems)
             {
                 var item = SerializationService.DeserializeItem(serialized.Data, player);
-                BiowareXP2.IPRemoveAllItemProperties(item, DURATION_TYPE_PERMANENT);
+                BiowareXP2.IPRemoveAllItemProperties(item, DurationType.Permanent);
                 foreach (var ip in serialized.ItemPropertiesToAdd)
                 {
                     BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

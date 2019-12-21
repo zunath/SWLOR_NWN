@@ -13,9 +13,9 @@ const int INVENTORY_SLOT_BEST_RANGED = 998;
 const int INVENTORY_SLOT_BEST_ARMOUR = 997;
 const int INVENTORY_SLOT_NONE = 996;
 
-const int INSTANT = DURATION_TYPE_INSTANT;
-const int PERMANENT = DURATION_TYPE_PERMANENT;
-const int TEMPORARY = DURATION_TYPE_TEMPORARY;
+const int INSTANT = DurationType.Instant;
+const int PERMANENT = DurationType.Permanent;
+const int TEMPORARY = DurationType.Temporary;
 
 const int TRACK_CURRENT = 998;
 const int TRACK_ORIGINAL = 999;
@@ -1711,7 +1711,7 @@ void GestaltDoSetSpeed(string sName, object oActor, string sActor, float fTime, 
             fPercent = 100 * ((fTargetSpeed - fActualSpeed) / fTargetSpeed);
             iPercent = FloatToInt(fPercent);
     //      AssignCommand(oActor,SpeakString("Speed increase " + IntToString(iPercent),TALKVOLUME_SHOUT));     // DEBUG LINE
-            ApplyEffectToObject(DURATION_TYPE_PERMANENT,EffectMovementSpeedIncrease(iPercent),oActor);
+            ApplyEffectToObject(DurationType.Permanent,EffectMovementSpeedIncrease(iPercent),oActor);
             }
 
         else
@@ -1719,7 +1719,7 @@ void GestaltDoSetSpeed(string sName, object oActor, string sActor, float fTime, 
             fPercent = 100 * ((fActualSpeed - fTargetSpeed) / fActualSpeed);
             iPercent = FloatToInt(fPercent);
     //      AssignCommand(oActor,SpeakString("Speed decrease " + IntToString(iPercent),TALKVOLUME_SHOUT));     // DEBUG LINE
-            ApplyEffectToObject(DURATION_TYPE_PERMANENT,EffectMovementSpeedDecrease(iPercent),oActor);
+            ApplyEffectToObject(DurationType.Permanent,EffectMovementSpeedDecrease(iPercent),oActor);
             }
         }
 }

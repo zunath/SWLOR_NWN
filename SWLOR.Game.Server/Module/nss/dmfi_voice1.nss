@@ -26,8 +26,8 @@ void main()
         SetListening(OBJECT_SELF, true);      //be sure NPC is listening
 
         //leave it here rather than add the one time loop to EVERY creature through a OS script change
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), OBJECT_SELF);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), OBJECT_SELF);
+        ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), OBJECT_SELF);
+        ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), OBJECT_SELF);
         SetLocalInt(OBJECT_SELF, "hls_invis",1);
     }
 

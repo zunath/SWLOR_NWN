@@ -50,7 +50,7 @@ int dmwand_istargetnotme()
 
 int dmwand_istargetpcornpc()
 {
-   return (GetIsObjectValid(oMyTarget) && GetAbilityScore(oMyTarget, ABILITY_CONSTITUTION));
+   return (GetIsObjectValid(oMyTarget) && GetAbilityScore(oMyTarget, Ability.Constitution));
 }
 
 int dmwand_istargetnpc()

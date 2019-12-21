@@ -7,7 +7,7 @@
 //:://////////////////////////////////////////////
 int StartingConditional()
 {
-	if(!(GetAbilityScore(GetPCSpeaker(), ABILITY_INTELLIGENCE) > 14))
+	if(!(GetAbilityScore(GetPCSpeaker(), Ability.Intelligence) > 14))
 		return false;
 
 	return true;

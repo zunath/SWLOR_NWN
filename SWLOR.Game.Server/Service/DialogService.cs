@@ -8,6 +8,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -150,7 +151,7 @@ namespace SWLOR.Game.Server.Service
 
             // NPC conversations
             
-            if (_.GetObjectType(talkTo.Object) == _.ObjectType.Creature &&
+            if (_.GetObjectType(talkTo.Object) == ObjectType.Creature &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
@@ -159,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             // Everything else
             else
             {
-                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, _.true, _.false));
+                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, true, false));
             }
         }
 
@@ -180,9 +181,9 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleRest()
         {
             NWPlayer player = (_.GetLastPCRested());
-            int restType = _.GetLastRestEventType();
+            var restType = _.GetLastRestEventType();
 
-            if (restType != _.REST_EVENTTYPE_REST_STARTED ||
+            if (restType != RestEventType.Started ||
                 !player.IsValid ||
                 player.IsDM) return;
 
@@ -340,8 +341,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    int objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
-                    if (objectType == _.ObjectType.Placeable)
+                    var objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
+                    if (objectType == ObjectType.Placeable)
                     {
                         NWPlaceable talkTo = (NWGameObject.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
@@ -354,7 +355,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    _.ActionStartConversation(pc.Object, "", _.true, _.false);
+                    _.ActionStartConversation(pc.Object, "", true, false);
                 }
             }
         }

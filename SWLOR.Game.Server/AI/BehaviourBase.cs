@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.AI
             int vfx = self.GetLocalInt("DEATH_VFX");
             if (vfx > 0)
             {
-                ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(vfx), self);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), self);
             }
         }
 
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.AI
             }
 
             if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == _.false &&
+                _.IsInConversation(self.Object) == false &&
                 _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
                 _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
                 RandomService.Random(100) <= 25)
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.AI
                 return;
 
             if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == _.false &&
+                _.IsInConversation(self.Object) == false &&
                 _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
             {
                 var flags = GetAIFlags(self);

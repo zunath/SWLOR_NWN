@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
                     // Play a visual effect signifying the ability was activated.
-                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
+                    _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
                 }
             }
 
@@ -392,13 +392,13 @@ namespace SWLOR.Game.Server.Service
             switch (skill)
             {
                 case SkillType.ForceAlter:
-                    abilityScoreType = ABILITY_INTELLIGENCE;
+                    abilityScoreType = Ability.Intelligence;
                     break;
                 case SkillType.ForceControl:
-                    abilityScoreType = ABILITY_WISDOM;
+                    abilityScoreType = Ability.Wisdom;
                     break;
                 case SkillType.ForceSense:
-                    abilityScoreType = ABILITY_CHARISMA;
+                    abilityScoreType = Ability.Charisma;
                     break;
                 default:
                     throw new ArgumentException("Invalid skill type called for " + nameof(CalculateAbilityResistance) + ", value '" + skill + "' not supported.");

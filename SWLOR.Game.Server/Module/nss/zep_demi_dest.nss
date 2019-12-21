@@ -91,7 +91,7 @@ void DestroyDemilich(object oBones)
         DestroyObject(oHolyWater);
 
     // Display the demilich's soul departing. (Impressive, no?)
-    ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_WAIL_O_BANSHEES), oBones);
+    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_FNF_WAIL_O_BANSHEES), oBones);
 
     // Display some floating text over the PC who did the demilich in.
     FloatingTextStringOnCreature(ZEP_DEMI_FINAL_DEST, OBJECT_SELF);
@@ -110,7 +110,7 @@ void DestroyDemilich(object oBones)
     DestroyObject(GetLocalObject(oBones, ZEP_DEMI_LOCAL_HOLDER), WAIL_TIME);
     DestroyObject(oBones, WAIL_TIME + 0.1); // Slightly longer delay so DeathKnell() can finish.
     // A little extra visual effect as the bones disappear.
-    DelayCommand(WAIL_TIME, ApplyEffectToObject(DURATION_TYPE_INSTANT,
+    DelayCommand(WAIL_TIME, ApplyEffectToObject(DurationType.Instant,
                                 EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE),
                                 oBones));
     // Effects of the death knell.
@@ -140,10 +140,10 @@ void DeathKnell()
         // Allow a Will save.
         if ( !WillSave(oCreature, nDC) )
             // Stun them for 1-4 rounds.
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eStun, oCreature, RoundsToSeconds(d4()));
+            ApplyEffectToObject(DurationType.Temporary, eStun, oCreature, RoundsToSeconds(d4()));
         else
             // Daze them for 1-2 rounds.
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eDaze, oCreature, RoundsToSeconds(d2()));
+            ApplyEffectToObject(DurationType.Temporary, eDaze, oCreature, RoundsToSeconds(d2()));
 
         // Update the loop.
         oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, ++nCount);
@@ -156,7 +156,7 @@ void DeathKnell()
         // Allow a Will save.
         if ( !WillSave(oCreature, nDC) )
             // Daze them for 1-4 rounds.
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eDaze, oCreature, RoundsToSeconds(d4()));
+            ApplyEffectToObject(DurationType.Temporary, eDaze, oCreature, RoundsToSeconds(d4()));
 
         // Update the loop.
         oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, ++nCount);

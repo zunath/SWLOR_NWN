@@ -19,10 +19,10 @@ namespace NWN.Scripts
                 int reqGold = _.GetLocalInt(oNPC, "gold");
                 if (nGold > reqGold)
                 {
-                    return _.true;
+                    return true;
                 }
 
-                return _.false;
+                return false;
             }
         }
     }

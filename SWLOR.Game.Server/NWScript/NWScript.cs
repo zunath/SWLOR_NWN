@@ -24,7 +24,7 @@ namespace NWN
         /// as parameters to delayed actions.  Instead, the effect should be created in the
         /// script and then passed into the action.  For example:
         /// effect eDamage = EffectDamage(nDamage, DAMAGE_TYPE_MAGICAL);
-        /// DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDamage, oTarget);
+        /// DelayCommand(fDelay, ApplyEffectToObject(DurationType.Instant, eDamage, oTarget);
         /// </summary>
         public static void DelayCommand(float fSeconds, ActionDelegate aActionToDelay)
         {
@@ -585,7 +585,7 @@ namespace NWN
         ///    the end-user to simulate a high-level magic-user having lots of advance
         ///    warning of impending trouble
         /// </summary>
-        public static void ActionCastSpellAtObject(int nSpell, NWGameObject oTarget, MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false, int nDomainLevel = 0, ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
+        public static void ActionCastSpellAtObject(Spell nSpell, NWGameObject oTarget, MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false, int nDomainLevel = 0, ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
             Internal.NativeFunctions.StackPushInteger(bInstantSpell ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
@@ -593,7 +593,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(bCheat ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nMetaMagic);
             Internal.NativeFunctions.StackPushObject(oTarget != null ? oTarget.Self : NWGameObject.OBJECT_INVALID);
-            Internal.NativeFunctions.StackPushInteger(nSpell);
+            Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(48);
         }
 
@@ -4310,9 +4310,9 @@ namespace NWN
         /// <summary>
         ///  Jump to oToJumpTo (the action is added to the top of the action queue).
         /// </summary>
-        public static void JumpToObject(NWGameObject oToJumpTo, int nWalkStraightLineToPoint = 1)
+        public static void JumpToObject(NWGameObject oToJumpTo, bool nWalkStraightLineToPoint = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nWalkStraightLineToPoint);
+            Internal.NativeFunctions.StackPushInteger(nWalkStraightLineToPoint ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oToJumpTo != null ? oToJumpTo.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(385);
         }
@@ -9236,11 +9236,11 @@ namespace NWN
         /// <summary>
         ///  Returns the creature's currently set PhenoType (body type).
         /// </summary>
-        public static int GetPhenoType(NWGameObject oCreature)
+        public static PhenoType GetPhenoType(NWGameObject oCreature)
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(778);
-            return Internal.NativeFunctions.StackPopInteger();
+            return (PhenoType)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>
@@ -10397,7 +10397,7 @@ namespace NWN
 
         /// <summary>
         ///  Returns the total duration of the effect in seconds.
-        ///  - Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY.
+        ///  - Returns 0 if the duration type of the effect is not DurationType.Temporary.
         /// </summary>
         public static int GetEffectDuration(NWN.Effect eEffect)
         {
@@ -10408,7 +10408,7 @@ namespace NWN
 
         /// <summary>
         ///  Returns the remaining duration of the effect in seconds.
-        ///  - Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY.
+        ///  - Returns 0 if the duration type of the effect is not DurationType.Temporary.
         /// </summary>
         public static int GetEffectDurationRemaining(NWN.Effect eEffect)
         {
@@ -10442,7 +10442,7 @@ namespace NWN
 
         /// <summary>
         ///  Returns the total duration of the item property in seconds.
-        ///  - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
+        ///  - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
         public static int GetItemPropertyDuration(NWN.ItemProperty nProperty)
         {
@@ -10453,7 +10453,7 @@ namespace NWN
 
         /// <summary>
         ///  Returns the remaining duration of the item property in seconds.
-        ///  - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
+        ///  - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
         public static int GetItemPropertyDurationRemaining(NWN.ItemProperty nProperty)
         {

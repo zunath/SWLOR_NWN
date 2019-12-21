@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
 
                 if (progress == null)
                 {
-                    _.CopyItem(item, player, _.true);
+                    _.CopyItem(item, player, true);
                     player.SendMessage(ColorTokenService.Red("That item is not required for this quest."));
                 }
                 else if (progress.MustBeCraftedByPlayer && crafterPlayerGUID != player.GlobalID)
                 {
-                    _.CopyItem(item, player, _.true);
+                    _.CopyItem(item, player, true);
                     player.SendMessage(ColorTokenService.Red("You may only submit items which you have personally created for this quest."));
                 }
                 else
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
                     // Or a regular NWN conversation.
                     else
                     {
-                        player.AssignCommand(() => { _.ActionStartConversation(owner, "", _.true, _.false); });
+                        player.AssignCommand(() => { _.ActionStartConversation(owner, "", true, false); });
                     }
                 }
             }

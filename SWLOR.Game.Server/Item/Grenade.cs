@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Item
             {
                 user.DelayAssignCommand(() =>
                 {
-                    ApplyEffectAtLocation(DURATION_TYPE_INSTANT, impactEffect, targetLocation);
+                    ApplyEffectAtLocation(DurationType.Instant, impactEffect, targetLocation);
                 }, delay);
             }
 
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Item
             if (durationEffect != null)
             {
                 //Apply AOE
-                ApplyEffectAtLocation(_.DURATION_TYPE_TEMPORARY, durationEffect, targetLocation, duration * 6.0f);
+                ApplyEffectAtLocation(_.DurationType.Temporary, durationEffect, targetLocation, duration * 6.0f);
             }
             else
             {
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Item
                     Console.WriteLine("applying effects to " + GetName(targetCreature));
 
                     if (damageEffect != null) ApplyEffectToObject(DurationType.Instant, damageEffect, targetCreature);
-                    if (durationEffect != null) ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, durationEffect, targetCreature, duration * 6.0f);
+                    if (durationEffect != null) ApplyEffectToObject(_.DurationType.Temporary, durationEffect, targetCreature, duration * 6.0f);
 
                     if (!targetCreature.IsPlayer)
                     {
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Item
             if (GetIsObjectValid(oTarget) == true)
             {
                 if (impactEffect != null) ApplyEffectToObject(DurationType.Instant, impactEffect, oTarget);
-                if (durationEffect != null) ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, durationEffect, oTarget, duration * 6.0f);
+                if (durationEffect != null) ApplyEffectToObject(_.DurationType.Temporary, durationEffect, oTarget, duration * 6.0f);
                 if (!oTarget.IsPlayer)
                 {
                     SkillService.RegisterPCToNPCForSkill(user.Object, oTarget, SkillType.Throwing);

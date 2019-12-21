@@ -19,7 +19,7 @@
     //SetLocalInt(oPC,"CLONED",1);  //Mark creature
     // object oFan = CopyObject(oPC,nLoc,OBJECT_INVALID,""); //Clone creature in his location
     //effect nEff = EffectVisualEffect(VFX_FNF_SUMMON_CELESTIAL,false); //Make a visual effect
-    //ApplyEffectToObject(DURATION_TYPE_INSTANT,nEff,nObj); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
+    //ApplyEffectToObject(DurationType.Instant,nEff,nObj); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
    // ExecuteScript("dead2",oFan); //Execute special script in new clone creature
     //AssignCommand(oFan,ActionAttack(oPC)); //Make this new creature attack the last creature in the sphere - need, because the new creature is a PC too
     //SetLocalInt(oFan,"HATE",1); //Mark a special variable in new creature

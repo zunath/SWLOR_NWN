@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Store;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -35,13 +36,13 @@ namespace SWLOR.Game.Server.Service
             foreach (var area in NWModule.Get().Areas)
             {
                 // Loop through any stores in this area.
-                foreach (var store in area.Objects.Where(x => x.ObjectType == _.OBJECT_TYPE_STORE))
+                foreach (var store in area.Objects.Where(x => x.ObjectType == ObjectType.Store))
                 {
                     // Loop through the store's inventory (i.e items which are being sold)
                     foreach (var item in store.InventoryItems)
                     {
                         // Mark this item so it doesn't get cleaned up.
-                        item.SetLocalInt("STORE_SERVICE_IS_STORE_ITEM", _.true);
+                        item.SetLocalBoolean("STORE_SERVICE_IS_STORE_ITEM", true);
                     }
 
                     _stores.Add(store);
@@ -87,14 +88,14 @@ namespace SWLOR.Game.Server.Service
             if(!string.IsNullOrWhiteSpace(closeDateString))
             {
                 DateTime closeDate = DateTime.Parse(closeDateString);
-                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return; // todo change to 10 minutes
+                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return;
             }
 
             // By this point we know that the store needs to be cleaned up.
             // We'll look for any items which aren't part of this store and destroy them.
             foreach (var item in store.InventoryItems)
             {
-                if (item.GetLocalInt("STORE_SERVICE_IS_STORE_ITEM") == _.true) continue;
+                if (item.GetLocalBoolean("STORE_SERVICE_IS_STORE_ITEM")) continue;
                 item.Destroy();
             }
         }

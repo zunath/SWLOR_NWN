@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Bioware
             if (fDuration == 0.0f)
             {
 
-                nDuration = _.DURATION_TYPE_PERMANENT;
+                nDuration = _.DurationType.Permanent;
             }
             else
             {
 
-                nDuration = _.DURATION_TYPE_TEMPORARY;
+                nDuration = _.DurationType.Temporary;
             }
 
             int nDurationCompare = nDuration;
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Bioware
 
             }
 
-            if (nDuration == _.DURATION_TYPE_PERMANENT)
+            if (nDuration == _.DurationType.Permanent)
             {
                 _.AddItemProperty(nDuration, ip, oItem.Object);
             }
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Bioware
                         if (_.GetItemPropertySubType(prop) == nItemPropertySubType || nItemPropertySubType == -1)
                         {
                             // Put a warning into the logfile if someone tries to remove a permanent ip with a temporary one!
-                            /*if (nItemPropertyDuration == DURATION_TYPE_TEMPORARY &&  GetItemPropertyDurationType(ip) == DURATION_TYPE_PERMANENT)
+                            /*if (nItemPropertyDuration == DurationType.Temporary &&  GetItemPropertyDurationType(ip) == DurationType.Permanent)
                             {
                                WriteTimestampedLogEntry("x2_inc_itemprop:: IPRemoveMatchingItemProperties() - WARNING: Permanent item property removed by temporary on "+GetTag(oItem));
                             }

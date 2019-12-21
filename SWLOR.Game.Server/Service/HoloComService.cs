@@ -108,14 +108,14 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(receiver, message);
                 Effect effectImmobilized = EffectCutsceneImmobilize();
                 TagEffect(effectImmobilized, "HOLOCOM_CALL_IMMOBILIZE");
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, effectImmobilized, sender);
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, effectImmobilized, receiver);
+                ApplyEffectToObject(DurationType.Permanent, effectImmobilized, sender);
+                ApplyEffectToObject(DurationType.Permanent, effectImmobilized, receiver);
 
                 var holosender = CopyObject(sender, VectorService.MoveLocation(receiver.Location, GetFacing(receiver), 2.0f, 180));
                 var holoreceiver = CopyObject(receiver, VectorService.MoveLocation(sender.Location, GetFacing(sender), 2.0f, 180));
 
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holosender);
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holoreceiver);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holosender);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holoreceiver);
                 SetPlotFlag(holoreceiver, true);
                 SetPlotFlag(holosender, true);
                 sender.SetLocalObject("HOLOCOM_HOLOGRAM", holosender);

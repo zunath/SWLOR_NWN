@@ -206,13 +206,13 @@ namespace SWLOR.Game.Server.Conversation
                         // Show sparks halfway through the process.
                         _.DelayCommand(1.0f * (delay / 2.0f), () =>
                         {
-                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), NWGameObject.OBJECT_SELF);
+                            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), NWGameObject.OBJECT_SELF);
                         });
                         
                         // Immobilize the player while crafting.
                         Effect immobilize = _.EffectCutsceneImmobilize();
                         immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
-                        _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, player);
+                        _.ApplyEffectToObject(DurationType.Permanent, immobilize, player);
 
                         // Clear the temporary crafting data and end this conversation.
                         model.SerializedSalvageItem = string.Empty;

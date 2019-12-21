@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.Armor
             var vfx = _.EffectVisualEffect(VFX_DUR_BLUR);
             vfx = _.TagEffect(vfx, "SHIELD_BOOST_VFX");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);
             CustomEffectService.ApplyCustomEffect(creature, target.Object, CustomEffectType.ShieldBoost, duration, perkLevel, null);
         }
 

@@ -24,9 +24,9 @@ void JumpToWeakestEnemy(object oTargetVictim)
         ClearAllActions();
         effect eVis = EffectDisappearAppear (lTargetVictim);
         effect eGate = EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE);
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGate, OBJECT_SELF, 2.0);
-        DelayCommand(0.3,ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eVis, OBJECT_SELF, 2.0));
-        DelayCommand(2.3,ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, eGate, lTargetVictim, 2.0));
+        ApplyEffectToObject(DurationType.Temporary, eGate, OBJECT_SELF, 2.0);
+        DelayCommand(0.3,ApplyEffectToObject(DurationType.Temporary, eVis, OBJECT_SELF, 2.0));
+        DelayCommand(2.3,ApplyEffectAtLocation(DurationType.Temporary, eGate, lTargetVictim, 2.0));
         DelayCommand(6.0,ActionAttack(oTargetVictim));
     }
 }

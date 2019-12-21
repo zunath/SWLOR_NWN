@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
             effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
         }
 
         private bool RemoveExistingEffect(NWObject target, float duration)

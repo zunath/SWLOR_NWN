@@ -73,7 +73,7 @@ void FinishDyeScript(object oPC, object oTarget, int bEquipped, int nSlot)
     //----------------------------------------------------------------------------
     // We need to remove all temporary item properties here
     //----------------------------------------------------------------------------
-    IPRemoveAllItemProperties(oNew,DURATION_TYPE_TEMPORARY);
+    IPRemoveAllItemProperties(oNew,DurationType.Temporary);
 
     // Reequip armor if it was equipped before
     if (bEquipped)
@@ -132,7 +132,7 @@ void main()
     // GZ@2006/03/26: Added cloak support
     else if (nBase == BASE_ITEM_CLOAK )
     {
-        nSlot = INVENTORY_SLOT_CLOAK;
+        nSlot = InventorySlot.Cloak;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
     else

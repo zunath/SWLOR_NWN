@@ -2,6 +2,7 @@
 using System.Linq;
 
 using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
@@ -18,21 +19,21 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual float ChallengeRating => _.GetChallengeRating(Object);
 
-        public virtual int Class1 => _.GetClassByPosition(1, Object);
+        public virtual ClassType Class1 => _.GetClassByPosition(ClassPosition.First, Object);
 
-        public virtual int Class2 => _.GetClassByPosition(2, Object);
+        public virtual ClassType Class2 => _.GetClassByPosition(ClassPosition.Second, Object);
 
-        public virtual int Class3 => _.GetClassByPosition(3, Object);
+        public virtual ClassType Class3 => _.GetClassByPosition(ClassPosition.Third, Object);
 
         public virtual bool IsCommandable
         {
-            get => _.GetCommandable(Object) == 1;
-            set => _.SetCommandable(value ? 1 : 0, Object);
+            get => _.GetCommandable(Object);
+            set => _.SetCommandable(value, Object);
         }
 
-        public virtual int Size => _.GetCreatureSize(Object);
+        public virtual CreatureSize Size => _.GetCreatureSize(Object);
 
-        public virtual int Phenotype
+        public virtual PhenoType Phenotype
         {
             get => _.GetPhenoType(Object);
             set => _.SetPhenoType(value, Object);
@@ -44,31 +45,31 @@ namespace SWLOR.Game.Server.GameObject
             set => _.SetDeity(Object, value);
         }
 
-        public virtual int RacialType => _.GetRacialType(Object);
+        public virtual RacialType RacialType => _.GetRacialType(Object);
 
-        public virtual int Gender => _.GetGender(Object);
+        public virtual Gender Gender => _.GetGender(Object);
 
-        public virtual bool IsResting => _.GetIsResting(Object) == 1;
+        public virtual bool IsResting => _.GetIsResting(Object);
 
         public virtual float Weight => _.GetWeight(Object) * 0.1f;
 
-        public virtual int Strength => _.GetAbilityScore(Object, ABILITY_STRENGTH);
+        public virtual int Strength => _.GetAbilityScore(Object, Ability.Strength);
 
-        public virtual int Dexterity => _.GetAbilityScore(Object, ABILITY_DEXTERITY);
+        public virtual int Dexterity => _.GetAbilityScore(Object, Ability.Dexterity);
 
-        public virtual int Constitution => _.GetAbilityScore(Object, ABILITY_CONSTITUTION);
+        public virtual int Constitution => _.GetAbilityScore(Object, Ability.Constitution);
 
-        public virtual int Wisdom => _.GetAbilityScore(Object, ABILITY_WISDOM);
-        public virtual int Intelligence => _.GetAbilityScore(Object, ABILITY_INTELLIGENCE);
+        public virtual int Wisdom => _.GetAbilityScore(Object, Ability.Wisdom);
+        public virtual int Intelligence => _.GetAbilityScore(Object, Ability.Intelligence);
 
-        public virtual int Charisma => _.GetAbilityScore(Object, ABILITY_CHARISMA);
+        public virtual int Charisma => _.GetAbilityScore(Object, Ability.Charisma);
         
-        public virtual int StrengthModifier => _.GetAbilityModifier(ABILITY_STRENGTH, Object);
-        public virtual int DexterityModifier => _.GetAbilityModifier(ABILITY_DEXTERITY, Object);
-        public virtual int ConstitutionModifier => _.GetAbilityModifier(ABILITY_CONSTITUTION, Object);
-        public virtual int WisdomModifier => _.GetAbilityModifier(ABILITY_WISDOM, Object);
-        public virtual int IntelligenceModifier => _.GetAbilityModifier(ABILITY_INTELLIGENCE, Object);
-        public virtual int CharismaModifier => _.GetAbilityModifier(ABILITY_CHARISMA, Object);
+        public virtual int StrengthModifier => _.GetAbilityModifier(Ability.Strength, Object);
+        public virtual int DexterityModifier => _.GetAbilityModifier(Ability.Dexterity, Object);
+        public virtual int ConstitutionModifier => _.GetAbilityModifier(Ability.Constitution, Object);
+        public virtual int WisdomModifier => _.GetAbilityModifier(Ability.Wisdom, Object);
+        public virtual int IntelligenceModifier => _.GetAbilityModifier(Ability.Intelligence, Object);
+        public virtual int CharismaModifier => _.GetAbilityModifier(Ability.Charisma, Object);
 
         public virtual int XP
         {
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.GameObject
             set => _.SetXP(Object, value);
         }
 
-        public bool IsInCombat => _.GetIsInCombat(Object) == 1;
+        public bool IsInCombat => _.GetIsInCombat(Object);
 
         public virtual void ClearAllActions(bool clearCombatState = false)
         {
@@ -88,26 +89,26 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual NWItem Head => _.GetItemInSlot(InventorySlot.Head, Object);
         public virtual NWItem Chest => _.GetItemInSlot(InventorySlot.Chest, Object);
-        public virtual NWItem Boots => _.GetItemInSlot(INVENTORY_SLOT_BOOTS, Object);
-        public virtual NWItem Arms => _.GetItemInSlot(INVENTORY_SLOT_ARMS, Object);
+        public virtual NWItem Boots => _.GetItemInSlot(InventorySlot.Boots, Object);
+        public virtual NWItem Arms => _.GetItemInSlot(InventorySlot.Arms, Object);
         public virtual NWItem RightHand => _.GetItemInSlot(InventorySlot.RightHand, Object);
-        public virtual NWItem LeftHand => _.GetItemInSlot(INVENTORY_SLOT_LEFTHAND, Object);
-        public virtual NWItem Cloak => _.GetItemInSlot(INVENTORY_SLOT_CLOAK, Object);
-        public virtual NWItem LeftRing => _.GetItemInSlot(INVENTORY_SLOT_LEFTRING, Object);
-        public virtual NWItem RightRing => _.GetItemInSlot(INVENTORY_SLOT_RIGHTRING, Object);
-        public virtual NWItem Neck => _.GetItemInSlot(INVENTORY_SLOT_NECK, Object);
-        public virtual NWItem Belt => _.GetItemInSlot(INVENTORY_SLOT_BELT, Object);
-        public virtual NWItem Arrows => _.GetItemInSlot(INVENTORY_SLOT_ARROWS, Object);
-        public virtual NWItem Bullets => _.GetItemInSlot(INVENTORY_SLOT_BULLETS, Object);
-        public virtual NWItem Bolts => _.GetItemInSlot(INVENTORY_SLOT_BOLTS, Object);
-        public virtual NWItem CreatureWeaponLeft => _.GetItemInSlot(INVENTORY_SLOT_CWEAPON_L, Object);
-        public virtual NWItem CreatureWeaponRight => _.GetItemInSlot(INVENTORY_SLOT_CWEAPON_R, Object);
-        public virtual NWItem CreatureWeaponBite => _.GetItemInSlot(INVENTORY_SLOT_CWEAPON_B, Object);
-        public virtual NWItem CreatureHide => _.GetItemInSlot(INVENTORY_SLOT_CARMOUR, Object);
+        public virtual NWItem LeftHand => _.GetItemInSlot(InventorySlot.LeftHand, Object);
+        public virtual NWItem Cloak => _.GetItemInSlot(InventorySlot.Cloak, Object);
+        public virtual NWItem LeftRing => _.GetItemInSlot(InventorySlot.LeftRing, Object);
+        public virtual NWItem RightRing => _.GetItemInSlot(InventorySlot.RightRing, Object);
+        public virtual NWItem Neck => _.GetItemInSlot(InventorySlot.Neck, Object);
+        public virtual NWItem Belt => _.GetItemInSlot(InventorySlot.Belt, Object);
+        public virtual NWItem Arrows => _.GetItemInSlot(InventorySlot.Arrows, Object);
+        public virtual NWItem Bullets => _.GetItemInSlot(InventorySlot.Bullets, Object);
+        public virtual NWItem Bolts => _.GetItemInSlot(InventorySlot.Bolts, Object);
+        public virtual NWItem CreatureWeaponLeft => _.GetItemInSlot(InventorySlot.CreatureWeaponLeft, Object);
+        public virtual NWItem CreatureWeaponRight => _.GetItemInSlot(InventorySlot.CreatureWeaponRight, Object);
+        public virtual NWItem CreatureWeaponBite => _.GetItemInSlot(InventorySlot.CreatureWeaponBite, Object);
+        public virtual NWItem CreatureHide => _.GetItemInSlot(InventorySlot.CreatureSkin, Object);
 
         public virtual void FloatingText(string text, bool displayToFaction = false)
         {
-            _.FloatingTextStringOnCreature(text, Object, displayToFaction ? 1 : 0);
+            _.FloatingTextStringOnCreature(text, Object, displayToFaction);
         }
 
         public virtual void SendMessage(string text)
@@ -115,13 +116,13 @@ namespace SWLOR.Game.Server.GameObject
             _.SendMessageToPC(Object, text);
         }
 
-        public virtual bool IsDead => _.GetIsDead(Object) == 1;
+        public virtual bool IsDead => _.GetIsDead(Object);
 
         public virtual bool IsPossessedFamiliar => _.GetIsPossessedFamiliar(Object) == true;
 
         public virtual bool IsDMPossessed => _.GetIsDMPossessed(Object) == true;
 
-        public bool HasAnyEffect(params int[] effectIDs)
+        public bool HasAnyEffect(params EffectType[] effectIDs)
         {
             Effect eff = _.GetFirstEffect(Object);
             while (_.GetIsEffectValid(eff) == true)
@@ -142,9 +143,9 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+                for (int slot = 0; slot < NWNConstants.NumberOfInventorySlots; slot++)
                 {
-                    yield return _.GetItemInSlot(slot, Object);
+                    yield return _.GetItemInSlot((InventorySlot)slot, Object);
                 }
             }
         }

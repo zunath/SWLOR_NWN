@@ -320,12 +320,12 @@ namespace SWLOR.Game.Server.GameObject
 
         public ObjectType ObjectType => _.GetObjectType(Object);
 
-        public void RemoveEffect(int effectTypeID)
+        public void RemoveEffect(EffectType effectTypeID)
         {
             Effect effect = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(effect) == true)
+            while (_.GetIsEffectValid(effect))
             {
-                if (_.GetEffectType(effect) == (EffectType)effectTypeID)
+                if (_.GetEffectType(effect) == effectTypeID)
                 {
                     _.RemoveEffect(Object, effect);
                 }

@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
                     if (compType == (int) allowedType)
                     {
                         oItem.GetOrAssignGlobalID();
-                        NWItem copy = (_.CopyItem(oItem.Object, storage.Object, _.true));
+                        NWItem copy = (_.CopyItem(oItem.Object, storage.Object, true));
                         list.Add(copy);
                         return;
                     }

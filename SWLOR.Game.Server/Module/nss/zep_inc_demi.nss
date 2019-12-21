@@ -303,7 +303,7 @@ void MoveDroppableInventory(object oTo, object oFrom)
     }
 
     // Loop through oFrom's equipment slots.
-    int nSlot = NUM_INVENTORY_SLOTS;
+    int nSlot = NWNConstants.NumberOfInventorySlots;
     while ( nSlot-- > 0 )
     {
         oItem = GetItemInSlot(nSlot, oFrom);
@@ -403,7 +403,7 @@ object ZEPDemilichFromBones(object oBones, string sResRef, int bIntrusion)
 
     // Create the demilich.
     object oDemilich = CreateObject(ObjectType.Creature, sResRef, GetLocation(oBones));
-    ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_MIND), oBones);
+    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_MIND), oBones);
 
     // Copy the variables recording soulgem victims.
     int nGem = ZEP_DEMI_NUM_SOULGEMS;
@@ -440,7 +440,7 @@ object ZEPDemilichCreateDetector(location lTarget)
 {
     // Create an invisible area of effect to detect intruders.
     effect eDetector = EffectAreaOfEffect(AOE_PER_CUSTOM_AOE, "zep_demi_aoe_ent");
-    ApplyEffectAtLocation(DURATION_TYPE_PERMANENT, eDetector, lTarget);
+    ApplyEffectAtLocation(DurationType.Permanent, eDetector, lTarget);
 
     // Look for the area of effect object we just created.
     object oDetector = GetFirstObjectInShape(SHAPE_CUBE, 0.0, lTarget, false,
@@ -580,7 +580,7 @@ void ZEPDemilichTrapSoul(object oPC, int nGem)
     DelayCommand(fDelay, SetCommandable(true, oPC));
 
     // Clone oPC in place.
-    ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), oPC);
+    ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), oPC);
     object oClone = CopyObject(oPC, GetLocation(oPC), OBJECT_INVALID, "ZEP_DEMILICH_VICTIM");
     // The clone will become a selectable, but not raisable, corpse.
     AssignCommand(oClone, SetIsDestroyable(false, false, true));
@@ -589,7 +589,7 @@ void ZEPDemilichTrapSoul(object oPC, int nGem)
     SetLocalObject(oClone, ZEP_DEMI_LOCAL_SGCORPSE, oPC);
 
     // Apply a visual effect.
-    ApplyEffectToObject(DURATION_TYPE_TEMPORARY,
+    ApplyEffectToObject(DurationType.Temporary,
         EffectBeam(VFX_BEAM_HOLY, OBJECT_SELF, BODY_NODE_HAND),
         oClone, fDelay);
 
@@ -600,8 +600,8 @@ void ZEPDemilichTrapSoul(object oPC, int nGem)
 
     // Kill PC and clone.
     effect oDeath = SupernaturalEffect(EffectDeath());
-    DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, oDeath, oClone));
-    DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, oDeath, oPC));
+    DelayCommand(fDelay, ApplyEffectToObject(DurationType.Instant, oDeath, oClone));
+    DelayCommand(fDelay, ApplyEffectToObject(DurationType.Instant, oDeath, oPC));
 
     // Turn processing over to the clone.
     // This will either hide oPC so it cannot be targetted by Raise Dead, or
@@ -641,12 +641,12 @@ void ZEPDemilichFreeSoul(int nGem)
     AssignCommand(oVFXMaker, ActionDoCommand(DestroyObject(oVFXMaker)));
     // Visual on the corpse.
     AssignCommand(oCorpse, DelayCommand(fVFXDuration,
-        ApplyEffectToObject(DURATION_TYPE_INSTANT,
+        ApplyEffectToObject(DurationType.Instant,
                             EffectVisualEffect(VFX_IMP_RESTORATION_GREATER),
                             oCorpse)));
     // Make the corpse disappear (in case the victim logged out).
     AssignCommand(oCorpse, DelayCommand(fVFXDuration + 1.0,
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT,
+        ApplyEffectToObject(DurationType.Permanent,
                             EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY),
                             oCorpse)));
 
@@ -701,11 +701,11 @@ void ZEPDemilichRaiseVictim(object oPC, float fDelay)
     if ( nResVictims > 0 )
     {
         // Raise the vicitm.
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectResurrection(), oPC);
+        ApplyEffectToObject(DurationType.Instant, EffectResurrection(), oPC);
         // Check for full resurrection.
         if ( nResVictims > 1 )
             // Heal the victim to full hit points.
-            ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectHeal(GetMaxHitPoints(oPC)), oPC);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(oPC)), oPC);
     }
     // This corpse is no longer needed.
     SetIsDestroyable(true, false, false);
@@ -726,7 +726,7 @@ void ZEPDemilichRaiseVictim(object oPC, float fDelay)
 void ZEPDemilichCorpseInit(object oPC)
 {
     // Make the corpse cutscene-ghosted. (Not sure if this helps, but it might.)
-    ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), OBJECT_SELF);
+    ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), OBJECT_SELF);
 
     // Loop through active effects on oPC.
     effect eGhost = GetFirstEffect(oPC);
@@ -744,7 +744,7 @@ void ZEPDemilichCorpseInit(object oPC)
         // Hide oPC with cutscene invisibility.
         // Effect is extraordinary so that it cannot be dispelled, but can be gotten
         // rid of by the PC (by resting) if something goes wrong with the removal scripts.
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT,
+        ApplyEffectToObject(DurationType.Permanent,
             ExtraordinaryEffect(EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY)),
             oPC);
 
@@ -786,7 +786,7 @@ void ZEPDemilichCorpseInit(object oPC)
         oItem = GetNextItemInInventory();
     }
     // Flag equipped items as undroppable.
-    int nSlot = NUM_INVENTORY_SLOTS;
+    int nSlot = NWNConstants.NumberOfInventorySlots;
     while ( nSlot-- > 0 )
         SetDroppableFlag(GetItemInSlot(nSlot), false);
     // Remove gold.

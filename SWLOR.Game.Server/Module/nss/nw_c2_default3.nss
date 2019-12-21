@@ -37,7 +37,7 @@ void main()
                 if (nRoll>4)
                 { // ac increase
                     nRoll=nRoll/5;
-                    ApplyEffectToObject(DURATION_TYPE_TEMPORARY,EffectACIncrease(nRoll),OBJECT_SELF,8.5);
+                    ApplyEffectToObject(DurationType.Temporary,EffectACIncrease(nRoll),OBJECT_SELF,8.5);
                 } // ac increase
             } // check for AC increase
         } // set variables on target for mounted combat

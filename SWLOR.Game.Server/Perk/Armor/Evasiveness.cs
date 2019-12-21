@@ -71,10 +71,10 @@ namespace SWLOR.Game.Server.Perk.Armor
             }
 
             Effect effect = _.EffectConcealment(concealment);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
+            _.ApplyEffectToObject(_.DurationType.Temporary, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_DUR_AURA_CYAN);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
+            _.ApplyEffectToObject(_.DurationType.Temporary, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
             _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);

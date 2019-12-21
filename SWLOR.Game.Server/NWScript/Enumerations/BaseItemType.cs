@@ -91,6 +91,9 @@
         CraftMaterialMedium = 109,
         CraftMaterialSmall = 110,
         Whip = 111,
+        Saberstaff = 511,
+        Lightsaber = 512,
+
         Invalid = 256,
 
     }

@@ -54,7 +54,7 @@ namespace NWN.Scripts
             }
             
             MessageHub.Instance.Publish(new OnModuleEnter());
-            player.SetLocalInt("LOGGED_IN_ONCE", _.true);
+            player.SetLocalInt("LOGGED_IN_ONCE", true);
         }
     }
 }

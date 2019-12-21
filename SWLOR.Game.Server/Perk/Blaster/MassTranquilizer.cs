@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                     effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
                     effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
-                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+                    _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 Effect effect = _.EffectDazed();
                 effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
                 effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, nearest, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, effect, nearest, duration);
 
                 current++;
                 nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);

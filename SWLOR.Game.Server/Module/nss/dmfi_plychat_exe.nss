@@ -788,11 +788,11 @@ void SmokePipe(object oActivator)
     case 3: AssignCommand(oActivator, ActionSpeakString(sEmote3));break;
     }
     // glow red
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
     // wait a moment
     AssignCommand(oActivator, ActionWait(3.0));
     // puff of smoke above and in front of head
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
     // if female, turn head to left
     if ((GetGender(oActivator) == GENDER_FEMALE) && (GetRacialType(oActivator) != RACIAL_TYPE_DWARF))
         AssignCommand(oActivator, ActionPlayAnimation(ANIMATION_FIREFORGET_HEAD_TURN_LEFT, 1.0, 5.0));
@@ -809,7 +809,7 @@ void ParseEmote(string sEmote, object oPC)
 
     DeleteLocalInt(oPC, "dmfi_univ_int");
     object oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
-    object oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
+    object oLeftHand =  GetItemInSlot(InventorySlot.LeftHand,oPC);
 
     if (GetStringLeft(sEmote, 1) == "*")
     {
@@ -1051,11 +1051,11 @@ void ParseEmote(string sEmote, object oPC)
              FindSubString(GetStringLowerCase(sEmote), "*naps")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), " naps")!= -1||
              FindSubString(GetStringLowerCase(sEmote), "nap")!= -1)
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_SLEEP), oPC);
+        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_IMP_SLEEP), oPC);
     else if (FindSubString(GetStringLowerCase(sEmote), "*sings")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), " sings")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), "hums")!= -1)
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BARD_SONG), oPC, 6.0f);
+        ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BARD_SONG), oPC, 6.0f);
     else if (FindSubString(GetStringLowerCase(sEmote), "whistles")!= -1)
         AssignCommand(oPC, PlaySound("as_pl_whistle2"));
     else if (FindSubString(GetStringLowerCase(sEmote), "talks")!= -1 ||
@@ -3040,8 +3040,8 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         string sArgsLC = GetStringLowerCase(sArgs);
         if (FindSubString(sArgsLC, "low") !=-1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);
             AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_RESISTANCE, oTarget, METAMAGIC_ANY, true, 5, PROJECTILE_PATH_TYPE_DEFAULT, true));
             AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_GHOSTLY_VISAGE, oTarget, METAMAGIC_ANY, true, 5, PROJECTILE_PATH_TYPE_DEFAULT, true));
             AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_CLARITY,  oTarget,METAMAGIC_ANY, true, 5, PROJECTILE_PATH_TYPE_DEFAULT, true));
@@ -3071,21 +3071,21 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         }
         else if (FindSubString(sArgsLC, "barkskin") != -1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);  return;
+            ApplyEffectToObject(DurationType.Temporary, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);  return;
         }
         else if (FindSubString(sArgsLC, "elements") != -1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_COLD, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_FIRE, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_ACID, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_SONIC, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_ELECTRICAL, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROTECTION_ELEMENTS), oTarget, 3600.0f);  return;
+            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_COLD, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_FIRE, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_ACID, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_SONIC, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_ELECTRICAL, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROTECTION_ELEMENTS), oTarget, 3600.0f);  return;
         }
         else if (FindSubString(sArgsLC, "haste") != -1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectHaste(), oTarget, 3600.0f);  return;
+            ApplyEffectToObject(DurationType.Temporary, EffectHaste(), oTarget, 3600.0f);  return;
         }
         else if (FindSubString(sArgsLC, "immortal") != -1) // tsunami282 added
         {
@@ -3099,7 +3099,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         }
         else if (FindSubString(sArgsLC, "invis") != -1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectInvisibility(INVISIBILITY_TYPE_NORMAL), oTarget, 3600.0f);   return;
+            ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(INVISIBILITY_TYPE_NORMAL), oTarget, 3600.0f);   return;
         }
         else if (FindSubString(sArgsLC, "unplot") != -1)
         {
@@ -3113,19 +3113,19 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         }
         else if (FindSubString(sArgsLC, "stoneskin") != -1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageReduction(10, DAMAGE_POWER_PLUS_THREE, 100), oTarget, 3600.0f);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, 3600.0f); return;
+            ApplyEffectToObject(DurationType.Temporary, EffectDamageReduction(10, DAMAGE_POWER_PLUS_THREE, 100), oTarget, 3600.0f);
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, 3600.0f); return;
         }
         else if (FindSubString(sArgsLC, "trues") != -1)
         {
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectTrueSeeing(), oTarget, 3600.0f); return;
+            ApplyEffectToObject(DurationType.Temporary, EffectTrueSeeing(), oTarget, 3600.0f); return;
         }
     }
     else if (GetStringLeft(sCom, 4) == ".dam")
     {
         int iArg = StringToInt(sArgs);
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectDamage(iArg, DAMAGE_TYPE_MAGICAL, DAMAGE_POWER_NORMAL), oTarget);
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_COM_BLOOD_LRG_RED), oTarget);
+        ApplyEffectToObject(DurationType.Instant, EffectDamage(iArg, DAMAGE_TYPE_MAGICAL, DAMAGE_POWER_NORMAL), oTarget);
+        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_COM_BLOOD_LRG_RED), oTarget);
         FloatingTextStringOnCreature(GetName(oTarget) + " has taken " + IntToString(iArg) + " damage.", oCommander, false);
         return;
     }
@@ -3205,7 +3205,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         else
         {
             effect eInvis =EffectBlindness();
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInvis, oTarget, 6.1);
+            ApplyEffectToObject(DurationType.Temporary, eInvis, oTarget, 6.1);
             DMFISendMessageToPC(oCommander, "Faction Adjusted - will take effect in 6 seconds", false, DMFI_MESSAGE_COLOR_STATUS);
         }
         return;
@@ -3218,7 +3218,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
     }
     else if (GetStringLeft(sCom, 4) == ".fly")
     {
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectDisappear(), oTarget);
+        ApplyEffectToObject(DurationType.Instant, EffectDisappear(), oTarget);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".fol")
@@ -3302,8 +3302,8 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
     else if (GetStringLeft(sCom, 4) == ".hea")
     {
         int iArg = StringToInt(sArgs);
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectHeal(iArg), oTarget);
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_HEALING_M), oTarget);
+        ApplyEffectToObject(DurationType.Instant, EffectHeal(iArg), oTarget);
+        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_IMP_HEALING_M), oTarget);
         FloatingTextStringOnCreature(GetName(oTarget) + " has healed " + IntToString(iArg) + " HP.", oCommander, false);
         return;
     }
@@ -3404,9 +3404,9 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
     {
         int iArg = StringToInt(sArgs);
         if (GetTag(oTarget) == "dmfi_voice")
-            ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(iArg), GetLocation(oTarget), 10.0f);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(iArg), GetLocation(oTarget), 10.0f);
         else
-            ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(iArg), oTarget, 10.0f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(iArg), oTarget, 10.0f);
         return;
     }
     else if (GetStringLeft(sCom, 5) == ".vtar")

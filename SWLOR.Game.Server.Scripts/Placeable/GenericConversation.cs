@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             if (!user.IsPlayer && !user.IsDM) return;
 
             string conversation = placeable.GetLocalString("CONVERSATION");
-            NWObject target = placeable.GetLocalInt("TARGET_PC") == _.true ? user.Object : placeable.Object;
+            NWObject target = placeable.GetLocalInt("TARGET_PC") == true ? user.Object : placeable.Object;
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             }
             else
             {
-                user.AssignCommand(() => _.ActionStartConversation(target, string.Empty, _.true, _.false));
+                user.AssignCommand(() => _.ActionStartConversation(target, string.Empty, true, false));
             }
 
         }

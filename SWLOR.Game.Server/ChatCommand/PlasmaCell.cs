@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.ChatCommand
             if (!user.IsPlayer) return;
 
             //Checks if the player has Plasma Cell
-            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, user) == _.false)
+            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, user) == false)
             {
                 user.SendMessage(ColorTokenService.Red("You do not have the perk: Plasma Cell."));
                 return;
             }
 
             //Checks if the player has toggled plasma cell off
-            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.false)
+            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == false)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
                 user.SendMessage(ColorTokenService.Red("Plasma Cell is now toggled off."));

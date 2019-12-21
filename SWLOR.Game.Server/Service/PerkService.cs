@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
 
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
             NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
 

@@ -47,7 +47,7 @@ void main()
                     if (GetCurrentHitPoints(OBJECT_SELF)<nHPBefore)
                     { // heal
                         effect eHeal=EffectHeal(nHPBefore-GetCurrentHitPoints(OBJECT_SELF));
-                        AssignCommand(GetModule(),ApplyEffectToObject(DURATION_TYPE_INSTANT,eHeal,oMe));
+                        AssignCommand(GetModule(),ApplyEffectToObject(DurationType.Instant,eHeal,oMe));
                     } // heal
                 } // averted attack
             } // haven't already had a chance to use this for the round

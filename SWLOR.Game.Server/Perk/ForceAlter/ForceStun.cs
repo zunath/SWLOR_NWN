@@ -122,14 +122,14 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 creature.AssignCommand(() =>
                 {
-                    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, successEffect, target, 6.1f);
+                    ApplyEffectToObject(DurationType.Temporary, successEffect, target, 6.1f);
                 });
             }
             else
             {
                 creature.AssignCommand(() =>
                 {
-                    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, failureEffect, target, 6.1f);
+                    ApplyEffectToObject(DurationType.Temporary, failureEffect, target, 6.1f);
                 });
             }
 

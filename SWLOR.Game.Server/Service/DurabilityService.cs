@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 using SWLOR.Game.Server.ValueObject;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            item.SetLocalInt("DURABILITY_OVERRIDE", true);
+            item.SetLocalBoolean("DURABILITY_OVERRIDE", true);
             if (item.GetLocalInt("DURABILITY_INITIALIZE") <= 0 &&
                 item.GetLocalFloat("DURABILITY_CURRENT") <= 0.0f)
             {
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
                     float maxDurability = DefaultDurability;
                     foreach (var ip in item.ItemProperties)
                     {
-                        if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.MaxDurability)
+                        if (_.GetItemPropertyType(ip) == ItemPropertyType.MaxDurability)
                         {
                             maxDurability = _.GetItemPropertyCostTableValue(ip);
                             break;
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             
-            int maxDurability = item.GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MaxDurability);
+            int maxDurability = item.GetItemPropertyValueAndRemove(ItemPropertyType.MaxDurability);
             if (maxDurability <= -1) return item.GetLocalFloat("DURABILITY_MAX") <= 0 ? DefaultDurability : item.GetLocalFloat("DURABILITY_MAX");
             SetMaxDurability(item, maxDurability);
             return maxDurability;
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            item.SetLocalInt("DURABILITY_OVERRIDE", true);
+            item.SetLocalBoolean("DURABILITY_OVERRIDE", true);
             if (value <= 0) value = DefaultDurability;
 
             item.SetLocalFloat("DURABILITY_MAX", value);
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            int durability = item.GetItemPropertyValueAndRemove((int)CustomItemPropertyType.Durability);
+            int durability = item.GetItemPropertyValueAndRemove(ItemPropertyType.Durability);
 
             if (durability <= -1)
             {
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (value < 0.0f) value = 0.0f;
 
-            item.SetLocalInt("DURABILITY_OVERRIDE", true);
+            item.SetLocalBoolean("DURABILITY_OVERRIDE", true);
             InitializeDurability(item);
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
 
             // Don't run heavy code when customizing equipment.
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return;
+            if (oPC.GetLocalBoolean("IS_CUSTOMIZING_ITEM") == true) return;
             
             NWItem oItem = (_.GetPCItemLastEquipped());
             float durability = GetDurability(oItem);
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service
 
         public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
-            if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != ObjectType.Item) return existingDescription;
 
             NWItem examinedItem = (examinedObject.Object);
             if (examinedItem.GetLocalFloat("DURABILITY_MAX") <= 0f) return existingDescription;
@@ -150,11 +150,11 @@ namespace SWLOR.Game.Server.Service
                 item.IsPlot ||
                 item.GetLocalInt("UNBREAKABLE") == 1 ||
                 !item.IsValid ||
-                item.BaseItemType == BASE_ITEM_CREATUREITEM ||  // Creature skin
-                item.BaseItemType == BASE_ITEM_CBLUDGWEAPON ||  // Creature bludgeoning weapon
-                item.BaseItemType == BASE_ITEM_CPIERCWEAPON ||  // Creature piercing weapon
-                item.BaseItemType == BASE_ITEM_CSLASHWEAPON ||  // Creature slashing weapon
-                item.BaseItemType == BASE_ITEM_CSLSHPRCWEAP)    // Creature slashing/piercing weapon
+                item.BaseItemType == BaseItemType.CreatureItem||  // Creature skin
+                item.BaseItemType == BaseItemType.CreatureBludgeonWeapon||  // Creature bludgeoning weapon
+                item.BaseItemType == BaseItemType.CreaturePierceWeapon ||  // Creature piercing weapon
+                item.BaseItemType == BaseItemType.CreatureSlashWeapon ||  // Creature slashing weapon
+                item.BaseItemType == BaseItemType.CreatureSlashPrcWeap)    // Creature slashing/piercing weapon
                 return;
             
             float durability = GetDurability(item);
@@ -215,14 +215,14 @@ namespace SWLOR.Game.Server.Service
 
             NWItem decayItem = oSpellOrigin;
 
-            if (oSpellOrigin.BaseItemType == BASE_ITEM_ARROW ||
-                oSpellOrigin.BaseItemType == BASE_ITEM_BOLT ||
-                oSpellOrigin.BaseItemType == BASE_ITEM_BULLET)
+            if (oSpellOrigin.BaseItemType == BaseItemType.Arrow ||
+                oSpellOrigin.BaseItemType == BaseItemType.Bolt ||
+                oSpellOrigin.BaseItemType == BaseItemType.Bullet)
             {
                 decayItem = oTarget.RightHand;
             }
 
-            if (oSpellOrigin.BaseItemType == BASE_ITEM_ARMOR)
+            if (oSpellOrigin.BaseItemType == BaseItemType.Armor)
             {
                 // Distribute durability hits across items in all clothing slots.
                 // PCs could have any number of these filled. Pick one at random, 
@@ -232,41 +232,41 @@ namespace SWLOR.Game.Server.Service
                 // isn't simple, just do a % check for each item in turn.  Items
                 // are broadly in order of "most likely to get hit" as items near
                 // the top have a slightly higher chance of being chosen.                
-                if (oTarget.Chest.IsValid && _.d100() > 85)
+                if (oTarget.Chest.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Chest;
                 }
-                else if (oTarget.Cloak.IsValid && _.d100() > 85)
+                else if (oTarget.Cloak.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Cloak;
                 }
-                else if (oTarget.Head.IsValid && _.d100() > 85)
+                else if (oTarget.Head.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Head;
                 }
                 // Gloves only decay from this code if they are not being used as a weapon.
-                else if (oTarget.Arms.IsValid && oTarget.RightHand.IsValid && _.d100() > 85)
+                else if (oTarget.Arms.IsValid && oTarget.RightHand.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Arms;
                 }
-                else if (oTarget.Boots.IsValid && _.d100() > 85)
+                else if (oTarget.Boots.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Boots;
                 }
-                else if (oTarget.Belt.IsValid && _.d100() > 85)
+                else if (oTarget.Belt.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Belt;
                 }
-                else if (oTarget.Neck.IsValid && _.d100() > 85)
+                else if (oTarget.Neck.IsValid && RandomService.D100(1) > 85)
                 {
                     decayItem = oTarget.Neck;
                 }
                 // Rings are very small, so less likely. 
-                else if (oTarget.LeftRing.IsValid && _.d100() > 95)
+                else if (oTarget.LeftRing.IsValid && RandomService.D100(1) > 95)
                 {
                     decayItem = oTarget.LeftRing;
                 }
-                else if (oTarget.RightRing.IsValid && _.d100() > 95)
+                else if (oTarget.RightRing.IsValid && RandomService.D100(1) > 95)
                 {
                     decayItem = oTarget.RightRing;
                 }

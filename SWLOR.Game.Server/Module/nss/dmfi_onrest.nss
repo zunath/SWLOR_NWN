@@ -136,7 +136,7 @@ void DoRestVFX(object oPC, float fDuration, int nEffect) {
     } else {
         eEffect = EffectVisualEffect(nEffect);
     }
-    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eEffect), oPC, fDuration);
+    ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eEffect), oPC, fDuration);
 }
 
 
@@ -157,9 +157,9 @@ void ApplyRestVFX(object oPC, int iSettings)
     }
     if (!(iSettings & 0x20000000)) //VFX flag
     {
-        // AssignCommand(oRestVFX, ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eBlind), oPC, fDuration));
+        // AssignCommand(oRestVFX, ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eBlind), oPC, fDuration));
         AssignCommand(oRestVFX, DoRestVFX(oPC, fDuration, VFX_DUR_BLACKOUT));
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, eSnore, oPC);
+        ApplyEffectToObject(DurationType.Instant, eSnore, oPC);
     }
 }
 
@@ -185,7 +185,7 @@ int CalculateFinalHitPoints(object oPC, int iSettings)
     {
         case 0x01000000: return 0; break;
         case 0x02000000: return GetHitDice(oPC); break;
-        case 0x03000000: return GetAbilityScore(oPC, ABILITY_CONSTITUTION); break;
+        case 0x03000000: return GetAbilityScore(oPC, Ability.Constitution); break;
         case 0x04000000: return GetMaxHitPoints(oPC)/10; break;
         case 0x05000000: return GetMaxHitPoints(oPC)/4; break;
         case 0x06000000: return GetMaxHitPoints(oPC)/2; break;
@@ -220,21 +220,21 @@ void DoPseudoRest(object oPC, int iSettings, int iSpells = false)
     AssignCommand(oPC, PlayAnimation(iAnimation, 1.0f, fDuration));
     DelayCommand(0.1, SetCommandable(false, oPC));
     DelayCommand(fDuration, SetCommandable(true, oPC));
-    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eStop), oPC, fDuration);
+    ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eStop), oPC, fDuration);
     if (!(iSettings & 0x20000000) && iAnimation != ANIMATION_LOOPING_MEDITATE && iAnimation != ANIMATION_LOOPING_WORSHIP) //If the No VFX flag is not set, do VFX
     {
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eBlind), oPC, fDuration);
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, eSnore, oPC);
+        ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eBlind), oPC, fDuration);
+        ApplyEffectToObject(DurationType.Instant, eSnore, oPC);
         while (fSeconds < fDuration)
         {
-            DelayCommand(fSeconds, ApplyEffectToObject(DURATION_TYPE_INSTANT, eSnore, oPC));
+            DelayCommand(fSeconds, ApplyEffectToObject(DurationType.Instant, eSnore, oPC));
             fSeconds += 6.0f;
         }
     }
     if (!iSpells)
     {
         effect eHeal = EffectHeal(CalculateFinalHitPoints(oPC, iSettings)); //Heal the PC
-        DelayCommand(fDuration + 0.1f, ApplyEffectToObject(DURATION_TYPE_INSTANT, eHeal, oPC));
+        DelayCommand(fDuration + 0.1f, ApplyEffectToObject(DurationType.Instant, eHeal, oPC));
         DelayCommand(fDuration + 0.1f, RemoveMagicalEffects(oPC)); //Remove all magical effects from PC
     }
     else
@@ -440,7 +440,7 @@ void main()
             {
                 effect eDam = EffectDamage(GetMaxHitPoints(oPC) - GetLocalInt(oPC, "dmfi_r_hitpoints"));
                 FloatyText("Your hitpoints have been reset",oPC, iSettings);
-                AssignCommand(oPC, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDam, oPC));
+                AssignCommand(oPC, ApplyEffectToObject(DurationType.Instant, eDam, oPC));
 
             }
         }
@@ -455,7 +455,7 @@ void main()
             {
                 effect eDam = EffectDamage(iDam);
                 FloatyText("You gain back limited HP from this rest",oPC, iSettings);
-                AssignCommand(oPC, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDam, oPC));
+                AssignCommand(oPC, ApplyEffectToObject(DurationType.Instant, eDam, oPC));
             }
         }
     }

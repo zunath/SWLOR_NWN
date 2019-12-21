@@ -2,12 +2,12 @@
 {
     public enum IPConst
     {
-        Ability_Str = 0,
-        Ability_Dex = 1,
-        Ability_Con = 2,
-        Ability_Int = 3,
-        Ability_Wis = 4,
-        Ability_Cha = 5,
+        Ability_Strength = 0,
+        Ability_Dexterity = 1,
+        Ability_Constitution = 2,
+        Ability_Intelligence = 3,
+        Ability_Wisdom = 4,
+        Ability_Charisma = 5,
         Acmodifiertype_Dodge = 0,
         Acmodifiertype_Natural = 1,
         Acmodifiertype_Armor = 2,
@@ -1103,5 +1103,8 @@
         Arcane_Spell_Failure_Plus_45_Percent = 18,
         Arcane_Spell_Failure_Plus_50_Percent = 19,
 
+        Damagetype_Ballistic = 14,
+        Damagetype_Energy = 15,
+        Damagetype_Bullet = 16
     }
 }

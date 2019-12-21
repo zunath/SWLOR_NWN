@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Item
             starkillerBase.Starcharts |= starcharts;
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_CONFUSION_S), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_CONFUSION_S), target);
             _.FloatingTextStringOnCreature("Starcharts loaded!", player);
             item.Destroy();
         }

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
             NWPlaceable bay = (NWGameObject.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
-            bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == _.true;
+            bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == true;
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             

@@ -211,11 +211,11 @@ namespace SWLOR.Game.Server.Service
             });
             _.DelayCommand(1.0f * (modifiedCraftDelay / 2.0f), () =>
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
             });
             Effect immobilize = _.EffectCutsceneImmobilize();
             immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, oPC.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, immobilize, oPC.Object);
 
             NWNXPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
 

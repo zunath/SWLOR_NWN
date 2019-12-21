@@ -55,7 +55,7 @@ int cloneDeathFlag = false;
 location locSpellTarget = GetLocation(OBJECT_SELF);
 
 object portal = GetNearestObjectByTag("WP_jumpTarget3");
- DelayCommand(18.0,ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_UNSUMMON), locSpellTarget));
+ DelayCommand(18.0,ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_IMP_UNSUMMON), locSpellTarget));
 
     DelayCommand(19.0,AssignCommand(oPC,ActionJumpToObject(portal)));
     DelayCommand(34.5,MusicBackgroundChangeDay(oArea,469));

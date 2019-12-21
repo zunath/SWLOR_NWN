@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var ip in tempItem.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentType)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
                     typeID = _.GetItemPropertyCostTableValue(ip);
                     break;

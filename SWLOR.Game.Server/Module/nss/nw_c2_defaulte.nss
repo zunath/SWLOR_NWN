@@ -40,9 +40,9 @@ void main()
         }   */
         return;
     }
-    if(GetAbilityScore(OBJECT_SELF, ABILITY_INTELLIGENCE) >= 5)
+    if(GetAbilityScore(OBJECT_SELF, Ability.Intelligence) >= 5)
     {
-        if(GetIsDoorActionPossible(oDoor, DOOR_ACTION_OPEN) && GetAbilityScore(OBJECT_SELF, ABILITY_INTELLIGENCE) >= 7 )
+        if(GetIsDoorActionPossible(oDoor, DOOR_ACTION_OPEN) && GetAbilityScore(OBJECT_SELF, Ability.Intelligence) >= 7 )
         {
             DoDoorAction(oDoor, DOOR_ACTION_OPEN);
         }

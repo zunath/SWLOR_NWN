@@ -189,7 +189,7 @@ void SetRestTokens(object oPC)
             {
                 case 0x01000000: sRest = sRest + "0 HP"; break;
                 case 0x02000000: sRest = sRest + IntToString(GetHitDice(oPC)) + " HP"; break;
-                case 0x03000000: sRest = sRest + IntToString(GetAbilityScore(oPC, ABILITY_CONSTITUTION)) + " HP"; break;
+                case 0x03000000: sRest = sRest + IntToString(GetAbilityScore(oPC, Ability.Constitution)) + " HP"; break;
                 case 0x04000000: sRest = sRest + IntToString(GetMaxHitPoints(oPC)/10) + " HP"; break;
                 case 0x05000000: sRest = sRest + IntToString(GetMaxHitPoints(oPC)/4) + " HP"; break;
                 case 0x06000000: sRest = sRest + IntToString(GetMaxHitPoints(oPC)/2) + " HP"; break;

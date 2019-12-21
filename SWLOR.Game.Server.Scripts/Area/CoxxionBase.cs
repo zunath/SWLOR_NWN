@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Scripts.Area
             var doors = new List<NWObject>();
 
             var obj = _.GetFirstObjectInArea(area);
-            while (_.GetIsObjectValid(obj) == _.true)
+            while (_.GetIsObjectValid(obj) == true)
             {
                 int colorID = _.GetLocalInt(obj, "DOOR_COLOR");
 

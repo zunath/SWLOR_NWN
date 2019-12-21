@@ -7,7 +7,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using Microsoft.Data.SqlClient;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -128,9 +127,9 @@ namespace SWLOR.Game.Server.Service
                 DataSource = ip,
                 InitialCatalog = "MASTER",
                 UserID = user,
-                Password = password,
+                Password = password, 
                 ConnectTimeout = 300 // 5 minutes
-            }.ToString();
+            }.ConnectionString;
             SWLORConnectionString = new SqlConnectionStringBuilder()
             {
                 DataSource = ip,
@@ -138,7 +137,7 @@ namespace SWLOR.Game.Server.Service
                 UserID = user,
                 Password = password,
                 ConnectTimeout = 300 // 5 minutes
-            }.ToString();
+            }.ConnectionString;
 
         }
 

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 
 namespace SWLOR.Game.Server.Threading
 {

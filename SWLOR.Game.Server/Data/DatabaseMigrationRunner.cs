@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using Microsoft.Data.SqlClient;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Data
@@ -31,9 +31,17 @@ namespace SWLOR.Game.Server.Data
         {
             Console.WriteLine("Starting database migration runner. This can take a few moments...");
 
-            BuildDatabase();
-            ApplyMigrations();
-            DataService.Initialize(true);
+            try
+            {
+                BuildDatabase();
+                ApplyMigrations();
+                DataService.Initialize(true);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToMessageAndCompleteStacktrace());
+            }
+
         }
 
         /// <summary>
@@ -49,9 +57,9 @@ namespace SWLOR.Game.Server.Data
 
                 using (var connection = new SqlConnection(DataService.MasterConnectionString))
                 {
-                    connection.Open();
                     try
                     {
+                        connection.Open();
                         string dbName = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
                         string sql = $@"CREATE DATABASE [{dbName}]";
 
@@ -83,15 +91,24 @@ namespace SWLOR.Game.Server.Data
         {
             bool result;
 
-            using (var connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-                using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection) { CommandTimeout = 0 })
+                using (var connection = new SqlConnection(connectionString))
                 {
-                    result = (command.ExecuteScalar() != DBNull.Value);
+                    connection.Open();
+
+                    using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection) {CommandTimeout = 0})
+                    {
+                        result = (command.ExecuteScalar() != DBNull.Value);
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToMessageAndCompleteStacktrace());
+                throw;
+            }
+            
             return result;
         }
 

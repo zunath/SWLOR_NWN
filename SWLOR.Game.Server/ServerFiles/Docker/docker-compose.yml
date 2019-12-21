@@ -17,7 +17,7 @@ services:
 
     swlor-server:
         hostname: nwnx-server
-        image: nwnxee-dotnet
+        image: nwnxee/unified:latest
         env_file: ${PWD-.}/swlor.env
         stdin_open: true
         tty: true

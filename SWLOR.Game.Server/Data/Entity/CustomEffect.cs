@@ -2,10 +2,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[CustomEffect]")]
     public class CustomEffect: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public int IconID { get; set; }

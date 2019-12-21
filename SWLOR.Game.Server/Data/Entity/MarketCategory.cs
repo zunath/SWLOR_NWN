@@ -2,10 +2,9 @@
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[MarketCategory]")]
     public class MarketCategory: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }

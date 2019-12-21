@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
@@ -202,17 +203,7 @@ namespace SWLOR.Game.Server.Conversation
 
             dbPlayer.UnallocatedSP += refundAmount;
 
-            var refundAudit = new PCPerkRefund
-            {
-                PlayerID = player.GlobalID,
-                DateAcquired = pcPerk.AcquiredDate,
-                DateRefunded = DateTime.UtcNow,
-                Level = pcPerk.PerkLevel,
-                PerkID = pcPerk.PerkID
-            };
-            
-            // Bypass caching for perk refunds.
-            DataService.DataQueue.Enqueue(new DatabaseAction(refundAudit, DatabaseActionType.Insert));
+            Audit.Write(AuditGroup.PerkRefund, $"REFUND - {player.GlobalID} - Acquired Date {pcPerk.AcquiredDate} - Refunded Date {DateTime.UtcNow} - Level {pcPerk.PerkLevel} - PerkID {pcPerk.PerkID}");
             DataService.SubmitDataChange(pcPerk, DatabaseActionType.Delete);
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 

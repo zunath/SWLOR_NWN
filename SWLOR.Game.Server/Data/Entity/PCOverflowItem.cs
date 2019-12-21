@@ -5,14 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCOverflowItem]")]
     public class PCOverflowItem: IEntity
     {
         public PCOverflowItem()
         {
             ID = Guid.NewGuid();
         }
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public string ItemName { get; set; }

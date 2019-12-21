@@ -5,10 +5,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCWeapon]")]
     public class PCWeapon: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public Guid PlayerID { get; set; }
         public string Weapon1 { get; set; }
         public string Weapon2 { get; set; }

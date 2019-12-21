@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[GameTopic]")]
     public class GameTopic: IEntity
     {
         public GameTopic()
@@ -10,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
             Icon = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public string Text { get; set; }

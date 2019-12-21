@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.Scripting.Contracts;
-using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -25,16 +23,10 @@ namespace NWN.Scripts
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
 
-            using (new Profiler(nameof(mod_on_load) + ":DatabaseMigrator"))
+            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
             {
-                DatabaseMigrationRunner.Start();
-            }
-
-            using (new Profiler(nameof(mod_on_load) + ":DBBackgroundThread"))
-            {
-                Console.WriteLine("Starting background thread manager...");
-                BackgroundThreadManager.Start();
-            }
+                MessageHub.Instance.Publish(new OnServerStopped());
+            };
 
             using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))
             {

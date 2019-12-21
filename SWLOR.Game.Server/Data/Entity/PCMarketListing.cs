@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCMarketListing]")]
     public class PCMarketListing: IEntity
     {
         public PCMarketListing()
@@ -11,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
             ID = Guid.NewGuid();
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid SellerPlayerID { get; set; }
         public string Note { get; set; }

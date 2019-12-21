@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[ChatChannel]")]
     public class ChatChannel: IEntity
     {
         public ChatChannel()
@@ -10,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
             Name = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
 

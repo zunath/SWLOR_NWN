@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCBase]")]
     public class PCBase: IEntity
     {
         public PCBase()
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
             CustomName = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public string AreaResref { get; set; }

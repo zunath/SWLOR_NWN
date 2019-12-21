@@ -5,14 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCQuestItemProgress]")]
     public class PCQuestItemProgress: IEntity
     {
         public PCQuestItemProgress()
         {
             ID = Guid.NewGuid();
         }
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public Guid PCQuestStatusID { get; set; }

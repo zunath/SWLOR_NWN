@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -28,22 +29,9 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            BugReport report = new BugReport
-            {
-                SenderPlayerID = user.IsPlayer ? new Guid?(user.GlobalID): null,
-                CDKey = _.GetPCPublicCDKey(user),
-                Text = message,
-                TargetName = target.IsValid ? target.Name : user.Name,
-                AreaResref = user.Area.Resref,
-                SenderLocationX = user.Location.X,
-                SenderLocationY = user.Location.Y,
-                SenderLocationZ = user.Location.Z,
-                SenderLocationOrientation = user.Location.Orientation,
-                DateSubmitted = DateTime.UtcNow
-            };
-
-            // Bypass the cache and save directly to the DB.
-            DataService.DataQueue.Enqueue(new DatabaseAction(report, DatabaseActionType.Insert));
+            var senderPlayerID = user.IsPlayer ? user.GlobalID.ToString() : "No Player ID";
+            var targetName = target.IsValid ? target.Name : user.Name;
+            Audit.Write(AuditGroup.BugReport, $"REPORT - {senderPlayerID} - {_.GetPCPublicCDKey(user)} - {message} - {targetName} - {user.Area.Resref} - {user.Location.X}, {user.Location.Y}, {user.Location.Z} - {user.Location.Orientation}");
 
             user.SendMessage("Bug report submitted! Thank you for your report.");
         }

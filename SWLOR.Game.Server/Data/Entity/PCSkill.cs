@@ -5,14 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCSkill]")]
     public class PCSkill: IEntity
     {
         public PCSkill()
         {
             ID = Guid.NewGuid();
         }
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public int SkillID { get; set; }

@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Download]")]
     public class Download: IEntity
     {
         public Download()
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
             Url = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

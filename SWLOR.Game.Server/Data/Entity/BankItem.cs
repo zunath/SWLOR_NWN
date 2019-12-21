@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[BankItem]")]
     public class BankItem: IEntity
     {
         public BankItem()
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
             ID = Guid.NewGuid();
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public int BankID { get; set; }
         public Guid PlayerID { get; set; }

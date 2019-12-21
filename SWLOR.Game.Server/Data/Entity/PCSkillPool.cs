@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCSkillPool]")]
     public class PCSkillPool: IEntity
     {
         public PCSkillPool()
@@ -11,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
             ID = Guid.NewGuid();
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public int SkillCategoryID { get; set; }

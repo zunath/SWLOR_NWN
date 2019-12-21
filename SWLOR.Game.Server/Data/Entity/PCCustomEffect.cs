@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCCustomEffect]")]
     public class PCCustomEffect: IEntity
     {
         public PCCustomEffect()
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
             CasterNWNObjectID = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public int CustomEffectID { get; set; }

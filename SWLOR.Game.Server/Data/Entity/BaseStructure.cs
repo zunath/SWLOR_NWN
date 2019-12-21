@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[BaseStructure]")]
     public class BaseStructure: IEntity
     {
         public BaseStructure()
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public int BaseStructureTypeID { get; set; }
         public string Name { get; set; }

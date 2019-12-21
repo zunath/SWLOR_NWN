@@ -5,14 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCPerkRefund]")]
     public class PCPerkRefund: IEntity
     {
         public PCPerkRefund()
         {
             ID = Guid.NewGuid();
         }
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public int PerkID { get; set; }

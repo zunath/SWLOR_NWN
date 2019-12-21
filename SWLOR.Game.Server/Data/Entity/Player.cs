@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Player]")]
     public class Player : IEntity
     {
         public Player()
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
             RespawnAreaResref = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public string CharacterName { get; set; }
         public int HitPoints { get; set; }

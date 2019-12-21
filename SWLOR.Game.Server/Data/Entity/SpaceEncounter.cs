@@ -2,10 +2,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[SpaceEncounter]")]
     public class SpaceEncounter: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Planet { get; set; }
         public int TypeID { get; set; }

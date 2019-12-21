@@ -3,6 +3,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 
@@ -29,18 +30,8 @@ namespace SWLOR.Game.Server.Service
                       (string.IsNullOrWhiteSpace(@event) ? string.Empty : @event + Environment.NewLine) +
                       "*****************" + Environment.NewLine +
                       " EXCEPTION:" + Environment.NewLine + Environment.NewLine + stackTrace;
-            Console.WriteLine(stackTrace);
-
-            Error log = new Error
-            {
-                DateCreated = DateTime.UtcNow, 
-                Caller = @event, 
-                Message = ex.Message,
-                StackTrace = stackTrace
-            };
-            DatabaseAction action = new DatabaseAction(log, DatabaseActionType.Insert);
-            // Bypass the caching logic and directly enqueue the insert.
-            DataService.DataQueue.Enqueue(action);
+            
+            Audit.Write(AuditGroup.Error, stackTrace);
         }
 
         public static void Trace(TraceComponent component, string log)

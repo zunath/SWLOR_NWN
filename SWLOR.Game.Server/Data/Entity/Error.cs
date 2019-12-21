@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Error]")]
     public class Error: IEntity
     {
         public Error()
@@ -11,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
             ID = Guid.NewGuid();
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public DateTime DateCreated { get; set; }
         public string Message { get; set; }

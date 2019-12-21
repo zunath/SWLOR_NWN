@@ -1,10 +1,9 @@
-﻿using System;
-using SWLOR.Game.Server.Data.Entity;
+﻿using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
 
@@ -55,20 +54,14 @@ namespace SWLOR.Game.Server.Service
         {
             var account = GetPCPlayerName(dm);
             var cdKey = GetPCPublicCDKey(dm);
-            var now = DateTime.UtcNow;
-            var eventType = isAuthorizationSuccessful ? 13 : 14;
 
-            ModuleEvent entity = new ModuleEvent
+            var authType = "FAILED";
+            if(isAuthorizationSuccessful)
             {
-                AccountName = account,
-                CDKey = cdKey,
-                ModuleEventTypeID = eventType,
-                PlayerID = null,
-                DateOfEvent = now
-            };
-
-            // Bypass the caching logic.
-            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+                authType = "SUCCESS";
+            }
+            var log = $"{authType} - {account} - {cdKey}";
+            Audit.Write(AuditGroup.DMAuthorization, log);
         }
     }
 }

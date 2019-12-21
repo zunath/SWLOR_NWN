@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Perk]")]
     public class Perk: IEntity
     {
         public Perk()
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
             Description = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }

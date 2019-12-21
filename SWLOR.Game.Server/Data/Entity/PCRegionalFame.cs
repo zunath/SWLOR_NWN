@@ -5,14 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCRegionalFame]")]
     public class PCRegionalFame: IEntity
     {
         public PCRegionalFame()
         {
             ID = Guid.NewGuid();
         }
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public int FameRegionID { get; set; }

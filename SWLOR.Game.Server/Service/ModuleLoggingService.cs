@@ -6,10 +6,12 @@ using SWLOR.Game.Server.Event.DM;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
+using static NWN._;
 using PCBaseType = SWLOR.Game.Server.Enumeration.PCBaseType;
 
 namespace SWLOR.Game.Server.Service
@@ -36,10 +38,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleEnter()
         {
-            NWPlayer oPC = (_.GetEnteringObject());
+            NWPlayer oPC = (GetEnteringObject());
             string name = oPC.Name;
-            string cdKey = _.GetPCPublicCDKey(oPC.Object);
-            string account = _.GetPCPlayerName(oPC.Object);
+            string cdKey = GetPCPublicCDKey(oPC.Object);
+            string account = GetPCPlayerName(oPC.Object);
             DateTime now = DateTime.UtcNow;
             string nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
 
@@ -50,43 +52,21 @@ namespace SWLOR.Game.Server.Service
             oPC.SetLocalString("PC_CD_KEY", cdKey);
             oPC.SetLocalString("PC_ACCOUNT", account);
 
-            Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") connected to the server.");
-            
-            ModuleEvent entity = new ModuleEvent
-            {
-                AccountName = account,
-                CDKey = cdKey,
-                ModuleEventTypeID = 1,
-                PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
-                DateOfEvent = now
-            };
-
-            // Bypass the caching logic.
-            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+            var details = nowString + ": " + name + " (" + account + "/" + cdKey + ") connected to the server.";
+            Audit.Write(AuditGroup.Connection, details);
         }
 
         private static void OnModuleLeave()
         {
-            NWPlayer oPC = (_.GetExitingObject());
+            NWPlayer oPC = (GetExitingObject());
             string name = oPC.Name;
             string cdKey = oPC.GetLocalString("PC_CD_KEY");
             string account = oPC.GetLocalString("PC_ACCOUNT");
             DateTime now = DateTime.UtcNow;
             string nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
 
-            Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") left the server.");
-
-            ModuleEvent entity = new ModuleEvent
-            {
-                AccountName = account,
-                CDKey = cdKey,
-                ModuleEventTypeID = 2,
-                PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
-                DateOfEvent = now
-            };
-
-            // Bypass the caching logic.
-            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+            var details = nowString + ": " + name + " (" + account + "/" + cdKey + ") left the server.";
+            Audit.Write(AuditGroup.Connection, details);
         }
 
 
@@ -125,75 +105,63 @@ namespace SWLOR.Game.Server.Service
 
             int mode = NWNXChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
-            NWObject recipient = NWNXChat.GetTarget();
-            ChatChannel channelEntity = DataService.ChatChannel.GetByID(channel);
 
-            // Sender - should always have this data.
-            string senderCDKey = _.GetPCPublicCDKey(sender.Object);
-            string senderAccountName = sender.Name;
-            Guid? senderPlayerID = null;
-            string senderDMName = null;
+            string log;
+            // We don't log server messages because there isn't a good way to filter them.
+            if (channel == (int)NWNXChatChannel.ServerMessage) return;
 
-            // DMs do not have PlayerIDs so store their name in another field.
-            if (sender.IsDM)
-                senderDMName = "[DM: " + sender.Name + " (" + senderCDKey + ")]";
-            else
-                senderPlayerID = sender.GlobalID;
-
-            // Receiver - may or may not have the data.
-
-            string receiverCDKey = null;
-            string receiverAccountName = null;
-            Guid? receiverPlayerID = null;
-            string receiverDMName = null;
-
-            if (recipient.IsValid)
+            if (channel == (int)NWNXChatChannel.DMTell ||
+                channel == (int)NWNXChatChannel.PlayerTell)
             {
-                receiverCDKey =  _.GetPCPublicCDKey(recipient.Object);
-                receiverAccountName = recipient.Name;
-
-                // DMs do not have PlayerIDs so store their name in another field.
-                if (recipient.IsDM)
-                    receiverDMName = "[DM: " + recipient.Name + " (" + senderCDKey + ")]";
-                else
-                    receiverPlayerID = recipient.GlobalID;
+                log = BuildTellLog();
+            }
+            else
+            {
+                log = BuildRegularChatLog();
             }
 
-            ChatLog entity = new ChatLog
-            {
-                Message = text,
-                SenderCDKey = senderCDKey,
-                SenderAccountName = senderAccountName,
-                SenderPlayerID = senderPlayerID,
-                SenderDMName = senderDMName,
-                ReceiverCDKey = receiverCDKey,
-                ReceiverAccountName = receiverAccountName,
-                ReceiverPlayerID = receiverPlayerID,
-                ReceiverDMName = receiverDMName,
-                ChatChannelID = channelEntity.ID,
-                DateSent = DateTime.UtcNow
-            };
-            
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+            Audit.Write(AuditGroup.Chat, log);
+
+        }
+
+        private static string BuildRegularChatLog()
+        {
+            var sender = NWNXChat.GetSender();
+            var channel = NWNXChat.GetChannel();
+            var message = NWNXChat.GetMessage();
+            var ipAddress = GetPCIPAddress(sender);
+            var cdKey = GetPCPublicCDKey(sender);
+            var account = GetPCPlayerName(sender);
+            var pcName = GetName(sender);
+
+            var log = $"{pcName} - {account} - {cdKey} - {ipAddress} - {channel}: {message}";
+
+            return log;
+        }
+
+        private static string BuildTellLog()
+        {
+            var sender = NWNXChat.GetSender();
+            var receiver = NWNXChat.GetTarget();
+            var channel = NWNXChat.GetChannel();
+            var message = NWNXChat.GetMessage();
+            var senderIPAddress = GetPCIPAddress(sender);
+            var senderCDKey = GetPCPublicCDKey(sender);
+            var senderAccount = GetPCPlayerName(sender);
+            var senderPCName = GetName(sender);
+            var receiverIPAddress = GetPCIPAddress(receiver);
+            var receiverCDKey = GetPCPublicCDKey(receiver);
+            var receiverAccount = GetPCPlayerName(receiver);
+            var receiverPCName = GetName(receiver);
+
+            var log = $"{senderPCName} - {senderAccount} - {senderCDKey} - {senderIPAddress} - {channel} (SENT TO {receiverPCName} - {receiverAccount} - {receiverCDKey} - {receiverIPAddress}): {message}";
+            return log;
         }
 
         private static void OnDMAction(int actionTypeID)
         {
             string details = ProcessEventAndBuildDetails(actionTypeID);
-
-            NWObject dm = NWGameObject.OBJECT_SELF;
-
-            var record = new DMAction
-            {
-                DMActionTypeID = actionTypeID,
-                Name = dm.Name,
-                CDKey = _.GetPCPublicCDKey(dm),
-                Details = details
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(record, DatabaseActionType.Insert));
+            Audit.Write(AuditGroup.DM, details);
         }
 
         private static string ProcessEventAndBuildDetails(int eventID)
@@ -211,7 +179,7 @@ namespace SWLOR.Game.Server.Service
                     float x = NWNXEvents.OnDMSpawnObject_GetPositionX();
                     float y = NWNXEvents.OnDMSpawnObject_GetPositionY();
                     float z = NWNXEvents.OnDMSpawnObject_GetPositionZ();
-                    creature.SetLocalInt("DM_SPAWNED", _.TRUE);
+                    creature.SetLocalInt("DM_SPAWNED", TRUE);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP
@@ -236,201 +204,73 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleDeath()
         {
-            NWPlayer player = _.GetLastPlayerDied();
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 3,
-                PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            NWPlayer player = GetLastPlayerDied();
+            var details = $"DEATH - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - {player.Name}";
+            Audit.Write(AuditGroup.Death, details);
         }
 
         private static void OnModuleRespawn()
         {
-            NWPlayer player = _.GetLastRespawnButtonPresser();
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 4,
-                PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            NWPlayer player = GetLastRespawnButtonPresser();
+            var details = $"RESPAWN - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - {player.Name}";
+            Audit.Write(AuditGroup.Death, details);
         }
 
         private static void OnStoreBankItem(NWPlayer player, BankItem entity)
         {
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 5,
-                PlayerID = entity.PlayerID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
-                BankID = entity.BankID,
-                ItemID = new Guid(entity.ItemID),
-                ItemName = entity.ItemName,
-                ItemTag = entity.ItemTag,
-                ItemResref = entity.ItemResref
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"STORE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - Bank #{entity.BankID} - {player.Name} - Item ID {entity.ItemID} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref}";
+            Audit.Write(AuditGroup.Bank, details);
         }
 
         private static void OnRemoveBankItem(NWPlayer player, BankItem entity)
         {
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 6,
-                PlayerID = entity.PlayerID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
-                BankID = entity.BankID,
-                ItemID = new Guid(entity.ItemID),
-                ItemName = entity.ItemName,
-                ItemTag = entity.ItemTag,
-                ItemResref = entity.ItemResref
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"REMOVE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - Bank #{entity.BankID} - {player.Name} - Item ID {entity.ItemID} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref}";
+            Audit.Write(AuditGroup.Bank, details);
         }
 
         private static void OnStoreStructureItem(NWPlayer player, PCBaseStructureItem entity)
         {
             PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
 
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 7,
-                PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
-                ItemID = new Guid(entity.ItemGlobalID),
-                ItemName = entity.ItemName,
-                ItemTag = entity.ItemTag,
-                ItemResref = entity.ItemResref,
-                PCBaseID = pcBaseStructure.PCBaseID,
-                PCBaseStructureID = entity.PCBaseStructureID,
-                BaseStructureID = pcBaseStructure.BaseStructureID,
-                CustomName = pcBaseStructure.CustomName
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"STORE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - PC Base Structure ID #{entity.PCBaseStructureID} - {player.Name} - Item ID {entity.ItemGlobalID} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref} - Custom Name {pcBaseStructure.CustomName}";
+            Audit.Write(AuditGroup.StructureStorage, details);
         }
 
         private static void OnRemoveStructureItem(NWPlayer player, PCBaseStructureItem entity)
         {
             PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
 
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 8,
-                PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
-                ItemID = new Guid(entity.ItemGlobalID),
-                ItemName = entity.ItemName,
-                ItemTag = entity.ItemTag,
-                ItemResref = entity.ItemResref,
-                PCBaseID = pcBaseStructure.PCBaseID,
-                PCBaseStructureID = entity.PCBaseStructureID,
-                BaseStructureID = pcBaseStructure.BaseStructureID,
-                CustomName = pcBaseStructure.CustomName
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"REMOVE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - PC Base Structure ID #{entity.PCBaseStructureID} - {player.Name} - Item ID {entity.ItemGlobalID} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref} - Custom Name {pcBaseStructure.CustomName}";
+            Audit.Write(AuditGroup.StructureStorage, details);
         }
 
         private static void OnPurchaseLand(OnPurchaseLand message)
         {
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 9,
-                PlayerID = message.Player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(message.Player),
-                AccountName = _.GetPCPlayerName(message.Player),
-                AreaSector = message.Sector,
-                AreaName = message.AreaName,
-                AreaTag = message.AreaTag,
-                AreaResref = message.AreaResref,
-                PCBaseTypeID = message.PCBaseType
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"PURCHASE LAND - {message.Player.GlobalID} - {GetPCPublicCDKey(message.Player)} - {GetPCPlayerName(message.Player)} - Sector {message.Sector} - Area {message.AreaName} ({message.AreaTag}) [{message.AreaResref}] PCBaseTypeID {message.PCBaseType}";
+            Audit.Write(AuditGroup.Territory, details);
         }
 
         private static void OnPCBaseLeaseExpired(PCBase pcBase)
         {
             Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
 
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 10,
-                PlayerID = pcBase.PlayerID,
-                AreaSector = pcBase.Sector,
-                AreaName = dbArea.Name,
-                AreaTag = dbArea.Tag,
-                AreaResref = pcBase.AreaResref,
-                PCBaseTypeID = (PCBaseType)pcBase.PCBaseTypeID, 
-                CustomName = pcBase.CustomName,
-                DateRentDue = pcBase.DateRentDue
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"LEASE EXPIRED - {pcBase.PlayerID} - Sector {pcBase.Sector} - Area {dbArea.Name} ({dbArea.Tag}) [{dbArea.Resref}] - PCBaseTypeID {pcBase.PCBaseTypeID} - Custom Name {pcBase.CustomName} - Date Rent Due {pcBase.DateRentDue}";
+            Audit.Write(AuditGroup.Territory, details);
         }
 
         private static void OnPCBaseDestroyed(PCBase pcBase, NWCreature lastAttacker)
         {
             Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
-
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 11,
-                PlayerID = pcBase.PlayerID,
-                AreaSector = pcBase.Sector,
-                AreaName = dbArea.Name,
-                AreaTag = dbArea.Tag,
-                AreaResref = pcBase.AreaResref,
-                PCBaseTypeID = (PCBaseType)pcBase.PCBaseTypeID,
-                CustomName = pcBase.CustomName,
-                DateRentDue = pcBase.DateRentDue,
-                AttackerPlayerID = lastAttacker.IsPlayer ? (Guid?)lastAttacker.GlobalID : null
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var attackerDetails = lastAttacker.IsPlayer ? lastAttacker.GlobalID.ToString() : string.Empty;
+            var details = $"BASE DESTROYED - {pcBase.PlayerID} - Sector {pcBase.Sector} - Area {dbArea.Name} ({dbArea.Tag}) [{dbArea.Resref}] - PCBaseTypeID {pcBase.PCBaseTypeID} - Custom Name {pcBase.CustomName} - Date Rent Due {pcBase.DateRentDue} - Attacker {attackerDetails}";
+            Audit.Write(AuditGroup.Territory, details);
         }
 
         private static void OnPCBaseLeaseCanceled(PCBase pcBase)
         {
             Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
-
-            var @event = new ModuleEvent
-            {
-                ModuleEventTypeID = 12,
-                PlayerID = pcBase.PlayerID,
-                AreaSector = pcBase.Sector,
-                AreaName = dbArea.Name,
-                AreaTag = dbArea.Tag,
-                AreaResref = pcBase.AreaResref,
-                PCBaseTypeID = (PCBaseType)pcBase.PCBaseTypeID,
-                CustomName = pcBase.CustomName,
-                DateRentDue = pcBase.DateRentDue,
-            };
-
-            // Bypass the caching logic
-            DataService.DataQueue.Enqueue(new DatabaseAction(@event, DatabaseActionType.Insert));
+            var details = $"LEASE CANCELLED - {pcBase.PlayerID} - Sector {pcBase.Sector} - Area {dbArea.Name} ({dbArea.Tag}) [{dbArea.Resref}] - PCBaseTypeID {pcBase.PCBaseTypeID} - Custom Name {pcBase.CustomName} - Date Rent Due {pcBase.DateRentDue}";
+            Audit.Write(AuditGroup.Territory, details);
         }
     }
 }

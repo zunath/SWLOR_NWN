@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[ComponentType]")]
     public class ComponentType: IEntity
     {
         public ComponentType()
@@ -10,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
             Name = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public string ReassembledResref { get; set; }

@@ -5,10 +5,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCHelmet]")]
     public class PCHelmet: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public Guid PlayerID { get; set; }
         public string Helmet1 { get; set; }
         public string Helmet2 { get; set; }

@@ -2,10 +2,9 @@
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[JukeboxSong]")]
     public class JukeboxSong: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public int AmbientMusicID { get; set; }
         public string FileName { get; set; }

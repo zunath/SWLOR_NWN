@@ -71,13 +71,6 @@ namespace SWLOR.Game.Server.Caching
                     propertyWithKey = prop;
                     break;
                 }
-
-                var explicitKey = prop.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).FirstOrDefault();
-                if (explicitKey != null)
-                {
-                    propertyWithKey = prop;
-                    break;
-                }
             }
 
             if (propertyWithKey == null)

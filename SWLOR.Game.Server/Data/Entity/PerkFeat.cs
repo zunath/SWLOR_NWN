@@ -2,7 +2,6 @@
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PerkFeat]")]
     public class PerkFeat: IEntity
     {
         [Key]

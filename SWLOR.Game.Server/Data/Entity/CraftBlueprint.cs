@@ -2,10 +2,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[CraftBlueprint]")]
     public class CraftBlueprint: IEntity
     {
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public int CraftCategoryID { get; set; }
         public int BaseLevel { get; set; }

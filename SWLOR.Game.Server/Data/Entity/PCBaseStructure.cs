@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCBaseStructure]")]
     public class PCBaseStructure: IEntity
     {
         public PCBaseStructure()
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
             CustomName = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid PCBaseID { get; set; }
         public int BaseStructureID { get; set; }

@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[SpawnObject]")]
     public class SpawnObject: IEntity
     {
         public SpawnObject()
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
             BehaviourScript = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public int SpawnID { get; set; }
         public string Resref { get; set; }

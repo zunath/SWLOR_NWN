@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[BuildingStyle]")]
     public class BuildingStyle: IEntity
     {
         public BuildingStyle()
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
             DoorRule = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; }
         public string Resref { get; set; }

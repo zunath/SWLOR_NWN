@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Message]")]
     public class Message: IEntity
     {
         public Message()
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
             DatePosted = DateTime.UtcNow;
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public Guid BoardID { get; set; }
         public Guid PlayerID { get; set; }

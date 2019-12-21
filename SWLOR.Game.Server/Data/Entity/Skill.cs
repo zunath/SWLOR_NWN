@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Skill]")]
     public class Skill: IEntity
     {
         public Skill()
@@ -11,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
             Description = "";
         }
 
-        [ExplicitKey]
+        [Key]
         public int ID { get; set; }
         public int SkillCategoryID { get; set; }
         public string Name { get; set; }

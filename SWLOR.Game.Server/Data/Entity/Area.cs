@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Area]")]
     public class Area: IEntity
     {
         public Area()
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
             ID = Guid.NewGuid();
         }
 
-        [ExplicitKey]
+        [Key]
         public Guid ID { get; set; }
         public string Resref { get; set; }
         public string Name { get; set; }

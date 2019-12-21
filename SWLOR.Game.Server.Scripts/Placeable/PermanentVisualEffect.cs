@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             
             if (vfxID > 0)
             {
-                _.ApplyEffectToObject(_.DurationType.Permanent, _.EffectVisualEffect(vfxID), self);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(vfxID), self);
             }
 
             _.SetEventScript(self, _.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);

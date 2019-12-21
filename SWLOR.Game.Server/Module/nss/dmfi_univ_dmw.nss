@@ -10,7 +10,7 @@ int dmwand_isnearbydestroyable()
 {
    object oMyTest = GetFirstObjectInShape(SHAPE_CUBE, 0.6, lMyLoc, false, OBJECT_TYPE_ALL);
    int nTargetType = GetObjectType(oMyTest);
-   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature)));
+   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature)));
 }
 
 int dmwand_istargetcreateable()
@@ -18,7 +18,7 @@ int dmwand_istargetcreateable()
    if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
-   return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
+   return ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
 }
 
 int dmwand_istargetdestroyable()
@@ -28,7 +28,7 @@ int dmwand_istargetdestroyable()
    int nTargetType = GetObjectType(oMyTarget);
    if(! GetIsPC(oMyTarget))
    {
-      return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
+      return ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
    }
    return false;
 }

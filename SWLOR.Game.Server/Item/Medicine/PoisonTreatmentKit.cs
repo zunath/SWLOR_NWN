@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -27,8 +28,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             {
                 if (_.GetIsEffectValid(effect) == true)
                 {
-                    int effectType = _.GetEffectType(effect);
-                    if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
+                    var effectType = _.GetEffectType(effect);
+                    if (effectType == EffectType.Poison || effectType == EffectType.Disease)
                     {
                         _.RemoveEffect(target.Object, effect);
                     }
@@ -64,9 +65,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             return true;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.Get_Mid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -92,8 +94,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             {
                 if (_.GetIsEffectValid(effect) == true)
                 {
-                    int effectType = _.GetEffectType(effect);
-                    if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
+                    var effectType = _.GetEffectType(effect);
+                    if (effectType == EffectType.Poison || effectType == EffectType.Disease)
                     {
                         hasEffect = true;
                     }

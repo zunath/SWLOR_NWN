@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -100,9 +101,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             return false;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return ANIMATION_LOOPING_GET_LOW;
+            return Animation.Get_Low;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

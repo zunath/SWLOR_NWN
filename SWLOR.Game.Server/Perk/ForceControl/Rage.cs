@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             creature.AssignCommand(() =>
             {
                 _.ApplyEffectToObject(DurationType.Instant, damageEffect, creature.Object);
-                _.ApplyEffectToObject(_.DurationType.Temporary, finalEffect, creature.Object, 6.1f);
-                _.ApplyEffectToObject(_.DurationType.Temporary, visualEffect, creature.Object, 6.1f);
+                _.ApplyEffectToObject(DurationType.Temporary, finalEffect, creature.Object, 6.1f);
+                _.ApplyEffectToObject(DurationType.Temporary, visualEffect, creature.Object, 6.1f);
             });
         }
     }

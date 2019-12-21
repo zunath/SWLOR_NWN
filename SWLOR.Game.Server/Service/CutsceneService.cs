@@ -1646,8 +1646,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
         /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
-        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
-        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is ObjectType.Item</param>
+        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is ObjectType.Item - all other objects will always appear on the ground at oTarget's location</param>
         /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
         public static void ActionCreate(float fDelay, NWCreature oActor, NWObject oTarget, ObjectType iType, string sRef, string sTag = "", Animation iAnim = Animation.Invalid, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
@@ -1667,8 +1667,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
         /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
-        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
-        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is ObjectType.Item</param>
+        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is ObjectType.Item - all other objects will always appear on the ground at oTarget's location</param>
         /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
         public static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, ObjectType iType, string sRef, string sTag = "", Animation iAnim = Animation.Invalid, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
@@ -1687,8 +1687,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
         /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
-        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
-        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is ObjectType.Item</param>
+        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is ObjectType.Item - all other objects will always appear on the ground at oTarget's location</param>
         /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
         public static void Create(float fDelay, NWObject oTarget, ObjectType iType, string sRef, string sTag = "", Animation iAnim = Animation.Invalid, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     {
                         creature.AssignCommand(() =>
                         {
-                            _.ApplyEffectToObject(_.DurationType.Temporary, confusionEffect, target, 6.1f);
+                            _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, target, 6.1f);
                             // Play VFX
                             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), target);
                         });
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var targetCreatureCopy = targetCreature; // Closure can modify the iteration variable so we copy it first.
                             creature.AssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(_.DurationType.Temporary, confusionEffect, targetCreatureCopy, 6.1f);
+                                _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, targetCreatureCopy, 6.1f);
                                 // Play VFX
                                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), targetCreatureCopy);
                             });

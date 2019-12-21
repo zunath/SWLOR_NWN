@@ -3,6 +3,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -47,8 +48,8 @@ namespace SWLOR.Game.Server.Service
 
         private static string ValidateBackground(NWPlayer player)
         {
-            int classID = _.GetClassByPosition(1, player);
-            bool isPlayerClass = Convert.ToInt32(_.Get2DAString("classes", "PlayerClass", classID)) == 1;
+            var classID = _.GetClassByPosition(ClassPosition.First, player);
+            bool isPlayerClass = Convert.ToInt32(_.Get2DAString("classes", "PlayerClass", (int)classID)) == 1;
             bool isValid = isPlayerClass;
             string error = string.Empty;
 

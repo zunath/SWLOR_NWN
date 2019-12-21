@@ -482,9 +482,9 @@ void GestaltClearEffect(float fDelay, object oActor, int iFX = EFFECT_TYPE_CUTSC
         // NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint
     // iAnim            whether or not the object should play its entry animation when it is created
     // iStack           sets how many of the items you want to create
-        // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM
+        // NOTE - this can only be used if iType is ObjectType.Item
     // bCreateOn        set this to true if you want to create an item in the target's inventory
-        // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location
+        // NOTE - this can only be used if iType is ObjectType.Item - all other objects will always appear on the ground at oTarget's location
     // sTarget          the tag of the object, character or waypoint you want to create the item at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
@@ -503,9 +503,9 @@ void GestaltActionCreate(float fDelay, object oActor, object oTarget, int iType,
         // NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint
     // iAnim            whether or not the object should play its entry animation when it is created
     // iStack           sets how many of the items you want to create
-        // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM
+        // NOTE - this can only be used if iType is ObjectType.Item
     // bCreateOn        set this to true if you want to create an item in the target's inventory
-        // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location
+        // NOTE - this can only be used if iType is ObjectType.Item - all other objects will always appear on the ground at oTarget's location
     // sTarget          the tag of the object, character or waypoint you want to create the item at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
@@ -522,9 +522,9 @@ void GestaltTagActionCreate(float fDelay, string sActor, object oTarget, int iTy
         // NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint
     // iAnim            whether or not the object should play its entry animation when it is created
     // iStack           sets how many of the items you want to create
-        // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM
+        // NOTE - this can only be used if iType is ObjectType.Item
     // bCreateOn        set this to true if you want to create an item in the target's inventory
-        // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location
+        // NOTE - this can only be used if iType is ObjectType.Item - all other objects will always appear on the ground at oTarget's location
     // sTarget          the tag of the object, character or waypoint you want to create the item at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget

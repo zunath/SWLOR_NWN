@@ -468,7 +468,7 @@
         Vfx_Eyes_Green_Halfling_Female = 576,
         Vfx_Eyes_Green_Halforc_Male = 577,
         Vfx_Eyes_Green_Halforc_Female = 578,
-        Vfx_Eyes_Green_Troglodyte = 579,
+        LightsaberHum = 579,
         Vfx_Eyes_Pur_Human_Male = 580,
         Vfx_Eyes_Pur_Human_Female = 581,
         Vfx_Eyes_Pur_Dwarf_Male = 582,

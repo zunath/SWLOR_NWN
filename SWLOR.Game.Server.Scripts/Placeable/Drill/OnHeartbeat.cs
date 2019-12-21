@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
                 {
                     outOfPowerEffect = _.EffectVisualEffect(_.VFX_DUR_AURA_RED);
                     outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
-                    _.ApplyEffectToObject(_.DurationType.Permanent, outOfPowerEffect, drill);
+                    _.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, drill);
                 }
 
                 return;

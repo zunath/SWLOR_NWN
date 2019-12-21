@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
+            _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(Vfx.Vfx_Dur_Paralyze_Hold), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 
@@ -37,9 +38,9 @@ namespace SWLOR.Game.Server.Item
                 return;
             }
 
-            _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), effectLocation);
+            _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Fnf_Summon_Monster_3), effectLocation);
 
-            if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == false)
+            if (user.IsPlayer && user.GetLocalBoolean(target.GlobalID.ToString()) == false)
             {
                 int scanningBonus = item.ScanningBonus;
                 SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);
@@ -72,9 +73,10 @@ namespace SWLOR.Game.Server.Item
             return true;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.Get_Mid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

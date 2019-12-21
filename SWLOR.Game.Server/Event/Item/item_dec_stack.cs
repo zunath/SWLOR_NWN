@@ -19,9 +19,9 @@ namespace NWN.Scripts
             if (!item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
-            if(item.BaseItemType == _.BASE_ITEM_SHURIKEN ||
-               item.BaseItemType == _.BASE_ITEM_DART ||
-               item.BaseItemType == _.BASE_ITEM_THROWINGAXE)
+            if(item.BaseItemType == _.BaseItemType.Shuriken ||
+               item.BaseItemType == _.BaseItemType.Dart ||
+               item.BaseItemType == _.BaseItemType.ThrowingAxe)
             {
                 NWNXEvents.SkipEvent();
             }

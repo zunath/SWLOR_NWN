@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessVersion6_ComponentBonuses(NWItem item, ItemProperty ip)
         {
             // Component Bonuses
-            if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+            if (_.GetItemPropertyType(ip) == (int)ItemPropertyType.ComponentBonus)
             {
                 // +AC Component Bonus
                 if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
@@ -250,17 +250,17 @@ namespace SWLOR.Game.Server.Service
         {
             int[] ipsToRemove =
             {
-                (int)CustomItemPropertyType.DarkPotencyBonus,
-                (int)CustomItemPropertyType.LightPotencyBonus,
-                (int)CustomItemPropertyType.MindPotencyBonus,
-                (int)CustomItemPropertyType.ElectricalPotencyBonus,
-                (int)CustomItemPropertyType.ForcePotencyBonus,
-                (int)CustomItemPropertyType.ForceAccuracyBonus,
-                (int)CustomItemPropertyType.ForceDefenseBonus,
-                (int)CustomItemPropertyType.ElectricalDefenseBonus,
-                (int)CustomItemPropertyType.MindDefenseBonus,
-                (int)CustomItemPropertyType.LightDefenseBonus,
-                (int)CustomItemPropertyType.DarkDefenseBonus
+                (int)ItemPropertyType.DarkPotencyBonus,
+                (int)ItemPropertyType.LightPotencyBonus,
+                (int)ItemPropertyType.MindPotencyBonus,
+                (int)ItemPropertyType.ElectricalPotencyBonus,
+                (int)ItemPropertyType.ForcePotencyBonus,
+                (int)ItemPropertyType.ForceAccuracyBonus,
+                (int)ItemPropertyType.ForceDefenseBonus,
+                (int)ItemPropertyType.ElectricalDefenseBonus,
+                (int)ItemPropertyType.MindDefenseBonus,
+                (int)ItemPropertyType.LightDefenseBonus,
+                (int)ItemPropertyType.DarkDefenseBonus
             };
 
             if (ipsToRemove.Contains(_.GetItemPropertyType(ip)))

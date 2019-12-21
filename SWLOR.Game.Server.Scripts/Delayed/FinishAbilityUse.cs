@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
                     // The Skill Increase effect icon and name has been overwritten. Apply the effect to the player now.
                     // This doesn't do anything - it simply gives a visual cue that the player has an active concentration effect.
-                    _.ApplyEffectToObject(_.DurationType.Permanent, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), activator);
+                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), activator);
                 }
 
                 // Handle applying cooldowns, if necessary.

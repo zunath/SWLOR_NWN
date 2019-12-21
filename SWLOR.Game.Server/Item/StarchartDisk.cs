@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Item
             starkillerBase.Starcharts |= starcharts;
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_CONFUSION_S), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Imp_Confusion_S), target);
             _.FloatingTextStringOnCreature("Starcharts loaded!", player);
             item.Destroy();
         }
@@ -57,9 +58,10 @@ namespace SWLOR.Game.Server.Item
             return true;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.Get_Mid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

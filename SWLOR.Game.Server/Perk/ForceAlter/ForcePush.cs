@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             // Resisted - Only apply slow for six seconds
             if (result.IsResisted)
             {
-                _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectSlow(), target, 6.0f);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectSlow(), target, 6.0f);
             }
 
             // Not resisted - Apply knockdown for the specified duration
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     creature.SendMessage("Lucky Force Push!");
                 }
 
-                _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectKnockdown(), target, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target, duration);
             }
 
             if (creature.IsPlayer)

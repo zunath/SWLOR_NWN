@@ -590,7 +590,7 @@ namespace NWN
 
         /// <summary>
         ///  Create an object of the specified type at lLocation.
-        ///  - nObjectType: OBJECT_TYPE_ITEM, ObjectType.Creature, ObjectType.Placeable,
+        ///  - nObjectType: ObjectType.Item, ObjectType.Creature, ObjectType.Placeable,
         ///    OBJECT_TYPE_STORE, ObjectType.Waypoint
         ///  - sTemplate
         ///  - lLocation

@@ -100,7 +100,7 @@ void main()
         return;
     }
 
-    if ( GetObjectType(oTarget) != OBJECT_TYPE_ITEM  ||  oTarget ==  OBJECT_INVALID )
+    if ( GetObjectType(oTarget) != ObjectType.Item  ||  oTarget ==  OBJECT_INVALID )
     {
         FloatingTextStrRefOnCreature(83353,oPC);         //"Invalid Target, must select armor or helmet"
         return;
@@ -108,7 +108,7 @@ void main()
 
     int nBase = GetBaseItemType(oTarget);
     // GZ@2006/03/26: Added cloak support
-    if ( nBase != BASE_ITEM_ARMOR  &&  nBase != BASE_ITEM_HELMET  &&  nBase != BASE_ITEM_CLOAK )
+    if ( nBase != BaseItemType.Armor  &&  nBase != BaseItemType.Helmet  &&  nBase != BaseItemType.Cloak )
     {
         FloatingTextStrRefOnCreature(83353,oPC);    //"Invalid Target, must select armor or helmet"
         return;
@@ -124,13 +124,13 @@ void main()
     // save if the item was equipped before the process
     int bEquipped;
     int nSlot;
-    if ( nBase == BASE_ITEM_HELMET )
+    if ( nBase == BaseItemType.Helmet )
     {
         nSlot = InventorySlot.Head;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
     // GZ@2006/03/26: Added cloak support
-    else if (nBase == BASE_ITEM_CLOAK )
+    else if (nBase == BaseItemType.Cloak )
     {
         nSlot = InventorySlot.Cloak;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);

@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -53,9 +54,10 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return ANIMATION_LOOPING_GET_MID;            
+            return Animation.Get_Mid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

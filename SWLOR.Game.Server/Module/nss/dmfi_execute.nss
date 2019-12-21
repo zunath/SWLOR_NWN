@@ -900,7 +900,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         SendMessageToPC(oUser, "Charges remaining: " + IntToString(GetItemCharges(oTarget)));
         break;
 
-    case 32: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 32: if (GetObjectType(oTarget)==ObjectType.Item)
         {
             SetPlotFlag(oTarget, false); DestroyObject(oTarget);
             FloatingTextStringOnCreature(GetName(oTarget)+": Item destroyed", oUser);
@@ -910,7 +910,7 @@ void DoNewDMThingy(int iChoice, object oUser)
             FloatingTextStringOnCreature("Invalid target. Target item directly from inventory screen", oUser);
         }
         break;
-    case 33: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 33: if (GetObjectType(oTarget)==ObjectType.Item)
         {
             SetItemCharges(oTarget, 0);
             FloatingTextStringOnCreature( GetName(oTarget)+": Remaining charges removed", oUser);
@@ -922,7 +922,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         break;
 
 
-    case 34: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 34: if (GetObjectType(oTarget)==ObjectType.Item)
         {
             SetItemCharges(oTarget, 999);
             FloatingTextStringOnCreature( GetName(oTarget)+": Item fully recharged",oUser); break;
@@ -933,7 +933,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         }
         break;
 
-    case 35: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 35: if (GetObjectType(oTarget)==ObjectType.Item)
         {
             if (GetDroppableFlag(oTarget))
             {
@@ -952,7 +952,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         }
         break;
 
-    case 36:   if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 36:   if (GetObjectType(oTarget)==ObjectType.Item)
         {
             if (GetItemCursedFlag(oTarget))
             {
@@ -971,7 +971,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         }
         break;
 
-    case 37:  if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 37:  if (GetObjectType(oTarget)==ObjectType.Item)
         {
             if (GetPlotFlag(oTarget))
             {
@@ -989,7 +989,7 @@ void DoNewDMThingy(int iChoice, object oUser)
             FloatingTextStringOnCreature("Invalid target. Target item directly from inventory screen", oUser);
         }
         break;
-    case 38:   if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
+    case 38:   if (GetObjectType(oTarget)==ObjectType.Item)
         {
             if (GetStolenFlag(oTarget))
             {

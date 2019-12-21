@@ -1804,12 +1804,12 @@ namespace NWN
         ///  Create an Area Of Effect effect in the area of the creature it is applied to.
         ///  If the scripts are not specified, default ones will be used.
         /// </summary>
-        public static Effect EffectAreaOfEffect(int nAreaEffectId, string sOnEnterScript = "", string sHeartbeatScript = "", string sOnExitScript = "")
+        public static Effect EffectAreaOfEffect(Aoe nAreaEffectId, string sOnEnterScript = "", string sHeartbeatScript = "", string sOnExitScript = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sOnExitScript);
             Internal.NativeFunctions.StackPushStringUTF8(sHeartbeatScript);
             Internal.NativeFunctions.StackPushStringUTF8(sOnEnterScript);
-            Internal.NativeFunctions.StackPushInteger(nAreaEffectId);
+            Internal.NativeFunctions.StackPushInteger((int)nAreaEffectId);
             Internal.NativeFunctions.CallBuiltIn(171);
             return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
         }

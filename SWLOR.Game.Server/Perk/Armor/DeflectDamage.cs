@@ -72,10 +72,10 @@ namespace SWLOR.Game.Server.Perk.Armor
             }
 
             Effect effect = _.EffectDamageShield(damageBase, randomDamage, _.DAMAGE_TYPE_MAGICAL);
-            _.ApplyEffectToObject(_.DurationType.Temporary, effect, creature.Object, length);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_DUR_AURA_ORANGE);
-            _.ApplyEffectToObject(_.DurationType.Temporary, effect, creature.Object, length);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
             _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);

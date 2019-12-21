@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Item
             ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), user);
 
             // But reduces one random attribute by 50 for 2 minutes.
-            int stat = RandomService.D6(1)-1;
+            var stat = (Ability)(RandomService.D6(1)-1);
             var effect = EffectAbilityDecrease(stat, 50);
             ApplyEffectToObject(DurationType.Temporary, effect, user, 120f);
         }
@@ -41,9 +42,10 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return 0;
+            return Animation.Invalid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

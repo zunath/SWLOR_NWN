@@ -65,9 +65,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             return true;
         }
 
-        public int AnimationID()
+
+        public Animation AnimationType()
         {
-            return (int)AnimationLooping.Get_Mid;
+            return Animation.Get_Mid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

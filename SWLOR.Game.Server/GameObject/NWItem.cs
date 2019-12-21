@@ -136,17 +136,17 @@ namespace SWLOR.Game.Server.GameObject
             BaseItemType[] vibroblades =
             {
                 BaseItemType.BastardSword,
-                BaseItemType.Longsword,
+                BaseItemType.LongSword,
                 BaseItemType.Katana,
                 BaseItemType.Scimitar,
-                BaseItemType.Battleaxe
+                BaseItemType.BattleAxe
             };
 
             BaseItemType[] finesseVibroblades =
             {
                 BaseItemType.Dagger,
                 BaseItemType.Rapier,
-                BaseItemType.Shortsword,
+                BaseItemType.ShortSword,
                 BaseItemType.Kukri,
                 BaseItemType.Sickle,
                 BaseItemType.Whip,
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.GameObject
                 BaseItemType.Club,
                 BaseItemType.LightFlail,
                 BaseItemType.LightHammer,
-                BaseItemType.Lightmace,
+                BaseItemType.LightMace,
                 BaseItemType.Morningstar
             };
 
@@ -199,19 +199,19 @@ namespace SWLOR.Game.Server.GameObject
                 BaseItemType.Gloves,
                 BaseItemType.Bracer,
                 BaseItemType.Kama,
-                BaseItemType.Quarterstaff
+                BaseItemType.QuarterStaff
             };
 
             BaseItemType[] blasterRifles =
             {
-                BaseItemType.LightCrossbow,
-                BaseItemType.HeavyCrossbow
+                BaseItemType.LightCrossBow,
+                BaseItemType.HeavyCrossBow
             };
 
             BaseItemType[] blasterPistol =
             {
                 BaseItemType.ShortBow,
-                BaseItemType.Longbow,
+                BaseItemType.LongBow,
             };
 
             BaseItemType[] throwing =

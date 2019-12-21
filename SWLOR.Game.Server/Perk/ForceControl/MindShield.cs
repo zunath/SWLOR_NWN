@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(_.DurationType.Temporary, effectMindShield, target, 6.1f);
+                        _.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 case 2:
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(_.DurationType.Temporary, effectMindShield, target, 6.1f);
+                        _.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 case 3:
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(_.DurationType.Temporary, effectMindShield, target, 6.1f);
+                        _.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 default:

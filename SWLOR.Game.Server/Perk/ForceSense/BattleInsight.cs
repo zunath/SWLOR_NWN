@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
-                _.ApplyEffectToObject(_.DurationType.Temporary, effect, targetCreature, 6.1f);
+                _.ApplyEffectToObject(DurationType.Temporary, effect, targetCreature, 6.1f);
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), targetCreature);
                 
                 nth++;

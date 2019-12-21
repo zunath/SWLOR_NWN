@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
             });
 
-            if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
+            if (type == BaseItemType.SmallShield || type == BaseItemType.LargeShield || type == BaseItemType.TowerShield)
             {
                 foreach (PCPerk pcPerk in pcPerks)
                 {

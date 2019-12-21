@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Service
 
             Effect eGhostWalk = _.EffectCutsceneGhost();
             eGhostWalk = _.TagEffect(eGhostWalk, "GHOST_WALK");
-            _.ApplyEffectToObject(_.DurationType.Permanent, eGhostWalk, oPC.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, eGhostWalk, oPC.Object);
 
         }
 

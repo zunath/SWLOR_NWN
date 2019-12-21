@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Bioware
             if (fDuration == 0.0f)
             {
 
-                nDuration = _.DurationType.Permanent;
+                nDuration = DurationType.Permanent;
             }
             else
             {
 
-                nDuration = _.DurationType.Temporary;
+                nDuration = DurationType.Temporary;
             }
 
             int nDurationCompare = nDuration;
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Bioware
 
             }
 
-            if (nDuration == _.DurationType.Permanent)
+            if (nDuration == DurationType.Permanent)
             {
                 _.AddItemProperty(nDuration, ip, oItem.Object);
             }

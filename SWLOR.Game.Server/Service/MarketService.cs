@@ -179,41 +179,41 @@ namespace SWLOR.Game.Server.Service
             // Weapons - These IDs are based solely on the NWN BaseItemType
             switch (item.BaseItemType)
             {
-                case BASE_ITEM_GREATAXE: return 1;
-                case BASE_ITEM_BATTLEAXE: return 2;
-                case BASE_ITEM_BASTARDSWORD: return 3;
-                case BASE_ITEM_DAGGER: return 4;
-                case BASE_ITEM_GREATSWORD: return 5;
-                case BASE_ITEM_LONGSWORD: return 7;
-                case BASE_ITEM_RAPIER: return 8;
-                case BASE_ITEM_KATANA: return 9;
-                case BASE_ITEM_SHORTSWORD: return 10;
-                case BASE_ITEM_CLUB: return 11;
-                case BASE_ITEM_LIGHTMACE: return 12;
-                case BASE_ITEM_MORNINGSTAR: return 13;
-                case BASE_ITEM_QUARTERSTAFF: return 15;
-                case BASE_ITEM_DOUBLEAXE: return 16;
-                case BASE_ITEM_TWOBLADEDSWORD: return 17;
-                case BASE_ITEM_KUKRI: return 18;
-                case BASE_ITEM_HALBERD: return 19;
-                case BASE_ITEM_SHORTSPEAR: return 20;
-                case BASE_ITEM_LIGHTCROSSBOW: return 21; // Blaster Rifles
-                case BASE_ITEM_SHORTBOW: return 22; // Blaster Pistols
-                case BASE_ITEM_HELMET: return 23;
-                case BASE_ITEM_SMALLSHIELD: return 28; // Shields
-                case BASE_ITEM_LARGESHIELD: return 28; // Shields
-                case BASE_ITEM_TOWERSHIELD: return 28; // Shields
+                case BaseItemType.GreatAxe: return 1;
+                case BaseItemType.BattleAxe: return 2;
+                case BaseItemType.BastardSword: return 3;
+                case BaseItemType.Dagger: return 4;
+                case BaseItemType.GreatSword: return 5;
+                case BaseItemType.LongSword: return 7;
+                case BaseItemType.Rapier: return 8;
+                case BaseItemType.Katana: return 9;
+                case BaseItemType.ShortSword: return 10;
+                case BaseItemType.Club: return 11;
+                case BaseItemType.LightMace: return 12;
+                case BaseItemType.Morningstar: return 13;
+                case BaseItemType.QuarterStaff: return 15;
+                case BaseItemType.DoubleAxe: return 16;
+                case BaseItemType.TwoBladedSword: return 17;
+                case BaseItemType.Kukri: return 18;
+                case BaseItemType.Halberd: return 19;
+                case BaseItemType.ShortSpear: return 20;
+                case BaseItemType.LightCrossBow: return 21; // Blaster Rifles
+                case BaseItemType.ShortBow: return 22; // Blaster Pistols
+                case BaseItemType.Helmet: return 23;
+                case BaseItemType.SmallShield: return 28; // Shields
+                case BaseItemType.LargeShield: return 28; // Shields
+                case BaseItemType.TowerShield: return 28; // Shields
                 case BASE_ITEM_BOOK: return 29;
-                case BASE_ITEM_GLOVES: return 30; // Power Gloves
-                case BASE_ITEM_AMULET: return 102; // Necklace
-                case BASE_ITEM_RING: return 103;
+                case BaseItemType.Gloves: return 30; // Power Gloves
+                case BaseItemType.Amulet: return 102; // Necklace
+                case BaseItemType.Ring: return 103;
             }
 
             // Check for armor.
-            if (item.BaseItemType == BASE_ITEM_ARMOR ||
-                item.BaseItemType == BASE_ITEM_BELT ||
-                item.BaseItemType == BASE_ITEM_CLOAK ||
-                item.BaseItemType == BASE_ITEM_BOOTS)
+            if (item.BaseItemType == BaseItemType.Armor ||
+                item.BaseItemType == BaseItemType.Belt ||
+                item.BaseItemType == BaseItemType.Cloak ||
+                item.BaseItemType == BaseItemType.Boots)
             {
                 switch (item.CustomItemType)
                 {
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var propertyType = _.GetItemPropertyType(prop);
                 // Check for components
-                if (propertyType == (int) CustomItemPropertyType.ComponentType)
+                if (propertyType == (int) ItemPropertyType.ComponentType)
                 {
                     // IDs are mapped to the iprp_comptype.2da file.
                     switch (_.GetItemPropertyCostTableValue(prop))
@@ -336,19 +336,19 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Check for mods
-                if (propertyType == (int)CustomItemPropertyType.BlueMod)
+                if (propertyType == (int)ItemPropertyType.BlueMod)
                 {
                     return 98;
                 }
-                if (propertyType == (int)CustomItemPropertyType.GreenMod)
+                if (propertyType == (int)ItemPropertyType.GreenMod)
                 {
                     return 99;
                 }
-                if (propertyType == (int)CustomItemPropertyType.RedMod)
+                if (propertyType == (int)ItemPropertyType.RedMod)
                 {
                     return 100;
                 }
-                if (propertyType == (int)CustomItemPropertyType.YellowMod)
+                if (propertyType == (int)ItemPropertyType.YellowMod)
                 {
                     return 101;
                 }

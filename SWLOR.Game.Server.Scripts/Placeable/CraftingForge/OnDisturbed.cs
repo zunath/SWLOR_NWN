@@ -123,15 +123,15 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
             // Any component bonuses on the ore get applied to the end product.
             var itemProperties = item.ItemProperties.Where(x =>
-                _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentBonus ||
-                _.GetItemPropertyType(x) == (int) CustomItemPropertyType.RecommendedLevel).ToList();
+                _.GetItemPropertyType(x) == (int)ItemPropertyType.ComponentBonus ||
+                _.GetItemPropertyType(x) == (int) ItemPropertyType.RecommendedLevel).ToList();
 
             string itemResref = item.Resref;
 
             var @event = new OnCompleteSmelt(pc, itemResref, itemProperties);
             pc.DelayEvent(baseCraftDelay, @event);
             
-            _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
             pc.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
             item.Destroy();
         }
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             int durability = 0;
             foreach (var ip in item.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+                if (_.GetItemPropertyType(ip) == (int)ItemPropertyType.ComponentBonus)
                 {
                     int bonusTypeID = _.GetItemPropertySubType(ip);
                     if (bonusTypeID == (int) ComponentBonusType.DurabilityUp)

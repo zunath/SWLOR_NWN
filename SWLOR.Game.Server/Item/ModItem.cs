@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Item
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
             ModSlots slots = ModService.GetModSlots(targetItem);
-            CustomItemPropertyType modType = ModService.GetModType(modItem);
+            ItemPropertyType modType = ModService.GetModType(modItem);
             int modID = modItem.GetLocalInt("RUNE_ID");
             string[] modArgs = modItem.GetLocalString("RUNE_VALUE").Split(',');
             int modLevel = modItem.RecommendedLevel;
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Item
             bool usePrismatic = false;
             switch (modType)
             {
-                case CustomItemPropertyType.RedMod:
+                case ItemPropertyType.RedMod:
                     if (slots.FilledRedSlots < slots.RedSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Item
                     }
                     else usePrismatic = true;
                     break;
-                case CustomItemPropertyType.BlueMod:
+                case ItemPropertyType.BlueMod:
                     if (slots.FilledBlueSlots < slots.BlueSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Item
                     }
                     else usePrismatic = true;
                     break;
-                case CustomItemPropertyType.GreenMod:
+                case ItemPropertyType.GreenMod:
                     if (slots.FilledGreenSlots < slots.GreenSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Item
                     }
                     else usePrismatic = true;
                     break;
-                case CustomItemPropertyType.YellowMod:
+                case ItemPropertyType.YellowMod:
                     if (slots.FilledYellowSlots < slots.YellowSlots)
                     {
                         targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Item
 
             SkillType skillType;
             
-            if(targetItem.GetLocalInt("LIGHTSABER") == true)
+            if(targetItem.GetLocalBoolean("LIGHTSABER") == true)
             {
                 skillType = SkillType.Engineering;
             }
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if(targetItem.GetLocalInt("LIGHTSABER") == true)
+            if(targetItem.GetLocalBoolean("LIGHTSABER") == true)
             {
                 perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
             }
@@ -145,10 +146,11 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        public int AnimationID()
+        public Animation AnimationType()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.Get_Mid;
         }
+
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -162,7 +164,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem mod, NWObject target, Location targetLocation)
         {
-            if (target.ObjectType != OBJECT_TYPE_ITEM) return "Only items may be targeted by mods.";
+            if (target.ObjectType != ObjectType.Item) return "Only items may be targeted by mods.";
             if (!user.IsPlayer) return "Only players may use mods.";
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
@@ -172,24 +174,24 @@ namespace SWLOR.Game.Server.Item
             int requiredPerkLevel = modLevel / 5;
             if (requiredPerkLevel <= 0) requiredPerkLevel = 1;
             int perkLevel = 0;
-            CustomItemPropertyType modType = ModService.GetModType(mod);
+            ItemPropertyType modType = ModService.GetModType(mod);
             ModSlots modSlots = ModService.GetModSlots(targetItem);
             int modID = mod.GetLocalInt("RUNE_ID");
             string[] modArgs = mod.GetLocalString("RUNE_VALUE").Split(',');
 
             // Check for a misconfigured mod item.
-            if (modType == CustomItemPropertyType.Unknown) return "Mod color couldn't be found. Notify an admin that this mod item is not set up properly.";
+            if (modType == ItemPropertyType.Invalid) return "Mod color couldn't be found. Notify an admin that this mod item is not set up properly.";
             if (modID <= 0) return "Mod ID couldn't be found. Notify an admin that this mod item is not set up properly.";
             if (modArgs.Length <= 0) return "Mod value couldn't be found. Notify an admin that this mod item is not set up properly.";
 
             // No available slots on target item
-            if (modType == CustomItemPropertyType.RedMod && !modSlots.CanRedModBeAdded) return "That item has no available red mod slots.";
-            if (modType == CustomItemPropertyType.BlueMod && !modSlots.CanBlueModBeAdded) return "That item has no available blue mod slots.";
-            if (modType == CustomItemPropertyType.GreenMod && !modSlots.CanGreenModBeAdded) return "That item has no available green mod slots.";
-            if (modType == CustomItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
+            if (modType == ItemPropertyType.RedMod && !modSlots.CanRedModBeAdded) return "That item has no available red mod slots.";
+            if (modType == ItemPropertyType.BlueMod && !modSlots.CanBlueModBeAdded) return "That item has no available blue mod slots.";
+            if (modType == ItemPropertyType.GreenMod && !modSlots.CanGreenModBeAdded) return "That item has no available green mod slots.";
+            if (modType == ItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
 
             // Get the perk level based on target item type and mod type.
-            if (targetItem.GetLocalInt("LIGHTSABER") == false && WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (targetItem.GetLocalBoolean("LIGHTSABER") == false && WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.WeaponModInstallation);
             }
@@ -197,7 +199,7 @@ namespace SWLOR.Game.Server.Item
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ArmorModInstallation);
             }
-            else if (targetItem.GetLocalInt("LIGHTSABER") == true || EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (targetItem.GetLocalBoolean("LIGHTSABER") == true || EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.EngineeringModInstallation);
             }
@@ -205,7 +207,7 @@ namespace SWLOR.Game.Server.Item
             // Ensure item isn't equipped.
             for (int slot = 0; slot < NWNConstants.NumberOfInventorySlots; slot++)
             {
-                if (_.GetItemInSlot(slot, user.Object) == targetItem.Object)
+                if (_.GetItemInSlot((InventorySlot)slot, user.Object) == targetItem.Object)
                 {
                     return "Targeted item must be unequipped before installing a mod.";
                 }
@@ -240,73 +242,73 @@ namespace SWLOR.Game.Server.Item
         // WeaponBaseItems in ItemService, and engineering items are in their own list here.  These lists are only 
         // used for the purpose of mod perks, the lists in ItemService are used for "is this item a weapon/armor/etc". 
         //------------------------------------------------------------------------------------------------------------
-        public static HashSet<int> ArmorBaseItemTypes = new HashSet<int>()
+        public static HashSet<BaseItemType> ArmorBaseItemTypes = new HashSet<BaseItemType>()
         {
-            BASE_ITEM_AMULET,
-            BASE_ITEM_ARMOR,
-            BASE_ITEM_BRACER,
-            BASE_ITEM_BELT,
-            BASE_ITEM_BOOTS,
-            BASE_ITEM_CLOAK,
-            BASE_ITEM_GLOVES,
-            BASE_ITEM_HELMET,
-            BASE_ITEM_LARGESHIELD,
-            BASE_ITEM_SMALLSHIELD,
-            BASE_ITEM_TOWERSHIELD,
-            BASE_ITEM_RING
+            BaseItemType.Amulet,
+            BaseItemType.Armor,
+            BaseItemType.Bracer,
+            BaseItemType.Belt,
+            BaseItemType.Boots,
+            BaseItemType.Cloak,
+            BaseItemType.Gloves,
+            BaseItemType.Helmet,
+            BaseItemType.LargeShield,
+            BaseItemType.SmallShield,
+            BaseItemType.TowerShield,
+            BaseItemType.Ring
         };
 
-        private static readonly HashSet<int> WeaponsmithBaseItemTypes = new HashSet<int>()
+        private static readonly HashSet<BaseItemType> WeaponsmithBaseItemTypes = new HashSet<BaseItemType>()
         {
-            BASE_ITEM_BASTARDSWORD,
-            BASE_ITEM_BATTLEAXE,
-            BASE_ITEM_CLUB,
-            BASE_ITEM_DAGGER,
-            BASE_ITEM_DART,
-            BASE_ITEM_DIREMACE,
-            BASE_ITEM_DOUBLEAXE,
-            BASE_ITEM_DWARVENWARAXE,
-            BASE_ITEM_GREATAXE,
-            BASE_ITEM_GREATSWORD,
-            BASE_ITEM_GRENADE,
-            BASE_ITEM_HALBERD,
-            BASE_ITEM_HANDAXE,
-            BASE_ITEM_HEAVYFLAIL,
-            BASE_ITEM_KAMA,
-            BASE_ITEM_KATANA,
-            BASE_ITEM_KUKRI,
-            BASE_ITEM_LIGHTFLAIL,
-            BASE_ITEM_LIGHTHAMMER,
-            BASE_ITEM_LIGHTMACE,
-            BASE_ITEM_LONGSWORD,
-            BASE_ITEM_MORNINGSTAR,
-            BASE_ITEM_QUARTERSTAFF,
-            BASE_ITEM_RAPIER,
-            BASE_ITEM_SCIMITAR,
-            BASE_ITEM_SCYTHE,
-            BASE_ITEM_SHORTSPEAR,
-            BASE_ITEM_SHORTSWORD,
-            BASE_ITEM_SHURIKEN,
-            BASE_ITEM_SICKLE,
-            BASE_ITEM_THROWINGAXE,
-            BASE_ITEM_TRIDENT,
-            BASE_ITEM_TWOBLADEDSWORD,
-            BASE_ITEM_WARHAMMER,
-            BASE_ITEM_WHIP,
+            BaseItemType.BastardSword,
+            BaseItemType.BattleAxe,
+            BaseItemType.Club,
+            BaseItemType.Dagger,
+            BaseItemType.Dart,
+            BaseItemType.DireMace,
+            BaseItemType.DoubleAxe,
+            BaseItemType.DwarvenWaraxe,
+            BaseItemType.GreatAxe,
+            BaseItemType.GreatSword,
+            BaseItemType.Grenade,
+            BaseItemType.Halberd,
+            BaseItemType.HandAxe,
+            BaseItemType.HeavyFlail,
+            BaseItemType.Kama,
+            BaseItemType.Katana,
+            BaseItemType.Kukri,
+            BaseItemType.LightFlail,
+            BaseItemType.LightHammer,
+            BaseItemType.LightMace,
+            BaseItemType.LongSword,
+            BaseItemType.Morningstar,
+            BaseItemType.QuarterStaff,
+            BaseItemType.Rapier,
+            BaseItemType.Scimitar,
+            BaseItemType.Scythe,
+            BaseItemType.ShortSpear,
+            BaseItemType.ShortSword,
+            BaseItemType.Shuriken,
+            BaseItemType.Sickle,
+            BaseItemType.ThrowingAxe,
+            BaseItemType.Trident,
+            BaseItemType.TwoBladedSword,
+            BaseItemType.Warhammer,
+            BaseItemType.Whip,
         };
 
-        private static readonly HashSet<int> EngineeringBaseItemTypes = new HashSet<int>()
+        private static readonly HashSet<BaseItemType> EngineeringBaseItemTypes = new HashSet<BaseItemType>()
         {
-            BASE_ITEM_ARROW,
-            BASE_ITEM_BOLT,
-            BASE_ITEM_BULLET,
-            BASE_ITEM_HEAVYCROSSBOW,
-            BASE_ITEM_LIGHTCROSSBOW,
-            BASE_ITEM_LONGBOW,
-            BASE_ITEM_SHORTBOW,
-            BASE_ITEM_SLING,
-            CustomBaseItemType.Saberstaff,
-            CustomBaseItemType.Lightsaber
+            BaseItemType.Arrow,
+            BaseItemType.Bolt,
+            BaseItemType.Bullet,
+            BaseItemType.HeavyCrossBow,
+            BaseItemType.LightCrossBow,
+            BaseItemType.LongBow,
+            BaseItemType.ShortBow,
+            BaseItemType.Sling,
+            BaseItemType.Saberstaff,
+            BaseItemType.Lightsaber
 
         };
 

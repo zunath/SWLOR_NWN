@@ -86,7 +86,7 @@ int dmwand_isnearbydestroyable()
 {
    object oMyTest = GetFirstObjectInShape(SHAPE_CUBE, 0.6, lMyLoc, false, OBJECT_TYPE_ALL);
    int nTargetType = GetObjectType(oMyTest);
-   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature)));
+   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature)));
 }
 
 int dmwand_istargetcreateable()
@@ -94,7 +94,7 @@ int dmwand_istargetcreateable()
    if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
-   return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
+   return ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
 }
 
 int dmwand_istargetdestroyable()
@@ -104,7 +104,7 @@ int dmwand_istargetdestroyable()
    int nTargetType = GetObjectType(oMyTarget);
    if(! GetIsPC(oMyTarget))
    {
-      return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
+      return ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
    }
    return false;
 }
@@ -961,60 +961,60 @@ string dmwand_ItemInfo(object oItem, int iInt)
 
    switch(GetBaseItemType(oItem))
    {
-      case BASE_ITEM_AMULET: sBaseType ="Amulet";break;
-      case BASE_ITEM_ARMOR: sBaseType ="Armor";break;
-      case BASE_ITEM_ARROW: sBaseType ="Arrow";break;
-      case BASE_ITEM_BASTARDSWORD: sBaseType ="Bastard Sword";break;
-      case BASE_ITEM_BATTLEAXE: sBaseType ="Battle Axe";break;
-      case BASE_ITEM_BELT: sBaseType ="Belt";break;
+      case BaseItemType.Amulet: sBaseType ="Amulet";break;
+      case BaseItemType.Armor: sBaseType ="Armor";break;
+      case BaseItemType.Arrow: sBaseType ="Arrow";break;
+      case BaseItemType.BastardSword: sBaseType ="Bastard Sword";break;
+      case BaseItemType.BattleAxe: sBaseType ="Battle Axe";break;
+      case BaseItemType.Belt: sBaseType ="Belt";break;
       case BASE_ITEM_BLANK_POTION : sBaseType ="Blank Potion";break;
       case BASE_ITEM_BLANK_SCROLL : sBaseType ="Blank Scroll";break;
       case BASE_ITEM_BLANK_WAND : sBaseType ="Blank Wand";break;
-      case BASE_ITEM_BOLT : sBaseType ="Bolt";break;
+      case BaseItemType.Bolt : sBaseType ="Bolt";break;
       case BASE_ITEM_BOOK: sBaseType ="Book";break;
-      case BASE_ITEM_BOOTS: sBaseType ="Boots";break;
-      case BASE_ITEM_BRACER: sBaseType ="Bracer";break;
-      case BASE_ITEM_BULLET: sBaseType ="Bullet";break;
+      case BaseItemType.Boots: sBaseType ="Boots";break;
+      case BaseItemType.Bracer: sBaseType ="Bracer";break;
+      case BaseItemType.Bullet: sBaseType ="Bullet";break;
       case BASE_ITEM_CBLUDGWEAPON: sBaseType ="Bludgeoning Weap.";break;
-      case BASE_ITEM_CLOAK: sBaseType ="Cloak";break;
-      case BASE_ITEM_CLUB: sBaseType ="Club";break;
+      case BaseItemType.Cloak: sBaseType ="Cloak";break;
+      case BaseItemType.Club: sBaseType ="Club";break;
       case BASE_ITEM_CPIERCWEAPON: sBaseType ="Pierceing Weap.";break;
       case BASE_ITEM_CREATUREITEM: sBaseType ="Creature Item";break;
       case BASE_ITEM_CSLASHWEAPON: sBaseType ="Slash Weap.";break;
       case BASE_ITEM_CSLSHPRCWEAP: sBaseType ="Slash/Pierce Weap.";break;
-      case BASE_ITEM_DAGGER: sBaseType ="Dagger";break;
-      case BASE_ITEM_DART: sBaseType ="Dart";break;
-      case BASE_ITEM_DIREMACE: sBaseType ="Mace";break;
-      case BASE_ITEM_DOUBLEAXE: sBaseType ="Double Axe";break;
-      case BASE_ITEM_DWARVENWARAXE : sBaseType ="Dwarven War Axe";break;
+      case BaseItemType.Dagger: sBaseType ="Dagger";break;
+      case BaseItemType.Dart: sBaseType ="Dart";break;
+      case BaseItemType.DireMace: sBaseType ="Mace";break;
+      case BaseItemType.DoubleAxe: sBaseType ="Double Axe";break;
+      case BaseItemType.DwarvenWaraxe : sBaseType ="Dwarven War Axe";break;
       case BASE_ITEM_ENCHANTED_POTION : sBaseType ="Enchanted Potion";break;
       case BASE_ITEM_ENCHANTED_SCROLL : sBaseType ="Enchanted Scroll";break;
       case BASE_ITEM_ENCHANTED_WAND : sBaseType ="Enchanted Wand";break;
       case BASE_ITEM_GEM: sBaseType ="Gem";break;
-      case BASE_ITEM_GLOVES: sBaseType ="Gloves";break;
+      case BaseItemType.Gloves: sBaseType ="Gloves";break;
       case BASE_ITEM_GOLD: sBaseType ="Gold";break;
-      case BASE_ITEM_GREATAXE: sBaseType ="Great Axe";break;
-      case BASE_ITEM_GREATSWORD: sBaseType ="Great Sword";break;
-      case BASE_ITEM_GRENADE : sBaseType ="Grenade";break;
-      case BASE_ITEM_HALBERD: sBaseType ="Halberd";break;
-      case BASE_ITEM_HANDAXE: sBaseType ="Hand Axe";break;
+      case BaseItemType.GreatAxe: sBaseType ="Great Axe";break;
+      case BaseItemType.GreatSword: sBaseType ="Great Sword";break;
+      case BaseItemType.Grenade : sBaseType ="Grenade";break;
+      case BaseItemType.Halberd: sBaseType ="Halberd";break;
+      case BaseItemType.HandAxe: sBaseType ="Hand Axe";break;
       case BASE_ITEM_HEALERSKIT: sBaseType ="Healers Kit";break;
-      case BASE_ITEM_HEAVYCROSSBOW: sBaseType ="Heavy Xbow";break;
-      case BASE_ITEM_HEAVYFLAIL: sBaseType ="Heavy Flail";break;
-      case BASE_ITEM_HELMET: sBaseType ="Helmet";break;
+      case BaseItemType.HeavyCrossBow: sBaseType ="Heavy Xbow";break;
+      case BaseItemType.HeavyFlail: sBaseType ="Heavy Flail";break;
+      case BaseItemType.Helmet: sBaseType ="Helmet";break;
       case BASE_ITEM_INVALID: sBaseType ="";break;
-      case BASE_ITEM_KAMA: sBaseType ="Kama";break;
-      case BASE_ITEM_KATANA: sBaseType ="Katana";break;
+      case BaseItemType.Kama: sBaseType ="Kama";break;
+      case BaseItemType.Katana: sBaseType ="Katana";break;
       case BASE_ITEM_KEY: sBaseType ="Key";break;
-      case BASE_ITEM_KUKRI: sBaseType ="Kukri";break;
+      case BaseItemType.Kukri: sBaseType ="Kukri";break;
       case BASE_ITEM_LARGEBOX: sBaseType ="Large Box";break;
-      case BASE_ITEM_LARGESHIELD: sBaseType ="Large Shield";break;
-      case BASE_ITEM_LIGHTCROSSBOW: sBaseType ="Light Xbow";break;
-      case BASE_ITEM_LIGHTFLAIL: sBaseType ="Light Flail";break;
-      case BASE_ITEM_LIGHTHAMMER: sBaseType ="Light Hammer";break;
-      case BASE_ITEM_LIGHTMACE: sBaseType ="Light Mace";break;
-      case BASE_ITEM_LONGBOW: sBaseType ="Long Bow";break;
-      case BASE_ITEM_LONGSWORD: sBaseType ="Long Sword";break;
+      case BaseItemType.LargeShield: sBaseType ="Large Shield";break;
+      case BaseItemType.LightCrossBow: sBaseType ="Light Xbow";break;
+      case BaseItemType.LightFlail: sBaseType ="Light Flail";break;
+      case BaseItemType.LightHammer: sBaseType ="Light Hammer";break;
+      case BaseItemType.LightMace: sBaseType ="Light Mace";break;
+      case BaseItemType.LongBow: sBaseType ="Long Bow";break;
+      case BaseItemType.LongSword: sBaseType ="Long Sword";break;
       case BASE_ITEM_MAGICROD: sBaseType ="Magic Rod";break;
       case BASE_ITEM_MAGICSTAFF: sBaseType ="Magic Staff";break;
       case BASE_ITEM_MAGICWAND: sBaseType ="Magic Wand";break;
@@ -1024,31 +1024,31 @@ string dmwand_ItemInfo(object oItem, int iInt)
       case BASE_ITEM_MISCTALL: sBaseType ="Misc. Small";break;
       case BASE_ITEM_MISCTHIN: sBaseType ="Misc. Thin";break;
       case BASE_ITEM_MISCWIDE: sBaseType ="Misc. Wide";break;
-      case BASE_ITEM_MORNINGSTAR: sBaseType ="Morningstar";break;
+      case BaseItemType.Morningstar: sBaseType ="Morningstar";break;
       case BASE_ITEM_POTIONS: sBaseType ="Potion";break;
-      case BASE_ITEM_QUARTERSTAFF: sBaseType ="Quarterstaff";break;
-      case BASE_ITEM_RAPIER: sBaseType ="Rapier";break;
-      case BASE_ITEM_RING: sBaseType ="Ring";break;
-      case BASE_ITEM_SCIMITAR: sBaseType ="Scimitar";break;
+      case BaseItemType.QuarterStaff: sBaseType ="Quarterstaff";break;
+      case BaseItemType.Rapier: sBaseType ="Rapier";break;
+      case BaseItemType.Ring: sBaseType ="Ring";break;
+      case BaseItemType.Scimitar: sBaseType ="Scimitar";break;
       case BASE_ITEM_SCROLL: sBaseType ="Scroll";break;
-      case BASE_ITEM_SCYTHE: sBaseType ="Scythe";break;
-      case BASE_ITEM_SHORTBOW: sBaseType ="Shortbow";break;
-      case BASE_ITEM_SHORTSPEAR: sBaseType ="Short Spear";break;
-      case BASE_ITEM_SHORTSWORD: sBaseType ="Short Sword";break;
-      case BASE_ITEM_SHURIKEN: sBaseType ="Shuriken";break;
-      case BASE_ITEM_SICKLE: sBaseType ="Sickle";break;
-      case BASE_ITEM_SLING: sBaseType ="Sling";break;
-      case BASE_ITEM_SMALLSHIELD: sBaseType ="Small Shield";break;
+      case BaseItemType.Scythe: sBaseType ="Scythe";break;
+      case BaseItemType.ShortBow: sBaseType ="Shortbow";break;
+      case BaseItemType.ShortSpear: sBaseType ="Short Spear";break;
+      case BaseItemType.ShortSword: sBaseType ="Short Sword";break;
+      case BaseItemType.Shuriken: sBaseType ="Shuriken";break;
+      case BaseItemType.Sickle: sBaseType ="Sickle";break;
+      case BaseItemType.Sling: sBaseType ="Sling";break;
+      case BaseItemType.SmallShield: sBaseType ="Small Shield";break;
       case BASE_ITEM_SPELLSCROLL: sBaseType ="Spell Scroll";break;
       case BASE_ITEM_THIEVESTOOLS: sBaseType ="Thieves Tools";break;
-      case BASE_ITEM_THROWINGAXE: sBaseType ="Throwing Axe";break;
-      case BASE_ITEM_TORCH: sBaseType ="Torch";break;
-      case BASE_ITEM_TOWERSHIELD: sBaseType ="Tower Shield";break;
+      case BaseItemType.ThrowingAxe: sBaseType ="Throwing Axe";break;
+      case BaseItemType.Torch: sBaseType ="Torch";break;
+      case BaseItemType.TowerShield: sBaseType ="Tower Shield";break;
       case BASE_ITEM_TRAPKIT: sBaseType ="Trap Kit";break;
-      case BASE_ITEM_TRIDENT: sBaseType ="Trident";break;
-      case BASE_ITEM_TWOBLADEDSWORD: sBaseType ="2 Bladed Sword";break;
-      case BASE_ITEM_WARHAMMER: sBaseType ="Warhammer";break;
-      case BASE_ITEM_WHIP : sBaseType ="Whip";break;
+      case BaseItemType.Trident: sBaseType ="Trident";break;
+      case BaseItemType.TwoBladedSword: sBaseType ="2 Bladed Sword";break;
+      case BaseItemType.Warhammer: sBaseType ="Warhammer";break;
+      case BaseItemType.Whip : sBaseType ="Whip";break;
   }
 
    sReturnString = sStacked + GetName(oItem) + " (" + sBaseType + ")";

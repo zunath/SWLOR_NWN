@@ -251,77 +251,77 @@ namespace SWLOR.Game.Server.Conversation
                     // WEAPON CRAFTING RESTRICTIONS GO HERE    
                     switch (model.TargetItem.BaseItemType)
                     {
-                        case BASE_ITEM_GREATAXE:
+                        case BaseItemType.GreatAxe:
                             parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 15, 16, 17, 19, 21, 24, 25 };
                             break;
-                        case BASE_ITEM_BATTLEAXE:
+                        case BaseItemType.BattleAxe:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 19, 20, 21, 23, 24, 25 };
                             break;
                         // parts 20 (lightfoil blade) and 24 (wind fire wheel?) excluded
-                        case BASE_ITEM_BASTARDSWORD:
+                        case BaseItemType.BastardSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 11, 14, 15, 16, 17, 18, 21, 22, 25 };
                             break;
                         // parts 19 (lightfoil blade) excluded
-                        case BASE_ITEM_DAGGER:
+                        case BaseItemType.Dagger:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 20, 21, 22};
                             break;
                         // parts 16 (lightfoil blade) excluded
-                        case BASE_ITEM_GREATSWORD:
+                        case BaseItemType.GreatSword:
                             parts = new[] { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 22, 23, 24 };
                             break;
                         // parts 21 (lightfoil blade) and 24 (cosmic blade) excluded
-                        case BASE_ITEM_LONGSWORD:
+                        case BaseItemType.LongSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 17, 18, 19, 20, 22, 23, 25};
                             break;
                         // parts 14 (lightfoil blade) excluded
-                        case BASE_ITEM_RAPIER:
+                        case BaseItemType.Rapier:
                             parts = new[] { 1, 2, 3, 4, 11, 12, 13 };
                             break;
                         // parts 23 (lightfoil blade) excluded
-                        case BASE_ITEM_KATANA:
+                        case BaseItemType.Katana:
                             parts = new[] { 2, 3, 4 };
                             break;
                         // parts 20 (lightfoil blade) and 24 (cosmic blade) excluded
-                        case BASE_ITEM_SHORTSWORD:
+                        case BaseItemType.ShortSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 15, 16, 17, 18, 19, 21, 22, 23, 25 };
                             break;
-                        case BASE_ITEM_CLUB:
+                        case BaseItemType.Club:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 13, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_LIGHTMACE:
+                        case BaseItemType.LightMace:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_MORNINGSTAR:
+                        case BaseItemType.Morningstar:
                             parts = new[] { 1, 2, 3, 4, 6 };
                             break;
-                        case BASE_ITEM_QUARTERSTAFF:
+                        case BaseItemType.QuarterStaff:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
                             break;
-                        case BASE_ITEM_DOUBLEAXE:
+                        case BaseItemType.DoubleAxe:
                             parts = new[] { 1, 2, 3, 6, 8, 11, 13, 14 };
                             break;
-                        case BASE_ITEM_TWOBLADEDSWORD:
+                        case BaseItemType.TwoBladedSword:
                             parts = new[] { 1, 2, 3 };
                             break;
-                        case BASE_ITEM_KUKRI:
+                        case BaseItemType.Kukri:
                             parts = new[] { 1 };
                             break;
                         // parts 9 (electric effect) excluded
-                        case BASE_ITEM_HALBERD:
+                        case BaseItemType.Halberd:
                             parts = new[] { 1, 2, 3, 4, 7, 10, 15, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_SHORTSPEAR:
+                        case BaseItemType.ShortSpear:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 18, 24, 25 };
                             break;
                         // Shortbow = Blaster Pistol
-                        case BASE_ITEM_SHORTBOW:
+                        case BaseItemType.ShortBow:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 18, 19, 21, 22 };
                             break;
                         // Light Crossbow = Blaster Rifle
-                        case BASE_ITEM_LIGHTCROSSBOW:
+                        case BaseItemType.LightCrossBow:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 };
                             break;
-                        case BASE_ITEM_THROWINGAXE:
+                        case BaseItemType.ThrowingAxe:
                             parts = new[] { 1, 2, 3, 4 };
                             break;
                     }
@@ -332,69 +332,69 @@ namespace SWLOR.Game.Server.Conversation
                     // WEAPON CRAFTING RESTRICTIONS GO HERE
                     switch (model.TargetItem.BaseItemType)
                     {
-                        case BASE_ITEM_GREATAXE:
+                        case BaseItemType.GreatAxe:
                             parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 25 };
                             break;
-                        case BASE_ITEM_BATTLEAXE:
+                        case BaseItemType.BattleAxe:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 15, 16, 18, 24 };
                             break;
-                        case BASE_ITEM_BASTARDSWORD:
+                        case BaseItemType.BastardSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_DAGGER:
+                        case BaseItemType.Dagger:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 20, 21, 22 };
                             break;
-                        case BASE_ITEM_GREATSWORD:
+                        case BaseItemType.GreatSword:
                             parts = new[] { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_LONGSWORD:
+                        case BaseItemType.LongSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_RAPIER:
+                        case BaseItemType.Rapier:
                             parts = new[] { 1, 2, 3, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
                             break;
-                        case BASE_ITEM_KATANA:
+                        case BaseItemType.Katana:
                             parts = new[] { 1, 2, 3, 4, 5, 8, 11, 12, 13, 24, 25 };
                             break;
-                        case BASE_ITEM_SHORTSWORD:
+                        case BaseItemType.ShortSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_CLUB:
+                        case BaseItemType.Club:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23, 25 };
                             break;
-                        case BASE_ITEM_LIGHTMACE:
+                        case BaseItemType.LightMace:
                             parts = new[] { 1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 25 };
                             break;
-                        case BASE_ITEM_MORNINGSTAR:
+                        case BaseItemType.Morningstar:
                             parts = new[] { 1, 2, 3, 4 };
                             break;
-                        case BASE_ITEM_QUARTERSTAFF:
+                        case BaseItemType.QuarterStaff:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 11, 23, 25 };
                             break;
-                        case BASE_ITEM_DOUBLEAXE:
+                        case BaseItemType.DoubleAxe:
                             parts = new[] { 1, 2, 3, 6, 8, 11, 12 };
                             break;
-                        case BASE_ITEM_TWOBLADEDSWORD:
+                        case BaseItemType.TwoBladedSword:
                             parts = new[] { 1, 2, 3 };
                             break;
-                        case BASE_ITEM_KUKRI:
+                        case BaseItemType.Kukri:
                             parts = new[] { 1 };
                             break;
-                        case BASE_ITEM_HALBERD:
+                        case BaseItemType.Halberd:
                             parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23 };
                             break;
-                        case BASE_ITEM_SHORTSPEAR:
+                        case BaseItemType.ShortSpear:
                             parts = new[] { 1, 2, 3, 4, 6, 7, 11, 14, 18, 24, 25 };
                             break;
                         // Shortbow = Blaster Pistol
-                        case BASE_ITEM_SHORTBOW:
+                        case BaseItemType.ShortBow:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
                         // Light Crossbow = Blaster Rifle
-                        case BASE_ITEM_LIGHTCROSSBOW:
+                        case BaseItemType.LightCrossBow:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25 };
                             break;
-                        case BASE_ITEM_THROWINGAXE:
+                        case BaseItemType.ThrowingAxe:
                             parts = new[] { 1, 2, 3, 4 };
                             break;
                     }
@@ -405,69 +405,69 @@ namespace SWLOR.Game.Server.Conversation
                     // WEAPON CRAFTING RESTRICTIONS GO HERE
                     switch (model.TargetItem.BaseItemType)
                     {
-                        case BASE_ITEM_GREATAXE:
+                        case BaseItemType.GreatAxe:
                             parts = new[] { 1, 2, 3, 4, 5, 7, 11, 12, 13, 14, 15, 16, 17, 18, 24, 25 };
                             break;
-                        case BASE_ITEM_BATTLEAXE:
+                        case BaseItemType.BattleAxe:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 24 };
                             break;
-                        case BASE_ITEM_BASTARDSWORD:
+                        case BaseItemType.BastardSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 24, 25 };
                             break;
-                        case BASE_ITEM_DAGGER:
+                        case BaseItemType.Dagger:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 20, 21, 22 };
                             break;
-                        case BASE_ITEM_GREATSWORD:
+                        case BaseItemType.GreatSword:
                             parts = new[] { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_LONGSWORD:
+                        case BaseItemType.LongSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_RAPIER:
+                        case BaseItemType.Rapier:
                             parts = new[] { 1, 2, 3, 4, 11, 12, 13, 14, 15, 16 };
                             break;
-                        case BASE_ITEM_KATANA:
+                        case BaseItemType.Katana:
                             parts = new[] { 1, 2, 3, 4, 11, 12, 24, 25 };
                             break;
-                        case BASE_ITEM_SHORTSWORD:
+                        case BaseItemType.ShortSword:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 21, 22, 23, 24, 25 };
                             break;
-                        case BASE_ITEM_CLUB:
+                        case BaseItemType.Club:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 13, 21, 22, 23, 25 };
                             break;
-                        case BASE_ITEM_LIGHTMACE:
+                        case BaseItemType.LightMace:
                             parts = new[] { 1, 2, 3, 4, 5, 11, 25 };
                             break;
-                        case BASE_ITEM_MORNINGSTAR:
+                        case BaseItemType.Morningstar:
                             parts = new[] { 1, 2, 3, 4 };
                             break;
-                        case BASE_ITEM_QUARTERSTAFF:
+                        case BaseItemType.QuarterStaff:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 23 };
                             break;
-                        case BASE_ITEM_DOUBLEAXE:
+                        case BaseItemType.DoubleAxe:
                             parts = new[] { 1, 2, 3, 6, 8, 11, 12, 13, 14, 15, 16, 17, 18 };
                             break;
-                        case BASE_ITEM_TWOBLADEDSWORD:
+                        case BaseItemType.TwoBladedSword:
                             parts = new[] { 1, 2, 3 };
                             break;
-                        case BASE_ITEM_KUKRI:
+                        case BaseItemType.Kukri:
                             parts = new[] { 1 };
                             break;
-                        case BASE_ITEM_HALBERD:
+                        case BaseItemType.Halberd:
                             parts = new[] { 1, 2, 3, 4, 7, 9, 10, 15, 21, 22, 23 };
                             break;
-                        case BASE_ITEM_SHORTSPEAR:
+                        case BaseItemType.ShortSpear:
                             parts = new[] { 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 14, 18, 24, 25 };
                             break;
                         // Shortbow = Blaster Pistol
-                        case BASE_ITEM_SHORTBOW:
+                        case BaseItemType.ShortBow:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 21, 23, 24, 25 };
                             break;
                         // Light Crossbow = Blaster Rifle
-                        case BASE_ITEM_LIGHTCROSSBOW:
+                        case BaseItemType.LightCrossBow:
                             parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
                             break;
-                        case BASE_ITEM_THROWINGAXE:
+                        case BaseItemType.ThrowingAxe:
                             parts = new[] { 1, 2, 3, 4 };
                             break;
                     }
@@ -568,7 +568,7 @@ namespace SWLOR.Game.Server.Conversation
                     parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 63, 75, 100, 101, 109, 110, 111, 113, 121, 122, 150, 151, 152, 153, 154, 155, 186, 192, 193, 194, 195, 196, 198, 201, 203, 215, 245, 246, 250, 257, 258, 259 };
                     break;
                 case 20: // Helmet
-                    if (model.TargetItem.BaseItemType == BASE_ITEM_HELMET)
+                    if (model.TargetItem.BaseItemType == BaseItemType.Helmet)
                     { 
                         model.Index = ITEM_APPR_TYPE_SIMPLE_MODEL;
                         /* parts excluded for helmets:

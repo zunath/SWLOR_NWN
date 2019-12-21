@@ -84,29 +84,29 @@ string ColorText(string sText, string sColor)
 
 int dmwand_isnearbydestroyable()
 {
-   object oMyTest = GetFirstObjectInShape(SHAPE_CUBE, 0.6, lMyLoc, FALSE, OBJECT_TYPE_ALL);
+   object oMyTest = GetFirstObjectInShape(SHAPE_CUBE, 0.6, lMyLoc, false, OBJECT_TYPE_ALL);
    int nTargetType = GetObjectType(oMyTest);
-   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == OBJECT_TYPE_PLACEABLE) || (nTargetType == OBJECT_TYPE_CREATURE)));
+   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature)));
 }
 
 int dmwand_istargetcreateable()
 {
-   if(! GetIsObjectValid(oMyTarget)) { return FALSE; }
+   if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
-   return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == OBJECT_TYPE_PLACEABLE) || (nTargetType == OBJECT_TYPE_CREATURE));
+   return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
 }
 
 int dmwand_istargetdestroyable()
 {
-   if(! GetIsObjectValid(oMyTarget)) { return FALSE; }
+   if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
    if(! GetIsPC(oMyTarget))
    {
-      return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == OBJECT_TYPE_PLACEABLE) || (nTargetType == OBJECT_TYPE_CREATURE));
+      return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
    }
-   return FALSE;
+   return false;
 }
 
 int dmwand_istargetinvalid()
@@ -151,10 +151,10 @@ int dmwand_istargetpcornpcnme()
 
 int dmwand_istargetplaceable()
 {
-   if(! GetIsObjectValid(oMyTarget)) { return FALSE; }
+   if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
-   return (nTargetType == OBJECT_TYPE_PLACEABLE);
+   return (nTargetType == ObjectType.Placeable);
 }
 
 int dmw_conv_Start(int nCurrent, int nChoice, string sParams = "")
@@ -283,7 +283,7 @@ void DMFI_toad(object oTarget, object oUser)
 
             eMyEffect = GetNextEffect(oTarget);
         }
-        FloatingTextStringOnCreature("Removed Penguin status from " + GetName(oTarget), oUser, FALSE);
+        FloatingTextStringOnCreature("Removed Penguin status from " + GetName(oTarget), oUser, false);
         SetLocalInt(oTarget, "toaded", 0);
     }
     else
@@ -293,7 +293,7 @@ void DMFI_toad(object oTarget, object oUser)
         AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, ePenguin, oTarget));
         AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, eParalyze, oTarget));
         SetLocalInt(oTarget, "toaded", 1);
-        FloatingTextStringOnCreature("Added Penguin status to " + GetName(oTarget), oUser, FALSE);
+        FloatingTextStringOnCreature("Added Penguin status to " + GetName(oTarget), oUser, false);
     }
 }
 
@@ -317,7 +317,7 @@ void dmwand_KickPC(object oTarget, object oUser)
    location lMyLoc = GetLocation (oTarget);
    AssignCommand( oUser, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_LIGHTNING_M), lMyLoc));
    AssignCommand ( oUser, PlaySound ("as_wt_thundercl3"));
-   object oScorch = CreateObject ( OBJECT_TYPE_PLACEABLE, "plc_weathmark", lMyLoc, FALSE);
+   object oScorch = CreateObject ( ObjectType.Placeable, "plc_weathmark", lMyLoc, false);
    object oTargetArea = GetArea(oUser);
    int nXPos, nYPos, nCount;
    for(nCount = 0; nCount < 5; nCount++)
@@ -401,7 +401,7 @@ int dmwand_BuildConversationDialog(int nCurrent, int nChoice, string sConversati
       return dmw_conv_Start(nCurrent, nChoice, sParams);
    }
 
-   return FALSE;
+   return false;
 }
 
 void dmwand_BuildConversation(string sConversation, string sParams)
@@ -719,7 +719,7 @@ void SmokePipe(object oActivator)
 
 void EmoteDance(object oPC)
 {
-    object oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+    object oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
     object oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
 
     AssignCommand(oPC,ActionUnequipItem(oRightHand));
@@ -742,7 +742,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
 
     AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,INVENTORY_SLOT_LEFTHAND)));
-    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,INVENTORY_SLOT_RIGHTHAND)));
+    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,InventorySlot.RightHand)));
 }
 
 void SitInNearestChair(object oPC)
@@ -803,9 +803,9 @@ void SitInNearestChair(object oPC)
      // if no one is sitting in the object the PC is closest to, have him sit in it
      if (GetSittingCreature(oSit) == OBJECT_INVALID)
          {
-           oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+           oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
            oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
-           AssignCommand(oPC,ActionMoveToObject(oSit,FALSE,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
+           AssignCommand(oPC,ActionMoveToObject(oSit,false,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
            ActionUnequipItem(oRightHand); //:: Added to resolve clipping issues when seated
            ActionUnequipItem(oLeftHand);  //:: Added to resolve clipping issues when seated
            ActionDoCommand(AssignCommand(oPC,ActionSit(oSit)));
@@ -1065,13 +1065,13 @@ string dmwand_Inventory(object oEntity)
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_ARMS, oMyTarget))){ sReturnString = sReturnString + "Arms: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_ARMS, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_BELT, oMyTarget))){ sReturnString = sReturnString + "Belt: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_BELT, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_BOOTS, oMyTarget))){ sReturnString = sReturnString + "Boots: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_BOOTS, oMyTarget),0) + "\n"; }
-   if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_CHEST, oMyTarget))){ sReturnString = sReturnString + "Chest: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_CHEST, oMyTarget),0) + "\n"; }
+   if(GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, oMyTarget))){ sReturnString = sReturnString + "Chest: " + dmwand_ItemInfo(GetItemInSlot(InventorySlot.Chest, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_CLOAK, oMyTarget))){ sReturnString = sReturnString + "Cloak: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_CLOAK, oMyTarget),0) + "\n"; }
-   if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_HEAD, oMyTarget))){ sReturnString = sReturnString + "Head: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_HEAD, oMyTarget),0) + "\n"; }
+   if(GetIsObjectValid(GetItemInSlot(InventorySlot.Head, oMyTarget))){ sReturnString = sReturnString + "Head: " + dmwand_ItemInfo(GetItemInSlot(InventorySlot.Head, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_LEFTHAND, oMyTarget))){ sReturnString = sReturnString + "Left Hand: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_LEFTHAND, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_LEFTRING, oMyTarget))){ sReturnString = sReturnString + "Left Ring: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_LEFTRING, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_NECK, oMyTarget))){ sReturnString = sReturnString + "Neck: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_NECK, oMyTarget),0) + "\n"; }
-   if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, oMyTarget))){ sReturnString = sReturnString + "Right Hand: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, oMyTarget),0) + "\n"; }
+   if(GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, oMyTarget))){ sReturnString = sReturnString + "Right Hand: " + dmwand_ItemInfo(GetItemInSlot(InventorySlot.RightHand, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_RIGHTRING, oMyTarget))){ sReturnString = sReturnString + "Right Ring: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_RIGHTRING, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_ARROWS, oMyTarget))){ sReturnString = sReturnString + "Arrows: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_ARROWS, oMyTarget),0) + "\n"; }
    if(GetIsObjectValid(GetItemInSlot(INVENTORY_SLOT_BOLTS, oMyTarget))){ sReturnString = sReturnString + "Bolts: " + dmwand_ItemInfo(GetItemInSlot(INVENTORY_SLOT_BOLTS, oMyTarget),0) + "\n"; }
@@ -1144,16 +1144,16 @@ int DMFI_GetNetWorth(object oTarget)
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_BOOTS, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_BULLETS, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_CARMOUR, oTarget));
-         n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_CHEST, oTarget));
+         n = n + GetGoldPieceValue(GetItemInSlot(InventorySlot.Chest, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_CLOAK, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_CWEAPON_B, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_CWEAPON_L, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_CWEAPON_R, oTarget));
-         n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_HEAD, oTarget));
+         n = n + GetGoldPieceValue(GetItemInSlot(InventorySlot.Head, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_LEFTHAND, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_LEFTRING, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_NECK, oTarget));
-         n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, oTarget));
+         n = n + GetGoldPieceValue(GetItemInSlot(InventorySlot.RightHand, oTarget));
          n = n + GetGoldPieceValue(GetItemInSlot(INVENTORY_SLOT_RIGHTRING, oTarget));
     return n;
 }

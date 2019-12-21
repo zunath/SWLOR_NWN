@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var item in store.InventoryItems)
                     {
                         // Mark this item so it doesn't get cleaned up.
-                        item.SetLocalInt("STORE_SERVICE_IS_STORE_ITEM", _.TRUE);
+                        item.SetLocalInt("STORE_SERVICE_IS_STORE_ITEM", _.true);
                     }
 
                     _stores.Add(store);
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             // We'll look for any items which aren't part of this store and destroy them.
             foreach (var item in store.InventoryItems)
             {
-                if (item.GetLocalInt("STORE_SERVICE_IS_STORE_ITEM") == _.TRUE) continue;
+                if (item.GetLocalInt("STORE_SERVICE_IS_STORE_ITEM") == _.true) continue;
                 item.Destroy();
             }
         }

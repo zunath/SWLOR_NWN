@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
                 foreach (var item in list)
                 {
                     NWItem storageItem = storageItems.Single(x => x.GlobalID == item.GlobalID);
-                    _.CopyItem(storageItem.Object, device.Object, _.TRUE);
+                    _.CopyItem(storageItem.Object, device.Object, _.true);
                 }
 
                 oPC.FloatingText("Place the components inside the container and then click the item named '" + menuItem.Name + "' to continue.");

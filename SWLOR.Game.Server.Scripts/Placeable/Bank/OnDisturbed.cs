@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 
             if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
-                if (_.GetHasInventory(item) == _.TRUE)
+                if (_.GetHasInventory(item) == _.true)
                 {
-                    item.SetLocalInt("RETURNING_ITEM", _.TRUE);
+                    item.SetLocalInt("RETURNING_ITEM", _.true);
                     ItemService.ReturnItem(player, item);
                     player.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
             }
             else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                if (item.GetLocalInt("RETURNING_ITEM") == _.TRUE)
+                if (item.GetLocalInt("RETURNING_ITEM") == _.true)
                 {
                     item.DeleteLocalInt("RETURNING_ITEM");
                 }

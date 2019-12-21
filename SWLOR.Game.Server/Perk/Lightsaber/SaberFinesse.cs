@@ -52,13 +52,13 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == FALSE) return;
+            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == false) return;
             ApplyFeatChanges(creature, null);
         }
 
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == FALSE) return;
+            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == false) return;
             if (oItem == creature.LeftHand) return;
             ApplyFeatChanges(creature, oItem);
         }
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
             NWItem equipped = oItem ?? creature.RightHand;
-            if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalInt("LIGHTSABER") == FALSE))
+            if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalInt("LIGHTSABER") == false))
             {
                 NWNXCreature.RemoveFeat(creature, _.FEAT_WEAPON_FINESSE);
                 return;

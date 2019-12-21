@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 return false;
             }
 
-            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == _.TRUE)
+            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == _.true)
             {
                 ReturnItemToPC(pc, item, "This forge is currently in use. Please wait...");
                 return false;
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 {
                     Vector flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
-                    flames = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
+                    flames = (_.CreateObject(_.ObjectType.Placeable, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }
 
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         private void ReturnItemToPC(NWPlayer pc, NWItem item, string message)
         {
-            _.CopyItem(item.Object, pc.Object, _.TRUE);
+            _.CopyItem(item.Object, pc.Object, _.true);
             item.Destroy();
             pc.SendMessage(message);
         }

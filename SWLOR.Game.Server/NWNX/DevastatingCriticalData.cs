@@ -1,11 +1,11 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class DevastatingCriticalData
     {
-        public NWItem Weapon { get; set; }
-        public NWObject Target { get; set; }
+        public NWGameObject Weapon { get; set; }
+        public NWGameObject Target { get; set; }
         public int Damage { get; set; }
     }
 }

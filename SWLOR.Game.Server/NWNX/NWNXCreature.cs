@@ -1,5 +1,7 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using System;
+using System.ComponentModel;
+using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
@@ -14,10 +16,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="feat"></param>
-        public static void AddFeat(NWCreature creature, int feat)
+        public static void AddFeat(NWGameObject creature, Feat feat)
         {
+            if (!Enum.IsDefined(typeof(Feat), feat)) throw new InvalidEnumArgumentException(nameof(feat), (int) feat, typeof(Feat));
             string sFunc = "AddFeat";
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, feat);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)feat);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -29,12 +32,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="feat"></param>
         /// <param name="level"></param>
-        public static void AddFeatByLevel(NWCreature creature, int feat, int level)
+        public static void AddFeatByLevel(NWGameObject creature, Feat feat, int level)
         {
             string sFunc = "AddFeatByLevel";
 
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, level);
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, feat);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)feat);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -45,10 +48,10 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="feat"></param>
-        public static void RemoveFeat(NWCreature creature, int feat)
+        public static void RemoveFeat(NWGameObject creature, Feat feat)
         {
             string sFunc = "RemoveFeat";
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, feat);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)feat);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -60,7 +63,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="feat"></param>
         /// <returns></returns>
-        public static int GetKnowsFeat(NWCreature creature, int feat)
+        public static int GetKnowsFeat(NWGameObject creature, int feat)
         {
             string sFunc = "GetKnowsFeat";
 
@@ -77,7 +80,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetFeatCountByLevel(NWCreature creature, int level)
+        public static int GetFeatCountByLevel(NWGameObject creature, int level)
         {
             string sFunc = "GetFeatCountByLevel";
 
@@ -95,7 +98,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="level"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static int GetFeatByLevel(NWCreature creature, int level, int index)
+        public static int GetFeatByLevel(NWGameObject creature, int level, int index)
         {
             string sFunc = "GetFeatByLevel";
 
@@ -112,7 +115,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetFeatCount(NWCreature creature)
+        public static int GetFeatCount(NWGameObject creature)
         {
             string sFunc = "GetFeatCount";
 
@@ -128,7 +131,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static int GetFeatByIndex(NWCreature creature, int index)
+        public static Feat GetFeatByIndex(NWGameObject creature, int index)
         {
             string sFunc = "GetFeatByIndex";
 
@@ -136,16 +139,16 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
-            return NWNX_GetReturnValueInt(NWNX_Creature, sFunc);
+            return (Feat)NWNX_GetReturnValueInt(NWNX_Creature, sFunc);
         }
 
         /// <summary>
-        /// Returns TRUE if creature meets all requirements to take given feat
+        /// Returns true if creature meets all requirements to take given feat
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="feat"></param>
         /// <returns></returns>
-        public static int GetMeetsFeatRequirements(NWCreature creature, int feat)
+        public static int GetMeetsFeatRequirements(NWGameObject creature, int feat)
         {
             string sFunc = "GetMeetsFeatRequirements";
 
@@ -162,7 +165,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static SpecialAbilitySlot GetSpecialAbility(NWCreature creature, int index)
+        public static SpecialAbilitySlot GetSpecialAbility(NWGameObject creature, int index)
         {
             string sFunc = "GetSpecialAbility";
 
@@ -185,7 +188,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetSpecialAbilityCount(NWCreature creature)
+        public static int GetSpecialAbilityCount(NWGameObject creature)
         {
             string sFunc = "GetSpecialAbilityCount";
 
@@ -200,7 +203,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="ability"></param>
-        public static void AddSpecialAbility(NWCreature creature, SpecialAbilitySlot ability)
+        public static void AddSpecialAbility(NWGameObject creature, SpecialAbilitySlot ability)
         {
             string sFunc = "AddSpecialAbility";
 
@@ -217,7 +220,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="index"></param>
-        public static void RemoveSpecialAbility(NWCreature creature, int index)
+        public static void RemoveSpecialAbility(NWGameObject creature, int index)
         {
             string sFunc = "RemoveSpecialAbility";
 
@@ -233,7 +236,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="index"></param>
         /// <param name="ability"></param>
-        public static void SetSpecialAbility(NWCreature creature, int index, SpecialAbilitySlot ability)
+        public static void SetSpecialAbility(NWGameObject creature, int index, SpecialAbilitySlot ability)
         {
             string sFunc = "SetSpecialAbility";
 
@@ -252,7 +255,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetClassByLevel(NWCreature creature, int level)
+        public static int GetClassByLevel(NWGameObject creature, int level)
         {
             string sFunc = "GetClassByLevel";
 
@@ -268,7 +271,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="ac"></param>
-        public static void SetBaseAC(NWCreature creature, int ac)
+        public static void SetBaseAC(NWGameObject creature, int ac)
         {
             string sFunc = "SetBaseAC";
 
@@ -283,7 +286,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetBaseAC(NWCreature creature)
+        public static int GetBaseAC(NWGameObject creature)
         {
             string sFunc = "GetBaseAC";
 
@@ -299,12 +302,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="ability"></param>
         /// <param name="value"></param>
-        public static void SetRawAbilityScore(NWCreature creature, int ability, int value)
+        public static void SetRawAbilityScore(NWGameObject creature, Ability ability, int value)
         {
             string sFunc = "SetRawAbilityScore";
 
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, value);
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, ability);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)ability);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -316,7 +319,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="ability"></param>
         /// <returns></returns>
-        public static int GetRawAbilityScore(NWCreature creature, int ability)
+        public static int GetRawAbilityScore(NWGameObject creature, int ability)
         {
             string sFunc = "GetRawAbilityScore";
 
@@ -333,7 +336,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="ability"></param>
         /// <param name="modifier"></param>
-        public static void ModifyRawAbilityScore(NWCreature creature, int ability, int modifier)
+        public static void ModifyRawAbilityScore(NWGameObject creature, int ability, int modifier)
         {
             string sFunc = "ModifyRawAbilityScore";
 
@@ -352,7 +355,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="level"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static MemorizedSpellSlot GetMemorisedSpell(NWCreature creature, int @class, int level, int index)
+        public static MemorizedSpellSlot GetMemorisedSpell(NWGameObject creature, int @class, int level, int index)
         {
             string sFunc = "GetMemorisedSpell";
             MemorizedSpellSlot spell = new MemorizedSpellSlot();
@@ -378,7 +381,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetMemorisedSpellCountByLevel(NWCreature creature, int @class, int level)
+        public static int GetMemorisedSpellCountByLevel(NWGameObject creature, int @class, int level)
         {
             string sFunc = "GetMemorisedSpellCountByLevel";
 
@@ -398,7 +401,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="level"></param>
         /// <param name="index"></param>
         /// <param name="spell"></param>
-        public static void SetMemorisedSpell(NWCreature creature, int @class, int level, int index, MemorizedSpellSlot spell)
+        public static void SetMemorisedSpell(NWGameObject creature, int @class, int level, int index, MemorizedSpellSlot spell)
         {
             string sFunc = "SetMemorisedSpell";
 
@@ -422,7 +425,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetRemainingSpellSlots(NWCreature creature, int @class, int level)
+        public static int GetRemainingSpellSlots(NWGameObject creature, int @class, int level)
         {
             string sFunc = "GetRemainingSpellSlots";
 
@@ -441,7 +444,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <param name="slots"></param>
-        public static void SetRemainingSpellSlots(NWCreature creature, int @class, int level, int slots)
+        public static void SetRemainingSpellSlots(NWGameObject creature, int @class, int level, int slots)
         {
             string sFunc = "SetRemainingSpellSlots";
 
@@ -461,7 +464,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="level"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static int GetKnownSpell(NWCreature creature, int @class, int level, int index)
+        public static int GetKnownSpell(NWGameObject creature, int @class, int level, int index)
         {
             string sFunc = "GetKnownSpell";
 
@@ -481,7 +484,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetKnownSpellCount(NWCreature creature, int @class, int level)
+        public static int GetKnownSpellCount(NWGameObject creature, int @class, int level)
         {
             string sFunc = "GetKnownSpellCount";
 
@@ -500,13 +503,13 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <param name="spellId"></param>
-        public static void RemoveKnownSpell(NWCreature creature, int @class, int level, int spellId)
+        public static void RemoveKnownSpell(NWGameObject creature, ClassType @class, int level, int spellId)
         {
             string sFunc = "RemoveKnownSpell";
 
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, spellId);
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, level);
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, @class);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)@class);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -519,7 +522,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <param name="spellId"></param>
-        public static void AddKnownSpell(NWCreature creature, int @class, int level, int spellId)
+        public static void AddKnownSpell(NWGameObject creature, int @class, int level, int spellId)
         {
             string sFunc = "AddKnownSpell";
 
@@ -537,7 +540,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="class"></param>
         /// <param name="spellId"></param>
-        public static void ClearMemorisedKnownSpells(NWCreature creature, int @class, int spellId)
+        public static void ClearMemorisedKnownSpells(NWGameObject creature, int @class, int spellId)
         {
             string sFunc = "ClearMemorisedKnownSpells";
 
@@ -555,7 +558,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <param name="index"></param>
-        public static void ClearMemorisedSpell(NWCreature creature, int @class, int level, int index)
+        public static void ClearMemorisedSpell(NWGameObject creature, int @class, int level, int index)
         {
             string sFunc = "ClearMemorisedSpell";
 
@@ -574,7 +577,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="class"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetMaxSpellSlots(NWCreature creature, int @class, int level)
+        public static int GetMaxSpellSlots(NWGameObject creature, int @class, int level)
         {
             string sFunc = "GetMaxSpellSlots";
 
@@ -592,7 +595,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static int GetMaxHitPointsByLevel(NWCreature creature, int level)
+        public static int GetMaxHitPointsByLevel(NWGameObject creature, int level)
         {
             string sFunc = "GetMaxHitPointsByLevel";
 
@@ -609,7 +612,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="level"></param>
         /// <param name="value"></param>
-        public static void SetMaxHitPointsByLevel(NWCreature creature, int level, int value)
+        public static void SetMaxHitPointsByLevel(NWGameObject creature, int level, int value)
         {
             string sFunc = "SetMaxHitPointsByLevel";
 
@@ -625,7 +628,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="rate"></param>
-        public static void SetMovementRate(NWCreature creature, int rate)
+        public static void SetMovementRate(NWGameObject creature, int rate)
         {
             string sFunc = "SetMovementRate";
 
@@ -640,7 +643,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="value"></param>
-        public static void SetAlignmentGoodEvil(NWCreature creature, int value)
+        public static void SetAlignmentGoodEvil(NWGameObject creature, int value)
         {
             string sFunc = "SetAlignmentGoodEvil";
 
@@ -655,7 +658,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="value"></param>
-        public static void SetAlignmentLawChaos(NWCreature creature, int value)
+        public static void SetAlignmentLawChaos(NWGameObject creature, int value)
         {
             string sFunc = "SetAlignmentLawChaos";
 
@@ -671,7 +674,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static int GetClericDomain(NWCreature creature, int index)
+        public static int GetClericDomain(NWGameObject creature, int index)
         {
             string sFunc = "GetClericDomain";
 
@@ -688,7 +691,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="index"></param>
         /// <param name="domain"></param>
-        public static void SetClericDomain(NWCreature creature, int index, int domain)
+        public static void SetClericDomain(NWGameObject creature, int index, int domain)
         {
             string sFunc = "SetClericDomain";
 
@@ -704,7 +707,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetWizardSpecialization(NWCreature creature)
+        public static int GetWizardSpecialization(NWGameObject creature)
         {
             string sFunc = "GetWizardSpecialization";
 
@@ -719,7 +722,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="school"></param>
-        public static void SetWizardSpecialization(NWCreature creature, int school)
+        public static void SetWizardSpecialization(NWGameObject creature, int school)
         {
             string sFunc = "SetWizardSpecialization";
 
@@ -734,7 +737,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetSoundset(NWCreature creature)
+        public static int GetSoundset(NWGameObject creature)
         {
             string sFunc = "GetSoundset";
 
@@ -749,7 +752,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="soundset"></param>
-        public static void SetSoundset(NWCreature creature, int soundset)
+        public static void SetSoundset(NWGameObject creature, int soundset)
         {
             string sFunc = "SetSoundset";
 
@@ -765,7 +768,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="skill"></param>
         /// <param name="rank"></param>
-        public static void SetSkillRank(NWCreature creature, int skill, int rank)
+        public static void SetSkillRank(NWGameObject creature, int skill, int rank)
         {
             string sFunc = "SetSkillRank";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, rank);
@@ -782,12 +785,13 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="position"></param>
-        /// <param name="classID"></param>
-        public static void SetClassByPosition(NWCreature creature, int position, int @classID)
+        /// <param name="classType"></param>
+        public static void SetClassByPosition(NWGameObject creature, ClassPosition position, ClassType classType)
         {
+            int positionIndex = (int) position - 1;
             string sFunc = "SetClassByPosition";
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, @classID);
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, position);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)classType);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, positionIndex);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -800,11 +804,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="position"></param>
         /// <param name="level"></param>
-        public static void SetLevelByPosition(NWCreature creature, int position, int level)
+        public static void SetLevelByPosition(NWGameObject creature, ClassPosition position, int level)
         {
+            int positionIndex = (int) position - 1;
             string sFunc = "SetLevelByPosition";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, level);
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, position);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, positionIndex);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);
@@ -822,7 +827,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="bab"></param>
-        public static void SetBaseAttackBonus(NWCreature creature, int bab)
+        public static void SetBaseAttackBonus(NWGameObject creature, int bab)
         {
             string sFunc = "SetBaseAttackBonus";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, bab);
@@ -840,7 +845,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="bBaseAPR"></param>
         /// <returns></returns>
-        public static int GetAttacksPerRound(NWCreature creature, int bBaseAPR = FALSE)
+        public static int GetAttacksPerRound(NWGameObject creature, int bBaseAPR = 0)
         {
             string sFunc = "GetAttacksPerRound";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, bBaseAPR);
@@ -855,7 +860,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="gender"></param>
-        public static void SetGender(NWCreature creature, int gender)
+        public static void SetGender(NWGameObject creature, int gender)
         {
             string sFunc = "SetGender";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, gender);
@@ -868,7 +873,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Restore all creature feat uses
         /// </summary>
         /// <param name="creature"></param>
-        public static void RestoreFeats(NWCreature creature)
+        public static void RestoreFeats(NWGameObject creature)
         {
             string sFunc = "RestoreFeats";
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
@@ -880,7 +885,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Restore all creature special ability uses
         /// </summary>
         /// <param name="creature"></param>
-        public static void RestoreSpecialAbilities(NWCreature creature)
+        public static void RestoreSpecialAbilities(NWGameObject creature)
         {
             string sFunc = "RestoreSpecialAbilities";
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
@@ -894,7 +899,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="level"></param>
-        public static void RestoreSpells(NWCreature creature, int level = -1)
+        public static void RestoreSpells(NWGameObject creature, int level = -1)
         {
             string sFunc = "RestoreSpells";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, level);
@@ -907,7 +912,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Restore uses for all items carried by the creature
         /// </summary>
         /// <param name="creature"></param>
-        public static void RestoreItems(NWCreature creature)
+        public static void RestoreItems(NWGameObject creature)
         {
             string sFunc = "RestoreItems";
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
@@ -920,7 +925,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="size"></param>
-        public static void SetSize(NWCreature creature, int size)
+        public static void SetSize(NWGameObject creature, int size)
         {
             string sFunc = "SetSize";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, size);
@@ -934,7 +939,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetSkillPointsRemaining(NWCreature creature)
+        public static int GetSkillPointsRemaining(NWGameObject creature)
         {
             string sFunc = "GetSkillPointsRemaining";
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
@@ -948,7 +953,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="skillpoints"></param>
-        public static void SetSkillPointsRemaining(NWCreature creature, int skillpoints)
+        public static void SetSkillPointsRemaining(NWGameObject creature, int skillpoints)
         {
             string sFunc = "SetSkillPointsRemaining";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, skillpoints);
@@ -962,7 +967,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="racialtype"></param>
-        public static void SetRacialType(NWCreature creature, int racialtype)
+        public static void SetRacialType(NWGameObject creature, int racialtype)
         {
             string sFunc = "SetRacialType";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, racialtype);
@@ -976,7 +981,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public static int GetMovementType(NWCreature creature)
+        public static int GetMovementType(NWGameObject creature)
         {
             string sFunc = "GetMovementType";
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
@@ -993,7 +998,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="fWalkRate"></param>
-        public static void SetWalkRateCap(NWCreature creature, float fWalkRate = 2000.0f)
+        public static void SetWalkRateCap(NWGameObject creature, float fWalkRate = 2000.0f)
         {
             string sFunc = "SetWalkRateCap";
             NWNX_PushArgumentFloat(NWNX_Creature, sFunc, fWalkRate);
@@ -1007,7 +1012,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="gold"></param>
-        public static void SetGold(NWCreature creature, int gold)
+        public static void SetGold(NWGameObject creature, int gold)
         {
             string sFunc = "SetGold";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, gold);
@@ -1021,7 +1026,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="nDecayTime"></param>
-        public static void SetCorpseDecayTime(NWCreature creature, int nDecayTime)
+        public static void SetCorpseDecayTime(NWGameObject creature, int nDecayTime)
         {
             string sFunc = "SetCorpseDecayTime";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, nDecayTime);
@@ -1036,7 +1041,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="which"></param>
         /// <returns></returns>
-        public static int GetBaseSavingThrow(NWCreature creature, int which)
+        public static int GetBaseSavingThrow(NWGameObject creature, int which)
         {
             string sFunc = "GetBaseSavingThrow";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, which);
@@ -1052,7 +1057,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="which"></param>
         /// <param name="value"></param>
-        public static void SetBaseSavingThrow(NWCreature creature, int which, int value)
+        public static void SetBaseSavingThrow(NWGameObject creature, int which, int value)
         {
             string sFunc = "SetBaseSavingThrow";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, value);
@@ -1069,7 +1074,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="class"></param>
         /// <param name="count"></param>
-        public static void LevelUp(NWCreature creature, int @class, int count = 1)
+        public static void LevelUp(NWGameObject creature, int @class, int count = 1)
         {
             string sFunc = "LevelUp";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, count);
@@ -1085,7 +1090,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="count"></param>
-        public static void LevelDown(NWCreature creature, int count = 1)
+        public static void LevelDown(NWGameObject creature, int count = 1)
         {
             string sFunc = "LevelDown";
             NWNX_PushArgumentInt(NWNX_Creature, sFunc, count);
@@ -1099,7 +1104,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="fCR"></param>
-        public static void SetChallengeRating(NWCreature creature, float fCR)
+        public static void SetChallengeRating(NWGameObject creature, float fCR)
         {
             string sFunc = "SetChallengeRating";
             NWNX_PushArgumentFloat(NWNX_Creature, sFunc, fCR);
@@ -1113,8 +1118,8 @@ namespace SWLOR.Game.Server.NWNX
         /// NOTE: AB vs. <Type> and +AB on Gauntlets are excluded
         ///
         /// int isMelee values:
-        ///   TRUE: Get Melee/Unarmed Attack Bonus
-        ///   FALSE: Get Ranged Attack Bonus
+        ///   true: Get Melee/Unarmed Attack Bonus
+        ///   false: Get Ranged Attack Bonus
         ///   -1: Get Attack Bonus depending on the weapon creature has equipped in its right hand
         ///       Defaults to Melee Attack Bonus if weapon is invalid or no weapon
         /// </summary>
@@ -1124,21 +1129,21 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="isOffhand"></param>
         /// <param name="includeBaseAttackBonus"></param>
         /// <returns></returns>
-        public static int GetAttackBonus(NWCreature creature, int isMelee = -1, int isTouchAttack = FALSE, int isOffhand = FALSE, int includeBaseAttackBonus = TRUE)
+        public static int GetAttackBonus(NWGameObject creature, int isMelee = -1, int isTouchAttack = 0, int isOffhand = 0, int includeBaseAttackBonus = 1)
         {
             string sFunc = "GetAttackBonus";
 
             if (isMelee == -1)
             {
-                NWItem oWeapon = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, creature);
+                NWGameObject oWeapon = GetItemInSlot(InventorySlot.RightHand, creature);
 
-                if (oWeapon.IsValid)
+                if (GetIsObjectValid(oWeapon))
                 {
-                    isMelee = oWeapon.IsRanged ? _.FALSE : _.TRUE;
+                    isMelee = GetWeaponRanged(oWeapon) ? 0 : 1;
                 }
                 else
                 {// Default to melee for unarmed
-                    isMelee = TRUE;
+                    isMelee = 1;
                 }
             }
 
@@ -1158,7 +1163,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="feat"></param>
         /// <returns></returns>
-        public static int GetFeatRemainingUses(NWCreature creature, int feat)
+        public static int GetFeatRemainingUses(NWGameObject creature, int feat)
         {
             string sFunc = "GetFeatRemainingUses";
 
@@ -1175,7 +1180,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="feat"></param>
         /// <returns></returns>
-        public static int GetFeatTotalUses(NWCreature creature, int feat)
+        public static int GetFeatTotalUses(NWGameObject creature, int feat)
         {
             string sFunc = "GetFeatTotalUses";
 
@@ -1192,7 +1197,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="feat"></param>
         /// <param name="uses"></param>
-        public static void SetFeatRemainingUses(NWCreature creature, int feat, int uses)
+        public static void SetFeatRemainingUses(NWGameObject creature, int feat, int uses)
         {
             string sFunc = "SetFeatRemainingUses";
 
@@ -1218,16 +1223,16 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="isOffhand"></param>
         /// <returns></returns>
         public static int GetTotalEffectBonus(
-            NWCreature creature, 
+            NWGameObject creature, 
             CreatureBonusType bonusType = CreatureBonusType.Attack, 
-            NWObject target = null, 
+            NWGameObject target = null, 
             int isElemental = 0,
             int isForceMax = 0, 
             int savetype = -1, 
             int saveSpecificType = -1, 
             int skill = -1, 
             int abilityScore = -1, 
-            int isOffhand = FALSE)
+            int isOffhand = 0)
         {
             if (target == null) target = new NWGameObject();
 
@@ -1255,7 +1260,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="name"></param>
         /// <param name="isLastName"></param>
-        public static void SetOriginalName(NWCreature creature, string name, int isLastName)
+        public static void SetOriginalName(NWGameObject creature, string name, int isLastName)
         {
             string sFunc = "SetOriginalName";
 
@@ -1272,7 +1277,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="isLastName"></param>
         /// <returns></returns>
-        public static string GetOriginalName(NWCreature creature, bool isLastName)
+        public static string GetOriginalName(NWGameObject creature, bool isLastName)
         {
             string sFunc = "GetOriginalName";
 
@@ -1288,7 +1293,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="sr"></param>
-        public static void SetSpellResistance(NWCreature creature, int sr)
+        public static void SetSpellResistance(NWGameObject creature, int sr)
         {
             string sFunc = "SetSpellResistance";
 
@@ -1298,6 +1303,94 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Creature, sFunc);
         }
 
+        /// <summary>
+        /// Set creature's animal companion creature type
+        /// </summary>
+        /// <param name="creature">The master creature object</param>
+        /// <param name="type">The type of animal companion</param>
+        public static void SetAnimalCompanionCreatureType(NWGameObject creature, AnimalCompanionCreatureType type)
+        {
+            string sFunc = "SetAnimalCompanionCreatureType";
 
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)type);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        /// <summary>
+        /// Set creature's familiar creature type
+        /// </summary>
+        /// <param name="creature">The master creature object</param>
+        /// <param name="type">The type of familiar</param>
+        public static void SetFamiliarCreatureType(NWGameObject creature, FamiliarCreatureType type)
+        {
+            string sFunc = "SetFamiliarCreatureType";
+
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)type);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        /// <summary>
+        /// Set creature's animal companion's name
+        /// </summary>
+        /// <param name="creature">The master creature object</param>
+        /// <param name="name">The name to give their animal companion</param>
+        public static void SetAnimalCompanionName(NWGameObject creature, string name)
+        {
+            string sFunc = "SetAnimalCompanionName";
+
+            NWNX_PushArgumentString(NWNX_Creature, sFunc, name);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        /// <summary>
+        /// Set creature's familiar's name
+        /// </summary>
+        /// <param name="creature">The master creature object</param>
+        /// <param name="name">The name to give their familiar.</param>
+        public static void SetFamiliarName(NWGameObject creature, string name)
+        {
+            string sFunc = "SetFamiliarName";
+
+            NWNX_PushArgumentString(NWNX_Creature, sFunc, name);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        /// <summary>
+        /// Get whether the creature can be disarmed.
+        /// </summary>
+        /// <param name="oItem">The creature object.</param>
+        /// <returns>true if disarmable, false otherwise</returns>
+        public static bool GetDisarmable(NWGameObject oItem)
+        {
+            string sFunc = "GetDisarmable";
+
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, oItem);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Creature, sFunc) == 1;
+        }
+
+        /// <summary>
+        /// Set whether a creature can be disarmed
+        /// </summary>
+        /// <param name="creature">The creature object.</param>
+        /// <param name="disarmable">Set to true if the creature can be disarmed</param>
+        public static void SetDisarmable(NWGameObject creature, bool disarmable)
+        {
+            string sFunc = "SetDisarmable";
+
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, disarmable ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
     }
 }

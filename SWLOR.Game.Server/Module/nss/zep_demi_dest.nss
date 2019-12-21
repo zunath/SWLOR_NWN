@@ -75,7 +75,7 @@ void DestroyDemilich(object oBones)
         return;
 
     // Prevent the demilich from regenerating.
-    SetLocalInt(oBones, "DESTROYED", TRUE);
+    SetLocalInt(oBones, "DESTROYED", true);
 
     // Allow a module-specific script to be called here.
     SetLocalObject(oBones, "MyDestroyer", OBJECT_SELF);
@@ -131,7 +131,7 @@ void DeathKnell()
 
     // Prepare to loop through all nearby creatures.
     int nCount = 1;
-    object oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, OBJECT_SELF, nCount);
+    object oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, nCount);
     float fDistance = GetDistanceToObject(oCreature);
 
     // Start with those relatively close. These will be stunned or dazed.
@@ -146,7 +146,7 @@ void DeathKnell()
             ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eDaze, oCreature, RoundsToSeconds(d2()));
 
         // Update the loop.
-        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, OBJECT_SELF, ++nCount);
+        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, ++nCount);
         fDistance = GetDistanceToObject(oCreature);
     }
 
@@ -159,7 +159,7 @@ void DeathKnell()
             ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eDaze, oCreature, RoundsToSeconds(d4()));
 
         // Update the loop.
-        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, OBJECT_SELF, ++nCount);
+        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, ++nCount);
         fDistance = GetDistanceToObject(oCreature);
     }
 }

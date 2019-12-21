@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Service
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
-            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
+            bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             starship.SetLocalObject("STARSHIP_RESOURCE_BAY", bay.Object);
             bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
@@ -682,7 +682,7 @@ namespace SWLOR.Game.Server.Service
                 location = waypoint.Location;
             }
 
-            NWCreature shipCreature = _.CreateObject(_.OBJECT_TYPE_CREATURE, "starship" + shipBase.BuildingStyleID.ToString(), location, 0, shipID);
+            NWCreature shipCreature = _.CreateObject(_.ObjectType.Creature, "starship" + shipBase.BuildingStyleID.ToString(), location, 0, shipID);
 
             shipCreature.SetLocalObject("AREA", ship);
             ship.SetLocalObject("CREATURE", shipCreature);
@@ -940,7 +940,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = _.GetFirstItemInInventory(copy);
             while (item.IsValid)
             {
-                _.SetDroppableFlag(item, FALSE);
+                _.SetDroppableFlag(item, false);
                 item.Destroy();
                 item = _.GetNextItemInInventory(copy);
             }
@@ -1084,7 +1084,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         // For now, do pirates (4) instead of customs (1).
                         string resref = _.d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
-                        NWCreature pirate = _.CreateObject(OBJECT_TYPE_CREATURE, resref, trigger.Location);
+                        NWCreature pirate = _.CreateObject(ObjectType.Creature, resref, trigger.Location);
                         pirate.SetLocalInt("DC", encounter.Difficulty);
                         pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTable);
                         // TODO - play proximity alert sound.
@@ -1477,11 +1477,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, true, ObjectType.Creature, creature.Position);
             while (target.IsValid)
             {
 
-                if (_.GetIsEnemy(target, creature) == TRUE &&
+                if (_.GetIsEnemy(target, creature) == true &&
                     !target.IsDead &&
                     target.GetLocalInt("IS_GUNNER") == 0 &&
                     _.GetDistanceBetween(creature, target) <= range &&
@@ -1492,7 +1492,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 }
 
-                target = _.GetNextObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+                target = _.GetNextObjectInShape(shape, range, targetLocation, true, ObjectType.Creature, creature.Position);
             }
         }
 
@@ -1517,7 +1517,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer equipper = _.GetPCItemLastEquippedBy();
-            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
 
             if (equipper.GetLocalInt("IS_SHIP") > 0)
             {
@@ -1590,7 +1590,7 @@ namespace SWLOR.Game.Server.Service
                 targetLocation = creature.Location;
             }
 
-            NWCreature enemy = _.GetFirstObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+            NWCreature enemy = _.GetFirstObjectInShape(shape, 25.0f, targetLocation, 1, ObjectType.Creature);
 
             while (enemy.IsValid)
             {
@@ -1600,7 +1600,7 @@ namespace SWLOR.Game.Server.Service
                     return true;
                 }
 
-                enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+                enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, 1, ObjectType.Creature);
             }
 
             enemy = _.GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY, creature);

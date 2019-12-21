@@ -1,6 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
-
-using NWN;
+﻿using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -39,7 +38,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oItem"></param>
         /// <param name="nPropertyID"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseItem(NWItem oItem, int nPropertyID)
+        public static QuickBarSlot UseItem(NWGameObject oItem, int nPropertyID)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
 
@@ -55,7 +54,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oItem"></param>
         /// <param name="oSecondaryItem"></param>
         /// <returns></returns>
-        public static QuickBarSlot EquipItem(NWItem oItem, NWItem oSecondaryItem)
+        public static QuickBarSlot EquipItem(NWGameObject oItem, NWGameObject oSecondaryItem)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
 
@@ -104,11 +103,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="nFeat"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseFeat(int nFeat)
+        public static QuickBarSlot UseFeat(Feat nFeat)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Feat);
 
-            qbs.INTParam1 = nFeat;
+            qbs.INTParam1 = (int)nFeat;
 
             return qbs;
         }

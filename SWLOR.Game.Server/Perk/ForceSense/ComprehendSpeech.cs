@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_WILL_SAVING_THROW_USE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_WILL_SAVING_THROW_USE), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

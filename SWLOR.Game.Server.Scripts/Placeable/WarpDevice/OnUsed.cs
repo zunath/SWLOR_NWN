@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
         {
             NWPlayer oPC = _.GetLastUsedBy();
 
-            if (_.GetIsInCombat(oPC) == _.TRUE)
+            if (_.GetIsInCombat(oPC) == _.true)
             {
                 _.SendMessageToPC(oPC, "You are in combat.");
                 return;
@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
             int visualEffectID = self.GetLocalInt("VISUAL_EFFECT");
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
             string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
-            bool isInstance = self.GetLocalInt("INSTANCE") == _.TRUE;
-            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == _.TRUE;
+            bool isInstance = self.GetLocalInt("INSTANCE") == _.true;
+            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == _.true;
 
             if (keyItemID > 0)
             {
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
             if (visualEffectID > 0)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(visualEffectID), oPC.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(visualEffectID), oPC.Object);
             }
 
             NWObject entranceWP = _.GetWaypointByTag(destination);

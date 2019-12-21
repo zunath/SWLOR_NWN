@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Conversation
             
             if (data.IsConfirming)
             {
-                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), TRUE);
+                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), true);
                 data.IsConfirming = false;
                 SetResponseText("BaseDetailsPage", responseID, optionText);
                 pcBase.DateRentDue = pcBase.DateRentDue.AddDays(days);

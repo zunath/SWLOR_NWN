@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             }
 
             // HP is tracked in the database. Heal the placeable so it doesn't get destroyed.
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(9999), tower.Object);
 
             if(attacker.IsPlayer)
             {

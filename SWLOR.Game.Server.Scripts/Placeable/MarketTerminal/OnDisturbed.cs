@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
             var model = MarketService.GetPlayerMarketData(player);
 
             // Serializing containers can be tricky so for the time being we'll leave them disabled.
-            if (_.GetHasInventory(item) == _.TRUE)
+            if (_.GetHasInventory(item) == _.true)
             {
                 ItemService.ReturnItem(player, item);
                 player.SendMessage(ColorTokenService.Red("Containers cannot be sold on the market."));

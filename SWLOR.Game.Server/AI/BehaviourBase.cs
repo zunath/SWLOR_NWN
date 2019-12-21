@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == TRUE)
+            if (GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == true)
             {
                 DoDoorAction(door.Object, DOOR_ACTION_OPEN);
             }
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.AI
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
             int nth = 1;
-            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
+            NWCreature creature = _.GetNearestObject(ObjectType.Creature, self, nth);
             while (creature.IsValid)
             {
                 float aggroRange = GetAggroRange(creature);
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.AI
                     Link(self, creature);
                 }
                 nth++;
-                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
+                creature = _.GetNearestObject(ObjectType.Creature, self, nth);
             }
         }
 
@@ -321,13 +321,13 @@ namespace SWLOR.Game.Server.AI
             if (nearby.IsDead) return;
 
             // Is the nearby creature not an enemy?
-            if (GetIsEnemy(nearby, self.Object) == FALSE) return;
+            if (GetIsEnemy(nearby, self.Object) == false) return;
 
             // Does the nearby creature have sanctuary?
             if (nearby.HasAnyEffect(EFFECT_TYPE_SANCTUARY)) return;
 
             // Does the nearby creature have line of sight to the creature being attacked?
-            if (LineOfSightObject(self, nearby) == FALSE) return;
+            if (LineOfSightObject(self, nearby) == false) return;
 
             // Success. Increase enmity on the nearby target.
             EnmityService.AdjustEnmity(self, nearby, 0, 1);
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.AI
             if (nearby.IsDead) return;
 
             // Is the nearby creature an enemy?
-            if (_.GetIsEnemy(nearby, self) == TRUE) return;
+            if (_.GetIsEnemy(nearby, self) == true) return;
 
             // Does the calling creature have the same racial type as the nearby creature?
             if (self.RacialType != nearby.RacialType) return;
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.AI
             if (target.IsDead) return;
 
             // Does the nearby creature have line of sight to the creature being attacked?
-            if (LineOfSightObject(self, nearby) == FALSE) return;
+            if (LineOfSightObject(self, nearby) == false) return;
 
             // Add the target of the nearby creature to this creature's enmity table.
             EnmityService.AdjustEnmity(self, target, 0, 1);
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.AI
             }
 
             if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == _.FALSE &&
+                _.IsInConversation(self.Object) == _.false &&
                 _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
                 _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
                 RandomService.Random(100) <= 25)
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.AI
                 return;
 
             if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == _.FALSE &&
+                _.IsInConversation(self.Object) == _.false &&
                 _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
             {
                 var flags = GetAIFlags(self);

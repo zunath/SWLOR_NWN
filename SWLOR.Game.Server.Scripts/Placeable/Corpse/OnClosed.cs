@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
 
             corpseOwner.AssignCommand(() =>
             {
-                _.SetIsDestroyable(_.TRUE);
+                _.SetIsDestroyable(_.true);
             });
         }
 

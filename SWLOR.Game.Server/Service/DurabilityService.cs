@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            item.SetLocalInt("DURABILITY_OVERRIDE", TRUE);
+            item.SetLocalInt("DURABILITY_OVERRIDE", true);
             if (item.GetLocalInt("DURABILITY_INITIALIZE") <= 0 &&
                 item.GetLocalFloat("DURABILITY_CURRENT") <= 0.0f)
             {
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            item.SetLocalInt("DURABILITY_OVERRIDE", TRUE);
+            item.SetLocalInt("DURABILITY_OVERRIDE", true);
             if (value <= 0) value = DefaultDurability;
 
             item.SetLocalFloat("DURABILITY_MAX", value);
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (value < 0.0f) value = 0.0f;
 
-            item.SetLocalInt("DURABILITY_OVERRIDE", TRUE);
+            item.SetLocalInt("DURABILITY_OVERRIDE", true);
             InitializeDurability(item);
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
 
             // Don't run heavy code when customizing equipment.
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return;
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return;
             
             NWItem oItem = (_.GetPCItemLastEquipped());
             float durability = GetDurability(oItem);

@@ -1,84 +1,122 @@
-﻿using static SWLOR.Game.Server.NWNX.NWNXCore;
-using SWLOR.Game.Server.GameObject;
-
+﻿using NWN;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXChat
     {
-        public const int NWNX_CHAT_CHANNEL_PLAYER_TALK = 1;
-        public const int NWNX_CHAT_CHANNEL_PLAYER_SHOUT = 2;
-        public const int NWNX_CHAT_CHANNEL_PLAYER_WHISPER = 3;
-        public const int NWNX_CHAT_CHANNEL_PLAYER_TELL = 4;
-        public const int NWNX_CHAT_CHANNEL_SERVER_MSG = 5;
-        public const int NWNX_CHAT_CHANNEL_PLAYER_PARTY = 6;
-        public const int NWNX_CHAT_CHANNEL_PLAYER_DM = 14;
-        public const int NWNX_CHAT_CHANNEL_DM_TALK = 17;
-        public const int NWNX_CHAT_CHANNEL_DM_SHOUT = 18;
-        public const int NWNX_CHAT_CHANNEL_DM_WHISPER = 19;
-        public const int NWNX_CHAT_CHANNEL_DM_TELL = 20;
-        public const int NWNX_CHAT_CHANNEL_DM_PARTY = 22;
-        public const int NWNX_CHAT_CHANNEL_DM_DM = 30;
+        private const string NWNX_Chat = "NWNX_Chat"; 
 
         // Sends a chat message. Channel is a NWNX_* constant.
         // If no target is provided, then it broadcasts to all eligible targets.
-        // Returns TRUE if successful, FALSE otherwise.
-        public static int SendMessage(int channel, string message, NWObject sender, NWObject target)
+        // Returns true if successful, false otherwise.
+        public static int SendMessage(int channel, string message, NWGameObject sender, NWGameObject target)
         {
-            NWNX_PushArgumentObject("NWNX_Chat", "SEND_MESSAGE", target.Object);
-            NWNX_PushArgumentObject("NWNX_Chat", "SEND_MESSAGE", sender.Object);
-            NWNX_PushArgumentString("NWNX_Chat", "SEND_MESSAGE", message);
-            NWNX_PushArgumentInt("NWNX_Chat", "SEND_MESSAGE", channel);
-            NWNX_CallFunction("NWNX_Chat", "SEND_MESSAGE");
-            return NWNX_GetReturnValueInt("NWNX_Chat", "SEND_MESSAGE");
+            string sFunc = "SEND_MESSAGE";
+
+            NWNX_PushArgumentObject(NWNX_Chat, sFunc, target);
+            NWNX_PushArgumentObject(NWNX_Chat, sFunc, sender);
+            NWNX_PushArgumentString(NWNX_Chat, sFunc, message);
+            NWNX_PushArgumentInt(NWNX_Chat, sFunc, channel);
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Chat, sFunc);
         }
 
         // Registers the script which receives all chat messages.
         // If a script was previously registered, this one will take over.
         public static void RegisterChatScript(string script)
         {
-            NWNX_PushArgumentString("NWNX_Chat", "REGISTER_CHAT_SCRIPT", script);
-            NWNX_CallFunction("NWNX_Chat", "REGISTER_CHAT_SCRIPT");
+            string sFunc = "REGISTER_CHAT_SCRIPT";
+
+            NWNX_PushArgumentString(NWNX_Chat, sFunc, script);
+            NWNX_CallFunction(NWNX_Chat, sFunc);
         }
 
         // Skips the message.
         // Must be called from an chat or system script handler.
         public static void SkipMessage()
         {
-            NWNX_CallFunction("NWNX_Chat", "SKIP_MESSAGE");
+            string sFunc = "SKIP_MESSAGE";
+
+            NWNX_CallFunction(NWNX_Chat, sFunc);
         }
 
         // Gets the channel. Channel is a NWNX_* constant.
         // Must be called from an chat or system script handler.
-        public static int GetChannel()
+        public static NWNXChatChannel GetChannel()
         {
-            NWNX_CallFunction("NWNX_Chat", "GET_CHANNEL");
-            return NWNX_GetReturnValueInt("NWNX_Chat", "GET_CHANNEL");
+            string sFunc = "GET_CHANNEL";
+
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+            return (NWNXChatChannel)NWNX_GetReturnValueInt(NWNX_Chat, sFunc);
         }
 
         // Gets the message.
         // Must be called from an chat or system script handler.
         public static string GetMessage()
         {
-            NWNX_CallFunction("NWNX_Chat", "GET_MESSAGE");
-            return NWNX_GetReturnValueString("NWNX_Chat", "GET_MESSAGE");
+            string sFunc = "GET_MESSAGE";
+
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Chat, sFunc);
         }
 
         // Gets the sender.
         // Must be called from an chat or system script handler.
-        public static NWObject GetSender()
+        public static NWGameObject GetSender()
         {
-            NWNX_CallFunction("NWNX_Chat", "GET_SENDER");
-            return (NWNX_GetReturnValueObject("NWNX_Chat", "GET_SENDER"));
+            string sFunc = "GET_SENDER";
+
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+            return NWNX_GetReturnValueObject(NWNX_Chat, sFunc);
         }
 
         // Gets the target. May be OBJECT_INVALID if no target.
         // Must be called from an chat or system script handler.
-        public static NWObject GetTarget()
+        public static NWGameObject GetTarget()
         {
-            NWNX_CallFunction("NWNX_Chat", "GET_TARGET");
-            return (NWNX_GetReturnValueObject("NWNX_Chat", "GET_TARGET"));
+            string sFunc = "GET_TARGET";
+
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+            return NWNX_GetReturnValueObject(NWNX_Chat, sFunc);
         }
 
+        /// <summary>
+        /// Sets the distance with which the player hears talks or whispers.
+        /// </summary>
+        /// <param name="distance">The distance in meters.</param>
+        /// <param name="listener">The listener, if OBJECT_INVALID then it will be set server wide.</param>
+        /// <param name="channel">The "channel" to modify the distance heard. Only applicable for talk and whisper.</param>
+        public static void SetChatHearingDistance(float distance, NWGameObject listener = null, NWNXChatChannel channel = NWNXChatChannel.PlayerTalk)
+        {
+            if(listener == null)
+                listener = NWGameObject.OBJECT_INVALID;
+
+            string sFunc = "SET_CHAT_HEARING_DISTANCE";
+
+            NWNX_PushArgumentInt(NWNX_Chat, sFunc, (int)channel);
+            NWNX_PushArgumentObject(NWNX_Chat, sFunc, listener);
+            NWNX_PushArgumentFloat(NWNX_Chat, sFunc, distance);
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+        }
+
+        /// <summary>
+        /// Gets the distance with which the player hears talks or whisper
+        /// </summary>
+        /// <param name="listener">The listener, if OBJECT_INVALID then will return server wide setting.</param>
+        /// <param name="channel">The "channel". Only applicable for talk and whisper.</param>
+        /// <returns>The hearing distance</returns>
+        public static float GetChatHearingDistance(NWGameObject listener = null, NWNXChatChannel channel = NWNXChatChannel.PlayerTalk)
+        {
+            if(listener == null)
+                listener = NWGameObject.OBJECT_INVALID;
+
+            string sFunc = "GET_CHAT_HEARING_DISTANCE";
+
+            NWNX_PushArgumentInt(NWNX_Chat, sFunc, (int)channel);
+            NWNX_PushArgumentObject(NWNX_Chat, sFunc, listener);
+            NWNX_CallFunction(NWNX_Chat, sFunc);
+            return NWNX_GetReturnValueFloat(NWNX_Chat, sFunc);
+        }
     }
 }

@@ -18,7 +18,7 @@
 
     //SetLocalInt(oPC,"CLONED",1);  //Mark creature
     // object oFan = CopyObject(oPC,nLoc,OBJECT_INVALID,""); //Clone creature in his location
-    //effect nEff = EffectVisualEffect(VFX_FNF_SUMMON_CELESTIAL,FALSE); //Make a visual effect
+    //effect nEff = EffectVisualEffect(VFX_FNF_SUMMON_CELESTIAL,false); //Make a visual effect
     //ApplyEffectToObject(DURATION_TYPE_INSTANT,nEff,nObj); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
    // ExecuteScript("dead2",oFan); //Execute special script in new clone creature
     //AssignCommand(oFan,ActionAttack(oPC)); //Make this new creature attack the last creature in the sphere - need, because the new creature is a PC too
@@ -39,7 +39,7 @@
 
 
     // Start cutscene, fade in
-    GestaltStartCutscene    (oPC,"mycutscene",TRUE,TRUE,TRUE,TRUE,2);
+    GestaltStartCutscene    (oPC,"mycutscene",true,true,true,true,2);
     GestaltCameraFade       (0.0,  oPC,   FADE_IN,FADE_SPEED_MEDIUM);
 
 
@@ -70,7 +70,7 @@
 
 
     // Move the NPC towards the player and congratulate him
-    //GestaltActionMove       (5.0,  oFan,  oPC,FALSE,1.0,4.0);
+    //GestaltActionMove       (5.0,  oFan,  oPC,false,1.0,4.0);
 
     //GestaltActionSpeak      (9.0,  oFan,
                             //"That was quite a performance!",

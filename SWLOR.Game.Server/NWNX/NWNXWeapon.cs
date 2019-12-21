@@ -1,6 +1,4 @@
-﻿using static SWLOR.Game.Server.NWNX.NWNXCore;
-
-namespace SWLOR.Game.Server.NWNX
+﻿namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXWeapon
     {
@@ -19,157 +17,157 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "SetWeaponFocusFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetEpicWeaponFocusFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponFocusFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetGreaterWeaponFocusFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetGreaterWeaponFocusFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetWeaponFinesseSize(int nBaseItem, int nSize)
         {
             string sFunc = "SetWeaponFinesseSize";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nSize);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nSize);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetWeaponUnarmed(int nBaseItem)
         {
             string sFunc = "SetWeaponUnarmed";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetWeaponIsMonkWeapon(int nBaseItem)
         {
             string sFunc = "SetWeaponIsMonkWeapon";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetWeaponImprovedCriticalFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponImprovedCriticalFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetWeaponSpecializationFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponSpecializationFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetGreaterWeaponSpecializationFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetGreaterWeaponSpecializationFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetEpicWeaponSpecializationFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponSpecializationFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetEpicWeaponOverwhelmingCriticalFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponOverwhelmingCriticalFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetEpicWeaponDevastatingCriticalFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponDevastatingCriticalFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetWeaponOfChoiceFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponOfChoiceFeat";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetOption(int nOption, int nVal)
         {
             string sFunc = "SetOption";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nVal);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nOption);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nVal);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nOption);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void SetDevastatingCriticalEventScript(string sScript)
         {
             string sFunc = "SetDevastatingCriticalEventScript";
 
-            NWNX_PushArgumentString(NWNX_Weapon, sFunc, sScript);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Weapon, sFunc, sScript);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
         public static void BypassDevastatingCritical()
         {
             string sFunc = "SetEventData";
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, 1);
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, NWNX_WEAPON_SETDATA_DC_BYPASS);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, 1);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, NWNX_WEAPON_SETDATA_DC_BYPASS);
 
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
         
         public static DevastatingCriticalData GetDevastatingCriticalEventData()
@@ -177,12 +175,12 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "GetEventData";
             DevastatingCriticalData data = new DevastatingCriticalData();
 
-            NWNX_PushArgumentInt(NWNX_Weapon, sFunc, NWNX_WEAPON_GETDATA_DC);
-            NWNX_CallFunction(NWNX_Weapon, sFunc);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, NWNX_WEAPON_GETDATA_DC);
+            NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
 
-            data.Weapon = NWNX_GetReturnValueObject(NWNX_Weapon, sFunc);
-            data.Target = NWNX_GetReturnValueObject(NWNX_Weapon, sFunc);
-            data.Damage = NWNX_GetReturnValueInt(NWNX_Weapon, sFunc);
+            data.Weapon = NWNXCore.NWNX_GetReturnValueObject(NWNX_Weapon, sFunc);
+            data.Target = NWNXCore.NWNX_GetReturnValueObject(NWNX_Weapon, sFunc);
+            data.Damage = NWNXCore.NWNX_GetReturnValueInt(NWNX_Weapon, sFunc);
 
             return data;
         }

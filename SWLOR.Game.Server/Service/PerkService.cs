@@ -205,11 +205,11 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-            if (oPC.GetLocalInt("LOGGED_IN_ONCE") == FALSE) return;
+            if (oPC.GetLocalInt("LOGGED_IN_ONCE") == false) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
             foreach (PCPerk pcPerk in executionPerks)
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
 
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
             NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
 
@@ -461,7 +461,7 @@ namespace SWLOR.Game.Server.Service
                 var perkFeatToGrant = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(perkID, pcPerk.PerkLevel);
 
                 // Add the feat(s) to the player if it doesn't exist yet.
-                if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.FeatID, oPC.Object) == FALSE)
+                if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.FeatID, oPC.Object) == false)
                 {
                     NWNXCreature.AddFeatByLevel(oPC, perkFeatToGrant.FeatID, 1);
 

@@ -24,15 +24,15 @@
 void main()
 {
     ExecuteScript("crea_on_death", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DEATH_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DEATH_EVENT") == true) return;
 
 
     int nClass = GetLevelByClass(CLASS_TYPE_COMMONER);
     int nAlign = GetAlignmentGoodEvil(OBJECT_SELF);
     object oKiller = GetLastKiller();
 
-    if (GetLocalInt(GetModule(),"X3_ENABLE_MOUNT_DB")&&GetIsObjectValid(GetMaster(OBJECT_SELF))) SetLocalInt(GetMaster(OBJECT_SELF),"bX3_STORE_MOUNT_INFO",TRUE);
+    if (GetLocalInt(GetModule(),"X3_ENABLE_MOUNT_DB")&&GetIsObjectValid(GetMaster(OBJECT_SELF))) SetLocalInt(GetMaster(OBJECT_SELF),"bX3_STORE_MOUNT_INFO",true);
 
 
     // If we're a good/neutral commoner,

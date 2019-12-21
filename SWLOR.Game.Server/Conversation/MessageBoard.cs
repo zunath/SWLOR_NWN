@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("CreatePostPage", header);
 
-            player.SetLocalInt("MESSAGE_BOARD_LISTENING", TRUE);
+            player.SetLocalInt("MESSAGE_BOARD_LISTENING", true);
         }
 
         private void CreatePostPageResponses(int responseID)
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Conversation
                             DateRemoved = null
                         };
                         DataService.SubmitDataChange(post, DatabaseActionType.Insert);
-                        _.TakeGoldFromCreature(price, player, TRUE);
+                        _.TakeGoldFromCreature(price, player, true);
 
                         player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
                         player.DeleteLocalString("MESSAGE_BOARD_TEXT");

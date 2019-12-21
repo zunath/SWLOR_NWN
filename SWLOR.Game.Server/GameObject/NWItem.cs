@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (ItemProperty ip = _.GetFirstItemProperty(Object); _.GetIsItemPropertyValid(ip) == TRUE; ip = _.GetNextItemProperty(Object))
+                for (ItemProperty ip = _.GetFirstItemProperty(Object); _.GetIsItemPropertyValid(ip) == true; ip = _.GetNextItemProperty(Object))
                 {
                     yield return ip;
                 }
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.GameObject
 
         private CustomItemType GetCustomItemType(NWItem item)
         {
-            if (item.GetLocalInt("LIGHTSABER") == TRUE)
+            if (item.GetLocalInt("LIGHTSABER") == true)
             {
                 return CustomItemType.Lightsaber;
             }
@@ -611,7 +611,7 @@ namespace SWLOR.Game.Server.GameObject
         public int GetItemPropertyValueAndRemove(int itemPropertyID)
         {
             ItemProperty ip = _.GetFirstItemProperty(Object);
-            while (_.GetIsItemPropertyValid(ip) == TRUE)
+            while (_.GetIsItemPropertyValid(ip) == true)
             {
                 if (_.GetItemPropertyType(ip) == itemPropertyID)
                 {

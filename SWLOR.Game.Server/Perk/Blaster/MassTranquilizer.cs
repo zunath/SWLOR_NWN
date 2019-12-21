@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             // Check if Mind Shield is on target.
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
             if (concentrationEffect.Type == PerkType.MindShield ||
-                GetIsImmune(target, IMMUNITY_TYPE_MIND_SPELLS) == TRUE)
+                GetIsImmune(target, IMMUNITY_TYPE_MIND_SPELLS) == true)
             {
                 creature.SendMessage("Your target is immune to tranquilization effects.");
             }
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
             int current = 1;
-            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
+            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);
             while (nearest.IsValid)
             {
                 float distance = _.GetDistanceBetween(nearest, target);
@@ -129,13 +129,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 concentrationEffect = AbilityService.GetActiveConcentrationEffect(nearest);
 
                 // If this creature isn't hostile to the attacking player or if this creature is already tranquilized, move to the next one.
-                if (_.GetIsReactionTypeHostile(nearest, creature) == FALSE ||
+                if (_.GetIsReactionTypeHostile(nearest, creature) == false ||
                     nearest.Object == target.Object ||
                     RemoveExistingEffect(nearest, duration) ||
                     concentrationEffect.Type == PerkType.MindShield)
                 {
                     current++;
-                    nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
+                    nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);
                     continue;
                 }
 
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, nearest, duration);
 
                 current++;
-                nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
+                nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);
             }
 
         }

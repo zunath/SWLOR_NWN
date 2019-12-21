@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            SetCommandable(FALSE, GetPC());
+            SetCommandable(false, GetPC());
             LoadMainPage();
         }
         
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Conversation
 
             bool canModifyMain = main.IsValid && !main.IsPlot && !main.IsCursed &&
                                  // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                 main.CustomItemType != CustomItemType.Lightsaber && main.GetLocalInt("LIGHTSABER") == FALSE;
+                                 main.CustomItemType != CustomItemType.Lightsaber && main.GetLocalInt("LIGHTSABER") == false;
 
             if (canModifyMain)
             {
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Conversation
 
             bool canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed &&
                                     // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalInt("LIGHTSABER") == FALSE;
+                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalInt("LIGHTSABER") == false;
 
             if (canModifyOffHand)
             {
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Save/Load Outfits
-                    SetCommandable(TRUE, player);
+                    SetCommandable(true, player);
                     SwitchConversation("Outfit");
                     break;
                 case 2: // Main Hand
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Conversation
                     else
                     {
                         model.TargetItem = player.RightHand;
-                        model.InventorySlotID = INVENTORY_SLOT_RIGHTHAND;
+                        model.InventorySlotID = InventorySlot.RightHand;
                         ChangePage("WeaponPartPage");
                     }
                     
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Conversation
                     else
                     {
                         model.TargetItem = player.Chest;
-                        model.InventorySlotID = INVENTORY_SLOT_CHEST;
+                        model.InventorySlotID = InventorySlot.Chest;
                         ChangePage("ArmorPartPage");
                     }
 
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Conversation
                     else
                     {
                         model.TargetItem = player.Head;
-                        model.InventorySlotID = INVENTORY_SLOT_HEAD;
+                        model.InventorySlotID = InventorySlot.Head;
                         ChangePage("HelmetPartPage");
                     }
 
@@ -486,7 +486,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ArmorPartResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            model.ItemTypeID = ITEM_APPR_TYPE_ARMOR_MODEL;
+            model.ItemTypeID = ItemApprType.ArmorModel;
             int[] parts = {0};
 
             switch (responseID)
@@ -556,7 +556,7 @@ namespace SWLOR.Game.Server.Conversation
                     parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 54, 55, 56, 57, 58, 100, 101, 102, 122, 123, 140, 141, 185, 186, 197, 198, 199, 219, 220, 221, 222, 249, 250 };
                     break;
                 case 17: // Left Bicep
-                    model.Index = ITEM_APPR_ARMOR_MODEL_LBICEP;
+                    model.Index = ItemApprArmorModel.LeftBicep;
                     parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20, 21, 22, 30, 31, 32, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 68, 75, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 140, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 182, 183, 186, 198, 199, 201, 202, 203, 246, 247, 248, 249, 250, 257, 258, 259 };
                     break;
                 case 18: // Left Forearm
@@ -645,27 +645,27 @@ namespace SWLOR.Game.Server.Conversation
             int type = model.ItemTypeID;
             int index = model.Index;
 
-            NWItem copy = CopyItemAndModify(item, type, index, partID, TRUE);
+            NWItem copy = CopyItemAndModify(item, type, index, partID, true);
             item.Destroy();
             model.TargetItem = copy;
 
             player.AssignCommand(() =>
             {
-                SetCommandable(TRUE, player);
+                SetCommandable(true, player);
                 ActionEquipItem(copy, slotID);
-                SetCommandable(FALSE, player);
+                SetCommandable(false, player);
             });
         }
 
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-            SetCommandable(TRUE, GetPC());
+            SetCommandable(true, GetPC());
         }
 
         public override void EndDialog()
         {
-            SetCommandable(TRUE, GetPC());
+            SetCommandable(true, GetPC());
         }
     }
 }

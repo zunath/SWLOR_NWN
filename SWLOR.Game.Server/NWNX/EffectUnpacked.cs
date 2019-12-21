@@ -1,6 +1,4 @@
-﻿
-using NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -14,7 +12,7 @@ namespace SWLOR.Game.Server.NWNX
         public int ExpiryCalendarDay { get; set; }
         public int ExpiryTimeOfDay { get; set; }
 
-        public NWObject Creator { get; set; }
+        public NWGameObject Creator { get; set; }
         public int SpellID { get; set; }
         public int Expose { get; set; }
         public int ShowIcon { get; set; }
@@ -44,10 +42,10 @@ namespace SWLOR.Game.Server.NWNX
         public string sParam3 { get; set; }
         public string sParam4 { get; set; }
         public string sParam5 { get; set; }
-        public NWObject oParam0 { get; set; }
-        public NWObject oParam1 { get; set; }
-        public NWObject oParam2 { get; set; }
-        public NWObject oParam3 { get; set; }
+        public NWGameObject oParam0 { get; set; }
+        public NWGameObject oParam1 { get; set; }
+        public NWGameObject oParam2 { get; set; }
+        public NWGameObject oParam3 { get; set; }
 
         public string Tag { get; set; }
     }

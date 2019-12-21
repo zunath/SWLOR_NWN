@@ -22,7 +22,7 @@ fTime+=6.0;
 if (fTime >= ZEP_RESTLESS_DEAD_RESPAWN_TIME)
     {
     ApplyEffectAtLocation(DURATION_TYPE_INSTANT,EffectVisualEffect(VFX_IMP_NEGATIVE_ENERGY),GetLocation(OBJECT_SELF));
-    CreateObject(OBJECT_TYPE_CREATURE,"zep_skelyellow",GetLocation(OBJECT_SELF));
+    CreateObject(ObjectType.Creature,"zep_skelyellow",GetLocation(OBJECT_SELF));
     DestroyObject(OBJECT_SELF);
     }
 else

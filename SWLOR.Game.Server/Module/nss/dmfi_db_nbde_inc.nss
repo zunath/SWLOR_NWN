@@ -13,7 +13,7 @@
 
 void FlushDMFIPersistentData(string sDBName)
 {
-    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", FALSE);
+    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", false);
     NBDE_FlushCampaignDatabase(sDBName);
 }
 
@@ -32,7 +32,7 @@ int GetDMFIPersistentInt(string sDBName, string sDBSetting, object oPlayer = OBJ
 void SetDMFIPersistentInt(string sDBName, string sDBSetting, int iDBValue, object oPlayer = OBJECT_INVALID)
 {
     NBDE_SetCampaignInt(sDBName, sDBSetting, iDBValue, oPlayer);
-    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", TRUE);
+    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", true);
 }
 
 //Float functions
@@ -45,7 +45,7 @@ float GetDMFIPersistentFloat(string sDBName, string sDBSetting, object oPlayer =
 void SetDMFIPersistentFloat(string sDBName, string sDBSetting, float fDBValue, object oPlayer = OBJECT_INVALID)
 {
     NBDE_SetCampaignFloat(sDBName, sDBSetting, fDBValue, oPlayer);
-    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", TRUE);
+    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", true);
 }
 
 //String functions
@@ -58,6 +58,6 @@ string GetDMFIPersistentString(string sDBName, string sDBSetting, object oPlayer
 void SetDMFIPersistentString(string sDBName, string sDBSetting, string sDBValue, object oPlayer = OBJECT_INVALID)
 {
     NBDE_SetCampaignString(sDBName, sDBSetting, sDBValue, oPlayer);
-    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", TRUE);
+    NBDE_SetCampaignInt(sDBName, "DMFI_DB_DIRTY", true);
 }
 

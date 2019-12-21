@@ -1,7 +1,7 @@
 
 #include "dmfi_db_inc"
 
-const int DMFI_DEFAULT_EMOTES_MUTED = FALSE;
+const int DMFI_DEFAULT_EMOTES_MUTED = false;
 
 int dmfiInitialize(object oUser)
 {
@@ -34,7 +34,7 @@ int dmfiInitialize(object oUser)
     //if you have campaign variables set - use those settings
         if (GetDMFIPersistentInt("dmfi", "Settings", oUser)==1)
         {
-            FloatingTextStringOnCreature("DMFI Settings Restored", oUser, FALSE);
+            FloatingTextStringOnCreature("DMFI Settings Restored", oUser, false);
             // SendMessageToPC(oUser, "DMFI Settings Restored");
 
             int n = GetDMFIPersistentInt("dmfi", "dmfi_alignshift", oUser);
@@ -126,7 +126,7 @@ int dmfiInitialize(object oUser)
         }
         else
         {
-            FloatingTextStringOnCreature("DMFI Default Settings Initialized", oUser, FALSE);
+            FloatingTextStringOnCreature("DMFI Default Settings Initialized", oUser, false);
             // SendMessageToPC(oUser, "DMFI Default Settings Initialized");
 
             //Setting FOUR campaign variables so 1st use will be slow.
@@ -212,6 +212,6 @@ int dmfiInitialize(object oUser)
         SetLocalInt(oUser, "dmfi_initialized", 1);
     }
 
-    return TRUE; // no errors detected
+    return true; // no errors detected
 }
 

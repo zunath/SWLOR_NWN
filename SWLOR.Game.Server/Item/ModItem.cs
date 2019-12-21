@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Item
 
             SkillType skillType;
             
-            if(targetItem.GetLocalInt("LIGHTSABER") == TRUE)
+            if(targetItem.GetLocalInt("LIGHTSABER") == true)
             {
                 skillType = SkillType.Engineering;
             }
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if(targetItem.GetLocalInt("LIGHTSABER") == TRUE)
+            if(targetItem.GetLocalInt("LIGHTSABER") == true)
             {
                 perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
             }
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Item
             if (modType == CustomItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
 
             // Get the perk level based on target item type and mod type.
-            if (targetItem.GetLocalInt("LIGHTSABER") == FALSE && WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (targetItem.GetLocalInt("LIGHTSABER") == false && WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.WeaponModInstallation);
             }
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Item
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ArmorModInstallation);
             }
-            else if (targetItem.GetLocalInt("LIGHTSABER") == TRUE || EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (targetItem.GetLocalInt("LIGHTSABER") == true || EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.EngineeringModInstallation);
             }

@@ -1,12 +1,16 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using System;
+using System.Collections.Generic;
+using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
+using static NWN._;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
-using System;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXEvents
     {
+        private const string NWNX_Events = "NWNX_Events";
+
         /// <summary>
         /// Scripts can subscribe to events.
         /// Some events are dispatched via the NWNX plugin (see NWNX_EVENTS_EVENT_* constants).
@@ -16,9 +20,11 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="script"></param>
         public static void SubscribeEvent(string evt, string script)
         {
-            NWNX_PushArgumentString("NWNX_Events", "SUBSCRIBE_EVENT", script);
-            NWNX_PushArgumentString("NWNX_Events", "SUBSCRIBE_EVENT", evt);
-            NWNX_CallFunction("NWNX_Events", "SUBSCRIBE_EVENT");
+            string sFunc = "OnSubscribeEvent";
+
+            NWNX_PushArgumentString(NWNX_Events, sFunc, script);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
+            NWNX_CallFunction(NWNX_Events, sFunc);
         }
 
         /// <summary>
@@ -29,24 +35,28 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="data"></param>
         public static void PushEventData(string tag, string data)
         {
-            NWNX_PushArgumentString("NWNX_Events", "PUSH_EVENT_DATA", data);
-            NWNX_PushArgumentString("NWNX_Events", "PUSH_EVENT_DATA", tag);
-            NWNX_CallFunction("NWNX_Events", "PUSH_EVENT_DATA");
+            string sFunc = "OnPushEventData";
+
+            NWNX_PushArgumentString(NWNX_Events, sFunc, data);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, tag);
+            NWNX_CallFunction(NWNX_Events, sFunc);
         }
 
         /// <summary>
         /// Signals an event. This will dispatch a notification to all subscribed handlers.
-        /// Returns TRUE if anyone was subscribed to the event, FALSE otherwise.
+        /// Returns true if anyone was subscribed to the event, false otherwise.
         /// </summary>
         /// <param name="evt"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static int SignalEvent(string evt, NWObject target)
+        public static int SignalEvent(string evt, NWGameObject target)
         {
-            NWNX_PushArgumentObject("NWNX_Events", "SIGNAL_EVENT", target.Object);
-            NWNX_PushArgumentString("NWNX_Events", "SIGNAL_EVENT", evt);
-            NWNX_CallFunction("NWNX_Events", "SIGNAL_EVENT");
-            return NWNX_GetReturnValueInt("NWNX_Events", "SIGNAL_EVENT");
+            string sFunc = "OnSignalEvent";
+
+            NWNX_PushArgumentObject(NWNX_Events, sFunc, target);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
+            NWNX_CallFunction(NWNX_Events, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Events, sFunc);
         }
 
         /// <summary>
@@ -57,9 +67,11 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static string GetEventDataString(string tag)
         {
-            NWNX_PushArgumentString("NWNX_Events", "GET_EVENT_DATA", tag);
-            NWNX_CallFunction("NWNX_Events", "GET_EVENT_DATA");
-            return NWNX_GetReturnValueString("NWNX_Events", "GET_EVENT_DATA");
+            string sFunc = "OnGetEventData";
+
+            NWNX_PushArgumentString(NWNX_Events, sFunc, tag);
+            NWNX_CallFunction(NWNX_Events, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Events, sFunc);
         }
 
 
@@ -94,7 +106,9 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         public static void SkipEvent()
         {
-            NWNX_CallFunction("NWNX_Events", "SKIP_EVENT");
+            string sFunc = "OnSkipEvent";
+
+            NWNX_CallFunction(NWNX_Events, sFunc);
         }
 
         /// <summary>
@@ -112,8 +126,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="data"></param>
         public static void SetEventResult(string data)
         {
-            NWNX_PushArgumentString("NWNX_Events", "EVENT_RESULT", data);
-            NWNX_CallFunction("NWNX_Events", "EVENT_RESULT");
+            string sFunc = "OnSetEventResult";
+
+            NWNX_PushArgumentString(NWNX_Events, sFunc, data);
+            NWNX_CallFunction(NWNX_Events, sFunc);
         }
 
         /// <summary>
@@ -123,8 +139,59 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static string GetCurrentEvent()
         {
-            NWNX_CallFunction("NWNX_Events", "GET_CURRENT_EVENT");
-            return NWNX_GetReturnValueString("NWNX_Events", "GET_CURRENT_EVENT");
+            string sFunc = "OnGetCurrentEvent";
+
+            NWNX_CallFunction(NWNX_Events, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Events, sFunc);
+        }
+
+        /// <summary>
+        /// Toggles DispatchListMode for sEvent+sScript
+        /// If enabled, sEvent for sScript will only be signalled if the target object is on its dispatch list.
+        /// </summary>
+        /// <param name="sEvent"></param>
+        /// <param name="sScript"></param>
+        /// <param name="bEnable"></param>
+        public static void ToggleDispatchListMode(string sEvent, string sScript, int bEnable)
+        {
+            string sFunc = "OnToggleDispatchListMode";
+
+            NWNX_PushArgumentInt(NWNX_Events, sFunc, bEnable);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+            NWNX_CallFunction(NWNX_Events, sFunc);
+        }
+
+        /// <summary>
+        /// Add oObject to the dispatch list for sEvent+sScript.
+        /// </summary>
+        /// <param name="sEvent"></param>
+        /// <param name="sScript"></param>
+        /// <param name="oObject"></param>
+        public static void AddObjectToDispatchList(string sEvent, string sScript, NWGameObject oObject)
+        {
+            string sFunc = "OnAddObjectToDispatchList";
+
+            NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+            NWNX_CallFunction(NWNX_Events, sFunc);
+        }
+
+        /// <summary>
+        /// Remove oObject from the dispatch list for sEvent+sScript.
+        /// </summary>
+        /// <param name="sEvent"></param>
+        /// <param name="sScript"></param>
+        /// <param name="oObject"></param>
+        public static void RemoveObjectFromDispatchList(string sEvent, string sScript, NWGameObject oObject)
+        {
+            string sFunc = "OnRemoveObjectFromDispatchList";
+
+            NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
+            NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+            NWNX_CallFunction(NWNX_Events, sFunc);
         }
 
         private static int GetEventDataInt(string tag)
@@ -145,7 +212,7 @@ namespace SWLOR.Game.Server.NWNX
             return (float)Convert.ToDouble(data);
         }
 
-        private static NWObject GetEventDataObject(string tag)
+        private static NWGameObject GetEventDataObject(string tag)
         {
             string data = GetEventDataString(tag);
             return NWNXObject.StringToObject(data);
@@ -154,9 +221,9 @@ namespace SWLOR.Game.Server.NWNX
         // The following methods are specific to our implementation which makes the API a little easier to use.
         // Pattern is: "Event_Action()"
 
-        public static int OnFeatUsed_GetFeatID()
+        public static Feat OnFeatUsed_GetFeat()
         {
-            return GetEventDataInt("FEAT_ID");
+            return (Feat)GetEventDataInt("FEAT_ID");
         }
 
         public static int OnFeatUsed_GetSubFeatID()
@@ -164,21 +231,21 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataInt("SUBFEAT_ID");
         }
 
-        public static NWObject OnFeatUsed_GetTarget()
+        public static NWGameObject OnFeatUsed_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public static NWLocation OnFeatUsed_GetTargetLocation()
+        public static Location OnFeatUsed_GetTargetLocation()
         {
-            return _.Location(
-                    OnFeatUsed_GetArea().Object,
-                    _.Vector(OnFeatUsed_GetTargetPositionX(), OnFeatUsed_GetTargetPositionY(), OnFeatUsed_GetTargetPositionZ()),
+            return Location(
+                    OnFeatUsed_GetArea(),
+                    Vector(OnFeatUsed_GetTargetPositionX(), OnFeatUsed_GetTargetPositionY(), OnFeatUsed_GetTargetPositionZ()),
                     0.0f
             );
         }
 
-        public static NWObject OnFeatUsed_GetArea()
+        public static NWGameObject OnFeatUsed_GetArea()
         {
             return GetEventDataObject("AREA_OBJECT_ID");
         }
@@ -198,25 +265,25 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataFloat("TARGET_POSITION_Z");
         }
 
-        public static NWItem OnItemUsed_GetItem()
+        public static NWGameObject OnItemUsed_GetItem()
         {
-            return GetEventDataObject("ITEM_OBJECT_ID").Object;
+            return GetEventDataObject("ITEM_OBJECT_ID");
         }
 
-        public static NWObject OnItemUsed_GetTarget()
+        public static NWGameObject OnItemUsed_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public static NWLocation OnItemUsed_GetTargetLocation()
+        public static Location OnItemUsed_GetTargetLocation()
         {
-            NWObject user = NWGameObject.OBJECT_SELF;
+            NWGameObject user = NWGameObject.OBJECT_SELF;
             var x = GetEventDataFloat("TARGET_POSITION_X");
             var y = GetEventDataFloat("TARGET_POSITION_Y");
             var z = GetEventDataFloat("TARGET_POSITION_Z");
-            var vector = _.Vector(x, y, z);
+            var vector = Vector(x, y, z);
 
-            return _.Location(user.Area, vector, 0.0f);
+            return Location(GetArea(user), vector, 0.0f);
         }
 
         public static int OnItemUsed_GetItemPropertyIndex()
@@ -229,7 +296,7 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataInt("TEST_VALUE_2");
         }
 
-        public static NWObject OnExamineObject_GetTarget()
+        public static NWGameObject OnExamineObject_GetTarget()
         {
             return GetEventDataObject("EXAMINEE_OBJECT_ID");
         }
@@ -254,7 +321,7 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataInt("TARGET_POSITION_Z");
         }
 
-        public static NWObject OnCastSpell_GetTarget()
+        public static NWGameObject OnCastSpell_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
@@ -264,7 +331,7 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataInt("MULTI_CLASS");
         }
 
-        public static NWObject OnCastSpell_GetItem()
+        public static NWGameObject OnCastSpell_GetItem()
         {
             return GetEventDataObject("ITEM_OBJECT_ID");
         }
@@ -289,7 +356,7 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataBoolean("IS_INSTANT_SPELL");
         }
 
-        public static NWObject OnCombatRoundStart_GetTarget()
+        public static NWGameObject OnCombatRoundStart_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
@@ -299,17 +366,17 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataInt("AMOUNT");
         }
 
-        public static NWObject OnDMGiveXP_GetTarget()
+        public static NWGameObject OnDMGiveXP_GetTarget()
         {
             return GetEventDataObject("OBJECT");
         }
 
         public static int OnDMGiveLevels_GetAmount()
         {
-            return GetEventDataInt("NUM_LEVELS");
+            return GetEventDataInt("AMOUNT");
         }
 
-        public static NWObject OnDMGiveLevels_GetTarget()
+        public static NWGameObject OnDMGiveLevels_GetTarget()
         {
             return GetEventDataObject("OBJECT");
         }
@@ -319,22 +386,22 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataInt("AMOUNT");
         }
 
-        public static NWObject OnDMGiveGold_GetTarget()
+        public static NWGameObject OnDMGiveGold_GetTarget()
         {
             return GetEventDataObject("OBJECT");
         }
 
-        public static NWArea OnDMSpawnObject_GetArea()
+        public static NWGameObject OnDMSpawnObject_GetArea()
         {
-            return GetEventDataObject("AREA").Object;
+            return GetEventDataObject("AREA");
         }
         
-        public static NWObject OnDMSpawnObject_GetObject()
+        public static NWGameObject OnDMSpawnObject_GetObject()
         {
             return GetEventDataObject("OBJECT");
         }
 
-        public static int OnDMSpawnObject_GetObjectType()
+        public static ObjectType OnDMSpawnObject_GetObjectType()
         {
             // For whatever reason, NWNX uses different object type IDs from standard NWN.
             // I don't want to deal with this nonsense so we'll convert to the correct IDs here.
@@ -342,13 +409,12 @@ namespace SWLOR.Game.Server.NWNX
 
             switch (nwnxObjectTypeID)
             {
-                case 5: return _.OBJECT_TYPE_CREATURE;
-                case 6: return _.OBJECT_TYPE_ITEM;
-                case 7: return _.OBJECT_TYPE_TRIGGER;
-                case 9: return _.OBJECT_TYPE_PLACEABLE;
-                case 12: return _.OBJECT_TYPE_WAYPOINT;
-                case 13: return _.OBJECT_TYPE_ENCOUNTER;
-                case 15: return 15; // Only exception are portals, whatever those are!
+                case 5: return ObjectType.Creature;
+                case 6: return ObjectType.Item;
+                case 7: return ObjectType.Trigger;
+                case 9: return ObjectType.Placeable;
+                case 12: return ObjectType.Waypoint;
+                case 13: return ObjectType.Encounter;
             }
 
             throw new Exception("Invalid object type: " + nwnxObjectTypeID);
@@ -366,5 +432,88 @@ namespace SWLOR.Game.Server.NWNX
         {
             return GetEventDataFloat("POS_Z");
         }
+
+        public static GameDifficulty OnDMChangeDifficulty_GetDifficultySetting()
+        {
+            return (GameDifficulty) GetEventDataInt("DIFFICULTY_SETTING");
+        }
+
+        public static NWGameObject OnDMDisableTrap_GetTrap()
+        {
+            return GetEventDataObject("TARGET");
+        }
+
+        public static List<NWGameObject> DMEvents_GetTargetList(string tagPrefix = "TARGET_")
+        {
+            var targetCount = GetEventDataInt("NUM_TARGETS");
+            var result = new List<NWGameObject>();
+
+            for (int x = 1; x <= targetCount; x++)
+            {
+                var target = GetEventDataObject(tagPrefix + x);
+                result.Add(target);
+            }
+
+            return result;
+        }
+
+        public static NWGameObject OnDMGiveItem_GetTarget()
+        {
+            return GetEventDataObject("TARGET");
+        }
+
+        public static NWGameObject OnDMGiveItem_GetItem()
+        {
+            return GetEventDataObject("ITEM");
+        }
+
+        public static NWGameObject OnDMJumpToPoint_GetArea()
+        {
+            return GetEventDataObject("TARGET_AREA");
+        }
+
+        public static float OnDMJumpToPoint_GetX()
+        {
+            return GetEventDataFloat("POS_X");
+        }
+
+        public static float OnDMJumpToPoint_GetY()
+        {
+            return GetEventDataFloat("POS_Y");
+        }
+
+        public static float OnDMJumpToPoint_GetZ()
+        {
+            return GetEventDataFloat("POS_Z");
+        }
+
+        public static NWGameObject OnDMPossess_GetTarget()
+        {
+            return GetEventDataObject("TARGET");
+        }
+
+        public static NWGameObject OnInventoryAddItem_GetItem()
+        {
+            return GetEventDataObject("ITEM");
+        }
+
+        public static NWGameObject OnInventoryAddItem_GetPlayer()
+        {
+            var item = OnInventoryAddItem_GetItem();
+            var player = GetItemPossessor(item);
+
+            return player;
+        }
+
+        public static NWGameObject OnEquipItem_GetItem()
+        {
+            return GetEventDataObject("ITEM");
+        }
+
+        public static InventorySlot OnEquipItem_GetInventorySlot()
+        {
+            return (InventorySlot)GetEventDataInt("SLOT");
+        }
+
     }
 }

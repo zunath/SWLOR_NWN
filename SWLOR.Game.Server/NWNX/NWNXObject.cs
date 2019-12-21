@@ -1,6 +1,4 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
@@ -14,7 +12,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static int GetLocalVariableCount(NWObject obj)
+        public static int GetLocalVariableCount(NWGameObject obj)
         {
             string sFunc = "GetLocalVariableCount";
 
@@ -30,7 +28,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="obj"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static LocalVariable GetLocalVariable(NWObject obj, int index)
+        public static LocalVariable GetLocalVariable(NWGameObject obj, int index)
         {
             string sFunc = "GetLocalVariable";
 
@@ -50,7 +48,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static NWObject StringToObject(string id)
+        public static NWGameObject StringToObject(string id)
         {
             string sFunc = "StringToObject";
 
@@ -64,13 +62,13 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="pos"></param>
-        public static void SetPosition(NWObject obj, Vector pos)
+        public static void SetPosition(NWGameObject obj, Vector pos)
         {
             string sFunc = "SetPosition";
 
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_X);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Y);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Z);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.X);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Y);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Z);
             NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);
 
@@ -81,7 +79,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="hp"></param>
-        public static void SetCurrentHitPoints(NWCreature creature, int hp)
+        public static void SetCurrentHitPoints(NWGameObject creature, int hp)
         {
             string sFunc = "SetCurrentHitPoints";
 
@@ -96,7 +94,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="hp"></param>
-        public static void SetMaxHitPoints(NWCreature creature, int hp)
+        public static void SetMaxHitPoints(NWGameObject creature, int hp)
         {
             string sFunc = "SetMaxHitPoints";
 
@@ -111,7 +109,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static string Serialize(NWObject obj)
+        public static string Serialize(NWGameObject obj)
         {
             string sFunc = "Serialize";
 
@@ -127,7 +125,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="serialized"></param>
         /// <returns></returns>
-        public static NWObject Deserialize(string serialized)
+        public static NWGameObject Deserialize(string serialized)
         {
             string sFunc = "Deserialize";
 
@@ -142,7 +140,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static string GetDialogResref(NWObject obj)
+        public static string GetDialogResref(NWGameObject obj)
         {
             string sFunc = "GetDialogResref";
 
@@ -157,7 +155,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="dialog"></param>
-        public static void SetDialogResref(NWObject obj, string dialog)
+        public static void SetDialogResref(NWGameObject obj, string dialog)
         {
             string sFunc = "SetDialogResref";
 
@@ -173,7 +171,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="app"></param>
-        public static void SetAppearance(NWObject obj, int app)
+        public static void SetAppearance(NWGameObject obj, int app)
         {
             string sFunc = "SetAppearance";
 
@@ -188,7 +186,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static int GetAppearance(NWObject obj)
+        public static int GetAppearance(NWGameObject obj)
         {
             string sFunc = "GetAppearance";
 
@@ -204,7 +202,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="obj"></param>
         /// <param name="nVFX"></param>
         /// <returns></returns>
-        public static bool GetHasVisualEffect(NWObject obj, int nVFX)
+        public static bool GetHasVisualEffect(NWGameObject obj, int nVFX)
         {
             string sFunc = "GetHasVisualEffect";
 
@@ -213,7 +211,7 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Object, sFunc);
 
-            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == _.TRUE;
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == 1;
         }
 
         /// <summary>
@@ -222,7 +220,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="obj"></param>
         /// <param name="baseitem"></param>
         /// <returns></returns>
-        public static bool CheckFit(NWItem item, int baseitem)
+        public static bool CheckFit(NWGameObject item, int baseitem)
         {
             string sFunc = "CheckFit";
 
@@ -231,7 +229,7 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Object, sFunc);
 
-            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == _.TRUE;
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == 1;
         }
 
         /// <summary>
@@ -241,7 +239,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="obj"></param>
         /// <param name="damageType"></param>
         /// <returns></returns>
-        public static int GetDamageImmunity(NWObject obj, int damageType)
+        public static int GetDamageImmunity(NWGameObject obj, int damageType)
         {
             string sFunc = "GetDamageImmunity";
 
@@ -259,18 +257,156 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="obj"></param>
         /// <param name="area"></param>
         /// <param name="pos"></param>
-        public static void AddToArea(NWObject obj, NWArea area, Vector pos)
+        public static void AddToArea(NWGameObject obj, NWGameObject area, Vector pos)
         {
             string sFunc = "AddToArea";
 
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Z);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Y);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_X);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Z);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Y);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.X);
             NWNX_PushArgumentObject(NWNX_Object, sFunc, area);
             NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
 
+        /// <summary>
+        /// Set placeable as static or not.
+        /// Will not update for PCs until they re-enter the area
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <returns>true or false</returns>
+        public static bool GetPlaceableIsStatic(NWGameObject obj)
+        {
+            string sFunc = "GetPlaceableIsStatic";
 
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == 1;
+        }
+
+        /// <summary>
+        /// Set placeable as static or not
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="isStatic">true or false</param>
+        public static void SetPlaceableIsStatic(NWGameObject obj, bool isStatic)
+        {
+            string sFunc = "SetPlaceableIsStatic";
+
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, isStatic ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Gets if a door/placeable auto-removes the key after use.
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <returns>true or false</returns>
+        public static bool GetAutoRemoveKey(NWGameObject obj)
+        {
+            string sFunc = "GetAutoRemoveKey";
+
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == 1;
+        }
+
+        /// <summary>
+        /// Sets if a door/placeable auto-removes the key after use
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="bRemoveKey">true or false</param>
+        public static void SetAutoRemoveKey(NWGameObject obj, bool bRemoveKey)
+        {
+            string sFunc = "SetAutoRemoveKey";
+
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, bRemoveKey ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Get the geometry of a trigger
+        /// </summary>
+        /// <param name="oTrigger">The trigger object</param>
+        /// <returns>A string of vertex positions</returns>
+        public static string GetTriggerGeometry(NWGameObject oTrigger)
+        {
+            string sFunc = "GetTriggerGeometry";
+
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, oTrigger);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+
+            return NWNX_GetReturnValueString(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Set the geometry of a trigger with a list of vertex positions.
+        /// sGeometry Needs to be in the following format -> {x.x, y.y, z.z} or {x.x, y.y}
+        /// Example Geometry: "{1.0, 1.0, 0.0}{4.0, 1.0, 0.0}{4.0, 4.0, 0.0}{1.0, 4.0, 0.0}"
+        /// The Z position is optional and will be calculated dynamically based
+        /// on terrain height if it's not provided.
+        /// The minimum number of vertices is 3.
+        /// </summary>
+        /// <param name="oTrigger">The trigger object.</param>
+        /// <param name="sGeometry">The geometry. Refer to summary for format of string.</param>
+        public static void SetTriggerGeometry(NWGameObject oTrigger, string sGeometry)
+        {
+            string sFunc = "SetTriggerGeometry";
+
+            NWNX_PushArgumentString(NWNX_Object, sFunc, sGeometry);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, oTrigger);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Add an effect to an object that displays an icon and has no other effect.
+        /// See effecticons.2da for a list of possible effect icons.
+        /// </summary>
+        /// <param name="obj">The object to apply the effect</param>
+        /// <param name="nIcon">The icon id.</param>
+        /// <param name="fDuration">If specified the effect will be temporary and last this length in seconds, otherwise the effect will be permanent.</param>
+        public static void AddIconEffect(NWGameObject obj, int nIcon, float fDuration = 0.0f)
+        {
+            string sFunc = "AddIconEffect";
+
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, fDuration);
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, nIcon);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Remove an icon effect from an object that was added by the NWNX_Object_AddIconEffect() function.
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="nIcon">The icon id.</param>
+        public static void RemoveIconEffect(NWGameObject obj, int nIcon)
+        {
+            string sFunc = "RemoveIconEffect";
+
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, nIcon);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Export an object to the UserDirectory/nwnx folder
+        /// </summary>
+        /// <param name="sFileName">The filename without extension, 16 or less characters.</param>
+        /// <param name="oObject">The object to export. Valid object types: Creature, Item, Placeable, Waypoint, Door, Store, Trigger</param>
+        public static void Export(string sFileName, NWGameObject oObject)
+        {
+            string sFunc = "Export";
+
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, oObject);
+            NWNX_PushArgumentString(NWNX_Object, sFunc, sFileName);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
     }
 }

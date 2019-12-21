@@ -27,11 +27,11 @@ namespace SWLOR.Game.Server.CustomEffect
             oCaster.AssignCommand(() =>
             {
                 Effect damage = _.EffectDamage(amount, _.DAMAGE_TYPE_FIRE);
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, oTarget.Object);
+                _.ApplyEffectToObject(DurationType.Instant, damage, oTarget.Object);
             });
 
             Effect vfx = _.EffectVisualEffect(_.VFX_COM_HIT_FIRE);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+            _.ApplyEffectToObject(DurationType.Instant, vfx, oTarget.Object);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)

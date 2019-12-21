@@ -68,13 +68,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (door.GetLocalInt("DOOR_COLOR") == terminalColorID)
                 {
-                    _.SetLocked(door, FALSE);
+                    _.SetLocked(door, false);
                     door.AssignCommand(() => _.ActionOpenDoor(door));
                 }
                 else
                 {
                     door.AssignCommand(() => _.ActionCloseDoor(door));
-                    _.SetLocked(door, TRUE);
+                    _.SetLocked(door, true);
                 }
             }
 

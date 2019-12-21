@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual Guid GetOrAssignGlobalID()
         {
-            if (Object == null || Object == OBJECT_TYPE_INVALID)
+            if (Object == null || Object == NWGameObject.OBJECT_INVALID)
                 throw new Exception("NWN object has not been set for this wrapper.");
 
             string globalID;
@@ -94,12 +95,12 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual Vector Position => _.GetPosition(Object);
 
-        public virtual bool HasInventory => _.GetHasInventory(Object) == 1;
+        public virtual bool HasInventory => _.GetHasInventory(Object);
 
         public virtual bool IsPlot
         {
-            get => _.GetPlotFlag(Object) == 1;
-            set => _.SetPlotFlag(Object, value ? 1 : 0);
+            get => _.GetPlotFlag(Object);
+            set => _.SetPlotFlag(Object, value);
         }
 
         public virtual float Facing
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual int MaxHP => _.GetMaxHitPoints(Object);
 
-        public virtual bool IsValid => Object != null && _.GetIsObjectValid(Object) == 1;
+        public virtual bool IsValid => Object != null && _.GetIsObjectValid(Object);
 
         public virtual string IdentifiedDescription
         {
@@ -122,8 +123,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual string UnidentifiedDescription
         {
-            get => _.GetDescription(Object, FALSE, FALSE);
-            set => _.SetDescription(Object, value, FALSE);
+            get => _.GetDescription(Object, false, false);
+            set => _.SetDescription(Object, value, false);
         }
 
         public virtual int Gold
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 AssignCommand(() =>
                 {
-                    _.TakeGoldFromCreature(Gold, Object, TRUE);
+                    _.TakeGoldFromCreature(Gold, Object, true);
 
                     if (value > 0)
                     {
@@ -158,6 +159,20 @@ namespace SWLOR.Game.Server.GameObject
             _.DeleteLocalInt(Object, name);
         }
 
+        public virtual bool GetLocalBoolean(string name)
+        {
+            return _.GetLocalBoolean(Object, name);
+        }
+
+        public virtual void SetLocalBoolean(string name, bool val)
+        {
+            _.SetLocalBoolean(Object, name, val);
+        }
+
+        public virtual void DeleteLocalBoolean(string name)
+        {
+            _.DeleteLocalBoolean(Object, name);
+        }
 
         public virtual string GetLocalString(string name)
         {
@@ -242,7 +257,7 @@ namespace SWLOR.Game.Server.GameObject
             _.AssignCommand(Object, action);
         }
 
-        public virtual void SpeakString(string message, int talkVolume = TALKVOLUME_TALK)
+        public virtual void SpeakString(string message, TalkVolume talkVolume = TalkVolume.Talk)
         {
             _.AssignCommand(Object, () =>
             {
@@ -266,26 +281,26 @@ namespace SWLOR.Game.Server.GameObject
             });
         }
 
-        public virtual bool IsPC => _.GetIsPC(Object) == 1;
+        public virtual bool IsPC => _.GetIsPC(Object);
 
-        public virtual bool IsPlayer => _.GetIsPC(Object) == 1 && _.GetIsDM(Object) == 0 && _.GetIsDMPossessed(Object) == 0;
+        public virtual bool IsPlayer => _.GetIsPC(Object) && !_.GetIsDM(Object) && !_.GetIsDMPossessed(Object);
 
-        public virtual bool IsDM =>  _.GetIsDM(Object) == 1 || _.GetIsDMPossessed(Object) == 1;
+        public virtual bool IsDM =>  _.GetIsDM(Object) || _.GetIsDMPossessed(Object);
 
         public virtual bool IsNPC => !IsPlayer && !IsDM && IsCreature;
         
-        public virtual bool IsCreature => _.GetObjectType(Object) == OBJECT_TYPE_CREATURE;
+        public virtual bool IsCreature => _.GetObjectType(Object) == ObjectType.Creature;
 
         public virtual IEnumerable<NWItem> InventoryItems
         {
             get
             {
-                if (_.GetHasInventory(Object) == FALSE)
+                if (_.GetHasInventory(Object) == false)
                 {
                     throw new Exception("Object does not have an inventory.");
                 }
                 
-                for (NWItem item = _.GetFirstItemInInventory(Object); _.GetIsObjectValid(item) == TRUE; item = _.GetNextItemInInventory(Object))
+                for (NWItem item = _.GetFirstItemInInventory(Object); _.GetIsObjectValid(item) == true; item = _.GetNextItemInInventory(Object))
                 {
                     yield return item;
                 }
@@ -296,21 +311,21 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (Effect effect = _.GetFirstEffect(Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(Object))
+                for (Effect effect = _.GetFirstEffect(Object); _.GetIsEffectValid(effect) == true; effect = _.GetNextEffect(Object))
                 {
                     yield return effect;
                 }
             }
         }
 
-        public int ObjectType => _.GetObjectType(Object);
+        public ObjectType ObjectType => _.GetObjectType(Object);
 
         public void RemoveEffect(int effectTypeID)
         {
             Effect effect = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(effect) == TRUE)
+            while (_.GetIsEffectValid(effect) == true)
             {
-                if (_.GetEffectType(effect) == effectTypeID)
+                if (_.GetEffectType(effect) == (EffectType)effectTypeID)
                 {
                     _.RemoveEffect(Object, effect);
                 }

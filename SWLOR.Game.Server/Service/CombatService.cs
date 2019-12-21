@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                      weapon.CustomItemType == CustomItemType.Saberstaff ||
-                     weapon.GetLocalInt("LIGHTSABER") == TRUE)
+                     weapon.GetLocalInt("LIGHTSABER") == true)
             {
                 int statBonus = (int) (player.CharismaModifier * 0.25f);
                 data.Base += statBonus;
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
                      targetWeapon.CustomItemType == CustomItemType.Saberstaff ||
-                     targetWeapon.GetLocalInt("LIGHTSABER") == TRUE)
+                     targetWeapon.GetLocalInt("LIGHTSABER") == true)
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
-            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
+            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == true;
             damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
             NWItem weapon = _.GetLastWeaponUsed(damager.Object);
 
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            for (Effect effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(self.Object))
+            for (Effect effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == true; effect = _.GetNextEffect(self.Object))
             {
                 if (_.GetEffectTag(effect) == "TRANQUILIZER_EFFECT")
                 {

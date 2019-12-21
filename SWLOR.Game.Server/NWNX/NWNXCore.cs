@@ -1,7 +1,5 @@
-﻿
-using System;
+﻿using System;
 using NWN;
-using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -27,7 +25,7 @@ namespace SWLOR.Game.Server.NWNX
             _.SetLocalFloat(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
-        public static void NWNX_PushArgumentObject(string pluginName, string functionName, NWObject value)
+        public static void NWNX_PushArgumentObject(string pluginName, string functionName, NWGameObject value)
         {
             _.SetLocalObject(NWGameObject.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }

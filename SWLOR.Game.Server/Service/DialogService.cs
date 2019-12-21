@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
 
             // NPC conversations
             
-            if (_.GetObjectType(talkTo.Object) == _.OBJECT_TYPE_CREATURE &&
+            if (_.GetObjectType(talkTo.Object) == _.ObjectType.Creature &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             // Everything else
             else
             {
-                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, _.TRUE, _.FALSE));
+                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, _.true, _.false));
             }
         }
 
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
                     int objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
-                    if (objectType == _.OBJECT_TYPE_PLACEABLE)
+                    if (objectType == _.ObjectType.Placeable)
                     {
                         NWPlaceable talkTo = (NWGameObject.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    _.ActionStartConversation(pc.Object, "", _.TRUE, _.FALSE);
+                    _.ActionStartConversation(pc.Object, "", _.true, _.false);
                 }
             }
         }

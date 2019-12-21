@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Conversation
             item.DateRetrieved = DateTime.UtcNow;
             DataService.SubmitDataChange(item, DatabaseActionType.Update);
             SerializationService.DeserializeItem(item.ItemObject, player);
-            _.TakeGoldFromCreature(50, player, TRUE);
+            _.TakeGoldFromCreature(50, player, true);
 
             LoadMainPage();
         }

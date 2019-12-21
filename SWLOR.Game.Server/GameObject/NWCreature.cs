@@ -82,15 +82,15 @@ namespace SWLOR.Game.Server.GameObject
         {
             AssignCommand(() =>
             {
-                _.ClearAllActions(clearCombatState ? TRUE : FALSE);
+                _.ClearAllActions(clearCombatState ? true : false);
             });
         }
 
-        public virtual NWItem Head => _.GetItemInSlot(INVENTORY_SLOT_HEAD, Object);
-        public virtual NWItem Chest => _.GetItemInSlot(INVENTORY_SLOT_CHEST, Object);
+        public virtual NWItem Head => _.GetItemInSlot(InventorySlot.Head, Object);
+        public virtual NWItem Chest => _.GetItemInSlot(InventorySlot.Chest, Object);
         public virtual NWItem Boots => _.GetItemInSlot(INVENTORY_SLOT_BOOTS, Object);
         public virtual NWItem Arms => _.GetItemInSlot(INVENTORY_SLOT_ARMS, Object);
-        public virtual NWItem RightHand => _.GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, Object);
+        public virtual NWItem RightHand => _.GetItemInSlot(InventorySlot.RightHand, Object);
         public virtual NWItem LeftHand => _.GetItemInSlot(INVENTORY_SLOT_LEFTHAND, Object);
         public virtual NWItem Cloak => _.GetItemInSlot(INVENTORY_SLOT_CLOAK, Object);
         public virtual NWItem LeftRing => _.GetItemInSlot(INVENTORY_SLOT_LEFTRING, Object);
@@ -117,14 +117,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsDead => _.GetIsDead(Object) == 1;
 
-        public virtual bool IsPossessedFamiliar => _.GetIsPossessedFamiliar(Object) == TRUE;
+        public virtual bool IsPossessedFamiliar => _.GetIsPossessedFamiliar(Object) == true;
 
-        public virtual bool IsDMPossessed => _.GetIsDMPossessed(Object) == TRUE;
+        public virtual bool IsDMPossessed => _.GetIsDMPossessed(Object) == true;
 
         public bool HasAnyEffect(params int[] effectIDs)
         {
             Effect eff = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(eff) == TRUE)
+            while (_.GetIsEffectValid(eff) == true)
             {
                 if (effectIDs.Contains(_.GetEffectType(eff)))
                 {
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWPlayer member = _.GetFirstFactionMember(Object, FALSE); member.IsValid; member = _.GetNextFactionMember(Object, FALSE))
+                for (NWPlayer member = _.GetFirstFactionMember(Object, false); member.IsValid; member = _.GetNextFactionMember(Object, false))
                 {
                     yield return member;
                 }

@@ -93,8 +93,8 @@ const float ZEP_DEMILICH_PSEUDO_DELAY = 6.0;
 
 // If you want to use the older heartbeat-based demilich, add "zep_demi_bone_hb"
 // as the OnHeartbeat event of the placeable blueprint zep_demi_skull (Pile of
-// Bones), and set the following flag to TRUE.
-const int ZEP_DEMI_USE_LEGACY = FALSE;
+// Bones), and set the following flag to true.
+const int ZEP_DEMI_USE_LEGACY = false;
 // IMPORTANT: Do not add a heartbeat event to the blueprint zep_demi_skull0;
 //            just add it to the blueprint without the '0'.
 
@@ -195,13 +195,13 @@ void MoveDroppableInventory(object oTo, object oFrom);
 // Creates and initializes the objects used to represent a resting or
 // regenerating demilich.
 // oDemilich is the demilich about to rest or regenerate.
-// bWasKilled is TRUE if oDemilich was killed (and needs to regenerate).
+// bWasKilled is true if oDemilich was killed (and needs to regenerate).
 void ZEPDemilichSpawnBones(object oDemilich, int bWasKilled);
 
 // Creates a demilich from its resting or regenerating state.
 // oBones is the bone placeable storing demilich data.
 // sResRef is the blueprint to use (supports custom demiliches).
-// bIntrusion is TRUE if the demilich is responding to an intruder.
+// bIntrusion is true if the demilich is responding to an intruder.
 object ZEPDemilichFromBones(object oBones, string sResRef, int bIntrusion);
 
 // Creates an area of effect that will serve to detect any nearby intruders.
@@ -295,7 +295,7 @@ void MoveDroppableInventory(object oTo, object oFrom)
         if ( GetDroppableFlag(oItem) )
         {
             // Move the item.
-            CopyItem(oItem, oTo, TRUE);
+            CopyItem(oItem, oTo, true);
             DestroyObject(oItem);
         }
         // Advance the loop.
@@ -311,7 +311,7 @@ void MoveDroppableInventory(object oTo, object oFrom)
         if ( GetDroppableFlag(oItem) )
         {
             // Move the item.
-            CopyItem(oItem, oTo, TRUE);
+            CopyItem(oItem, oTo, true);
             DestroyObject(oItem);
         }
     }
@@ -324,7 +324,7 @@ void MoveDroppableInventory(object oTo, object oFrom)
 // Creates and initializes the objects used to represent a resting or
 // regenerating demilich.
 // oDemilich is the demilich about to rest or regenerate.
-// bWasKilled is TRUE if oDemilich was killed (and needs to regenerate).
+// bWasKilled is true if oDemilich was killed (and needs to regenerate).
 //
 void ZEPDemilichSpawnBones(object oDemilich, int bWasKilled)
 {
@@ -335,12 +335,12 @@ void ZEPDemilichSpawnBones(object oDemilich, int bWasKilled)
     string sDemilich = GetResRef(oDemilich);
 
     // Create a skull pile and dust plume.
-    object oDust = CreateObject(OBJECT_TYPE_PLACEABLE, ZEP_DEMI_DUST_RESREF, lDemilich);
+    object oDust = CreateObject(ObjectType.Placeable, ZEP_DEMI_DUST_RESREF, lDemilich);
     object oBones;
     if ( bWasKilled )
-        oBones = CreateObject(OBJECT_TYPE_PLACEABLE, ZEP_DEMI_INERT_RESREF, lDemilich);
+        oBones = CreateObject(ObjectType.Placeable, ZEP_DEMI_INERT_RESREF, lDemilich);
     else
-        oBones = CreateObject(OBJECT_TYPE_PLACEABLE, ZEP_DEMI_SKULL_RESREF, lDemilich);
+        oBones = CreateObject(ObjectType.Placeable, ZEP_DEMI_SKULL_RESREF, lDemilich);
     // Link the dust to the bones.
     SetLocalObject(oBones, ZEP_DEMI_LOCAL_AMBIENT, oDust);
     // Record the blueprint for this demilich.
@@ -358,9 +358,9 @@ void ZEPDemilichSpawnBones(object oDemilich, int bWasKilled)
     if ( bWasKilled )
     {
         // Move the droppable inventory into an invisible placeable.
-        object oHolder = CreateObject(OBJECT_TYPE_PLACEABLE, "x0_plc_corpse", lDemilich);
+        object oHolder = CreateObject(ObjectType.Placeable, "x0_plc_corpse", lDemilich);
         MoveDroppableInventory(oHolder, oDemilich);
-        SetUseableFlag(oHolder, FALSE);
+        SetUseableFlag(oHolder, false);
         SetLocalObject(oBones, ZEP_DEMI_LOCAL_HOLDER, oHolder);
 
         // Find a suitable delay.
@@ -392,7 +392,7 @@ void ZEPDemilichSpawnBones(object oDemilich, int bWasKilled)
 // Creates a demilich from its resting or regenerating state.
 // oBones is the bone placeable storing demilich data.
 // sResRef is the blueprint to use.
-// bIntrusion is TRUE if the demilich is responding to an intruder.
+// bIntrusion is true if the demilich is responding to an intruder.
 //
 object ZEPDemilichFromBones(object oBones, string sResRef, int bIntrusion)
 {
@@ -402,7 +402,7 @@ object ZEPDemilichFromBones(object oBones, string sResRef, int bIntrusion)
         sResRef = "zep_demi_lich";
 
     // Create the demilich.
-    object oDemilich = CreateObject(OBJECT_TYPE_CREATURE, sResRef, GetLocation(oBones));
+    object oDemilich = CreateObject(ObjectType.Creature, sResRef, GetLocation(oBones));
     ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_MIND), oBones);
 
     // Copy the variables recording soulgem victims.
@@ -443,7 +443,7 @@ object ZEPDemilichCreateDetector(location lTarget)
     ApplyEffectAtLocation(DURATION_TYPE_PERMANENT, eDetector, lTarget);
 
     // Look for the area of effect object we just created.
-    object oDetector = GetFirstObjectInShape(SHAPE_CUBE, 0.0, lTarget, FALSE,
+    object oDetector = GetFirstObjectInShape(SHAPE_CUBE, 0.0, lTarget, false,
                                              OBJECT_TYPE_AREA_OF_EFFECT);
     while( GetIsObjectValid(oDetector) )
     {
@@ -457,7 +457,7 @@ object ZEPDemilichCreateDetector(location lTarget)
         }
 
         // Get the next candidate AOE object.
-        oDetector = GetNextObjectInShape(SHAPE_CUBE, 0.0, lTarget, FALSE,
+        oDetector = GetNextObjectInShape(SHAPE_CUBE, 0.0, lTarget, false,
                                          OBJECT_TYPE_AREA_OF_EFFECT);
     }
 
@@ -483,7 +483,7 @@ void ZEPDemilichRestore(string sResRef, object oDust, object oHolder)
         return;
 
     // Spawn the demilich.
-    ZEPDemilichFromBones(OBJECT_SELF, sResRef, FALSE);
+    ZEPDemilichFromBones(OBJECT_SELF, sResRef, false);
 
     // Destroy oHolder's inventory.
     object oItem = GetFirstItemInInventory(oHolder);
@@ -576,14 +576,14 @@ void ZEPDemilichTrapSoul(object oPC, int nGem)
 
     // Stop the PC for this effect. (Makes the visual effects look better.)
     AssignCommand(oPC, ClearAllActions());
-    DelayCommand(0.1, SetCommandable(FALSE, oPC));
-    DelayCommand(fDelay, SetCommandable(TRUE, oPC));
+    DelayCommand(0.1, SetCommandable(false, oPC));
+    DelayCommand(fDelay, SetCommandable(true, oPC));
 
     // Clone oPC in place.
     ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), oPC);
     object oClone = CopyObject(oPC, GetLocation(oPC), OBJECT_INVALID, "ZEP_DEMILICH_VICTIM");
     // The clone will become a selectable, but not raisable, corpse.
-    AssignCommand(oClone, SetIsDestroyable(FALSE, FALSE, TRUE));
+    AssignCommand(oClone, SetIsDestroyable(false, false, true));
     // Record the soon-to-be corpse.
     SetLocalObject(OBJECT_SELF, ZEP_DEMI_LOCAL_SGCORPSE + IntToString(nGem), oClone);
     SetLocalObject(oClone, ZEP_DEMI_LOCAL_SGCORPSE, oPC);
@@ -636,7 +636,7 @@ void ZEPDemilichFreeSoul(int nGem)
     float fVFXDuration = 0.4 + 0.07 * GetDistanceToObject(oCorpse);
     // Use an auxiliary placeable so that the visuals can overlap, and because
     // faked spells don't fire reliably.
-    object oVFXMaker = CreateObject(OBJECT_TYPE_PLACEABLE, "x0_plc_bomb", GetLocation(OBJECT_SELF));
+    object oVFXMaker = CreateObject(ObjectType.Placeable, "x0_plc_bomb", GetLocation(OBJECT_SELF));
     AssignCommand(oVFXMaker, ActionCastSpellAtObject(SPELL_PHANTASMAL_KILLER, oCorpse));
     AssignCommand(oVFXMaker, ActionDoCommand(DestroyObject(oVFXMaker)));
     // Visual on the corpse.
@@ -708,7 +708,7 @@ void ZEPDemilichRaiseVictim(object oPC, float fDelay)
             ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectHeal(GetMaxHitPoints(oPC)), oPC);
     }
     // This corpse is no longer needed.
-    SetIsDestroyable(TRUE, FALSE, FALSE);
+    SetIsDestroyable(true, false, false);
     DestroyObject(OBJECT_SELF);
 }
 
@@ -788,9 +788,9 @@ void ZEPDemilichCorpseInit(object oPC)
     // Flag equipped items as undroppable.
     int nSlot = NUM_INVENTORY_SLOTS;
     while ( nSlot-- > 0 )
-        SetDroppableFlag(GetItemInSlot(nSlot), FALSE);
+        SetDroppableFlag(GetItemInSlot(nSlot), false);
     // Remove gold.
-    TakeGoldFromCreature(GetGold(), OBJECT_SELF, TRUE);
+    TakeGoldFromCreature(GetGold(), OBJECT_SELF, true);
 
     // Get the pseudo-heartbeat delay.
     float fDelay = GetLocalFloat(GetModule(), "ZEP_DEMILICH_Pseudo_Delay");
@@ -836,7 +836,7 @@ void ZEPDemilichCorpseCheck(object oPC, float fDelay)
         }
 
         // This corpse is no longer needed.
-        SetIsDestroyable(TRUE, FALSE, FALSE);
+        SetIsDestroyable(true, false, false);
         DestroyObject(OBJECT_SELF);
     }
 }

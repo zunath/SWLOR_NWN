@@ -32,16 +32,16 @@ namespace NWN.Scripts
 
                 string description;
 
-                if (_.GetIsPC(examinedObject.Object) == _.TRUE)
+                if (_.GetIsPC(examinedObject.Object) == _.true)
                 {
                     // https://github.com/zunath/SWLOR_NWN/issues/853
                     // safest probably to get the modified (non-original) description only for players
                     // may want to always get the modified description for later flexibility?
-                    description = _.GetDescription(examinedObject.Object, _.FALSE) + "\n\n";
+                    description = _.GetDescription(examinedObject.Object, _.false) + "\n\n";
                 }
                 else
                 {
-                    description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
+                    description = _.GetDescription(examinedObject.Object, _.true) + "\n\n";
                 }                
 
                 if (examinedObject.IsCreature)
@@ -60,7 +60,7 @@ namespace NWN.Scripts
 
                 if (!string.IsNullOrWhiteSpace(description))
                 {
-                    _.SetDescription(examinedObject.Object, description, _.FALSE);
+                    _.SetDescription(examinedObject.Object, description, _.false);
                     _.SetDescription(examinedObject.Object, description);
                 }
             }

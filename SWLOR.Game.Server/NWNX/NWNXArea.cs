@@ -1,5 +1,4 @@
 ﻿using NWN;
-using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
@@ -14,7 +13,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static int GetNumberOfPlayersInArea(NWArea area)
+        public static int GetNumberOfPlayersInArea(NWGameObject area)
         {
             string sFunc = "GetNumberOfPlayersInArea";
 
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static NWCreature GetLastEntered(NWArea area)
+        public static NWGameObject GetLastEntered(NWGameObject area)
         {
             string sFunc = "GetLastEntered";
 
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static NWObject GetLastLeft(NWArea area)
+        public static NWGameObject GetLastLeft(NWGameObject area)
         {
             string sFunc = "GetLastLeft";
 
@@ -59,7 +58,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static AreaPVPSetting GetPVPSetting(NWArea area)
+        public static AreaPVPSetting GetPVPSetting(NWGameObject area)
         {
             string sFunc = "GetPVPSetting";
 
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="pvpSetting"></param>
-        public static void SetPVPSetting(NWArea area, AreaPVPSetting pvpSetting)
+        public static void SetPVPSetting(NWGameObject area, AreaPVPSetting pvpSetting)
         {
             string sFunc = "SetPVPSetting";
 
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static int GetAreaSpotModifier(NWArea area)
+        public static int GetAreaSpotModifier(NWGameObject area)
         {
             string sFunc = "GetAreaSpotModifier";
 
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="spotModifier"></param>
-        public static void SetAreaSpotModifier(NWArea area, int spotModifier)
+        public static void SetAreaSpotModifier(NWGameObject area, int spotModifier)
         {
             string sFunc = "SetAreaSpotModifier";
 
@@ -117,7 +116,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static int GetAreaListenModifier(NWArea area)
+        public static int GetAreaListenModifier(NWGameObject area)
         {
             string sFunc = "GetAreaListenModifier";
 
@@ -132,7 +131,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="listenModifier"></param>
-        public static void SetAreaListenModifier(NWArea area, int listenModifier)
+        public static void SetAreaListenModifier(NWGameObject area, int listenModifier)
         {
             string sFunc = "SetAreaListenModifier";
 
@@ -146,14 +145,14 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static bool GetNoRestingAllowed(NWArea area)
+        public static bool GetNoRestingAllowed(NWGameObject area)
         {
             string sFunc = "GetNoRestingAllowed";
 
             NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
             NWNX_CallFunction(NWNX_Area, sFunc);
 
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc) == _.TRUE;
+            return NWNX_GetReturnValueInt(NWNX_Area, sFunc) == 1;
         }
 
         /// <summary>
@@ -163,11 +162,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="bNoRestingAllowed"></param>
-        public static void SetNoRestingAllowed(NWArea area, bool bNoRestingAllowed)
+        public static void SetNoRestingAllowed(NWGameObject area, bool bNoRestingAllowed)
         {
             string sFunc = "SetNoRestingAllowed";
 
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, bNoRestingAllowed ? _.TRUE : _.FALSE);
+            NWNX_PushArgumentInt(NWNX_Area, sFunc, bNoRestingAllowed ? 1 : 0);
             NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
             NWNX_CallFunction(NWNX_Area, sFunc);
         }
@@ -177,7 +176,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static int GetWindPower(NWArea area)
+        public static int GetWindPower(NWGameObject area)
         {
             string sFunc = "GetWindPower";
 
@@ -193,7 +192,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="windPower"></param>
-        public static void SetWindPower(NWArea area, int windPower)
+        public static void SetWindPower(NWGameObject area, int windPower)
         {
             string sFunc = "SetWindPower";
 
@@ -208,7 +207,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="area"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static int GetWeatherChance(NWArea area, AreaWeatherChance type)
+        public static int GetWeatherChance(NWGameObject area, AreaWeatherChance type)
         {
             string sFunc = "GetWeatherChance";
 
@@ -225,7 +224,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="area"></param>
         /// <param name="type"></param>
         /// <param name="chance"></param>
-        public static void SetWeatherChance(NWArea area, AreaWeatherChance type, int chance)
+        public static void SetWeatherChance(NWGameObject area, AreaWeatherChance type, int chance)
         {
             string sFunc = "SetWeatherChance";
 
@@ -240,7 +239,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static float GetFogClipDistance(NWArea area)
+        public static float GetFogClipDistance(NWGameObject area)
         {
             string sFunc = "GetFogClipDistance";
 
@@ -255,7 +254,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="distance"></param>
-        public static void SetFogClipDistance(NWArea area, float distance)
+        public static void SetFogClipDistance(NWGameObject area, float distance)
         {
             string sFunc = "SetFogClipDistance";
 
@@ -269,7 +268,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static int GetShadowOpacity(NWArea area)
+        public static int GetShadowOpacity(NWGameObject area)
         {
             string sFunc = "GetShadowOpacity";
 
@@ -285,7 +284,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="shadowOpacity"></param>
-        public static void SetShadowOpacity(NWArea area, int shadowOpacity)
+        public static void SetShadowOpacity(NWGameObject area, int shadowOpacity)
         {
             string sFunc = "SetShadowOpacity";
 
@@ -299,7 +298,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static AreaDayNightCycle GetDayNightCycle(NWArea area)
+        public static AreaDayNightCycle GetDayNightCycle(NWGameObject area)
         {
             string sFunc = "GetDayNightCycle";
 
@@ -314,7 +313,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="area"></param>
         /// <param name="type"></param>
-        public static void SetDayNightCycle(NWArea area, AreaDayNightCycle type)
+        public static void SetDayNightCycle(NWGameObject area, AreaDayNightCycle type)
         {
             string sFunc = "SetDayNightCycle";
 
@@ -337,7 +336,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="area"></param>
         /// <param name="type"></param>
         /// <param name="color"></param>
-        public static void SetSunMoonColors(NWArea area, AreaColorType type, int color)
+        public static void SetSunMoonColors(NWGameObject area, AreaColorType type, int color)
         {
             string sFunc = "SetSunMoonColors";
 
@@ -360,7 +359,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="size"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public static NWObject CreateTransition(NWArea area, NWObject target, float x, float y, float z, float size = 2.0f, string tag = "")
+        public static NWGameObject CreateTransition(NWGameObject area, NWGameObject target, float x, float y, float z, float size = 2.0f, string tag = "")
         {
             string sFunc = "CreateTransition";
 
@@ -374,6 +373,79 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Area, sFunc);
 
             return NWNX_GetReturnValueObject(NWNX_Area, sFunc);
+        }
+
+        /// <summary>
+        /// Get the state of a tile animation loop
+        /// </summary>
+        /// <param name="oArea">The area object</param>
+        /// <param name="fTileX">The X coordinate of the tile</param>
+        /// <param name="fTileY">The Y coordinate of the tile</param>
+        /// <param name="nAnimLoop">The loop to check. (1-3)</param>
+        /// <returns>true if the loop is enabled, false otherwise</returns>
+        public static bool GetTileAnimationLoop(NWGameObject oArea, float fTileX, float fTileY, int nAnimLoop)
+        {
+            string sFunc = "GetTileAnimationLoop";
+
+            NWNX_PushArgumentInt(NWNX_Area, sFunc, nAnimLoop);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fTileY);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fTileX);
+            NWNX_PushArgumentObject(NWNX_Area, sFunc, oArea);
+
+            NWNX_CallFunction(NWNX_Area, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Area, sFunc) == 1;
+        }
+
+        /// <summary>
+        /// Set the state of a tile animation loop
+        /// </summary>
+        /// <param name="oArea">The area object.</param>
+        /// <param name="fTileX">The X coordinate of the tile</param>
+        /// <param name="fTileY">The Y coordinate of the tile</param>
+        /// <param name="nAnimLoop">The loop to set (1-3).</param>
+        /// <param name="bEnabled">true or false</param>
+        public static void SetTileAnimationLoop(NWGameObject oArea, float fTileX, float fTileY, int nAnimLoop, bool bEnabled)
+        {
+            string sFunc = "SetTileAnimationLoop";
+
+            NWNX_PushArgumentInt(NWNX_Area, sFunc, bEnabled ? 1 : 0);
+            NWNX_PushArgumentInt(NWNX_Area, sFunc, nAnimLoop);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fTileY);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fTileX);
+            NWNX_PushArgumentObject(NWNX_Area, sFunc, oArea);
+
+            NWNX_CallFunction(NWNX_Area, sFunc);
+        }
+
+        /// <summary>
+        /// Test to see if there's a direct, walkable line between two points in the area.
+        /// </summary>
+        /// <param name="oArea">The area object.</param>
+        /// <param name="fStartX">The starting point</param>
+        /// <param name="fStartY">The starting point</param>
+        /// <param name="fEndX">The ending point</param>
+        /// <param name="fEndY">The ending point</param>
+        /// <param name="fPerSpace">The personal space of a creature. Found in appearance.2da.</param>
+        /// <param name="fHeight">The height of a creature. Found in appearance.2da.</param>
+        /// <param name="bIgnoreDoors">Whether to ignore doors in the check.</param>
+        /// <returns>The DirectLineResult of the test</returns>
+        public static DirectLineResult TestDirectLine(NWGameObject oArea, float fStartX, float fStartY, float fEndX, float fEndY, float fPerSpace, float fHeight, bool bIgnoreDoors = false)
+        {
+            string sFunc = "TestDirectLine";
+
+            NWNX_PushArgumentInt(NWNX_Area, sFunc, bIgnoreDoors ? 1 : 0);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fHeight);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fPerSpace);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fEndY);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fEndX);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fStartY);
+            NWNX_PushArgumentFloat(NWNX_Area, sFunc, fStartX);
+            NWNX_PushArgumentObject(NWNX_Area, sFunc, oArea);
+
+            NWNX_CallFunction(NWNX_Area, sFunc);
+
+            return (DirectLineResult)NWNX_GetReturnValueInt(NWNX_Area, sFunc);
         }
     }
 }

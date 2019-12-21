@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.GameObject;
-using static SWLOR.Game.Server.NWNX.NWNXCore;
+﻿using NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -26,15 +25,15 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static VisibilityType GetVisibilityOverride(NWPlayer player, NWObject target)
+        public static VisibilityType GetVisibilityOverride(NWGameObject player, NWGameObject target)
         {
             string sFunc = "GetVisibilityOverride";
 
-            NWNX_PushArgumentObject(NWNX_Visibility, sFunc, target);
-            NWNX_PushArgumentObject(NWNX_Visibility, sFunc, player);
-            NWNX_CallFunction(NWNX_Visibility, sFunc);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Visibility, sFunc, target);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Visibility, sFunc, player);
+            NWNXCore.NWNX_CallFunction(NWNX_Visibility, sFunc);
 
-            return (VisibilityType)NWNX_GetReturnValueInt(NWNX_Visibility, sFunc);
+            return (VisibilityType)NWNXCore.NWNX_GetReturnValueInt(NWNX_Visibility, sFunc);
         }
 
         /// <summary>
@@ -61,14 +60,14 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <param name="override"></param>
-        public static void SetVisibilityOverride(NWPlayer player, NWObject target, VisibilityType @override)
+        public static void SetVisibilityOverride(NWGameObject player, NWGameObject target, VisibilityType @override)
         {
             string sFunc = "SetVisibilityOverride";
 
-            NWNX_PushArgumentInt(NWNX_Visibility, sFunc, (int)@override);
-            NWNX_PushArgumentObject(NWNX_Visibility, sFunc, target);
-            NWNX_PushArgumentObject(NWNX_Visibility, sFunc, player);
-            NWNX_CallFunction(NWNX_Visibility, sFunc);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Visibility, sFunc, (int)@override);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Visibility, sFunc, target);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Visibility, sFunc, player);
+            NWNXCore.NWNX_CallFunction(NWNX_Visibility, sFunc);
         }
 
 }

@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, _.false);
                         return;
                     }
 

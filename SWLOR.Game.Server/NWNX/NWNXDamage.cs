@@ -1,6 +1,4 @@
 ﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -15,17 +13,17 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="script"></param>
         /// <param name="oOwner"></param>
-        public static void SetDamageEventScript(string script, NWObject oOwner = null)
+        public static void SetDamageEventScript(string script, NWGameObject oOwner = null)
         {
-            if (oOwner == null) oOwner = new NWObject(NWGameObject.OBJECT_INVALID);
+            if (oOwner == null) oOwner = new NWGameObject();
 
             string sFunc = "SetEventScript";
 
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, script);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, "DAMAGE");
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Damage, sFunc, script);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Damage, sFunc, "DAMAGE");
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
         /// <summary>
@@ -37,22 +35,22 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "GetDamageEventData";
             DamageEventData data = new DamageEventData();
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
 
-            data.Damager = NWNX_GetReturnValueObject(NWNX_Damage, sFunc);
-            data.Bludgeoning = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Pierce = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Slash = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Magical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Acid = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Cold = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Divine = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Electrical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Fire = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Negative = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Positive = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Sonic = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Base = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Damager = NWNXCore.NWNX_GetReturnValueObject(NWNX_Damage, sFunc);
+            data.Bludgeoning = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Pierce = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Slash = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Magical = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Acid = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Cold = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Divine = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Electrical = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Fire = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Negative = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Positive = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Sonic = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Base = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
 
             return data;
         }
@@ -65,21 +63,21 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "SetDamageEventData";
 
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Base);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Base);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
         /// <summary>
@@ -89,17 +87,17 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="sScript"></param>
         /// <param name="oOwner"></param>
-        public static void SetAttackEventScript(string sScript, NWObject oOwner = null)
+        public static void SetAttackEventScript(string sScript, NWGameObject oOwner = null)
         {
             if (oOwner == null) oOwner = new NWGameObject();
 
             string sFunc = "SetEventScript";
 
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, sScript);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, "ATTACK");
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Damage, sFunc, sScript);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Damage, sFunc, "ATTACK");
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
         /// <summary>
@@ -111,26 +109,26 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "GetAttackEventData";
             AttackEventData data = new AttackEventData();
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
 
-            data.Target = NWNX_GetReturnValueObject(NWNX_Damage, sFunc);
-            data.Bludgeoning = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Pierce = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Slash = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Magical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Acid = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Cold = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Divine = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Electrical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Fire = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Negative = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Positive = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Sonic = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Base = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.AttackNumber = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.AttackResult = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.AttackType = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.SneakAttack = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Target = NWNXCore.NWNX_GetReturnValueObject(NWNX_Damage, sFunc);
+            data.Bludgeoning = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Pierce = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Slash = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Magical = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Acid = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Cold = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Divine = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Electrical = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Fire = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Negative = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Positive = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Sonic = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.Base = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.AttackNumber = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.AttackResult = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.AttackType = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
+            data.SneakAttack = NWNXCore.NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
 
             return data;
         }
@@ -143,21 +141,21 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "SetAttackEventData";
 
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Base);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Base);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
         /// <summary>
@@ -166,27 +164,27 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="data"></param>
         /// <param name="oTarget"></param>
         /// <param name="oSource"></param>
-        public static void DealDamage(DamageData data, NWObject oTarget, NWObject oSource)
+        public static void DealDamage(DamageData data, NWGameObject oTarget, NWGameObject oSource)
         {
             string sFunc = "DealDamage";
 
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Power);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oTarget);
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oSource);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Power);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Damage, sFunc, oTarget);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Damage, sFunc, oSource);
 
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
 }

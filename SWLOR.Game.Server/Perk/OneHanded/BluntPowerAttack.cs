@@ -79,13 +79,13 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             {
                 NWNXCreature.RemoveFeat(creature, FEAT_POWER_ATTACK);
                 NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_POWER_ATTACK);
-                if (_.GetActionMode(creature, ACTION_MODE_POWER_ATTACK) == TRUE)
+                if (_.GetActionMode(creature, ACTION_MODE_POWER_ATTACK) == true)
                 {
-                    _.SetActionMode(creature, ACTION_MODE_POWER_ATTACK, FALSE);
+                    _.SetActionMode(creature, ACTION_MODE_POWER_ATTACK, false);
                 }
-                if (_.GetActionMode(creature, ACTION_MODE_IMPROVED_POWER_ATTACK) == TRUE)
+                if (_.GetActionMode(creature, ACTION_MODE_IMPROVED_POWER_ATTACK) == true)
                 {
-                    _.SetActionMode(creature, ACTION_MODE_IMPROVED_POWER_ATTACK, FALSE);
+                    _.SetActionMode(creature, ACTION_MODE_IMPROVED_POWER_ATTACK, false);
                 }
                 return;
             }

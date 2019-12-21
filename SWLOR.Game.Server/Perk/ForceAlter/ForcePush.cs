@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceAlter, target.Object);
             }
             
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_COM_BLOOD_SPARK_SMALL), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_COM_BLOOD_SPARK_SMALL), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

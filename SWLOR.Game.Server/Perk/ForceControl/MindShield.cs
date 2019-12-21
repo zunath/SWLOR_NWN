@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // Play VFX
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MIND_AFFECTING_POSITIVE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_DUR_MIND_AFFECTING_POSITIVE), target);
 
         }
     }

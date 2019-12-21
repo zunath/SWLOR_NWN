@@ -509,25 +509,25 @@ namespace SWLOR.Game.Server.Service
             foreach (var item in model.MainComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.SecondaryComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.TertiaryComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.EnhancementComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
 
@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender)
         {
-            return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+            return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == true;
         }
 
         private static void OnModuleNWNXChat()
@@ -587,7 +587,7 @@ namespace SWLOR.Game.Server.Service
             if (featID != (int)CustomFeatType.RenameCraftedItem) return;
             pc.ClearAllActions();
 
-            bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+            bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == true;
             NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget().Object;
 
             if (isSetting)
@@ -605,7 +605,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            pc.SetLocalInt("CRAFT_RENAMING_ITEM", TRUE);
+            pc.SetLocalInt("CRAFT_RENAMING_ITEM", true);
             pc.SetLocalObject("CRAFT_RENAMING_ITEM_OBJECT", renameItem);
             pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }

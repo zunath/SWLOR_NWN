@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 default: return;
             }
 
-            if (equipped.GetLocalInt("LIGHTSABER") == TRUE)
+            if (equipped.GetLocalInt("LIGHTSABER") == true)
             {
                 perkType = PerkType.ImprovedCriticalLightsabers;
             }

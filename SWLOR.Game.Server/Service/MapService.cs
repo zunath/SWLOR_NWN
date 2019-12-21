@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!player.IsPlayer) return;
 
-                if (area.GetLocalInt("AUTO_EXPLORED") == TRUE)
+                if (area.GetLocalInt("AUTO_EXPLORED") == true)
                 {
                     _.ExploreAreaForPlayer(area.Object, player);
                 }
@@ -103,13 +103,13 @@ namespace SWLOR.Game.Server.Service
         {
             NWArea area = NWGameObject.OBJECT_SELF;
             
-            if (area.GetLocalInt("HIDE_MINIMAP") == _.TRUE)
+            if (area.GetLocalInt("HIDE_MINIMAP") == _.true)
             {
                 var players = NWModule.Get().Players.Where(x => x.Area.Equals(area) && x.IsPlayer);
 
                 foreach (var player in players)
                 {
-                    _.ExploreAreaForPlayer(area, player, _.FALSE);
+                    _.ExploreAreaForPlayer(area, player, _.false);
                 }
             }
 

@@ -42,9 +42,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="bClear">sets whether or not to clear all actions on the select PC(s)</param>
         /// <param name="bClearFX">sets whether or not to clear all visual effects from the selected PC(s) (includes cutscene invisibility, polymorph, blindness etc)</param>
         /// <param name="bResetSpeed">sets whether or not to clear all effects from the selected PC(s) that will interfere with their movement (includes sleep, paralyzation etc)</param>
-        /// <param name="bStoreCam">sets whether or not to store the position of the player's camera so that it can be restored at the end of the scene. NOTE - if your cutscene is triggered from the OnEnter script of an area, the camera position which is stored will be invalid, as the player won't yet be in the area. To get around this, either set bStoreCam to FALSE and store the camera facing yourself from the script that sent the player to the new area for the cutscene OR set bStoreCam to 2 to store the camera facing a few seconds after the cutscene starts, by which time the player should be in the area.</param>
+        /// <param name="bStoreCam">sets whether or not to store the position of the player's camera so that it can be restored at the end of the scene. NOTE - if your cutscene is triggered from the OnEnter script of an area, the camera position which is stored will be invalid, as the player won't yet be in the area. To get around this, either set bStoreCam to false and store the camera facing yourself from the script that sent the player to the new area for the cutscene OR set bStoreCam to 2 to store the camera facing a few seconds after the cutscene starts, by which time the player should be in the area.</param>
         /// <param name="iParty">sets whether the cutscene is being seen by only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
-        public static void StartCutscene(NWPlayer oPC, string sName = "", bool bCamera = true, bool bClear = true, bool bClearFX = true, bool bResetSpeed = true, int bStoreCam = TRUE, int iParty = 0)
+        public static void StartCutscene(NWPlayer oPC, string sName = "", bool bCamera = true, bool bClear = true, bool bClearFX = true, bool bResetSpeed = true, int bStoreCam = true, int iParty = 0)
         {
             NWCreature oParty;
 
@@ -58,14 +58,14 @@ namespace SWLOR.Game.Server.Service
             string sID = sName + "_" + IntToString(iCancel);
             SetLocalString(GetModule(), "cutscene", sID);
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
-                SetCutsceneMode(oParty, TRUE);
+                SetCutsceneMode(oParty, true);
                 SetLocalString(oParty, "cutscene", sName);
                 SetLocalString(oParty, "cutsceneid", sID);
 
                 if (bCamera) { StopCameraMoves(oPC); }
-                if (bClear) { AssignCommand(oParty, () => ClearAllActions(TRUE)); }
+                if (bClear) { AssignCommand(oParty, () => ClearAllActions(true)); }
                 if (bClearFX) { ClearFX(oPC); }
                 if (bResetSpeed) { ResetSpeed(oPC); }
                 if (bStoreCam == 1) { AssignCommand(oParty, StoreCameraFacing); }
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
                     DelayCommand(5.0f, () => AssignCommand(party, StoreCameraFacing));
                 }
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -102,11 +102,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 DelayCommand(fDelay, () => DoClearAssociates(sName, oParty, iAssociates, iMethod, oDestination, sDestination));
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -133,11 +133,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 DelayCommand(fDelay, () => DoReturnAssociates(sName, oParty, iAssociates, iMethod, oDestination, sDestination));
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -159,8 +159,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="oPC">the player whose camera movements you want to stop</param>
         /// <param name="iParty">sets whether to stop the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
-        /// <param name="bAuto">sets whether the function should stop all camera movement (TRUE) or only ones with an id lower than iCamID (FALSE)</param>
-        /// <param name="iCamID">the ID of the last camera move you want to stop (this is only needed if bAuto is set to FALSE)</param>
+        /// <param name="bAuto">sets whether the function should stop all camera movement (true) or only ones with an id lower than iCamID (false)</param>
+        /// <param name="iCamID">the ID of the last camera move you want to stop (this is only needed if bAuto is set to false)</param>
         private static void StopCameraMoves(NWCreature oPC, int iParty = 0, bool bAuto = true, int iCamID = 0)
         {
             NWCreature oParty;
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 if (bAuto)
                 { iCamID = GetLocalInt(oParty, "iCamCount"); }
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service
                     // AssignCommand(oParty,SpeakString("Camera movement id " + IntToString(iCount) + "has been stopped"));
                 }
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -266,11 +266,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fDelay">how many seconds to wait before movement is added to oActor's action queue</param>
         /// <param name="oActor">the character you want to move</param>
         /// <param name="oDestination">the object or waypoint they should move to</param>
-        /// <param name="run">sets whether the actor will walk (FALSE) or run (TRUE)</param>
+        /// <param name="run">sets whether the actor will walk (false) or run (true)</param>
         /// <param name="fRange">how many metres from the target the actor should be at the end of movement (keep this number low if you're timing the movement!). NOTE - due to a bug in BioWare's ActionMoveToObject function, if you set fRange > 0.0 for a PC, the PC will run regardless of what you set iRun to be</param>
         /// <param name="fTime">how many seconds the movement should take - leave at 0.0 if you don't want to adjust the actor's speed</param>
         /// <param name="sDestination">the tag of the object or waypoint they should move to. NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag. If you want to do this, set oDestination to OBJECT_INVALID and sDestination to the tag of the object you want to move to. If the object you want to send the actor to exists at the start of the cutscene, leave sDestination as "".</param>
-        /// <param name="bTowards">sets whether the actor should move towards (TRUE) or away from (FALSE) the destination</param>
+        /// <param name="bTowards">sets whether the actor should move towards (true) or away from (false) the destination</param>
         public static void ActionMove(float fDelay, NWCreature oActor, NWObject oDestination, bool run = false, float fRange = 0.0f, float fTime = 0.0f, string sDestination = "", bool bTowards = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fRange">how many metres from the target the actor should be at the end of movement (keep this number low if you're timing the movement!). NOTE - due to a bug in BioWare's ActionMoveToObject function, if you set fRange > 0.0 for a PC, the PC will run regardless of what you set iRun to be</param>
         /// <param name="fTime">how many seconds the movement should take - leave at 0.0 if you don't want to adjust the actor's speed</param>
         /// <param name="sDestination">the tag of the object or waypoint they should move to. NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag. If you want to do this, set oDestination to OBJECT_INVALID and sDestination to the tag of the object you want to move to. If the object you want to send the actor to exists at the start of the cutscene, leave sDestination as "". </param>
-        /// <param name="bTowards">sets whether the actor should move towards (TRUE) or away from (FALSE) the destination</param>
+        /// <param name="bTowards">sets whether the actor should move towards (true) or away from (false) the destination</param>
         public static void TagActionMove(float fDelay, string sActor, NWObject oDestination, bool run = false, float fRange = 0.0f, float fTime = 0.0f, string sDestination = "", bool bTowards = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Service
         {
             Effect eFect = GetFirstEffect(oActor);
             int iType = GetEffectType(eFect);
-            while (GetIsEffectValid(eFect) == TRUE)
+            while (GetIsEffectValid(eFect) == true)
             {
                 if (iType == EFFECT_TYPE_IMPROVEDINVISIBILITY
                     || iType == EFFECT_TYPE_CUTSCENEGHOST
@@ -506,7 +506,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (oDestination == null) oDestination = new NWGameObject();
 
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sDestination != "")
@@ -525,7 +525,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     oAssociate = GetAssociate(1, oPC, i);
 
-                    if (GetIsObjectValid(oAssociate) == TRUE)
+                    if (GetIsObjectValid(oAssociate) == true)
                     {
                         int iCount = 1;
 
@@ -586,10 +586,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoClearAssociate(NWObject oAssociate, int iMethod, NWObject oDestination)
         {
-            if (GetIsObjectValid(oAssociate) == FALSE)
+            if (GetIsObjectValid(oAssociate) == false)
             { return; }
             
-            AssignCommand(oAssociate, () => ClearAllActions(TRUE));
+            AssignCommand(oAssociate, () => ClearAllActions(true));
 
             if (iMethod == 0)
             {
@@ -604,20 +604,20 @@ namespace SWLOR.Game.Server.Service
 
             else if (iMethod == 2)
             {
-                AssignCommand(oAssociate, () => SetIsDestroyable(TRUE));
+                AssignCommand(oAssociate, () => SetIsDestroyable(true));
                 DestroyObject(oAssociate);
             }
 
             DelayCommand(0.1f, () => ApplyEffectToObject(Permanent, EffectCutsceneParalyze(), oAssociate));
-            DelayCommand(0.1f, () => SetCommandable(FALSE, oAssociate));
+            DelayCommand(0.1f, () => SetCommandable(false, oAssociate));
         }
 
         private static void DoReturnAssociate(NWCreature oAssociate, NWObject oDestination, int iMethod)
         {
-            if (GetIsObjectValid(oAssociate) == FALSE)
+            if (GetIsObjectValid(oAssociate) == false)
             { return; }
 
-            SetCommandable(TRUE, oAssociate);
+            SetCommandable(true, oAssociate);
             ResetSpeed(oAssociate);
             if (iMethod == 1) { ClearFX(oAssociate); }
             DelayCommand(0.1f, () => AssignCommand(oAssociate, () => JumpToObject(oDestination)));
@@ -625,13 +625,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoReturnAssociates(string sName, NWCreature oPC, int iAssociates, int iMethod, NWObject oDestination, string sDestination)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sDestination != "")
             { oDestination = GetWaypointByTag(sDestination); }
 
-            if (GetIsObjectValid(oDestination) == FALSE)
+            if (GetIsObjectValid(oDestination) == false)
             { oDestination = oPC; }
 
             NWCreature oAssociate;
@@ -647,7 +647,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     oAssociate = GetAssociate(1, oPC, i);
 
-                    if (GetIsObjectValid(oAssociate) == TRUE)
+                    if (GetIsObjectValid(oAssociate) == true)
                     {
                         int iCount = 1;
                         while (iCount <= 5)
@@ -708,11 +708,11 @@ namespace SWLOR.Game.Server.Service
         private static void DoStopCutscene(string sName, string sID, NWCreature oPC, string sDestination = "", bool bMode = true, bool bCamera = true, bool bClear = true, bool bClearFX = true, bool bResetSpeed = true, bool bClearActors = true, int iParty = 0)
         {
             // Check cutscene hasn't been stopped already
-            if (GetLocalInt(GetModule(), sID) == TRUE)
+            if (GetLocalInt(GetModule(), sID) == true)
             { return; }
 
             // Otherwise stop cutscene
-            SetLocalInt(GetModule(), sID, TRUE);
+            SetLocalInt(GetModule(), sID, true);
             DeleteLocalString(GetModule(), "cutscene");
 
             NWCreature oParty;
@@ -724,12 +724,12 @@ namespace SWLOR.Game.Server.Service
 
             ClearActorSpeeds(sID);
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // End cutscene mode and clear selected player
-                if (bMode) { SetCutsceneMode(oParty, FALSE); }
+                if (bMode) { SetCutsceneMode(oParty, false); }
                 if (bCamera) { StopCameraMoves(oParty); }
-                if (bClear) { AssignCommand(oParty, () => ClearAllActions(TRUE)); }
+                if (bClear) { AssignCommand(oParty, () => ClearAllActions(true)); }
                 if (bClearFX) { ClearFX(oParty); }
                 if (bResetSpeed) { ResetSpeed(oParty); }
                 if (sDestination != "") { AssignCommand(oParty, () => JumpToObject(GetWaypointByTag(sDestination))); }
@@ -738,7 +738,7 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalString(oParty, "cutscene");
                 DeleteLocalString(oParty, "cutsceneid");
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -774,33 +774,33 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalObject(GetModule(), sID + "actor" + IntToString(iCount));
 
                 // If the actor is valid, reset them
-                if (GetIsObjectValid(oActor) == TRUE)
+                if (GetIsObjectValid(oActor) == true)
                 {
                     var sActor = GetTag(oActor);
                     DeleteLocalInt(GetModule(), sName + sActor + "registered");
-                    AssignCommand(oActor, () => ClearAllActions(TRUE));
+                    AssignCommand(oActor, () => ClearAllActions(true));
 
                     if (GetLocalInt(oActor, "gcss_ambient") == 1)
                     {
                         DeleteLocalInt(oActor, "gcss_ambient");
-                        SetSpawnCondition(oActor, NWFlagAmbientAnimations, TRUE);
+                        SetSpawnCondition(oActor, NWFlagAmbientAnimations, true);
                     }
 
                     if (GetLocalInt(oActor, "gcss_immobile") == 1)
                     {
                         DeleteLocalInt(oActor, "gcss_immobile");
-                        SetSpawnCondition(oActor, NWFlagImmobileAmbientAnimations, TRUE);
+                        SetSpawnCondition(oActor, NWFlagImmobileAmbientAnimations, true);
                     }
 
                     if (GetLocalInt(oActor, "gcss_avian") == 1)
                     {
                         DeleteLocalInt(oActor, "gcss_avian");
-                        SetSpawnCondition(oActor, NWFlagAmbientAnimationsAvian, TRUE);
+                        SetSpawnCondition(oActor, NWFlagAmbientAnimationsAvian, true);
                     }
 
                     NWObject oWP = GetWaypointByTag(sName + sActor);
 
-                    if (GetIsObjectValid(oWP) == TRUE)
+                    if (GetIsObjectValid(oWP) == true)
                     {
                         var actor = oActor;
                         DelayCommand(0.1f, () => AssignCommand(actor, () => ActionJumpToObject(oWP)));
@@ -820,13 +820,13 @@ namespace SWLOR.Game.Server.Service
         {
             int nPlot = GetLocalInt(oActor, "NW_GENERIC_MASTER");
 
-            if (bValid == TRUE)
+            if (bValid == true)
             {
                 nPlot = nPlot | nCondition;
                 SetLocalInt(oActor, "NW_GENERIC_MASTER", nPlot);
             }
 
-            else if (bValid == FALSE)
+            else if (bValid == false)
             {
                 nPlot = nPlot & ~nCondition;
                 SetLocalInt(oActor, "NW_GENERIC_MASTER", nPlot);
@@ -836,7 +836,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoSetSpeed(string sName, NWCreature oActor, string sActor, float fTime, float fDistance, bool run, float fStops = 0.0f)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -844,7 +844,7 @@ namespace SWLOR.Game.Server.Service
 
             if (fTime == 0.0f)
             {
-                if (GetIsPC(oActor) == TRUE) { SetCutsceneCameraMoveRate(oActor, 1.0f); }
+                if (GetIsPC(oActor) == true) { SetCutsceneCameraMoveRate(oActor, 1.0f); }
                 else { ResetSpeed(oActor); }
                 return;
             }
@@ -859,7 +859,7 @@ namespace SWLOR.Game.Server.Service
             if (fPercent < 0.1) { fPercent = 0.1f; }
             if (fPercent > 2.0) { fPercent = 2.0f; }
 
-            if (GetIsPC(oActor) == TRUE)
+            if (GetIsPC(oActor) == true)
             {
                 SetCutsceneCameraMoveRate(oActor, fPercent);
             }
@@ -920,7 +920,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoInvisibility(string sName, NWCreature oActor, string sActor, float fTime)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -943,7 +943,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoMove(string sName, NWCreature oActor, string sActor, NWObject oDestination, bool run, float fRange, float fTime, string sDestination, bool bTowards)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -955,55 +955,55 @@ namespace SWLOR.Game.Server.Service
             if (fTime > 0.0)
             { AssignCommand(oActor, () => ActionDoCommand(() => DoSetSpeed(sName, oActor, "", fTime, GetDistanceBetween(oActor, oDestination), run))); }
 
-            if (!bTowards) { AssignCommand(oActor, () => ActionMoveAwayFromObject(oDestination, run ? TRUE: FALSE, fRange)); }
-            else if (fRange > 0.0) { AssignCommand(oActor, () => ActionMoveToObject(oDestination, run ? TRUE: FALSE, fRange)); }
-            else { AssignCommand(oActor, () => ActionMoveToLocation(GetLocation(oDestination), run ? TRUE : FALSE)); }
+            if (!bTowards) { AssignCommand(oActor, () => ActionMoveAwayFromObject(oDestination, run ? true: false, fRange)); }
+            else if (fRange > 0.0) { AssignCommand(oActor, () => ActionMoveToObject(oDestination, run ? true: false, fRange)); }
+            else { AssignCommand(oActor, () => ActionMoveToLocation(GetLocation(oDestination), run ? true : false)); }
         }
 
 
         private static void RegisterActor(string sName, NWCreature oActor, string sActor = "")
         {
             // Make sure the actor is a valid NPC
-            if (GetObjectType(oActor) != OBJECT_TYPE_CREATURE) { return; }
-            if (GetIsPC(oActor) == TRUE) { return; }
+            if (GetObjectType(oActor) != ObjectType.Creature) { return; }
+            if (GetIsPC(oActor) == true) { return; }
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
             if (sActor == "") { sActor = GetTag(oActor); }
 
             ResetSpeed(oActor);
             SetCutsceneCameraMoveRate(oActor, 1.0f);
 
-            if (GetLocalInt(GetModule(), sName + sActor + "registered") == TRUE)
+            if (GetLocalInt(GetModule(), sName + sActor + "registered") == true)
             { return; }
 
             if (GetSpawnCondition(oActor, NWFlagAmbientAnimations))
             {
-                SetSpawnCondition(oActor,  NWFlagAmbientAnimations, FALSE);
+                SetSpawnCondition(oActor,  NWFlagAmbientAnimations, false);
                 SetLocalInt(oActor, "gcss_ambient", 1);
             }
 
             if (GetSpawnCondition(oActor, NWFlagImmobileAmbientAnimations))
             {
-                SetSpawnCondition(oActor,  NWFlagImmobileAmbientAnimations, FALSE);
+                SetSpawnCondition(oActor,  NWFlagImmobileAmbientAnimations, false);
                 SetLocalInt(oActor, "gcss_immobile", 1);
             }
 
             if (GetSpawnCondition(oActor, NWFlagAmbientAnimationsAvian))
             {
-                SetSpawnCondition(oActor, NWFlagAmbientAnimationsAvian, FALSE);
+                SetSpawnCondition(oActor, NWFlagAmbientAnimationsAvian, false);
                 SetLocalInt(oActor, "gcss_avian", 1);
             }
 
             int iActors = GetLocalInt(GetModule(), sName + "actorsregistered") + 1;
             SetLocalObject(GetModule(), sName + "actor" + IntToString(iActors), oActor);
             SetLocalInt(GetModule(), sName + "actorsregistered", iActors);
-            SetLocalInt(GetModule(), sName + sActor + "registered", TRUE);
+            SetLocalInt(GetModule(), sName + sActor + "registered", true);
         }
 
 
         private static bool GetSpawnCondition(NWCreature oActor, int nCondition)
         {
             int nPlot = GetLocalInt(oActor, "NW_GENERIC_MASTER");
-            if (nPlot == TRUE && nCondition == TRUE)
+            if (nPlot == true && nCondition == true)
             { return true; }
             return false;
         }
@@ -1011,7 +1011,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoJump(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, bool bAction = false)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1020,13 +1020,13 @@ namespace SWLOR.Game.Server.Service
             if (sTarget != "")
             { oTarget = GetObjectByTag(sTarget); }
 
-            if (bAction) { AssignCommand(oActor, () => ActionJumpToObject(oTarget, FALSE)); }
-            else { AssignCommand(oActor, () => JumpToObject(oTarget, FALSE)); }
+            if (bAction) { AssignCommand(oActor, () => ActionJumpToObject(oTarget, false)); }
+            else { AssignCommand(oActor, () => JumpToObject(oTarget, false)); }
         }
 
         private static void DoAnimate(string sName, NWCreature oActor, string sActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f, bool bAction = false)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1039,7 +1039,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoSpeak(string sName, NWCreature oActor, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f, bool bAction = false)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1070,7 +1070,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoActionTimeStamp(string sName, NWCreature oActor, string sMessage, float fStartTime)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             AssignCommand(oActor, () => ActionDoCommand(() => PrintTimeStamp(sMessage, fStartTime)));
@@ -1137,7 +1137,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void DoConversation(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1146,7 +1146,7 @@ namespace SWLOR.Game.Server.Service
             if (sTarget != "")
             { oTarget = GetObjectByTag(sTarget); }
 
-            AssignCommand(oActor, () => ActionStartConversation(oTarget, sConv, FALSE, bGreet ? TRUE : FALSE));
+            AssignCommand(oActor, () => ActionStartConversation(oTarget, sConv, false, bGreet ? true : false));
         }
 
 
@@ -1187,7 +1187,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoFace(string sName, NWCreature oActor, string sActor, NWObject oTarget, int iFace, float fFace, bool bAction)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1280,7 +1280,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoEquip(string sName, NWCreature oActor, string sActor, int iSlot, NWItem oItem, string sItem)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1330,7 +1330,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoUnequip(string sName, NWCreature oActor, string sActor, int iSlot, NWItem oItem, string sItem)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1381,7 +1381,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoAttack(string sName, NWCreature oActor, string sActor, NWObject oTarget, bool bPassive, string sTarget)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1390,7 +1390,7 @@ namespace SWLOR.Game.Server.Service
             if (sTarget != "")
             { oTarget = GetObjectByTag(sTarget); }
 
-            AssignCommand(oActor, () => _.ActionAttack(oTarget, bPassive ? TRUE : FALSE));
+            AssignCommand(oActor, () => _.ActionAttack(oTarget, bPassive ? true : false));
         }
 
         /// <summary>
@@ -1427,7 +1427,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoSpellCast(string sName, NWCreature oActor, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1437,7 +1437,7 @@ namespace SWLOR.Game.Server.Service
             { oTarget = GetObjectByTag(sTarget); }
 
             if (bFake) { AssignCommand(oActor, () => ActionCastFakeSpellAtObject(iSpell, oTarget, iPath)); }
-            else { AssignCommand(oActor, () => ActionCastSpellAtObject(iSpell, oTarget, iMeta, bCheat ? TRUE : FALSE, iLevel, iPath, bInstant ? TRUE : FALSE)); }
+            else { AssignCommand(oActor, () => ActionCastSpellAtObject(iSpell, oTarget, iMeta, bCheat ? true : false, iLevel, iPath, bInstant ? true : false)); }
         }
 
 
@@ -1448,11 +1448,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="oActor">the character you want to cast the spell</param>
         /// <param name="oTarget">the object you want to cast the spell at</param>
         /// <param name="iSpell">the SPELL_* you want to be cast</param>
-        /// <param name="bFake">whether to only create the animations and visual effects for the spell (TRUE) or to really cast the spell (FALSE). NOTE - if iFake is TRUE, bCheat, bInstant and iMeta aren't used</param>
+        /// <param name="bFake">whether to only create the animations and visual effects for the spell (true) or to really cast the spell (false). NOTE - if iFake is true, bCheat, bInstant and iMeta aren't used</param>
         /// <param name="iPath">the PROJECTILE_PATH_TYPE_* the spell should use (uses spell's default path unless told otherwise)</param>
         /// <param name="sTarget">the tag of the object you want to cast the spell at. NOTE - this is included so that you can cast spells at objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
         /// <param name="bCheat">whether or not to let the character cast the spell even if he wouldn't normally be able to</param>
-        /// <param name="bInstant">if bInstant is set to TRUE, the character will cast the spell immediately without playing their casting animation</param>
+        /// <param name="bInstant">if bInstant is set to true, the character will cast the spell immediately without playing their casting animation</param>
         /// <param name="iLevel">if iLevel is set to anything other than 0, that is the level at which the spell will be cast, rather than the actor's real level</param>
         /// <param name="iMeta">the METAMAGIC_* type you want the caster to cast the spell using (NONE by default)</param>
         public static void ActionSpellCast(float fDelay, NWCreature oActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
@@ -1470,11 +1470,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="sActor">the tag of the character you want to cast the spell - MAKE SURE THIS IS UNIQUE!</param>
         /// <param name="oTarget">the object you want to cast the spell at</param>
         /// <param name="iSpell">the SPELL_* you want to be cast</param>
-        /// <param name="bFake">whether to only create the animations and visual effects for the spell (TRUE) or to really cast the spell (FALSE). NOTE - if iFake is TRUE, bCheat, bInstant and iMeta aren't used</param>
+        /// <param name="bFake">whether to only create the animations and visual effects for the spell (true) or to really cast the spell (false). NOTE - if iFake is true, bCheat, bInstant and iMeta aren't used</param>
         /// <param name="iPath">the PROJECTILE_PATH_TYPE_* the spell should use (uses spell's default path unless told otherwise)</param>
         /// <param name="sTarget">the tag of the object you want to cast the spell at. NOTE - this is included so that you can cast spells at objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
         /// <param name="bCheat">whether or not to let the character cast the spell even if he wouldn't normally be able to</param>
-        /// <param name="bInstant">if bInstant is set to TRUE, the character will cast the spell immediately without playing their casting animation</param>
+        /// <param name="bInstant">if bInstant is set to true, the character will cast the spell immediately without playing their casting animation</param>
         /// <param name="iLevel">if iLevel is set to anything other than 0, that is the level at which the spell will be cast, rather than the actor's real level</param>
         /// <param name="iMeta">the METAMAGIC_* type you want the caster to cast the spell using (NONE by default)</param>
         public static void TagActionSpellCast(float fDelay, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
@@ -1488,7 +1488,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoEffect(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, bool bAction = false)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "")
@@ -1521,7 +1521,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoLocationEffect(string sName, Location lTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             ApplyEffectAtLocation(iDuration, eFect, lTarget, fDuration);
@@ -1582,7 +1582,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoClearEffect(string sName, NWCreature oActor, int iFX = EffectTypeCutsceneEffects)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (iFX == EffectTypeCutsceneEffects)
@@ -1593,7 +1593,7 @@ namespace SWLOR.Game.Server.Service
             {
                 Effect eFect = GetFirstEffect(oActor);
                 int iType = GetEffectType(eFect);
-                while (GetIsEffectValid(eFect) == TRUE)
+                while (GetIsEffectValid(eFect) == true)
                 {
                     if (iType == iFX)
                     { RemoveEffect(oActor, eFect); }
@@ -1633,7 +1633,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoCreate(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, int iType, string sRef, string sTag, int iAnim, int iStack, bool bCreateOn, bool bAction = false)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
@@ -1659,14 +1659,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fDelay">how many seconds to wait before the function is added to oActor's action queue</param>
         /// <param name="oActor">the character you want this command to go into the action queue for. NOTE - this is NOT the character the object is created on!</param>
         /// <param name="oTarget">the object, character or waypoint you want to create the item at or on</param>
-        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)</param>
+        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, ObjectType.Creature, ObjectType.Placeable etc)</param>
         /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
         /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
         /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
-        /// <param name="bCreateOn">set this to TRUE if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
         /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
-        public static void ActionCreate(float fDelay, NWCreature oActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        public static void ActionCreate(float fDelay, NWCreature oActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCreate(sName, oActor, "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
@@ -1680,14 +1680,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fDelay">how many seconds to wait before the function is added to the actor's action queue</param>
         /// <param name="sActor">the tag of the character you want this command to go into the action queue for - MAKE SURE THIS IS UNIQUE! NOTE - this is NOT the character the object is created on!</param>
         /// <param name="oTarget">the object, character or waypoint you want to create the item at or on</param>
-        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)</param>
+        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, ObjectType.Creature, ObjectType.Placeable etc)</param>
         /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
         /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
         /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
-        /// <param name="bCreateOn">set this to TRUE if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
         /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
-        public static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        public static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCreate(sName, new NWGameObject(), sActor, oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
@@ -1700,14 +1700,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="fDelay">how many seconds to wait before the object is created</param>
         /// <param name="oTarget">the object, character or waypoint you want to create the item at or on</param>
-        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)</param>
+        /// <param name="iType">the OBJECT_TYPE_* you want to create (eg, ObjectType.Creature, ObjectType.Placeable etc)</param>
         /// <param name="sRef">the resref of the object you want to create. NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create</param>
         /// <param name="sTag">the tag you want the object to be given when it is created. NOTE - this won't work if you're creating an item in an object's inventory. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="iAnim">whether or not the object should play its entry animation when it is created</param>
         /// <param name="iStack">sets how many of the items you want to create. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM</param>
-        /// <param name="bCreateOn">set this to TRUE if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
+        /// <param name="bCreateOn">set this to true if you want to create an item in the target's inventory. NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location</param>
         /// <param name="sTarget">the tag of the object, character or waypoint you want to create the item at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
-        public static void Create(float fDelay, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
+        public static void Create(float fDelay, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoCreate(sName, new NWGameObject(), "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn));
@@ -1717,7 +1717,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoCopy(string sName, NWObject oSource, NWObject oTarget, string sTarget, string sTag, bool bCreateOn)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
@@ -1734,7 +1734,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fDelay">how many seconds to wait before copying the object</param>
         /// <param name="oSource">the object you want to copy</param>
         /// <param name="oTarget">the object you want to create the copy at or on</param>
-        /// <param name="bCreateOn">set this to TRUE if you want to put the copy in oTarget's inventory. NOTE - this can only be used for items, and will only work if oTarget has an inventory (ie, it's a creature or a container)</param>
+        /// <param name="bCreateOn">set this to true if you want to put the copy in oTarget's inventory. NOTE - this can only be used for items, and will only work if oTarget has an inventory (ie, it's a creature or a container)</param>
         /// <param name="sTag">the tag you want to give the new item. NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint</param>
         /// <param name="sTarget">the tag of the object you want to create the copy at or on. NOTE - this is included so that you can create objects on other objects that have been created during the cutscene. NOTE - leave sTarget at its default value of "" if you have already set oTarget</param>
         public static void Copy(float fDelay, NWObject oSource, NWObject oTarget, bool bCreateOn = false, string sTag = "", string sTarget = "")
@@ -1747,13 +1747,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoClone(string sName, NWObject oPC, NWObject oTarget, string sTarget, string sTag, bool bInvisible)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
             NWObject oClone = CopyObject(oPC, GetLocation(oTarget), new NWGameObject(), sTag);
 
-            if (GetIsPC(oPC) == TRUE)
+            if (GetIsPC(oPC) == true)
             {
                 ChangeToStandardFaction(oClone, STANDARD_FACTION_COMMONER);
             }
@@ -1781,7 +1781,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoPickUp(string sName, NWCreature oActor, string sActor, NWItem oItem, string sItem)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
@@ -1824,7 +1824,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoSit(string sName, NWCreature oActor, string sActor, NWObject oChair, string sChair)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
@@ -1880,7 +1880,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoPlaySound(string sName, NWCreature oActor, string sActor, string sSound, bool bAction)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
@@ -1926,7 +1926,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoSoundObject(string sName, NWObject oSound, bool bOn, float fDuration, int iVolume, NWObject oPosition)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (bOn) { SoundObjectPlay(oSound); }
@@ -1934,7 +1934,7 @@ namespace SWLOR.Game.Server.Service
 
             if (fDuration > 0.0) { DelayCommand(fDuration, () => DoSoundObject(sName, oSound, !bOn, 0.0f, 128, new NWGameObject())); }
             if (iVolume < 128) { SoundObjectSetVolume(oSound, iVolume); }
-            if (GetIsObjectValid(oPosition) == TRUE) { SoundObjectSetPosition(oSound, GetPosition(oPosition)); }
+            if (GetIsObjectValid(oPosition) == true) { SoundObjectSetPosition(oSound, GetPosition(oPosition)); }
         }
 
 
@@ -1944,7 +1944,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fDelay">how many seconds to wait before making the change</param>
         /// <param name="oSound">the sound object you want to adjust</param>
         /// <param name="oPosition">changes the sound to play from the position of the specified object. NOTE - leave oPosition at its default value of OBJECT_INVALID to leave the position unchanged</param>
-        /// <param name="bOn">set to TRUE to switch the sound object on, or FALSE to switch it off</param>
+        /// <param name="bOn">set to true to switch the sound object on, or false to switch it off</param>
         /// <param name="fDuration">how long the sound object should stay on / off for. NOTE - leave fDuration at its default value of 0.0 to switch the sound object on / off permanently</param>
         /// <param name="iVolume">changes the volume of the sound (iVolume must be between 0 and 127). NOTE - leave iVolume at its default value of 128 to leave the volume unchanged</param>
         public static void SoundObject(float fDelay, NWObject oSound, NWObject oPosition, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
@@ -1957,7 +1957,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoAmbientSound(string sName, NWArea oArea, bool bOn, float fDuration, int iVolume)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (bOn) { AmbientSoundPlay(oArea); }
@@ -1978,7 +1978,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="fDelay">how many seconds to wait before making the change</param>
         /// <param name="oArea">the area whose ambient sound you want to adjust</param>
-        /// <param name="bOn">set to TRUE to switch the ambient sound on, or FALSE to switch it off</param>
+        /// <param name="bOn">set to true to switch the ambient sound on, or false to switch it off</param>
         /// <param name="fDuration">how long the ambient sound should stay on / off for. NOTE - leave fDuration at its default value of 0.0 to switch the sound on / off permanently</param>
         /// <param name="iVolume">changes the volume of the area's ambient sound (iVolume must be between 0 and 100). NOTE - leave iVolume at its default value of 128 to leave the volume unchanged</param>
         public static void AmbientSound(float fDelay, NWArea oArea, bool bOn = true, float fDuration = 0.0f, int iVolume = 128)
@@ -1991,7 +1991,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoMusic(string sName, NWArea oArea, bool bOn = true, int iTrack = TrackCurrent, float fDuration = 0.0f)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (fDuration > 0.0) { DelayCommand(fDuration, () => DoMusic(sName, oArea, !bOn, iTrack)); }
@@ -2030,7 +2030,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="fDelay">how many seconds to wait before changing the music</param>
         /// <param name="oArea">the area whose music you want to change</param>
-        /// <param name="bOn">set to TRUE to switch the area music on, or FALSE to switch it off</param>
+        /// <param name="bOn">set to true to switch the area music on, or false to switch it off</param>
         /// <param name="iTrack">the TRACK_* you want to play. NOTE - leave iTrack at its default value of TRACK_CURRENT to leave the area music unchanged. NOTE - set iTrack to TRACK_ORIGINAL if you want to switch all the music settings for the area back to their original values</param>
         /// <param name="fDuration">how long the music should stay on / off for and how long the new piece of music (if you changed the track) should remain active. NOTE - leave fDuration at its default value of 0.0 to make the changes permanent</param>
         public static void PlayMusic(float fDelay, NWArea oArea, bool bOn = true, int iTrack = TrackCurrent, float fDuration = 0.0f)
@@ -2043,21 +2043,21 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoDoor(string sName, NWCreature oActor, string sActor, NWObject oDoor, bool bLock, bool bOpen)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
 
             if (bOpen)
             {
-                if (bLock) { AssignCommand(oActor, () => ActionDoCommand(() => SetLocked(oDoor, FALSE))); }
+                if (bLock) { AssignCommand(oActor, () => ActionDoCommand(() => SetLocked(oDoor, false))); }
                 AssignCommand(oActor, () => ActionOpenDoor(oDoor));
             }
 
             else
             {
                 AssignCommand(oActor, () => ActionCloseDoor(oDoor));
-                if (bLock) { AssignCommand(oActor, () => ActionDoCommand(() => SetLocked(oDoor, TRUE))); }
+                if (bLock) { AssignCommand(oActor, () => ActionDoCommand(() => SetLocked(oDoor, true))); }
             }
         }
 
@@ -2124,12 +2124,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoQuest(string sName, NWPlayer oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, bool bRewardAll = true, bool bOverride = false)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
-            if (iParty == 1) { AddJournalQuestEntry(sQuest, iState, oPC, TRUE, FALSE, bOverride ? TRUE : FALSE); }
-            else if (iParty == 2) { AddJournalQuestEntry(sQuest, iState, oPC, FALSE, TRUE, bOverride ? TRUE : FALSE); }
-            else { AddJournalQuestEntry(sQuest, iState, oPC, FALSE, FALSE, bOverride ? TRUE : FALSE); }
+            if (iParty == 1) { AddJournalQuestEntry(sQuest, iState, oPC, true, false, bOverride ? true : false); }
+            else if (iParty == 2) { AddJournalQuestEntry(sQuest, iState, oPC, false, true, bOverride ? true : false); }
+            else { AddJournalQuestEntry(sQuest, iState, oPC, false, false, bOverride ? true : false); }
 
             if (iXP == 0) { return; }
             else if (iXP == 1) { iXP = GetJournalQuestExperience(sQuest); }
@@ -2142,11 +2142,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 GiveXPToCreature(oParty, iXP);
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -2163,7 +2163,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="iXP">how many XP to give the player(s). NOTE - leave this at 0 if you want to give no XP. NOTE - set this to 1 if you want to give the quest XP you specified in the journal editor</param>
         /// <param name="iParty">sets whether to update the journal for only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
         /// <param name="bRewardAll">sets whether or not to give the XP reward to all the players you updated the journal for, or only for oPC. NOTE - if iXP or iParty is 0 you can ignore this option</param>
-        /// <param name="bOverride">sets whether or not to allow the function to give a player a quest state lower than the one they already have in that quest. NOTE - this is TRUE by default!</param>
+        /// <param name="bOverride">sets whether or not to allow the function to give a player a quest state lower than the one they already have in that quest. NOTE - this is true by default!</param>
         public static void JournalEntry(float fDelay, NWPlayer oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, bool bRewardAll = true, bool bOverride = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
@@ -2174,7 +2174,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoWait(string sName, NWCreature oActor, string sActor, float fPause)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
@@ -2214,12 +2214,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoClear(string sName, NWCreature oActor, string sActor)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sActor != "") { oActor = GetObjectByTag(sActor); }
 
-            AssignCommand(oActor, () => ClearAllActions(TRUE));
+            AssignCommand(oActor, () => ClearAllActions(true));
         }
 
 
@@ -2235,9 +2235,9 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(fDelay, () => DoClear(sName, oActor, sActor));
         }
         
-        private static void DoFloatingText(string sName, NWCreature oActor, string sMessage, int bFaction = TRUE)
+        private static void DoFloatingText(string sName, NWCreature oActor, string sMessage, int bFaction = true)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             FloatingTextStringOnCreature(sMessage, oActor, bFaction);
@@ -2250,8 +2250,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="fDelay">how many seconds to wait before displaying the text</param>
         /// <param name="oActor">the object above which the text should appear</param>
         /// <param name="sMessage">the text you want to appear</param>
-        /// <param name="bFaction">whether or not the text will only appear to members in the object's faction. NOTE - if you set this to TRUE and oActor is an object or an NPC which isn't in the PC's party, nobody will see it. NOTE - if you set this to TRUE and oActor is a PC, only other players in their party will see it. NOTE - if you set this to FALSE, everyone on the server will see the message appear in their chat window</param>
-        public static void FloatingText(float fDelay, NWCreature oActor, string sMessage, int bFaction = TRUE)
+        /// <param name="bFaction">whether or not the text will only appear to members in the object's faction. NOTE - if you set this to true and oActor is an object or an NPC which isn't in the PC's party, nobody will see it. NOTE - if you set this to true and oActor is a PC, only other players in their party will see it. NOTE - if you set this to false, everyone on the server will see the message appear in their chat window</param>
+        public static void FloatingText(float fDelay, NWCreature oActor, string sMessage, int bFaction = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoFloatingText(sName, oActor, sMessage, bFaction));
@@ -2261,7 +2261,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoExecute(string sName, NWObject oTarget, string sScript, string sTarget)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
@@ -2303,27 +2303,27 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoDestroy(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sTarget, bool bAction)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
 
             if (bAction)
             {
-                AssignCommand(oActor, () => ActionDoCommand(() => AssignCommand(oTarget, () => SetIsDestroyable(TRUE))));
+                AssignCommand(oActor, () => ActionDoCommand(() => AssignCommand(oTarget, () => SetIsDestroyable(true))));
                 AssignCommand(oActor, () => ActionDoCommand(() => DestroyObject(oTarget)));
             }
 
             else
             {
-                AssignCommand(oTarget, () => SetIsDestroyable(TRUE));
+                AssignCommand(oTarget, () => SetIsDestroyable(true));
                 DestroyObject(oTarget);
             }
         }
 
 
         /// <summary>
-        /// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+        /// Destroy the specified object. The function will SetIsDestroyable(true) the object first to make sure it can be destroyed.
         /// </summary>
         /// <param name="fDelay">how many seconds to wait before adding this command to the actor's action queue</param>
         /// <param name="oActor">the actor whose action queue you want this to be placed in. NOTE - this is not the object that will be destroyed!</param>
@@ -2338,7 +2338,7 @@ namespace SWLOR.Game.Server.Service
 
 
         /// <summary>
-        /// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+        /// Destroy the specified object. The function will SetIsDestroyable(true) the object first to make sure it can be destroyed.
         /// </summary>
         /// <param name="fDelay">how many seconds to wait before adding this command to the actor's action queue</param>
         /// <param name="sActor">the tag of the actor whose action queue you want this to be placed in - MAKE SURE THIS IS UNIQUE! NOTE - this is not the object that will be destroyed!</param>
@@ -2353,7 +2353,7 @@ namespace SWLOR.Game.Server.Service
 
 
         /// <summary>
-        /// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+        /// Destroy the specified object. The function will SetIsDestroyable(true) the object first to make sure it can be destroyed.
         /// </summary>
         /// <param name="fDelay">how many seconds to wait before destroying the target</param>
         /// <param name="oTarget">the object you want to destroy</param>
@@ -2409,7 +2409,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoCameraMode(string sName, NWPlayer oPC, int iMode)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             SetCameraMode(oPC, iMode);
@@ -2427,7 +2427,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoCameraFacing(string sName, float fDirection, float fRange, float fPitch, NWPlayer oPC, int iTransition)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             AssignCommand(oPC, () => SetCameraFacing(fDirection, fRange, fPitch, iTransition));
@@ -2526,7 +2526,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 fDirection = GestaltGetDirection(oTarget, oParty);
 
@@ -2538,7 +2538,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalFloat(oParty, "fCameraRange", fRange);
                 SetLocalFloat(oParty, "fCameraPitch", fPitch);
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -2611,7 +2611,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // Set the camera to top down mode
                 CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
@@ -2637,7 +2637,7 @@ namespace SWLOR.Game.Server.Service
                     fDelay = fStart + (fCount * fdTime);
                 }
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -2682,7 +2682,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // Set the camera to top down mode
                 CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
@@ -2709,7 +2709,7 @@ namespace SWLOR.Game.Server.Service
                     fDelay = fStart + (fCount * fdTime);
                 }
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -2781,7 +2781,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // Work out whose camera position to use as the starting position
                 if (iSync == 1) { oSync = oPC; }
@@ -2806,7 +2806,7 @@ namespace SWLOR.Game.Server.Service
                 var id = iCamID;
                 DelayCommand(fDelay, () => CameraSmoothStart(fdDirection1, fdRange1, fdPitch1, fdDirection2, fdRange2, fdPitch2, fTime, fFrameRate, party1, sync, id));
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -2882,7 +2882,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // Work out whose camera position to use as the starting position
                 if (iSync == 1) { oSync = oPC; }
@@ -2905,7 +2905,7 @@ namespace SWLOR.Game.Server.Service
                 var party1 = oParty;
                 DelayCommand(fDelay, () => CameraCraneSmoothStart(fdDirection1, fdRange1, fdPitch1, fdHeight1, fdDirection2, fdRange2, fdPitch2, fdHeight2, fTime, fFrameRate, party1, oSync, iCamID));
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -2915,7 +2915,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoCameraSetup(string sName, NWPlayer oPC, float fDirection, float fRange, float fPitch, float fHeight)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             SetLocalFloat(oPC, "fCameraDirection", fDirection);
@@ -2986,7 +2986,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // Set the camera to top down mode
                 CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
@@ -3021,7 +3021,7 @@ namespace SWLOR.Game.Server.Service
                     fDelay = fStart + (fCount * fdTime);
                 }
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -3063,7 +3063,7 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 // Set the camera to top down mode
                 CameraMode(fDelay, oParty.Object, CAMERA_MODE_TOP_DOWN);
@@ -3097,7 +3097,7 @@ namespace SWLOR.Game.Server.Service
                     fDelay = fStart + (fCount * fdTime);
                 }
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -3107,7 +3107,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoFadeOut(string sName, NWPlayer oPC, float fSpeed, int iParty)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             NWCreature oParty;
@@ -3116,11 +3116,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 FadeToBlack(oParty, fSpeed);
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -3130,7 +3130,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoFadeIn(string sName, NWPlayer oPC, float fSpeed, int iParty)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             NWCreature oParty;
@@ -3139,11 +3139,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 FadeFromBlack(oParty, fSpeed);
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -3153,7 +3153,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoBlack(string sName, NWPlayer oPC, int iParty)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             NWCreature oParty;
@@ -3162,11 +3162,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 BlackScreen(oParty);
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -3176,7 +3176,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoStopFade(string sName, NWPlayer oPC, int iParty)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             NWCreature oParty;
@@ -3185,11 +3185,11 @@ namespace SWLOR.Game.Server.Service
             else if (iParty == 2) { oParty = GetFirstPC(); }
             else { oParty = oPC; }
 
-            while (GetIsObjectValid(oParty) == TRUE)
+            while (GetIsObjectValid(oParty) == true)
             {
                 StopFade(oParty);
 
-                if (iParty == 1) { oParty = GetNextFactionMember(oParty, TRUE); }
+                if (iParty == 1) { oParty = GetNextFactionMember(oParty, true); }
                 else if (iParty == 2) { oParty = GetNextPC(); }
                 else { return; }
             }
@@ -3199,7 +3199,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoFade(string sName, NWPlayer oPC, CutsceneFadeType iFade, float fSpeed, float fDuration, int iParty)
         {
-            if (GetLocalInt(GetModule(), sName) == TRUE)
+            if (GetLocalInt(GetModule(), sName) == true)
             { return; }
 
             if (iFade == CutsceneFadeType.FadeIn)

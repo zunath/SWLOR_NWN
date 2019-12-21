@@ -1,11 +1,11 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class QuickBarSlot
     {
-        public NWItem Item { get; set; }
-        public NWItem SecondaryItem { get; set; }
+        public NWGameObject Item { get; set; }
+        public NWGameObject SecondaryItem { get; set; }
         public QuickBarSlotType ObjectType { get; set; }
         public int MultiClass { get; set; }
         public string Resref { get; set; }
@@ -16,6 +16,6 @@ namespace SWLOR.Game.Server.NWNX
         public int MetaType { get; set; }
         public int DomainLevel { get; set; }
         public int AssociateType { get; set; }
-        public NWObject Associate { get; set; }
+        public NWGameObject Associate { get; set; }
     }
 }

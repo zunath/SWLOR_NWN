@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     RunEffect(creature, target);
                     
                     // Target the next nearest creature and do the same thing.
-                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
+                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature != target)
@@ -167,18 +167,18 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             break;
                         }
 
-                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
+                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
                     }
                     break;
                 // Tier 3 - All creatures within 10m are tranquilized using tier 1 rules.
                 case 3:
                     RunEffect(creature, target);
                     
-                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
+                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
                     while (targetCreature.IsValid)
                     {
                         RunEffect(creature, target);
-                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
+                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
                     }
                     break;
                 default:

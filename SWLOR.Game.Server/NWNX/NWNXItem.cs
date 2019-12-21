@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.GameObject;
-
+﻿using NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
@@ -8,138 +7,198 @@ namespace SWLOR.Game.Server.NWNX
     {
         private const string NWNX_Item = "NWNX_Item";
 
-        // Set oItem's weight. Will not persist through saving.
-        public static void SetWeight(NWItem oItem, int w)
+        /// <summary>
+        /// Set an item's weight
+        /// Will not persist through saving
+        /// </summary>
+        /// <param name="oItem">The item object</param>
+        /// <param name="weight">The weight, note this is in tenths of pounds</param>
+        public static void SetWeight(NWGameObject oItem, int weight)
         {
             string sFunc = "SetWeight";
 
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, w);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentInt(NWNX_Item, sFunc, weight);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
         }
 
-        // Set oItem's base value in gold pieces (Total cost = base_value +
-        // additional_value). Will not persist through saving.
-        // NOTE: Equivalent to SetGoldPieceValue NWNX2 function
-        public static void SetBaseGoldPieceValue(NWItem oItem, int g)
+        /// <summary>
+        /// Set an item's base value in gold pieces
+        /// Total cost = base_value + additional_value
+        /// Equivalent to SetGoldPieceValue NWNX2 function
+        /// Will not persist through saving
+        /// </summary>
+        /// <param name="oItem">The item object.</param>
+        /// <param name="gold">The base gold value.</param>
+        public static void SetBaseGoldPieceValue(NWGameObject oItem, int gold)
         {
             string sFunc = "SetBaseGoldPieceValue";
 
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, g);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentInt(NWNX_Item, sFunc, gold);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
         }
 
-        // Set oItem's additional value in gold pieces (Total cost = base_value +
-        // additional_value). Will persist through saving.
-        public static void SetAddGoldPieceValue(NWItem oItem, int g)
+        /// <summary>
+        /// Set an item's additional value in gold pieces
+        /// Total cost = base_value + additional_value
+        /// Will persist through saving
+        /// </summary>
+        /// <param name="oItem">The item object.</param>
+        /// <param name="gold">The additional gold value</param>
+        public static void SetAddGoldPieceValue(NWGameObject oItem, int gold)
         {
             string sFunc = "SetAddGoldPieceValue";
 
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, g);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentInt(NWNX_Item, sFunc, gold);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
         }
 
-        // Get oItem's base value in gold pieces.
-        public static int GetBaseGoldPieceValue(NWItem oItem)
+        /// <summary>
+        /// Get an item's base value in gold pieces.
+        /// </summary>
+        /// <param name="oItem">The item object.</param>
+        /// <returns>The base gold piece value for the item</returns>
+        public static int GetBaseGoldPieceValue(NWGameObject oItem)
         {
             string sFunc = "GetBaseGoldPieceValue";
 
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
             return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
         }
 
-        // Get oItem's additional value in gold pieces.
-        public static int GetAddGoldPieceValue(NWItem oItem)
+        /// <summary>
+        /// Get an item's additional value in gold pieces
+        /// </summary>
+        /// <param name="oItem">The item object</param>
+        /// <returns>The additional gold piece value for the item.</returns>
+        public static int GetAddGoldPieceValue(NWGameObject oItem)
         {
             string sFunc = "GetAddGoldPieceValue";
 
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
             return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
         }
 
-        // Set oItem's base item type. This will not be visible until the
-        // item is refreshed (e.g. drop and take the item, or logging out
-        // and back in).
-        public static void SetBaseItemType(NWItem oItem, int nBaseItem)
+        /// <summary>
+        /// Set an item's base item type
+        /// This will not be visible until the item is refreshed (e.g. drop and take the item,
+        /// or logging out and back in).
+        /// </summary>
+        /// <param name="oItem">The item object.</param>
+        /// <param name="nBaseItem">The new base item</param>
+        public static void SetBaseItemType(NWGameObject oItem, int nBaseItem)
         {
             string sFunc = "SetBaseItemType";
 
             NWNX_PushArgumentInt(NWNX_Item, sFunc, nBaseItem);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
         }
 
-        // Make a single change to the appearance of an item. This will not be visible to PCs until
-        // the item is refreshed for them (e.g. by logging out and back in).
-        // Helmet models and simple items ignore iIndex.
-        // nType                            nIndex                              nValue
-        // ITEM_APPR_TYPE_SIMPLE_MODEL      [Ignored]                           Model #
-        // ITEM_APPR_TYPE_WEAPON_COLOR      ITEM_APPR_WEAPON_COLOR_*            0-255
-        // ITEM_APPR_TYPE_WEAPON_MODEL      ITEM_APPR_WEAPON_MODEL_*            Model #
-        // ITEM_APPR_TYPE_ARMOR_MODEL       ITEM_APPR_ARMOR_MODEL_*             Model #
-        // ITEM_APPR_TYPE_ARMOR_COLOR       ITEM_APPR_ARMOR_COLOR_* [0]         0-255 [1]
-        //
-        // [0] Alternatively, where ITEM_APPR_TYPE_ARMOR_COLOR is specified, if per-part coloring is
-        // desired, the following equation can be used for nIndex to achieve that:
-        //
-        // ITEM_APPR_ARMOR_NUM_COLORS + (ITEM_APPR_ARMOR_MODEL_ * ITEM_APPR_ARMOR_NUM_COLORS) + ITEM_APPR_ARMOR_COLOR_
-        //
-        // For example, to change the CLOTH1 channel of the torso, nIndex would be:
-        //
-        //     6 + (7 * 6) + 2 = 50
-        //
-        // [1] When specifying per-part coloring, the value 255 corresponds with the logical
-        // function 'clear colour override', which clears the per-part override for that part.
-        public static void SetItemAppearance(NWItem oItem, int nType, int nIndex, int nValue)
+        /// <summary>
+        /// Make a single change to the appearance of an item. This will not be visible to PCs until
+        /// the item is refreshed for them (e.g. by logging out and back in).
+        /// Helmet models and simple items ignore iIndex.
+        /// nType                            nIndex                              nValue
+        /// ITEM_APPR_TYPE_SIMPLE_MODEL      [Ignored]                           Model #
+        /// ITEM_APPR_TYPE_WEAPON_COLOR      ITEM_APPR_WEAPON_COLOR_*            0-255
+        /// ITEM_APPR_TYPE_WEAPON_MODEL      ITEM_APPR_WEAPON_MODEL_*            Model #
+        /// ItemApprType.ArmorModel       ITEM_APPR_ARMOR_MODEL_*             Model #
+        /// ItemApprType.ArmorColor       ITEM_APPR_ARMOR_COLOR_* [0]         0-255 [1]
+        ///
+        /// [0] Alternatively, where ItemApprType.ArmorColor is specified, if per-part coloring is
+        /// desired, the following equation can be used for nIndex to achieve that:
+        ///
+        /// ITEM_APPR_ARMOR_NUM_COLORS + (ITEM_APPR_ARMOR_MODEL_ * ITEM_APPR_ARMOR_NUM_COLORS) + ITEM_APPR_ARMOR_COLOR_
+        ///
+        /// For example, to change the CLOTH1 channel of the torso, nIndex would be:
+        ///
+        ///     6 + (7 * 6) + 2 = 50
+        ///
+        /// [1] When specifying per-part coloring, the value 255 corresponds with the logical
+        /// function 'clear colour override', which clears the per-part override for that part.
+        /// </summary>
+        /// <param name="oItem">The item</param>
+        /// <param name="nType">The type to use</param>
+        /// <param name="nIndex">The index</param>
+        /// <param name="nValue">The new value</param>
+        public static void SetItemAppearance(NWGameObject oItem, int nType, int nIndex, int nValue)
         {
             string sFunc = "SetItemAppearance";
 
             NWNX_PushArgumentInt(NWNX_Item, sFunc, nValue);
             NWNX_PushArgumentInt(NWNX_Item, sFunc, nIndex);
             NWNX_PushArgumentInt(NWNX_Item, sFunc, nType);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
 
         }
 
-        // Return a String containing the entire appearance for oItem which can later be
-        // passed to RestoreItemAppearance().
-        public static string GetEntireItemAppearance(NWItem oItem)
+        /// <summary>
+        /// Return a string containing the entire appearance for an item.
+        /// </summary>
+        /// <param name="oItem">The item object</param>
+        /// <returns>A string representing the item's appearance.</returns>
+        public static string GetEntireItemAppearance(NWGameObject oItem)
         {
             string sFunc = "GetEntireItemAppearance";
 
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
             return NWNX_GetReturnValueString(NWNX_Item, sFunc);
         }
 
-        // Restore an item's appearance with the value returned by GetEntireItemAppearance().
-        public static void RestoreItemAppearance(NWItem oItem, string sApp)
+        /// <summary>
+        /// Restore an item's appearance with the value returned by GetEntireItemAppearance().
+        /// </summary>
+        /// <param name="oItem">The item to restore</param>
+        /// <param name="sApp">A string representing the item's appearance.</param>
+        public static void RestoreItemAppearance(NWGameObject oItem, string sApp)
         {
             string sFunc = "RestoreItemAppearance";
 
             NWNX_PushArgumentString(NWNX_Item, sFunc, sApp);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
         }
 
-
-        public static int GetBaseArmorClass(NWItem oItem)
+        /// <summary>
+        /// Get an item's base armor class
+        /// </summary>
+        /// <param name="oItem">The item object.</param>
+        /// <returns>The base armor class</returns>
+        public static int GetBaseArmorClass(NWGameObject oItem)
         {
             string sFunc = "GetBaseArmorClass";
+
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
+
+            NWNX_CallFunction(NWNX_Item, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
+        }
+
+
+        /// <summary>
+        /// Get an item's minimum level required to equip.
+        /// </summary>
+        /// <param name="oItem">The item object</param>
+        /// <returns>The minimum level required to equip the item.</returns>
+        public static int GetMinEquipLevel(NWGameObject oItem)
+        {
+            string sFunc = "GetMinEquipLevel";
 
             NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
 

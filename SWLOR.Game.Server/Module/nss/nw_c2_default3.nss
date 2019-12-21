@@ -21,8 +21,8 @@
 void main()
 {
     ExecuteScript("crea_on_roundend", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT") == true) return;
 
 
     if (!GetLocalInt(GetModule(),"X3_NO_MOUNTED_COMBAT_FEAT"))

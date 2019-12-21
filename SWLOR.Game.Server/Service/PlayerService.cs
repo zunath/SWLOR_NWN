@@ -515,7 +515,7 @@ namespace SWLOR.Game.Server.Service
                             amount += sturdinessLevel + 1;
                         }
                     }
-                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+                    _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), oPC.Object);
                 }
 
                 entity.RegenerationTick = rate;

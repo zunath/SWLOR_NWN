@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.AI
             ActionPlayAnimation(ANIMATION_LOOPING_CONJURE2, 3.0F, 0.5F);
             ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
             ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY1, 3.0F);
-            ActionDoCommand(() => SetCommandable(TRUE));
-            SetCommandable(FALSE);
+            ActionDoCommand(() => SetCommandable(true));
+            SetCommandable(false);
         }
     }
 }

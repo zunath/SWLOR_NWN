@@ -89,6 +89,6 @@ void main()
     {
         object oSelf = OBJECT_SELF;
         PlayAnimation(ANIMATION_PLACEABLE_CLOSE);
-        SetLocalObject(oSelf, "GateBlock", CreateObject(OBJECT_TYPE_PLACEABLE, sGateBlock, lSelfLoc));
+        SetLocalObject(oSelf, "GateBlock", CreateObject(ObjectType.Placeable, sGateBlock, lSelfLoc));
     }
 }

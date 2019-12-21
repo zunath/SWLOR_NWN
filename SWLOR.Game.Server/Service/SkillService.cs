@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = GetPCItemLastEquippedBy();
             NWItem oItem = GetPCItemLastEquipped();
 
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
             if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
             if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
 
@@ -581,7 +581,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = GetPCItemLastUnequippedBy();
             NWItem oItem = GetPCItemLastUnequipped();
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             HandleGlovesUnequipEvent();
             PlayerStatService.ApplyStatChanges(oPC, oItem);
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
             if (oTarget.IsPlayer || oTarget.IsDM) return;
-            if (oTarget.ObjectType != OBJECT_TYPE_CREATURE) return;
+            if (oTarget.ObjectType != ObjectType.Creature) return;
 
             int skillID = (int)skillType;
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(oTarget.GlobalID);
@@ -1015,7 +1015,7 @@ namespace SWLOR.Game.Server.Service
             // the item equip event on the new item. 
             // If this happens, we don't want to apply penalties a second time.
             // An example of where this happens is with item appearance modification.
-            if (item.GetLocalInt("PENALTIES_APPLIED") == TRUE) return;
+            if (item.GetLocalInt("PENALTIES_APPLIED") == true) return;
 
             List<ItemProperty> ipsToApply = new List<ItemProperty>();
 
@@ -1219,7 +1219,7 @@ namespace SWLOR.Game.Server.Service
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
 
-            item.SetLocalInt("PENALTIES_APPLIED", TRUE);
+            item.SetLocalInt("PENALTIES_APPLIED", true);
         }
 
         /// <summary>

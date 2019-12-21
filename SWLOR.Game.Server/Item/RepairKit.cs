@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Item
 
         private static SkillType GetSkillType(NWItem item)
         {
-            if (item.GetLocalInt("LIGHTSABER") == TRUE)
+            if (item.GetLocalInt("LIGHTSABER") == true)
             {
                 return SkillType.Engineering;
             }

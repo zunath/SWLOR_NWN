@@ -68,7 +68,7 @@ void main()
         string ssLanguage = GetStringRight(sItemTag, GetStringLength(sItemTag) - 8);
         SetLocalInt(oUser, "hls_MyLanguage", StringToInt(ssLanguage));
         SetLocalString(oUser, "hls_MyLanguageName", GetName(oItem));
-        DelayCommand(1.0f, FloatingTextStringOnCreature("You are speaking " + GetName(oItem) + ". Type [(what you want to say in brackets)]", oUser, FALSE));
+        DelayCommand(1.0f, FloatingTextStringOnCreature("You are speaking " + GetName(oItem) + ". Type [(what you want to say in brackets)]", oUser, false));
         return;
     }
 
@@ -76,14 +76,14 @@ void main()
     {
         if (GetStringLeft(sItemTag, 12) == "dmfi_pc_rest")
         {
-            CreateObject(OBJECT_TYPE_PLACEABLE, "dmfi_rest" + GetStringRight(sItemTag, 3), GetLocation(oUser));
+            CreateObject(ObjectType.Placeable, "dmfi_rest" + GetStringRight(sItemTag, 3), GetLocation(oUser));
             return;
         }
         if (sItemTag == "dmfi_pc_follow")
         {
             if (GetIsObjectValid(oOther))
             {
-                FloatingTextStringOnCreature("Now following "+ GetName(oOther),oUser, FALSE);
+                FloatingTextStringOnCreature("Now following "+ GetName(oOther),oUser, false);
                 DelayCommand(2.0f, AssignCommand(oUser, ActionForceFollowObject(oOther, 2.0f)));
             }
             return;
@@ -92,23 +92,23 @@ void main()
         SetLocalLocation(oUser, "dmfi_univ_location", lLocation);
         SetLocalString(oUser, "dmfi_univ_conv", GetStringRight(sItemTag, GetStringLength(sItemTag) - 5));
         AssignCommand(oUser, ClearAllActions());
-        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", TRUE));
+        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", true));
         return;
     }
 
     if (GetStringLeft(sItemTag, 5) == "dmfi_")
     {
-        int iPass = FALSE;
+        int iPass = false;
 
         if (GetIsDM(oUser) || GetIsDMPossessed(oUser))
-            iPass = TRUE;
+            iPass = true;
 
         if (!GetIsPC(oUser))
-            iPass = TRUE;
+            iPass = true;
 
         if (!iPass)
         {
-            FloatingTextStringOnCreature("You cannot use this item." ,oUser, FALSE);
+            FloatingTextStringOnCreature("You cannot use this item." ,oUser, false);
             SendMessageToAllDMs(GetName(oUser)+ " is attempting to use a DM item.");
             return;
         }
@@ -151,7 +151,7 @@ void main()
             object oP;
             while (GetIsObjectValid(oArea))
             {
-                if (GetObjectType(oArea) == OBJECT_TYPE_CREATURE && !GetIsPC(oArea))
+                if (GetObjectType(oArea) == ObjectType.Creature && !GetIsPC(oArea))
                 {
                     AssignCommand(oArea, ClearAllActions());
                     oP = GetFirstPC();
@@ -182,7 +182,7 @@ void main()
                 // 2008.05.29 tsunami282 - we don't use creature listen stuff anymore
                 SetLocalObject(oUser, "dmfi_VoiceTarget", oOther);
 
-                FloatingTextStringOnCreature("You have targeted " + GetName(oOther) + " with the Voice Widget", oUser, FALSE);
+                FloatingTextStringOnCreature("You have targeted " + GetName(oOther) + " with the Voice Widget", oUser, false);
 
                 if (GetLocalInt(GetModule(), "dmfi_voice_initial")!=1)
                 {
@@ -200,11 +200,11 @@ void main()
                     DestroyObject(GetLocalObject(oUser, "dmfi_StaticVoice"));
                 }
                 //Create the StationaryVoice
-                object oStaticVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", GetLocation(oUser));
+                object oStaticVoice = CreateObject(ObjectType.Creature, "dmfi_voice", GetLocation(oUser));
                 //Set Ownership of the Voice to the User
                 SetLocalObject(oUser, "dmfi_StaticVoice", oVoice);
                 SetLocalObject(oUser, "dmfi_VoiceTarget", oStaticVoice);
-                DelayCommand(1.0f, FloatingTextStringOnCreature("A Stationary Voice has been created.", oUser, FALSE));
+                DelayCommand(1.0f, FloatingTextStringOnCreature("A Stationary Voice has been created.", oUser, false));
                 return;
             }
             return;
@@ -240,26 +240,26 @@ void main()
             //Targeting Self
             if (oUser == oOther)
             {
-                oKillMe = GetNearestObject(OBJECT_TYPE_PLACEABLE, oUser);
-                FloatingTextStringOnCreature("Destroyed " + GetName(oKillMe) + "(" + GetTag(oKillMe) + ")", oUser, FALSE);
+                oKillMe = GetNearestObject(ObjectType.Placeable, oUser);
+                FloatingTextStringOnCreature("Destroyed " + GetName(oKillMe) + "(" + GetTag(oKillMe) + ")", oUser, false);
                 DelayCommand(0.1f, DestroyObject(oKillMe));
             }
             else if (GetIsObjectValid(oOther)) //Targeting something else
             {
-                FloatingTextStringOnCreature("Destroyed " + GetName(oOther) + "(" + GetTag(oOther) + ")", oUser, FALSE);
+                FloatingTextStringOnCreature("Destroyed " + GetName(oOther) + "(" + GetTag(oOther) + ")", oUser, false);
                 DelayCommand(0.1f, DestroyObject(oOther));
             }
             else //Targeting the ground
             {
                 int iReport = 0;
-                oKillMe = GetFirstObjectInShape(SHAPE_SPHERE, 2.0f, lLocation, FALSE, OBJECT_TYPE_ALL);
+                oKillMe = GetFirstObjectInShape(SHAPE_SPHERE, 2.0f, lLocation, false, OBJECT_TYPE_ALL);
                 while (GetIsObjectValid(oKillMe))
                 {
                     iReport++;
                     DestroyObject(oKillMe);
-                    oKillMe = GetNextObjectInShape(SHAPE_SPHERE, 2.0f, lLocation, FALSE, OBJECT_TYPE_ALL);
+                    oKillMe = GetNextObjectInShape(SHAPE_SPHERE, 2.0f, lLocation, false, OBJECT_TYPE_ALL);
                 }
-                FloatingTextStringOnCreature("Destroyed " + IntToString(iReport) + " objects.", oUser, FALSE);
+                FloatingTextStringOnCreature("Destroyed " + IntToString(iReport) + " objects.", oUser, false);
             }
             return;
         }
@@ -339,7 +339,7 @@ void main()
         SetLocalLocation(oUser, "dmfi_univ_location", lLocation);
         SetLocalString(oUser, "dmfi_univ_conv", GetStringRight(sItemTag, GetStringLength(sItemTag) - 5));
         AssignCommand(oUser, ClearAllActions());
-        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", TRUE, FALSE));
+        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", true, false));
     }
 }
 

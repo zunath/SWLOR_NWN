@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
                 resref = exteriorStyle.Resref;
             }
 
-            NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
+            NWPlaceable plc = (_.CreateObject(ObjectType.Placeable, resref, location));
             plc.SetLocalString("PC_BASE_STRUCTURE_ID", pcStructure.ID.ToString());
             plc.SetLocalInt("REQUIRES_BASE_POWER", baseStructure.RequiresBasePower ? 1 : 0);
             plc.SetLocalString("ORIGINAL_SCRIPT_CLOSED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED));
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var record in areaStructures)
             {
                 var structure = record.Structure;
-                if (structure.GetLocalInt("REQUIRES_BASE_POWER") == TRUE)
+                if (structure.GetLocalInt("REQUIRES_BASE_POWER") == true)
                 {
                     if (isPoweredOn)
                     {
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Service
             var doorRule = GetDoorRule(spawnRule);
             NWPlaceable door = doorRule.Run(area, location);
             door.SetLocalString("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
-            door.SetLocalInt("IS_DOOR", TRUE);
+            door.SetLocalInt("IS_DOOR", true);
 
             return door;
         }
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            player.AssignCommand(() => _.TakeGoldFromCreature(purchasePrice, player.Object, TRUE));
+            player.AssignCommand(() => _.TakeGoldFromCreature(purchasePrice, player.Object, true));
 
             switch (sector)
             {
@@ -644,7 +644,7 @@ namespace SWLOR.Game.Server.Service
             if (baseStructureType.ID == (int)BaseStructureType.Starship)
             {
                 int nNth = 1;
-                NWObject dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                NWObject dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
 
                 while (dock.IsValid)
                 {
@@ -655,7 +655,7 @@ namespace SWLOR.Game.Server.Service
                     if (dock.GetLocalInt("DOCKED_STARSHIP") == 1)
                     {
                         nNth++;
-                        dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                        dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
                         continue;
                     }
 
@@ -731,7 +731,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     nNth++;
-                    dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                    dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
                 }
 
                 return "Unable to dock starship.  Starships must be docked on a vacant docking bay.";
@@ -755,7 +755,7 @@ namespace SWLOR.Game.Server.Service
             {
                 item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
                 item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
-                item.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", TRUE);
+                item.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", true);
             }
 
             return item;
@@ -873,7 +873,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         // Container doesn't exist yet. Create a new one and add it to the dictionary.
                         var cachedStructure = areaStructures.Single(s => s.PCBaseStructureID == structureKey && s.ChildStructure == null);
-                        rubbleContainer = _.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", cachedStructure.Structure.Location);
+                        rubbleContainer = _.CreateObject(ObjectType.Placeable, "structure_rubble", cachedStructure.Structure.Location);
                         rubbleContainers.Add(structureKey, rubbleContainer);
                     }
                 }
@@ -1256,7 +1256,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanHandleChat(NWObject sender)
         {
             bool validTarget = sender.IsPlayer || sender.IsDM;
-            return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == TRUE;
+            return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == true;
         }
 
         private static void OnModuleNWNXChat()

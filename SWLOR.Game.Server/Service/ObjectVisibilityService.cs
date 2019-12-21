@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             {
                 string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
                 var matchingVisibility = visibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID.ToString() == visibilityObjectID);
-                if (visibilityObject.Value.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE && matchingVisibility == null)
+                if (visibilityObject.Value.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == true && matchingVisibility == null)
                 {
                     NWNXVisibility.SetVisibilityOverride(player, visibilityObject.Value, VisibilityType.Hidden);
                 }
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (visibility == null)
                 {
-                    if(target.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE)
+                    if(target.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == true)
                         NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Hidden);
                     continue;
                 }

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(damage), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), target);
             });
 
             if (creature.IsPlayer)
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_SILENCE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_SILENCE), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

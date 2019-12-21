@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.Bioware
         ///	     X2_IP_ADDPROP_POLICY_REPLACE_EXISTING - remove any property of the same type, subtype, durationtype before adding;
         ///	     X2_IP_ADDPROP_POLICY_KEEP_EXISTING - do not add if any property with same type, subtype and durationtype already exists;
         ///	     X2_IP_ADDPROP_POLICY_IGNORE_EXISTING - add itemproperty in any case - Do not Use with OnHit or OnHitSpellCast props!
-        ///   bIgnoreDurationType  - If set to TRUE, an item property will be considered identical even if the DurationType is different. Be careful when using this
+        ///   bIgnoreDurationType  - If set to true, an item property will be considered identical even if the DurationType is different. Be careful when using this
         ///	                          with X2_IP_ADDPROP_POLICY_REPLACE_EXISTING, as this could lead to a temporary item property removing a permanent one
-        ///   bIgnoreSubType       - If set to TRUE an item property will be considered identical even if the SubType is different.
+        ///   bIgnoreSubType       - If set to true an item property will be considered identical even if the SubType is different.
         ///
         /// ----------------------------------------------------------------------------
         /// </summary>

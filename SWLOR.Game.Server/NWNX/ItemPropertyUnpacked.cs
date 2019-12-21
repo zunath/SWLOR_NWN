@@ -1,5 +1,4 @@
 ﻿using NWN;
-using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -16,12 +15,12 @@ namespace SWLOR.Game.Server.NWNX
         public int ChanceToAppear { get; set; }
         public bool IsUseable { get; set; }
         public int SpellID { get; set; }
-        public NWObject Creator { get; set; }
+        public NWGameObject Creator { get; set; }
         public string Tag { get; set; }
 
         public ItemPropertyUnpacked()
         {
-            Creator = new NWObject(NWGameObject.OBJECT_INVALID);
+            Creator = new NWGameObject();
             Tag = string.Empty;
         }
     }

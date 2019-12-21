@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY");
                 if (bay.IsValid)
                 {
-                    bool isStronidium = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == _.TRUE;
+                    bool isStronidium = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == _.true;
                     if (!isStronidium)
                     {
                         NWItem fuel = _.GetFirstItemInInventory(bay.Object);

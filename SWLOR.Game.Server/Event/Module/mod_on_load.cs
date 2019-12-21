@@ -75,7 +75,7 @@ namespace NWN.Scripts
         private static void SetAreaEventScripts()
         {
             NWGameObject area = _.GetFirstArea();
-            while (_.GetIsObjectValid(area) == _.TRUE)
+            while (_.GetIsObjectValid(area) == _.true)
             {
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_EXIT, "area_on_exit");

@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service
                 dbArea.SouthwestLootTableID = southwestLootTableID > 0 ? southwestLootTableID : new int?();
                 dbArea.SoutheastLootTableID = southeastLootTableID > 0 ? southeastLootTableID : new int?();
                 dbArea.IsBuildable =
-                    (area.GetLocalInt("IS_BUILDABLE") == TRUE &&
+                    (area.GetLocalInt("IS_BUILDABLE") == true &&
                     dbArea.Width == 32 &&
                     dbArea.Height == 32 &&
                     dbArea.PurchasePrice > 0 &&
@@ -93,9 +93,9 @@ namespace SWLOR.Game.Server.Service
                     dbArea.NortheastLootTableID != null &&
                     dbArea.SouthwestLootTableID != null &&
                     dbArea.SoutheastLootTableID != null) ||
-                    (area.GetLocalInt("IS_BUILDING") == TRUE);
+                    (area.GetLocalInt("IS_BUILDING") == true);
                 dbArea.IsActive = true;
-                dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == TRUE;
+                dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == true;
                 dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
                 dbArea.MaxResourceQuality = area.GetLocalInt("RESOURCE_MAX_QUALITY");
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                     bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
 
                     // Location is not walkable if another object exists nearby.
-                    NWObject nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE | OBJECT_TYPE_TRIGGER, checkLocation));
+                    NWObject nearest = (_.GetNearestObjectToLocation(ObjectType.Creature | OBJECT_TYPE_DOOR | ObjectType.Placeable | OBJECT_TYPE_TRIGGER, checkLocation));
                     float distance = _.GetDistanceBetweenLocations(checkLocation, nearest.Location);
                     if (nearest.IsValid && distance <= MinDistance)
                     {
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Service
             
             instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());
             instance.SetLocalString("ORIGINAL_RESREF", areaResref);
-            instance.SetLocalInt("IS_AREA_INSTANCE", TRUE);
+            instance.SetLocalInt("IS_AREA_INSTANCE", true);
             instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
 
             NWObject searchByObject = _.GetFirstObjectInArea(instance);

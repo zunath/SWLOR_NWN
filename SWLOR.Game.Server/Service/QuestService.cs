@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
                 var quest = _quests[pcQuest.QuestID];
-                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, FALSE);
+                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, false);
             }
         }
 
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Location location = oPC.Location;
-            NWPlaceable collector = CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location);
+            NWPlaceable collector = CreateObject(ObjectType.Placeable, "qst_item_collect", location);
             collector.SetLocalObject("QUEST_OWNER", questOwner);
 
             collector.AssignCommand(() =>

@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (string.IsNullOrWhiteSpace(pcBaseStructureID))
             {
-                _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, _.FALSE);
+                _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, _.false);
                 return;
             }
             var structureID = new Guid(pcBaseStructureID);
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Conversation
             Guid structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             NWArea instance = BaseService.GetAreaInstance(structureID, false);
 
-            _.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, _.FALSE);
+            _.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, _.false);
 
             if (instance != null)
             {
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     if (Equals(player.Area, instance))
                     {
-                        _.FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, _.FALSE);
+                        _.FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, _.false);
                     }
 
                     player = (_.GetNextPC());

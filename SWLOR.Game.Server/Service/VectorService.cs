@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using static NWN._;
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Service
         // - If the scalar triple product is 0.0, v1, v2 and v3 are co-planar
         public static float ScalarTripleProduct(Vector v1, Vector v2, Vector v3)
         {
-            return fabs(DotProduct(v1, CrossProduct(v2, v3)));
+            return Math.Abs(DotProduct(v1, CrossProduct(v2, v3)));
         }
 
         // Returns the cross product of Vectors v1 and v2.
@@ -189,13 +190,13 @@ namespace SWLOR.Game.Server.Service
         // and the adjacent side. * returns 0.0 for divide by 0.
         public static float toa(float fOppositeLength, float fAdjacentLength)
         {
-            if (fAdjacentLength == 0.0)
+            if (fAdjacentLength == 0.0f)
             {
                 return 0.0f;
             }
             else
             {
-                return atan(fOppositeLength / fAdjacentLength);
+                return (float)Math.Atan(fOppositeLength / fAdjacentLength);
             }
         }
 

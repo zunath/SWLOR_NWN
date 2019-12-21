@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer player = (_.GetPCItemLastEquippedBy());
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
 
             if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
 
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer player = (_.GetPCItemLastUnequippedBy());
 
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.true) return; // Don't run heavy code when customizing equipment.
             if (!player.IsPlayer) return;
 
             NWItem item = (_.GetPCItemLastUnequipped());
@@ -61,9 +61,9 @@ namespace SWLOR.Game.Server.Service
             _.FloatingTextStringOnCreature(
                 pc.DisplayHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.", 
                 player.Object,
-                _.FALSE);
+                _.false);
 
-            NWItem helmet = (_.GetItemInSlot(_.INVENTORY_SLOT_HEAD, player.Object));
+            NWItem helmet = (_.GetItemInSlot(_.InventorySlot.Head, player.Object));
             if (helmet.IsValid)
             {
                 _.SetHiddenWhenEquipped(helmet.Object, !pc.DisplayHelmet == false ? 0 : 1);

@@ -1,20 +1,23 @@
-﻿using SWLOR.Game.Server.GameObject;
-
-using static NWN._;
+﻿using System;
+using NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXAdmin
     {
+        private const string NWNX_Administration = "NWNX_Administration";
+
         /// <summary>
         /// Gets the current player password.
         /// </summary>
         /// <returns></returns>
         public static string GetPlayerPassword()
         {
-            NWNX_CallFunction("NWNX_Administration", "GET_PLAYER_PASSWORD");
-            return NWNX_GetReturnValueString("NWNX_Administration", "GET_PLAYER_PASSWORD");
+            string sFunc = "GetPlayerPassword";
+
+            NWNX_CallFunction(NWNX_Administration, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -23,10 +26,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="password"></param>
         public static void SetPlayerPassword(string password)
         {
-            if (password == null) password = string.Empty;
+            string sFunc = "SetPlayerPassword";
 
-            NWNX_PushArgumentString("NWNX_Administration", "SET_PLAYER_PASSWORD", password);
-            NWNX_CallFunction("NWNX_Administration", "SET_PLAYER_PASSWORD");
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, password);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -34,7 +37,9 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         public static void ClearPlayerPassword()
         {
-            NWNX_CallFunction("NWNX_Administration", "CLEAR_PLAYER_PASSWORD");
+            string sFunc = "ClearPlayerPassword";
+
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -43,8 +48,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static string GetDMPassword()
         {
-            NWNX_CallFunction("NWNX_Administration", "GET_DM_PASSWORD");
-            return NWNX_GetReturnValueString("NWNX_Administration", "GET_DM_PASSWORD");
+            string sFunc = "GetDMPassword";
+
+            NWNX_CallFunction(NWNX_Administration, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -53,10 +60,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="password"></param>
         public static void SetDMPassword(string password)
         {
-            if (password == null) password = string.Empty;
+            string sFunc = "SetDMPassword";
 
-            NWNX_PushArgumentString("NWNX_Administration", "SET_DM_PASSWORD", password);
-            NWNX_CallFunction("NWNX_Administration", "SET_DM_PASSWORD");
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, password);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -64,7 +71,9 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         public static void ShutdownServer()
         {
-            NWNX_CallFunction("NWNX_Administration", "SHUTDOWN_SERVER");
+            string sFunc = "ShutdownServer";
+
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -73,11 +82,13 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="pc">The player character to boot.</param>
         /// <param name="bPreserveBackup">If true, it will leave the files on the server and append ".deleted0" to the bic file name.</param>
-        public static void DeletePlayerCharacter(NWPlayer pc, bool bPreserveBackup)
+        public static void DeletePlayerCharacter(NWGameObject pc, bool bPreserveBackup)
         {
-            NWNX_PushArgumentInt("NWNX_Administration", "DELETE_PLAYER_CHARACTER", bPreserveBackup ? TRUE : FALSE);
-            NWNX_PushArgumentObject("NWNX_Administration", "DELETE_PLAYER_CHARACTER", pc);
-            NWNX_CallFunction("NWNX_Administration", "DELETE_PLAYER_CHARACTER");
+            string sFunc = "DeletePlayerCharacter";
+
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, bPreserveBackup ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Administration, sFunc, pc);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -86,8 +97,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="ip"></param>
         public static void AddBannedIP(string ip)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "ADD_BANNED_IP", ip);
-            NWNX_CallFunction("NWNX_Administration", "ADD_BANNED_IP");
+            string sFunc = "AddBannedIP";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, ip);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -96,8 +109,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="ip"></param>
         public static void RemoveBannedIP(string ip)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "REMOVE_BANNED_IP", ip);
-            NWNX_CallFunction("NWNX_Administration", "REMOVE_BANNED_IP");
+            string sFunc = "RemoveBannedIP";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, ip);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -106,8 +121,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="key"></param>
         public static void AddBannedCDKey(string key)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "ADD_BANNED_CDKEY", key);
-            NWNX_CallFunction("NWNX_Administration", "ADD_BANNED_CDKEY");
+            string sFunc = "AddBannedCDKey";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, key);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -116,8 +133,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="key"></param>
         public static void RemoveBannedCDKey(string key)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "REMOVE_BANNED_CDKEY", key);
-            NWNX_CallFunction("NWNX_Administration", "REMOVE_BANNED_CDKEY");
+            string sFunc = "RemoveBannedCDKey";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, key);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -125,20 +144,24 @@ namespace SWLOR.Game.Server.NWNX
         /// NOTE: Players can easily change their names.
         /// </summary>
         /// <param name="playername"></param>
-        public static void AddBannedPlayerName(string playername)
+        public static void AddBannedPlayerName(string playerName)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "ADD_BANNED_PLAYER_NAME", playername);
-            NWNX_CallFunction("NWNX_Administration", "ADD_BANNED_PLAYER_NAME");
+            string sFunc = "AddBannedPlayerName";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, playerName);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
         /// Removes a banned player name.
         /// </summary>
         /// <param name="playername"></param>
-        public static void RemoveBannedPlayerName(string playername)
+        public static void RemoveBannedPlayerName(string playerName)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "REMOVE_BANNED_PLAYER_NAME", playername);
-            NWNX_CallFunction("NWNX_Administration", "REMOVE_BANNED_PLAYER_NAME");
+            string sFunc = "RemoveBannedPlayerName";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, playerName);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -147,8 +170,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static string GetBannedList()
         {
-            NWNX_CallFunction("NWNX_Administration", "GET_BANNED_LIST");
-            return NWNX_GetReturnValueString("NWNX_Administration", "GET_BANNED_LIST");
+            string sFunc = "GetBannedList";
+
+            NWNX_CallFunction(NWNX_Administration, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Administration, sFunc);
         }
 
 
@@ -158,8 +183,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="name"></param>
         public static void SetModuleName(string name)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "SET_MODULE_NAME", name);
-            NWNX_CallFunction("NWNX_Administration", "SET_MODULE_NAME");
+            string sFunc = "SetModuleName";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, name);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -168,8 +195,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="name"></param>
         public static void SetServerName(string name)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "SET_SERVER_NAME", name);
-            NWNX_CallFunction("NWNX_Administration", "SET_SERVER_NAME");
+            string sFunc = "SetServerName";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, name);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -179,10 +208,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static int GetPlayOption(AdministrationOption option)
         {
-            NWNX_PushArgumentInt("NWNX_Administration", "GET_PLAY_OPTION", (int)option);
-            NWNX_CallFunction("NWNX_Administration", "GET_PLAY_OPTION");
+            string sFunc = "GetPlayOption";
 
-            return NWNX_GetReturnValueInt("NWNX_Administration", "GET_PLAY_OPTION");
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, (int)option);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -192,9 +223,11 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="value"></param>
         public static void SetPlayOption(AdministrationOption option, int value)
         {
-            NWNX_PushArgumentInt("NWNX_Administration", "SET_PLAY_OPTION", value);
-            NWNX_PushArgumentInt("NWNX_Administration", "SET_PLAY_OPTION", (int)option);
-            NWNX_CallFunction("NWNX_Administration", "SET_PLAY_OPTION");
+            string sFunc = "SetPlayOption";
+
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, value);
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, (int)option);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
 
         /// <summary>
@@ -202,11 +235,44 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="playerName">Name of the player's user account</param>
         /// <param name="characterName">Name of the character</param>
-        public static void DeleteTURD(string playerName, string characterName)
+        public static bool DeleteTURD(string playerName, string characterName)
         {
-            NWNX_PushArgumentString("NWNX_Administration", "DELETE_TURD", characterName);
-            NWNX_PushArgumentString("NWNX_Administration", "DELETE_TURD", playerName);
-            NWNX_CallFunction("NWNX_Administration", "DELETE_TURD");
+            string sFunc = "DeleteTURD";
+
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, characterName);
+            NWNX_PushArgumentString(NWNX_Administration, sFunc, playerName);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
+
+            return Convert.ToBoolean(NWNX_GetReturnValueInt(NWNX_Administration, sFunc));
+        }
+
+        /// <summary>
+        /// Get an admin_debug "Administration Debug Type" value.
+        /// </summary>
+        /// <param name="type">An "Administration Debug Type"</param>
+        /// <returns>The current value for the supplied debug type from admin_debug "Administration Debug Types".</returns>
+        public static bool GetDebugValue(AdministrationDebugType type)
+        {
+            string sFunc = "GetDebugValue";
+
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, (int)type);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Administration, sFunc) == 1;
+        }
+
+        /// <summary>
+        /// Set an "Administration Debug Type" to a value.
+        /// </summary>
+        /// <param name="type">The debug type to adjust from "Administration Debug Types".</param>
+        /// <param name="state">The new state for the debug type, true or false</param>
+        public static void SetDebugValue(AdministrationDebugType type, bool state)
+        {
+            string sFunc = "SetDebugValue";
+
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, state ? 1 : 0);
+            NWNX_PushArgumentInt(NWNX_Administration, sFunc, (int)type);
+            NWNX_CallFunction(NWNX_Administration, sFunc);
         }
     }
 }

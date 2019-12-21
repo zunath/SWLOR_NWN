@@ -11,7 +11,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return KeyItemCheck.Check(9, 2) ? TRUE : FALSE;
+            return KeyItemCheck.Check(9, 2) ? true : false;
         }
     }
 }

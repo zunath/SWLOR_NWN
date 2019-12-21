@@ -32,14 +32,14 @@ int StartingConditional()
     // (Referred to as "HolyWater" in code since that is the default.)
     object oHolyWater = GetItemPossessedBy(oPC, ZEP_DEMI_DEST_TAG);
 
-    // If PC does not have the right item, return FALSE.
+    // If PC does not have the right item, return false.
     if ( oHolyWater == OBJECT_INVALID )
-        return FALSE;
+        return false;
 
     // Store the name of the special item in custom token 1001.
     SetCustomToken(1001, GetName(oHolyWater));
 
-    // PC has the item, so return TRUE.
-    return TRUE;
+    // PC has the item, so return true.
+    return true;
 }
 

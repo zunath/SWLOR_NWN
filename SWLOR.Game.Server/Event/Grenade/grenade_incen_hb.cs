@@ -15,7 +15,7 @@ namespace NWN.Scripts
         {            
             NWObject oTarget;            
             oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
-            while (GetIsObjectValid(oTarget) == TRUE)
+            while (GetIsObjectValid(oTarget) == true)
             {         
                 SWLOR.Game.Server.Item.Grenade.grenadeAoe(oTarget, "INCENDIARY");
                 //Get the next target in the AOE

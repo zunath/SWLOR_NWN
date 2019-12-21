@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
 
             NWItem item = NWNXObject.Deserialize(base64String).Object;
             if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
-            var result = _.CopyItem(item.Object, target.Object, TRUE);
+            var result = _.CopyItem(item.Object, target.Object, true);
             item.Destroy();
 
             return result;
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
 
             NWItem item = NWNXObject.Deserialize(base64String).Object;
             if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
-            var result = _.CopyItem(item.Object, target.Object, TRUE);
+            var result = _.CopyItem(item.Object, target.Object, true);
             item.Destroy();
 
             return result;

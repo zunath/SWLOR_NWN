@@ -93,7 +93,7 @@ void main()
                         {
                             SetCustomToken(iPhrase, sSaid);
                             SetDMFIPersistentString("dmfi", "hls" + IntToString(iPhrase), sSaid);
-                            FloatingTextStringOnCreature("Phrase " + IntToString(iPhrase) + " has been recorded", oShouter, FALSE);
+                            FloatingTextStringOnCreature("Phrase " + IntToString(iPhrase) + " has been recorded", oShouter, false);
                         }
                         else if (iPhrase < 0)
                         {

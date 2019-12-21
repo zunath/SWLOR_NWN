@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (response.Text == "Table host (NPC)")
             {
-                NWCreature NPC = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, pc.Object, 1, CREATURE_TYPE_PLAYER_CHAR, FALSE); 
+                NWCreature NPC = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, pc.Object, 1, CREATURE_TYPE_PLAYER_CHAR, false); 
 
                 if (NPC.IsValid)
                 {

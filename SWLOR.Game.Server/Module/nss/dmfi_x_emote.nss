@@ -77,7 +77,7 @@ void SmokePipe(object oActivator)
 
 void EmoteDance(object oPC)
 {
-    object oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+    object oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
     object oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
 
     AssignCommand(oPC,ActionUnequipItem(oRightHand));
@@ -100,7 +100,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
 
     AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,INVENTORY_SLOT_LEFTHAND)));
-    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,INVENTORY_SLOT_RIGHTHAND)));
+    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,InventorySlot.RightHand)));
 }
 
 void SitInNearestChair(object oPC)
@@ -161,9 +161,9 @@ void SitInNearestChair(object oPC)
      // if no one is sitting in the object the PC is closest to, have him sit in it
      if (GetSittingCreature(oSit) == OBJECT_INVALID)
          {
-           oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+           oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
            oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
-           AssignCommand(oPC,ActionMoveToObject(oSit,FALSE,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
+           AssignCommand(oPC,ActionMoveToObject(oSit,false,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
            ActionUnequipItem(oRightHand); //:: Added to resolve clipping issues when seated
            ActionUnequipItem(oLeftHand);  //:: Added to resolve clipping issues when seated
            ActionDoCommand(AssignCommand(oPC,ActionSit(oSit)));
@@ -202,8 +202,8 @@ void main()
         case 86: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_MEDITATE, 1.0, fDur)); break;
         case 87: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL, 1.0, fDur)); break;
         case 88: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_WORSHIP, 1.0, fDur)); break;
-        case 10: if (!GetLocalInt(oTarget, "hls_emotemute")) FloatingTextStringOnCreature("*emote* commands are off", oTarget, FALSE);
-                 else FloatingTextStringOnCreature("*emote* commands are on", oTarget, FALSE);
+        case 10: if (!GetLocalInt(oTarget, "hls_emotemute")) FloatingTextStringOnCreature("*emote* commands are off", oTarget, false);
+                 else FloatingTextStringOnCreature("*emote* commands are on", oTarget, false);
                  SetLocalInt(oTarget, "hls_emotemute", abs(GetLocalInt(oTarget, "hls_emotemute") - 1)); break;
         case 91: EmoteDance(oTarget); break;
         case 92: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_PAUSE_DRUNK, 1.0, fDur)); break;

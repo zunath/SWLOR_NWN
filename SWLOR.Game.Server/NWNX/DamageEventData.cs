@@ -1,10 +1,10 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class DamageEventData
     {
-        public NWObject Damager { get; set; }
+        public NWGameObject Damager { get; set; }
         public int Bludgeoning { get; set; }
         public int Pierce { get; set; }
         public int Slash { get; set; }

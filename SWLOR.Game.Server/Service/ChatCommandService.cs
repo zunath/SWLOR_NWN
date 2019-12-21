@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                 sender.SetLocalString("CHAT_COMMAND_ARGS", args);
                 sender.SendMessage("Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
 
-                if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == FALSE || sender.IsDM)
+                if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == false || sender.IsDM)
                 {
                     NWNXCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
 

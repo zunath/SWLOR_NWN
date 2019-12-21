@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCorpse()
         {
-            SetIsDestroyable(FALSE);
+            SetIsDestroyable(false);
 
             NWObject self = NWGameObject.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Service
             Vector lootPosition = Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
             Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
-            NWPlaceable container = CreateObject(OBJECT_TYPE_PLACEABLE, "corpse", spawnLocation);
+            NWPlaceable container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             container.SetLocalObject("CORPSE_BODY", self);
             container.Name = self.Name + "'s Corpse";
 
@@ -141,10 +141,10 @@ namespace SWLOR.Game.Server.Service
                 NWItem item = GetItemInSlot(slot, self);
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
-                    NWItem copy = CopyItem(item, container, TRUE);
+                    NWItem copy = CopyItem(item, container, true);
 
-                    if (slot == INVENTORY_SLOT_HEAD ||
-                        slot == INVENTORY_SLOT_CHEST)
+                    if (slot == InventorySlot.Head ||
+                        slot == InventorySlot.Chest)
                     {
                         copy.SetLocalObject("CORPSE_ITEM_COPY", item);
                     }
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
-                    CopyItem(item, container, TRUE);
+                    CopyItem(item, container, true);
                     item.Destroy();
                 }
             }
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service
                 if (!container.IsValid) return;
 
                 NWObject body = container.GetLocalObject("CORPSE_BODY");
-                body.AssignCommand(() => SetIsDestroyable(TRUE));
+                body.AssignCommand(() => SetIsDestroyable(true));
                 body.DestroyAllInventoryItems();
                 body.Destroy();
 

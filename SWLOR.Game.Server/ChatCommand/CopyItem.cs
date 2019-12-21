@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            _.CopyItem(target, user, TRUE);
+            _.CopyItem(target, user, true);
             user.SendMessage("Item copied successfully.");
         }
 

@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber &&
-                oItem.GetLocalInt("LIGHTSABER") == FALSE) 
+                oItem.GetLocalInt("LIGHTSABER") == false) 
                 return;
 
             ApplyFeatChanges(creature, null);
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber &&
-                oItem.GetLocalInt("LIGHTSABER") == FALSE)
+                oItem.GetLocalInt("LIGHTSABER") == false)
                 return;
 
             ApplyFeatChanges(creature, oItem);
@@ -102,9 +102,9 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
             // Main or offhand is not acceptable item type.
             if ((mainEquipped.CustomItemType != CustomItemType.Lightsaber &&
-                 mainEquipped.GetLocalInt("LIGHTSABER") == FALSE) ||
+                 mainEquipped.GetLocalInt("LIGHTSABER") == false) ||
                 (offEquipped.CustomItemType != CustomItemType.Lightsaber &&
-                 offEquipped.GetLocalInt("LIGHTSABER") == FALSE))
+                 offEquipped.GetLocalInt("LIGHTSABER") == false))
             {
                 RemoveFeats(creature);
                 return;

@@ -45,8 +45,8 @@ void SafeFaction(object oCurrent, object oAttacker)
 void main()
 {
     ExecuteScript("crea_on_attacked", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_ATTACKED_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_ATTACKED_EVENT") == true) return;
 
 
 //DMFI CODE ADDITIONS*****************************
@@ -62,7 +62,7 @@ void main()
 
     if (!GetLocalInt(GetModule(),"X3_NO_MOUNTED_COMBAT_FEAT"))
         { // set variables on target for mounted combat
-            SetLocalInt(OBJECT_SELF,"bX3_LAST_ATTACK_PHYSICAL",TRUE);
+            SetLocalInt(OBJECT_SELF,"bX3_LAST_ATTACK_PHYSICAL",true);
             SetLocalInt(OBJECT_SELF,"nX3_HP_BEFORE",GetCurrentHitPoints(OBJECT_SELF));
         } // set variables on target for mounted combat
 
@@ -72,7 +72,7 @@ void main()
     } else if (GetSpawnInCondition(NW_FLAG_SET_WARNINGS)) {
         // We give an attacker one warning before we attack
         // This is not fully implemented yet
-        SetSpawnInCondition(NW_FLAG_SET_WARNINGS, FALSE);
+        SetSpawnInCondition(NW_FLAG_SET_WARNINGS, false);
 
         //Put a check in to see if this attacker was the last attacker
         //Possibly change the GetNPCWarning function to make the check

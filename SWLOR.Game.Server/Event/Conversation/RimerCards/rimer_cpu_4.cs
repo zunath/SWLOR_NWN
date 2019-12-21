@@ -17,7 +17,7 @@ namespace NWN.Scripts
             {
                 RimerDeckType deck = RandomService.Random(4) <= 3 ? RimerDeckType.FastCreatures : RimerDeckType.BigCreatures;
                 RimerCPU.ConfigureGameSettings(NWGameObject.OBJECT_SELF, deck, RimerAIDifficulty.Normal);
-                return _.FALSE;
+                return _.false;
             }
         }
     }

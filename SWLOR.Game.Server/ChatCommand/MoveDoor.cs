@@ -32,7 +32,7 @@
 
 //            NWPlaceable newDoor = App.ResolveByInterface<IDoorRule, NWPlaceable>("DoorRule.LargeSquareBuildingRule", rule => rule.Run(user.Area, house.Location, orientation, sqrtValue));
 //            newDoor.SetLocalInt("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
-//            newDoor.SetLocalInt("IS_DOOR", TRUE);
+//            newDoor.SetLocalInt("IS_DOOR", true);
 
 
 //        }

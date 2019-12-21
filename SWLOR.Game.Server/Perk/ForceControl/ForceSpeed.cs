@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, target, duration);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_AC_BONUS), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_AC_BONUS), target);
 
             if (creature.IsPlayer)
             {

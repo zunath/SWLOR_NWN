@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Service
                     float x = NWNXEvents.OnDMSpawnObject_GetPositionX();
                     float y = NWNXEvents.OnDMSpawnObject_GetPositionY();
                     float z = NWNXEvents.OnDMSpawnObject_GetPositionZ();
-                    creature.SetLocalInt("DM_SPAWNED", TRUE);
+                    creature.SetLocalInt("DM_SPAWNED", true);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP

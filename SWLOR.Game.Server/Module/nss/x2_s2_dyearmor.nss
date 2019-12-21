@@ -67,7 +67,7 @@ int GetApprArmorColorFromSpellID(int nID)
 void FinishDyeScript(object oPC, object oTarget, int bEquipped, int nSlot)
 {
     // Move the armor back from the IP Container
-    object oNew = CopyItem(oTarget, oPC, TRUE);
+    object oNew = CopyItem(oTarget, oPC, true);
     DestroyObject(oTarget);
 
     //----------------------------------------------------------------------------
@@ -78,7 +78,7 @@ void FinishDyeScript(object oPC, object oTarget, int bEquipped, int nSlot)
     // Reequip armor if it was equipped before
     if (bEquipped)
     {
-        AssignCommand(oPC,ClearAllActions(TRUE));
+        AssignCommand(oPC,ClearAllActions(true));
         AssignCommand(oPC,ActionEquipItem(oNew,nSlot));
     }
 }
@@ -126,7 +126,7 @@ void main()
     int nSlot;
     if ( nBase == BASE_ITEM_HELMET )
     {
-        nSlot = INVENTORY_SLOT_HEAD;
+        nSlot = InventorySlot.Head;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
     // GZ@2006/03/26: Added cloak support
@@ -137,7 +137,7 @@ void main()
     }
     else
     {
-        nSlot = INVENTORY_SLOT_CHEST;
+        nSlot = InventorySlot.Chest;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
 
@@ -152,7 +152,7 @@ void main()
     {
         // Set the local variable to the target's color.
         SetLocalInt(oItem, "DYE_INDEX",
-            GetItemAppearance(oTarget, ITEM_APPR_TYPE_ARMOR_COLOR, nColorType));
+            GetItemAppearance(oTarget, ItemApprType.ArmorColor, nColorType));
         // Run the item-specific script.
         ExecuteScript(GetLocalString(oItem, "DYE_POSTSAMPLE_HANDLER"), oItem);
         // Done. Do not continue.
@@ -182,7 +182,7 @@ void main()
 
 
     // move the item into the IP work container
-    object oNew = CopyItem(oTarget, IPGetIPWorkContainer(), TRUE);
+    object oNew = CopyItem(oTarget, IPGetIPWorkContainer(), true);
 
     DestroyObject(oTarget);
 

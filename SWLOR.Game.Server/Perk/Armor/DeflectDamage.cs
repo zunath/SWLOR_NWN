@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Perk.Armor
             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
 
             effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, creature.Object);
+            _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

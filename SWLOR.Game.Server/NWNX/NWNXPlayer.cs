@@ -1,7 +1,6 @@
 ﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using static SWLOR.Game.Server.NWNX.NWNXCore;
 using static NWN._;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -15,11 +14,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="placeable"></param>
-        public static void ForcePlaceableExamineWindow(NWPlayer player, NWPlaceable placeable)
+        public static void ForcePlaceableExamineWindow(NWGameObject player, NWGameObject placeable)
         {
             string sFunc = "ForcePlaceableExamineWindow";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable.Object);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
@@ -36,7 +35,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="placeable"></param>
-        public static void ForcePlaceableInventoryWindow(NWPlayer player, NWPlaceable placeable)
+        public static void ForcePlaceableInventoryWindow(NWGameObject player, NWGameObject placeable)
         {
             string sFunc = "ForcePlaceableInventoryWindow";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable);
@@ -49,30 +48,29 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts displaying a timing bar.
         /// Will run a script at the end of the timing bar, if specified.
         /// </summary>
-        /// <param name="creature">The creature who will see the timing bar.</param>
+        /// <param name="player">The creature who will see the timing bar.</param>
         /// <param name="seconds">How long the timing bar should come on screen.</param>
         /// <param name="script">The script to run at the end of the timing bar.</param>
-        public static void StartGuiTimingBar(NWCreature creature, float seconds, string script)
+        /// <param name="type">The type of timing bar to display.</param>
+        public static void StartGuiTimingBar(NWGameObject player, float seconds, string script = "", TimingBarType type = TimingBarType.Custom)
         {
-            // only one timing bar at a time!
-            if (_.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
+            if (GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
                 return;
 
             string sFunc = "StartGuiTimingBar";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, (int)type);
             NWNX_PushArgumentFloat(NWNX_Player, sFunc, seconds);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
 
-            int id = _.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
-            _.SetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
-            _.SetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
+            int id = GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
+            SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
+            SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID", id);
 
-            _.DelayCommand(seconds, () =>
-            {
-                StopGuiTimingBar(creature, script, -1);
-            });
+            DelayCommand(seconds, () => StopGuiTimingBar(player, script, id));
         }
+
 
         /// <summary>
         /// Stops displaying a timing bar.
@@ -81,9 +79,9 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature">The creature's timing bar to stop.</param>
         /// <param name="script">The script to run once ended.</param>
         /// <param name="id">ID number of this timing bar.</param>
-        public static void StopGuiTimingBar(NWCreature creature, string script, int id)
+        public static void StopGuiTimingBar(NWGameObject creature, string script, int id)
         {
-            int activeId = _.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            int activeId = GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
             if (activeId == 0)
                 return;
@@ -92,15 +90,15 @@ namespace SWLOR.Game.Server.NWNX
             if (id != -1 && id != activeId)
                 return;
 
-            _.DeleteLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
 
             string sFunc = "StopGuiTimingBar";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature);
             NWNX_CallFunction(NWNX_Player, sFunc);
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                _.ExecuteScript(script, creature.Object);
+                ExecuteScript(script, creature);
             }
         }
 
@@ -111,7 +109,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="script"></param>
-        public static void StopGuiTimingBar(NWPlayer player, string script)
+        public static void StopGuiTimingBar(NWGameObject player, string script)
         {
             StopGuiTimingBar(player, script, -1);
         }
@@ -122,11 +120,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="bWalk"></param>
-        public static void SetAlwaysWalk(NWPlayer player, int bWalk)
+        public static void SetAlwaysWalk(NWGameObject player, int bWalk)
         {
             string sFunc = "SetAlwaysWalk";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, bWalk);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
@@ -137,13 +135,13 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="slot"></param>
         /// <returns></returns>
-        public static QuickBarSlot GetQuickBarSlot(NWPlayer player, int slot)
+        public static QuickBarSlot GetQuickBarSlot(NWGameObject player, int slot)
         {
             string sFunc = "GetQuickBarSlot";
             QuickBarSlot qbs = new QuickBarSlot();
 
             NWNX_PushArgumentInt(NWNX_Player, sFunc, slot);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
             NWNX_CallFunction(NWNX_Player, sFunc);
 
             qbs.Associate = (NWNX_GetReturnValueObject(NWNX_Player, sFunc));
@@ -169,12 +167,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="slot"></param>
         /// <param name="qbs"></param>
-        public static void SetQuickBarSlot(NWPlayer player, int slot, QuickBarSlot qbs)
+        public static void SetQuickBarSlot(NWGameObject player, int slot, QuickBarSlot qbs)
         {
             string sFunc = "SetQuickBarSlot";
 
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, qbs.Item.Object);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, qbs.SecondaryItem.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, qbs.Item);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, qbs.SecondaryItem);
             NWNX_PushArgumentInt(NWNX_Player, sFunc, (int)qbs.ObjectType);
             NWNX_PushArgumentInt(NWNX_Player, sFunc, qbs.MultiClass);
             NWNX_PushArgumentString(NWNX_Player, sFunc, qbs.Resref);
@@ -185,10 +183,10 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentInt(NWNX_Player, sFunc, qbs.MetaType);
             NWNX_PushArgumentInt(NWNX_Player, sFunc, qbs.DomainLevel);
             NWNX_PushArgumentInt(NWNX_Player, sFunc, qbs.AssociateType);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, qbs.Associate.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, qbs.Associate);
 
             NWNX_PushArgumentInt(NWNX_Player, sFunc, slot);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
 
@@ -198,10 +196,10 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static string GetBicFileName(NWPlayer player)
+        public static string GetBicFileName(NWGameObject player)
         {
             string sFunc = "GetBicFileName";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
             NWNX_CallFunction(NWNX_Player, sFunc);
             return NWNX_GetReturnValueString(NWNX_Player, sFunc);
         }
@@ -212,12 +210,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="effectId"></param>
         /// <param name="position"></param>
-        public static void ShowVisualEffect(NWPlayer player, int effectId, Vector position)
+        public static void ShowVisualEffect(NWGameObject player, int effectId, Vector position)
         {
             string sFunc = "ShowVisualEffect";
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_X);
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_Y);
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_Z);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.X);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.Y);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.Z);
             NWNX_PushArgumentInt(NWNX_Player, sFunc, effectId);
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
@@ -229,11 +227,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="track"></param>
-        public static void MusicBackgroundChangeDay(NWPlayer player, int track)
+        public static void MusicBackgroundChangeDay(NWGameObject player, int track)
         {
             string sFunc = "ChangeBackgroundMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool day = TRUE
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, 1); // bool day = true
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
@@ -244,11 +242,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="track"></param>
-        public static void MusicBackgroundChangeNight(NWPlayer player, int track)
+        public static void MusicBackgroundChangeNight(NWGameObject player, int track)
         {
             string sFunc = "ChangeBackgroundMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool day = FALSE
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, 0); // bool day = false
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
@@ -258,10 +256,10 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts the background music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public static void MusicBackgroundStart(NWPlayer player)
+        public static void MusicBackgroundStart(NWGameObject player)
         {
             string sFunc = "PlayBackgroundMusic";
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool play = TRUE
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, 1); // bool play = true
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
@@ -271,10 +269,10 @@ namespace SWLOR.Game.Server.NWNX
         /// Stops the background music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public static void MusicBackgroundStop(NWPlayer player)
+        public static void MusicBackgroundStop(NWGameObject player)
         {
             string sFunc = "PlayBackgroundMusic";
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool play = FALSE
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, 0); // bool play = false
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
@@ -285,7 +283,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="track"></param>
-        public static void MusicBattleChange(NWPlayer player, int track)
+        public static void MusicBattleChange(NWGameObject player, int track)
         {
             string sFunc = "ChangeBattleMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
@@ -298,10 +296,10 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts the battle music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public static void MusicBattleStart(NWPlayer player)
+        public static void MusicBattleStart(NWGameObject player)
         {
             string sFunc = "PlayBattleMusic";
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool play = TRUE
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, 1); // bool play = true
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
@@ -311,10 +309,10 @@ namespace SWLOR.Game.Server.NWNX
         /// Stops the background music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public static void MusicBattleStop(NWPlayer player)
+        public static void MusicBattleStop(NWGameObject player)
         {
             string sFunc = "PlayBattleMusic";
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool play = FALSE
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, 0); // bool play = false
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
@@ -327,7 +325,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="sound"></param>
         /// <param name="target"></param>
-        public static void PlaySound(NWPlayer player, string sound, NWObject target)
+        public static void PlaySound(NWGameObject player, string sound, NWGameObject target)
         {
             string sFunc = "PlaySound";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, target);
@@ -343,10 +341,10 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="placeable"></param>
         /// <param name="isUseable"></param>
-        public static void SetPlaceableUseable(NWPlayer player, NWPlaceable placeable, bool isUseable)
+        public static void SetPlaceableUseable(NWGameObject player, NWGameObject placeable, bool isUseable)
         {
             string sFunc = "SetPlaceableUsable";
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, isUseable ? TRUE : FALSE);
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, isUseable ? 1 : 0);
             NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable);
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
@@ -361,7 +359,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="duration"></param>
-        public static void SetRestDuration(NWPlayer player, int duration)
+        public static void SetRestDuration(NWGameObject player, int duration)
         {
             string sFunc = "SetRestDuration";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, duration);
@@ -378,7 +376,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <param name="visualeffect"></param>
-        public static void ApplyInstantVisualEffectToObject(NWPlayer player, NWObject target, int visualeffect)
+        public static void ApplyInstantVisualEffectToObject(NWGameObject player, NWGameObject target, int visualeffect)
         {
             string sFunc = "ApplyInstantVisualEffectToObject";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, visualeffect);
@@ -394,7 +392,7 @@ namespace SWLOR.Game.Server.NWNX
         /// through nwnx and forcing a UI refresh, 0.5s seemed to be fine
         /// </summary>
         /// <param name="player"></param>
-        public static void UpdateCharacterSheet(NWPlayer player)
+        public static void UpdateCharacterSheet(NWGameObject player)
         {
             string sFunc = "UpdateCharacterSheet";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
@@ -410,7 +408,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <param name="open"></param>
-        public static void OpenInventory(NWPlayer player, NWObject target, bool open = true)
+        public static void OpenInventory(NWGameObject player, NWGameObject target, bool open = true)
         {
             string sFunc = "OpenInventory";
 
@@ -427,7 +425,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player">The player object</param>
         /// <param name="area">The area</param>
         /// <returns></returns>
-        public static string GetAreaExplorationState(NWPlayer player, NWArea area)
+        public static string GetAreaExplorationState(NWGameObject player, NWGameObject area)
         {
             string sFunc = "GetAreaExplorationState";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, area);
@@ -443,7 +441,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player">The player object</param>
         /// <param name="area">The area</param>
         /// <param name="str">The encoded exploration state string</param>
-        public static void SetAreaExplorationState(NWPlayer player, NWArea area, string str)
+        public static void SetAreaExplorationState(NWGameObject player, NWGameObject area, string str)
         {
             string sFunc = "SetAreaExplorationState";
             NWNX_PushArgumentString(NWNX_Player, sFunc, str);
@@ -462,7 +460,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="oPlayer">The player object</param>
         /// <param name="nAnimation">The rest animation</param>
-        public static void SetRestAnimation(NWPlayer oPlayer, int nAnimation)
+        public static void SetRestAnimation(NWGameObject oPlayer, int nAnimation)
         {
             string sFunc = "SetRestAnimation";
 
@@ -482,7 +480,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oObject">The object to transform</param>
         /// <param name="nTransform">The transformation type</param>
         /// <param name="fValue">The amount to transform by</param>
-        public static void SetObjectVisualTransformOverride(NWPlayer oPlayer, NWObject oObject, int nTransform, float fValue)
+        public static void SetObjectVisualTransformOverride(NWGameObject oPlayer, NWGameObject oObject, int nTransform, float fValue)
         {
             string sFunc = "SetObjectVisualTransformOverride";
 
@@ -506,7 +504,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player">The player object</param>
         /// <param name="target">The target to apply the visual effect to</param>
         /// <param name="visualeffect">The visual effect to use</param>
-        public static void ApplyLoopingVisualEffectToObject(NWPlayer player, NWObject target, int visualeffect)
+        public static void ApplyLoopingVisualEffectToObject(NWGameObject player, NWGameObject target, int visualeffect)
         {
             string sFunc = "ApplyLoopingVisualEffectToObject";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, visualeffect);
@@ -523,7 +521,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player">The player object</param>
         /// <param name="placeable">The placeable object</param>
         /// <param name="name">The new name to use</param>
-        public static void SetPlaceableNameOverride(NWPlayer player, NWPlaceable placeable, string name)
+        public static void SetPlaceableNameOverride(NWGameObject player, NWGameObject placeable, string name)
         {
             string sFunc = "SetPlaceableNameOverride";
 
@@ -541,7 +539,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player">The player object</param>
         /// <param name="sQuestName">The name of the quest</param>
         /// <returns></returns>
-        public static int GetQuestCompleted(NWPlayer player, string sQuestName)
+        public static int GetQuestCompleted(NWGameObject player, string sQuestName)
         {
             string sFunc = "GetQuestCompleted";
             NWNX_PushArgumentString(NWNX_Player, sFunc, sQuestName);
@@ -549,6 +547,74 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Player, sFunc);
             return NWNX_GetReturnValueInt(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// This will require storing the PC's cd key or community name (depending on how you store in your vault)
+        /// and bic_filename along with routinely updating their location in some persistent method like OnRest,
+        /// OnAreaEnter and OnClentExit.
+        ///
+        /// Place waypoints on module load representing where a PC should start
+        /// </summary>
+        /// <param name="sCDKeyOrCommunityName">The Public CD Key or Community Name of the player, this will depend on your vault type.</param>
+        /// <param name="sBicFileName">The filename for the character. Retrieved with NWNX_Player_GetBicFileName().</param>
+        /// <param name="oWP">The waypoint object to place where the PC should start.</param>
+        /// <param name="bFirstConnectOnly">Set to false if you would like the PC to go to this location every time they login instead of just every server restart.</param>
+        public static void SetPersistentLocation(string sCDKeyOrCommunityName, string sBicFileName, NWGameObject oWP, bool bFirstConnectOnly = true)
+        {
+            string sFunc = "SetPersistentLocation";
+
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, bFirstConnectOnly ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oWP);
+            NWNX_PushArgumentString(NWNX_Player, sFunc, sBicFileName);
+            NWNX_PushArgumentString(NWNX_Player, sFunc, sCDKeyOrCommunityName);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Force an item name to be updated.
+        /// This is a workaround for bug that occurs when updating item names in open containers.
+        /// </summary>
+        /// <param name="oPlayer">The player</param>
+        /// <param name="oItem">The item</param>
+        public static void UpdateItemName(NWGameObject oPlayer, NWGameObject oItem)
+        {
+            string sFunc = "UpdateItemName";
+
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oItem);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oPlayer);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Possesses a creature by temporarily making them a familiar
+        /// This command allows a PC to possess an NPC by temporarily adding them as a familiar. It will work
+        /// if the player already has an existing familiar. The creatures must be in the same area. Unpossession can be
+        /// done with the regular @nwn{UnpossessFamiliar} commands.
+        /// The possessed creature will send automap data back to the possessor.
+        /// If you wish to prevent this you may wish to use NWNX_Player_GetAreaExplorationState() and
+        /// NWNX_Player_SetAreaExplorationState() before and after the possession.
+        /// The possessing creature will be left wherever they were when beginning the possession. You may wish
+        /// to use @nwn{EffectCutsceneImmobilize} and @nwn{EffectCutsceneGhost} to hide them.
+        /// </summary>
+        /// <param name="oPossessor">The possessor player object</param>
+        /// <param name="oPossessed">The possessed creature object. Only works on NPCs.</param>
+        /// <param name="bMindImmune">If false will remove the mind immunity effect on the possessor.</param>
+        /// <param name="bCreateDefaultQB">If true will populate the quick bar with default buttons.</param>
+        /// <returns>true if possession succeeded.</returns>
+        public static bool PossessCreature(NWGameObject oPossessor, NWGameObject oPossessed, bool bMindImmune = true, bool bCreateDefaultQB = false)
+        {
+            string sFunc = "PossessCreature";
+
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, bCreateDefaultQB ? 1 : 0);
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, bMindImmune ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oPossessed);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, oPossessor);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Player, sFunc) == 1;
         }
     }
 }

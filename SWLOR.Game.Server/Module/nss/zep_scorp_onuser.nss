@@ -19,7 +19,7 @@ void JumpToWeakestEnemy(object oTargetVictim)
      object oTargetVictim = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
     location lTargetVictim = GetLocation((oTargetVictim));
     // * won't jump if closer than 4 meters to victim
-    if ((GetDistanceToObject(oTargetVictim) > 4.0)   && (GetObjectSeen(oTargetVictim) == TRUE))
+    if ((GetDistanceToObject(oTargetVictim) > 4.0)   && (GetObjectSeen(oTargetVictim) == true))
     {
         ClearAllActions();
         effect eVis = EffectDisappearAppear (lTargetVictim);

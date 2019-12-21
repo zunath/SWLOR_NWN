@@ -1,6 +1,4 @@
 ﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -17,50 +15,50 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "UnpackEffect";
 
-            NWNX_PushArgumentEffect(NWNX_Effect, sFunc, effect);
-            NWNX_CallFunction(NWNX_Effect, sFunc);
+            NWNXCore.NWNX_PushArgumentEffect(NWNX_Effect, sFunc, effect);
+            NWNXCore.NWNX_CallFunction(NWNX_Effect, sFunc);
 
             EffectUnpacked n = new EffectUnpacked
             {
-                Tag = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                oParam3 = NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
-                oParam2 = NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
-                oParam1 = NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
-                oParam0 = NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
-                sParam5 = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                sParam4 = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                sParam3 = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                sParam2 = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                sParam1 = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                sParam0 = NWNX_GetReturnValueString(NWNX_Effect, sFunc),
-                fParam3 = NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
-                fParam2 = NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
-                fParam1 = NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
-                fParam0 = NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
-                nParam7 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam6 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam5 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam4 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam3 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam2 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam1 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                nParam0 = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                NumIntegers = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                LinkRightValid = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                LinkRight = NWNX_GetReturnValueEffect(NWNX_Effect, sFunc),
-                LinkLeftValid = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                LinkLeft = NWNX_GetReturnValueEffect(NWNX_Effect, sFunc),
-                CasterLevel = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                ShowIcon = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                Expose = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                SpellID = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                Creator = NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
-                ExpiryTimeOfDay = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                ExpiryCalendarDay = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                Duration = NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
-                SubType = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                Type = NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
-                EffectID = NWNX_GetReturnValueInt(NWNX_Effect, sFunc)
+                Tag = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                oParam3 = NWNXCore.NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
+                oParam2 = NWNXCore.NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
+                oParam1 = NWNXCore.NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
+                oParam0 = NWNXCore.NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
+                sParam5 = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                sParam4 = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                sParam3 = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                sParam2 = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                sParam1 = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                sParam0 = NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc),
+                fParam3 = NWNXCore.NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
+                fParam2 = NWNXCore.NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
+                fParam1 = NWNXCore.NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
+                fParam0 = NWNXCore.NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
+                nParam7 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam6 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam5 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam4 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam3 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam2 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam1 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                nParam0 = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                NumIntegers = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                LinkRightValid = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                LinkRight = NWNXCore.NWNX_GetReturnValueEffect(NWNX_Effect, sFunc),
+                LinkLeftValid = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                LinkLeft = NWNXCore.NWNX_GetReturnValueEffect(NWNX_Effect, sFunc),
+                CasterLevel = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                ShowIcon = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                Expose = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                SpellID = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                Creator = NWNXCore.NWNX_GetReturnValueObject(NWNX_Effect, sFunc),
+                ExpiryTimeOfDay = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                ExpiryCalendarDay = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                Duration = NWNXCore.NWNX_GetReturnValueFloat(NWNX_Effect, sFunc),
+                SubType = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                Type = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc),
+                EffectID = NWNXCore.NWNX_GetReturnValueInt(NWNX_Effect, sFunc)
             };
             
             return n;
@@ -75,53 +73,53 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "PackEffect";
 
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.EffectID);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.Type);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.SubType);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.EffectID);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.Type);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.SubType);
 
-            NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.Duration);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.ExpiryCalendarDay);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.ExpiryTimeOfDay);
+            NWNXCore.NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.Duration);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.ExpiryCalendarDay);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.ExpiryTimeOfDay);
 
-            NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.Creator);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.SpellID);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.Expose);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.ShowIcon);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.CasterLevel);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.Creator);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.SpellID);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.Expose);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.ShowIcon);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.CasterLevel);
 
-            NWNX_PushArgumentEffect(NWNX_Effect, sFunc, effect.LinkLeft);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.LinkLeftValid);
-            NWNX_PushArgumentEffect(NWNX_Effect, sFunc, effect.LinkRight);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.LinkRightValid);
+            NWNXCore.NWNX_PushArgumentEffect(NWNX_Effect, sFunc, effect.LinkLeft);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.LinkLeftValid);
+            NWNXCore.NWNX_PushArgumentEffect(NWNX_Effect, sFunc, effect.LinkRight);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.LinkRightValid);
 
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.NumIntegers);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam0);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam1);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam2);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam3);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam4);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam5);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam6);
-            NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam7);
-            NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam0);
-            NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam1);
-            NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam2);
-            NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam3);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam0);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam1);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam2);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam3);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam4);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam5);
-            NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam0);
-            NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam1);
-            NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam2);
-            NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam3);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.NumIntegers);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam0);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam1);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam2);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam3);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam4);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam5);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam6);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Effect, sFunc, effect.nParam7);
+            NWNXCore.NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam0);
+            NWNXCore.NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam1);
+            NWNXCore.NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam2);
+            NWNXCore.NWNX_PushArgumentFloat(NWNX_Effect, sFunc, effect.fParam3);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam0);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam1);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam2);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam3);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam4);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.sParam5);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam0);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam1);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam2);
+            NWNXCore.NWNX_PushArgumentObject(NWNX_Effect, sFunc, effect.oParam3);
 
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.Tag);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, effect.Tag);
 
-            NWNX_CallFunction(NWNX_Effect, sFunc);
-            return NWNX_GetReturnValueEffect(NWNX_Effect, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Effect, sFunc);
+            return NWNXCore.NWNX_GetReturnValueEffect(NWNX_Effect, sFunc);
         }
 
         /// <summary>
@@ -137,13 +135,13 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "SetEffectExpiredScript";
 
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, data);
-            NWNX_PushArgumentString(NWNX_Effect, sFunc, script);
-            NWNX_PushArgumentEffect(NWNX_Effect, sFunc, e);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, data);
+            NWNXCore.NWNX_PushArgumentString(NWNX_Effect, sFunc, script);
+            NWNXCore.NWNX_PushArgumentEffect(NWNX_Effect, sFunc, e);
 
-            NWNX_CallFunction(NWNX_Effect, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Effect, sFunc);
 
-            return NWNX_GetReturnValueEffect(NWNX_Effect, sFunc);
+            return NWNXCore.NWNX_GetReturnValueEffect(NWNX_Effect, sFunc);
         }
 
         /// <summary>
@@ -156,9 +154,9 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "GetEffectExpiredData";
 
-            NWNX_CallFunction(NWNX_Effect, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Effect, sFunc);
 
-            return NWNX_GetReturnValueString(NWNX_Effect, sFunc);
+            return NWNXCore.NWNX_GetReturnValueString(NWNX_Effect, sFunc);
         }
 
         /// <summary>
@@ -166,13 +164,13 @@ namespace SWLOR.Game.Server.NWNX
         /// THIS SHOULD ONLY BE CALLED FROM WITHIN A SCRIPT THAT WAS EXECUTED BY NWNX_Effect_SetEffectExpiredScript()
         /// </summary>
         /// <returns></returns>
-        public static NWObject GetEffectExpiredCreator()
+        public static NWGameObject GetEffectExpiredCreator()
         {
             string sFunc = "GetEffectExpiredCreator";
 
-            NWNX_CallFunction(NWNX_Effect, sFunc);
+            NWNXCore.NWNX_CallFunction(NWNX_Effect, sFunc);
 
-            return NWNX_GetReturnValueObject(NWNX_Effect, sFunc);
+            return NWNXCore.NWNX_GetReturnValueObject(NWNX_Effect, sFunc);
         }
     }
 }

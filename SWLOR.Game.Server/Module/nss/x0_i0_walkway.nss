@@ -55,7 +55,7 @@ const int NW_WALK_FLAG_BACKWARDS                   = 0x00000008;
 int GetWalkCondition(int nCondition, object oCreature=OBJECT_SELF);
 
 // Set a given condition
-void SetWalkCondition(int nCondition, int bValid=TRUE, object oCreature=OBJECT_SELF);
+void SetWalkCondition(int nCondition, int bValid=true, object oCreature=OBJECT_SELF);
 
 // Get a waypoint number suffix, padded if necessary
 string GetWaypointSuffix(int i);
@@ -66,7 +66,7 @@ string GetWaypointSuffix(int i);
 //        WN_NUM     : number of night waypoints
 //        WP_#, WN_# : the waypoint objects
 //        WP_CUR     : the current waypoint number
-// bCrossAreas: if set to TRUE, the creature will travel between areas to reach
+// bCrossAreas: if set to true, the creature will travel between areas to reach
 //              its waypoint
 void LookUpWalkWayPoints();
 
@@ -98,7 +98,7 @@ int GetNearestWalkWayPoint(object oCreature=OBJECT_SELF);
 // Specific waypoints will now be more for creatures that
 // you really want to patrol back and forth along a pre-set
 // path.
-void WalkWayPoints(int nRun = FALSE, float fPause = 1.0);
+void WalkWayPoints(int nRun = false, float fPause = 1.0);
 
 // Check to make sure that the walker has at least one valid
 // waypoint they will walk to at some point (day or night).
@@ -120,7 +120,7 @@ int GetWalkCondition(int nCondition, object oCreature=OBJECT_SELF)
 }
 
 // Set a given WalkWayPoints condition
-void SetWalkCondition(int nCondition, int bValid=TRUE, object oCreature=OBJECT_SELF)
+void SetWalkCondition(int nCondition, int bValid=true, object oCreature=OBJECT_SELF)
 {
     int nCurrentCond = GetLocalInt(oCreature, sWalkwayVarname);
     if (bValid) {
@@ -149,7 +149,7 @@ string GetWaypointSuffix(int i)
 void LookUpWalkWayPoints()
 {
     // check if the module enables area transitions for walkwaypoints
-    int bCrossAreas = (GetLocalInt(OBJECT_SELF,"X2_SWITCH_CROSSAREA_WALKWAYPOINTS") == TRUE);
+    int bCrossAreas = (GetLocalInt(OBJECT_SELF,"X2_SWITCH_CROSSAREA_WALKWAYPOINTS") == true);
 
     SetLocalInt(OBJECT_SELF, "WP_CUR", -1);
 
@@ -305,13 +305,13 @@ object GetNextWalkWayPoint(object oCreature=OBJECT_SELF)
             nCurWay--;
             if (nCurWay == 0) {
                 nCurWay = 2;
-                SetWalkCondition(NW_WALK_FLAG_BACKWARDS, FALSE, oCreature);
+                SetWalkCondition(NW_WALK_FLAG_BACKWARDS, false, oCreature);
             }
         } else {
             nCurWay++;
             if (nCurWay > nPoints) {
                 nCurWay = nCurWay - 2;
-                SetWalkCondition(NW_WALK_FLAG_BACKWARDS, TRUE, oCreature);
+                SetWalkCondition(NW_WALK_FLAG_BACKWARDS, true, oCreature);
             }
         }
     }
@@ -361,16 +361,16 @@ int GetNearestWalkWayPoint(object oCreature=OBJECT_SELF)
 
 
 // Make the caller walk through their waypoints or go to their post.
-void WalkWayPoints(int nRun = FALSE, float fPause = 1.0)
+void WalkWayPoints(int nRun = false, float fPause = 1.0)
 {
     // * don't interrupt current circuit
     object oNearestEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
     int bIsEnemyValid = GetIsObjectValid(oNearestEnemy);
 
     // * if I can see an enemy I should not be trying to walk waypoints
-    if (bIsEnemyValid == TRUE)
+    if (bIsEnemyValid == true)
     {
-        if( GetObjectSeen(oNearestEnemy) == TRUE)
+        if( GetObjectSeen(oNearestEnemy) == true)
         {
             return;
         }
@@ -381,7 +381,7 @@ void WalkWayPoints(int nRun = FALSE, float fPause = 1.0)
     int bMoving = GetCurrentAction(OBJECT_SELF) == ACTION_MOVETOPOINT;
     int bWaiting = GetCurrentAction(OBJECT_SELF) == ACTION_WAIT;
 
-    if (bIsFighting == TRUE || bIsInConversation == TRUE || bMoving == TRUE || bWaiting == TRUE)
+    if (bIsFighting == true || bIsInConversation == true || bMoving == true || bWaiting == true)
         return;
 
     // Initialize if necessary
@@ -393,17 +393,17 @@ void WalkWayPoints(int nRun = FALSE, float fPause = 1.0)
         // Use appropriate skills, only once
         // * GZ: 2003-09-03 - ActionUseSkill never worked, added the new action mode stuff
         if(GetSpawnInCondition(NW_FLAG_STEALTH)) {
-            SetActionMode(OBJECT_SELF,ACTION_MODE_STEALTH,TRUE);
+            SetActionMode(OBJECT_SELF,ACTION_MODE_STEALTH,true);
         }
 
         // * GZ: 2003-09-03 - ActionUseSkill never worked, added the new action mode stuff
         if(GetSpawnInCondition(NW_FLAG_SEARCH)){
-            SetActionMode(OBJECT_SELF,ACTION_MODE_DETECT,TRUE);
+            SetActionMode(OBJECT_SELF,ACTION_MODE_DETECT,true);
         }
     }
     // Move to the next waypoint
     object oWay = GetNextWalkWayPoint(OBJECT_SELF);
-    if (GetIsObjectValid(oWay) == TRUE)
+    if (GetIsObjectValid(oWay) == true)
     {
         SetWalkCondition(NW_WALK_FLAG_CONSTANT);
         // * Feb 7 2003: Moving this from 299 to 321, because I don't see the point
@@ -464,8 +464,8 @@ int CheckWayPoints(object oWalker = OBJECT_SELF)
     }
 
     if (GetLocalInt(oWalker, "WP_NUM") > 0 || GetLocalInt(oWalker, "WN_NUM") > 0)
-        return TRUE;
-    return FALSE;
+        return true;
+    return false;
 }
 
 // Check to see if the specified object is currently walking
@@ -478,34 +478,34 @@ int GetIsPostOrWalking(object oWalker = OBJECT_SELF)
 
     if (!GetSpawnInCondition(NW_FLAG_DAY_NIGHT_POSTING) || GetIsDay()) {
         if (GetLocalInt(oWalker, "WP_NUM") > 0) {
-            return TRUE;
+            return true;
         }
     } else if (GetLocalInt(oWalker, "WN_NUM") > 0) {
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 
 
 
 // Make the caller walk through their waypoints or go to their post.
-void TradeWayPoints(int nRun = FALSE, float fPause = 1.0, float fWait=30.0);
+void TradeWayPoints(int nRun = false, float fPause = 1.0, float fWait=30.0);
 
 
 
 // Make the caller walk through their waypoints or go to their post.
-void TradeWayPoints(int nRun = FALSE, float fPause = 1.0, float fWait=30.0)
+void TradeWayPoints(int nRun = false, float fPause = 1.0, float fWait=30.0)
 {
     // * don't interrupt current circuit
     object oNearestEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
     int bIsEnemyValid = GetIsObjectValid(oNearestEnemy);
 
     // * if I can see an enemy I should not be trying to walk waypoints
-    if (bIsEnemyValid == TRUE)
+    if (bIsEnemyValid == true)
     {
-        if( GetObjectSeen(oNearestEnemy) == TRUE)
+        if( GetObjectSeen(oNearestEnemy) == true)
         {
             return;
         }
@@ -516,7 +516,7 @@ void TradeWayPoints(int nRun = FALSE, float fPause = 1.0, float fWait=30.0)
     int bMoving = GetCurrentAction(OBJECT_SELF) == ACTION_MOVETOPOINT;
     int bWaiting = GetCurrentAction(OBJECT_SELF) == ACTION_WAIT;
 
-    if (bIsFighting == TRUE || bIsInConversation == TRUE || bMoving == TRUE || bWaiting == TRUE)
+    if (bIsFighting == true || bIsInConversation == true || bMoving == true || bWaiting == true)
         return;
 
     // Initialize if necessary
@@ -528,17 +528,17 @@ void TradeWayPoints(int nRun = FALSE, float fPause = 1.0, float fWait=30.0)
         // Use appropriate skills, only once
         // * GZ: 2003-09-03 - ActionUseSkill never worked, added the new action mode stuff
         if(GetSpawnInCondition(NW_FLAG_STEALTH)) {
-            SetActionMode(OBJECT_SELF,ACTION_MODE_STEALTH,TRUE);
+            SetActionMode(OBJECT_SELF,ACTION_MODE_STEALTH,true);
         }
 
         // * GZ: 2003-09-03 - ActionUseSkill never worked, added the new action mode stuff
         if(GetSpawnInCondition(NW_FLAG_SEARCH)){
-            SetActionMode(OBJECT_SELF,ACTION_MODE_DETECT,TRUE);
+            SetActionMode(OBJECT_SELF,ACTION_MODE_DETECT,true);
         }
     }
     // Move to the next waypoint
     object oWay = GetNextWalkWayPoint(OBJECT_SELF);
-    if (GetIsObjectValid(oWay) == TRUE)
+    if (GetIsObjectValid(oWay) == true)
     {
         SetWalkCondition(NW_WALK_FLAG_CONSTANT);
         // * Feb 7 2003: Moving this from 299 to 321, because I don't see the point
@@ -641,18 +641,18 @@ void randomAnim()
 
 
 // Make the caller walk through their waypoints and play animations.
-void WalkWayPointsAnim(int nRun = FALSE, float fPause = 1.0);
+void WalkWayPointsAnim(int nRun = false, float fPause = 1.0);
 
-void WalkWayPointsAnim(int nRun = FALSE, float fPause = 1.0)
+void WalkWayPointsAnim(int nRun = false, float fPause = 1.0)
 {
     // * don't interrupt current circuit
     object oNearestEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
     int bIsEnemyValid = GetIsObjectValid(oNearestEnemy);
 
     // * if I can see an enemy I should not be trying to walk waypoints
-    if (bIsEnemyValid == TRUE)
+    if (bIsEnemyValid == true)
     {
-        if( GetObjectSeen(oNearestEnemy) == TRUE)
+        if( GetObjectSeen(oNearestEnemy) == true)
         {
             return;
         }
@@ -663,7 +663,7 @@ void WalkWayPointsAnim(int nRun = FALSE, float fPause = 1.0)
     int bMoving = GetCurrentAction(OBJECT_SELF) == ACTION_MOVETOPOINT;
     int bWaiting = GetCurrentAction(OBJECT_SELF) == ACTION_WAIT;
 
-    if (bIsFighting == TRUE || bIsInConversation == TRUE || bMoving == TRUE || bWaiting == TRUE)
+    if (bIsFighting == true || bIsInConversation == true || bMoving == true || bWaiting == true)
         return;
 
     // Initialize if necessary
@@ -675,17 +675,17 @@ void WalkWayPointsAnim(int nRun = FALSE, float fPause = 1.0)
         // Use appropriate skills, only once
         // * GZ: 2003-09-03 - ActionUseSkill never worked, added the new action mode stuff
         if(GetSpawnInCondition(NW_FLAG_STEALTH)) {
-            SetActionMode(OBJECT_SELF,ACTION_MODE_STEALTH,TRUE);
+            SetActionMode(OBJECT_SELF,ACTION_MODE_STEALTH,true);
         }
 
         // * GZ: 2003-09-03 - ActionUseSkill never worked, added the new action mode stuff
         if(GetSpawnInCondition(NW_FLAG_SEARCH)){
-            SetActionMode(OBJECT_SELF,ACTION_MODE_DETECT,TRUE);
+            SetActionMode(OBJECT_SELF,ACTION_MODE_DETECT,true);
         }
     }
     // Move to the next waypoint
     object oWay = GetNextWalkWayPoint(OBJECT_SELF);
-    if (GetIsObjectValid(oWay) == TRUE)
+    if (GetIsObjectValid(oWay) == true)
     {
         SetWalkCondition(NW_WALK_FLAG_CONSTANT);
         // * Feb 7 2003: Moving this from 299 to 321, because I don't see the point

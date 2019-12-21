@@ -28,22 +28,22 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var item in model.MainComponents)
             {
-                _.CopyItem(item.Object, player.Object, _.TRUE);
+                _.CopyItem(item.Object, player.Object, _.true);
                 item.Destroy();
             }
             foreach (var item in model.SecondaryComponents)
             {
-                _.CopyItem(item.Object, player.Object, _.TRUE);
+                _.CopyItem(item.Object, player.Object, _.true);
                 item.Destroy();
             }
             foreach (var item in model.TertiaryComponents)
             {
-                _.CopyItem(item.Object, player.Object, _.TRUE);
+                _.CopyItem(item.Object, player.Object, _.true);
                 item.Destroy();
             }
             foreach (var item in model.EnhancementComponents)
             {
-                _.CopyItem(item.Object, player.Object, _.TRUE);
+                _.CopyItem(item.Object, player.Object, _.true);
                 item.Destroy();
             }
 

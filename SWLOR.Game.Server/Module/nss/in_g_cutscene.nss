@@ -38,10 +38,10 @@ const int NW_FLAG_AMBIENT_ANIMATIONS_AVIAN    = 0x00800000;
     // bResetSpeed      sets whether or not to clear all effects from the selected PC(s) that will interfere with their movement (includes sleep, paralyzation etc)
     // bStoreCam        sets whether or not to store the position of the player's camera so that it can be restored at the end of the scene
         // NOTE - if your cutscene is triggered from the OnEnter script of an area, the camera position which is stored will be invalid, as the player won't yet be in the area
-            // To get around this, either set bStoreCam to FALSE and store the camera facing yourself from the script that sent the player to the new area for the cutscene
+            // To get around this, either set bStoreCam to false and store the camera facing yourself from the script that sent the player to the new area for the cutscene
             // OR set bStoreCam to 2 to store the camera facing a few seconds after the cutscene starts, by which time the player should be in the area
     // iParty           sets whether the cutscene is being seen by only oPC (0), all the players in oPC's party (1) or all the players on the server (2)
-void GestaltStartCutscene(object oPC, string sName = "", int bCamera = TRUE, int bClear = TRUE, int bClearFX = TRUE, int bResetSpeed = TRUE, int bStoreCam = TRUE, int iParty = 0);
+void GestaltStartCutscene(object oPC, string sName = "", int bCamera = true, int bClear = true, int bClearFX = true, int bResetSpeed = true, int bStoreCam = true, int iParty = 0);
 
 // Move one or more NPC members of oPC's party out of the way at the beginning of the cutscene
     // fDelay           how many seconds to wait before removing the(associates)
@@ -110,7 +110,7 @@ void GestaltReturnAssociates(float fDelay, object oPC, int iAssociates = 63, int
         // FOR EXAMPLE - the finishing position for an actor with the tag "freda" in a cutscene called "bigscene" is a waypoint with the tag "bigscenefreda"
         // NOTE - objects can't have a tag longer than 32 characters, so make sure your actor tags and cutscene names aren't too long!
     // iParty           make this the same as you used in GestaltStartCutscene to make sure the cutscene is cancelled for everyone together
-void GestaltStopCutscene(float fDelay, object oPC, string sDestination = "", int bMode = TRUE, int bCamera = TRUE, int bClear = TRUE, int bClearFX = TRUE, int bResetSpeed = TRUE, int bClearActors = TRUE, int iParty = 0);
+void GestaltStopCutscene(float fDelay, object oPC, string sDestination = "", int bMode = true, int bCamera = true, int bClear = true, int bClearFX = true, int bResetSpeed = true, int bClearActors = true, int iParty = 0);
 
 // Sets the speed of the selected character so that they will go fDistance metres in fTime seconds
 // NOTE - to reset the character's speed to its normal rate, set the fTime parameter to 0.0
@@ -144,7 +144,7 @@ void GestaltInvisibility(float fDelay, object oActor, float fTime = 0.0, string 
     // fDelay           how many seconds to wait before movement is added to oActor's action queue
     // oActor           the character you want to move
     // oDestination     the object or waypoint they should move to
-    // iRun             sets whether the actor will walk (FALSE) or run (TRUE)
+    // iRun             sets whether the actor will walk (false) or run (true)
     // fRange           how many metres from the target the actor should be at the end of movement (keep this number low if you're timing the movement!)
         // NOTE - due to a bug in BioWare's ActionMoveToObject function, if you set fRange > 0.0 for a PC, the PC will run regardless of what you set iRun to be
     // fTime            how many seconds the movement should take - leave at 0.0 if you don't want to adjust the actor's speed
@@ -152,14 +152,14 @@ void GestaltInvisibility(float fDelay, object oActor, float fTime = 0.0, string 
         // NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag
         // If you want to do this, set oDestination to OBJECT_INVALID and sDestination to the tag of the object you want to move to
         // If the object you want to send the actor to exists at the start of the cutscene, leave sDestination as ""
-    // bTowards         sets whether the actor should move towards (TRUE) or away from (FALSE) the destination
-void GestaltActionMove(float fDelay, object oActor, object oDestination, int iRun = FALSE, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = TRUE);
+    // bTowards         sets whether the actor should move towards (true) or away from (false) the destination
+void GestaltActionMove(float fDelay, object oActor, object oDestination, int iRun = false, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = true);
 
 // Moves the selected actor to a target object in a specified time
     // fDelay           how many seconds to wait before movement is added to the actor's action queue
     // sActor           the tag of the character you want to move - MAKE SURE THIS IS UNIQUE!
     // oDestination     the object or waypoint they should move to
-    // iRun             sets whether the actor will walk (FALSE) or run (TRUE)
+    // iRun             sets whether the actor will walk (false) or run (true)
     // fRange           how many metres from the target the actor should be at the end of movement (keep this number low if you're timing the movement!)
         // NOTE - due to a bug in BioWare's ActionMoveToObject function, if you set fRange > 0.0 for a PC, the PC will run regardless of what you set iRun to be
     // fTime            how many seconds the movement should take - leave at 0.0 if you don't want to adjust the actor's speed
@@ -167,8 +167,8 @@ void GestaltActionMove(float fDelay, object oActor, object oDestination, int iRu
         // NOTE - this allows you to send actors to objects or waypoints created during the cutscene, as long as they have a unique tag
         // If you want to do this, set oDestination to OBJECT_INVALID and sDestination to the tag of the object you want to move to
         // If the object you want to send the actor to exists at the start of the cutscene, leave sDestination as ""
-    // bTowards         sets whether the actor should move towards (TRUE) or away from (FALSE) the destination
-void GestaltTagActionMove(float fDelay, string sActor, object oDestination, int iRun = FALSE, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = TRUE);
+    // bTowards         sets whether the actor should move towards (true) or away from (false) the destination
+void GestaltTagActionMove(float fDelay, string sActor, object oDestination, int iRun = false, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = true);
 
 // Jumps the selected actor to the position of another object
     // fDelay           how many seconds to wait before jump is added to oActor's action queue
@@ -290,7 +290,7 @@ void GestaltTagSpeak(float fDelay, string sActor, string sLine, int iAnimation =
         // If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the character you want the actor to talk to
         // If you have already set oTarget, leave sTarget at its default value of ""
     // bGreet           whether or not the character should play its greeting sound when the conversation starts
-void GestaltActionConversation(float fDelay, object oActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = TRUE);
+void GestaltActionConversation(float fDelay, object oActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = true);
 
 // Tell the selected actor to start a conversation. NOTE players can hold a conversation while in cutscene mode.
     // fDelay           how many seconds to wait before speech is added to oActor's action queue
@@ -302,7 +302,7 @@ void GestaltActionConversation(float fDelay, object oActor, object oTarget, stri
         // If you want to do this, set oTarget to OBJECT_INVALID and sTarget to the tag of the character you want the actor to talk to
         // If you have already set oTarget, leave sTarget at its default value of ""
     // bGreet           whether or not the character should play its greeting sound when the conversation starts
-void GestaltTagActionConversation(float fDelay, string sActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = TRUE);
+void GestaltTagActionConversation(float fDelay, string sActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = true);
 
 // Tells the selected actor to face in a particular direction
     // fDelay           how many seconds to wait before facing command is added to oActor's action queue
@@ -404,7 +404,7 @@ void GestaltActionUnequip(float fDelay, object oActor, int iSlot = INVENTORY_SLO
         // NOTE - this is included so that you can attack objects and creatures that are created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
     // bPassive         whether or not to attack in passive mode
-void GestaltActionAttack(float fDelay, object oActor, object oTarget, string sTarget = "", int bPassive = FALSE);
+void GestaltActionAttack(float fDelay, object oActor, object oTarget, string sTarget = "", int bPassive = false);
 
 // Tells the selected actor to attack something
     // fDelay           how many seconds to wait before attack is added to oActor's action queue
@@ -414,7 +414,7 @@ void GestaltActionAttack(float fDelay, object oActor, object oTarget, string sTa
         // NOTE - this is included so that you can attack objects and creatures that are created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
     // bPassive         whether or not to attack in passive mode
-void GestaltTagActionAttack(float fDelay, string sActor, object oTarget, string sTarget = "", int bPassive = FALSE);
+void GestaltTagActionAttack(float fDelay, string sActor, object oTarget, string sTarget = "", int bPassive = false);
 
 // Applies an effect to a target
     // fDelay           how many seconds to wait before applying the effect
@@ -474,7 +474,7 @@ void GestaltClearEffect(float fDelay, object oActor, int iFX = EFFECT_TYPE_CUTSC
     // oActor           the character you want this command to go into the action queue for
         // NOTE - this is NOT the character the object is created on!
     // oTarget          the object, character or waypoint you want to create the item at or on
-    // iType            the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)
+    // iType            the OBJECT_TYPE_* you want to create (eg, ObjectType.Creature, ObjectType.Placeable etc)
     // sRef             the resref of the object you want to create
         // NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create
     // sTag             the tag you want the object to be given when it is created
@@ -483,19 +483,19 @@ void GestaltClearEffect(float fDelay, object oActor, int iFX = EFFECT_TYPE_CUTSC
     // iAnim            whether or not the object should play its entry animation when it is created
     // iStack           sets how many of the items you want to create
         // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM
-    // bCreateOn        set this to TRUE if you want to create an item in the target's inventory
+    // bCreateOn        set this to true if you want to create an item in the target's inventory
         // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location
     // sTarget          the tag of the object, character or waypoint you want to create the item at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
-void GestaltActionCreate(float fDelay, object oActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, int bCreateOn = FALSE, string sTarget = "");
+void GestaltActionCreate(float fDelay, object oActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, int bCreateOn = false, string sTarget = "");
 
 // Creates something on or at the selected object, creature or waypoint
     // fDelay           how many seconds to wait before the function is added to the actor's action queue
     // sActor           the tag of the character you want this command to go into the action queue for - MAKE SURE THIS IS UNIQUE!
         // NOTE - this is NOT the character the object is created on!
     // oTarget          the object, character or waypoint you want to create the item at or on
-    // iType            the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)
+    // iType            the OBJECT_TYPE_* you want to create (eg, ObjectType.Creature, ObjectType.Placeable etc)
     // sRef             the resref of the object you want to create
         // NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create
     // sTag             the tag you want the object to be given when it is created
@@ -504,17 +504,17 @@ void GestaltActionCreate(float fDelay, object oActor, object oTarget, int iType,
     // iAnim            whether or not the object should play its entry animation when it is created
     // iStack           sets how many of the items you want to create
         // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM
-    // bCreateOn        set this to TRUE if you want to create an item in the target's inventory
+    // bCreateOn        set this to true if you want to create an item in the target's inventory
         // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location
     // sTarget          the tag of the object, character or waypoint you want to create the item at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
-void GestaltTagActionCreate(float fDelay, string sActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, int bCreateOn = FALSE, string sTarget = "");
+void GestaltTagActionCreate(float fDelay, string sActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, int bCreateOn = false, string sTarget = "");
 
 // Creates something on or at the selected object, creature or waypoint
     // fDelay           how many seconds to wait before the object is created
     // oTarget          the object, character or waypoint you want to create the item at or on
-    // iType            the OBJECT_TYPE_* you want to create (eg, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE etc)
+    // iType            the OBJECT_TYPE_* you want to create (eg, ObjectType.Creature, ObjectType.Placeable etc)
     // sRef             the resref of the object you want to create
         // NOTE - you can create gold by using "nw_it_gold001" as sRef and setting iStack to how many GP you want to create
     // sTag             the tag you want the object to be given when it is created
@@ -523,26 +523,26 @@ void GestaltTagActionCreate(float fDelay, string sActor, object oTarget, int iTy
     // iAnim            whether or not the object should play its entry animation when it is created
     // iStack           sets how many of the items you want to create
         // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM
-    // bCreateOn        set this to TRUE if you want to create an item in the target's inventory
+    // bCreateOn        set this to true if you want to create an item in the target's inventory
         // NOTE - this can only be used if iType is OBJECT_TYPE_ITEM - all other objects will always appear on the ground at oTarget's location
     // sTarget          the tag of the object, character or waypoint you want to create the item at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
-void GestaltCreate(float fDelay, object oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, int bCreateOn = FALSE, string sTarget = "");
+void GestaltCreate(float fDelay, object oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, int bCreateOn = false, string sTarget = "");
 
 // Copies a creature or inventory item
 // Note that due to NWN limitations, this function will not work on placeable objects or doors
     // fDelay           how many seconds to wait before copying the object
     // oSource          the object you want to copy
     // oTarget          the object you want to create the copy at or on
-    // bCreateOn        set this to TRUE if you want to put the copy in oTarget's inventory
+    // bCreateOn        set this to true if you want to put the copy in oTarget's inventory
         // NOTE - this can only be used for items, and will only work if oTarget has an inventory (ie, it's a creature or a container)
     // sTag             the tag you want to give the new item
         // NOTE - leave sTag as "" if you want to use the default tag for the object, as defined in its blueprint
     // sTarget          the tag of the object you want to create the copy at or on
         // NOTE - this is included so that you can create objects on other objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
-void GestaltCopy(float fDelay, object oSource, object oTarget, int bCreateOn = FALSE, string sTag = "", string sTarget = "");
+void GestaltCopy(float fDelay, object oSource, object oTarget, int bCreateOn = false, string sTag = "", string sTarget = "");
 
 // Creates a clone of the selected PC which you can then move around from your cutscene script
     // fDelay           how many seconds to wait before copying the object
@@ -555,69 +555,69 @@ void GestaltCopy(float fDelay, object oSource, object oTarget, int bCreateOn = F
         // NOTE - this is included so that you can create clones at the position of other objects created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
     // bInvisible       sets whether or not you want to make the PC invisible, allowing you to use them as a cameraman while their clone does the acting
-void GestaltClonePC(float fDelay, object oPC, object oTarget, string sTag = "cloned_pc", string sTarget = "", int bInvisible = TRUE);
+void GestaltClonePC(float fDelay, object oPC, object oTarget, string sTag = "cloned_pc", string sTarget = "", int bInvisible = true);
 
 // Tells the actor to cast (or fake casting) a spell at an object
     // fDelay           how many seconds to wait before adding the spell cast to the actor's action queue
     // oActor           the character you want to cast the spell
     // oTarget          the object you want to cast the spell at
     // iSpell           the SPELL_* you want to be cast
-    // bFake            whether to only create the animations and visual effects for the spell (TRUE) or to really cast the spell (FALSE)
-        // NOTE - if iFake is TRUE, bCheat, bInstant and iMeta aren't used
+    // bFake            whether to only create the animations and visual effects for the spell (true) or to really cast the spell (false)
+        // NOTE - if iFake is true, bCheat, bInstant and iMeta aren't used
     // iPath            the PROJECTILE_PATH_TYPE_* the spell should use (uses spell's default path unless told otherwise)
     // sTarget          the tag of the object you want to cast the spell at
         // NOTE - this is included so that you can cast spells at objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
     // bCheat           whether or not to let the character cast the spell even if he wouldn't normally be able to
-    // bInstant         if bInstant is set to TRUE, the character will cast the spell immediately without playing their casting animation
+    // bInstant         if bInstant is set to true, the character will cast the spell immediately without playing their casting animation
     // iLevel           if iLevel is set to anything other than 0, that is the level at which the spell will be cast, rather than the actor's real level
     // iMeta            the METAMAGIC_* type you want the caster to cast the spell using (NONE by default)
-void GestaltActionSpellCast(float fDelay, object oActor, object oTarget, int iSpell, int bFake = FALSE, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = TRUE, int bInstant = FALSE, int iLevel = 0, int iMeta = METAMAGIC_NONE);
+void GestaltActionSpellCast(float fDelay, object oActor, object oTarget, int iSpell, int bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = true, int bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE);
 
 // Tells the actor to cast (or fake casting) a spell at an object
     // fDelay           how many seconds to wait before adding the spell cast to the actor's action queue
     // sActor           the tag of the character you want to cast the spell - MAKE SURE THIS IS UNIQUE!
     // oTarget          the object you want to cast the spell at
     // iSpell           the SPELL_* you want to be cast
-    // bFake            whether to only create the animations and visual effects for the spell (TRUE) or to really cast the spell (FALSE)
-        // NOTE - if iFake is TRUE, bCheat, bInstant and iMeta aren't used
+    // bFake            whether to only create the animations and visual effects for the spell (true) or to really cast the spell (false)
+        // NOTE - if iFake is true, bCheat, bInstant and iMeta aren't used
     // iPath            the PROJECTILE_PATH_TYPE_* the spell should use (uses spell's default path unless told otherwise)
     // sTarget          the tag of the object you want to cast the spell at
         // NOTE - this is included so that you can cast spells at objects that have been created during the cutscene
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
     // bCheat           whether or not to let the character cast the spell even if he wouldn't normally be able to
-    // bInstant         if bInstant is set to TRUE, the character will cast the spell immediately without playing their casting animation
+    // bInstant         if bInstant is set to true, the character will cast the spell immediately without playing their casting animation
     // iLevel           if iLevel is set to anything other than 0, that is the level at which the spell will be cast, rather than the actor's real level
     // iMeta            the METAMAGIC_* type you want the caster to cast the spell using (NONE by default)
-void GestaltTagActionSpellCast(float fDelay, string sActor, object oTarget, int iSpell, int bFake = FALSE, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = TRUE, int bInstant = FALSE, int iLevel = 0, int iMeta = METAMAGIC_NONE);
+void GestaltTagActionSpellCast(float fDelay, string sActor, object oTarget, int iSpell, int bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = true, int bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE);
 
 // Tells the actor to close a door
     // fDelay           how many seconds to wait before adding the command to the actor's action queue
     // oActor           the character you want to close the door
     // oDoor            the door you want them to close
     // bLock            whether or not they should lock the door once it's closed
-void GestaltActionClose(float fDelay, object oActor, object oDoor, int bLock = FALSE);
+void GestaltActionClose(float fDelay, object oActor, object oDoor, int bLock = false);
 
 // Tells the actor to open a door
     // fDelay           how many seconds to wait before adding the command to the actor's action queue
     // oActor           the character you want to open the door
     // oDoor            the door you want them to open
     // bUnlock          whether or not they should unlock the door if necessary before opening it
-void GestaltActionOpen(float fDelay, object oActor, object oDoor, int bUnlock = TRUE);
+void GestaltActionOpen(float fDelay, object oActor, object oDoor, int bUnlock = true);
 
 // Tells the actor to close a door
     // fDelay           how many seconds to wait before adding the command to the actor's action queue
     // sActor           the tag of the character you want to close the door - MAKE SURE THIS IS UNIQUE!
     // oDoor            the door you want them to close
     // bLock            whether or not they should lock the door once it's closed
-void GestaltTagActionClose(float fDelay, string sActor, object oDoor, int bLock = FALSE);
+void GestaltTagActionClose(float fDelay, string sActor, object oDoor, int bLock = false);
 
 // Tells the actor to open a door
     // fDelay           how many seconds to wait before adding the command to the actor's action queue
     // sActor           the tag of the character you want to open the door - MAKE SURE THIS IS UNIQUE!
     // oDoor            the door you want them to open
     // bUnlock          whether or not they should unlock the door if necessary before opening it
-void GestaltTagActionOpen(float fDelay, string sActor, object oDoor, int bUnlock = TRUE);
+void GestaltTagActionOpen(float fDelay, string sActor, object oDoor, int bUnlock = true);
 
 // Tells the actor to pick up an object from the ground
     // fDelay           how many seconds to wait before adding the command to the actor's action queue
@@ -658,35 +658,35 @@ void GestaltTagActionSit(float fDelay, string sActor, object oChair, string sCha
 // This function allows you to activate and deactivate sound objects, as well as to adjust their position and volume
     // fDelay           how many seconds to wait before making the change
     // oSound           the sound object you want to adjust
-    // bOn              set to TRUE to switch the sound object on, or FALSE to switch it off
+    // bOn              set to true to switch the sound object on, or false to switch it off
     // fDuration        how long the sound object should stay on / off for
         // NOTE - leave fDuration at its default value of 0.0 to switch the sound object on / off permanently
     // iVolume          changes the volume of the sound (iVolume must be between 0 and 127)
         // NOTE - leave iVolume at its default value of 128 to leave the volume unchanged
     // oPosition        changes the sound to play from the position of the specified object
         // NOTE - leave oPosition at its default value of OBJECT_INVALID to leave the position unchanged
-void GestaltSoundObject(float fDelay, object oSound, int bOn = TRUE, float fDuration = 0.0, int iVolume = 128, object oPosition = OBJECT_INVALID);
+void GestaltSoundObject(float fDelay, object oSound, int bOn = true, float fDuration = 0.0, int iVolume = 128, object oPosition = OBJECT_INVALID);
 
 // This function allows you to activate and deactivate sound objects, as well as to adjust their position and volume
     // fDelay           how many seconds to wait before making the change
     // oArea            the area whose ambient sound you want to adjust
-    // bOn              set to TRUE to switch the ambient sound on, or FALSE to switch it off
+    // bOn              set to true to switch the ambient sound on, or false to switch it off
     // fDuration        how long the ambient sound should stay on / off for
         // NOTE - leave fDuration at its default value of 0.0 to switch the sound on / off permanently
     // iVolume          changes the volume of the area's ambient sound (iVolume must be between 0 and 100)
         // NOTE - leave iVolume at its default value of 128 to leave the volume unchanged
-void GestaltAmbientSound(float fDelay, object oArea, int bOn = TRUE, float fDuration = 0.0, int iVolume = 128);
+void GestaltAmbientSound(float fDelay, object oArea, int bOn = true, float fDuration = 0.0, int iVolume = 128);
 
 // This function allows you to play a specific piece of soundtrack music at any point in the cutscene
     // fDelay           how many seconds to wait before changing the music
     // oArea            the area whose music you want to change
-    // bOn              set to TRUE to switch the area music on, or FALSE to switch it off
+    // bOn              set to true to switch the area music on, or false to switch it off
     // iTrack           the TRACK_* you want to play
         // NOTE - leave iTrack at its default value of TRACK_CURRENT to leave the area music unchanged
         // NOTE - set iTrack to TRACK_ORIGINAL if you want to switch all the music settings for the area back to their original values
     // fDuration        how long the music should stay on / off for and how long the new piece of music (if you changed the track) should remain active
         // NOTE - leave fDuration at its default value of 0.0 to make the changes permanent
-void GestaltPlayMusic(float fDelay, object oArea, int bOn = TRUE, int iTrack = TRACK_CURRENT, float fDuration = 0.0);
+void GestaltPlayMusic(float fDelay, object oArea, int bOn = true, int iTrack = TRACK_CURRENT, float fDuration = 0.0);
 
 // Tells the actor to play a sound file
     // fDelay           how many seconds to wait before playing the sound
@@ -731,12 +731,12 @@ void GestaltClearActions(float fDelay, object oActor, string sActor="");
     // oActor           the object above which the text should appear
     // sMessage         the text you want to appear
     // bFaction         whether or not the text will only appear to members in the object's faction
-        // NOTE - if you set this to TRUE and oActor is an object or an NPC which isn't in the PC's party, nobody will see it
-        // NOTE - if you set this to TRUE and oActor is a PC, only other players in their party will see it
-        // NOTE - if you set this to FALSE, everyone on the server will see the message appear in their chat window
-void GestaltFloatingText(float fDelay, object oActor, string sMessage, int bFaction = TRUE);
+        // NOTE - if you set this to true and oActor is an object or an NPC which isn't in the PC's party, nobody will see it
+        // NOTE - if you set this to true and oActor is a PC, only other players in their party will see it
+        // NOTE - if you set this to false, everyone on the server will see the message appear in their chat window
+void GestaltFloatingText(float fDelay, object oActor, string sMessage, int bFaction = true);
 
-// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+// Destroy the specified object. The function will SetIsDestroyable(true) the object first to make sure it can be destroyed.
     // fDelay           how many seconds to wait before destroying the target
     // oTarget          the object you want to destroy
     // sTarget          the tag of the object you want to destroy
@@ -744,7 +744,7 @@ void GestaltFloatingText(float fDelay, object oActor, string sMessage, int bFact
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
 void GestaltDestroy(float fDelay, object oTarget, string sTarget = "");
 
-// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+// Destroy the specified object. The function will SetIsDestroyable(true) the object first to make sure it can be destroyed.
     // fDelay           how many seconds to wait before adding this command to the actor's action queue
     // oActor           the actor whose action queue you want this to be placed in
         // NOTE - this is not the object that will be destroyed!
@@ -754,7 +754,7 @@ void GestaltDestroy(float fDelay, object oTarget, string sTarget = "");
         // NOTE - leave sTarget at its default value of "" if you have already set oTarget
 void GestaltActionDestroy(float fDelay, object oActor, object oTarget, string sTarget = "");
 
-// Destroy the specified object. The function will SetIsDestroyable(TRUE) the object first to make sure it can be destroyed.
+// Destroy the specified object. The function will SetIsDestroyable(true) the object first to make sure it can be destroyed.
     // fDelay           how many seconds to wait before adding this command to the actor's action queue
     // sActor           the tag of the actor whose action queue you want this to be placed in - MAKE SURE THIS IS UNIQUE!
         // NOTE - this is not the object that will be destroyed!
@@ -776,8 +776,8 @@ void GestaltTagActionDestroy(float fDelay, string sActor, object oTarget, string
     // bRewardAll       sets whether or not to give the XP reward to all the players you updated the journal for, or only for oPC
         // NOTE - if iXP or iParty is 0 you can ignore this option
     // bOverride        sets whether or not to allow the function to give a player a quest state lower than the one they already have in that quest
-        // NOTE - this is TRUE by default!
-void GestaltJournalEntry(float fDelay, object oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, int bRewardAll = TRUE, int bOverride = FALSE);
+        // NOTE - this is true by default!
+void GestaltJournalEntry(float fDelay, object oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, int bRewardAll = true, int bOverride = false);
 
 // Execute another script
     // fDelay           how many seconds to wait before triggering the other script
@@ -810,9 +810,9 @@ void GestaltActionTimeStamp(float fDelay, object oActor, string sMessage);
     // oPC              the player whose camera movements you want to stop
     // iParty           sets whether to stop the camera of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)
 // DO NOT CHANGE THE FOLLOWING SETTINGS!
-    // bAuto            sets whether the function should stop all camera movement (TRUE) or only ones with an id lower than iCamID (FALSE)
-    // iCamID           the ID of the last camera move you want to stop (this is only needed if bAuto is set to FALSE)
-void GestaltStopCameraMoves(object oPC, int iParty = 0, int bAuto = TRUE, int iCamID = 0);
+    // bAuto            sets whether the function should stop all camera movement (true) or only ones with an id lower than iCamID (false)
+    // iCamID           the ID of the last camera move you want to stop (this is only needed if bAuto is set to false)
+void GestaltStopCameraMoves(object oPC, int iParty = 0, int bAuto = true, int iCamID = 0);
 
 // Gets the vector linking object A to object B
 vector GetVectorAB(object oA, object oB);
@@ -1101,7 +1101,7 @@ float GestaltGetSpeed(object oActor,int iRun)
         case 7:               fSpeed = 5.50;      break;    // DM Fast
         }
 
-    if (iRun == TRUE)                                   { fSpeed = fSpeed * 2; }
+    if (iRun == true)                                   { fSpeed = fSpeed * 2; }
 //    if (GetHasFeat(FEAT_BARBARIAN_ENDURANCE,oActor))    { fSpeed = fSpeed * 1.1; }
 //    if (GetHasFeat(FEAT_MONK_ENDURANCE,oActor))         { fSpeed = fSpeed * GestaltMonkSpeed(oActor); }
 
@@ -1143,13 +1143,13 @@ void SetSpawnCondition(object oActor, int nCondition, int bValid)
 {
     int nPlot = GetLocalInt(oActor,"NW_GENERIC_MASTER");
 
-    if(bValid == TRUE)
+    if(bValid == true)
         {
         nPlot = nPlot | nCondition;
         SetLocalInt(oActor,"NW_GENERIC_MASTER",nPlot);
         }
 
-    else if (bValid == FALSE)
+    else if (bValid == false)
         {
         nPlot = nPlot & ~nCondition;
         SetLocalInt(oActor,"NW_GENERIC_MASTER",nPlot);
@@ -1162,8 +1162,8 @@ int GetSpawnCondition(object oActor, int nCondition)
 {
     int nPlot = GetLocalInt(oActor,"NW_GENERIC_MASTER");
     if(nPlot & nCondition)
-        { return TRUE; }
-    return FALSE;
+        { return true; }
+    return false;
 }
 
 
@@ -1171,7 +1171,7 @@ int GetSpawnCondition(object oActor, int nCondition)
 void GestaltRegisterActor(string sName, object oActor, string sActor = "")
 {
     // Make sure the actor is a valid NPC
-    if (GetObjectType(oActor) != OBJECT_TYPE_CREATURE)  { return; }
+    if (GetObjectType(oActor) != ObjectType.Creature)  { return; }
     if (GetIsPC(oActor))                                { return; }
     if (sActor != "")                                   { oActor = GetObjectByTag(sActor); }
     if (sActor == "")                                   { sActor = GetTag(oActor); }
@@ -1184,26 +1184,26 @@ void GestaltRegisterActor(string sName, object oActor, string sActor = "")
 
     if (GetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS))
         {
-        SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS,FALSE);
+        SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS,false);
         SetLocalInt(oActor,"gcss_ambient",1);
         }
 
     if (GetSpawnCondition(oActor,NW_FLAG_IMMOBILE_AMBIENT_ANIMATIONS))
         {
-        SetSpawnCondition(oActor,NW_FLAG_IMMOBILE_AMBIENT_ANIMATIONS,FALSE);
+        SetSpawnCondition(oActor,NW_FLAG_IMMOBILE_AMBIENT_ANIMATIONS,false);
         SetLocalInt(oActor,"gcss_immobile",1);
         }
 
     if (GetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS_AVIAN))
         {
-        SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS_AVIAN,FALSE);
+        SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS_AVIAN,false);
         SetLocalInt(oActor,"gcss_avian",1);
         }
 
     int iActors = GetLocalInt(GetModule(),sName + "actorsregistered") + 1;
     SetLocalObject(GetModule(),sName + "actor" + IntToString(iActors),oActor);
     SetLocalInt(GetModule(),sName + "actorsregistered",iActors);
-    SetLocalInt(GetModule(),sName + sActor + "registered",TRUE);
+    SetLocalInt(GetModule(),sName + sActor + "registered",true);
 }
 
 
@@ -1244,24 +1244,24 @@ void GestaltClearActors(string sName, string sID)
             {
             sActor = GetTag(oActor);
             DeleteLocalInt(GetModule(),sName + sActor + "registered");
-            AssignCommand(oActor,ClearAllActions(TRUE));
+            AssignCommand(oActor,ClearAllActions(true));
 
             if (GetLocalInt(oActor,"gcss_ambient") == 1)
                 {
                 DeleteLocalInt(oActor,"gcss_ambient");
-                SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS,TRUE);
+                SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS,true);
                 }
 
             if (GetLocalInt(oActor,"gcss_immobile") == 1)
                 {
                 DeleteLocalInt(oActor,"gcss_immobile");
-                SetSpawnCondition(oActor,NW_FLAG_IMMOBILE_AMBIENT_ANIMATIONS,TRUE);
+                SetSpawnCondition(oActor,NW_FLAG_IMMOBILE_AMBIENT_ANIMATIONS,true);
                 }
 
             if (GetLocalInt(oActor,"gcss_avian") == 1)
                 {
                 DeleteLocalInt(oActor,"gcss_avian");
-                SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS_AVIAN,TRUE);
+                SetSpawnCondition(oActor,NW_FLAG_AMBIENT_ANIMATIONS_AVIAN,true);
                 }
 
             oWP = GetWaypointByTag(sName + sActor);
@@ -1285,7 +1285,7 @@ void GestaltClearActors(string sName, string sID)
 
 // Cutscene setup / abort control functions
 
-void GestaltStartCutscene(object oPC, string sName, int bCamera = TRUE, int bClear = TRUE, int bClearFX = TRUE, int bResetSpeed = TRUE, int bStoreCam = TRUE, int iParty = 0)
+void GestaltStartCutscene(object oPC, string sName, int bCamera = true, int bClear = true, int bClearFX = true, int bResetSpeed = true, int bStoreCam = true, int iParty = 0)
 {
     object oParty;
 
@@ -1301,18 +1301,18 @@ void GestaltStartCutscene(object oPC, string sName, int bCamera = TRUE, int bCle
 
     while (GetIsObjectValid(oParty))
         {
-        SetCutsceneMode(oParty,TRUE);
+        SetCutsceneMode(oParty,true);
         SetLocalString(oParty,"cutscene",sName);
         SetLocalString(oParty,"cutsceneid",sID);
 
         if (bCamera)            { GestaltStopCameraMoves(oPC); }
-        if (bClear)             { AssignCommand(oParty,ClearAllActions(TRUE)); }
+        if (bClear)             { AssignCommand(oParty,ClearAllActions(true)); }
         if (bClearFX)           { GestaltClearFX(oPC); }
         if (bResetSpeed)        { GestaltResetSpeed(oPC); }
         if (bStoreCam)          { AssignCommand(oParty,StoreCameraFacing()); }
         if (bStoreCam == 2)     { DelayCommand(5.0,AssignCommand(oParty,StoreCameraFacing())); }
 
-        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)   { oParty = GetNextPC(); }
         else                    { return; }
         }
@@ -1320,14 +1320,14 @@ void GestaltStartCutscene(object oPC, string sName, int bCamera = TRUE, int bCle
 
 
 
-void GestaltDoStopCutscene(string sName, string sID, object oPC, string sDestination = "", int bMode = TRUE, int bCamera = TRUE, int bClear = TRUE, int bClearFX = TRUE, int bResetSpeed = TRUE, int bClearActors = TRUE, int iParty = 0)
+void GestaltDoStopCutscene(string sName, string sID, object oPC, string sDestination = "", int bMode = true, int bCamera = true, int bClear = true, int bClearFX = true, int bResetSpeed = true, int bClearActors = true, int iParty = 0)
 {
     // Check cutscene hasn't been stopped already
     if (GetLocalInt(GetModule(),sID))
         { return; }
 
     // Otherwise stop cutscene
-    SetLocalInt(GetModule(),sID,TRUE);
+    SetLocalInt(GetModule(),sID,true);
     DeleteLocalString(GetModule(),"cutscene");
 
     object oParty;
@@ -1342,9 +1342,9 @@ void GestaltDoStopCutscene(string sName, string sID, object oPC, string sDestina
     while (GetIsObjectValid(oParty))
         {
         // End cutscene mode and clear selected player
-        if (bMode)              { SetCutsceneMode(oParty,FALSE); }
+        if (bMode)              { SetCutsceneMode(oParty,false); }
         if (bCamera)            { GestaltStopCameraMoves(oParty); }
-        if (bClear)             { AssignCommand(oParty,ClearAllActions(TRUE)); }
+        if (bClear)             { AssignCommand(oParty,ClearAllActions(true)); }
         if (bClearFX)           { GestaltClearFX(oParty); }
         if (bResetSpeed)        { GestaltResetSpeed(oParty); }
         if (sDestination != "") { AssignCommand(oParty,JumpToObject(GetWaypointByTag(sDestination))); }
@@ -1353,7 +1353,7 @@ void GestaltDoStopCutscene(string sName, string sID, object oPC, string sDestina
         DeleteLocalString(oParty,"cutscene");
         DeleteLocalString(oParty,"cutsceneid");
 
-        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)   { oParty = GetNextPC(); }
         else                    { return; }
         }
@@ -1361,7 +1361,7 @@ void GestaltDoStopCutscene(string sName, string sID, object oPC, string sDestina
 
 
 
-void GestaltStopCutscene(float fDelay, object oPC, string sDestination = "", int bMode = TRUE, int bCamera = TRUE, int bClear = TRUE, int bClearFX = TRUE, int bResetSpeed = TRUE, int bClearActors = TRUE, int iParty = 0)
+void GestaltStopCutscene(float fDelay, object oPC, string sDestination = "", int bMode = true, int bCamera = true, int bClear = true, int bClearFX = true, int bResetSpeed = true, int bClearActors = true, int iParty = 0)
 {
     string sName = GetLocalString(oPC,"cutscene");
     string sID = GetLocalString(oPC,"cutsceneid");
@@ -1375,7 +1375,7 @@ void GestaltDoClearAssociate(object oAssociate, int iMethod, object oDestination
     if (!GetIsObjectValid(oAssociate))
         { return; }
 
-    AssignCommand(oAssociate,ClearAllActions(TRUE));
+    AssignCommand(oAssociate,ClearAllActions(true));
 
     if (iMethod == 0)
         {
@@ -1390,12 +1390,12 @@ void GestaltDoClearAssociate(object oAssociate, int iMethod, object oDestination
 
     else if (iMethod == 2)
         {
-        AssignCommand(oAssociate,SetIsDestroyable(TRUE));
+        AssignCommand(oAssociate,SetIsDestroyable(true));
         DestroyObject(oAssociate);
         }
 
     DelayCommand(0.1,ApplyEffectToObject(PERMANENT,EffectCutsceneParalyze(),oAssociate));
-    DelayCommand(0.1,SetCommandable(FALSE,oAssociate));
+    DelayCommand(0.1,SetCommandable(false,oAssociate));
 }
 
 
@@ -1496,7 +1496,7 @@ void GestaltClearAssociates(float fDelay, object oPC, int iAssociates = 63, int 
         {
         DelayCommand(fDelay,GestaltDoClearAssociates(sName,oParty,iAssociates,iMethod,oDestination,sDestination));
 
-        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)   { oParty = GetNextPC(); }
         else                    { return; }
         }
@@ -1509,7 +1509,7 @@ void GestaltDoReturnAssociate(object oAssociate, object oDestination, int iMetho
     if (!GetIsObjectValid(oAssociate))
         { return; }
 
-    SetCommandable(TRUE,oAssociate);
+    SetCommandable(true,oAssociate);
     GestaltResetSpeed(oAssociate);
     if (iMethod == 1)           { GestaltClearFX(oAssociate); }
     DelayCommand(0.1,AssignCommand(oAssociate,JumpToObject(oDestination)));
@@ -1614,7 +1614,7 @@ void GestaltReturnAssociates(float fDelay, object oPC, int iAssociates = 63, int
         {
         DelayCommand(fDelay,GestaltDoReturnAssociates(sName,oParty,iAssociates,iMethod,oDestination,sDestination));
 
-        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)        { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)   { oParty = GetNextPC(); }
         else                    { return; }
         }
@@ -1796,7 +1796,7 @@ void GestaltDoMove(string sName, object oActor, string sActor, object oDestinati
 
 
 
-void GestaltTagActionMove(float fDelay, string sActor, object oDestination, int iRun = FALSE, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = TRUE)
+void GestaltTagActionMove(float fDelay, string sActor, object oDestination, int iRun = false, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoMove(sName,OBJECT_INVALID,sActor,oDestination,iRun,fRange,fTime,sDestination,bTowards));
@@ -1805,7 +1805,7 @@ void GestaltTagActionMove(float fDelay, string sActor, object oDestination, int 
 
 
 
-void GestaltActionMove(float fDelay, object oActor, object oDestination, int iRun = FALSE, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = TRUE)
+void GestaltActionMove(float fDelay, object oActor, object oDestination, int iRun = false, float fRange = 0.0, float fTime = 0.0, string sDestination = "", int bTowards = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoMove(sName,oActor,"",oDestination,iRun,fRange,fTime,sDestination,bTowards));
@@ -1814,7 +1814,7 @@ void GestaltActionMove(float fDelay, object oActor, object oDestination, int iRu
 
 
 
-void GestaltDoJump(string sName, object oActor, string sActor, object oTarget, string sTarget, int bAction = FALSE)
+void GestaltDoJump(string sName, object oActor, string sActor, object oTarget, string sTarget, int bAction = false)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -1825,8 +1825,8 @@ void GestaltDoJump(string sName, object oActor, string sActor, object oTarget, s
     if (sTarget != "")
         { oTarget = GetObjectByTag(sTarget); }
 
-    if (bAction)        { AssignCommand(oActor,ActionJumpToObject(oTarget,FALSE)); }
-    else                { AssignCommand(oActor,JumpToObject(oTarget,FALSE)); }
+    if (bAction)        { AssignCommand(oActor,ActionJumpToObject(oTarget,false)); }
+    else                { AssignCommand(oActor,JumpToObject(oTarget,false)); }
 }
 
 
@@ -1834,7 +1834,7 @@ void GestaltDoJump(string sName, object oActor, string sActor, object oTarget, s
 void GestaltTagActionJump(float fDelay, string sActor, object oTarget, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoJump(sName,OBJECT_INVALID,sActor,oTarget,sTarget,TRUE));
+    DelayCommand(fDelay,GestaltDoJump(sName,OBJECT_INVALID,sActor,oTarget,sTarget,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -1852,7 +1852,7 @@ void GestaltTagJump(float fDelay, string sActor, object oTarget, string sTarget 
 void GestaltActionJump(float fDelay, object oActor, object oTarget, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoJump(sName,oActor,"",oTarget,sTarget,TRUE));
+    DelayCommand(fDelay,GestaltDoJump(sName,oActor,"",oTarget,sTarget,true));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -1867,7 +1867,7 @@ void GestaltJump(float fDelay, object oActor, object oTarget, string sTarget = "
 
 
 
-void GestaltDoAnimate(string sName, object oActor, string sActor, int iAnim, float fDuration = 0.0, float fSpeed = 1.0, int bAction = FALSE)
+void GestaltDoAnimate(string sName, object oActor, string sActor, int iAnim, float fDuration = 0.0, float fSpeed = 1.0, int bAction = false)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -1884,7 +1884,7 @@ void GestaltDoAnimate(string sName, object oActor, string sActor, int iAnim, flo
 void GestaltTagActionAnimate(float fDelay, string sActor, int iAnim, float fDuration = 0.0, float fSpeed = 1.0)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoAnimate(sName,OBJECT_INVALID,sActor,iAnim,fDuration,fSpeed,TRUE));
+    DelayCommand(fDelay,GestaltDoAnimate(sName,OBJECT_INVALID,sActor,iAnim,fDuration,fSpeed,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -1902,7 +1902,7 @@ void GestaltTagAnimate(float fDelay, string sActor, int iAnim, float fDuration =
 void GestaltActionAnimate(float fDelay, object oActor, int iAnim, float fDuration = 0.0, float fSpeed = 1.0)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoAnimate(sName,oActor,"",iAnim,fDuration,fSpeed,TRUE));
+    DelayCommand(fDelay,GestaltDoAnimate(sName,oActor,"",iAnim,fDuration,fSpeed,true));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -1917,7 +1917,7 @@ void GestaltAnimate(float fDelay, object oActor, int iAnim, float fDuration = 0.
 
 
 
-void GestaltDoSpeak(string sName, object oActor, string sActor, string sLine, int iAnimation = ANIMATION_NONE, float fDuration = 0.0, float fSpeed = 1.0, int bAction = FALSE)
+void GestaltDoSpeak(string sName, object oActor, string sActor, string sLine, int iAnimation = ANIMATION_NONE, float fDuration = 0.0, float fSpeed = 1.0, int bAction = false)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -1945,7 +1945,7 @@ void GestaltDoSpeak(string sName, object oActor, string sActor, string sLine, in
 void GestaltTagActionSpeak(float fDelay, string sActor, string sLine, int iAnimation = ANIMATION_NONE, float fDuration = 0.0, float fSpeed = 1.0)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoSpeak(sName,OBJECT_INVALID,sActor,sLine,iAnimation,fDuration,fSpeed,TRUE));
+    DelayCommand(fDelay,GestaltDoSpeak(sName,OBJECT_INVALID,sActor,sLine,iAnimation,fDuration,fSpeed,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -1963,7 +1963,7 @@ void GestaltTagSpeak(float fDelay, string sActor, string sLine, int iAnimation =
 void GestaltActionSpeak(float fDelay, object oActor, string sLine, int iAnimation = ANIMATION_NONE, float fDuration = 0.0, float fSpeed = 1.0)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoSpeak(sName,oActor,"",sLine,iAnimation,fDuration,fSpeed,TRUE));
+    DelayCommand(fDelay,GestaltDoSpeak(sName,oActor,"",sLine,iAnimation,fDuration,fSpeed,true));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -1978,7 +1978,7 @@ void GestaltSpeak(float fDelay, object oActor, string sLine, int iAnimation = AN
 
 
 
-void GestaltDoConversation(string sName, object oActor, string sActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = TRUE)
+void GestaltDoConversation(string sName, object oActor, string sActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = true)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -1989,12 +1989,12 @@ void GestaltDoConversation(string sName, object oActor, string sActor, object oT
     if (sTarget != "")
         { oTarget = GetObjectByTag(sTarget); }
 
-    AssignCommand(oActor,ActionStartConversation(oTarget,sConv,FALSE,bGreet));
+    AssignCommand(oActor,ActionStartConversation(oTarget,sConv,false,bGreet));
 }
 
 
 
-void GestaltActionConversation(float fDelay, object oActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = TRUE)
+void GestaltActionConversation(float fDelay, object oActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoConversation(sName,oActor,"",oTarget,sConv,sTarget,bGreet));
@@ -2003,7 +2003,7 @@ void GestaltActionConversation(float fDelay, object oActor, object oTarget, stri
 
 
 
-void GestaltTagActionConversation(float fDelay, string sActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = TRUE)
+void GestaltTagActionConversation(float fDelay, string sActor, object oTarget, string sConv = "", string sTarget = "", int bGreet = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoConversation(sName,OBJECT_INVALID,sActor,oTarget,sConv,sTarget,bGreet));
@@ -2044,7 +2044,7 @@ void GestaltDoFace(string sName, object oActor, string sActor, object oTarget, i
 void GestaltTagActionFace(float fDelay, string sActor, float fFace, int iFace = 0, object oTarget = OBJECT_INVALID)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoFace(sName,OBJECT_INVALID,sActor,oTarget,iFace,fFace,TRUE));
+    DelayCommand(fDelay,GestaltDoFace(sName,OBJECT_INVALID,sActor,oTarget,iFace,fFace,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -2053,7 +2053,7 @@ void GestaltTagActionFace(float fDelay, string sActor, float fFace, int iFace = 
 void GestaltTagFace(float fDelay, string sActor, float fFace, int iFace = 0, object oTarget = OBJECT_INVALID)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoFace(sName,OBJECT_INVALID,sActor,oTarget,iFace,fFace,FALSE));
+    DelayCommand(fDelay,GestaltDoFace(sName,OBJECT_INVALID,sActor,oTarget,iFace,fFace,false));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -2062,7 +2062,7 @@ void GestaltTagFace(float fDelay, string sActor, float fFace, int iFace = 0, obj
 void GestaltActionFace(float fDelay, object oActor, float fFace, int iFace = 0, object oTarget = OBJECT_INVALID)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoFace(sName,oActor,"",oTarget,iFace,fFace,TRUE));
+    DelayCommand(fDelay,GestaltDoFace(sName,oActor,"",oTarget,iFace,fFace,true));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -2071,7 +2071,7 @@ void GestaltActionFace(float fDelay, object oActor, float fFace, int iFace = 0, 
 void GestaltFace(float fDelay, object oActor, float fFace, int iFace = 0, object oTarget = OBJECT_INVALID)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoFace(sName,oActor,"",oTarget,iFace,fFace,FALSE));
+    DelayCommand(fDelay,GestaltDoFace(sName,oActor,"",oTarget,iFace,fFace,false));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -2167,7 +2167,7 @@ void GestaltDoAttack(string sName, object oActor, string sActor, object oTarget,
 
 
 
-void GestaltTagActionAttack(float fDelay, string sActor, object oTarget, string sTarget = "", int bPassive = FALSE)
+void GestaltTagActionAttack(float fDelay, string sActor, object oTarget, string sTarget = "", int bPassive = false)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoAttack(sName,OBJECT_INVALID,sActor,oTarget,bPassive,sTarget));
@@ -2176,7 +2176,7 @@ void GestaltTagActionAttack(float fDelay, string sActor, object oTarget, string 
 
 
 
-void GestaltActionAttack(float fDelay, object oActor, object oTarget, string sTarget = "", int bPassive = FALSE)
+void GestaltActionAttack(float fDelay, object oActor, object oTarget, string sTarget = "", int bPassive = false)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoAttack(sName,oActor,"",oTarget,bPassive,sTarget));
@@ -2185,7 +2185,7 @@ void GestaltActionAttack(float fDelay, object oActor, object oTarget, string sTa
 
 
 
-void GestaltDoSpellCast(string sName, object oActor, string sActor, object oTarget, int iSpell, int bFake = FALSE, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = TRUE, int bInstant = FALSE, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+void GestaltDoSpellCast(string sName, object oActor, string sActor, object oTarget, int iSpell, int bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = true, int bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -2202,7 +2202,7 @@ void GestaltDoSpellCast(string sName, object oActor, string sActor, object oTarg
 
 
 
-void GestaltActionSpellCast(float fDelay, object oActor, object oTarget, int iSpell, int bFake = FALSE, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = TRUE, int bInstant = FALSE, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+void GestaltActionSpellCast(float fDelay, object oActor, object oTarget, int iSpell, int bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = true, int bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoSpellCast(sName,oActor,"",oTarget,iSpell,bFake,iPath,sTarget,bCheat,bInstant,iLevel,iMeta));
@@ -2211,7 +2211,7 @@ void GestaltActionSpellCast(float fDelay, object oActor, object oTarget, int iSp
 
 
 
-void GestaltTagActionSpellCast(float fDelay, string sActor, object oTarget, int iSpell, int bFake = FALSE, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = TRUE, int bInstant = FALSE, int iLevel = 0, int iMeta = METAMAGIC_NONE)
+void GestaltTagActionSpellCast(float fDelay, string sActor, object oTarget, int iSpell, int bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", int bCheat = true, int bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoSpellCast(sName,OBJECT_INVALID,sActor,oTarget,iSpell,bFake,iPath,sTarget,bCheat,bInstant,iLevel,iMeta));
@@ -2220,7 +2220,7 @@ void GestaltTagActionSpellCast(float fDelay, string sActor, object oTarget, int 
 
 
 
-void GestaltDoEffect(string sName, object oActor, string sActor, object oTarget, string sTarget, effect eFect, int iDuration = PERMANENT, float fDuration = 0.0, int bAction = FALSE)
+void GestaltDoEffect(string sName, object oActor, string sActor, object oTarget, string sTarget, effect eFect, int iDuration = PERMANENT, float fDuration = 0.0, int bAction = false)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -2266,7 +2266,7 @@ void GestaltApplyLocationEffect(float fDelay, location lTarget, effect eFect, in
 void GestaltActionEffect(float fDelay, object oActor, object oTarget, effect eFect, int iDuration = PERMANENT, float fDuration = 0.0, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoEffect(sName,oActor,"",oTarget,sTarget,eFect,iDuration,fDuration,TRUE));
+    DelayCommand(fDelay,GestaltDoEffect(sName,oActor,"",oTarget,sTarget,eFect,iDuration,fDuration,true));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -2275,7 +2275,7 @@ void GestaltActionEffect(float fDelay, object oActor, object oTarget, effect eFe
 void GestaltTagActionEffect(float fDelay, string sActor, object oTarget, effect eFect, int iDuration = PERMANENT, float fDuration = 0.0, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoEffect(sName,OBJECT_INVALID,sActor,oTarget,sTarget,eFect,iDuration,fDuration,TRUE));
+    DelayCommand(fDelay,GestaltDoEffect(sName,OBJECT_INVALID,sActor,oTarget,sTarget,eFect,iDuration,fDuration,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -2327,7 +2327,7 @@ void VoidCreateItemOnObject(string sRef, object oTarget, int iStack)
 
 
 
-void GestaltDoCreate(string sName, object oActor, string sActor, object oTarget, string sTarget, int iType, string sRef, string sTag, int iAnim, int iStack, int bCreateOn, int bAction = FALSE)
+void GestaltDoCreate(string sName, object oActor, string sActor, object oTarget, string sTarget, int iType, string sRef, string sTag, int iAnim, int iStack, int bCreateOn, int bAction = false)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -2350,25 +2350,25 @@ void GestaltDoCreate(string sName, object oActor, string sActor, object oTarget,
 
 
 
-void GestaltActionCreate(float fDelay, object oActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, int bCreateOn = FALSE, string sTarget = "")
+void GestaltActionCreate(float fDelay, object oActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, int bCreateOn = false, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoCreate(sName,oActor,"",oTarget,sTarget,iType,sRef,sTag,iAnim,iStack,bCreateOn,TRUE));
+    DelayCommand(fDelay,GestaltDoCreate(sName,oActor,"",oTarget,sTarget,iType,sRef,sTag,iAnim,iStack,bCreateOn,true));
     GestaltRegisterActor(sName,oActor);
 }
 
 
 
-void GestaltTagActionCreate(float fDelay, string sActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, int bCreateOn = FALSE, string sTarget = "")
+void GestaltTagActionCreate(float fDelay, string sActor, object oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, int bCreateOn = false, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoCreate(sName,OBJECT_INVALID,sActor,oTarget,sTarget,iType,sRef,sTag,iAnim,iStack,bCreateOn,TRUE));
+    DelayCommand(fDelay,GestaltDoCreate(sName,OBJECT_INVALID,sActor,oTarget,sTarget,iType,sRef,sTag,iAnim,iStack,bCreateOn,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
 
 
-void GestaltCreate(float fDelay, object oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, int bCreateOn = FALSE, string sTarget = "")
+void GestaltCreate(float fDelay, object oTarget, int iType, string sRef, string sTag = "", int iAnim = false, int iStack = 0, int bCreateOn = false, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoCreate(sName,OBJECT_INVALID,"",oTarget,sTarget,iType,sRef,sTag,iAnim,iStack,bCreateOn));
@@ -2389,7 +2389,7 @@ void GestaltDoCopy(string sName, object oSource, object oTarget, string sTarget,
 
 
 
-void GestaltCopy(float fDelay, object oSource, object oTarget, int bCreateOn = FALSE, string sTag = "", string sTarget = "")
+void GestaltCopy(float fDelay, object oSource, object oTarget, int bCreateOn = false, string sTag = "", string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoCopy(sName,oSource,oTarget,sTarget,sTag,bCreateOn));
@@ -2415,7 +2415,7 @@ void GestaltDoClone(string sName, object oPC, object oTarget, string sTarget, st
 
 
 
-void GestaltClonePC(float fDelay, object oPC, object oTarget, string sTag = "cloned_pc", string sTarget = "", int bInvisible = TRUE)
+void GestaltClonePC(float fDelay, object oPC, object oTarget, string sTag = "cloned_pc", string sTarget = "", int bInvisible = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoClone(sName,oPC,oTarget,sTarget,sTag,bInvisible));
@@ -2500,7 +2500,7 @@ void GestaltDoPlaySound(string sName, object oActor, string sActor, string sSoun
 void GestaltPlaySound(float fDelay, object oActor, string sSound, string sActor = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoPlaySound(sName,oActor,sActor,sSound,FALSE));
+    DelayCommand(fDelay,GestaltDoPlaySound(sName,oActor,sActor,sSound,false));
 
     if (sActor != "")           { GestaltRegisterActor(sName,OBJECT_INVALID,sActor); }
     else                        { GestaltRegisterActor(sName,oActor); }
@@ -2511,7 +2511,7 @@ void GestaltPlaySound(float fDelay, object oActor, string sSound, string sActor 
 void GestaltActionPlaySound(float fDelay, object oActor, string sSound, string sActor = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoPlaySound(sName,oActor,sActor,sSound,TRUE));
+    DelayCommand(fDelay,GestaltDoPlaySound(sName,oActor,sActor,sSound,true));
 
     if (sActor != "")           { GestaltRegisterActor(sName,OBJECT_INVALID,sActor); }
     else                        { GestaltRegisterActor(sName,oActor); }
@@ -2534,7 +2534,7 @@ void GestaltDoSoundObject(string sName, object oSound, int bOn, float fDuration,
 
 
 
-void GestaltSoundObject(float fDelay, object oSound, int bOn = TRUE, float fDuration = 0.0, int iVolume = 128, object oPosition = OBJECT_INVALID)
+void GestaltSoundObject(float fDelay, object oSound, int bOn = true, float fDuration = 0.0, int iVolume = 128, object oPosition = OBJECT_INVALID)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoSoundObject(sName,oSound,bOn,fDuration,iVolume,oPosition));
@@ -2561,7 +2561,7 @@ void GestaltDoAmbientSound(string sName, object oArea, int bOn, float fDuration,
 
 
 
-void GestaltAmbientSound(float fDelay, object oArea, int bOn = TRUE, float fDuration = 0.0, int iVolume = 128)
+void GestaltAmbientSound(float fDelay, object oArea, int bOn = true, float fDuration = 0.0, int iVolume = 128)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoAmbientSound(sName,oArea,bOn,fDuration,iVolume));
@@ -2569,7 +2569,7 @@ void GestaltAmbientSound(float fDelay, object oArea, int bOn = TRUE, float fDura
 
 
 
-void GestaltDoMusic(string sName, object oArea, int bOn = TRUE, int iTrack = TRACK_CURRENT, float fDuration = 0.0)
+void GestaltDoMusic(string sName, object oArea, int bOn = true, int iTrack = TRACK_CURRENT, float fDuration = 0.0)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -2606,7 +2606,7 @@ void GestaltDoMusic(string sName, object oArea, int bOn = TRUE, int iTrack = TRA
 
 
 
-void GestaltPlayMusic(float fDelay, object oArea, int bOn = TRUE, int iTrack = TRACK_CURRENT, float fDuration = 0.0)
+void GestaltPlayMusic(float fDelay, object oArea, int bOn = true, int iTrack = TRACK_CURRENT, float fDuration = 0.0)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoMusic(sName,oArea,bOn,iTrack,fDuration));
@@ -2623,63 +2623,63 @@ void GestaltDoDoor(string sName, object oActor, string sActor, object oDoor, int
 
     if (bOpen)
         {
-        if (bLock)      { AssignCommand(oActor,ActionDoCommand(SetLocked(oDoor,FALSE))); }
+        if (bLock)      { AssignCommand(oActor,ActionDoCommand(SetLocked(oDoor,false))); }
         AssignCommand(oActor,ActionOpenDoor(oDoor));
         }
 
     else
         {
         AssignCommand(oActor,ActionCloseDoor(oDoor));
-        if (bLock)      { AssignCommand(oActor,ActionDoCommand(SetLocked(oDoor,TRUE))); }
+        if (bLock)      { AssignCommand(oActor,ActionDoCommand(SetLocked(oDoor,true))); }
         }
 }
 
 
 
-void GestaltActionClose(float fDelay, object oActor, object oDoor, int bLock = FALSE)
+void GestaltActionClose(float fDelay, object oActor, object oDoor, int bLock = false)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDoor(sName,oActor,"",oDoor,bLock,FALSE));
+    DelayCommand(fDelay,GestaltDoDoor(sName,oActor,"",oDoor,bLock,false));
     GestaltRegisterActor(sName,oActor);
 }
 
 
 
-void GestaltActionOpen(float fDelay, object oActor, object oDoor, int bUnlock = TRUE)
+void GestaltActionOpen(float fDelay, object oActor, object oDoor, int bUnlock = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDoor(sName,oActor,"",oDoor,bUnlock,TRUE));
+    DelayCommand(fDelay,GestaltDoDoor(sName,oActor,"",oDoor,bUnlock,true));
     GestaltRegisterActor(sName,oActor);
 }
 
 
 
-void GestaltTagActionClose(float fDelay, string sActor, object oDoor, int bLock = FALSE)
+void GestaltTagActionClose(float fDelay, string sActor, object oDoor, int bLock = false)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDoor(sName,OBJECT_INVALID,sActor,oDoor,bLock,FALSE));
+    DelayCommand(fDelay,GestaltDoDoor(sName,OBJECT_INVALID,sActor,oDoor,bLock,false));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
 
 
-void GestaltTagActionOpen(float fDelay, string sActor, object oDoor, int bUnlock = TRUE)
+void GestaltTagActionOpen(float fDelay, string sActor, object oDoor, int bUnlock = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDoor(sName,OBJECT_INVALID,sActor,oDoor,bUnlock,TRUE));
+    DelayCommand(fDelay,GestaltDoDoor(sName,OBJECT_INVALID,sActor,oDoor,bUnlock,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
 
 
-void GestaltDoQuest(string sName, object oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, int bRewardAll = TRUE, int bOverride = FALSE)
+void GestaltDoQuest(string sName, object oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, int bRewardAll = true, int bOverride = false)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
 
-    if (iParty == 1)        { AddJournalQuestEntry(sQuest,iState,oPC,TRUE,FALSE,bOverride); }
-    else if (iParty == 2)   { AddJournalQuestEntry(sQuest,iState,oPC,FALSE,TRUE,bOverride); }
-    else                    { AddJournalQuestEntry(sQuest,iState,oPC,FALSE,FALSE,bOverride); }
+    if (iParty == 1)        { AddJournalQuestEntry(sQuest,iState,oPC,true,false,bOverride); }
+    else if (iParty == 2)   { AddJournalQuestEntry(sQuest,iState,oPC,false,true,bOverride); }
+    else                    { AddJournalQuestEntry(sQuest,iState,oPC,false,false,bOverride); }
 
     if (iXP == 0)           { return; }
     else if (iXP == 1)      { iXP = GetJournalQuestExperience(sQuest); }
@@ -2696,7 +2696,7 @@ void GestaltDoQuest(string sName, object oPC, string sQuest, int iState, int iXP
         {
         GiveXPToCreature(oParty,iXP);
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -2704,7 +2704,7 @@ void GestaltDoQuest(string sName, object oPC, string sQuest, int iState, int iXP
 
 
 
-void GestaltJournalEntry(float fDelay, object oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, int bRewardAll = TRUE, int bOverride = FALSE)
+void GestaltJournalEntry(float fDelay, object oPC, string sQuest, int iState, int iXP = 0, int iParty = 0, int bRewardAll = true, int bOverride = false)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoQuest(sName,oPC,sQuest,iState,iXP,iParty,bRewardAll,bOverride));
@@ -2749,7 +2749,7 @@ void GestaltDoClear(string sName, object oActor, string sActor)
 
     if (sActor != "")   { oActor = GetObjectByTag(sActor); }
 
-    AssignCommand(oActor,ClearAllActions(TRUE));
+    AssignCommand(oActor,ClearAllActions(true));
 }
 
 
@@ -2762,7 +2762,7 @@ void GestaltClearActions(float fDelay, object oActor, string sActor="")
 
 
 
-void GestaltDoFloatingText(string sName, object oActor, string sMessage, int bFaction = TRUE)
+void GestaltDoFloatingText(string sName, object oActor, string sMessage, int bFaction = true)
 {
     if (GetLocalInt(GetModule(),sName))
         { return; }
@@ -2772,7 +2772,7 @@ void GestaltDoFloatingText(string sName, object oActor, string sMessage, int bFa
 
 
 
-void GestaltFloatingText(float fDelay, object oActor, string sMessage, int bFaction = TRUE)
+void GestaltFloatingText(float fDelay, object oActor, string sMessage, int bFaction = true)
 {
     string sName = GetLocalString(GetModule(),"cutscene");
     DelayCommand(fDelay,GestaltDoFloatingText(sName,oActor,sMessage,bFaction));
@@ -2818,13 +2818,13 @@ void GestaltDoDestroy(string sName, object oActor, string sActor, object oTarget
 
     if (bAction)
         {
-        AssignCommand(oActor,ActionDoCommand(AssignCommand(oTarget,SetIsDestroyable(TRUE))));
+        AssignCommand(oActor,ActionDoCommand(AssignCommand(oTarget,SetIsDestroyable(true))));
         AssignCommand(oActor,ActionDoCommand(DestroyObject(oTarget)));
         }
 
     else
         {
-        AssignCommand(oTarget,SetIsDestroyable(TRUE));
+        AssignCommand(oTarget,SetIsDestroyable(true));
         DestroyObject(oTarget);
         }
 }
@@ -2834,7 +2834,7 @@ void GestaltDoDestroy(string sName, object oActor, string sActor, object oTarget
 void GestaltActionDestroy(float fDelay, object oActor, object oTarget, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDestroy(sName,oActor,"",oTarget,sTarget,TRUE));
+    DelayCommand(fDelay,GestaltDoDestroy(sName,oActor,"",oTarget,sTarget,true));
     GestaltRegisterActor(sName,oActor);
 }
 
@@ -2843,7 +2843,7 @@ void GestaltActionDestroy(float fDelay, object oActor, object oTarget, string sT
 void GestaltTagActionDestroy(float fDelay, string sActor, object oTarget, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDestroy(sName,OBJECT_INVALID,sActor,oTarget,sTarget,TRUE));
+    DelayCommand(fDelay,GestaltDoDestroy(sName,OBJECT_INVALID,sActor,oTarget,sTarget,true));
     GestaltRegisterActor(sName,OBJECT_INVALID,sActor);
 }
 
@@ -2852,7 +2852,7 @@ void GestaltTagActionDestroy(float fDelay, string sActor, object oTarget, string
 void GestaltDestroy(float fDelay, object oTarget, string sTarget = "")
 {
     string sName = GetLocalString(GetModule(),"cutscene");
-    DelayCommand(fDelay,GestaltDoDestroy(sName,OBJECT_INVALID,"",oTarget,sTarget,FALSE));
+    DelayCommand(fDelay,GestaltDoDestroy(sName,OBJECT_INVALID,"",oTarget,sTarget,false));
 }
 
 
@@ -2866,7 +2866,7 @@ void GestaltDestroy(float fDelay, object oTarget, string sTarget = "")
 
 // Camera functions
 
-void GestaltStopCameraMoves(object oPC, int iParty = 0, int bAuto = TRUE, int iCamID = 0)
+void GestaltStopCameraMoves(object oPC, int iParty = 0, int bAuto = true, int iCamID = 0)
 {
     object oParty;
     string sCam;
@@ -2894,7 +2894,7 @@ void GestaltStopCameraMoves(object oPC, int iParty = 0, int bAuto = TRUE, int iC
             // AssignCommand(oParty,SpeakString("Camera movement id " + IntToString(iCount) + "has been stopped"));
             }
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3053,7 +3053,7 @@ void GestaltCameraFaceTarget(object oTarget, float fRange, float fPitch, object 
         SetLocalFloat(oParty,"fCameraRange",fRange);
         SetLocalFloat(oParty,"fCameraPitch",fPitch);
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3129,7 +3129,7 @@ void GestaltCameraMove(float fDelay, float fDirection, float fRange, float fPitc
         // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
 
         // After delay, stop any older camera movements and start this one
-        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,FALSE,iCamID - 1));
+        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,false,iCamID - 1));
 
         while (fCount <= fTicks)
             {
@@ -3138,7 +3138,7 @@ void GestaltCameraMove(float fDelay, float fDirection, float fRange, float fPitc
             fDelay = fStart + (fCount * fdTime);
             }
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3183,7 +3183,7 @@ void GestaltCameraCrane(float fDelay, float fDirection, float fRange, float fPit
         // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
 
         // After delay, stop any older camera movements and start this one
-        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,FALSE,iCamID - 1));
+        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,false,iCamID - 1));
 
         while (fCount <= fTicks)
             {
@@ -3192,7 +3192,7 @@ void GestaltCameraCrane(float fDelay, float fDirection, float fRange, float fPit
             fDelay = fStart + (fCount * fdTime);
             }
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3266,10 +3266,10 @@ void GestaltCameraSmooth(float fDelay, float fdDirection1, float fdRange1, float
         // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
 
         // After delay, stop any older camera movements and start this one
-        DelayCommand(fDelay,GestaltStopCameraMoves(oParty,0,FALSE,iCamID - 1));
+        DelayCommand(fDelay,GestaltStopCameraMoves(oParty,0,false,iCamID - 1));
         DelayCommand(fDelay,GestaltCameraSmoothStart(fdDirection1,fdRange1,fdPitch1,fdDirection2,fdRange2,fdPitch2,fTime,fFrameRate,oParty,oSync,iCamID));
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3346,10 +3346,10 @@ void GestaltCameraCraneSmooth(float fDelay, float fdDirection1, float fdRange1, 
         // AssignCommand(oParty,SpeakString("Camera id - " + IntToString(iCamID)));
 
         // After delay, stop any older camera movements and start this one
-        DelayCommand(fDelay,GestaltStopCameraMoves(oParty,0,FALSE,iCamID - 1));
+        DelayCommand(fDelay,GestaltStopCameraMoves(oParty,0,false,iCamID - 1));
         DelayCommand(fDelay,GestaltCameraCraneSmoothStart(fdDirection1,fdRange1,fdPitch1,fdHeight1,fdDirection2,fdRange2,fdPitch2,fdHeight2,fTime,fFrameRate,oParty,oSync,iCamID));
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3422,7 +3422,7 @@ void GestaltCameraFace(float fDelay, object oStart, float fRange, float fPitch, 
         fdDirection = GestaltGetPanRate(fDirection,fDirection2,fTicks,iClockwise);
 
         // After delay, stop any older camera movements and start this one
-        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,FALSE,iCamID - 1));
+        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,false,iCamID - 1));
 
         while (fCount <= fTicks)
             {
@@ -3431,7 +3431,7 @@ void GestaltCameraFace(float fDelay, object oStart, float fRange, float fPitch, 
             fDelay = fStart + (fCount * fdTime);
             }
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3476,7 +3476,7 @@ void GestaltCameraTrack(float fDelay, object oTrack, float fRange, float fPitch,
         fPitch = fSPitch;
 
         // After delay, stop any older camera movements and start this one
-        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,FALSE,iCamID - 1));
+        DelayCommand(fStart,GestaltStopCameraMoves(oParty,0,false,iCamID - 1));
 
         while (fCount <= fTicks)
             {
@@ -3487,7 +3487,7 @@ void GestaltCameraTrack(float fDelay, object oTrack, float fRange, float fPitch,
             fDelay = fStart + (fCount * fdTime);
             }
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3510,7 +3510,7 @@ void GestaltDoFadeOut(string sName, object oPC, float fSpeed, int iParty)
         {
         FadeToBlack(oParty,fSpeed);
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3533,7 +3533,7 @@ void GestaltDoFadeIn(string sName, object oPC, float fSpeed, int iParty)
         {
         FadeFromBlack(oParty,fSpeed);
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3556,7 +3556,7 @@ void GestaltDoBlack(string sName, object oPC, int iParty)
         {
         BlackScreen(oParty);
 
-        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                       { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                  { oParty = GetNextPC(); }
         else                                   { return; }
         }
@@ -3579,7 +3579,7 @@ void GestaltDoStopFade(string sName, object oPC, int iParty)
         {
         StopFade(oParty);
 
-        if (iParty == 1)                        { oParty = GetNextFactionMember(oParty,TRUE); }
+        if (iParty == 1)                        { oParty = GetNextFactionMember(oParty,true); }
         else if (iParty == 2)                   { oParty = GetNextPC(); }
         else                                    { return; }
         }

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (target.ObjectType != _.OBJECT_TYPE_CREATURE)
+            if (target.ObjectType != _.ObjectType.Creature)
             {
                 user.SendMessage("You may only use stim packs on creatures!");
                 return;
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
 
-            if (existing != null && _.GetIsEffectValid(existing) == _.TRUE)
+            if (existing != null && _.GetIsEffectValid(existing) == _.true)
             {
                 return "Your target is already under the effects of another stimulant.";
             }

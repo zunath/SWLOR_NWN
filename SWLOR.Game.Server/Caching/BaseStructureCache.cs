@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class BaseStructureCache: CacheBase<BaseStructure>
     {
-        protected override void OnCacheObjectSet(BaseStructure entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, BaseStructure entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(BaseStructure entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, BaseStructure entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public BaseStructure GetByID(int id)
         {
-            return (BaseStructure)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

@@ -1,21 +1,20 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Caching
 {
     public class AreaCache: CacheBase<Area>
     {
-        private Dictionary<string, Area> ByResref { get; } = new Dictionary<string, Area>();
-
-        protected override void OnCacheObjectSet(Area entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, Area entity)
         {
-            ByResref[entity.Resref] = (Area)entity.Clone();
+            SetIndexByKey(entity.Resref, id);
         }
 
-        protected override void OnCacheObjectRemoved(Area entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, Area entity)
         {
-            ByResref.Remove(entity.Resref);
+            RemoveByIndex(entity.Resref);
         }
 
         protected override void OnSubscribeEvents()
@@ -24,20 +23,20 @@ namespace SWLOR.Game.Server.Caching
 
         public Area GetByID(Guid id)
         {
-            return (Area)ByID[id].Clone();
+            return ByID(id);
         }
 
         public Area GetByResref(string resref)
         {
-            return (Area)ByResref[resref].Clone();
+            return GetByIndex(resref);
         }
 
         public Area GetByResrefOrDefault(string resref)
         {
-            if (!ByResref.ContainsKey(resref))
+            if (!ExistsByIndex(resref))
                 return default;
 
-            return (Area)ByResref[resref].Clone();
+            return GetByIndex(resref);
         }
     }
 }

@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<int, ComponentType> ByHasReassembledResref { get; } = new Dictionary<int, ComponentType>();
 
-        protected override void OnCacheObjectSet(ComponentType entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, ComponentType entity)
         {
             SetByHasReassembledResref(entity);
         }
 
-        protected override void OnCacheObjectRemoved(ComponentType entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, ComponentType entity)
         {
             RemoveByHasReassembledResref(entity);
         }
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ComponentType GetByID(int id)
         {
-            return (ComponentType)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<ComponentType> GetAllWhereHasReassembledResref()

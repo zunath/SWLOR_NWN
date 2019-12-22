@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<int, SkillCategory> ByActive { get; } = new Dictionary<int, SkillCategory>();
 
-        protected override void OnCacheObjectSet(SkillCategory entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, SkillCategory entity)
         {
             SetByActive(entity);
         }
 
-        protected override void OnCacheObjectRemoved(SkillCategory entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, SkillCategory entity)
         {
             ByActive.Remove(entity.ID);
         }
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Caching
 
         public SkillCategory GetByID(int id)
         {
-            return (SkillCategory)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<SkillCategory> GetAllActive()

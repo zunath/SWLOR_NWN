@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<Guid, PCImpoundedItem>> ByPlayerIDAndNotRetrieved { get; } = new Dictionary<Guid, Dictionary<Guid, PCImpoundedItem>>();
 
-        protected override void OnCacheObjectSet(PCImpoundedItem entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCImpoundedItem entity)
         {
             SetByPlayerIDAndNotRetrieved(entity);
         }
 
-        protected override void OnCacheObjectRemoved(PCImpoundedItem entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCImpoundedItem entity)
         {
             RemoveByPlayerIDAndNotRetrieved(entity);
         }
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCImpoundedItem GetByID(Guid id)
         {
-            return (PCImpoundedItem)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<PCImpoundedItem> GetAllByPlayerIDAndNotRetrieved(Guid playerID)

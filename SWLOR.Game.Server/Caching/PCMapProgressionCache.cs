@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<string, PCMapProgression>> ByPlayerIDAndAreaResref { get; } = new Dictionary<Guid, Dictionary<string, PCMapProgression>>();
 
-        protected override void OnCacheObjectSet(PCMapProgression entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCMapProgression entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.AreaResref, entity, ByPlayerIDAndAreaResref);
         }
 
-        protected override void OnCacheObjectRemoved(PCMapProgression entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCMapProgression entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.AreaResref, ByPlayerIDAndAreaResref);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMapProgression GetByID(Guid id)
         {
-            return (PCMapProgression)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCMapProgression GetByPlayerIDAndAreaResrefOrDefault(Guid playerID, string areaResref)

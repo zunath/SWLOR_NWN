@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PerkCache: CacheBase<Data.Entity.Perk>
     {
-        protected override void OnCacheObjectSet(Data.Entity.Perk entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, Data.Entity.Perk entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(Data.Entity.Perk entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, Data.Entity.Perk entity)
         {
         }
 
@@ -18,14 +18,14 @@ namespace SWLOR.Game.Server.Caching
 
         public Data.Entity.Perk GetByID(int id)
         {
-            return (Data.Entity.Perk)ByID[id].Clone();
+            return ByID(id);
         }
 
         public Data.Entity.Perk GetByIDOrDefault(int id)
         {
-            if (!ByID.ContainsKey(id))
+            if (!Exists(id))
                 return default;
-            return (Data.Entity.Perk)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

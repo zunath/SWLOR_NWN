@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<int, PCQuestStatus>> ByPlayerAndQuestID { get; } = new Dictionary<Guid, Dictionary<int, PCQuestStatus>>();
 
-        protected override void OnCacheObjectSet(PCQuestStatus entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCQuestStatus entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.QuestID, entity, ByPlayerAndQuestID);
         }
 
-        protected override void OnCacheObjectRemoved(PCQuestStatus entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCQuestStatus entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.QuestID, ByPlayerAndQuestID);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestStatus GetByID(Guid id)
         {
-            return (PCQuestStatus)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCQuestStatus GetByPlayerAndQuestID(Guid playerID, int questID)

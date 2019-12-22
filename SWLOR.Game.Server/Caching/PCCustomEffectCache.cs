@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<Guid, PCCustomEffect>> ByPlayer { get; } = new Dictionary<Guid, Dictionary<Guid, PCCustomEffect>>();
 
-        protected override void OnCacheObjectSet(PCCustomEffect entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCCustomEffect entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayer);
         }
 
-        protected override void OnCacheObjectRemoved(PCCustomEffect entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCCustomEffect entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayer);
         }
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByID(Guid id)
         {
-            return (PCCustomEffect)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCCustomEffect GetByStancePerkOrDefault(Guid playerID, int stancePerkID)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<PCCustomEffect>();
             foreach (var pcCustomEffectID in pcCustomEffectIDs)
             {
-                list.Add((PCCustomEffect)ByID[pcCustomEffectID].Clone());
+                list.Add( ByID(pcCustomEffectID));
             }
 
             return list;

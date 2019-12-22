@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<Guid, PCMapPin>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCMapPin>>();
 
-        protected override void OnCacheObjectSet(PCMapPin entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCMapPin entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
         }
 
-        protected override void OnCacheObjectRemoved(PCMapPin entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCMapPin entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMapPin GetByID(Guid id)
         {
-            return (PCMapPin)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<PCMapPin> GetAllByPlayerID(Guid playerID)

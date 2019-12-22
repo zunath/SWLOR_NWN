@@ -10,14 +10,14 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, Dictionary<string, PCBaseStructureItem>> ByPCBaseStructureIDAndItemGlobalID { get; } = new Dictionary<Guid, Dictionary<string, PCBaseStructureItem>>();
         private Dictionary<Guid, int> CountsByPCBaseStructureID { get;  } = new Dictionary<Guid, int>();
 
-        protected override void OnCacheObjectSet(PCBaseStructureItem entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCBaseStructureItem entity)
         {
             ByItemGlobalID[entity.ItemGlobalID] = (PCBaseStructureItem)entity.Clone();
             SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
             SetCountsByPCBaseStructureID(entity);
         }
 
-        protected override void OnCacheObjectRemoved(PCBaseStructureItem entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBaseStructureItem entity)
         {
             ByItemGlobalID.Remove(entity.ItemGlobalID);
             RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructureItem GetByID(Guid id)
         {
-            return (PCBaseStructureItem)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCBaseStructureItem GetByItemGlobalID(string itemGlobalID)

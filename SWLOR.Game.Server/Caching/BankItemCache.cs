@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<string, BankItem> ByItemID { get; } = new Dictionary<string, BankItem>();
         private Dictionary<Guid, Dictionary<int, Dictionary<Guid, BankItem>>> ByPlayerAndBankID { get; } = new Dictionary<Guid, Dictionary<int, Dictionary<Guid, BankItem>>>();
 
-        protected override void OnCacheObjectSet(BankItem entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, BankItem entity)
         {
             ByItemID[entity.ItemID] = entity;
             SetByPlayerAndBankID(entity);
         }
 
-        protected override void OnCacheObjectRemoved(BankItem entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, BankItem entity)
         {
             ByItemID.Remove(entity.ItemResref);
             RemoveByPlayerAndBankID(entity);
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Caching
 
         public BankItem GetByID(Guid id)
         {
-            return (BankItem)ByID[id].Clone();
+            return ByID(id);
         }
 
         public BankItem GetByItemID(string itemID)

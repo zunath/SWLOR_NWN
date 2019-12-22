@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCWeaponCache: CacheBase<PCWeapon>
     {
-        protected override void OnCacheObjectSet(PCWeapon entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCWeapon entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(PCWeapon entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCWeapon entity)
         {
         }
 
@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.Caching
 
         public PCWeapon GetByIDOrDefault(Guid playerID)
         {
-            if (!ByID.ContainsKey(playerID))
+            if (!Exists(playerID))
                 return null;
 
-            return (PCWeapon)ByID[playerID].Clone();
+            return ByID(playerID);
         }
     }
 }

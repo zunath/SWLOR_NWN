@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<int, PCCraftedBlueprint>> ByPlayerIDAndCraftBlueprintID { get; } = new Dictionary<Guid, Dictionary<int, PCCraftedBlueprint>>();
 
-        protected override void OnCacheObjectSet(PCCraftedBlueprint entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCCraftedBlueprint entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.CraftBlueprintID, entity, ByPlayerIDAndCraftBlueprintID);
         }
 
-        protected override void OnCacheObjectRemoved(PCCraftedBlueprint entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCCraftedBlueprint entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.CraftBlueprintID, ByPlayerIDAndCraftBlueprintID);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCraftedBlueprint GetByID(Guid id)
         {
-            return (PCCraftedBlueprint)ByID[id].Clone();
+            return ByID(id);
         }
 
         public bool ExistsByPlayerIDAndCraftedBlueprintID(Guid playerID, int craftBlueprintID)

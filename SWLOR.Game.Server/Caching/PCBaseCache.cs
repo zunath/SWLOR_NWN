@@ -19,14 +19,14 @@ namespace SWLOR.Game.Server.Caching
 
         private Dictionary<Guid, DateTime> RentDueTimes { get; } = new Dictionary<Guid, DateTime>();
 
-        protected override void OnCacheObjectSet(PCBase entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCBase entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDAndPCBaseID);
             SetEntityIntoDictionary(entity.AreaResref, entity.Sector, entity, ByAreaResrefAndSector);
             RentDueTimes[entity.ID] = entity.DateRentDue;
         }
 
-        protected override void OnCacheObjectRemoved(PCBase entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBase entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndPCBaseID);
             RemoveEntityFromDictionary(entity.AreaResref, entity.Sector, ByAreaResrefAndSector);
@@ -39,14 +39,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBase GetByID(Guid id)
         {
-            return (PCBase)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCBase GetByIDOrDefault(Guid id)
         {
-            if (!ByID.ContainsKey(id))
+            if (!Exists(id))
                 return default;
-            return (PCBase)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Caching
             DateTime now = DateTime.UtcNow;
             foreach (var pcBaseID in RentDueTimes.Where(x => x.Value <= now))
             {
-                list.Add((PCBase)ByID[pcBaseID.Key].Clone());
+                list.Add(ByID(pcBaseID.Key));
             }
 
             return list;

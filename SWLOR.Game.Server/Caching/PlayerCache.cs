@@ -14,13 +14,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, Guid> ByPrimaryResidencePCBaseStructureID { get; }  = new Dictionary<Guid, Guid>();
 
 
-        protected override void OnCacheObjectSet(Player entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, Player entity)
         {
             SetByPrimaryResidencePCBaseID(entity);
             SetByPrimaryResidencePCBaseStructureID(entity);
         }
 
-        protected override void OnCacheObjectRemoved(Player entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, Player entity)
         {
             RemoveByPrimaryResidencePCBaseID(entity);
             RemoveByPrimaryResidencePCBaseStructureID(entity);
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Player GetByID(Guid id)
         {
-            return (Player)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<Player> GetAllByIDs(IEnumerable<Guid> playerIDs)
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<Player>();
             foreach (var id in playerIDs)
             {
-                list.Add((Player)ByID[id].Clone());
+                list.Add(ByID(id));
             }
 
             return list;
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Caching
 
         public bool ExistsByID(Guid id)
         {
-            return ByID.ContainsKey(id);
+            return Exists(id);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Caching
             else
             {
                 var playerID = ByPrimaryResidencePCBaseID[pcBaseID];
-                return (Player)ByID[playerID].Clone();
+                return ByID(playerID);
             }
         }
 
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Caching
             else
             {
                 var playerID = ByPrimaryResidencePCBaseStructureID[pcStructureID];
-                return (Player)ByID[playerID].Clone();
+                return ByID(playerID);
             }
         }
 

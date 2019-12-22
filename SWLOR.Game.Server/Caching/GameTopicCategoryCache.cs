@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class GameTopicCategoryCache: CacheBase<GameTopicCategory>
     {
-        protected override void OnCacheObjectSet(GameTopicCategory entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, GameTopicCategory entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(GameTopicCategory entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, GameTopicCategory entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public GameTopicCategory GetByID(int id)
         {
-            return (GameTopicCategory)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class DatabaseVersionCache: CacheBase<DatabaseVersion>
     {
-        protected override void OnCacheObjectSet(DatabaseVersion entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, DatabaseVersion entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(DatabaseVersion entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, DatabaseVersion entity)
         {
         }
 
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public DatabaseVersion GetByID(Guid id)
         {
-            return (DatabaseVersion)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
@@ -17,6 +18,9 @@ namespace SWLOR.Game.Server.Service
 {
     public static class DataService
     {
+        private static ConnectionMultiplexer _redis;
+        public static IDatabase DB => _redis.GetDatabase();
+
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
         public static AssociationCache Association { get; } = new AssociationCache();
@@ -135,6 +139,18 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void Initialize()
+        {
+            var host = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
+
+            var sw = new Stopwatch();
+            sw.Start();
+            Console.WriteLine("Connecting to Redis...");
+            _redis = ConnectionMultiplexer.Connect(host);
+            sw.Stop();
+            Console.WriteLine($"Redis finished connecting. (Took {sw.ElapsedMilliseconds}ms)");
+        }
+
         public static void RunMigration()
         {
             Console.WriteLine("Starting DB migration...");
@@ -147,14 +163,17 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
 
             const string ConfigKey = "ServerConfiguration";
-            var serverConfig = 
-                NWNXRedis.Exists(ConfigKey) ?
-                JsonConvert.DeserializeObject<ServerConfiguration>(NWNXRedis.Get(ConfigKey)) :
-                new ServerConfiguration
-                {
-                    ServerName = "Star Wars: Legends of the Old Republic",
-                    MessageOfTheDay = "Welcome to SWLOR! Visit our website at https://starwarsnwn.com  Please report ALL bugs using the in-game /bug command. May the Force be with you!"
-                };
+
+            var db = _redis.GetDatabase();
+            var serverConfig =
+                db.KeyExists(ConfigKey)
+                    ? JsonConvert.DeserializeObject<ServerConfiguration>(db.StringGet(ConfigKey))
+                    : new ServerConfiguration()
+                    {
+                        ServerName = "Star Wars: Legends of the Old Republic",
+                        MessageOfTheDay = "Welcome to SWLOR!"
+                    };
+
             foreach (var migrationScript in migrationScripts)
             {
                 if (serverConfig.DataVersion < migrationScript.Version)
@@ -166,7 +185,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            NWNXRedis.Set(ConfigKey, JsonConvert.SerializeObject(serverConfig));
+            db.StringSet(ConfigKey, JsonConvert.SerializeObject(serverConfig));
         }
     }
 }

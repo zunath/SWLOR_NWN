@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class StructureModeCache: CacheBase<StructureMode>
     {
-        protected override void OnCacheObjectSet(StructureMode entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, StructureMode entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(StructureMode entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, StructureMode entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public StructureMode GetByID(int id)
         {
-            return (StructureMode)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

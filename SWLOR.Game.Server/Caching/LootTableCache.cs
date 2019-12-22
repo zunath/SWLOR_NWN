@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class LootTableCache: CacheBase<LootTable>
     {
-        protected override void OnCacheObjectSet(LootTable entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, LootTable entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(LootTable entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, LootTable entity)
         {
         }
 
@@ -18,13 +18,13 @@ namespace SWLOR.Game.Server.Caching
 
         public LootTable GetByID(int id)
         {
-            return (LootTable)ByID[id].Clone();
+            return ByID(id);
         }
 
         public LootTable GetByIDOrDefault(int id)
         {
-            if (ByID.ContainsKey(id))
-                return (LootTable)ByID[id].Clone();
+            if (Exists(id))
+                return ByID(id);
             else return default;
         }
     }

@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<int, Dictionary<int, LootTableItem>> ByLootTableID { get; } = new Dictionary<int, Dictionary<int, LootTableItem>>();
 
-        protected override void OnCacheObjectSet(LootTableItem entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, LootTableItem entity)
         {
             SetEntityIntoDictionary(entity.LootTableID, entity.ID, entity, ByLootTableID);
         }
 
-        protected override void OnCacheObjectRemoved(LootTableItem entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, LootTableItem entity)
         {
             RemoveEntityFromDictionary(entity.LootTableID, entity.ID, ByLootTableID);
         }
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Caching
 
         public LootTableItem GetByID(int id)
         {
-            return (LootTableItem)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<LootTableItem> GetAllByLootTableID(int lootTableID)

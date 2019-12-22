@@ -30,6 +30,7 @@ namespace NWN.Scripts
                 MessageHub.Instance.Publish(new OnServerStopped());
             };
 
+            DataService.Initialize();
             DataService.RunMigration();
 
             using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))

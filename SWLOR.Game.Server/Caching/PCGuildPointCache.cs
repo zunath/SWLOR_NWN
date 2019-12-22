@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<int, PCGuildPoint>> ByPlayerIDAndGuildID { get; } = new Dictionary<Guid, Dictionary<int, PCGuildPoint>>();
 
-        protected override void OnCacheObjectSet(PCGuildPoint entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCGuildPoint entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.GuildID, entity, ByPlayerIDAndGuildID);
         }
 
-        protected override void OnCacheObjectRemoved(PCGuildPoint entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCGuildPoint entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.GuildID, ByPlayerIDAndGuildID);
         }
@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCGuildPoint GetByID(Guid id)
         {
-            return (PCGuildPoint)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCGuildPoint GetByIDOrDefault(Guid id)
         {
-            if (!ByID.ContainsKey(id))
+            if (!Exists(id))
                 return default;
-            return (PCGuildPoint)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCGuildPoint GetByPlayerIDAndGuildID(Guid playerID, int guildID)

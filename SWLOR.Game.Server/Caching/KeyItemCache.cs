@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class KeyItemCache: CacheBase<KeyItem>
     {
-        protected override void OnCacheObjectSet(KeyItem entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, KeyItem entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(KeyItem entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, KeyItem entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public KeyItem GetByID(int id)
         {
-            return (KeyItem)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

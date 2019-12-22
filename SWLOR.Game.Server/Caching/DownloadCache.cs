@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class DownloadCache: CacheBase<Download>
     {
-        protected override void OnCacheObjectSet(Download entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, Download entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(Download entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, Download entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Download GetByID(int id)
         {
-            return (Download)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

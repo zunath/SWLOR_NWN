@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<string, PCQuestItemProgress>> ByQuestStatusIDAndResref { get; } = new Dictionary<Guid, Dictionary<string, PCQuestItemProgress>>();
 
-        protected override void OnCacheObjectSet(PCQuestItemProgress entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCQuestItemProgress entity)
         {
             SetEntityIntoDictionary(entity.PCQuestStatusID, entity.Resref, entity, ByQuestStatusIDAndResref);
         }
 
-        protected override void OnCacheObjectRemoved(PCQuestItemProgress entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCQuestItemProgress entity)
         {
             RemoveEntityFromDictionary(entity.PCQuestStatusID, entity.Resref, ByQuestStatusIDAndResref);
         }
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestItemProgress GetByID(Guid id)
         {
-            return (PCQuestItemProgress)ByID[id].Clone();
+            return ByID(id);
         }
 
         public int GetCountByPCQuestStatusID(Guid pcQuestStatusID)

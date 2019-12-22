@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
         // Excludes inactive entries.
         private Dictionary<int, CraftBlueprintCategory> ByCategoryIDActive { get; } = new Dictionary<int, CraftBlueprintCategory>();
 
-        protected override void OnCacheObjectSet(CraftBlueprintCategory entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, CraftBlueprintCategory entity)
         {
             SetByCategoryIDActive(entity);
         }
 
-        protected override void OnCacheObjectRemoved(CraftBlueprintCategory entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, CraftBlueprintCategory entity)
         {
             RemoveByCategoryIDActive(entity);
         }
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Caching
 
         public CraftBlueprintCategory GetByID(int id)
         {
-            return (CraftBlueprintCategory)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<CraftBlueprintCategory> GetAllActiveByIDs(IEnumerable<int> craftBlueprintCategoryIDs)

@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<Guid, Message>> ByBoardID { get; } = new Dictionary<Guid, Dictionary<Guid, Message>>();
 
-        protected override void OnCacheObjectSet(Message entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, Message entity)
         {
             SetEntityIntoDictionary(entity.BoardID, entity.ID, entity, ByBoardID);
         }
 
-        protected override void OnCacheObjectRemoved(Message entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, Message entity)
         {
             RemoveEntityFromDictionary(entity.BoardID, entity.ID, ByBoardID);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Message GetByID(Guid id)
         {
-            return (Message)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<Message> GetAllByBoardID(Guid boardID)

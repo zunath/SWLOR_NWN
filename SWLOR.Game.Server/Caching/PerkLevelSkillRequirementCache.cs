@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<int, Dictionary<int, PerkLevelSkillRequirement>> ByPerkLevelID { get; } = new Dictionary<int, Dictionary<int, PerkLevelSkillRequirement>>();
 
-        protected override void OnCacheObjectSet(PerkLevelSkillRequirement entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PerkLevelSkillRequirement entity)
         {
             SetEntityIntoDictionary(entity.PerkLevelID, entity.ID, entity, ByPerkLevelID);
         }
 
-        protected override void OnCacheObjectRemoved(PerkLevelSkillRequirement entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PerkLevelSkillRequirement entity)
         {
             RemoveEntityFromDictionary(entity.PerkLevelID, entity.ID, ByPerkLevelID);
         }
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkLevelSkillRequirement GetByID(int id)
         {
-            return (PerkLevelSkillRequirement)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<PerkLevelSkillRequirement> GetAllByPerkLevelID(int perkLevelID)

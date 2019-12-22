@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CraftBlueprintCache: CacheBase<CraftBlueprint>
     {
-        protected override void OnCacheObjectSet(CraftBlueprint entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, CraftBlueprint entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(CraftBlueprint entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, CraftBlueprint entity)
         {
         }
 
@@ -18,14 +18,14 @@ namespace SWLOR.Game.Server.Caching
 
         public CraftBlueprint GetByID(int id)
         {
-            return (CraftBlueprint)ByID[id].Clone();
+            return ByID(id);
         }
 
         public CraftBlueprint GetByIDOrDefault(int id)
         {
-            if (!ByID.ContainsKey(id))
+            if (!Exists(id))
                 return default;
-            return (CraftBlueprint)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

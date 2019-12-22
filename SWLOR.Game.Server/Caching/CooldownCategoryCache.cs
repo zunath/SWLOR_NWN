@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CooldownCategoryCache: CacheBase<CooldownCategory>
     {
-        protected override void OnCacheObjectSet(CooldownCategory entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, CooldownCategory entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(CooldownCategory entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, CooldownCategory entity)
         {
         }
 
@@ -18,13 +18,13 @@ namespace SWLOR.Game.Server.Caching
 
         public CooldownCategory GetByID(int id)
         {
-            return (CooldownCategory)ByID[id].Clone();
+            return ByID(id);
         }
 
         public CooldownCategory GetByIDOrDefault(int id)
         {
-            if (ByID.ContainsKey(id))
-                return (CooldownCategory)ByID[id].Clone();
+            if (Exists(id))
+                return ByID(id);
             else return default;
         }
 

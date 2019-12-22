@@ -10,11 +10,11 @@ namespace SWLOR.Game.Server.Caching
         // LINQ should be pretty quick since the set is so small, but if performance
         // gets bad look into setting up a few lookup dictionaries. 
 
-        protected override void OnCacheObjectSet(BuildingStyle entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, BuildingStyle entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(BuildingStyle entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, BuildingStyle entity)
         {
         }
 
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public BuildingStyle GetByID(int id)
         {
-            return (BuildingStyle)ByID[id].Clone();
+            return ByID(id);
         }
 
         public BuildingStyle GetDefaultInteriorByBaseStructureID(int baseStructureID)

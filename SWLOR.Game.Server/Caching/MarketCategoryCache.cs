@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class MarketCategoryCache: CacheBase<MarketCategory>
     {
-        protected override void OnCacheObjectSet(MarketCategory entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, MarketCategory entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(MarketCategory entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, MarketCategory entity)
         {
         }
 
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         public MarketCategory GetByID(int id)
         {
-            return (MarketCategory)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<MarketCategory> GetAllByIDs(IEnumerable<int> ids)
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<MarketCategory>();
             foreach (var id in ids)
             {
-                list.Add( (MarketCategory) ByID[id].Clone());
+                list.Add(ByID(id));
             }
 
             return list;

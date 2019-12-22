@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCOutfitCache: CacheBase<PCOutfit>
     {
-        protected override void OnCacheObjectSet(PCOutfit entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCOutfit entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(PCOutfit entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCOutfit entity)
         {
         }
 
@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.Caching
 
         public PCOutfit GetByIDOrDefault(Guid playerID)
         {
-            if (!ByID.ContainsKey(playerID))
+            if (!Exists(playerID))
                 return null;
 
-            return (PCOutfit)ByID[playerID].Clone();
+            return ByID(playerID);
         }
     }
 }

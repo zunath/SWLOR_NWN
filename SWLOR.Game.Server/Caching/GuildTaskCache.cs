@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<int, GuildTask> ByCurrentlyOffered { get; } = new Dictionary<int, GuildTask>();
         private Dictionary<int, Dictionary<int, GuildTask>> ByRequiredRank { get; } = new Dictionary<int, Dictionary<int, GuildTask>>();
 
-        protected override void OnCacheObjectSet(GuildTask entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, GuildTask entity)
         {
             SetByCurrentlyOffered(entity);
             SetEntityIntoDictionary(entity.RequiredRank, entity.ID, entity, ByRequiredRank);
         }
 
-        protected override void OnCacheObjectRemoved(GuildTask entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, GuildTask entity)
         {
             RemoveByCurrentlyOffered(entity);
             RemoveEntityFromDictionary(entity.RequiredRank, entity.RequiredRank, ByRequiredRank);
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Caching
 
         public GuildTask GetByID(int id)
         {
-            return (GuildTask)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<GuildTask> GetAllByCurrentlyOffered()

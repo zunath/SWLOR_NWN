@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCHelmetCache: CacheBase<PCHelmet>
     {
-        protected override void OnCacheObjectSet(PCHelmet entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCHelmet entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(PCHelmet entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCHelmet entity)
         {
         }
 
@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.Caching
 
         public PCHelmet GetByIDOrDefault(Guid playerID)
         {
-            if (!ByID.ContainsKey(playerID))
+            if (!Exists(playerID))
                 return null;
 
-            return (PCHelmet)ByID[playerID].Clone();
+            return ByID(playerID);
         }
     }
 }

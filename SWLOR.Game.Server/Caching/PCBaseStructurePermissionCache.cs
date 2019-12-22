@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.Caching
         // Secondary Index: PCBaseStructurePermissionID
         private Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>> ByPCBaseStructureID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>>();
 
-        protected override void OnCacheObjectSet(PCBaseStructurePermission entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCBaseStructurePermission entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
             SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ID, entity, ByPCBaseStructureID);
         }
 
-        protected override void OnCacheObjectRemoved(PCBaseStructurePermission entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBaseStructurePermission entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
             RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ID, ByPCBaseStructureID);
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructurePermission GetByID(Guid id)
         {
-            return (PCBaseStructurePermission)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<PCBaseStructurePermission> GetAllByPlayerID(Guid playerID)

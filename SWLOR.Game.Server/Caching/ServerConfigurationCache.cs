@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class ServerConfigurationCache: CacheBase<ServerConfiguration>
     {
-        protected override void OnCacheObjectSet(ServerConfiguration entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, ServerConfiguration entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(ServerConfiguration entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, ServerConfiguration entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ServerConfiguration Get()
         {
-            return (ServerConfiguration)ByID[1].Clone();
+            return ByID(1);
         }
     }
 }

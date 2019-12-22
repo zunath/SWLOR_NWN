@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, Dictionary<Guid, PCSkill>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCSkill>>();
         private Dictionary<Guid, Dictionary<int, PCSkill>> ByPlayerIDAndSkillID { get; } = new Dictionary<Guid, Dictionary<int, PCSkill>>();
 
-        protected override void OnCacheObjectSet(PCSkill entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCSkill entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
             SetEntityIntoDictionary(entity.PlayerID, entity.SkillID, entity, ByPlayerIDAndSkillID);
         }
 
-        protected override void OnCacheObjectRemoved(PCSkill entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCSkill entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
             RemoveEntityFromDictionary(entity.PlayerID, entity.SkillID, ByPlayerIDAndSkillID);
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCSkill GetByID(Guid id)
         {
-            return (PCSkill)ByID[id].Clone();
+            return ByID(id);
         }
 
         public IEnumerable<PCSkill> GetAllByPlayerID(Guid playerID)

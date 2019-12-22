@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseTypeCache: CacheBase<PCBaseType>
     {
-        protected override void OnCacheObjectSet(PCBaseType entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCBaseType entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(PCBaseType entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBaseType entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseType GetByID(int id)
         {
-            return (PCBaseType)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

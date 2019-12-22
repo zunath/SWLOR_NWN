@@ -4,11 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CustomEffectCategoryCache: CacheBase<CustomEffectCategory>
     {
-        protected override void OnCacheObjectSet(CustomEffectCategory entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, CustomEffectCategory entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(CustomEffectCategory entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, CustomEffectCategory entity)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Caching
 
         public CustomEffectCategory GetByID(int id)
         {
-            return (CustomEffectCategory)ByID[id].Clone();
+            return ByID(id);
         }
     }
 }

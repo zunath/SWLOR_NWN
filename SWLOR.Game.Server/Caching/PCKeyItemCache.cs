@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, Dictionary<int, PCKeyItem>> ByPlayerAndKeyItemID { get; } = new Dictionary<Guid, Dictionary<int, PCKeyItem>>();
 
 
-        protected override void OnCacheObjectSet(PCKeyItem entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCKeyItem entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.KeyItemID, entity, ByPlayerAndKeyItemID);
         }
 
-        protected override void OnCacheObjectRemoved(PCKeyItem entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCKeyItem entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.KeyItemID, ByPlayerAndKeyItemID);
         }
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCKeyItem GetByID(Guid id)
         {
-            return (PCKeyItem)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, int pcKeyItemID)

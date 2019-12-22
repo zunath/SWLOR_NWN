@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<int, PCCooldown>> ByPlayerAndCooldownCategoryID { get; } = new Dictionary<Guid, Dictionary<int, PCCooldown>>();
 
-        protected override void OnCacheObjectSet(PCCooldown entity)
+        protected override void OnCacheObjectSet(string @namespace, object id, PCCooldown entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.CooldownCategoryID, entity, ByPlayerAndCooldownCategoryID);
         }
 
-        protected override void OnCacheObjectRemoved(PCCooldown entity)
+        protected override void OnCacheObjectRemoved(string @namespace, object id, PCCooldown entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.CooldownCategoryID, ByPlayerAndCooldownCategoryID);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCooldown GetByID(Guid id)
         {
-            return (PCCooldown)ByID[id].Clone();
+            return ByID(id);
         }
 
         public PCCooldown GetByPlayerAndCooldownCategoryIDOrDefault(Guid playerID, int cooldownCategoryID)

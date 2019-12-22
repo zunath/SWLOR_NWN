@@ -3,10 +3,15 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.ValueObject;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -19,7 +24,6 @@ namespace SWLOR.Game.Server.Service
         public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();
         public static BankCache Bank { get; } = new BankCache();
         public static BankItemCache BankItem { get; } = new BankItemCache();
-        public static BaseItemTypeCache BaseItemType { get; } = new BaseItemTypeCache();
         public static BaseStructureCache BaseStructure { get; } = new BaseStructureCache();
         public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
         public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
@@ -38,7 +42,6 @@ namespace SWLOR.Game.Server.Service
         public static DMRoleCache DMRole { get; } = new DMRoleCache();
         public static DownloadCache Download { get; } = new DownloadCache();
         public static EnmityAdjustmentRuleCache EnmityAdjustmentRule { get; } = new EnmityAdjustmentRuleCache();
-        public static ErrorCache Error { get; } = new ErrorCache();
         public static FameRegionCache FameRegion { get; } = new FameRegionCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
         public static GameTopicCategoryCache GameTopicCategory { get; } = new GameTopicCategoryCache();
@@ -130,6 +133,40 @@ namespace SWLOR.Game.Server.Service
             {
                 RemoveFromCache(data);
             }
+        }
+
+        public static void RunMigration()
+        {
+            Console.WriteLine("Starting DB migration...");
+            List<IDataMigration> migrationScripts = 
+                Assembly.GetExecutingAssembly().GetTypes()
+                .Where(x => typeof(IDataMigration).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
+                .Select(Activator.CreateInstance)
+                .OrderBy(o => ((IDataMigration)o).Version)
+                .Cast<IDataMigration>()
+                .ToList();
+
+            const string ConfigKey = "ServerConfiguration";
+            var serverConfig = 
+                NWNXRedis.Exists(ConfigKey) ?
+                JsonConvert.DeserializeObject<ServerConfiguration>(NWNXRedis.Get(ConfigKey)) :
+                new ServerConfiguration
+                {
+                    ServerName = "Star Wars: Legends of the Old Republic",
+                    MessageOfTheDay = "Welcome to SWLOR! Visit our website at https://starwarsnwn.com  Please report ALL bugs using the in-game /bug command. May the Force be with you!"
+                };
+            foreach (var migrationScript in migrationScripts)
+            {
+                if (serverConfig.DataVersion < migrationScript.Version)
+                {
+                    Console.WriteLine($"Applying DB version #{migrationScript.Version}...");
+                    migrationScript.Up();
+                    serverConfig.DataVersion = migrationScript.Version;
+                    Console.WriteLine($"DB version #{migrationScript.Version} applied successfully!");
+                }
+            }
+
+            NWNXRedis.Set(ConfigKey, JsonConvert.SerializeObject(serverConfig));
         }
     }
 }

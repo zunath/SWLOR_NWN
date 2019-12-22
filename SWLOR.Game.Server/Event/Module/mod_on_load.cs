@@ -9,6 +9,7 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.Scripting.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -28,6 +29,8 @@ namespace NWN.Scripts
             {
                 MessageHub.Instance.Publish(new OnServerStopped());
             };
+
+            DataService.RunMigration();
 
             using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))
             {

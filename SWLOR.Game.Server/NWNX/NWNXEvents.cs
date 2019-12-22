@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="script"></param>
         public static void SubscribeEvent(string evt, string script)
         {
-            string sFunc = "OnSubscribeEvent";
+            string sFunc = "SubscribeEvent";
 
             NWNX_PushArgumentString(NWNX_Events, sFunc, script);
             NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="data"></param>
         public static void PushEventData(string tag, string data)
         {
-            string sFunc = "OnPushEventData";
+            string sFunc = "PushEventData";
 
             NWNX_PushArgumentString(NWNX_Events, sFunc, data);
             NWNX_PushArgumentString(NWNX_Events, sFunc, tag);
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static int SignalEvent(string evt, NWGameObject target)
         {
-            string sFunc = "OnSignalEvent";
+            string sFunc = "SignalEvent";
 
             NWNX_PushArgumentObject(NWNX_Events, sFunc, target);
             NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static string GetEventDataString(string tag)
         {
-            string sFunc = "OnGetEventData";
+            string sFunc = "GetEventData";
 
             NWNX_PushArgumentString(NWNX_Events, sFunc, tag);
             NWNX_CallFunction(NWNX_Events, sFunc);
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         public static void SkipEvent()
         {
-            string sFunc = "OnSkipEvent";
+            string sFunc = "SkipEvent";
 
             NWNX_CallFunction(NWNX_Events, sFunc);
         }
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="data"></param>
         public static void SetEventResult(string data)
         {
-            string sFunc = "OnSetEventResult";
+            string sFunc = "SetEventResult";
 
             NWNX_PushArgumentString(NWNX_Events, sFunc, data);
             NWNX_CallFunction(NWNX_Events, sFunc);
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static string GetCurrentEvent()
         {
-            string sFunc = "OnGetCurrentEvent";
+            string sFunc = "GetCurrentEvent";
 
             NWNX_CallFunction(NWNX_Events, sFunc);
             return NWNX_GetReturnValueString(NWNX_Events, sFunc);
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="bEnable"></param>
         public static void ToggleDispatchListMode(string sEvent, string sScript, int bEnable)
         {
-            string sFunc = "OnToggleDispatchListMode";
+            string sFunc = "ToggleDispatchListMode";
 
             NWNX_PushArgumentInt(NWNX_Events, sFunc, bEnable);
             NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oObject"></param>
         public static void AddObjectToDispatchList(string sEvent, string sScript, NWGameObject oObject)
         {
-            string sFunc = "OnAddObjectToDispatchList";
+            string sFunc = "AddObjectToDispatchList";
 
             NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
             NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oObject"></param>
         public static void RemoveObjectFromDispatchList(string sEvent, string sScript, NWGameObject oObject)
         {
-            string sFunc = "OnRemoveObjectFromDispatchList";
+            string sFunc = "RemoveObjectFromDispatchList";
 
             NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
             NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);

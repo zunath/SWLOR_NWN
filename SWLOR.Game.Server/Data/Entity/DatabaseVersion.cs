@@ -15,8 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid ID { get; set; }
         public string ScriptName { get; set; }
         public DateTime DateApplied { get; set; }
-        public DateTime VersionDate { get; set; }
-        public int VersionNumber { get; set; }
+        public int Version { get; set; }
 
         public IEntity Clone()
         {
@@ -25,8 +24,7 @@ namespace SWLOR.Game.Server.Data.Entity
                 ID = ID,
                 ScriptName = ScriptName,
                 DateApplied = DateApplied,
-                VersionDate = VersionDate,
-                VersionNumber = VersionNumber
+                Version = Version
             };
         }
     }

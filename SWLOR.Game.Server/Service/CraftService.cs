@@ -330,28 +330,28 @@ namespace SWLOR.Game.Server.Service
         public static int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
         {
             int effectiveLevel = skillRank;
-            BackgroundType background = (BackgroundType)player.Class1;
+            ClassType background = (ClassType)player.Class1;
 
             switch (skill)
             {
                 case SkillType.Armorsmith:
-                    if (background == BackgroundType.Armorsmith)
+                    if (background == ClassType.Armorsmith)
                         effectiveLevel++;
                     break;
                 case SkillType.Cooking:
-                    if (background == BackgroundType.Chef)
+                    if (background == ClassType.Chef)
                         effectiveLevel++;
                     break;
                 case SkillType.Weaponsmith:
-                    if (background == BackgroundType.Weaponsmith)
+                    if (background == ClassType.Weaponsmith)
                         effectiveLevel++;
                     break;
                 case SkillType.Engineering:
-                    if (background == BackgroundType.Engineer)
+                    if (background == ClassType.Engineer)
                         effectiveLevel++;
                     break;
                 case SkillType.Fabrication:
-                    if (background == BackgroundType.Fabricator)
+                    if (background == ClassType.Fabricator)
                         effectiveLevel++;
                     break;
             }

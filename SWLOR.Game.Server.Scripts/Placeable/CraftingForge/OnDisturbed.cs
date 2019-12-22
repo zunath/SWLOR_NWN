@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         public void Main()
         {
-            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED) return;
+            if (_.GetInventoryDisturbType() != InventoryDisturbType.Added) return;
 
             NWPlayer pc = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
@@ -123,8 +124,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
             // Any component bonuses on the ore get applied to the end product.
             var itemProperties = item.ItemProperties.Where(x =>
-                _.GetItemPropertyType(x) == (int)ItemPropertyType.ComponentBonus ||
-                _.GetItemPropertyType(x) == (int) ItemPropertyType.RecommendedLevel).ToList();
+                _.GetItemPropertyType(x) == ItemPropertyType.ComponentBonus ||
+                _.GetItemPropertyType(x) == ItemPropertyType.RecommendedLevel).ToList();
 
             string itemResref = item.Resref;
 
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             pc.DelayEvent(baseCraftDelay, @event);
             
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
-            pc.AssignCommand(() => _.ActionPlayAnimation(_.Animation.Get_Mid, 1.0f, baseCraftDelay));
+            pc.AssignCommand(() => _.ActionPlayAnimation(Animation.Get_Mid, 1.0f, baseCraftDelay));
             item.Destroy();
         }
 
@@ -141,7 +142,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             int durability = 0;
             foreach (var ip in item.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == (int)ItemPropertyType.ComponentBonus)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
                 {
                     int bonusTypeID = _.GetItemPropertySubType(ip);
                     if (bonusTypeID == (int) ComponentBonusType.DurabilityUp)

@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             if (!user.IsPlayer && !user.IsDM) return;
 
             string conversation = placeable.GetLocalString("CONVERSATION");
-            NWObject target = placeable.GetLocalInt("TARGET_PC") == true ? user.Object : placeable.Object;
+            NWObject target = placeable.GetLocalBoolean("TARGET_PC") == true ? user.Object : placeable.Object;
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {

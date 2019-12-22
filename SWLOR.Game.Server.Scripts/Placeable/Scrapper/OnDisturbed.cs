@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
+using LocalVariableType = SWLOR.Game.Server.Enumeration.LocalVariableType;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
 {
@@ -21,12 +22,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
 
         public void Main()
         {
-            int type = _.GetInventoryDisturbType();
-            if (type != _.INVENTORY_DISTURB_TYPE_ADDED) return;
+            var type = _.GetInventoryDisturbType();
+            if (type != InventoryDisturbType.Added) return;
             NWPlaceable device = NWGameObject.OBJECT_SELF;
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)ItemPropertyType.ComponentType);
+            var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == ItemPropertyType.ComponentType);
 
             // Not a component. Return the item.
             if (componentIP == null)
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
             foreach (var ip in item.ItemProperties)
             {
                 var ipType = _.GetItemPropertyType(ip);
-                if (ipType != (int)ItemPropertyType.ComponentType)
+                if (ipType != ItemPropertyType.ComponentType)
                 {
                     _.RemoveItemProperty(item, ip);
                 }

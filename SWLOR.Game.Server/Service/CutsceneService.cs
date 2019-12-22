@@ -1846,21 +1846,6 @@ namespace SWLOR.Game.Server.Service
             RegisterActor(sName, oActor);
         }
 
-
-        private static float GestaltMonkSpeed(NWCreature oActor)
-        {
-            int iClass = GetLevelByClass(ClassType.Monk, oActor);
-
-            if (iClass >= 18) { return 1.50f; }
-            if (iClass >= 15) { return 1.45f; }
-            if (iClass >= 12) { return 1.40f; }
-            if (iClass >= 9) { return 1.30f; }
-            if (iClass >= 6) { return 1.20f; }
-            if (iClass >= 3) { return 1.10f; }
-            else { return 1.00f; }
-        }
-
-
         private static void DoPlaySound(string sName, NWCreature oActor, string sActor, string sSound, bool bAction)
         {
             if (GetLocalBoolean(GetModule(), sName) == true)

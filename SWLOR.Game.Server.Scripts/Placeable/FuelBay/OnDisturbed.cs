@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -23,14 +24,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
         {
             NWPlayer player = (_.GetLastDisturbed());
             NWPlaceable bay = (NWGameObject.OBJECT_SELF);
-            int disturbType = _.GetInventoryDisturbType();
+            var disturbType = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
-            bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == true;
+            bool stronidiumOnly = bay.GetLocalBoolean("CONTROL_TOWER_FUEL_TYPE") == true;
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             
             // Check for either fuel cells or stronidium when adding an item to the container.
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == InventoryDisturbType.Added)
             {
                 if (item.Resref != allowedResref)
                 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 }
             }
             // If the item removed wasn't fuel cells or stronidium, exit early. We don't need to do anything else.
-            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == InventoryDisturbType.Removed)
             {
                 if (item.Resref != allowedResref)
                 {
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 // For starships only: Add the ship's cargo bonus to the max stronidium amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
-                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), (int)ItemPropertyType.StarshipStronidiumBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), ItemPropertyType.StarshipStronidiumBonus);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 // For starships only: Add the ship's cargo bonus to the max fuel amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
-                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), (int)ItemPropertyType.StarshipFuelBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), ItemPropertyType.StarshipFuelBonus);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.

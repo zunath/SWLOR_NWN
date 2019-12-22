@@ -222,16 +222,16 @@ namespace SWLOR.Game.Server.Conversation
         private bool IsGrantedByBackground(PerkType perkType)
         {
             var player = GetPC();
-            var background = (BackgroundType)player.Class1;
+            var background = (ClassType)player.Class1;
 
             if (
-                (background == BackgroundType.Armorsmith && perkType == PerkType.ArmorBlueprints) ||
-                (background == BackgroundType.Weaponsmith && perkType == PerkType.WeaponBlueprints) ||
-                (background == BackgroundType.Chef && perkType == PerkType.FoodRecipes) ||
-                (background == BackgroundType.Engineer && perkType == PerkType.EngineeringBlueprints) ||
-                (background == BackgroundType.Fabricator && perkType == PerkType.FabricationBlueprints) ||
-                (background == BackgroundType.Scavenger && perkType == PerkType.ScavengingExpert) ||
-                (background == BackgroundType.Medic && perkType == PerkType.ImmediateImprovement))
+                (background == ClassType.Armorsmith && perkType == PerkType.ArmorBlueprints) ||
+                (background == ClassType.Weaponsmith && perkType == PerkType.WeaponBlueprints) ||
+                (background == ClassType.Chef && perkType == PerkType.FoodRecipes) ||
+                (background == ClassType.Engineer && perkType == PerkType.EngineeringBlueprints) ||
+                (background == ClassType.Fabricator && perkType == PerkType.FabricationBlueprints) ||
+                (background == ClassType.Scavenger && perkType == PerkType.ScavengingExpert) ||
+                (background == ClassType.Medic && perkType == PerkType.ImmediateImprovement))
             {
                 return true;
             }

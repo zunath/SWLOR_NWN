@@ -3,6 +3,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -20,13 +21,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         public void Main()
         {
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
             
-            if (type == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            if (type == InventoryDisturbType.Removed)
             {
                 HandleRemoveItem();
             }
-            else if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            else if (type == InventoryDisturbType.Added)
             {
                 HandleAddItem();
             }
@@ -114,7 +115,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (_.GetItemPropertyType(ip) == (int) ItemPropertyType.ComponentItemTypeRestriction)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentItemTypeRestriction)
                 {
                     int restrictionType = _.GetItemPropertyCostTableValue(ip);
                     allowedItemTypes.Add((CustomItemType)restrictionType);
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (_.GetItemPropertyType(ip) == (int) ItemPropertyType.ComponentType)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
                     int compType = _.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)

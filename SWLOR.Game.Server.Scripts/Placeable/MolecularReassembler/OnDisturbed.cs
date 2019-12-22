@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
         public void Main()
         {
-            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (_.GetInventoryDisturbType() != InventoryDisturbType.Added)
                 return;
             
             NWPlayer player = _.GetLastDisturbed();
@@ -61,8 +62,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
         private bool IsValidItemType(NWItem item)
         {
-            int type = item.BaseItemType;
-            int[] validTypes =
+            var type = item.BaseItemType;
+            BaseItemType[] validTypes =
             {
                 BaseItemType.Dart,
                 BaseItemType.ThrowingAxe,

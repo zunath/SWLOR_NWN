@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -17,13 +18,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
 
         public void Main()
         {
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
 
-            if (type == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            if (type == InventoryDisturbType.Removed)
             {
                 HandleRemoveItem();
             }
-            else if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            else if (type == InventoryDisturbType.Added)
             {
                 HandleAddItem();
             }

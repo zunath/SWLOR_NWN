@@ -611,37 +611,37 @@ namespace SWLOR.Game.Server.Service
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;
             int backgroundBAB = 0;
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            ClassType background = (ClassType)oPC.Class1;
             bool receivesBackgroundBonus = false;
 
             switch (weapon.CustomItemType)
             {
                 case CustomItemType.FinesseVibroblade:
-                    receivesBackgroundBonus = background == BackgroundType.Duelist;
+                    receivesBackgroundBonus = background == ClassType.Duelist;
                     break;
                 case CustomItemType.Baton:
-                    receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
+                    receivesBackgroundBonus = background == ClassType.SecurityOfficer;
                     break;
                 case CustomItemType.HeavyVibroblade:
-                    receivesBackgroundBonus = background == BackgroundType.Soldier;
+                    receivesBackgroundBonus = background == ClassType.Soldier;
                     break;
                 case CustomItemType.TwinBlade:
-                    receivesBackgroundBonus = background == BackgroundType.Berserker;
+                    receivesBackgroundBonus = background == ClassType.Berserker;
                     break;
                 case CustomItemType.MartialArtWeapon:
-                    receivesBackgroundBonus = background == BackgroundType.TerasKasi;
+                    receivesBackgroundBonus = background == ClassType.TerasKasi;
                     break;
                 case CustomItemType.BlasterPistol:
-                    receivesBackgroundBonus = background == BackgroundType.Smuggler;
+                    receivesBackgroundBonus = background == ClassType.Smuggler;
                     break;
                 case CustomItemType.BlasterRifle:
-                    receivesBackgroundBonus = background == BackgroundType.Sharpshooter || background == BackgroundType.Mandalorian;
+                    receivesBackgroundBonus = background == ClassType.Sharpshooter || background == ClassType.Mandalorian;
                     break;
             }
 
             if (receivesBackgroundBonus)
             {
-                backgroundBAB = background == BackgroundType.Mandalorian ? 1 : 2;
+                backgroundBAB = background == ClassType.Mandalorian ? 1 : 2;
             }
 
             return 1 + skillBAB + perkBAB + stats.BAB + backgroundBAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.

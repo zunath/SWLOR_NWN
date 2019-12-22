@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -19,19 +20,19 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
         {
             NWCreature looter = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
 
             looter.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_LOW, 1.0f, 1.0f);
+                _.ActionPlayAnimation(Animation.Get_Low, 1.0f, 1.0f);
             });
 
-            if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (type == InventoryDisturbType.Added)
             {
                 ItemService.ReturnItem(looter, item);
                 looter.SendMessage("You cannot place items inside of corpses.");
             }
-            else if (type == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (type == InventoryDisturbType.Removed)
             {
                 NWItem copy = item.GetLocalObject("CORPSE_ITEM_COPY");
 

@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -25,10 +26,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
             device.DestroyAllInventoryItems();
             device.IsLocked = false;
             
-            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
-            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
-            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
-            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnUsed, "script_1");
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnOpen, string.Empty);
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnClosed, string.Empty);
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnInventoryDisturbed, string.Empty);
             
             // Only wipe the data if we're not returning from an item preview for item picking.
             if(!model.IsReturningFromItemPreview &&

@@ -53,9 +53,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
             float interval = 6.0f;
-            BackgroundType background = (BackgroundType) player.Class1;
+            ClassType background = (ClassType) player.Class1;
 
-            if (background == BackgroundType.Medic)
+            if (background == ClassType.Medic)
                 interval *= 0.5f;
 
             string data = (int)interval + ", " + restoreAmount;
@@ -99,9 +99,9 @@ namespace SWLOR.Game.Server.Item.Medicine
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             int consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
-            BackgroundType background = (BackgroundType) user.Class1;
+            ClassType background = (ClassType) user.Class1;
 
-            if (background == BackgroundType.Medic)
+            if (background == ClassType.Medic)
             {
                 consumeChance += 5;
             }

@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -24,9 +25,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
             NWItem oItem = (_.GetInventoryDisturbItem());
             NWPlaceable point = (NWGameObject.OBJECT_SELF);
-            int disturbType = _.GetInventoryDisturbType();
+            var disturbType = _.GetInventoryDisturbType();
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == InventoryDisturbType.Added)
             {
                 ItemService.ReturnItem(oPC, oItem);
             }

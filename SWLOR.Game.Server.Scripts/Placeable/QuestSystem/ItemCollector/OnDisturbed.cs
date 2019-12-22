@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -26,13 +27,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
 
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            int disturbType = _.GetInventoryDisturbType();
+            var disturbType = _.GetInventoryDisturbType();
             string crafterPlayerID = item.GetLocalString("CRAFTER_PLAYER_ID");
             Guid? crafterPlayerGUID = null;
             if (!string.IsNullOrWhiteSpace(crafterPlayerID))
                 crafterPlayerGUID = new Guid(crafterPlayerID);
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == InventoryDisturbType.Added)
             {
                 int questID = container.GetLocalInt("QUEST_ID");
                 PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);

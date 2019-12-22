@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 
 namespace SWLOR.Game.Server.Service
@@ -22,59 +22,59 @@ namespace SWLOR.Game.Server.Service
             string item2Resref = "";
             int item2Quantity = 1;
 
-            switch ((BackgroundType)classID)
+            switch ((ClassType)classID)
             {
-                case BackgroundType.Freelancer:
+                case ClassType.Freelancer:
                     dbPlayer.UnallocatedSP = dbPlayer.UnallocatedSP + 3;
                     DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                     break;
-                case BackgroundType.Smuggler:
+                case ClassType.Smuggler:
                     item1Resref = "blaster_s";
                     break;
-                case BackgroundType.Sharpshooter:
+                case ClassType.Sharpshooter:
                     item1Resref = "rifle_s";
                     break;
-                case BackgroundType.TerasKasi:
+                case ClassType.TerasKasi:
                     item1Resref = "powerglove_t";
                     break;
-                case BackgroundType.SecurityOfficer:
+                case ClassType.SecurityOfficer:
                     item1Resref = "club_s";
                     break;
-                case BackgroundType.Berserker:
+                case ClassType.Berserker:
                     item1Resref = "doubleaxe_z";
                     break;
-                case BackgroundType.Duelist:
+                case ClassType.Duelist:
                     item1Resref = "kukri_d";
                     break;
-                case BackgroundType.Soldier:
+                case ClassType.Soldier:
                     item1Resref = "greatsword_s";
                     break;
-                case BackgroundType.Armorsmith:
+                case ClassType.Armorsmith:
                     PerkService.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints, true);
                     break;
-                case BackgroundType.Weaponsmith:
+                case ClassType.Weaponsmith:
                     PerkService.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints, true);
                     break;
-                case BackgroundType.Chef:
+                case ClassType.Chef:
                     PerkService.DoPerkUpgrade(oPC, PerkType.FoodRecipes, true);
                     break;
-                case BackgroundType.Engineer:
+                case ClassType.Engineer:
                     PerkService.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints, true);
                     break;
-                case BackgroundType.Fabricator:
+                case ClassType.Fabricator:
                     PerkService.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints, true);
                     break;
-                case BackgroundType.Harvester:
+                case ClassType.Harvester:
                     item1Resref = "scanner_r_h";
                     item2Resref = "harvest_r_h";
                     break;
-                case BackgroundType.Scavenger:
+                case ClassType.Scavenger:
                     PerkService.DoPerkUpgrade(oPC, PerkType.ScavengingExpert, true);
                     break;
-                case BackgroundType.Medic:
+                case ClassType.Medic:
                     PerkService.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement, true);
                     break;
-                case BackgroundType.Mandalorian:
+                case ClassType.Mandalorian:
                     item1Resref = "man_armor";
                     break;
                 default:

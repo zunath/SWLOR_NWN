@@ -6,9 +6,11 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler

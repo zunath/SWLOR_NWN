@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Resource
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Resource
             NWPlaceable objSelf = (NWGameObject.OBJECT_SELF);
 
             // No matter what, we want to remove the heartbeat script from this resource.
-            _.SetEventScript(objSelf, _.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);
+            _.SetEventScript(objSelf, EventScriptPlaceable.OnHeartbeat, string.Empty);
 
             bool hasSpawnedProp = objSelf.GetLocalInt("RESOURCE_PROP_SPAWNED") == 1;
             if (hasSpawnedProp) return;

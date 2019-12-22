@@ -5,11 +5,13 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
+using Skill = SWLOR.Game.Server.NWScript.Enumerations.Skill;
 
 namespace SWLOR.Game.Server.Scripts.Delayed
 {
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                     // If an animation is specified for this perk, play it now.
                     if (dbPerk.CastAnimationID != null && dbPerk.CastAnimationID > 0)
                     {
-                        activator.AssignCommand(() => { _.ActionPlayAnimation((int)dbPerk.CastAnimationID, 1f, 1f); });
+                        activator.AssignCommand(() => { _.ActionPlayAnimation((Animation)dbPerk.CastAnimationID, 1f, 1f); });
                     }
 
                     // If the target is an NPC, assign enmity towards this creature for that NPC.
@@ -109,7 +111,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
                     // The Skill Increase effect icon and name has been overwritten. Apply the effect to the player now.
                     // This doesn't do anything - it simply gives a visual cue that the player has an active concentration effect.
-                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), activator);
+                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(Skill.UseMagicDevice, 1), activator);
                 }
 
                 // Handle applying cooldowns, if necessary.

@@ -1,7 +1,6 @@
 ﻿using System;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.DM;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -9,10 +8,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-
-using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using PCBaseType = SWLOR.Game.Server.Enumeration.PCBaseType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -70,26 +66,26 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private static int ConvertNWNXChatChannelIDToDatabaseID(int nwnxChatChannelID)
+        private static int ConvertNWNXChatChannelIDToDatabaseID(NWNXChatChannel nwnxChatChannelID)
         {
             switch (nwnxChatChannelID)
             {
-                case (int)ChatChannelType.PlayerTalk:
-                case (int)ChatChannelType.DMTalk:
+                case NWNXChatChannel.PlayerTalk:
+                case NWNXChatChannel.DMTalk:
                     return 3;
-                case (int)ChatChannelType.PlayerShout:
-                case (int)ChatChannelType.DMShout:
+                case NWNXChatChannel.PlayerShout:
+                case NWNXChatChannel.DMShout:
                     return 1;
-                case (int)ChatChannelType.PlayerWhisper:
-                case (int)ChatChannelType.DMWhisper:
+                case NWNXChatChannel.PlayerWhisper:
+                case NWNXChatChannel.DMWhisper:
                     return 2;
-                case (int)ChatChannelType.PlayerTell:
-                case (int)ChatChannelType.DMTell:
+                case NWNXChatChannel.PlayerTell:
+                case NWNXChatChannel.DMTell:
                     return 6;
-                case (int)ChatChannelType.ServerMessage:
+                case NWNXChatChannel.ServerMessage:
                     return 7;
-                case (int)ChatChannelType.PlayerParty:
-                case (int)ChatChannelType.DMParty:
+                case NWNXChatChannel.PlayerParty:
+                case NWNXChatChannel.DMParty:
                     return 4;
                 default:
                     return 5;
@@ -103,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
 
-            int mode = NWNXChat.GetChannel();
+            var mode = NWNXChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
 
             string log;
@@ -173,13 +169,13 @@ namespace SWLOR.Game.Server.Service
             switch (eventID)
             {
                 case 1: // Spawn Creature
-                    string areaName = NWNXEvents.OnDMSpawnObject_GetArea().Name;
-                    NWCreature creature = NWNXEvents.OnDMSpawnObject_GetObject().Object;
-                    int objectTypeID = NWNXEvents.OnDMSpawnObject_GetObjectType();
+                    string areaName = _.GetName(NWNXEvents.OnDMSpawnObject_GetArea());
+                    NWCreature creature = NWNXEvents.OnDMSpawnObject_GetObject();
+                    var objectTypeID = NWNXEvents.OnDMSpawnObject_GetObjectType();
                     float x = NWNXEvents.OnDMSpawnObject_GetPositionX();
                     float y = NWNXEvents.OnDMSpawnObject_GetPositionY();
                     float z = NWNXEvents.OnDMSpawnObject_GetPositionZ();
-                    creature.SetLocalInt("DM_SPAWNED", true);
+                    creature.SetLocalBoolean("DM_SPAWNED", true);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP

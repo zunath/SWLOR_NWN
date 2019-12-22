@@ -74,7 +74,7 @@
 
     //GestaltActionSpeak      (9.0,  oFan,
                             //"That was quite a performance!",
-                            //ANIMATION_LOOPING_GET_MID,2.0);
+                            //Animation.Get_Mid,2.0);
 
 
     // Fade to black and remove the NPC

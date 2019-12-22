@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
@@ -12,11 +13,11 @@ namespace SWLOR.Game.Server.GameObject
             
         }
 
-        public int Width => _.GetAreaSize(AREA_WIDTH, Object);
+        public int Width => _.GetAreaSize(AreaProperty.Width, Object);
 
-        public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
+        public int Height => _.GetAreaSize(AreaProperty.Height, Object);
 
-        public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == true;
+        public bool IsInstance => _.GetLocalBoolean(Object, "IS_AREA_INSTANCE") == true;
 
         public IEnumerable<NWObject> Objects
         {

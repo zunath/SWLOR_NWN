@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using System;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -50,9 +51,9 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == true)
+            if (GetIsDoorActionPossible(door.Object, DoorAction.Open) == true)
             {
-                DoDoorAction(door.Object, DOOR_ACTION_OPEN);
+                DoDoorAction(door.Object, DoorAction.Open);
             }
         }
 
@@ -82,7 +83,7 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnDeath(NWCreature self)
         {
-            int vfx = self.GetLocalInt("DEATH_VFX");
+            var vfx = (Vfx)self.GetLocalInt("DEATH_VFX");
             if (vfx > 0)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), self);
@@ -224,7 +225,7 @@ namespace SWLOR.Game.Server.AI
                 });
             }
             // We don't have a valid target but we're still attacking someone. We shouldn't be attacking them anymore. Clear all actions.
-            else if(target == null && GetCurrentAction(self) == ACTION_ATTACKOBJECT)
+            else if(target == null && GetCurrentAction(self) == ActionType.AttackObject)
             {
                 self.AssignCommand(() =>
                 {
@@ -324,7 +325,7 @@ namespace SWLOR.Game.Server.AI
             if (GetIsEnemy(nearby, self.Object) == false) return;
 
             // Does the nearby creature have sanctuary?
-            if (nearby.HasAnyEffect(EFFECT_TYPE_SANCTUARY)) return;
+            if (nearby.HasAnyEffect(EffectType.Sanctuary)) return;
 
             // Does the nearby creature have line of sight to the creature being attacked?
             if (LineOfSightObject(self, nearby) == false) return;
@@ -375,10 +376,10 @@ namespace SWLOR.Game.Server.AI
                 return;
             }
 
-            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
                 _.IsInConversation(self.Object) == false &&
-                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
-                _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
+                _.GetCurrentAction(self.Object) != ActionType.RandomWalk &&
+                _.GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
@@ -390,9 +391,9 @@ namespace SWLOR.Game.Server.AI
             if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
                 return;
 
-            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
                 _.IsInConversation(self.Object) == false &&
-                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
+                _.GetCurrentAction(self.Object) != ActionType.RandomWalk )
             {
                 var flags = GetAIFlags(self);
                 Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
@@ -435,11 +436,11 @@ namespace SWLOR.Game.Server.AI
             foreach (var perkDetails in randomizedFeatIDs)
             {
                 // Move to next feat if this creature cannot use this one.
-                if (!AbilityService.CanUsePerkFeat(self, target, perkDetails.FeatID)) continue;
+                if (!AbilityService.CanUsePerkFeat(self, target, (Feat)perkDetails.FeatID)) continue;
                 
                 self.AssignCommand(() =>
                 {
-                    _.ActionUseFeat(perkDetails.FeatID, target);
+                    _.ActionUseFeat((Feat)perkDetails.FeatID, target);
                 });
 
                 break;

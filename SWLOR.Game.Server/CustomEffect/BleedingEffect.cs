@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.CustomEffect
             if (currentTick % 2 == 0) return;
 
             Location location = oTarget.Location;
-            NWPlaceable oBlood = (_.CreateObject(_.ObjectType.Placeable, "plc_bloodstain", location));
+            NWPlaceable oBlood = (_.CreateObject(ObjectType.Placeable, "plc_bloodstain", location));
             oBlood.Destroy(48.0f);
 
             int amount = 1;

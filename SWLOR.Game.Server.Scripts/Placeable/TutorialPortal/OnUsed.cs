@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.TutorialPortal
         {
             NWPlayer player = (_.GetLastUsedBy());
             NWPlaceable warp = (NWGameObject.OBJECT_SELF);
-            bool isExit = warp.GetLocalInt("IS_EXIT") == true;
+            bool isExit = warp.GetLocalBoolean("IS_EXIT") == true;
 
             if (isExit)
             {

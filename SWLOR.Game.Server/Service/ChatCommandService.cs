@@ -12,6 +12,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -130,16 +131,16 @@ namespace SWLOR.Game.Server.Service
                 sender.SetLocalString("CHAT_COMMAND_ARGS", args);
                 sender.SendMessage("Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
 
-                if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == false || sender.IsDM)
+                if (_.GetHasFeat(Feat.ChatCommandTargeter, sender) == false || sender.IsDM)
                 {
-                    NWNXCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
+                    NWNXCreature.AddFeatByLevel(sender, Feat.ChatCommandTargeter, 1);
 
                     if(sender.IsDM)
                     {
                         var qbs = NWNXPlayer.GetQuickBarSlot(sender, 11);
                         if (qbs.ObjectType == QuickBarSlotType.Empty)
                         {
-                            NWNXPlayer.SetQuickBarSlot(sender, 11, NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.ChatCommandTargeter));
+                            NWNXPlayer.SetQuickBarSlot(sender, 11, NWNXPlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter));
                         }
                     }
                 }
@@ -151,9 +152,9 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = NWGameObject.OBJECT_SELF;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            var featID = NWNXEvents.OnFeatUsed_GetFeat();
 
-            if (featID != (int)CustomFeatType.ChatCommandTargeter) return;
+            if (featID != Feat.ChatCommandTargeter) return;
 
             var target = NWNXEvents.OnFeatUsed_GetTarget();
             var targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();

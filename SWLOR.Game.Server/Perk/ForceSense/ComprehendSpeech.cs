@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_WILL_SAVING_THROW_USE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Imp_Will_Saving_Throw_Use), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

@@ -8,6 +8,7 @@ using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 
@@ -21,14 +22,14 @@ namespace SWLOR.Game.Server.ChatCommand
             if (!user.IsPlayer) return;
 
             //Checks if the player has Plasma Cell
-            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, user) == false)
+            if (_.GetHasFeat(Feat.PlasmaCell, user) == false)
             {
                 user.SendMessage(ColorTokenService.Red("You do not have the perk: Plasma Cell."));
                 return;
             }
 
             //Checks if the player has toggled plasma cell off
-            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == false)
+            if (user.GetLocalBoolean("PLASMA_CELL_TOGGLE_OFF") == false)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
                 user.SendMessage(ColorTokenService.Red("Plasma Cell is now toggled off."));

@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;

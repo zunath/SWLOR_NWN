@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 {
                     Vector flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
-                    flames = (_.CreateObject(_.ObjectType.Placeable, "forge_flame", flameLocation));
+                    flames = (_.CreateObject(ObjectType.Placeable, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }
 
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             pc.DelayEvent(baseCraftDelay, @event);
             
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
-            pc.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
+            pc.AssignCommand(() => _.ActionPlayAnimation(_.Animation.Get_Mid, 1.0f, baseCraftDelay));
             item.Destroy();
         }
 

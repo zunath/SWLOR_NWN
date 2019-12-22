@@ -505,7 +505,7 @@ namespace SWLOR.Game.Server.Service
             float baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
             var vfxID = Vfx.None;
-            var animationID = AnimationLooping.Invalid;
+            var animationID = Animation.Invalid;
             
             if (baseActivationTime > 0f && activationTime < 1.0f)
                 activationTime = 1.0f;
@@ -540,8 +540,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If player is in stealth mode, force them out of stealth mode.
-            if (_.GetActionMode(activator.Object, ActionMode.Stealth) == 1)
-                _.SetActionMode(activator.Object, ActionMode.Stealth, 0);
+            if (_.GetActionMode(activator.Object, ActionMode.Stealth) == true)
+                _.SetActionMode(activator.Object, ActionMode.Stealth, false);
 
             // Make the player face their target.
             _.ClearAllActions();
@@ -552,7 +552,7 @@ namespace SWLOR.Game.Server.Service
                 executionType == PerkExecutionType.ConcentrationAbility)
             {
                 vfxID = Vfx.Vfx_Dur_Iounstone_Yellow;
-                animationID = AnimationLooping.Conjure1;
+                animationID = Animation.Conjure1;
             }
 
             if (executionType == PerkExecutionType.ConcentrationAbility)
@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.Service
 
             // If an animation has been specified, make the player play that animation now.
             // bypassing if perk is throw saber due to couldn't get the animation to work via db table edit
-            if (animationID != AnimationLooping.Invalid && entity.ID != (int) PerkType.ThrowSaber)                
+            if (animationID != Animation.Invalid && entity.ID != (int) PerkType.ThrowSaber)                
             {
                 activator.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
@@ -643,9 +643,9 @@ namespace SWLOR.Game.Server.Service
 
             Vector currentPosition = activator.Position;
 
-            if (currentPosition.m_X != position.m_X ||
-                currentPosition.m_Y != position.m_Y ||
-                currentPosition.m_Z != position.m_Z)
+            if (currentPosition.X != position.X ||
+                currentPosition.Y != position.Y ||
+                currentPosition.Z != position.Z)
             {
                 var effect = activator.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "ACTIVATION_VFX");
                 if (effect != null)

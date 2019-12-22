@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 

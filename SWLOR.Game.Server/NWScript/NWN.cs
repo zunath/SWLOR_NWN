@@ -7,15 +7,15 @@ namespace NWN
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector
     {
-        public float m_X;
-        public float m_Y;
-        public float m_Z;
+        public float X;
+        public float Y;
+        public float Z;
 
         public Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
-            this.m_X = x;
-            this.m_Y = y;
-            this.m_Z = z;
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
         }
     }
 

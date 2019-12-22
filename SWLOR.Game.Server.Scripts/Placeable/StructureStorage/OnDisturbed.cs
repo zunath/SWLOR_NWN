@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
+using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
 {
@@ -26,7 +28,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
             NWPlaceable container = (NWGameObject.OBJECT_SELF);
-            int disturbType = _.GetInventoryDisturbType();
+            var disturbType = _.GetInventoryDisturbType();
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
@@ -35,11 +37,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
             int itemCount = container.InventoryItems.Count();
             string itemResref = item.Resref;
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == InventoryDisturbType.Added)
             {
                 if (_.GetHasInventory(item) == true)
                 {
-                    item.SetLocalInt("RETURNING_ITEM", true);
+                    item.SetLocalBoolean("RETURNING_ITEM", true);
                     ItemService.ReturnItem(oPC, item);
                     oPC.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return;
@@ -50,7 +52,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
                     ItemService.ReturnItem(oPC, item);
                     oPC.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
                 }
-                else if (item.BaseItemType == _.BASE_ITEM_GOLD)
+                else if (item.BaseItemType == BaseItemType.Gold)
                 {
                     ItemService.ReturnItem(oPC, item);
                     oPC.SendMessage(ColorTokenService.Red("Credits cannot be placed inside."));
@@ -70,9 +72,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
                     MessageHub.Instance.Publish(new OnStoreStructureItem(oPC, itemEntity));
                 }
             }
-            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == InventoryDisturbType.Removed)
             {
-                if (item.GetLocalInt("RETURNING_ITEM") == true)
+                if (item.GetLocalBoolean("RETURNING_ITEM") == true)
                 {
                     item.DeleteLocalInt("RETURNING_ITEM");
                 }

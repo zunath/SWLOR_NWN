@@ -160,10 +160,10 @@ void main()
                         if (GetArea(oP) == GetArea(oUser))
                         {
                             ClearPersonalReputation(oArea, oP);
-                            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 25, oP);
-                            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 91, oP);
-                            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 91, oP);
-                            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 91, oP);
+                            SetStandardFactionReputation(StandardFaction.Hostile, 25, oP);
+                            SetStandardFactionReputation(StandardFaction.Commoner, 91, oP);
+                            SetStandardFactionReputation(StandardFaction.Merchant, 91, oP);
+                            SetStandardFactionReputation(StandardFaction.Defender, 91, oP);
                         }
                         oP = GetNextPC();
                     }
@@ -252,12 +252,12 @@ void main()
             else //Targeting the ground
             {
                 int iReport = 0;
-                oKillMe = GetFirstObjectInShape(SHAPE_SPHERE, 2.0f, lLocation, false, OBJECT_TYPE_ALL);
+                oKillMe = GetFirstObjectInShape(Shape.Sphere, 2.0f, lLocation, false, OBJECT_TYPE_ALL);
                 while (GetIsObjectValid(oKillMe))
                 {
                     iReport++;
                     DestroyObject(oKillMe);
-                    oKillMe = GetNextObjectInShape(SHAPE_SPHERE, 2.0f, lLocation, false, OBJECT_TYPE_ALL);
+                    oKillMe = GetNextObjectInShape(Shape.Sphere, 2.0f, lLocation, false, OBJECT_TYPE_ALL);
                 }
                 FloatingTextStringOnCreature("Destroyed " + IntToString(iReport) + " objects.", oUser, false);
             }

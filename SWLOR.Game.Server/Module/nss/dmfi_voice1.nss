@@ -50,7 +50,7 @@ void main()
         return;
 
     // If in loiter mode, look for a PC and make the announcement when appropraite
-    object oPC = GetFirstObjectInShape(SHAPE_SPHERE, 10.0f, GetLocation(OBJECT_SELF), true);
+    object oPC = GetFirstObjectInShape(Shape.Sphere, 10.0f, GetLocation(OBJECT_SELF), true);
     while(GetIsObjectValid(oPC))
     {
         if (GetIsPC(oPC) &&
@@ -60,6 +60,6 @@ void main()
                 SpeakString(GetLocalString(OBJECT_SELF, "dmfi_LoiterSay"));
                 DestroyObject(OBJECT_SELF);
             }
-        oPC = GetNextObjectInShape(SHAPE_SPHERE, 10.0f, GetLocation(OBJECT_SELF), true);
+        oPC = GetNextObjectInShape(Shape.Sphere, 10.0f, GetLocation(OBJECT_SELF), true);
     }
 }

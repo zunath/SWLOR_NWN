@@ -37,12 +37,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
                     string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
                     if (!string.IsNullOrWhiteSpace(seed))
                     {
-                        _.CreateObject(_.ObjectType.Item, seed, point.Location);
+                        _.CreateObject(ObjectType.Item, seed, point.Location);
 
                         int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.SeedPicker);
                         if (RandomService.Random(100) + 1 <= perkLevel * 10)
                         {
-                            _.CreateObject(_.ObjectType.Item, seed, point.Location);
+                            _.CreateObject(ObjectType.Item, seed, point.Location);
                         }
                     }
 

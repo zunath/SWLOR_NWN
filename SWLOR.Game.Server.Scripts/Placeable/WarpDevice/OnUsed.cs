@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -31,8 +32,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
             int visualEffectID = self.GetLocalInt("VISUAL_EFFECT");
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
             string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
-            bool isInstance = self.GetLocalInt("INSTANCE") == true;
-            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == true;
+            bool isInstance = self.GetLocalBoolean("INSTANCE") == true;
+            bool personalInstanceOnly = self.GetLocalBoolean("PERSONAL_INSTANCE_ONLY") == true;
 
             if (keyItemID > 0)
             {
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
             if (visualEffectID > 0)
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(visualEffectID), oPC.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect((Vfx)visualEffectID), oPC.Object);
             }
 
             NWObject entranceWP = _.GetWaypointByTag(destination);

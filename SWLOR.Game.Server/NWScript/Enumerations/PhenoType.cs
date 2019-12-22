@@ -3,6 +3,7 @@
     public enum PhenoType
     {
         Normal = 0,
+        Large = 1,
         Big = 2,
         Custom1 = 3,
         Custom2 = 4,

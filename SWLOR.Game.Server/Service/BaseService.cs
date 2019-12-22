@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -65,11 +66,11 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer player = (NWGameObject.OBJECT_SELF);
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            var featID = NWNXEvents.OnFeatUsed_GetFeat();
             NWLocation targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
             NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
 
-            if (featID != (int)CustomFeatType.StructureManagementTool) return;
+            if (featID != Feat.StructureManagementTool) return;
 
             var data = GetPlayerTempData(player);
             data.TargetArea = targetArea;
@@ -159,19 +160,19 @@ namespace SWLOR.Game.Server.Service
             NWPlaceable plc = (_.CreateObject(ObjectType.Placeable, resref, location));
             plc.SetLocalString("PC_BASE_STRUCTURE_ID", pcStructure.ID.ToString());
             plc.SetLocalInt("REQUIRES_BASE_POWER", baseStructure.RequiresBasePower ? 1 : 0);
-            plc.SetLocalString("ORIGINAL_SCRIPT_CLOSED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED));
-            plc.SetLocalString("ORIGINAL_SCRIPT_DAMAGED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_DAMAGED));
-            plc.SetLocalString("ORIGINAL_SCRIPT_DEATH", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_DEATH));
-            plc.SetLocalString("ORIGINAL_SCRIPT_HEARTBEAT", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT));
-            plc.SetLocalString("ORIGINAL_SCRIPT_INVENTORYDISTURBED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED));
-            plc.SetLocalString("ORIGINAL_SCRIPT_LOCK", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_LOCK));
-            plc.SetLocalString("ORIGINAL_SCRIPT_MELEEATTACKED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_MELEEATTACKED));
-            plc.SetLocalString("ORIGINAL_SCRIPT_OPEN", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN));
-            plc.SetLocalString("ORIGINAL_SCRIPT_SPELLCASTAT", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_SPELLCASTAT));
-            plc.SetLocalString("ORIGINAL_SCRIPT_UNLOCK", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_UNLOCK));
-            plc.SetLocalString("ORIGINAL_SCRIPT_USED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_USED));
-            plc.SetLocalString("ORIGINAL_SCRIPT_USER_DEFINED_EVENT", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_USER_DEFINED_EVENT));
-            plc.SetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK));
+            plc.SetLocalString("ORIGINAL_SCRIPT_CLOSED", _.GetEventScript(plc.Object, EventScriptPlaceable.OnClosed));
+            plc.SetLocalString("ORIGINAL_SCRIPT_DAMAGED", _.GetEventScript(plc.Object, EventScriptPlaceable.OnDamaged));
+            plc.SetLocalString("ORIGINAL_SCRIPT_DEATH", _.GetEventScript(plc.Object, EventScriptPlaceable.OnDeath));
+            plc.SetLocalString("ORIGINAL_SCRIPT_HEARTBEAT", _.GetEventScript(plc.Object, EventScriptPlaceable.OnHeartbeat));
+            plc.SetLocalString("ORIGINAL_SCRIPT_INVENTORYDISTURBED", _.GetEventScript(plc.Object, EventScriptPlaceable.OnInventoryDisturbed));
+            plc.SetLocalString("ORIGINAL_SCRIPT_LOCK", _.GetEventScript(plc.Object, EventScriptPlaceable.OnLock));
+            plc.SetLocalString("ORIGINAL_SCRIPT_MELEEATTACKED", _.GetEventScript(plc.Object, EventScriptPlaceable.OnMeleeAttacked));
+            plc.SetLocalString("ORIGINAL_SCRIPT_OPEN", _.GetEventScript(plc.Object, EventScriptPlaceable.OnOpen));
+            plc.SetLocalString("ORIGINAL_SCRIPT_SPELLCASTAT", _.GetEventScript(plc.Object, EventScriptPlaceable.OnSpellCastAt));
+            plc.SetLocalString("ORIGINAL_SCRIPT_UNLOCK", _.GetEventScript(plc.Object, EventScriptPlaceable.OnUnlock));
+            plc.SetLocalString("ORIGINAL_SCRIPT_USED", _.GetEventScript(plc.Object, EventScriptPlaceable.OnUsed));
+            plc.SetLocalString("ORIGINAL_SCRIPT_USER_DEFINED_EVENT", _.GetEventScript(plc.Object, EventScriptPlaceable.OnUserDefinedEvent));
+            plc.SetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK", _.GetEventScript(plc.Object, EventScriptPlaceable.OnLeftClick));
             plc.SetLocalString("ORIGINAL_SCRIPT_1", _.GetLocalString(plc.Object, "SCRIPT_1"));
 
             if (!string.IsNullOrWhiteSpace(pcStructure.CustomName))
@@ -239,41 +240,41 @@ namespace SWLOR.Game.Server.Service
             foreach (var record in areaStructures)
             {
                 var structure = record.Structure;
-                if (structure.GetLocalInt("REQUIRES_BASE_POWER") == true)
+                if (structure.GetLocalBoolean("REQUIRES_BASE_POWER") == true)
                 {
                     if (isPoweredOn)
                     {
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, structure.GetLocalString("ORIGINAL_SCRIPT_CLOSED"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_DAMAGED, structure.GetLocalString("ORIGINAL_SCRIPT_DAMAGED"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_DEATH, structure.GetLocalString("ORIGINAL_SCRIPT_DEATH"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, structure.GetLocalString("ORIGINAL_SCRIPT_HEARTBEAT"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, structure.GetLocalString("ORIGINAL_SCRIPT_INVENTORYDISTURBED"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_LOCK, structure.GetLocalString("ORIGINAL_SCRIPT_LOCK"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_MELEEATTACKED, structure.GetLocalString("ORIGINAL_SCRIPT_MELEEATTACKED"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, structure.GetLocalString("ORIGINAL_SCRIPT_OPEN"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_SPELLCASTAT, structure.GetLocalString("ORIGINAL_SCRIPT_SPELLCASTAT"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_UNLOCK, structure.GetLocalString("ORIGINAL_SCRIPT_UNLOCK"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, structure.GetLocalString("ORIGINAL_SCRIPT_USED"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USER_DEFINED_EVENT, structure.GetLocalString("ORIGINAL_SCRIPT_USER_DEFINED_EVENT"));
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK, structure.GetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnClosed, structure.GetLocalString("ORIGINAL_SCRIPT_CLOSED"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnDamaged, structure.GetLocalString("ORIGINAL_SCRIPT_DAMAGED"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnDeath, structure.GetLocalString("ORIGINAL_SCRIPT_DEATH"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnHeartbeat, structure.GetLocalString("ORIGINAL_SCRIPT_HEARTBEAT"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnInventoryDisturbed, structure.GetLocalString("ORIGINAL_SCRIPT_INVENTORYDISTURBED"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnLock, structure.GetLocalString("ORIGINAL_SCRIPT_LOCK"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnMeleeAttacked, structure.GetLocalString("ORIGINAL_SCRIPT_MELEEATTACKED"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnOpen, structure.GetLocalString("ORIGINAL_SCRIPT_OPEN"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnSpellCastAt, structure.GetLocalString("ORIGINAL_SCRIPT_SPELLCASTAT"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnUnlock, structure.GetLocalString("ORIGINAL_SCRIPT_UNLOCK"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnUsed, structure.GetLocalString("ORIGINAL_SCRIPT_USED"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnUserDefinedEvent, structure.GetLocalString("ORIGINAL_SCRIPT_USER_DEFINED_EVENT"));
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnLeftClick, structure.GetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK"));
                         structure.SetLocalString("SCRIPT_1", structure.GetLocalString("ORIGINAL_SCRIPT_1"));
                         structure.IsLocked = false;
                     }
                     else
                     {
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_DAMAGED, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_DEATH, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_LOCK, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_MELEEATTACKED, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_SPELLCASTAT, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_UNLOCK, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_USER_DEFINED_EVENT, string.Empty);
-                        _.SetEventScript(structure.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnClosed, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnDamaged, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnDeath, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnHeartbeat, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnInventoryDisturbed, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnLock, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnMeleeAttacked, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnOpen, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnSpellCastAt, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnUnlock, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnUsed, "script_1");
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnUserDefinedEvent, string.Empty);
+                        _.SetEventScript(structure.Object, EventScriptPlaceable.OnLeftClick, string.Empty);
                         structure.SetLocalString("SCRIPT_1", "Placeable.DisabledStructure.OnUsed");
                         structure.IsLocked = true;
                     }
@@ -291,7 +292,7 @@ namespace SWLOR.Game.Server.Service
             var doorRule = GetDoorRule(spawnRule);
             NWPlaceable door = doorRule.Run(area, location);
             door.SetLocalString("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
-            door.SetLocalInt("IS_DOOR", true);
+            door.SetLocalBoolean("IS_DOOR", true);
 
             return door;
         }
@@ -451,8 +452,8 @@ namespace SWLOR.Game.Server.Service
         public static string GetSectorOfLocation(NWLocation targetLocation)
         {
             NWArea area = targetLocation.Area;
-            int cellX = (int)(_.GetPositionFromLocation(targetLocation).m_X / 10);
-            int cellY = (int)(_.GetPositionFromLocation(targetLocation).m_Y / 10);
+            int cellX = (int)(_.GetPositionFromLocation(targetLocation).X / 10);
+            int cellY = (int)(_.GetPositionFromLocation(targetLocation).Y / 10);
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
 
             string sector = "INVALID";
@@ -709,9 +710,9 @@ namespace SWLOR.Game.Server.Service
                                 BaseStructureID = baseStructureID,
                                 Durability = DurabilityService.GetDurability(structureItem),
                                 LocationOrientation = _.GetFacingFromLocation(targetLocation),
-                                LocationX = position.m_X,
-                                LocationY = position.m_Y,
-                                LocationZ = position.m_Z,
+                                LocationX = position.X,
+                                LocationY = position.Y,
+                                LocationZ = position.Z,
                                 PCBaseID = starkillerBase.ID,
                                 InteriorStyleID = style.ID,
                                 ExteriorStyleID = extStyle.ID,
@@ -755,7 +756,7 @@ namespace SWLOR.Game.Server.Service
             {
                 item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
                 item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
-                item.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", true);
+                item.SetLocalBoolean("STRUCTURE_BUILDING_INITIALIZED", true);
             }
 
             return item;
@@ -957,7 +958,7 @@ namespace SWLOR.Game.Server.Service
                 if (displayExplosion)
                 {
                     Location location = structure.Structure.Location;
-                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
+                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(Vfx.Fnf_Fireball), location);
                 }
             }
         }
@@ -1256,7 +1257,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanHandleChat(NWObject sender)
         {
             bool validTarget = sender.IsPlayer || sender.IsDM;
-            return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == true;
+            return validTarget && sender.GetLocalBoolean("LISTENING_FOR_NEW_CONTAINER_NAME") == true;
         }
 
         private static void OnModuleNWNXChat()

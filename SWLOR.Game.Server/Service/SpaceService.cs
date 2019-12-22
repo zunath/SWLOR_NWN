@@ -804,9 +804,9 @@ namespace SWLOR.Game.Server.Service
             // being on board the ship so we can send them back to the right place afterwards.
             Player entity = PlayerService.GetPlayerEntity(player.GlobalID);
             entity.LocationAreaResref = copy.Area.Resref;
-            entity.LocationX = copy.Position.m_X;
-            entity.LocationY = copy.Position.m_Y;
-            entity.LocationZ = copy.Position.m_Z;
+            entity.LocationX = copy.Position.X;
+            entity.LocationY = copy.Position.Y;
+            entity.LocationZ = copy.Position.Z;
             entity.LocationOrientation = (copy.Facing);
             entity.LocationInstanceID = new Guid(copy.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
 

@@ -46,7 +46,7 @@ namespace NWN.Scripts
 
                 if (examinedObject.IsCreature)
                 {
-                    int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
+                    int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", (int)_.GetRacialType(examinedObject)));
                     string racialtype = _.GetStringByStrRef(racialID);
                     if (!description.Contains(ColorTokenService.Green("Racial Type: ") + racialtype))
                     {

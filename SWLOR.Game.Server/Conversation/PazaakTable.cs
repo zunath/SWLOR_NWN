@@ -5,6 +5,7 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
@@ -192,7 +193,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (response.Text == "Table host (NPC)")
             {
-                NWCreature NPC = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, pc.Object, 1, CREATURE_TYPE_PLAYER_CHAR, false); 
+                NWCreature NPC = GetNearestCreature((int)CreatureType.IsAlive, 1, pc.Object, 1, (int)CreatureType.PlayerCharacter, 1); 
 
                 if (NPC.IsValid)
                 {

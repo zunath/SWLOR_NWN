@@ -1000,7 +1000,7 @@ void ParseEmote(string sEmote, object oPC)
              FindSubString(GetStringLowerCase(sEmote), "stoop")!= -1)
         AssignCommand(oPC, ActionPlayAnimation(ANIMATION_LOOPING_GET_LOW, 1.0, 99999.0));
     else if (FindSubString(GetStringLowerCase(sEmote), "fiddle")!= -1)
-        AssignCommand(oPC, ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0, 5.0));
+        AssignCommand(oPC, ActionPlayAnimation(Animation.Get_Mid, 1.0, 5.0));
     else if (FindSubString(GetStringLowerCase(sEmote), "nod")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), "agree")!= -1)
         AssignCommand(oPC, ActionPlayAnimation(ANIMATION_LOOPING_LISTEN, 1.0, 4.0));
@@ -3173,22 +3173,22 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         string sArgsLC = GetStringLowerCase(sArgs);
         if (FindSubString(sArgsLC, "hostile") != -1)
         {
-            ChangeToStandardFaction(oTarget, STANDARD_FACTION_HOSTILE);
+            ChangeToStandardFaction(oTarget, StandardFaction.Hostile);
             FloatingTextStringOnCreature("Faction set to hostile", oCommander, false);
         }
         else if (FindSubString(sArgsLC, "commoner") != -1)
         {
-            ChangeToStandardFaction(oTarget, STANDARD_FACTION_COMMONER);
+            ChangeToStandardFaction(oTarget, StandardFaction.Commoner);
             FloatingTextStringOnCreature("Faction set to commoner", oCommander, false);
         }
         else if (FindSubString(sArgsLC, "defender") != -1)
         {
-            ChangeToStandardFaction(oTarget, STANDARD_FACTION_DEFENDER);
+            ChangeToStandardFaction(oTarget, StandardFaction.Defender);
             FloatingTextStringOnCreature("Faction set to defender", oCommander, false);
         }
         else if (FindSubString(sArgsLC, "merchant") != -1)
         {
-            ChangeToStandardFaction(oTarget, STANDARD_FACTION_MERCHANT);
+            ChangeToStandardFaction(oTarget, StandardFaction.Merchant);
             FloatingTextStringOnCreature("Faction set to merchant", oCommander, false);
         }
         else
@@ -3507,14 +3507,14 @@ string TranslateToLanguage(string sSaid, object oShouter, int nVolume, object oM
     string sKnownLanguage;
 
     // send translated message to PC's in range who understand it
-    object oEavesdrop = GetFirstObjectInShape(SHAPE_SPHERE, fDistance, GetLocation(oShouter), false, ObjectType.Creature);
+    object oEavesdrop = GetFirstObjectInShape(Shape.Sphere, fDistance, GetLocation(oShouter), false, ObjectType.Creature);
     while (GetIsObjectValid(oEavesdrop))
     {
         if (GetIsPC(oEavesdrop) || GetIsDM(oEavesdrop) || GetIsDMPossessed(oEavesdrop) || GetIsPossessedFamiliar(oEavesdrop))
         {
             subTranslateToLanguage(sSaid, oShouter, nVolume, oMaster, iTranslate, sLanguageName, oEavesdrop);
         }
-        oEavesdrop = GetNextObjectInShape(SHAPE_SPHERE, fDistance, GetLocation(oShouter), false, ObjectType.Creature);
+        oEavesdrop = GetNextObjectInShape(Shape.Sphere, fDistance, GetLocation(oShouter), false, ObjectType.Creature);
     }
 
     // send translated message to DM's in range

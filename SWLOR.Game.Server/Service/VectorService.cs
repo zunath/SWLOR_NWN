@@ -52,13 +52,13 @@ namespace SWLOR.Game.Server.Service
         {
 
             Vector vThrow = VectorNormalize(AngleToVector(fDirection));
-            vThrow.m_X *= fDistance;
-            vThrow.m_Y *= fDistance;
+            vThrow.X *= fDistance;
+            vThrow.Y *= fDistance;
 
-            vThrow.m_Z += fOffZ;
+            vThrow.Z += fOffZ;
             Vector position = GetPositionFromLocation(lCurrent);
-            position.m_X += vThrow.m_X;
-            position.m_Y += vThrow.m_Y;
+            position.X += vThrow.X;
+            position.Y += vThrow.Y;
             return Location(GetAreaFromLocation(lCurrent), position, GetFacingFromLocation(lCurrent) + fOffFacing);
         }
         
@@ -66,14 +66,14 @@ namespace SWLOR.Game.Server.Service
         public static Vector AtoB(Vector vA, Vector vB)
         {
             //return vB - vA;
-            return new Vector(vB.m_X - vA.m_X, vB.m_Y - vA.m_Y, vB.m_Z - vA.m_Z);            
+            return new Vector(vB.X - vA.X, vB.Y - vA.Y, vB.Z - vA.Z);            
         }
 
 
         // Returns a Vector fDist away from vRef at fAngle.
         public static Vector VAtAngleToV(Vector vRef, float fDist, float fAngle)
         {
-            return new Vector(vRef.m_X + fDist * (float) Cos(fAngle), vRef.m_Y + fDist * (float) Sin(fAngle), vRef.m_Z);
+            return new Vector(vRef.X + fDist * (float) Cos(fAngle), vRef.Y + fDist * (float) Sin(fAngle), vRef.Z);
         }
         
         /*
@@ -116,14 +116,14 @@ namespace SWLOR.Game.Server.Service
         // parallelogram.
         public static Vector CrossProduct(Vector v1, Vector v2)
         {
-            return Vector(v1.m_Y * v2.m_Z - v2.m_Y * v1.m_Z, v2.m_X * v1.m_Z - v1.m_X * v2.m_Z, v1.m_X * v2.m_Y - v2.m_X * v1.m_Y);
+            return Vector(v1.Y * v2.Z - v2.Y * v1.Z, v2.X * v1.Z - v1.X * v2.Z, v1.X * v2.Y - v2.X * v1.Y);
         }
 
 
         // Returns the dot product of two Vectors.
         public static float DotProduct(Vector v1, Vector v2)
         {
-            return (v1.m_X * v2.m_X) + (v1.m_Y * v2.m_Y) + (v1.m_Z * v2.m_Z);
+            return (v1.X * v2.X) + (v1.Y * v2.Y) + (v1.Z * v2.Z);
         }
 
 
@@ -136,19 +136,19 @@ namespace SWLOR.Game.Server.Service
         public static int DetermineQuadrant(Vector vOrigin, Vector v1)
         {
             Vector vNew = AtoB(vOrigin, v1);
-            if (vNew.m_X > 0.0 && vNew.m_Y > 0.0)
+            if (vNew.X > 0.0 && vNew.Y > 0.0)
             {
                 return 1;
             }
-            else if (vNew.m_X < 0.0 && vNew.m_Y > 0.0)
+            else if (vNew.X < 0.0 && vNew.Y > 0.0)
             {
                 return 2;
             }
-            else if (vNew.m_X < 0.0 && vNew.m_Y < 0.0)
+            else if (vNew.X < 0.0 && vNew.Y < 0.0)
             {
                 return 3;
             }
-            else if (vNew.m_X > 0.0 && vNew.m_Y < 0.0)
+            else if (vNew.X > 0.0 && vNew.Y < 0.0)
             {
                 return 4;
             }
@@ -203,19 +203,19 @@ namespace SWLOR.Game.Server.Service
         // Returns the angle between a Vector (position) and the positive x-axis
         public static float GetXAngle(Vector v1)
         {
-            return cah(v1.m_X, VectorMagnitude(v1));
+            return cah(v1.X, VectorMagnitude(v1));
         }
 
         // Returns the angle between a Vector (position) and the positive y-axis
         public static float GetYAngle(Vector v1)
         {
-            return cah(v1.m_Y, VectorMagnitude(v1));
+            return cah(v1.Y, VectorMagnitude(v1));
         }
 
         // Returns the angle between a Vector (position) and the positive z-axis
         public static float GetZAngle(Vector v1)
         {
-            return cah(v1.m_Z, VectorMagnitude(v1));
+            return cah(v1.Z, VectorMagnitude(v1));
         }
 
 

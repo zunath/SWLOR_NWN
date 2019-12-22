@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             int duration = 60;
 
-            var vfx = _.EffectVisualEffect(VFX_DUR_BLUR);
+            var vfx = _.EffectVisualEffect(Vfx.Dur_Blur);
             vfx = _.TagEffect(vfx, "SHIELD_BOOST_VFX");
 
             _.ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);

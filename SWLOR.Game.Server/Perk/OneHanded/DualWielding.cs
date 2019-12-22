@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
@@ -81,9 +82,9 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         private void RemoveFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, FEAT_TWO_WEAPON_FIGHTING);
-            NWNXCreature.RemoveFeat(creature, FEAT_AMBIDEXTERITY);
-            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(creature, Feat.Two_Weapon_Fighting);
+            NWNXCreature.RemoveFeat(creature, Feat.Ambidexterity);
+            NWNXCreature.RemoveFeat(creature, Feat.Improved_Two_Weapon_Fighting);
         }
 
 
@@ -120,15 +121,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
 
             int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.OneHandedDualWielding);
-            NWNXCreature.AddFeat(creature, FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.AddFeat(creature, Feat.Two_Weapon_Fighting);
 
             if (perkLevel >= 2)
             {
-                NWNXCreature.AddFeat(creature, FEAT_AMBIDEXTERITY);
+                NWNXCreature.AddFeat(creature, Feat.Ambidexterity);
             }
             if (perkLevel >= 3)
             {
-                NWNXCreature.AddFeat(creature, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                NWNXCreature.AddFeat(creature, Feat.Improved_Two_Weapon_Fighting);
             }
         }
 

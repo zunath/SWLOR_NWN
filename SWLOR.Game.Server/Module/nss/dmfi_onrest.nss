@@ -282,7 +282,7 @@ int GetIsNearRestingObject(object oPC, int iSettings)
         if (GetLevelByClass(CLASS_TYPE_BARBARIAN, oPC))
             return true;
     }
-    object oPlaceable = GetFirstObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
+    object oPlaceable = GetFirstObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
     while (GetIsObjectValid(oPlaceable))
     {
         if (!(iSettings & 0x00001000) && GetTag(oPlaceable) == "dmfi_rest") //DMFI Placeables: by default, ON
@@ -295,7 +295,7 @@ int GetIsNearRestingObject(object oPC, int iSettings)
             return true;
         if ((iSettings & 0x00010000) && GetStringLowerCase(GetName(oPlaceable)) == "tent") //tents
             return true;
-        oPlaceable = GetNextObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
+        oPlaceable = GetNextObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
     }
     return false;
 }

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Service
             NWObject self = NWGameObject.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
-            Vector lootPosition = Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
+            Vector lootPosition = Vector(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
             Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
             NWPlaceable container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
@@ -132,19 +133,19 @@ namespace SWLOR.Game.Server.Service
             // Dump equipped items in container
             for (int slot = 0; slot < NWNConstants.NumberOfInventorySlots; slot++)
             {
-                if (slot == InventorySlot.CreatureSkin ||
-                    slot == InventorySlot.CreatureWeaponBite ||
-                    slot == InventorySlot.CreatureWeaponLeft ||
-                    slot == InventorySlot.CreatureWeaponRight)
+                if (slot == (int)InventorySlot.CreatureSkin ||
+                    slot == (int)InventorySlot.CreatureWeaponBite ||
+                    slot == (int)InventorySlot.CreatureWeaponLeft ||
+                    slot == (int)InventorySlot.CreatureWeaponRight)
                     continue;
 
-                NWItem item = GetItemInSlot(slot, self);
+                NWItem item = GetItemInSlot((InventorySlot)slot, self);
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
                     NWItem copy = CopyItem(item, container, true);
 
-                    if (slot == InventorySlot.Head ||
-                        slot == InventorySlot.Chest)
+                    if (slot == (int)InventorySlot.Head ||
+                        slot == (int)InventorySlot.Chest)
                     {
                         copy.SetLocalObject("CORPSE_ITEM_COPY", item);
                     }

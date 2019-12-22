@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -83,10 +84,10 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.Access = CraftingAccessType.None;
 
-                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "script_1");
-                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
-                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
-                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
+                _.SetEventScript(device.Object, EventScriptPlaceable.OnUsed, "script_1");
+                _.SetEventScript(device.Object, EventScriptPlaceable.OnOpen, string.Empty);
+                _.SetEventScript(device.Object, EventScriptPlaceable.OnClosed, string.Empty);
+                _.SetEventScript(device.Object, EventScriptPlaceable.OnInventoryDisturbed, string.Empty);
             }
 
 
@@ -203,10 +204,10 @@ namespace SWLOR.Game.Server.Conversation
             device.IsLocked = false;
             model.IsAccessingStorage = true;
 
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "script_2");
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "script_3");
-            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "script_4");
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnUsed, string.Empty);
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnOpen, "script_2");
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnClosed, "script_3");
+            _.SetEventScript(device.Object, EventScriptPlaceable.OnInventoryDisturbed, "script_4");
 
             device.SetLocalString("SCRIPT_2", "Placeable.CraftingDevice.OnOpened");
             device.SetLocalString("SCRIPT_3", "Placeable.CraftingDevice.OnClosed");

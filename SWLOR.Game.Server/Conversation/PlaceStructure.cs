@@ -6,6 +6,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canPlaceStructure = true;
             bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
             bool isPlacingBuilding = structure.BaseStructureTypeID == (int)BaseStructureType.Building;
-            bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INITIALIZED") == false;
+            bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalBoolean("STRUCTURE_BUILDING_INITIALIZED") == false;
 
             double powerInUse = BaseService.GetPowerInUse(data.PCBaseID);
             double cpuInUse = BaseService.GetCPUInUse(data.PCBaseID);
@@ -255,7 +256,7 @@ namespace SWLOR.Game.Server.Conversation
             plc.IsUseable = false;
             plc.Destroy(6.0f);
             _.DelayCommand(6.1f, () => { data.IsPreviewing = false; });
-            _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), plc.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(Vfx.Vfx_Dur_Aura_Green), plc.Object);
         }
 
         private void LoadRotatePage()
@@ -264,7 +265,7 @@ namespace SWLOR.Game.Server.Conversation
             float facing = _.GetFacingFromLocation(data.TargetLocation);
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
             string header = ColorTokenService.Green("Current Direction: ") + facing + "\n\n";
-            header += ColorTokenService.Green("Current Height: ") + position.m_Z;
+            header += ColorTokenService.Green("Current Height: ") + position.Z;
 
             if (data.StructurePreview == null || !data.StructurePreview.IsValid)
             {
@@ -272,7 +273,7 @@ namespace SWLOR.Game.Server.Conversation
                 string resref = GetPlaceableResref(structure);
                 data.StructurePreview = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
-                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), data.StructurePreview.Object);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(Vfx.Vfx_Dur_Aura_Green), data.StructurePreview.Object);
             }
 
             SetPageHeader("RotatePage", header);
@@ -358,14 +359,14 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
             
-            if (position.m_Z > 10.0f || 
-                position.m_Z < -10.0f)
+            if (position.Z > 10.0f || 
+                position.Z < -10.0f)
             {
                 GetPC().SendMessage("This structure cannot be moved any further in this direction.");                
             }
             else
             {
-                position.m_Z += degrees;
+                position.Z += degrees;
             }
 
             Preview();
@@ -399,9 +400,9 @@ namespace SWLOR.Game.Server.Conversation
                 BaseStructureID = data.BaseStructureID, 
                 Durability = DurabilityService.GetDurability(data.StructureItem),
                 LocationOrientation = _.GetFacingFromLocation(data.TargetLocation),
-                LocationX = position.m_X,
-                LocationY = position.m_Y,
-                LocationZ = position.m_Z,
+                LocationX = position.X,
+                LocationY = position.Y,
+                LocationZ = position.Z,
                 PCBaseID = data.PCBaseID,
                 InteriorStyleID = interiorStyleID,
                 ExteriorStyleID = exteriorStyleID,
@@ -490,7 +491,7 @@ namespace SWLOR.Game.Server.Conversation
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             var style = DataService.BuildingStyle.GetByID(styleID);
             var area = AreaService.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
-            area.SetLocalInt("IS_BUILDING_PREVIEW", true);
+            area.SetLocalBoolean("IS_BUILDING_PREVIEW", true);
             NWPlayer player = GetPC();
 
             BaseService.JumpPCToBuildingInterior(player, area);

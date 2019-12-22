@@ -730,7 +730,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_TALK_LAUGHING, 2.0, 2.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY1,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY3,2.0));
-    AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
+    AssignCommand(oPC,ActionPlayAnimation( Animation.Get_Mid, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
     AssignCommand(oPC,ActionDoCommand(PlayVoiceChat(VOICE_CHAT_LAUGH,oPC)));
@@ -738,7 +738,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY1,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY3,2.0));
     AssignCommand(oPC,ActionDoCommand(PlayVoiceChat(VOICE_CHAT_LAUGH,oPC)));
-    AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
+    AssignCommand(oPC,ActionPlayAnimation( Animation.Get_Mid, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
 
     AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,InventorySlot.LeftHand)));
@@ -971,7 +971,7 @@ string dmwand_ItemInfo(object oItem, int iInt)
       case BASE_ITEM_BLANK_SCROLL : sBaseType ="Blank Scroll";break;
       case BASE_ITEM_BLANK_WAND : sBaseType ="Blank Wand";break;
       case BaseItemType.Bolt : sBaseType ="Bolt";break;
-      case BASE_ITEM_BOOK: sBaseType ="Book";break;
+      case BaseItemType.Book: sBaseType ="Book";break;
       case BaseItemType.Boots: sBaseType ="Boots";break;
       case BaseItemType.Bracer: sBaseType ="Bracer";break;
       case BaseItemType.Bullet: sBaseType ="Bullet";break;
@@ -1002,7 +1002,7 @@ string dmwand_ItemInfo(object oItem, int iInt)
       case BaseItemType.HeavyCrossBow: sBaseType ="Heavy Xbow";break;
       case BaseItemType.HeavyFlail: sBaseType ="Heavy Flail";break;
       case BaseItemType.Helmet: sBaseType ="Helmet";break;
-      case BASE_ITEM_INVALID: sBaseType ="";break;
+      case BaseItemType.Invalid: sBaseType ="";break;
       case BaseItemType.Kama: sBaseType ="Kama";break;
       case BaseItemType.Katana: sBaseType ="Katana";break;
       case BASE_ITEM_KEY: sBaseType ="Key";break;

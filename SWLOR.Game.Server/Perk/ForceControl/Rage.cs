@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -128,9 +129,9 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // Build a linked effect which handles applying these bonuses and penalties.
-            Effect visualEffect = _.EffectVisualEffect(_.VFX_DUR_AURA_RED);
-            Effect strEffect = _.EffectAbilityIncrease(_.Ability.Strength, strBonus);
-            Effect conEffect = _.EffectAbilityIncrease(_.Ability.Constitution, conBonus);
+            Effect visualEffect = _.EffectVisualEffect(Vfx.Vfx_Dur_Aura_Red);
+            Effect strEffect = _.EffectAbilityIncrease(Ability.Strength, strBonus);
+            Effect conEffect = _.EffectAbilityIncrease(Ability.Constitution, conBonus);
             Effect acEffect = _.EffectACDecrease(acPenalty);
             Effect attackEffect = _.EffectModifyAttacks(attacks);
             Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);

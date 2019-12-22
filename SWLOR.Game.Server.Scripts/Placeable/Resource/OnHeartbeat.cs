@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Resource
             if (string.IsNullOrWhiteSpace(propResref)) return;
 
             Location location = objSelf.Location;
-            NWPlaceable prop = (_.CreateObject(_.ObjectType.Placeable, propResref, location));
+            NWPlaceable prop = (_.CreateObject(ObjectType.Placeable, propResref, location));
             objSelf.SetLocalObject("RESOURCE_PROP_OBJ", prop.Object);
             objSelf.SetLocalInt("RESOURCE_PROP_SPAWNED", 1);
         }

@@ -3,7 +3,7 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 
 namespace SWLOR.Game.Server.ChatCommand

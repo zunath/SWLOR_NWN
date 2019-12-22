@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable door = GetDialogTarget().Object;
             NWArea area = door.Area;
             BuildingType type = (BuildingType)area.GetLocalInt("BUILDING_TYPE");
-            bool isPreview = area.GetLocalInt("IS_BUILDING_PREVIEW") == true;
+            bool isPreview = area.GetLocalBoolean("IS_BUILDING_PREVIEW") == true;
             bool canPeek = type == BuildingType.Interior && !isPreview;
             bool canChangeApartment = type == BuildingType.Apartment && !isPreview;
 

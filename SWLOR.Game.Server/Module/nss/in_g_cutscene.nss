@@ -2407,7 +2407,7 @@ void GestaltDoClone(string sName, object oPC, object oTarget, string sTarget, st
 
     if (GetIsPC(oPC))
         {
-        ChangeToStandardFaction(oClone, STANDARD_FACTION_COMMONER);
+        ChangeToStandardFaction(oClone, StandardFaction.Commoner);
         }
 
     if (bInvisible)     { ApplyEffectToObject(PERMANENT,EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY),oPC); }

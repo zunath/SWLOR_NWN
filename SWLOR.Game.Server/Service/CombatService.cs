@@ -8,8 +8,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-
-
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
 
-            NWPlayer player = data.Damager.Object;
+            NWPlayer player = data.Damager;
             NWCreature target = NWGameObject.OBJECT_SELF;
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
-            NWPlayer player = data.Damager.Object;
+            NWPlayer player = data.Damager;
             NWItem weapon = _.GetLastWeaponUsed(player);
             
             if (weapon.CustomItemType == CustomItemType.BlasterPistol ||
@@ -64,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                      weapon.CustomItemType == CustomItemType.Saberstaff ||
-                     weapon.GetLocalInt("LIGHTSABER") == true)
+                     weapon.GetLocalBoolean("LIGHTSABER") == true)
             {
                 int statBonus = (int) (player.CharismaModifier * 0.25f);
                 data.Base += statBonus;
@@ -77,7 +76,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWCreature damager = data.Damager.Object;
+            NWCreature damager = data.Damager;
             NWCreature target = NWGameObject.OBJECT_SELF;
 
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
@@ -105,7 +104,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
                      targetWeapon.CustomItemType == CustomItemType.Saberstaff ||
-                     targetWeapon.GetLocalInt("LIGHTSABER") == true)
+                     targetWeapon.GetLocalBoolean("LIGHTSABER") == true)
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);
@@ -202,7 +201,7 @@ namespace SWLOR.Game.Server.Service
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
                     // Play a visual effect signifying the ability was activated.
-                    _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
+                    _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(Vfx.Dur_Blur), target, 0.5f);
                 }
             }
 
@@ -301,7 +300,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
-            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == true;
+            bool isActive = damager.GetLocalBoolean("RECOVERY_BLAST_ACTIVE") == true;
             damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
             NWItem weapon = _.GetLastWeaponUsed(damager.Object);
 
@@ -349,7 +348,7 @@ namespace SWLOR.Game.Server.Service
         private static void HandleStances()
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
-            NWPlayer damager = data.Damager.Object;
+            NWPlayer damager = data.Damager;
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
 
             if (damager.IsPlayer)
@@ -388,7 +387,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>Data regarding the ability resistance roll</returns>
         public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {
-            int abilityScoreType;
+            Ability abilityScoreType;
             switch (skill)
             {
                 case SkillType.ForceAlter:

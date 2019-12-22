@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
@@ -207,11 +208,11 @@ namespace SWLOR.Game.Server.Service
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
-                _.ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0f, modifiedCraftDelay);
+                _.ActionPlayAnimation(Animation.Get_Mid, 1.0f, modifiedCraftDelay);
             });
             _.DelayCommand(1.0f * (modifiedCraftDelay / 2.0f), () =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Com_Blood_Spark_Medium), device.Object);
             });
             Effect immobilize = _.EffectCutsceneImmobilize();
             immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
@@ -543,12 +544,12 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender)
         {
-            return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == true;
+            return sender.GetLocalBoolean("CRAFT_RENAMING_ITEM") == true;
         }
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer pc = NWNXChat.GetSender().Object;
+            NWPlayer pc = NWNXChat.GetSender();
             string newName = NWNXChat.GetMessage();
 
             if (!CanHandleChat(pc))
@@ -582,13 +583,13 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = NWGameObject.OBJECT_SELF;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            var featID = NWNXEvents.OnFeatUsed_GetFeat();
 
-            if (featID != (int)CustomFeatType.RenameCraftedItem) return;
+            if (featID != Feat.RenameCraftedItem) return;
             pc.ClearAllActions();
 
-            bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == true;
-            NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget().Object;
+            bool isSetting = pc.GetLocalBoolean("CRAFT_RENAMING_ITEM") == true;
+            NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget();
 
             if (isSetting)
             {
@@ -605,7 +606,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            pc.SetLocalInt("CRAFT_RENAMING_ITEM", true);
+            pc.SetLocalBoolean("CRAFT_RENAMING_ITEM", true);
             pc.SetLocalObject("CRAFT_RENAMING_ITEM_OBJECT", renameItem);
             pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }

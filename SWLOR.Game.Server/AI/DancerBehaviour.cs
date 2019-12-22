@@ -1,6 +1,7 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
 using System;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.AI
@@ -17,21 +18,21 @@ namespace SWLOR.Game.Server.AI
 
         private void Dance(NWCreature self)
         {
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_SPASM, 3.0F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY3, 3.0F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_DUCK);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY2, 3.0F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_DUCK);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_SPASM, 3.0F);
-            ActionPlayAnimation(ANIMATION_LOOPING_PAUSE_DRUNK, 3.0F, 1.0F);
-            ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 3.0F, 0.5F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_LOOPING_PAUSE_DRUNK, 3.0F, 1.0F);
-            ActionPlayAnimation(ANIMATION_LOOPING_CONJURE2, 3.0F, 0.5F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY1, 3.0F);
+            ActionPlayAnimation(Animation.FireForget_Dodge_Side);
+            ActionPlayAnimation(Animation.FireForget_Spasm, 3.0F);
+            ActionPlayAnimation(Animation.FireForget_Victory3, 3.0F);
+            ActionPlayAnimation(Animation.FireForget_Dodge_Duck);
+            ActionPlayAnimation(Animation.FireForget_Dodge_Side);
+            ActionPlayAnimation(Animation.FireForget_Victory2, 3.0F);
+            ActionPlayAnimation(Animation.FireForget_Dodge_Duck);
+            ActionPlayAnimation(Animation.FireForget_Spasm, 3.0F);
+            ActionPlayAnimation(Animation.Pause_Drunk, 3.0F, 1.0F);
+            ActionPlayAnimation(Animation.Conjure1, 3.0F, 0.5F);
+            ActionPlayAnimation(Animation.FireForget_Dodge_Side);
+            ActionPlayAnimation(Animation.Pause_Drunk, 3.0F, 1.0F);
+            ActionPlayAnimation(Animation.Conjure2, 3.0F, 0.5F);
+            ActionPlayAnimation(Animation.FireForget_Dodge_Side);
+            ActionPlayAnimation(Animation.FireForget_Victory1, 3.0F);
             ActionDoCommand(() => SetCommandable(true));
             SetCommandable(false);
         }

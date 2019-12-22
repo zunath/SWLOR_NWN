@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Conversation
             HoloComService.SetCallReceiver(receiver, receiver);
 
             string message = "Your HoloCom buzzes as you are receiving a call.";
-            if (Random(10) == 1)
+            if (RandomService.Random(10) == 1)
             {
                 message += " " + ColorTokenService.Green("Maybe you should answer it.");
             }            

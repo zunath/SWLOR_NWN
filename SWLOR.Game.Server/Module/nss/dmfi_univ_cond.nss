@@ -143,7 +143,7 @@ void SetRestTokens(object oPC)
                 !(GetLevelByClass(CLASS_TYPE_RANGER, oPC) && (iSettings & 0x00040000)) ||
                 !(GetLevelByClass(CLASS_TYPE_BARBARIAN, oPC) && (iSettings & 0x00080000)))
             {
-                object oPlaceable = GetFirstObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
+                object oPlaceable = GetFirstObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
                 int iBreak = 0;
                 while (GetIsObjectValid(oPlaceable) && !iBreak)
                 {
@@ -157,7 +157,7 @@ void SetRestTokens(object oPC)
                         iBreak = 1;
                     if ((iSettings & 0x00010000) && GetStringLowerCase(GetName(oPlaceable)) == "tent") //tents
                         iBreak = 1;
-                    oPlaceable = GetNextObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
+                    oPlaceable = GetNextObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
                 }
                 if (!iBreak)
                 {

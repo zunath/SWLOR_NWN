@@ -14,8 +14,10 @@ using System.Reflection;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
+using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -205,11 +207,11 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalBoolean("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-            if (oPC.GetLocalInt("LOGGED_IN_ONCE") == false) return;
+            if (oPC.GetLocalBoolean("LOGGED_IN_ONCE") == false) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
             foreach (PCPerk pcPerk in executionPerks)
@@ -224,7 +226,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
 
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalBoolean("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
             NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
 
@@ -259,7 +261,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = NWGameObject.OBJECT_SELF;
             if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
-            int type = oItem.BaseItemType;
+            var type = oItem.BaseItemType;
             var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID).Where(x =>
             {
                 if (oPC.GlobalID != x.PlayerID) return false;
@@ -461,11 +463,11 @@ namespace SWLOR.Game.Server.Service
                 var perkFeatToGrant = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(perkID, pcPerk.PerkLevel);
 
                 // Add the feat(s) to the player if it doesn't exist yet.
-                if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.FeatID, oPC.Object) == false)
+                if (perkFeatToGrant != null && _.GetHasFeat((Feat)perkFeatToGrant.FeatID, oPC.Object) == false)
                 {
-                    NWNXCreature.AddFeatByLevel(oPC, perkFeatToGrant.FeatID, 1);
+                    NWNXCreature.AddFeatByLevel(oPC, (Feat)perkFeatToGrant.FeatID, 1);
 
-                    var qbs = NWNXPlayerQuickBarSlot.UseFeat(perkFeatToGrant.FeatID);
+                    var qbs = NWNXPlayerQuickBarSlot.UseFeat((Feat)perkFeatToGrant.FeatID);
 
                     // Try to add the new feat to the player's hotbar.
                     if (NWNXPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)

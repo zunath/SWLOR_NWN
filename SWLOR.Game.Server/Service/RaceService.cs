@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            CustomRaceType race = (CustomRaceType) player.RacialType;
+            RacialType race = (RacialType) player.RacialType;
 
-            if (race == CustomRaceType.Wookiee)
+            if (race == RacialType.Wookiee)
             {
                 _.SetObjectVisualTransform(player, ObjectVisualTransform.Scale, 1.2f);
             }
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyDefaultAppearance(NWPlayer player)
         {
-            CustomRaceType race = (CustomRaceType)player.RacialType;
+            RacialType race = (RacialType)player.RacialType;
             int maleHead;
             int femaleHead;
             int skinColor;
@@ -73,63 +73,63 @@ namespace SWLOR.Game.Server.Service
 
             switch (race)
             {
-                case CustomRaceType.Human:
+                case RacialType.Human:
                     skinColor = 2;
                     hairColor = 0;
                     maleHead = 1;
                     femaleHead = 1;
                     break;
-                case CustomRaceType.Bothan:
+                case RacialType.Bothan:
                     skinColor = 6;
                     hairColor = 1;
                     appearance = AppearanceType.Elf;
                     maleHead = 40;
                     femaleHead = 109;
                     break;
-                case CustomRaceType.Chiss:
+                case RacialType.Chiss:
                     skinColor = 137;
                     hairColor = 134;
                     maleHead = 33;
                     femaleHead = 191;
                     break;
-                case CustomRaceType.Zabrak:
+                case RacialType.Zabrak:
                     skinColor = 88;
                     hairColor = 0;
                     maleHead = 103;
                     femaleHead = 120;
                     break;
-                case CustomRaceType.Twilek:
+                case RacialType.Twilek:
                     skinColor = 52;
                     hairColor = 0;
                     maleHead = 115;
                     femaleHead = 145;
                     break;
-                case CustomRaceType.Cyborg:
+                case RacialType.Cyborg:
                     skinColor = 2;
                     hairColor = 0;
                     maleHead = 168;
                     femaleHead = 41;
                     break;
-                case CustomRaceType.Mirialan:
+                case RacialType.Mirialan:
                     skinColor = 38;
                     hairColor = 3;
                     maleHead = 20;
                     femaleHead = 1;
                     break;
-                case CustomRaceType.Echani:
+                case RacialType.Echani:
                     skinColor = 164;
                     hairColor = 16;
                     maleHead = 182;
                     femaleHead = 45;
                     break;
-                case CustomRaceType.Cathar:
+                case RacialType.Cathar:
                     skinColor = 54;
                     hairColor = 0;
                     appearance = AppearanceType.Half_Orc;
                     maleHead = 27;
                     femaleHead = 18;
                     break;
-                case CustomRaceType.Trandoshan:
+                case RacialType.Trandoshan:
                     skinColor = 39;
                     hairColor = 4;
                     maleHead = 162;
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftFoot = 201;
 
                     break;
-                case CustomRaceType.Wookiee:
+                case RacialType.Wookiee:
 
                     appearance = AppearanceType.Elf;
                     skinColor = 0;
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftFoot = 208;
 
                     break;
-                case CustomRaceType.MonCalamari:
+                case RacialType.MonCalamari:
                     skinColor = 6;
                     hairColor = 7;
 
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftShin = 204;
                     femaleLeftFoot = 204;
                     break;
-                case CustomRaceType.Ugnaught:
+                case RacialType.Ugnaught:
 
                     appearance = AppearanceType.Dwarf;
                     skinColor = 0;

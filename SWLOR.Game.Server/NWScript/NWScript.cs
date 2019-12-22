@@ -1240,7 +1240,7 @@ namespace NWN
         ///  Get the first object in nShape
         ///  - nShape: SHAPE_*
         ///  - fSize:
-        ///    -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
+        ///    -> If nShape == Shape.Sphere, this is the radius of the sphere
         ///    -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder
         ///       Spell Cylinder's always have a radius of 1.5m.
         ///    -> If nShape == SHAPE_CONE, this is the widest radius of the cone
@@ -1279,7 +1279,7 @@ namespace NWN
         ///  Get the next object in nShape
         ///  - nShape: SHAPE_*
         ///  - fSize:
-        ///    -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
+        ///    -> If nShape == Shape.Sphere, this is the radius of the sphere
         ///    -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder.
         ///       Spell Cylinder's always have a radius of 1.5m.
         ///    -> If nShape == SHAPE_CONE, this is the widest radius of the cone
@@ -4476,7 +4476,7 @@ namespace NWN
 
         /// <summary>
         ///  Get the base item type (BASE_ITEM_*) of oItem.
-        ///  * Returns BASE_ITEM_INVALID if oItem is an invalid item.
+        ///  * Returns BaseItemType.Invalid if oItem is an invalid item.
         /// </summary>
         public static BaseItemType GetBaseItemType(NWGameObject oItem)
         {
@@ -8709,7 +8709,7 @@ namespace NWN
         ///  [1] When specifying per-part coloring, the value 255 is allowed and corresponds with the logical
         ///  function 'clear colour override', which clears the per-part override for that part.
         /// </summary>
-        private static NWGameObject CopyItemAndModify(NWGameObject oItem, int nType, int nIndex, int nNewValue, bool bCopyVars = true)
+        public static NWGameObject CopyItemAndModify(NWGameObject oItem, int nType, int nIndex, int nNewValue, bool bCopyVars = true)
         {
             Internal.NativeFunctions.StackPushInteger(bCopyVars ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger(nNewValue);
@@ -8759,20 +8759,20 @@ namespace NWN
         /// <summary>
         ///  Gets the status of ACTION_MODE_* modes on a creature.
         /// </summary>
-        public static int GetActionMode(NWGameObject oCreature, ActionMode nMode)
+        public static bool GetActionMode(NWGameObject oCreature, ActionMode nMode)
         {
             Internal.NativeFunctions.StackPushInteger((int)nMode);
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(735);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>
         ///  Sets the status of modes ACTION_MODE_* on a creature.
         /// </summary>
-        public static void SetActionMode(NWGameObject oCreature, ActionMode nMode, int nStatus)
+        public static void SetActionMode(NWGameObject oCreature, ActionMode nMode, bool nStatus)
         {
-            Internal.NativeFunctions.StackPushInteger(nStatus);
+            Internal.NativeFunctions.StackPushInteger(nStatus ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nMode);
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(736);
@@ -10052,8 +10052,8 @@ namespace NWN
         /// <summary>
         ///  Gets the size of the area.
         ///  - nAreaDimension: The area dimension that you wish to determine.
-        ///       AREA_HEIGHT
-        ///       AREA_WIDTH
+        ///       AreaProperty.Height
+        ///       AreaProperty.Width
         ///  - oArea: The area that you wish to get the size of.
         ///  Returns: The number of tiles that the area is wide/high, or zero on an error.
         ///  If no valid area (or object) is specified, it uses the area of the caller.
@@ -10232,10 +10232,10 @@ namespace NWN
         ///  * Returns -1 on error.
         ///  Note: Private tells do not trigger a OnPlayerChat event.
         /// </summary>
-        public static int GetPCChatVolume()
+        public static TalkVolume GetPCChatVolume()
         {
             Internal.NativeFunctions.CallBuiltIn(840);
-            return Internal.NativeFunctions.StackPopInteger();
+            return (TalkVolume)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>

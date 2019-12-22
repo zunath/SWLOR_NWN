@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service;
 
@@ -270,7 +271,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var feat in feats)
             {
-                NWNXCreature.RemoveFeat(GetPC(), feat.FeatID);
+                NWNXCreature.RemoveFeat(GetPC(), (Feat)feat.FeatID);
             }
         }
 

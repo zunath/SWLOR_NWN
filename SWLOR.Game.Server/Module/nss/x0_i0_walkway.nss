@@ -629,7 +629,7 @@ void randomAnim()
         break;
 
          default :
-            ActionPlayAnimation(ANIMATION_LOOPING_GET_MID,1.0,3.0);
+            ActionPlayAnimation(Animation.Get_Mid,1.0,3.0);
          break;
 
 

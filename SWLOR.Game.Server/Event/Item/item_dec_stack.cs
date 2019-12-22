@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -19,9 +20,9 @@ namespace NWN.Scripts
             if (!item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
-            if(item.BaseItemType == _.BaseItemType.Shuriken ||
-               item.BaseItemType == _.BaseItemType.Dart ||
-               item.BaseItemType == _.BaseItemType.ThrowingAxe)
+            if(item.BaseItemType == BaseItemType.Shuriken ||
+               item.BaseItemType == BaseItemType.Dart ||
+               item.BaseItemType == BaseItemType.ThrowingAxe)
             {
                 NWNXEvents.SkipEvent();
             }

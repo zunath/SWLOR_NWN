@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.NWNX
+﻿using SWLOR.Game.Server.NWScript.Enumerations;
+
+namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXWeapon
     {
@@ -13,130 +15,130 @@
         // Set Event Data Constants
         const int NWNX_WEAPON_SETDATA_DC_BYPASS = 0; // Set Devastating Critical Bypass
         
-        public static void SetWeaponFocusFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponFocusFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetWeaponFocusFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetEpicWeaponFocusFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponFocusFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetEpicWeaponFocusFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetGreaterWeaponFocusFeat(int nBaseItem, int nFeat)
+        public static void SetGreaterWeaponFocusFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetGreaterWeaponFocusFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetWeaponFinesseSize(int nBaseItem, int nSize)
+        public static void SetWeaponFinesseSize(BaseItemType nBaseItem, CreatureSize nSize)
         {
             string sFunc = "SetWeaponFinesseSize";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nSize);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nSize);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetWeaponUnarmed(int nBaseItem)
+        public static void SetWeaponUnarmed(BaseItemType nBaseItem)
         {
             string sFunc = "SetWeaponUnarmed";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetWeaponIsMonkWeapon(int nBaseItem)
+        public static void SetWeaponIsMonkWeapon(BaseItemType nBaseItem)
         {
             string sFunc = "SetWeaponIsMonkWeapon";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetWeaponImprovedCriticalFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponImprovedCriticalFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetWeaponImprovedCriticalFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetWeaponSpecializationFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponSpecializationFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetWeaponSpecializationFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetGreaterWeaponSpecializationFeat(int nBaseItem, int nFeat)
+        public static void SetGreaterWeaponSpecializationFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetGreaterWeaponSpecializationFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetEpicWeaponSpecializationFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponSpecializationFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetEpicWeaponSpecializationFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetEpicWeaponOverwhelmingCriticalFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponOverwhelmingCriticalFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetEpicWeaponOverwhelmingCriticalFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetEpicWeaponDevastatingCriticalFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponDevastatingCriticalFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetEpicWeaponDevastatingCriticalFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public static void SetWeaponOfChoiceFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponOfChoiceFeat(BaseItemType nBaseItem, Feat nFeat)
         {
             string sFunc = "SetWeaponOfChoiceFeat";
 
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nFeat);
-            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, nBaseItem);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nFeat);
+            NWNXCore.NWNX_PushArgumentInt(NWNX_Weapon, sFunc, (int)nBaseItem);
 
             NWNXCore.NWNX_CallFunction(NWNX_Weapon, sFunc);
         }

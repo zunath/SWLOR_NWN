@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -24,9 +25,9 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetLastPlayerDied();
             NWObject hostile = _.GetLastHostileActor(player.Object);
 
-            _.SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, player);
-            _.SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, player);
-            _.SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Defender, 100, player);
 
             var factionMember = _.GetFirstFactionMember(hostile.Object, false);
             while (_.GetIsObjectValid(factionMember) == true)
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         {
             for (int index = 0; index < NWNConstants.NumberOfInventorySlots; index++)
             {
-                NWItem equipped = _.GetItemInSlot(index, player);
+                NWItem equipped = _.GetItemInSlot((InventorySlot)index, player);
                 DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
             }
 
@@ -88,9 +89,9 @@ namespace SWLOR.Game.Server.Service
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
-            pc.RespawnLocationX = player.Position.m_X;
-            pc.RespawnLocationY = player.Position.m_Y;
-            pc.RespawnLocationZ = player.Position.m_Z;
+            pc.RespawnLocationX = player.Position.X;
+            pc.RespawnLocationY = player.Position.Y;
+            pc.RespawnLocationZ = player.Position.Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);

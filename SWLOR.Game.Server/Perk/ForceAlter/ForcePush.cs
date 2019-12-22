@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -10,21 +11,21 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public PerkType PerkType => PerkType.ForcePush;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            int size = _.GetCreatureSize(oTarget);
-            int maxSize = _.CREATURE_SIZE_INVALID;
+            var size = _.GetCreatureSize(oTarget);
+            var maxSize = CreatureSize.Invalid;
             switch (spellTier)
             {
                 case 1:
-                    maxSize = _.CREATURE_SIZE_SMALL;
+                    maxSize = CreatureSize.Small;
                     break;
                 case 2:
-                    maxSize = _.CREATURE_SIZE_MEDIUM;
+                    maxSize = CreatureSize.Medium;
                     break;
                 case 3:
-                    maxSize = _.CREATURE_SIZE_LARGE;
+                    maxSize = CreatureSize.Large;
                     break;
                 case 4:
-                    maxSize = _.CREATURE_SIZE_HUGE;
+                    maxSize = CreatureSize.Huge;
                     break;
             }
 
@@ -110,7 +111,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceAlter, target.Object);
             }
             
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_COM_BLOOD_SPARK_SMALL), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Com_Blood_Spark_Small), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

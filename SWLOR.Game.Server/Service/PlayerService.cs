@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             {
                 player.DestroyAllInventoryItems();
                 player.InitializePlayer();
-                _.AssignCommand(player, () => _.TakeGoldFromCreature(_.GetGold(player), player, 1));
+                _.AssignCommand(player, () => _.TakeGoldFromCreature(_.GetGold(player), player, true));
 
                 _.DelayCommand(0.5f, () =>
                 {
@@ -95,18 +96,18 @@ namespace SWLOR.Game.Server.Service
                     NWNXCreature.RemoveFeat(player, NWNXCreature.GetFeatByIndex(player, currentFeat - 1));
                 }
 
-                NWNXCreature.AddFeatByLevel(player, FEAT_ARMOR_PROFICIENCY_LIGHT, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_ARMOR_PROFICIENCY_MEDIUM, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_ARMOR_PROFICIENCY_HEAVY, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_SHIELD_PROFICIENCY, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_EXOTIC, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_MARTIAL, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_SIMPLE, 1);
-                NWNXCreature.AddFeatByLevel(player, FEAT_UNCANNY_DODGE_1, 1);
-                NWNXCreature.AddFeatByLevel(player, (int) CustomFeatType.StructureManagementTool, 1);
-                NWNXCreature.AddFeatByLevel(player, (int) CustomFeatType.OpenRestMenu, 1);
-                NWNXCreature.AddFeatByLevel(player, (int) CustomFeatType.RenameCraftedItem, 1);
-                NWNXCreature.AddFeatByLevel(player, (int) CustomFeatType.ChatCommandTargeter, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Armor_Proficiency_Light, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Armor_Proficiency_Medium, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Armor_Proficiency_Heavy, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Shield_Proficiency, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Weapon_Proficiency_Exotic, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Weapon_Proficiency_Martial, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Weapon_Proficiency_Simple, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.Uncanny_Dodge_1, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.StructureManagementTool, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.OpenRestMenu, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.RenameCraftedItem, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
 
                 for (int iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
                 {
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Service
                 _.SetReflexSavingThrow(player, 0);
                 _.SetWillSavingThrow(player, 0);
 
-                int classID = _.GetClassByPosition(1, player);
+                var classID = _.GetClassByPosition(ClassPosition.First, player);
 
                 for (int index = 0; index <= 255; index++)
                 {
@@ -158,49 +159,49 @@ namespace SWLOR.Game.Server.Service
         
         private static Player CreateDBPCEntity(NWPlayer player)
         {
-            CustomRaceType race = (CustomRaceType)player.RacialType;
+            RacialType race = (RacialType)player.RacialType;
             AssociationType assType; 
-            int goodEvil = _.GetAlignmentGoodEvil(player);
-            int lawChaos = _.GetAlignmentLawChaos(player);
+            var goodEvil = _.GetAlignmentGoodEvil(player);
+            var lawChaos = _.GetAlignmentLawChaos(player);
             
             // Jedi Order -- Mandalorian -- Sith Empire
-            if(goodEvil == ALIGNMENT_GOOD && lawChaos == ALIGNMENT_LAWFUL)
+            if(goodEvil == Alignment.Good && lawChaos == Alignment.Lawful)
             {
                 assType = AssociationType.JediOrder;
             }
-            else if(goodEvil == ALIGNMENT_GOOD && lawChaos == ALIGNMENT_NEUTRAL)
+            else if(goodEvil == Alignment.Good && lawChaos == Alignment.Neutral)
             {
                 assType = AssociationType.Mandalorian;
             }
-            else if(goodEvil == ALIGNMENT_GOOD && lawChaos == ALIGNMENT_CHAOTIC)
+            else if(goodEvil == Alignment.Good && lawChaos == Alignment.Chaotic)
             {
                 assType = AssociationType.SithEmpire;
             }
 
             // Smugglers -- Unaligned -- Hutt Cartel
-            else if(goodEvil == ALIGNMENT_NEUTRAL && lawChaos == ALIGNMENT_LAWFUL)
+            else if(goodEvil == Alignment.Neutral && lawChaos == Alignment.Lawful)
             {
                 assType = AssociationType.Smugglers;
             }
-            else if(goodEvil == ALIGNMENT_NEUTRAL && lawChaos == ALIGNMENT_NEUTRAL)
+            else if(goodEvil == Alignment.Neutral && lawChaos == Alignment.Neutral)
             {
                 assType = AssociationType.Unaligned;
             }
-            else if(goodEvil == ALIGNMENT_NEUTRAL && lawChaos == ALIGNMENT_CHAOTIC)
+            else if(goodEvil == Alignment.Neutral && lawChaos == Alignment.Chaotic)
             {
                 assType = AssociationType.HuttCartel;
             }
 
             // Republic -- Czerka -- Sith Order
-            else if(goodEvil == ALIGNMENT_EVIL && lawChaos == ALIGNMENT_LAWFUL)
+            else if(goodEvil == Alignment.Evil && lawChaos == Alignment.Lawful)
             {
                 assType = AssociationType.Republic;
             }
-            else if(goodEvil == ALIGNMENT_EVIL && lawChaos == ALIGNMENT_NEUTRAL)
+            else if(goodEvil == Alignment.Evil && lawChaos == Alignment.Neutral)
             {
                 assType = AssociationType.Czerka;
             }
-            else if(goodEvil == ALIGNMENT_EVIL && lawChaos == ALIGNMENT_CHAOTIC)
+            else if(goodEvil == Alignment.Evil && lawChaos == Alignment.Chaotic)
             {
                 assType = AssociationType.SithOrder;
             }
@@ -210,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             int sp = 5;
-            if (race == CustomRaceType.Human)
+            if (race == RacialType.Human)
                 sp++;
 
             Player entity = new Player
@@ -219,9 +220,9 @@ namespace SWLOR.Game.Server.Service
                 CharacterName = player.Name,
                 HitPoints = player.CurrentHP,
                 LocationAreaResref = _.GetResRef(_.GetAreaFromLocation(player.Location)),
-                LocationX = player.Position.m_X,
-                LocationY = player.Position.m_Y,
-                LocationZ = player.Position.m_Z,
+                LocationX = player.Position.X,
+                LocationY = player.Position.Y,
+                LocationZ = player.Position.Z,
                 LocationOrientation = player.Facing,
                 CreateTimestamp = DateTime.UtcNow,
                 UnallocatedSP = sp,
@@ -310,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
 
             // Cleanup code in case people log out as spaceships.
-            int appearance = player.Chest.GetLocalInt("APPEARANCE");
+            var appearance = (AppearanceType)player.Chest.GetLocalInt("APPEARANCE");
             if (appearance > 0 && appearance != _.GetAppearanceType(player))
             {
                 _.SetCreatureAppearanceType(player, appearance);
@@ -359,18 +360,18 @@ namespace SWLOR.Game.Server.Service
             // The rest are included here for completeness sake.
 
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, "pc_on_blocked");
-            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_DAMAGED, "pc_on_damaged");
+            _.SetEventScript(player.Object, EventScriptCreature.OnDamaged, "pc_on_damaged");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DEATH, "pc_on_death");
-            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_DIALOGUE, "default");
+            _.SetEventScript(player.Object, EventScriptCreature.OnDialogue, "default");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DISTURBED, "pc_on_disturb");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, "pc_on_endround");
-            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, "pc_on_heartbeat");
+            _.SetEventScript(player.Object, EventScriptCreature.OnHeartbeat, "pc_on_heartbeat");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, "pc_on_attacked");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_NOTICE, "pc_on_notice");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_RESTED, "pc_on_rested");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN, "pc_on_spawn");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, "pc_on_spellcast");
-            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, "pc_on_user");
+            _.SetEventScript(player.Object, EventScriptCreature.OnUserDefinedEvent, "pc_on_user");
         }
 
         private static void OnModuleLeave()
@@ -402,9 +403,9 @@ namespace SWLOR.Game.Server.Service
                 LoggingService.Trace(TraceComponent.Space, "Saving location in area " + _.GetName(area));
                 Player entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaResref = area.Resref;
-                entity.LocationX = player.Position.m_X;
-                entity.LocationY = player.Position.m_Y;
-                entity.LocationZ = player.Position.m_Z;
+                entity.LocationX = player.Position.X;
+                entity.LocationY = player.Position.Y;
+                entity.LocationZ = player.Position.Z;
                 entity.LocationOrientation = (player.Facing);
                 entity.LocationInstanceID = null;
 
@@ -413,9 +414,9 @@ namespace SWLOR.Game.Server.Service
                     NWObject waypoint = _.GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT");
                     entity.RespawnAreaResref = waypoint.Area.Resref;
                     entity.RespawnLocationOrientation = waypoint.Facing;
-                    entity.RespawnLocationX = waypoint.Position.m_X;
-                    entity.RespawnLocationY = waypoint.Position.m_Y;
-                    entity.RespawnLocationZ = waypoint.Position.m_Z;
+                    entity.RespawnLocationX = waypoint.Position.X;
+                    entity.RespawnLocationY = waypoint.Position.Y;
+                    entity.RespawnLocationZ = waypoint.Position.Z;
                 }
 
                 DataService.SubmitDataChange(entity, DatabaseActionType.Update);
@@ -435,9 +436,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     Player entity = GetPlayerEntity(player.GlobalID);
                     entity.LocationAreaResref = area.Resref;
-                    entity.LocationX = player.Position.m_X;
-                    entity.LocationY = player.Position.m_Y;
-                    entity.LocationZ = player.Position.m_Z;
+                    entity.LocationX = player.Position.X;
+                    entity.LocationY = player.Position.Y;
+                    entity.LocationZ = player.Position.Z;
                     entity.LocationOrientation = (player.Facing);
                     entity.LocationInstanceID = new Guid(instanceID);
 
@@ -448,10 +449,10 @@ namespace SWLOR.Game.Server.Service
                 
         private static void InitializeHotBar(NWPlayer player)
         {
-            var openRestMenu = NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.OpenRestMenu);
-            var structure = NWNXPlayerQuickBarSlot.UseFeat((int) CustomFeatType.StructureManagementTool);
-            var renameCraftedItem = NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.RenameCraftedItem);
-            var chatCommandTargeter = NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.ChatCommandTargeter);
+            var openRestMenu = NWNXPlayerQuickBarSlot.UseFeat(Feat.OpenRestMenu);
+            var structure = NWNXPlayerQuickBarSlot.UseFeat(Feat.StructureManagementTool);
+            var renameCraftedItem = NWNXPlayerQuickBarSlot.UseFeat(Feat.RenameCraftedItem);
+            var chatCommandTargeter = NWNXPlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter);
 
             NWNXPlayer.SetQuickBarSlot(player, 0, openRestMenu);
             NWNXPlayer.SetQuickBarSlot(player, 1, structure);
@@ -462,9 +463,9 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = (NWGameObject.OBJECT_SELF);
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            var featID = NWNXEvents.OnFeatUsed_GetFeat();
 
-            if (featID != (int)CustomFeatType.OpenRestMenu) return;
+            if (featID != Feat.OpenRestMenu) return;
             pc.ClearAllActions();
             DialogService.StartConversation(pc, pc, "RestMenu");
         }

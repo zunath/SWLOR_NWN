@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, _.DAMAGE_TYPE_SONIC), oTarget);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Sonic), oTarget);
             });
             
         }

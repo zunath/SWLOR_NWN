@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 
 namespace SWLOR.Game.Server.Perk.Throwing
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_RAPID_SHOT);
+            NWNXCreature.RemoveFeat(creature, Feat.Rapid_Shot);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -75,11 +76,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
             if (Equals(equippedWeapon, oItem) ||
                 equippedWeapon.CustomItemType != CustomItemType.Throwing)
             {
-                NWNXCreature.RemoveFeat(creature, _.FEAT_RAPID_SHOT);
+                NWNXCreature.RemoveFeat(creature, Feat.Rapid_Shot);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, _.FEAT_RAPID_SHOT);
+            NWNXCreature.AddFeat(creature, Feat.Rapid_Shot);
         }
 
         public bool IsHostile()

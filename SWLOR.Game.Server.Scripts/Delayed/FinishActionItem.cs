@@ -28,9 +28,9 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 data.Player.IsBusy = false;
 
                 Vector userPosition = data.Player.Position;
-                if (userPosition.m_X != data.UserPosition.m_X ||
-                    userPosition.m_Y != data.UserPosition.m_Y ||
-                    userPosition.m_Z != data.UserPosition.m_Z)
+                if (userPosition.X != data.UserPosition.X ||
+                    userPosition.Y != data.UserPosition.Y ||
+                    userPosition.Z != data.UserPosition.Z)
                 {
                     data.Player.SendMessage("You move and interrupt your action.");
                     return;

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using System.Linq;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             
             // Apply the new effect.
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Dur_Magic_Resistance), target);
 
             // Register players to all combat targets for Force Sense.
             if (creature.IsPlayer)

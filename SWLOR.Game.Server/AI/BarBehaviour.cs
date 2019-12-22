@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 using System;
 using static NWN._;
 using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -33,10 +34,10 @@ namespace SWLOR.Game.Server.AI
             switch (barActivity)
             {
                 case 1:
-                    ActionPlayAnimation(ANIMATION_LOOPING_CUSTOM7, 1.0F, 9999F);
+                    ActionPlayAnimation(Animation.Custom7, 1.0F, 9999F);
                     break;
                 case 2: 
-                    ActionPlayAnimation(ANIMATION_LOOPING_CUSTOM9, 1.0F, 9999F);
+                    ActionPlayAnimation(Animation.Custom9, 1.0F, 9999F);
                     break;
                 case 3:
                     NWObject chair = GetNearestObjectByTag("chair", self);

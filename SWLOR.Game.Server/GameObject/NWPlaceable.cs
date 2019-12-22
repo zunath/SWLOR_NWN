@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsUseable
         {
-            get => _.GetUseableFlag(Object) == 1;
-            set => _.SetUseableFlag(Object, value ? 1 : 0);
+            get => _.GetUseableFlag(Object) == true;
+            set => _.SetUseableFlag(Object, value ? true : false);
         }
 
         public virtual bool IsLocked
         {
-            get => _.GetLocked(Object) == 1;
-            set => _.SetLocked(Object, value ? 1 : 0);
+            get => _.GetLocked(Object) == true;
+            set => _.SetLocked(Object, value ? true : false);
         }
 
         //

@@ -3,7 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
-
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
@@ -47,18 +47,18 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_WEAPON_FINESSE);
+            NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == false) return;
+            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalBoolean("LIGHTSABER") == false) return;
             ApplyFeatChanges(creature, null);
         }
 
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == false) return;
+            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalBoolean("LIGHTSABER") == false) return;
             if (oItem == creature.LeftHand) return;
             ApplyFeatChanges(creature, oItem);
         }
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
             NWItem equipped = oItem ?? creature.RightHand;
-            if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalInt("LIGHTSABER") == false))
+            if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalBoolean("LIGHTSABER") == false))
             {
-                NWNXCreature.RemoveFeat(creature, _.FEAT_WEAPON_FINESSE);
+                NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
                 return;
             }
-            NWNXCreature.AddFeat(creature, _.FEAT_WEAPON_FINESSE);
+            NWNXCreature.AddFeat(creature, Feat.WeaponFinesse);
         }
 
         public bool IsHostile()

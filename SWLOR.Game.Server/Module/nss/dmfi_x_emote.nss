@@ -88,7 +88,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_TALK_LAUGHING, 2.0, 2.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY1,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY3,2.0));
-    AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
+    AssignCommand(oPC,ActionPlayAnimation( Animation.Get_Mid, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
     AssignCommand(oPC,ActionDoCommand(PlayVoiceChat(VOICE_CHAT_LAUGH,oPC)));
@@ -96,7 +96,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY1,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY3,2.0));
     AssignCommand(oPC,ActionDoCommand(PlayVoiceChat(VOICE_CHAT_LAUGH,oPC)));
-    AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
+    AssignCommand(oPC,ActionPlayAnimation( Animation.Get_Mid, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
 
     AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,InventorySlot.LeftHand)));
@@ -198,7 +198,7 @@ void main()
         case 82: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE1, 1.0, fDur)); break;
         case 83: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE2, 1.0, fDur)); break;
         case 84: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_LOW, 1.0, fDur)); break;
-        case 85: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_MID, 1.0, fDur)); break;
+        case 85: AssignCommand(oTarget, PlayAnimation( Animation.Get_Mid, 1.0, fDur)); break;
         case 86: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_MEDITATE, 1.0, fDur)); break;
         case 87: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL, 1.0, fDur)); break;
         case 88: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_WORSHIP, 1.0, fDur)); break;

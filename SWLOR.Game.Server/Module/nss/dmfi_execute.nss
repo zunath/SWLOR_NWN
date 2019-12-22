@@ -129,7 +129,7 @@ void RollDemBones(object oUser, int iBroadcast, int iMod = 0, string sAbility = 
         case 95: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_CONJURE2, 1.0, 5.0f)); break;
         case 97: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_TAUNT, 1.0)); break;
         case 98: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_DODGE_DUCK, 1.0)); break;
-        default: AssignCommand(oUser, PlayAnimation (ANIMATION_LOOPING_GET_MID, 1.0, 3.0)); break;
+        default: AssignCommand(oUser, PlayAnimation (Animation.Get_Mid, 1.0, 3.0)); break;
         }
     }
 
@@ -351,72 +351,72 @@ void DoControlFunction(int iFaction, object oUser)
             SetLocalInt(oArea, "dmfi_encounter_inactive", true);
         }
         break;
-    case 11: ChangeToStandardFaction(oTarget, STANDARD_FACTION_HOSTILE);  break;
-    case 12: ChangeToStandardFaction(oTarget, STANDARD_FACTION_COMMONER); break;
-    case 13: ChangeToStandardFaction(oTarget, STANDARD_FACTION_DEFENDER); break;
-    case 14: ChangeToStandardFaction(oTarget, STANDARD_FACTION_MERCHANT); break;
+    case 11: ChangeToStandardFaction(oTarget, StandardFaction.Hostile);  break;
+    case 12: ChangeToStandardFaction(oTarget, StandardFaction.Commoner); break;
+    case 13: ChangeToStandardFaction(oTarget, StandardFaction.Defender); break;
+    case 14: ChangeToStandardFaction(oTarget, StandardFaction.Merchant); break;
     case 15: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
             if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, STANDARD_FACTION_HOSTILE);
+                ChangeToStandardFaction(oChange, StandardFaction.Hostile);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 16: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
             if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, STANDARD_FACTION_COMMONER);
+                ChangeToStandardFaction(oChange, StandardFaction.Commoner);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 17: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
             if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, STANDARD_FACTION_DEFENDER);
+                ChangeToStandardFaction(oChange, StandardFaction.Defender);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 18: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
             if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, STANDARD_FACTION_MERCHANT);
+                ChangeToStandardFaction(oChange, StandardFaction.Merchant);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 21: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 0, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Hostile, 0, oChange);
+            SetStandardFactionReputation(StandardFaction.Commoner, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Defender, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Merchant, 100, oChange);
             oChange = GetNextPC();
         }break;
     case 22: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 20, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 91, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 50, oChange);
+            SetStandardFactionReputation(StandardFaction.Hostile, 20, oChange);
+            SetStandardFactionReputation(StandardFaction.Commoner, 91, oChange);
+            SetStandardFactionReputation(StandardFaction.Defender, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Merchant, 50, oChange);
             oChange = GetNextPC();
         }break;
     case 23: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 0 , oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 0, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 0, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 0, oChange);
+            SetStandardFactionReputation(StandardFaction.Hostile, 0 , oChange);
+            SetStandardFactionReputation(StandardFaction.Commoner, 0, oChange);
+            SetStandardFactionReputation(StandardFaction.Defender, 0, oChange);
+            SetStandardFactionReputation(StandardFaction.Merchant, 0, oChange);
             oChange = GetNextPC();
         }break;
     case 24: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 100, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, oChange);
-            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Hostile, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Commoner, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Defender, 100, oChange);
+            SetStandardFactionReputation(StandardFaction.Merchant, 100, oChange);
             oChange = GetNextPC();
         }break;
     case 25: oChange = GetFirstObjectInArea(oArea);
@@ -424,10 +424,10 @@ void DoControlFunction(int iFaction, object oUser)
         {
             if (GetObjectType(oChange) == ObjectType.Creature)
             {
-                SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 0, oChange);
-                SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 0, oChange);
-                SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 0, oChange);
-                SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 0, oChange);
+                SetStandardFactionReputation(StandardFaction.Hostile, 0, oChange);
+                SetStandardFactionReputation(StandardFaction.Commoner, 0, oChange);
+                SetStandardFactionReputation(StandardFaction.Defender, 0, oChange);
+                SetStandardFactionReputation(StandardFaction.Merchant, 0, oChange);
             }
             oChange = GetNextObjectInArea(oArea);
         }break;
@@ -437,10 +437,10 @@ void DoControlFunction(int iFaction, object oUser)
             if (GetObjectType(oChange) == ObjectType.Creature)
             {
                 AssignCommand(oChange, ClearAllActions(true));
-                SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 50, oChange);
-                SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 50, oChange);
-                SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 50, oChange);
-                SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 50, oChange);
+                SetStandardFactionReputation(StandardFaction.Hostile, 50, oChange);
+                SetStandardFactionReputation(StandardFaction.Commoner, 50, oChange);
+                SetStandardFactionReputation(StandardFaction.Defender, 50, oChange);
+                SetStandardFactionReputation(StandardFaction.Merchant, 50, oChange);
             }
             oChange = GetNextObjectInArea(oArea);
         }break;
@@ -1079,7 +1079,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         oCopy = RetrieveCampaignObject("dmfi", "dmfi_copyplayer"+IntToString(n), lLocation);
         while (GetIsObjectValid(oCopy))
         {
-            ChangeToStandardFaction(oCopy, STANDARD_FACTION_COMMONER);
+            ChangeToStandardFaction(oCopy, StandardFaction.Commoner);
 
             n=n+1;
             oCopy = RetrieveCampaignObject("dmfi", "dmfi_copyplayer"+IntToString(n), lLocation);
@@ -3072,7 +3072,7 @@ void DoEmoteFunction(int iEmote, object oUser)
     case 82: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE1, 1.0, fDur)); break;
     case 83: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE2, 1.0, fDur)); break;
     case 84: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_LOW, 1.0, fDur)); break;
-    case 85: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_MID, 1.0, fDur)); break;
+    case 85: AssignCommand(oTarget, PlayAnimation( Animation.Get_Mid, 1.0, fDur)); break;
     case 86: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_MEDITATE, 1.0, fDur)); break;
     case 87: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL, 1.0, fDur)); break;
     case 88: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_WORSHIP, 1.0, fDur)); break;

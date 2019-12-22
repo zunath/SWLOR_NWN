@@ -838,8 +838,8 @@ namespace SWLOR.Game.Server.Service
                             Vector vPosition = GetPosition(GetEnteringObject());
 
                             // Vectors are in meters - 10 meters to a tile. 
-                            vPosition.m_X = RandomService.Random(nSizeX * 10);
-                            vPosition.m_Y = RandomService.Random(nSizeY * 10);
+                            vPosition.X = RandomService.Random(nSizeX * 10);
+                            vPosition.Y = RandomService.Random(nSizeY * 10);
 
                             float fFacing = RandomService.Random(360);
 

@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
+using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnModuleNWNXChat()
         {
-            NWPlayer player = NWNXChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender();
             if (!CanHandleChat(player)) return;
 
             var model = GetPlayerMarketData(player);
@@ -203,7 +204,7 @@ namespace SWLOR.Game.Server.Service
                 case BaseItemType.SmallShield: return 28; // Shields
                 case BaseItemType.LargeShield: return 28; // Shields
                 case BaseItemType.TowerShield: return 28; // Shields
-                case BASE_ITEM_BOOK: return 29;
+                case BaseItemType.Book: return 29;
                 case BaseItemType.Gloves: return 30; // Power Gloves
                 case BaseItemType.Amulet: return 102; // Necklace
                 case BaseItemType.Ring: return 103;
@@ -262,7 +263,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var propertyType = _.GetItemPropertyType(prop);
                 // Check for components
-                if (propertyType == (int) ItemPropertyType.ComponentType)
+                if (propertyType == ItemPropertyType.ComponentType)
                 {
                     // IDs are mapped to the iprp_comptype.2da file.
                     switch (_.GetItemPropertyCostTableValue(prop))
@@ -336,19 +337,19 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Check for mods
-                if (propertyType == (int)ItemPropertyType.BlueMod)
+                if (propertyType == ItemPropertyType.BlueMod)
                 {
                     return 98;
                 }
-                if (propertyType == (int)ItemPropertyType.GreenMod)
+                if (propertyType == ItemPropertyType.GreenMod)
                 {
                     return 99;
                 }
-                if (propertyType == (int)ItemPropertyType.RedMod)
+                if (propertyType == ItemPropertyType.RedMod)
                 {
                     return 100;
                 }
-                if (propertyType == (int)ItemPropertyType.YellowMod)
+                if (propertyType == ItemPropertyType.YellowMod)
                 {
                     return 101;
                 }

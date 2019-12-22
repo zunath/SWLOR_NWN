@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                Effect effect = _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL);
+                Effect effect = _.EffectDamage(damage, DamageType.Electrical);
                 _.ApplyEffectToObject(DurationType.Instant, effect, oTarget);
             });
         }

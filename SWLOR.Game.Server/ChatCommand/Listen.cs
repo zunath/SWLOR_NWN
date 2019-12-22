@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             user.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_LISTEN, 1.0f, duration);
+                _.ActionPlayAnimation(Animation.Listen, 1.0f, duration);
             });
         }
     }

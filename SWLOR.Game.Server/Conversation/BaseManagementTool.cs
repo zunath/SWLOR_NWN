@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            int cellX = (int)(_.GetPositionFromLocation(data.TargetLocation).m_X / 10.0f);
-            int cellY = (int)(_.GetPositionFromLocation(data.TargetLocation).m_Y / 10.0f);
+            int cellX = (int)(_.GetPositionFromLocation(data.TargetLocation).X / 10.0f);
+            int cellY = (int)(_.GetPositionFromLocation(data.TargetLocation).Y / 10.0f);
             string sector = BaseService.GetSectorOfLocation(data.TargetLocation);
 
             Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
@@ -956,15 +956,15 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (playerposition.m_Z + position.m_Z > 10.0f ||
-                playerposition.m_Z + position.m_Z < -10.0f)
+            if (playerposition.Z + position.Z > 10.0f ||
+                playerposition.Z + position.Z < -10.0f)
             {
                 GetPC().SendMessage("This structure cannot be moved any further in this direction.");
                 return;
             }
             else
             {
-                position.m_Z += degrees;
+                position.Z += degrees;
             }
 
             structure.Location = _.Location(_.GetAreaFromLocation(data.TargetLocation),
@@ -979,7 +979,7 @@ namespace SWLOR.Game.Server.Conversation
             LoadRotatePage();
 
             var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
-            dbStructure.LocationZ = position.m_Z;
+            dbStructure.LocationZ = position.Z;
             
             DataService.SubmitDataChange(dbStructure, DatabaseActionType.Update);
         }

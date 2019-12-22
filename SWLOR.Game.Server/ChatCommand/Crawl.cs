@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -10,15 +11,15 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            int pheno = GetPhenoType(user);
+            var pheno = GetPhenoType(user);
 
-            if (pheno == 1)
+            if (pheno == PhenoType.Large)
             {
-                SetPhenoType(PHENOTYPE_NORMAL, user);
+                SetPhenoType(PhenoType.Normal, user);
             }
             else
             {
-                SetPhenoType(PHENOTYPE_NORMAL, user);
+                SetPhenoType(PhenoType.Normal, user);
             }
  
         }

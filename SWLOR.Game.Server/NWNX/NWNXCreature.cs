@@ -319,11 +319,11 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="creature"></param>
         /// <param name="ability"></param>
         /// <returns></returns>
-        public static int GetRawAbilityScore(NWGameObject creature, int ability)
+        public static int GetRawAbilityScore(NWGameObject creature, Ability ability)
         {
             string sFunc = "GetRawAbilityScore";
 
-            NWNX_PushArgumentInt(NWNX_Creature, sFunc, ability);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, (int)ability);
             NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Creature, sFunc);

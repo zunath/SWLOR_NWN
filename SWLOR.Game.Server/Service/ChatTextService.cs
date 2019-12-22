@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.Service
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
             if (channel == ChatChannelType.PlayerShout && sender.IsPC && 
-                sender.GetLocalInt("DISPLAY_HOLONET") == false)
+                sender.GetLocalBoolean("DISPLAY_HOLONET") == false)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
@@ -158,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannelType.PlayerShout)
             {
-                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == true));
+                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalBoolean("DISPLAY_HOLONET") == true));
                 recipients.AddRange(AppCache.ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
@@ -250,8 +251,8 @@ namespace SWLOR.Game.Server.Service
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);                
-                if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
+                RacialType race = (RacialType) _.GetRacialType(sender);                
+                if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
@@ -333,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? true : false);
+            player.SetLocalBoolean("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? true : false);
         }
         
         private enum WorkingOnEmoteStyle

@@ -25,17 +25,17 @@ void SafeFaction(object oCurrent, object oAttacker)
         AssignCommand(oAttacker, ClearAllActions());
         AssignCommand(oCurrent, ClearAllActions());
         // * Note: waiting for Sophia to make SetStandardFactionReptuation to clear all personal reputation
-        if (GetStandardFactionReputation(STANDARD_FACTION_COMMONER, oAttacker) <= 10)
+        if (GetStandardFactionReputation(StandardFaction.Commoner, oAttacker) <= 10)
         {   SetLocalInt(oAttacker, "NW_G_Playerhasbeenbad", 10); // * Player bad
-            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 80, oAttacker);
+            SetStandardFactionReputation(StandardFaction.Commoner, 80, oAttacker);
         }
-        if (GetStandardFactionReputation(STANDARD_FACTION_MERCHANT, oAttacker) <= 10)
+        if (GetStandardFactionReputation(StandardFaction.Merchant, oAttacker) <= 10)
         {   SetLocalInt(oAttacker, "NW_G_Playerhasbeenbad", 10); // * Player bad
-            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 80, oAttacker);
+            SetStandardFactionReputation(StandardFaction.Merchant, 80, oAttacker);
         }
-        if (GetStandardFactionReputation(STANDARD_FACTION_DEFENDER, oAttacker) <= 10)
+        if (GetStandardFactionReputation(StandardFaction.Defender, oAttacker) <= 10)
         {   SetLocalInt(oAttacker, "NW_G_Playerhasbeenbad", 10); // * Player bad
-            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 80, oAttacker);
+            SetStandardFactionReputation(StandardFaction.Defender, 80, oAttacker);
         }
 
 

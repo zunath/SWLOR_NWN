@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -998,10 +999,10 @@ namespace SWLOR.Game.Server.Conversation
             model.TemporaryDialogNavigationStack = NavigationStack;
             model.IsConfirming = false;
 
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "script_2");
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "script_3");
-            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "script_4");
+            _.SetEventScript(terminal, EventScriptPlaceable.OnUsed, string.Empty);
+            _.SetEventScript(terminal, EventScriptPlaceable.OnOpen, "script_2");
+            _.SetEventScript(terminal, EventScriptPlaceable.OnClosed, "script_3");
+            _.SetEventScript(terminal, EventScriptPlaceable.OnInventoryDisturbed, "script_4");
 
             terminal.SetLocalString("SCRIPT_2", "Placeable.MarketTerminal.OnOpened");
             terminal.SetLocalString("SCRIPT_3", "Placeable.MarketTerminal.OnClosed");

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Messaging;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleChat()
         {
             NWPlayer sender = GetPCChatSpeaker();
-            int talkvolume = GetPCChatVolume();
+            var talkvolume = GetPCChatVolume();
 
             /*
             ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
@@ -58,10 +59,10 @@ namespace SWLOR.Game.Server.Service
             if (channel != ChatChannelType.PlayerParty) return;
             */
            
-            if (talkvolume == TALKVOLUME_SHOUT) return;
-            if (talkvolume == TALKVOLUME_TELL) return;
-            if (talkvolume == TALKVOLUME_SILENT_SHOUT) return;            
-            if (talkvolume == TALKVOLUME_SILENT_TALK) return;
+            if (talkvolume == TalkVolume.Shout) return;
+            if (talkvolume == TalkVolume.Tell) return;
+            if (talkvolume == TalkVolume.SilentShout) return;            
+            if (talkvolume == TalkVolume.SilentTalk) return;
 
             NWPlayer receiver = GetHoloGram(sender);
 
@@ -69,9 +70,9 @@ namespace SWLOR.Game.Server.Service
 
             if (text.StartsWith("/")) return;
 
-            int animation = ANIMATION_LOOPING_TALK_NORMAL;
-            if (text.Contains("!")) animation = ANIMATION_LOOPING_TALK_FORCEFUL;
-            if (text.Contains("?")) animation = ANIMATION_LOOPING_TALK_PLEADING;
+            var animation = Animation.Talk_Normal;
+            if (text.Contains("!")) animation = Animation.Talk_Forceful;
+            if (text.Contains("?")) animation = Animation.Talk_Pleading;
 
             SetCommandable(true, receiver);
             receiver.ClearAllActions();
@@ -90,15 +91,15 @@ namespace SWLOR.Game.Server.Service
 
     public static bool IsInCall(NWPlayer player)
         {
-            if (player.GetLocalInt("HOLOCOM_CALL_CONNECTED") == true) return true;
+            if (player.GetLocalBoolean("HOLOCOM_CALL_CONNECTED") == true) return true;
             else return false;
         }
         public static void SetIsInCall(NWPlayer sender, NWPlayer receiver, bool value = true)
         {
             if (value) // START CALL
             {
-                sender.SetLocalInt("HOLOCOM_CALL_CONNECTED", true);
-                receiver.SetLocalInt("HOLOCOM_CALL_CONNECTED", true);
+                sender.SetLocalBoolean("HOLOCOM_CALL_CONNECTED", true);
+                receiver.SetLocalBoolean("HOLOCOM_CALL_CONNECTED", true);
 
                 sender.SetLocalObject("HOLOCOM_CALL_CONNECTED_WITH", receiver);
                 receiver.SetLocalObject("HOLOCOM_CALL_CONNECTED_WITH", sender);
@@ -114,8 +115,8 @@ namespace SWLOR.Game.Server.Service
                 var holosender = CopyObject(sender, VectorService.MoveLocation(receiver.Location, GetFacing(receiver), 2.0f, 180));
                 var holoreceiver = CopyObject(receiver, VectorService.MoveLocation(sender.Location, GetFacing(sender), 2.0f, 180));
 
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holosender);
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holoreceiver);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(Vfx.Vfx_Dur_Ghostly_Visage_No_Sound, false), holosender);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(Vfx.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoreceiver);
                 SetPlotFlag(holoreceiver, true);
                 SetPlotFlag(holosender, true);
                 sender.SetLocalObject("HOLOCOM_HOLOGRAM", holosender);
@@ -152,8 +153,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (_.GetIsEffectValid(effect) == true)
                     {
-                        int effectType = GetEffectType(effect);
-                        if (effectType == EFFECT_TYPE_CUTSCENEIMMOBILIZE)
+                        var effectType = GetEffectType(effect);
+                        if (effectType == EffectType.CutsceneImmobilize)
                         {
                             RemoveEffect(sender.Object, effect);
                         }
@@ -164,8 +165,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (_.GetIsEffectValid(effect) == true)
                     {
-                        int effectType = GetEffectType(effect);
-                        if (effectType == EFFECT_TYPE_CUTSCENEIMMOBILIZE)
+                        var effectType = GetEffectType(effect);
+                        if (effectType == EffectType.CutsceneImmobilize)
                         {
                             RemoveEffect(receiver.Object, effect);
                         }
@@ -223,13 +224,13 @@ namespace SWLOR.Game.Server.Service
         }
         public static bool IsCallSender(NWPlayer player)
         {
-            if (player.GetLocalInt("HOLOCOM_CALL_SENDER") == true) return true;
+            if (player.GetLocalBoolean("HOLOCOM_CALL_SENDER") == true) return true;
             else return false;
         }
         public static void SetIsCallSender(NWPlayer player, bool value = true)
         {
-            if (value) player.SetLocalInt("HOLOCOM_CALL_SENDER", true);
-            else player.SetLocalInt("HOLOCOM_CALL_SENDER", false);
+            if (value) player.SetLocalBoolean("HOLOCOM_CALL_SENDER", true);
+            else player.SetLocalBoolean("HOLOCOM_CALL_SENDER", false);
         }
         public static NWPlayer GetCallSender(NWPlayer player)
         {
@@ -242,13 +243,13 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsCallReceiver(NWPlayer player)
         {
-            if (player.GetLocalInt("HOLOCOM_CALL_RECEIVER") == true) return true;
+            if (player.GetLocalBoolean("HOLOCOM_CALL_RECEIVER") == true) return true;
             else return false;
         }
         public static void SetIsCallReceiver(NWPlayer player, bool value = true)
         {
-            if (value) player.SetLocalInt("HOLOCOM_CALL_RECEIVER", true);
-            else player.SetLocalInt("HOLOCOM_CALL_RECEIVER", false);
+            if (value) player.SetLocalBoolean("HOLOCOM_CALL_RECEIVER", true);
+            else player.SetLocalBoolean("HOLOCOM_CALL_RECEIVER", false);
         }        
         public static NWPlayer GetCallReceiver(NWPlayer player)
         {

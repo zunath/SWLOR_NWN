@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
+using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
 
 namespace SWLOR.Game.Server.Bioware
 {
@@ -36,9 +37,9 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="bIgnoreSubType"></param>
         public static void IPSafeAddItemProperty(NWItem oItem, ItemProperty ip, float fDuration, AddItemPropertyPolicy nAddItemPropertyPolicy, bool bIgnoreDurationType, bool bIgnoreSubType)
         {
-            int nType = _.GetItemPropertyType(ip);
+            var nType = _.GetItemPropertyType(ip);
             int nSubType = _.GetItemPropertySubType(ip);
-            int nDuration;
+            DurationType nDuration;
             // if duration is 0.0f, make the item property permanent
             if (fDuration == 0.0f)
             {
@@ -51,10 +52,10 @@ namespace SWLOR.Game.Server.Bioware
                 nDuration = DurationType.Temporary;
             }
 
-            int nDurationCompare = nDuration;
+            var nDurationCompare = nDuration;
             if (bIgnoreDurationType)
             {
-                nDurationCompare = -1;
+                nDurationCompare = DurationType.Invalid;
             }
 
             if (nAddItemPropertyPolicy == AddItemPropertyPolicy.ReplaceExisting)
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="nItemPropertyType"></param>
         /// <param name="nItemPropertyDuration"></param>
         /// <param name="nItemPropertySubType"></param>
-        public static void IPRemoveMatchingItemProperties(NWItem oItem, int nItemPropertyType, int nItemPropertyDuration, int nItemPropertySubType)
+        public static void IPRemoveMatchingItemProperties(NWItem oItem, ItemPropertyType nItemPropertyType, DurationType nItemPropertyDuration, int nItemPropertySubType)
         {
             var props = oItem.ItemProperties;
 
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Bioware
                 if (_.GetItemPropertyType(prop) == nItemPropertyType)
                 {
                     // same duration or duration ignored?
-                    if (_.GetItemPropertyDurationType(prop) == nItemPropertyDuration || nItemPropertyDuration == -1)
+                    if (_.GetItemPropertyDurationType(prop) == nItemPropertyDuration || nItemPropertyDuration == DurationType.Invalid)
                     {
                         // same subtype or subtype ignored
                         if (_.GetItemPropertySubType(prop) == nItemPropertySubType || nItemPropertySubType == -1)
@@ -139,7 +140,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="nDurationCompare"></param>
         /// <param name="bIgnoreSubType"></param>
         /// <returns></returns>
-        public static bool IPGetItemHasProperty(NWItem oItem, ItemProperty ipCompareTo, int nDurationCompare, bool bIgnoreSubType)
+        public static bool IPGetItemHasProperty(NWItem oItem, ItemProperty ipCompareTo, DurationType nDurationCompare, bool bIgnoreSubType)
         {
             var props = oItem.ItemProperties;
 
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.Bioware
                 {
                     if (_.GetItemPropertySubType(ip) == _.GetItemPropertySubType(ipCompareTo) || bIgnoreSubType)
                     {
-                        if (_.GetItemPropertyDurationType(ip) == nDurationCompare || nDurationCompare == -1)
+                        if (_.GetItemPropertyDurationType(ip) == nDurationCompare || nDurationCompare == DurationType.Invalid)
                         {
                             return true; // if duration is not ignored and durationtypes are equal, true
                         }
@@ -165,7 +166,7 @@ namespace SWLOR.Game.Server.Bioware
         /// </summary>
         /// <param name="oItem"></param>
         /// <param name="nItemPropertyDuration"></param>
-        public static void IPRemoveAllItemProperties(NWItem oItem, int nItemPropertyDuration)
+        public static void IPRemoveAllItemProperties(NWItem oItem, DurationType nItemPropertyDuration)
         {
             var props = oItem.ItemProperties;
             foreach (var prop in props)

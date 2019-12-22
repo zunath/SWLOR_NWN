@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using static NWN._;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier)
         {
             NWItem weapon = creature.RightHand;
-            int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", weapon.BaseItemType));
+            int weaponSize = Convert.ToInt32(Get2DAString("baseitems", "WeaponSize", (int)weapon.BaseItemType));
             int strengthMod = creature.StrengthModifier;
             float distance = _.GetDistanceBetween(creature, oTarget);
 
@@ -82,7 +83,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             int iRange = 15;
             int iCount = 1;
             float fDelay = 0;
-            int iPheno = _.GetPhenoType(player);
+            var iPheno = _.GetPhenoType(player);
 
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
@@ -97,14 +98,14 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             NWObject oObject;
 
             // If player is in stealth mode, force them out of stealth mode.
-            if (_.GetActionMode(player.Object, ACTION_MODE_STEALTH) == 1)
-                _.SetActionMode(player.Object, ACTION_MODE_STEALTH, 0);
+            if (_.GetActionMode(player.Object, ActionMode.Stealth) == true)
+                _.SetActionMode(player.Object, ActionMode.Stealth, false);
 
             // Make the player face their target.
             _.ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, player);
 
-            player.AssignCommand(() => _.ActionPlayAnimation(30, 2));
+            player.AssignCommand(() => _.ActionPlayAnimation(Animation.Custom10, 2));
 
             /*
             // reset phenotype
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -145,7 +146,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -178,7 +179,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -189,7 +190,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
-                    oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
+                    oObject = _.GetFirstObjectInShape(Shape.SpellCone, iRange, target.Location, true, ObjectType.Creature, _.GetPosition(player));
                     while (oObject.IsValid && iCount < 3)
                     {
                         if (oObject != target && oObject != player)
@@ -198,7 +199,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var creature = oObject;
                             player.DelayAssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), creature);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
                             }, fDelay);
 
                             if (player.IsPlayer)
@@ -207,7 +208,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             }
                             iCount += 1;
                         }
-                        oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
+                        oObject = _.GetNextObjectInShape(Shape.SpellCone, iRange, target.Location, true, ObjectType.Creature, _.GetPosition(player));
                     }
                     break;
                 case 5:
@@ -218,7 +219,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -228,7 +229,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
-                    oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
+                    oObject = _.GetFirstObjectInShape(Shape.SpellCylinder, iRange, target.Location, true, ObjectType.Creature, _.GetPosition(player));
                     while (oObject.IsValid && iCount < 4)
                     {
                         if (oObject != target && oObject != player)
@@ -237,7 +238,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var creature = oObject;
                             player.DelayAssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), creature);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(Vfx.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
                             }, fDelay);
 
                             if (player.IsPlayer)
@@ -246,7 +247,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             }
                             iCount += 1;
                         }
-                        oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
+                        oObject = _.GetNextObjectInShape(Shape.SpellCylinder, iRange, target.Location, true, ObjectType.Creature, _.GetPosition(player));
                     }
                     break;
                 default:

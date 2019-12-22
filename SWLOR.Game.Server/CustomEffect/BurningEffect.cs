@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -26,11 +27,11 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                Effect damage = _.EffectDamage(amount, _.DAMAGE_TYPE_FIRE);
+                Effect damage = _.EffectDamage(amount, DamageType.Fire);
                 _.ApplyEffectToObject(DurationType.Instant, damage, oTarget.Object);
             });
 
-            Effect vfx = _.EffectVisualEffect(_.VFX_COM_HIT_FIRE);
+            Effect vfx = _.EffectVisualEffect(Vfx.Vfx_Com_Hit_Fire);
             _.ApplyEffectToObject(DurationType.Instant, vfx, oTarget.Object);
         }
 

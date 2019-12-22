@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -55,8 +56,8 @@ namespace SWLOR.Game.Server.Service
                     action = DatabaseActionType.Insert;
                 }
 
-                int width = _.GetAreaSize(AREA_WIDTH, area.Object);
-                int height = _.GetAreaSize(AREA_HEIGHT, area.Object);
+                int width = _.GetAreaSize(AreaProperty.Width, area.Object);
+                int height = _.GetAreaSize(AreaProperty.Height, area.Object);
                 int northwestLootTableID = area.GetLocalInt("RESOURCE_NORTHWEST_LOOT_TABLE_ID");
                 int northeastLootTableID = area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
                 int southwestLootTableID = area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.Service
                 dbArea.SouthwestLootTableID = southwestLootTableID > 0 ? southwestLootTableID : new int?();
                 dbArea.SoutheastLootTableID = southeastLootTableID > 0 ? southeastLootTableID : new int?();
                 dbArea.IsBuildable =
-                    (area.GetLocalInt("IS_BUILDABLE") == true &&
+                    (area.GetLocalBoolean("IS_BUILDABLE") == true &&
                     dbArea.Width == 32 &&
                     dbArea.Height == 32 &&
                     dbArea.PurchasePrice > 0 &&
@@ -93,9 +94,9 @@ namespace SWLOR.Game.Server.Service
                     dbArea.NortheastLootTableID != null &&
                     dbArea.SouthwestLootTableID != null &&
                     dbArea.SoutheastLootTableID != null) ||
-                    (area.GetLocalInt("IS_BUILDING") == true);
+                    (area.GetLocalBoolean("IS_BUILDING") == true);
                 dbArea.IsActive = true;
-                dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == true;
+                dbArea.AutoSpawnResources = area.GetLocalBoolean("AUTO_SPAWN_RESOURCES") == true;
                 dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
                 dbArea.MaxResourceQuality = area.GetLocalInt("RESOURCE_MAX_QUALITY");
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                     bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
 
                     // Location is not walkable if another object exists nearby.
-                    NWObject nearest = (_.GetNearestObjectToLocation(ObjectType.Creature | OBJECT_TYPE_DOOR | ObjectType.Placeable | OBJECT_TYPE_TRIGGER, checkLocation));
+                    NWObject nearest = (_.GetNearestObjectToLocation(ObjectType.Creature | ObjectType.Door | ObjectType.Placeable | ObjectType.Trigger, checkLocation));
                     float distance = _.GetDistanceBetweenLocations(checkLocation, nearest.Location);
                     if (nearest.IsValid && distance <= MinDistance)
                     {
@@ -162,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             
             instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());
             instance.SetLocalString("ORIGINAL_RESREF", areaResref);
-            instance.SetLocalInt("IS_AREA_INSTANCE", true);
+            instance.SetLocalBoolean("IS_AREA_INSTANCE", true);
             instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
 
             NWObject searchByObject = _.GetFirstObjectInArea(instance);
@@ -200,9 +201,9 @@ namespace SWLOR.Game.Server.Service
             NWArea area = NWGameObject.OBJECT_SELF;
             int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
             if (playerCount > 0)
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+                _.SetEventScript(area, EventScriptArea.OnHeartbeat, "area_on_hb");
             else
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+                _.SetEventScript(area, EventScriptArea.OnHeartbeat, string.Empty);
         }
 
         private static void OnAreaExit()
@@ -210,9 +211,9 @@ namespace SWLOR.Game.Server.Service
             NWArea area = NWGameObject.OBJECT_SELF;
             int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
             if (playerCount > 0)
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+                _.SetEventScript(area, EventScriptArea.OnHeartbeat, "area_on_hb");
             else
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
+                _.SetEventScript(area, EventScriptArea.OnHeartbeat, string.Empty);
         }
 
         public static List<AreaWalkmesh> GetAreaWalkmeshes(NWArea area)

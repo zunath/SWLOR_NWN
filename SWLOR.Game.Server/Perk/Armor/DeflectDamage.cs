@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -71,13 +72,13 @@ namespace SWLOR.Game.Server.Perk.Armor
                     return;
             }
 
-            Effect effect = _.EffectDamageShield(damageBase, randomDamage, _.DAMAGE_TYPE_MAGICAL);
+            Effect effect = _.EffectDamageShield(damageBase, (DamageBonus)randomDamage, DamageType.Magical);
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_DUR_AURA_ORANGE);
+            effect = _.EffectVisualEffect(Vfx.Vfx_Dur_Aura_Orange);
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
+            effect = _.EffectVisualEffect(Vfx.Vfx_Imp_Ac_Bonus);
             _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);
         }
 

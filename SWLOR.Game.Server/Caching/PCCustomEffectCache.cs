@@ -7,16 +7,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCCustomEffectCache: CacheBase<PCCustomEffect>
     {
-        private Dictionary<Guid, Dictionary<Guid, PCCustomEffect>> ByPlayer { get; } = new Dictionary<Guid, Dictionary<Guid, PCCustomEffect>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCCustomEffect entity)
+        public PCCustomEffectCache() 
+            : base("PCCustomEffect")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayer);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCCustomEffect entity)
+        private const string ByPlayerIDIndex = "ByPlayerID";
+
+        protected override void OnCacheObjectSet(PCCustomEffect entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayer);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCCustomEffect entity)
+        {
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -30,41 +35,37 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByStancePerkOrDefault(Guid playerID, int stancePerkID)
         {
-            if (!ByPlayer.ContainsKey(playerID))
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
-            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID == stancePerkID)?.Clone();
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .SingleOrDefault(x => x.StancePerkID == stancePerkID);
         }
 
         public PCCustomEffect GetByPlayerStanceOrDefault(Guid playerID)
         {
-            if (!ByPlayer.ContainsKey(playerID))
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
-            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID != null)?.Clone();
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .SingleOrDefault(x => x.StancePerkID != null);
         }
 
         public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, int customEffectID)
         {
-            if (!ByPlayer.ContainsKey(playerID))
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
-            return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID)?.Clone();
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .SingleOrDefault(x => x.CustomEffectID == customEffectID);
         }
 
         public IEnumerable<PCCustomEffect> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayer.ContainsKey(playerID))
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCCustomEffect>();
 
-            var list = new List<PCCustomEffect>();
-
-            foreach(var record in ByPlayer[playerID].Values)
-            {
-                list.Add((PCCustomEffect)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
         public IEnumerable<PCCustomEffect> GetAllByPCCustomEffectID(IEnumerable<Guid> pcCustomEffectIDs)

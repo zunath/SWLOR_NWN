@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CraftBlueprintCache: CacheBase<CraftBlueprint>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, CraftBlueprint entity)
+        public CraftBlueprintCache() 
+            : base("CraftBlueprint")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, CraftBlueprint entity)
+        protected override void OnCacheObjectSet(CraftBlueprint entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(CraftBlueprint entity)
         {
         }
 

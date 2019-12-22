@@ -1,19 +1,25 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Caching
 {
     public class PCImpoundedItemCache: CacheBase<PCImpoundedItem>
     {
-        private Dictionary<Guid, Dictionary<Guid, PCImpoundedItem>> ByPlayerIDAndNotRetrieved { get; } = new Dictionary<Guid, Dictionary<Guid, PCImpoundedItem>>();
+        public PCImpoundedItemCache() 
+            : base("PCImpoundedItem")
+        {
+        }
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCImpoundedItem entity)
+        private const string ByPlayerIDAndNotRetrievedIndex = "ByPlayerIDAndNotRetrieved";
+
+        protected override void OnCacheObjectSet(PCImpoundedItem entity)
         {
             SetByPlayerIDAndNotRetrieved(entity);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCImpoundedItem entity)
+        protected override void OnCacheObjectRemoved(PCImpoundedItem entity)
         {
             RemoveByPlayerIDAndNotRetrieved(entity);
         }
@@ -28,9 +34,9 @@ namespace SWLOR.Game.Server.Caching
             if (entity.DateRetrieved != null)
             {
                 // If it exists in the dictionary, remove it.
-                if (ByPlayerIDAndNotRetrieved.ContainsKey(entity.PlayerID) && ByPlayerIDAndNotRetrieved[entity.PlayerID].ContainsKey(entity.ID))
+                if (ExistsByIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString()))
                 {
-                    RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndNotRetrieved);
+                    RemoveFromListIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString(), entity);
                 }
 
                 // Whether an entry was found and removed or not, we exit early. Nothing left for us to do.
@@ -38,12 +44,12 @@ namespace SWLOR.Game.Server.Caching
             }
 
             // Otherwise add it to the index.
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDAndNotRetrieved);
+            SetIntoListIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString(), entity);
         }
 
         private void RemoveByPlayerIDAndNotRetrieved(PCImpoundedItem entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndNotRetrieved);
+            RemoveFromListIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString(), entity);
         }
 
 
@@ -54,16 +60,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCImpoundedItem> GetAllByPlayerIDAndNotRetrieved(Guid playerID)
         {
-            if(!ByPlayerIDAndNotRetrieved.ContainsKey(playerID))
+            if(!ExistsByIndex(ByPlayerIDAndNotRetrievedIndex, playerID.ToString()))
                 return new List<PCImpoundedItem>();
 
-            var list = new List<PCImpoundedItem>();
-            foreach(var record in ByPlayerIDAndNotRetrieved[playerID].Values)
-            {
-                list.Add((PCImpoundedItem)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDAndNotRetrievedIndex, playerID.ToString());
         }
     }
 }

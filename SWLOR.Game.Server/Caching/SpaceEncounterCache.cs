@@ -7,11 +7,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class SpaceEncounterCache: CacheBase<SpaceEncounter>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, SpaceEncounter entity)
+        protected override void OnCacheObjectSet(SpaceEncounter entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, SpaceEncounter entity)
+        protected override void OnCacheObjectRemoved(SpaceEncounter entity)
         {
         }
 

@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
 {
     public class PCKeyItemCache: CacheBase<PCKeyItem>
     {
-        private Dictionary<Guid, Dictionary<int, PCKeyItem>> ByPlayerAndKeyItemID { get; } = new Dictionary<Guid, Dictionary<int, PCKeyItem>>();
-
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCKeyItem entity)
+        public PCKeyItemCache() 
+            : base("PCKeyItem")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.KeyItemID, entity, ByPlayerAndKeyItemID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCKeyItem entity)
+        private const string ByPlayerIDIndex = "ByPlayerID";
+
+        protected override void OnCacheObjectSet(PCKeyItem entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.KeyItemID, ByPlayerAndKeyItemID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCKeyItem entity)
+        {
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -28,41 +33,34 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, int pcKeyItemID)
+        public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, int keyItemID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, pcKeyItemID, ByPlayerAndKeyItemID);
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).SingleOrDefault(x => x.KeyItemID == keyItemID);
         }
 
-        public PCKeyItem GetByPlayerAndKeyItemID(Guid playerID, int pcKeyItemID)
+        public PCKeyItem GetByPlayerAndKeyItemID(Guid playerID, int keyItemID)
         {
-            return GetEntityFromDictionary(playerID, pcKeyItemID, ByPlayerAndKeyItemID);
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).Single(x => x.KeyItemID == keyItemID);
         }
 
         public IEnumerable<PCKeyItem> GetAllByPlayerID(Guid playerID)
         {
-            if (!ByPlayerAndKeyItemID.ContainsKey(playerID))
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCKeyItem>();
 
-            var list = new List<PCKeyItem>();
-            foreach (var record in ByPlayerAndKeyItemID[playerID].Values)
-            {
-                list.Add((PCKeyItem)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
         public IEnumerable<PCKeyItem> GetAllByPlayerIDAndKeyItemIDs(Guid playerID, IEnumerable<int> keyItemIDs)
         {
-            var list = new List<PCKeyItem>();
-            foreach (var keyItemID in keyItemIDs)
-            {
-                var record = GetEntityFromDictionaryOrDefault(playerID, keyItemID, ByPlayerAndKeyItemID);
-                if(record != null)
-                    list.Add(record);
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .Where(x => keyItemIDs.Contains(x.KeyItemID));
         }
     }
 }

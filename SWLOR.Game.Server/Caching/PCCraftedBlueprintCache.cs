@@ -6,16 +6,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCCraftedBlueprintCache: CacheBase<PCCraftedBlueprint>
     {
-        private Dictionary<Guid, Dictionary<int, PCCraftedBlueprint>> ByPlayerIDAndCraftBlueprintID { get; } = new Dictionary<Guid, Dictionary<int, PCCraftedBlueprint>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCCraftedBlueprint entity)
+        public PCCraftedBlueprintCache() 
+            : base("PCCraftedBlueprint")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.CraftBlueprintID, entity, ByPlayerIDAndCraftBlueprintID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCCraftedBlueprint entity)
+        private const string ByPlayerIDAndCraftBlueprintIDIndex = "ByPlayerIDAndCraftBlueprintID";
+
+        protected override void OnCacheObjectSet(PCCraftedBlueprint entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.CraftBlueprintID, ByPlayerIDAndCraftBlueprintID);
+            SetIntoIndex($"{ByPlayerIDAndCraftBlueprintIDIndex}:{entity.PlayerID.ToString()}", entity.CraftBlueprintID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCCraftedBlueprint entity)
+        {
+            RemoveFromIndex($"{ByPlayerIDAndCraftBlueprintIDIndex}:{entity.PlayerID.ToString()}", entity.CraftBlueprintID.ToString());
         }
 
         protected override void OnSubscribeEvents()
@@ -29,8 +34,7 @@ namespace SWLOR.Game.Server.Caching
 
         public bool ExistsByPlayerIDAndCraftedBlueprintID(Guid playerID, int craftBlueprintID)
         {
-            return ByPlayerIDAndCraftBlueprintID.ContainsKey(playerID) && 
-                   ByPlayerIDAndCraftBlueprintID[playerID].ContainsKey(craftBlueprintID);
+            return ExistsByIndex($"{ByPlayerIDAndCraftBlueprintIDIndex}:{playerID.ToString()}", craftBlueprintID.ToString());
         }
     }
 }

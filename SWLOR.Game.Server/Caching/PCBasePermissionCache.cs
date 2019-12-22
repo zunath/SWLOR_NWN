@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Caching
         // Includes ALL records, both public and private.
         private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPCBaseIDAll { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCBasePermission entity)
+        protected override void OnCacheObjectSet(PCBasePermission entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
 
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Caching
             SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseIDAll);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBasePermission entity)
+        protected override void OnCacheObjectRemoved(PCBasePermission entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
 

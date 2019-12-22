@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<Guid, PCQuestKillTargetProgress>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCQuestKillTargetProgress>>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCQuestKillTargetProgress entity)
+        protected override void OnCacheObjectSet(PCQuestKillTargetProgress entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCQuestKillTargetProgress entity)
+        protected override void OnCacheObjectRemoved(PCQuestKillTargetProgress entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
         }

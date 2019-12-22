@@ -1,21 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
 {
     public class PCCooldownCache: CacheBase<PCCooldown>
     {
-        private Dictionary<Guid, Dictionary<int, PCCooldown>> ByPlayerAndCooldownCategoryID { get; } = new Dictionary<Guid, Dictionary<int, PCCooldown>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCCooldown entity)
+        public PCCooldownCache() 
+            : base("PCCooldown")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.CooldownCategoryID, entity, ByPlayerAndCooldownCategoryID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCCooldown entity)
+        private const string ByPlayerIDIndex = "ByPlayerID";
+
+        protected override void OnCacheObjectSet(PCCooldown entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.CooldownCategoryID, ByPlayerAndCooldownCategoryID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCCooldown entity)
+        {
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -29,28 +35,25 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCooldown GetByPlayerAndCooldownCategoryIDOrDefault(Guid playerID, int cooldownCategoryID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, cooldownCategoryID, ByPlayerAndCooldownCategoryID);
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).SingleOrDefault(x => x.CooldownCategoryID == cooldownCategoryID);
         }
 
         public PCCooldown GetByPlayerAndCooldownCategoryID(Guid playerID, int cooldownCategoryID)
         {
-            return GetEntityFromDictionary(playerID, cooldownCategoryID, ByPlayerAndCooldownCategoryID);
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).Single(x => x.CooldownCategoryID == cooldownCategoryID);
         }
 
         public IEnumerable<PCCooldown> GetAllByPlayerID(Guid playerID)
         {
-            if (!ByPlayerAndCooldownCategoryID.ContainsKey(playerID))
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
             {
                 return new List<PCCooldown>();
             }
 
-            var list = new List<PCCooldown>();
-            foreach (var record in ByPlayerAndCooldownCategoryID[playerID].Values)
-            {
-                list.Add((PCCooldown)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
     }
 }

@@ -6,14 +6,17 @@ namespace SWLOR.Game.Server.Caching
 {
     public class AuthorizedDMCache: CacheBase<AuthorizedDM>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, AuthorizedDM entity)
+        public AuthorizedDMCache() : 
+            base("AuthorizedDM")
         {
-            AddIndexToList("All", id);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, AuthorizedDM entity)
+        protected override void OnCacheObjectSet(AuthorizedDM entity)
         {
-            RemoveIndexFromList("All", index);
+        }
+
+        protected override void OnCacheObjectRemoved(AuthorizedDM entity)
+        {
         }
 
         protected override void OnSubscribeEvents()
@@ -27,8 +30,8 @@ namespace SWLOR.Game.Server.Caching
 
         public AuthorizedDM GetByCDKeyAndActiveOrDefault(string cdKey)
         {
-            var list = GetIndexList("All");
-            return (AuthorizedDM)list.SingleOrDefault(x => x.CDKey == cdKey && x.IsActive)?.Clone();
+            return (AuthorizedDM)GetAll().SingleOrDefault(x => x.CDKey == cdKey && x.IsActive)?.Clone();
         }
+
     }
 }

@@ -6,16 +6,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCGuildPointCache: CacheBase<PCGuildPoint>
     {
-        private Dictionary<Guid, Dictionary<int, PCGuildPoint>> ByPlayerIDAndGuildID { get; } = new Dictionary<Guid, Dictionary<int, PCGuildPoint>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCGuildPoint entity)
+        public PCGuildPointCache() 
+            : base("PCGuildPoint")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.GuildID, entity, ByPlayerIDAndGuildID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCGuildPoint entity)
+        private Dictionary<Guid, Dictionary<int, PCGuildPoint>> ByPlayerIDAndGuildID { get; } = new Dictionary<Guid, Dictionary<int, PCGuildPoint>>();
+
+        protected override void OnCacheObjectSet(PCGuildPoint entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.GuildID, ByPlayerIDAndGuildID);
+            SetIntoIndex(entity.PlayerID.ToString(), entity.GuildID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCGuildPoint entity)
+        {
+            RemoveFromIndex(entity.PlayerID.ToString(), entity.GuildID.ToString());
         }
 
         protected override void OnSubscribeEvents()
@@ -36,12 +41,15 @@ namespace SWLOR.Game.Server.Caching
 
         public PCGuildPoint GetByPlayerIDAndGuildID(Guid playerID, int guildID)
         {
-            return GetEntityFromDictionary(playerID, guildID, ByPlayerIDAndGuildID);
+            return GetFromIndex(playerID.ToString(), guildID.ToString());
         }
 
         public PCGuildPoint GetByPlayerIDAndGuildIDOrDefault(Guid playerID, int guildID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, guildID, ByPlayerIDAndGuildID);
+            if (!ExistsByIndex(playerID.ToString(), guildID.ToString()))
+                return default;
+
+            return GetFromIndex(playerID.ToString(), guildID.ToString());
         }
     }
 }

@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class ApartmentBuildingCache: CacheBase<ApartmentBuilding>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, ApartmentBuilding entity)
+        public ApartmentBuildingCache()
+            : base("ApartmentBuilding")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, ApartmentBuilding entity)
+        protected override void OnCacheObjectSet(ApartmentBuilding entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(ApartmentBuilding entity)
         {
         }
 
@@ -20,5 +25,6 @@ namespace SWLOR.Game.Server.Caching
         {
             return ByID(id);
         }
+
     }
 }

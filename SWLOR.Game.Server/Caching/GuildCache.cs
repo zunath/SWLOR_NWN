@@ -5,11 +5,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class GuildCache: CacheBase<Guild>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, Guild entity)
+        public GuildCache() 
+            : base("Guild")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Guild entity)
+        protected override void OnCacheObjectSet(Guild entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(Guild entity)
         {
         }
 

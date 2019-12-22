@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PerkCache: CacheBase<Data.Entity.Perk>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, Data.Entity.Perk entity)
+        public PerkCache() 
+            : base("Perk")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Data.Entity.Perk entity)
+        protected override void OnCacheObjectSet(Data.Entity.Perk entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(Data.Entity.Perk entity)
         {
         }
 

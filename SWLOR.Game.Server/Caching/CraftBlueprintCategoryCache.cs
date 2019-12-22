@@ -5,16 +5,20 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CraftBlueprintCategoryCache: CacheBase<CraftBlueprintCategory>
     {
-        // Indexed by CraftBlueprintCategoryID
-        // Excludes inactive entries.
-        private Dictionary<int, CraftBlueprintCategory> ByCategoryIDActive { get; } = new Dictionary<int, CraftBlueprintCategory>();
+        public CraftBlueprintCategoryCache() 
+            : base("CraftBlueprintCategory")
+        {
+        }
 
-        protected override void OnCacheObjectSet(string @namespace, object id, CraftBlueprintCategory entity)
+        private const string CategoryIDActiveIndex = "CategoryID";
+        private const string CategoryIDActiveValue = "Active";
+        
+        protected override void OnCacheObjectSet(CraftBlueprintCategory entity)
         {
             SetByCategoryIDActive(entity);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, CraftBlueprintCategory entity)
+        protected override void OnCacheObjectRemoved(CraftBlueprintCategory entity)
         {
             RemoveByCategoryIDActive(entity);
         }
@@ -25,17 +29,17 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetByCategoryIDActive(CraftBlueprintCategory entity)
         {
-            if (!entity.IsActive && ByCategoryIDActive.ContainsKey(entity.ID))
-                ByCategoryIDActive.Remove(entity.ID);
+            if (!entity.IsActive && ExistsByIndex(CategoryIDActiveIndex, CategoryIDActiveValue))
+                RemoveFromListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity);
             else if (entity.IsActive)
-                ByCategoryIDActive[entity.ID] = (CraftBlueprintCategory)entity.Clone();
+                SetIntoListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity);
 
         }
 
         private void RemoveByCategoryIDActive(CraftBlueprintCategory entity)
         {
-            if (ByCategoryIDActive.ContainsKey(entity.ID))
-                ByCategoryIDActive.Remove(entity.ID);
+            if (ExistsByIndex(CategoryIDActiveIndex, CategoryIDActiveValue))
+                RemoveFromListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity);
         }
 
         public CraftBlueprintCategory GetByID(int id)
@@ -45,13 +49,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<CraftBlueprintCategory> GetAllActiveByIDs(IEnumerable<int> craftBlueprintCategoryIDs)
         {
-            var list = new List<CraftBlueprintCategory>();
-            foreach (var id in craftBlueprintCategoryIDs)
-            {
-                list.Add( (CraftBlueprintCategory)ByCategoryIDActive[id].Clone());
-            }
-
-            return list;
+            return GetFromListIndex(CategoryIDActiveIndex, CategoryIDActiveValue);
         }
     }
 }

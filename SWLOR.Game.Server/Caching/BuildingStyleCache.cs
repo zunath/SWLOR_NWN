@@ -10,11 +10,16 @@ namespace SWLOR.Game.Server.Caching
         // LINQ should be pretty quick since the set is so small, but if performance
         // gets bad look into setting up a few lookup dictionaries. 
 
-        protected override void OnCacheObjectSet(string @namespace, object id, BuildingStyle entity)
+        public BuildingStyleCache() 
+            : base("BuildingStyle")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, BuildingStyle entity)
+        protected override void OnCacheObjectSet(BuildingStyle entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(BuildingStyle entity)
         {
         }
 
@@ -29,17 +34,17 @@ namespace SWLOR.Game.Server.Caching
 
         public BuildingStyle GetDefaultInteriorByBaseStructureID(int baseStructureID)
         {
-            return (BuildingStyle)All.Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int) Enumeration.BuildingType.Interior && x.IsActive).Clone();
+            return (BuildingStyle)GetAll().Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int) Enumeration.BuildingType.Interior && x.IsActive).Clone();
         }
 
         public BuildingStyle GetDefaultExteriorByBaseStructureID(int baseStructureID)
         {
-            return (BuildingStyle)All.Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int)Enumeration.BuildingType.Exterior && x.IsActive).Clone();
+            return (BuildingStyle)GetAll().Single(x => x.BaseStructureID == baseStructureID && x.IsDefault && x.BuildingTypeID == (int)Enumeration.BuildingType.Exterior && x.IsActive).Clone();
         }
 
         public BuildingStyle GetByBaseStructureIDAndBuildingType(int baseStructureID, Enumeration.BuildingType buildingType)
         {
-            return (BuildingStyle)All.Single(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)buildingType).Clone();
+            return (BuildingStyle)GetAll().Single(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)buildingType).Clone();
         }
     }
 }

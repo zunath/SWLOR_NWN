@@ -5,11 +5,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class BuildingTypeCache: CacheBase<BuildingType>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, BuildingType entity)
+        public BuildingTypeCache() 
+            : base("BuildingType")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, BuildingType entity)
+        protected override void OnCacheObjectSet(BuildingType entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(BuildingType entity)
         {
         }
 

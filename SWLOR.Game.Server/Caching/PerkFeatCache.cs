@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<int, Dictionary<int, PerkFeat>> ByPerkIDAndLevelUnlocked { get; } = new Dictionary<int, Dictionary<int, PerkFeat>>();
         private Dictionary<int, PerkFeat> ByFeatID { get; } = new Dictionary<int, PerkFeat>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PerkFeat entity)
+        protected override void OnCacheObjectSet(PerkFeat entity)
         {
             SetEntityIntoDictionary(entity.PerkID, entity.PerkLevelUnlocked, entity, ByPerkIDAndLevelUnlocked);
             ByFeatID[entity.FeatID] = (PerkFeat)entity.Clone();
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PerkFeat entity)
+        protected override void OnCacheObjectRemoved(PerkFeat entity)
         {
             RemoveEntityFromDictionary(entity.PerkID, entity.PerkLevelUnlocked, ByPerkIDAndLevelUnlocked);
             ByFeatID.Remove(entity.FeatID);

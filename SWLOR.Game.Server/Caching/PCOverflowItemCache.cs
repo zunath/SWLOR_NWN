@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<Guid, PCOverflowItem>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCOverflowItem>>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCOverflowItem entity)
+        protected override void OnCacheObjectSet(PCOverflowItem entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCOverflowItem entity)
+        protected override void OnCacheObjectRemoved(PCOverflowItem entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
         }

@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class DownloadCache: CacheBase<Download>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, Download entity)
+        public DownloadCache() 
+            : base("Download")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Download entity)
+        protected override void OnCacheObjectSet(Download entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(Download entity)
         {
         }
 

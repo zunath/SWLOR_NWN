@@ -6,19 +6,26 @@ namespace SWLOR.Game.Server.Caching
 {
     public class GuildTaskCache: CacheBase<GuildTask>
     {
-        private Dictionary<int, GuildTask> ByCurrentlyOffered { get; } = new Dictionary<int, GuildTask>();
-        private Dictionary<int, Dictionary<int, GuildTask>> ByRequiredRank { get; } = new Dictionary<int, Dictionary<int, GuildTask>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, GuildTask entity)
+        public GuildTaskCache() 
+            : base("GuildTask")
         {
-            SetByCurrentlyOffered(entity);
-            SetEntityIntoDictionary(entity.RequiredRank, entity.ID, entity, ByRequiredRank);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, GuildTask entity)
+        private const string ByCurrentlyOfferedIndex = "ByCurrentlyOffered";
+        private const string ByCurrentlyOfferedValue = "Active";
+        private const string ByRequiredRankIndex = "ByRequiredRank";
+
+        
+        protected override void OnCacheObjectSet(GuildTask entity)
+        {
+            SetByCurrentlyOffered(entity);
+            SetIntoListIndex(ByRequiredRankIndex, entity.RequiredRank.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(GuildTask entity)
         {
             RemoveByCurrentlyOffered(entity);
-            RemoveEntityFromDictionary(entity.RequiredRank, entity.RequiredRank, ByRequiredRank);
+            RemoveFromListIndex(ByRequiredRankIndex, entity.RequiredRank.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -27,16 +34,16 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetByCurrentlyOffered(GuildTask entity)
         {
-            if (!ByCurrentlyOffered.ContainsKey(entity.ID) && entity.IsCurrentlyOffered)
-                ByCurrentlyOffered[entity.ID] = (GuildTask)entity.Clone();
-            else if (ByCurrentlyOffered.ContainsKey(entity.ID) && !entity.IsCurrentlyOffered)
-                ByCurrentlyOffered.Remove(entity.ID);
+            if (!ExistsByIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue) && entity.IsCurrentlyOffered)
+                SetIntoListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity);
+            else if (ExistsByIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue) && !entity.IsCurrentlyOffered)
+                RemoveFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity);
         }
 
         private void RemoveByCurrentlyOffered(GuildTask entity)
         {
-            if (ByCurrentlyOffered.ContainsKey(entity.ID))
-                ByCurrentlyOffered.Remove(entity.ID);
+            if (ExistsByIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedIndex))
+                RemoveFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity);
         }
 
         public GuildTask GetByID(int id)
@@ -46,28 +53,15 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<GuildTask> GetAllByCurrentlyOffered()
         {
-            var list = new List<GuildTask>();
-            foreach (var task in ByCurrentlyOffered.Values)
-            {
-                list.Add( (GuildTask) task.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue);
         }
 
         public IEnumerable<GuildTask> GetAllByGuildIDAndRequiredRank(int requiredRank, int guildID)
         {
-            var list = new List<GuildTask>();
-            if (!ByRequiredRank.ContainsKey(requiredRank))
-                return list;
+            if (!ExistsByIndex(ByRequiredRankIndex, requiredRank.ToString()))
+                return new List<GuildTask>();
 
-            var results = ByRequiredRank[requiredRank].Values.Where(x => x.GuildID == guildID);
-            foreach (var result in results)
-            {
-                list.Add( (GuildTask)result.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByRequiredRankIndex, requiredRank.ToString()).Where(x => x.GuildID == guildID);
         }
     }
 }

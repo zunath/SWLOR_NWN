@@ -6,16 +6,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class MessageCache: CacheBase<Message>
     {
-        private Dictionary<Guid, Dictionary<Guid, Message>> ByBoardID { get; } = new Dictionary<Guid, Dictionary<Guid, Message>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, Message entity)
+        public MessageCache() 
+            : base("Message")
         {
-            SetEntityIntoDictionary(entity.BoardID, entity.ID, entity, ByBoardID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Message entity)
+        private const string ByBoardIDIndex = "ByBoardID";
+
+        protected override void OnCacheObjectSet(Message entity)
         {
-            RemoveEntityFromDictionary(entity.BoardID, entity.ID, ByBoardID);
+            SetIntoListIndex(ByBoardIDIndex, entity.BoardID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(Message entity)
+        {
+            RemoveFromListIndex(ByBoardIDIndex, entity.BoardID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -29,16 +34,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<Message> GetAllByBoardID(Guid boardID)
         {
-            if(!ByBoardID.ContainsKey(boardID))
+            if(!ExistsByIndex(ByBoardIDIndex, boardID.ToString()))
                 return new List<Message>();
 
-            var list = new List<Message>();
-            foreach (var message in ByBoardID[boardID].Values)
-            {
-                list.Add((Message)message.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByBoardIDIndex, boardID.ToString());
         }
     }
 }

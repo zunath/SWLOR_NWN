@@ -19,14 +19,14 @@ namespace SWLOR.Game.Server.Caching
 
         private Dictionary<Guid, DateTime> RentDueTimes { get; } = new Dictionary<Guid, DateTime>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCBase entity)
+        protected override void OnCacheObjectSet(PCBase entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDAndPCBaseID);
             SetEntityIntoDictionary(entity.AreaResref, entity.Sector, entity, ByAreaResrefAndSector);
             RentDueTimes[entity.ID] = entity.DateRentDue;
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBase entity)
+        protected override void OnCacheObjectRemoved(PCBase entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndPCBaseID);
             RemoveEntityFromDictionary(entity.AreaResref, entity.Sector, ByAreaResrefAndSector);

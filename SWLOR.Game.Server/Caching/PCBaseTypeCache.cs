@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseTypeCache: CacheBase<PCBaseType>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, PCBaseType entity)
+        public PCBaseTypeCache() 
+            : base("PCBaseType")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBaseType entity)
+        protected override void OnCacheObjectSet(PCBaseType entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(PCBaseType entity)
         {
         }
 

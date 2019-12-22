@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CustomEffectCategoryCache: CacheBase<CustomEffectCategory>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, CustomEffectCategory entity)
+        public CustomEffectCategoryCache() 
+            : base("CustomEffectCategory")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, CustomEffectCategory entity)
+        protected override void OnCacheObjectSet(CustomEffectCategory entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(CustomEffectCategory entity)
         {
         }
 

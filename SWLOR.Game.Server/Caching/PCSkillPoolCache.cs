@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<Guid, Dictionary<int, PCSkillPool>> ByPlayerIDAndSkillCategoryID { get; } = new Dictionary<Guid, Dictionary<int, PCSkillPool>>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCSkillPool entity)
+        protected override void OnCacheObjectSet(PCSkillPool entity)
         {
             SetEntityIntoDictionary(entity.PlayerID, entity.SkillCategoryID, entity, ByPlayerIDAndSkillCategoryID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCSkillPool entity)
+        protected override void OnCacheObjectRemoved(PCSkillPool entity)
         {
             RemoveEntityFromDictionary(entity.PlayerID, entity.SkillCategoryID, ByPlayerIDAndSkillCategoryID);
         }

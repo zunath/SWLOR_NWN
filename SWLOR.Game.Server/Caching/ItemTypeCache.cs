@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class ItemTypeCache: CacheBase<ItemType>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, ItemType entity)
+        public ItemTypeCache() 
+            : base("ItemType")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, ItemType entity)
+        protected override void OnCacheObjectSet(ItemType entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(ItemType entity)
         {
         }
 

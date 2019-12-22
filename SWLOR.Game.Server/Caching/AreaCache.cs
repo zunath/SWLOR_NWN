@@ -7,14 +7,20 @@ namespace SWLOR.Game.Server.Caching
 {
     public class AreaCache: CacheBase<Area>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, Area entity)
+        private const string _resrefIndex = "Resref";
+
+        public AreaCache()
+            : base("Area")
         {
-            SetIndexByKey(entity.Resref, id);
+        }
+        protected override void OnCacheObjectSet(Area entity)
+        {
+            SetIntoIndex(_resrefIndex, entity.Resref, entity);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Area entity)
+        protected override void OnCacheObjectRemoved(Area entity)
         {
-            RemoveByIndex(entity.Resref);
+            RemoveFromIndex(_resrefIndex, entity.Resref);
         }
 
         protected override void OnSubscribeEvents()
@@ -28,15 +34,15 @@ namespace SWLOR.Game.Server.Caching
 
         public Area GetByResref(string resref)
         {
-            return GetByIndex(resref);
+            return GetFromIndex(_resrefIndex, resref);
         }
 
         public Area GetByResrefOrDefault(string resref)
         {
-            if (!ExistsByIndex(resref))
+            if (!ExistsByIndex(_resrefIndex, resref))
                 return default;
 
-            return GetByIndex(resref);
+            return GetFromIndex(_resrefIndex, resref);
         }
     }
 }

@@ -5,14 +5,20 @@ namespace SWLOR.Game.Server.Caching
 {
     public class ComponentTypeCache: CacheBase<ComponentType>
     {
-        private Dictionary<int, ComponentType> ByHasReassembledResref { get; } = new Dictionary<int, ComponentType>();
+        private const string HasReassembledResrefIndex = "HasReassembledResref";
+        private const string HasReassembledResrefValue = "HasValue";
 
-        protected override void OnCacheObjectSet(string @namespace, object id, ComponentType entity)
+        public ComponentTypeCache() 
+            : base("ComponentType")
+        {
+        }
+
+        protected override void OnCacheObjectSet(ComponentType entity)
         {
             SetByHasReassembledResref(entity);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, ComponentType entity)
+        protected override void OnCacheObjectRemoved(ComponentType entity)
         {
             RemoveByHasReassembledResref(entity);
         }
@@ -24,16 +30,18 @@ namespace SWLOR.Game.Server.Caching
         private void SetByHasReassembledResref(ComponentType entity)
         {
             // Entity no longer has a reassembled resref. Remove it from the list.
-            if (ByHasReassembledResref.ContainsKey(entity.ID) && string.IsNullOrWhiteSpace(entity.ReassembledResref))
-                ByHasReassembledResref.Remove(entity.ID);
+            if (ExistsByIndex(HasReassembledResrefIndex, HasReassembledResrefValue) && string.IsNullOrWhiteSpace(entity.ReassembledResref))
+                RemoveFromListIndex(HasReassembledResrefIndex, HasReassembledResrefValue, entity);
             // Entity isn't on the list but has a reassembled resref now. Add it to the list.
-            else if(!ByHasReassembledResref.ContainsKey(entity.ID) && !string.IsNullOrWhiteSpace(entity.ReassembledResref))
-                ByHasReassembledResref[entity.ID] = (ComponentType)entity.Clone();
+            else if(!ExistsByIndex(HasReassembledResrefIndex, HasReassembledResrefValue) && !string.IsNullOrWhiteSpace(entity.ReassembledResref))
+                SetIntoListIndex(HasReassembledResrefIndex, HasReassembledResrefValue, entity);
         }
 
         private void RemoveByHasReassembledResref(ComponentType entity)
         {
-            ByHasReassembledResref.Remove(entity.ID);
+            if (string.IsNullOrWhiteSpace(entity.ReassembledResref)) return;
+
+            RemoveFromListIndex(HasReassembledResrefIndex, HasReassembledResrefValue, entity);
         }
 
         public ComponentType GetByID(int id)
@@ -43,13 +51,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<ComponentType> GetAllWhereHasReassembledResref()
         {
-            var list = new List<ComponentType>();
-            foreach (var record in ByHasReassembledResref.Values)
-            {
-                list.Add( (ComponentType)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(HasReassembledResrefIndex, "");
         }
     }
 }

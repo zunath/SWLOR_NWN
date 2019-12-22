@@ -6,16 +6,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCMapPinCache: CacheBase<PCMapPin>
     {
-        private Dictionary<Guid, Dictionary<Guid, PCMapPin>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCMapPin>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCMapPin entity)
+        public PCMapPinCache() 
+            : base("PCMapPin")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCMapPin entity)
+        private const string ByPlayerIDIndex = "ByPlayerID";
+
+        protected override void OnCacheObjectSet(PCMapPin entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCMapPin entity)
+        {
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -29,16 +34,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCMapPin> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayerID.ContainsKey(playerID))
+            if(!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCMapPin>();
 
-            var list = new List<PCMapPin>();
-            foreach(var record in ByPlayerID[playerID].Values)
-            {
-                list.Add((PCMapPin)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
     }
 }

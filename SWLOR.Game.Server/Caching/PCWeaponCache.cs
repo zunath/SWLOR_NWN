@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCWeaponCache: CacheBase<PCWeapon>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, PCWeapon entity)
+        protected override void OnCacheObjectSet(PCWeapon entity)
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCWeapon entity)
+        protected override void OnCacheObjectRemoved(PCWeapon entity)
         {
         }
 

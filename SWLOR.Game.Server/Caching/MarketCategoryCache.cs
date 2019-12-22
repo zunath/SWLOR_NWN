@@ -5,11 +5,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class MarketCategoryCache: CacheBase<MarketCategory>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, MarketCategory entity)
+        public MarketCategoryCache() 
+            : base("MarketCategory")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, MarketCategory entity)
+        protected override void OnCacheObjectSet(MarketCategory entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(MarketCategory entity)
         {
         }
 

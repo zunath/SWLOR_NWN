@@ -14,13 +14,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, Guid> ByPrimaryResidencePCBaseStructureID { get; }  = new Dictionary<Guid, Guid>();
 
 
-        protected override void OnCacheObjectSet(string @namespace, object id, Player entity)
+        protected override void OnCacheObjectSet(Player entity)
         {
             SetByPrimaryResidencePCBaseID(entity);
             SetByPrimaryResidencePCBaseStructureID(entity);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Player entity)
+        protected override void OnCacheObjectRemoved(Player entity)
         {
             RemoveByPrimaryResidencePCBaseID(entity);
             RemoveByPrimaryResidencePCBaseStructureID(entity);

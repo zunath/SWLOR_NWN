@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class FameRegionCache: CacheBase<FameRegion>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, FameRegion entity)
+        public FameRegionCache() 
+            : base("FameRegion")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, FameRegion entity)
+        protected override void OnCacheObjectSet(FameRegion entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(FameRegion entity)
         {
         }
 

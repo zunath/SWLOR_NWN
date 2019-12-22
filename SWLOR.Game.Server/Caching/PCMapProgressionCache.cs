@@ -6,16 +6,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCMapProgressionCache: CacheBase<PCMapProgression>
     {
-        private Dictionary<Guid, Dictionary<string, PCMapProgression>> ByPlayerIDAndAreaResref { get; } = new Dictionary<Guid, Dictionary<string, PCMapProgression>>();
-
-        protected override void OnCacheObjectSet(string @namespace, object id, PCMapProgression entity)
+        public PCMapProgressionCache() 
+            : base("PCMapProgression")
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.AreaResref, entity, ByPlayerIDAndAreaResref);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCMapProgression entity)
+        private const string ByPlayerIDAndAreaResrefIndex = "ByPlayerIDAndAreaResref";
+
+        protected override void OnCacheObjectSet(PCMapProgression entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.AreaResref, ByPlayerIDAndAreaResref);
+            SetIntoIndex($"{ByPlayerIDAndAreaResrefIndex}:{entity.PlayerID}", $"{entity.AreaResref}", entity);
+        }
+
+        protected override void OnCacheObjectRemoved(PCMapProgression entity)
+        {
+            RemoveFromIndex($"{ByPlayerIDAndAreaResrefIndex}:{entity.PlayerID}", $"{entity.AreaResref}");
         }
 
         protected override void OnSubscribeEvents()
@@ -29,7 +34,10 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMapProgression GetByPlayerIDAndAreaResrefOrDefault(Guid playerID, string areaResref)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, areaResref, ByPlayerIDAndAreaResref);
+            if (!ExistsByIndex($"{ByPlayerIDAndAreaResrefIndex}:{playerID.ToString()}", $"{areaResref}"))
+                return default;
+
+            return GetFromIndex($"{ByPlayerIDAndAreaResrefIndex}:{playerID.ToString()}", $"{areaResref}");
         }
     }
 }

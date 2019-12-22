@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CooldownCategoryCache: CacheBase<CooldownCategory>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, CooldownCategory entity)
+        public CooldownCategoryCache() 
+            : base("CooldownCategory")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, CooldownCategory entity)
+        protected override void OnCacheObjectSet(CooldownCategory entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(CooldownCategory entity)
         {
         }
 

@@ -5,11 +5,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCHelmetCache: CacheBase<PCHelmet>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, PCHelmet entity)
+        public PCHelmetCache() 
+            : base("PCHelmet")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCHelmet entity)
+        protected override void OnCacheObjectSet(PCHelmet entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(PCHelmet entity)
         {
         }
 

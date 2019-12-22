@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<int, Dictionary<int, Skill>> ByCategoryID { get; } = new Dictionary<int, Dictionary<int, Skill>>();
         private Dictionary<int, Skill> ByContributesToSkillCap { get; } = new Dictionary<int, Skill>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, Skill entity)
+        protected override void OnCacheObjectSet(Skill entity)
         {
             SetEntityIntoDictionary(entity.SkillCategoryID, entity.ID, entity, ByCategoryID);
             SetByContributesToSkillCap(entity);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Skill entity)
+        protected override void OnCacheObjectRemoved(Skill entity)
         {
             RemoveEntityFromDictionary(entity.SkillCategoryID, entity.ID, ByCategoryID);
             ByContributesToSkillCap.Remove(entity.ID);

@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Caching
         // Excludes inactive entries.
         private Dictionary<int, PerkCategory> ByCategoryID { get; } = new Dictionary<int, PerkCategory>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PerkCategory entity)
+        protected override void OnCacheObjectSet(PerkCategory entity)
         {
             ByCategoryID[entity.ID] = (PerkCategory)entity.Clone();
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PerkCategory entity)
+        protected override void OnCacheObjectRemoved(PerkCategory entity)
         {
             ByCategoryID.Remove(entity.ID);
         }

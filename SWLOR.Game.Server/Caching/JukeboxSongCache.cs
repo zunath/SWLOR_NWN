@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class JukeboxSongCache: CacheBase<JukeboxSong>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, JukeboxSong entity)
+        public JukeboxSongCache() 
+            : base("JukeboxSong")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, JukeboxSong entity)
+        protected override void OnCacheObjectSet(JukeboxSong entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(JukeboxSong entity)
         {
         }
 

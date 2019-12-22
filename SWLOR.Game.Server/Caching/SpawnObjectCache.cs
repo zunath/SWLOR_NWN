@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Caching
     {
         private Dictionary<int, Dictionary<int, SpawnObject>> BySpawnTableID { get; } = new Dictionary<int, Dictionary<int, SpawnObject>>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, SpawnObject entity)
+        protected override void OnCacheObjectSet(SpawnObject entity)
         {
             SetEntityIntoDictionary(entity.SpawnID, entity.ID, entity, BySpawnTableID);
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, SpawnObject entity)
+        protected override void OnCacheObjectRemoved(SpawnObject entity)
         {
             RemoveEntityFromDictionary(entity.SpawnID, entity.ID, BySpawnTableID);
         }

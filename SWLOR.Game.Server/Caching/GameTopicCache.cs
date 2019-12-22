@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class GameTopicCache: CacheBase<GameTopic>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, GameTopic entity)
+        public GameTopicCache() 
+            : base("GameTopic")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, GameTopic entity)
+        protected override void OnCacheObjectSet(GameTopic entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(GameTopic entity)
         {
         }
 

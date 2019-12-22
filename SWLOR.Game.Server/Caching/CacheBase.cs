@@ -3,116 +3,112 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using SWLOR.Game.Server.Caching.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
+using Index = SWLOR.Game.Server.Data.Index;
 
 namespace SWLOR.Game.Server.Caching
 {
     public abstract class CacheBase<T>: ICache<T>
         where T: class, IEntity
     {
-        protected CacheBase()
+        private readonly string _setName;
+
+        protected CacheBase(string setName)
         {
+            _setName = setName;
+
             MessageHub.Instance.Subscribe<OnCacheObjectSet<T>>(msg => CacheObjectSet(msg.Entity));
             MessageHub.Instance.Subscribe<OnCacheObjectDeleted<T>>(msg => CacheObjectRemoved(msg.Entity));
             OnSubscribeEvents();
         }
 
+        private Index GetIndexDetails()
+        {
+            var key = $"{_setName}:Index";
+            var index = 
+                DataService.DB.KeyExists(key) ?
+                JsonConvert.DeserializeObject<Index>(DataService.DB.StringGet(key)) :
+                new Index();
+
+            return index;
+        }
+
+        private void SetIndexDetails(Index index)
+        {
+            var key = $"{_setName}:Index";
+            var json = JsonConvert.SerializeObject(index);
+            DataService.DB.StringSet(key, json);
+        }
+
         private void CacheObjectSet(T entity)
         {
-            var clone = (T)entity.Clone();
-            var @namespace = typeof(T).Name;
-            var id = GetEntityKey(clone);
-            var key = $"{@namespace}:{id}";
-            var json = JsonConvert.SerializeObject(clone);
+            // Update the entity data.
+            var id = GetEntityKey(entity);
+            var key = $"{_setName}:{id}";
+            var json = JsonConvert.SerializeObject(entity);
             DataService.DB.StringSet(key, json);
-            OnCacheObjectSet(@namespace, id, clone);
+
+            // Update the index data.
+            var index = GetIndexDetails();
+            index.IDs.Add(id);
+            SetIndexDetails(index);
+
+            // Publish event notifying that a new object has been set into the cache.
+            OnCacheObjectSet(entity);
         }
 
         private void CacheObjectRemoved(T entity)
         {
-            var @namespace = typeof(T).Name;
+            // Remove the entity data.
             var id = GetEntityKey(entity);
-            var key = $"{@namespace}:{id}" ;
+            var key = $"{_setName}:{id}" ;
             DataService.DB.KeyDelete(key);
-            OnCacheObjectRemoved(@namespace, id, entity);
+
+            // Update the index data.
+            var index = GetIndexDetails();
+            index.IDs.Remove(id);
+            SetIndexDetails(index);
+
+            // Publish event notifying that an object has been removed from the cache.
+            OnCacheObjectRemoved(entity);
         }
 
         protected T ByID(object id)
         {
-            var key = $"{typeof(T).Name}:{id}";
+            var key = $"{_setName}:{id}";
             var json = DataService.DB.StringGet(key);
 
             return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        protected IEnumerable<T> GetAll()
+        {
+            var index = GetIndexDetails();
+            List<RedisKey> redisKeys = new List<RedisKey>();
+
+            foreach(var id in index.IDs)
+            {
+                redisKeys.Add($"{_setName}:{id}");
+            }
+
+            var data = DataService.DB.StringGet(redisKeys.ToArray());
+            foreach (var record in data)
+            {
+                yield return JsonConvert.DeserializeObject<T>(record);
+            }
         }
 
         protected bool Exists(object id)
         {
-            var key = $"{typeof(T).Name}:{id}";
+            var key = $"{_setName}:{id}";
             return DataService.DB.KeyExists(key);
         }
-
-        protected void SetIndexByKey(string index, object id)
-        {
-            var key = $"{typeof(T).Name}:{index}";
-            var json = JsonConvert.SerializeObject(id);
-            DataService.DB.StringSet(key, json);
-        }
-
-        protected bool ExistsByIndex(string index)
-        {
-            var key = $"{typeof(T).Name}:{index}";
-            return DataService.DB.KeyExists(key);
-        }
-
-        protected T GetByIndex(string index)
-        {
-            var key = $"{typeof(T).Name}:{index}";
-            var json = DataService.DB.StringGet(key);
-
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
-        protected void RemoveByIndex(string index)
-        {
-            var key = $"{typeof(T).Name}:{index}";
-            DataService.DB.KeyDelete(key);
-        }
-
-        protected long AddIndexToList(string listName, object id)
-        {
-            var key = $"{typeof(T).Name}:{listName}";
-            var json = JsonConvert.SerializeObject(id);
-            return DataService.DB.ListRightPush(key, json);
-        }
-
-        protected IEnumerable<T> GetIndexList(string listName)
-        {
-            var @namespace = typeof(T).Name;
-            var key = $"{@namespace}:{listName}";
-            var length = DataService.DB.ListLength(key);
-
-            for (var x = 0; x < length; x++)
-            {
-                var json = DataService.DB.ListGetByIndex(key, x);
-                yield return JsonConvert.DeserializeObject<T>(json);
-            }
-        }
-
-        protected void RemoveIndexFromList(string listName, long index)
-        {
-            var key = $"{typeof(T).Name}:{listName}";
-            var value = DataService.DB.ListGetByIndex(key, index);
-            DataService.DB.ListRemove(key, value);
-        }
-
-        protected abstract void OnCacheObjectSet(string @namespace, object id, T entity);
-        protected abstract void OnCacheObjectRemoved(string @namespace, object id, T entity);
-        protected abstract void OnSubscribeEvents();
 
         private static object GetEntityKey(IEntity entity)
         {
@@ -137,5 +133,92 @@ namespace SWLOR.Game.Server.Caching
 
             return propertyWithKey.GetValue(entity);
         }
+
+        protected void SetIntoIndex(string indexName, string indexValue, T entity)
+        {
+            var index = GetIndexDetails();
+            var id = GetEntityKey(entity);
+            var key = $"{indexName}:{indexValue}";
+            index.SecondaryIndexes[key] = id;
+
+            SetIndexDetails(index);
+        }
+
+        protected void SetIntoListIndex(string indexName, string indexValue, T entity)
+        {
+            var index = GetIndexDetails();
+            var id = GetEntityKey(entity);
+            var key = $"{indexName}:{indexValue}";
+
+            if (!index.SecondaryIndexes.ContainsKey(key))
+            {
+                index.SecondaryIndexes[key] = new List<object>();
+            }
+
+            var list = (List<object>)index.SecondaryIndexes[key];
+            list.Add(id);
+            SetIndexDetails(index);
+        }
+
+        protected void RemoveFromIndex(string indexName, string indexValue)
+        {
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+            index.SecondaryIndexes.Remove(key);
+            SetIndexDetails(index);
+        }
+
+        protected void RemoveFromListIndex(string indexName, string indexValue, T entity)
+        {
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+            var id = GetEntityKey(entity);
+
+            var list = (List<object>) index.SecondaryIndexes[key];
+            list.Remove(id);
+            SetIndexDetails(index);
+        }
+
+        protected T GetFromIndex(string indexName, string indexValue)
+        {
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+            var id = index.SecondaryIndexes[key];
+
+            return ByID(id);
+        }
+
+        protected IEnumerable<T> GetFromListIndex(string indexName, string indexValue)
+        {
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+
+            var list = (List<object>) index.SecondaryIndexes[key];
+            var redisKeys = new List<RedisKey>();
+
+            foreach (var id in list)
+            {
+                redisKeys.Add($"{_setName}:{id}");
+            }
+
+            var results = DataService.DB.StringGet(redisKeys.ToArray());
+
+            foreach(var result in results)
+            {
+                yield return JsonConvert.DeserializeObject<T>(result);
+            }
+        }
+
+        protected bool ExistsByIndex(string indexName, string indexValue)
+        {
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+            return index.SecondaryIndexes.ContainsKey(key);
+        }
+
+        protected abstract void OnCacheObjectSet(T entity);
+        protected abstract void OnCacheObjectRemoved(T entity);
+        protected abstract void OnSubscribeEvents();
+
     }
 }

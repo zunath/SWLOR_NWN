@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class BankCache: CacheBase<Bank>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, Bank entity)
+        public BankCache() 
+            : base("Bank")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Bank entity)
+        protected override void OnCacheObjectSet(Bank entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(Bank entity)
         {
         }
 

@@ -5,11 +5,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class DatabaseVersionCache: CacheBase<DatabaseVersion>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, DatabaseVersion entity)
+        public DatabaseVersionCache() 
+            : base("DatabaseVersion")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, DatabaseVersion entity)
+        protected override void OnCacheObjectSet(DatabaseVersion entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(DatabaseVersion entity)
         {
         }
 

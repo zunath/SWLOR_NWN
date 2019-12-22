@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class LootTableCache: CacheBase<LootTable>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, LootTable entity)
+        public LootTableCache() 
+            : base("LootTable")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, LootTable entity)
+        protected override void OnCacheObjectSet(LootTable entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(LootTable entity)
         {
         }
 

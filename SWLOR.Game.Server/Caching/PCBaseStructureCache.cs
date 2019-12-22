@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Caching
         private Dictionary<Guid, double> CPUInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
         private Dictionary<Guid, Dictionary<Guid, PCBaseStructure>> ByParentPCBaseStructureID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructure>>();
 
-        protected override void OnCacheObjectSet(string @namespace, object id, PCBaseStructure entity)
+        protected override void OnCacheObjectSet(PCBaseStructure entity)
         {
             SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseID);
             RecalculatePowerAndCPU(entity);
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Caching
             }
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, PCBaseStructure entity)
+        protected override void OnCacheObjectRemoved(PCBaseStructure entity)
         {
             RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseID);
             RecalculatePowerAndCPU(entity);

@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class AssociationCache: CacheBase<Association>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, Association entity)
+        public AssociationCache() 
+            : base("Association")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, Association entity)
+        protected override void OnCacheObjectSet(Association entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(Association entity)
         {
         }
 

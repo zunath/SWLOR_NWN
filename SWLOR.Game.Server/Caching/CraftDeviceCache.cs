@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class CraftDeviceCache: CacheBase<CraftDevice>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, CraftDevice entity)
+        public CraftDeviceCache() 
+            : base("CraftDevice")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, CraftDevice entity)
+        protected override void OnCacheObjectSet(CraftDevice entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(CraftDevice entity)
         {
         }
 

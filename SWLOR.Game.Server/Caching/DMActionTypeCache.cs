@@ -4,11 +4,16 @@ namespace SWLOR.Game.Server.Caching
 {
     public class DMActionTypeCache: CacheBase<DMActionType>
     {
-        protected override void OnCacheObjectSet(string @namespace, object id, DMActionType entity)
+        public DMActionTypeCache() 
+            : base("DMActionType")
         {
         }
 
-        protected override void OnCacheObjectRemoved(string @namespace, object id, DMActionType entity)
+        protected override void OnCacheObjectSet(DMActionType entity)
+        {
+        }
+
+        protected override void OnCacheObjectRemoved(DMActionType entity)
         {
         }
 

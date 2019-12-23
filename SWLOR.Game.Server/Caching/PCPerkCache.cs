@@ -6,16 +6,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCPerkCache: CacheBase<PCPerk>
     {
+        public PCPerkCache() 
+            : base("PCPerk")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<int, PCPerk>> ByPlayerAndPerkID { get; } = new Dictionary<Guid, Dictionary<int, PCPerk>>();
 
         protected override void OnCacheObjectSet(PCPerk entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.PerkID, entity, ByPlayerAndPerkID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.PerkID, entity, ByPlayerAndPerkID);
         }
 
         protected override void OnCacheObjectRemoved(PCPerk entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.PerkID, ByPlayerAndPerkID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.PerkID, ByPlayerAndPerkID);
         }
 
         protected override void OnSubscribeEvents()
@@ -29,12 +34,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCPerk GetByPlayerAndPerkID(Guid playerID, int perkID)
         {
-            return GetEntityFromDictionary(playerID, perkID, ByPlayerAndPerkID);
+            return null;
+            //return GetEntityFromDictionary(playerID, perkID, ByPlayerAndPerkID);
         }
 
         public PCPerk GetByPlayerAndPerkIDOrDefault(Guid playerID, int perkID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, perkID, ByPlayerAndPerkID);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(playerID, perkID, ByPlayerAndPerkID);
         }
 
         public IEnumerable<PCPerk> GetAllByPlayerID(Guid playerID)

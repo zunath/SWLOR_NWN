@@ -6,19 +6,24 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCMarketListingCache: CacheBase<PCMarketListing>
     {
+        public PCMarketListingCache() 
+            : base("PCMarketListing")
+        {
+        }
+
         private Dictionary<int, Dictionary<Guid, PCMarketListing>> ByMarketRegionID { get; } = new Dictionary<int, Dictionary<Guid, PCMarketListing>>();
         private Dictionary<Guid, Dictionary<Guid, PCMarketListing>> BySellerPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCMarketListing>>();
 
         protected override void OnCacheObjectSet(PCMarketListing entity)
         {
-            SetEntityIntoDictionary(entity.MarketRegionID, entity.ID, entity, ByMarketRegionID);
-            SetEntityIntoDictionary(entity.SellerPlayerID, entity.ID, entity, BySellerPlayerID);
+            //SetEntityIntoDictionary(entity.MarketRegionID, entity.ID, entity, ByMarketRegionID);
+            //SetEntityIntoDictionary(entity.SellerPlayerID, entity.ID, entity, BySellerPlayerID);
         }
 
         protected override void OnCacheObjectRemoved(PCMarketListing entity)
         {
-            RemoveEntityFromDictionary(entity.MarketRegionID, entity.ID, ByMarketRegionID);
-            RemoveEntityFromDictionary(entity.SellerPlayerID, entity.ID, BySellerPlayerID);
+            //RemoveEntityFromDictionary(entity.MarketRegionID, entity.ID, ByMarketRegionID);
+            //RemoveEntityFromDictionary(entity.SellerPlayerID, entity.ID, BySellerPlayerID);
         }
 
         protected override void OnSubscribeEvents()

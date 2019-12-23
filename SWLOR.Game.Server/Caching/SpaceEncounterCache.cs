@@ -7,6 +7,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class SpaceEncounterCache: CacheBase<SpaceEncounter>
     {
+        public SpaceEncounterCache() 
+            : base("SpaceEncounter")
+        {
+        }
+
         protected override void OnCacheObjectSet(SpaceEncounter entity)
         {
         }
@@ -26,10 +31,10 @@ namespace SWLOR.Game.Server.Caching
         public IEnumerable<SpaceEncounter> GetAllByPlanet(string planet)
         {
             var list = new List<SpaceEncounter>();
-            foreach (var record in ByID.Values.Where(x => x.Planet == planet))
-            {
-                list.Add((SpaceEncounter)record.Clone());
-            }
+            //foreach (var record in ByID.Values.Where(x => x.Planet == planet))
+            //{
+            //    list.Add((SpaceEncounter)record.Clone());
+            //}
 
             return list;
         }

@@ -32,29 +32,19 @@ namespace SWLOR.Game.Server.Service
         public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
         public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
         public static BuildingTypeCache BuildingType { get; } = new BuildingTypeCache();
-        public static ChatChannelCache ChatChannel { get; } = new ChatChannelCache();
         public static ComponentTypeCache ComponentType { get; } = new ComponentTypeCache();
         public static CooldownCategoryCache CooldownCategory { get; } = new CooldownCategoryCache();
         public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
         public static CraftBlueprintCategoryCache CraftBlueprintCategory { get; } = new CraftBlueprintCategoryCache();
         public static CraftDeviceCache CraftDevice { get; } = new CraftDeviceCache();
         public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
-        public static CustomEffectCategoryCache CustomEffectCategory { get; } = new CustomEffectCategoryCache();
-        public static DatabaseVersionCache DatabaseVersion { get; } = new DatabaseVersionCache();
-        public static DMActionCache DMAction { get; } = new DMActionCache();
-        public static DMActionTypeCache DMActionType { get; } = new DMActionTypeCache();
-        public static DMRoleCache DMRole { get; } = new DMRoleCache();
         public static DownloadCache Download { get; } = new DownloadCache();
-        public static EnmityAdjustmentRuleCache EnmityAdjustmentRule { get; } = new EnmityAdjustmentRuleCache();
         public static FameRegionCache FameRegion { get; } = new FameRegionCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
-        public static GameTopicCategoryCache GameTopicCategory { get; } = new GameTopicCategoryCache();
         public static GuildCache Guild { get; } = new GuildCache();
         public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();
-        public static ItemTypeCache ItemType { get; } = new ItemTypeCache();
         public static JukeboxSongCache JukeboxSong { get; } = new JukeboxSongCache();
         public static KeyItemCache KeyItem { get; } = new KeyItemCache();
-        public static KeyItemCategoryCache KeyItemCategory { get; } = new KeyItemCategoryCache();
         public static LootTableCache LootTable { get; } = new LootTableCache();
         public static LootTableItemCache LootTableItem { get; } = new LootTableItemCache();
         public static MarketCategoryCache MarketCategory { get; } = new MarketCategoryCache();
@@ -65,7 +55,6 @@ namespace SWLOR.Game.Server.Service
         public static PCBaseStructureCache PCBaseStructure { get; } = new PCBaseStructureCache();
         public static PCBaseStructureItemCache PCBaseStructureItem { get; } = new PCBaseStructureItemCache();
         public static PCBaseStructurePermissionCache PCBaseStructurePermission { get; } = new PCBaseStructurePermissionCache();
-        public static PCBaseTypeCache PCBaseType { get; } = new PCBaseTypeCache();
         public static PCCooldownCache PCCooldown { get; } = new PCCooldownCache();
         public static PCCraftedBlueprintCache PCCraftedBlueprint { get; } = new PCCraftedBlueprintCache();
         public static PCCustomEffectCache PCCustomEffect { get; } = new PCCustomEffectCache();
@@ -102,7 +91,6 @@ namespace SWLOR.Game.Server.Service
         public static StarportCache Starport { get; } = new StarportCache();
         public static SpawnCache Spawn { get; } = new SpawnCache();
         public static SpawnObjectCache SpawnObject { get; } = new SpawnObjectCache();
-        public static SpawnObjectTypeCache SpawnObjectType { get; } = new SpawnObjectTypeCache();
         public static StructureModeCache StructureMode { get; } = new StructureModeCache();
 
         private static void SetIntoCache<T>(T entity)
@@ -170,6 +158,7 @@ namespace SWLOR.Game.Server.Service
                     ? JsonConvert.DeserializeObject<ServerConfiguration>(db.StringGet(ConfigKey))
                     : new ServerConfiguration()
                     {
+                        ID = 1,
                         ServerName = "Star Wars: Legends of the Old Republic",
                         MessageOfTheDay = "Welcome to SWLOR!"
                     };

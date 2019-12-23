@@ -5,16 +5,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class SpawnObjectCache: CacheBase<SpawnObject>
     {
+        public SpawnObjectCache() 
+            : base("SpawnObject")
+        {
+        }
+
         private Dictionary<int, Dictionary<int, SpawnObject>> BySpawnTableID { get; } = new Dictionary<int, Dictionary<int, SpawnObject>>();
 
         protected override void OnCacheObjectSet(SpawnObject entity)
         {
-            SetEntityIntoDictionary(entity.SpawnID, entity.ID, entity, BySpawnTableID);
+            //SetEntityIntoDictionary(entity.SpawnID, entity.ID, entity, BySpawnTableID);
         }
 
         protected override void OnCacheObjectRemoved(SpawnObject entity)
         {
-            RemoveEntityFromDictionary(entity.SpawnID, entity.ID, BySpawnTableID);
+            //RemoveEntityFromDictionary(entity.SpawnID, entity.ID, BySpawnTableID);
         }
 
         protected override void OnSubscribeEvents()

@@ -4,6 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class SpawnCache: CacheBase<Spawn>
     {
+        public SpawnCache() 
+            : base("Spawn")
+        {
+        }
+
         protected override void OnCacheObjectSet(Spawn entity)
         {
         }

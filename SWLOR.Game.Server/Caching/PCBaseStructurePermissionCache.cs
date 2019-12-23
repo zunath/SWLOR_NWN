@@ -7,8 +7,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseStructurePermissionCache: CacheBase<PCBaseStructurePermission>
     {
-        // Primary Index: PlayerID
-        // Secondary Index: PCBaseStructurePermissionID
+        public PCBaseStructurePermissionCache() 
+            : base("PCBaseStructurePermission")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>>();
 
         // Primary INdex: PCBaseStructureID
@@ -17,14 +20,14 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCBaseStructurePermission entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
-            SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ID, entity, ByPCBaseStructureID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            //SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ID, entity, ByPCBaseStructureID);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructurePermission entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
-            RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ID, ByPCBaseStructureID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            //RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ID, ByPCBaseStructureID);
         }
 
         protected override void OnSubscribeEvents()
@@ -52,7 +55,8 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructurePermission GetPublicPermissionOrDefault(Guid pcBaseStructureID)
         {
-            return (PCBaseStructurePermission)ByID.Values.SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission)?.Clone();
+            return null;
+            //return (PCBaseStructurePermission)ByID.Values.SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission)?.Clone();
         }
 
         public PCBaseStructurePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseStructureID)

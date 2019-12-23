@@ -6,22 +6,27 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseStructureItemCache: CacheBase<PCBaseStructureItem>
     {
+        public PCBaseStructureItemCache() 
+            : base("PCBaseStructureItem")
+        {
+        }
+
         private Dictionary<string, PCBaseStructureItem> ByItemGlobalID { get; } = new Dictionary<string, PCBaseStructureItem>();
         private Dictionary<Guid, Dictionary<string, PCBaseStructureItem>> ByPCBaseStructureIDAndItemGlobalID { get; } = new Dictionary<Guid, Dictionary<string, PCBaseStructureItem>>();
         private Dictionary<Guid, int> CountsByPCBaseStructureID { get;  } = new Dictionary<Guid, int>();
 
         protected override void OnCacheObjectSet(PCBaseStructureItem entity)
         {
-            ByItemGlobalID[entity.ItemGlobalID] = (PCBaseStructureItem)entity.Clone();
-            SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
-            SetCountsByPCBaseStructureID(entity);
+            //ByItemGlobalID[entity.ItemGlobalID] = (PCBaseStructureItem)entity.Clone();
+            //SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
+            //SetCountsByPCBaseStructureID(entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructureItem entity)
         {
-            ByItemGlobalID.Remove(entity.ItemGlobalID);
-            RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
-            RemoveCountsByPCBaseStructureID(entity);
+            //ByItemGlobalID.Remove(entity.ItemGlobalID);
+            //RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
+            //RemoveCountsByPCBaseStructureID(entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -54,7 +59,8 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructureItem GetByPCBaseStructureIDAndItemGlobalIDOrDefault(Guid pcBaseStructureID, string itemGlobalID)
         {
-            return GetEntityFromDictionaryOrDefault(pcBaseStructureID, itemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(pcBaseStructureID, itemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
         }
 
         public int GetNumberOfItemsContainedBy(Guid pcBaseStructureID)

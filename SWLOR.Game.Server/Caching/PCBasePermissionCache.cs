@@ -7,8 +7,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBasePermissionCache: CacheBase<PCBasePermission>
     {
-        // Primary Index: PlayerID
-        // Secondary Index: PCBasePermissionID
+        public PCBasePermissionCache() 
+            : base("PCBasePermission")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
         
         // Primary Index: PCBaseID
@@ -23,22 +26,22 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCBasePermission entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
 
-            if(!entity.IsPublicPermission)
-                SetEntityIntoDictionary(entity.PCBaseID, entity.PlayerID, entity, ByPCBaseIDPrivate);
+            //if(!entity.IsPublicPermission)
+            //    SetEntityIntoDictionary(entity.PCBaseID, entity.PlayerID, entity, ByPCBaseIDPrivate);
 
-            SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseIDAll);
+            //SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseIDAll);
         }
 
         protected override void OnCacheObjectRemoved(PCBasePermission entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
 
-            if(!entity.IsPublicPermission)
-                RemoveEntityFromDictionary(entity.PCBaseID, entity.PlayerID, ByPCBaseIDPrivate);
+            //if(!entity.IsPublicPermission)
+            //    RemoveEntityFromDictionary(entity.PCBaseID, entity.PlayerID, ByPCBaseIDPrivate);
 
-            RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseIDAll);
+            //RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseIDAll);
         }
 
         protected override void OnSubscribeEvents()
@@ -72,12 +75,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBasePermission GetByPlayerAndPCBaseIDOrDefault(Guid playerID, Guid pcBaseID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, pcBaseID, ByPlayerID);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(playerID, pcBaseID, ByPlayerID);
         }
 
         public PCBasePermission GetPublicPermissionOrDefault(Guid pcBaseID)
         {
-            return (PCBasePermission)ByID.Values.SingleOrDefault(x => x.PCBaseID == pcBaseID && x.IsPublicPermission)?.Clone();
+            return null;
+            //return (PCBasePermission)ByID.Values.SingleOrDefault(x => x.PCBaseID == pcBaseID && x.IsPublicPermission)?.Clone();
         }
 
         public PCBasePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseID)

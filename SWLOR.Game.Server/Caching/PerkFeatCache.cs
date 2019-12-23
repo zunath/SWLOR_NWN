@@ -7,18 +7,23 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PerkFeatCache: CacheBase<PerkFeat>
     {
+        public PerkFeatCache() 
+            : base("PerkFeat")
+        {
+        }
+
         private Dictionary<int, Dictionary<int, PerkFeat>> ByPerkIDAndLevelUnlocked { get; } = new Dictionary<int, Dictionary<int, PerkFeat>>();
         private Dictionary<int, PerkFeat> ByFeatID { get; } = new Dictionary<int, PerkFeat>();
 
         protected override void OnCacheObjectSet(PerkFeat entity)
         {
-            SetEntityIntoDictionary(entity.PerkID, entity.PerkLevelUnlocked, entity, ByPerkIDAndLevelUnlocked);
+            //SetEntityIntoDictionary(entity.PerkID, entity.PerkLevelUnlocked, entity, ByPerkIDAndLevelUnlocked);
             ByFeatID[entity.FeatID] = (PerkFeat)entity.Clone();
         }
 
         protected override void OnCacheObjectRemoved(PerkFeat entity)
         {
-            RemoveEntityFromDictionary(entity.PerkID, entity.PerkLevelUnlocked, ByPerkIDAndLevelUnlocked);
+            //RemoveEntityFromDictionary(entity.PerkID, entity.PerkLevelUnlocked, ByPerkIDAndLevelUnlocked);
             ByFeatID.Remove(entity.FeatID);
         }
 
@@ -33,12 +38,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkFeat GetByPerkIDAndLevelUnlocked(int perkID, int levelUnlocked)
         {
-            return GetEntityFromDictionary(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
+            return null;
+            //return GetEntityFromDictionary(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
         }
 
         public PerkFeat GetByPerkIDAndLevelUnlockedOrDefault(int perkID, int levelUnlocked)
         {
-            return GetEntityFromDictionaryOrDefault(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
         }
 
         public PerkFeat GetByFeatID(int featID)

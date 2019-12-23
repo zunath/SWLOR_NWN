@@ -11,8 +11,6 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<int, PCGuildPoint>> ByPlayerIDAndGuildID { get; } = new Dictionary<Guid, Dictionary<int, PCGuildPoint>>();
-
         protected override void OnCacheObjectSet(PCGuildPoint entity)
         {
             SetIntoIndex(entity.PlayerID.ToString(), entity.GuildID.ToString(), entity);

@@ -1081,7 +1081,7 @@ namespace SWLOR.Game.Server.Service
                         string resref = RandomService.D20(1) == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
                         NWCreature pirate = CreateObject(ObjectType.Creature, resref, trigger.Location);
                         pirate.SetLocalInt("DC", encounter.Difficulty);
-                        pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTable);
+                        pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTableID);
                         // TODO - play proximity alert sound.
                     }
                     else if (encounter.TypeID == 2)
@@ -1134,7 +1134,7 @@ namespace SWLOR.Game.Server.Service
                                 return;
                             }
 
-                            var itemDetails = LootService.PickRandomItemFromLootTable(encounter.LootTable);
+                            var itemDetails = LootService.PickRandomItemFromLootTable(encounter.LootTableID);
 
                             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
                             NWItem item = CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);

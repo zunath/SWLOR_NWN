@@ -8,6 +8,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseStructureCache: CacheBase<PCBaseStructure>
     {
+        public PCBaseStructureCache() 
+            : base("PCBaseStructure")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<Guid, PCBaseStructure>> ByPCBaseID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructure>>();
         private Dictionary<Guid, double> PowerInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
         private Dictionary<Guid, double> CPUInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
@@ -15,22 +20,22 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectSet(PCBaseStructure entity)
         {
-            SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseID);
-            RecalculatePowerAndCPU(entity);
-            if (entity.ParentPCBaseStructureID != null)
-            {
-                SetEntityIntoDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, entity, ByParentPCBaseStructureID);
-            }
+            //SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseID);
+            //RecalculatePowerAndCPU(entity);
+            //if (entity.ParentPCBaseStructureID != null)
+            //{
+            //    SetEntityIntoDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, entity, ByParentPCBaseStructureID);
+            //}
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructure entity)
         {
-            RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseID);
-            RecalculatePowerAndCPU(entity);
-            if (entity.ParentPCBaseStructureID != null)
-            {
-                RemoveEntityFromDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, ByParentPCBaseStructureID);
-            }
+            //RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseID);
+            //RecalculatePowerAndCPU(entity);
+            //if (entity.ParentPCBaseStructureID != null)
+            //{
+            //    RemoveEntityFromDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, ByParentPCBaseStructureID);
+            //}
         }
 
         protected override void OnSubscribeEvents()

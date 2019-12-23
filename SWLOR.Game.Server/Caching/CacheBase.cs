@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Caching
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        protected IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll()
         {
             var index = GetIndexDetails();
             List<RedisKey> redisKeys = new List<RedisKey>();

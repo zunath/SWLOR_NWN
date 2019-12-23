@@ -5,8 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PerkCategoryCache: CacheBase<PerkCategory>
     {
-        // Indexed by PerkCategoryID
-        // Excludes inactive entries.
+        public PerkCategoryCache() 
+            : base("PerkCategory")
+        {
+        }
+
         private Dictionary<int, PerkCategory> ByCategoryID { get; } = new Dictionary<int, PerkCategory>();
 
         protected override void OnCacheObjectSet(PerkCategory entity)

@@ -5,6 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class SkillCategoryCache: CacheBase<SkillCategory>
     {
+        public SkillCategoryCache() 
+            : base("SkillCategory")
+        {
+        }
+
         private Dictionary<int, SkillCategory> ByActive { get; } = new Dictionary<int, SkillCategory>();
 
         protected override void OnCacheObjectSet(SkillCategory entity)

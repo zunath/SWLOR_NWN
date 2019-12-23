@@ -7,16 +7,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCQuestKillTargetProgressCache: CacheBase<PCQuestKillTargetProgress>
     {
+        public PCQuestKillTargetProgressCache() 
+            : base("PCQuestKillTargetProgress")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<Guid, PCQuestKillTargetProgress>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCQuestKillTargetProgress>>();
 
         protected override void OnCacheObjectSet(PCQuestKillTargetProgress entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
         }
 
         protected override void OnCacheObjectRemoved(PCQuestKillTargetProgress entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
         }
 
         protected override void OnSubscribeEvents()

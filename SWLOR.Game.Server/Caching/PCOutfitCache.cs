@@ -5,6 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCOutfitCache: CacheBase<PCOutfit>
     {
+        public PCOutfitCache() 
+            : base("PCOutfit")
+        {
+        }
+
         protected override void OnCacheObjectSet(PCOutfit entity)
         {
         }

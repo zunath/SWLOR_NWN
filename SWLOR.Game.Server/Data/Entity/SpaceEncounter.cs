@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int TypeID { get; set; }
         public int Chance { get; set; }
         public int Difficulty { get; set; }
-        public int LootTable { get; set; }
+        public int LootTableID { get; set; }
 
         public IEntity Clone()
         {
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Data.Entity
                 TypeID = TypeID,
                 Chance = Chance,
                 Difficulty = Difficulty,
-                LootTable = LootTable
+                LootTableID = LootTableID
             };
         }
     }

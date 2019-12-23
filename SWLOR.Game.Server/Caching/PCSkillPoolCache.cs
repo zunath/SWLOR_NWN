@@ -7,16 +7,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCSkillPoolCache: CacheBase<PCSkillPool>
     {
+        public PCSkillPoolCache() 
+            : base("PCSkillPool")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<int, PCSkillPool>> ByPlayerIDAndSkillCategoryID { get; } = new Dictionary<Guid, Dictionary<int, PCSkillPool>>();
 
         protected override void OnCacheObjectSet(PCSkillPool entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.SkillCategoryID, entity, ByPlayerIDAndSkillCategoryID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.SkillCategoryID, entity, ByPlayerIDAndSkillCategoryID);
         }
 
         protected override void OnCacheObjectRemoved(PCSkillPool entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.SkillCategoryID, ByPlayerIDAndSkillCategoryID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.SkillCategoryID, ByPlayerIDAndSkillCategoryID);
         }
 
         protected override void OnSubscribeEvents()
@@ -30,12 +35,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCSkillPool GetByPlayerIDAndSkillCategoryID(Guid playerID, int skillCategoryID)
         {
-            return GetEntityFromDictionary(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
+            return null;
+            //return GetEntityFromDictionary(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
         }
 
         public PCSkillPool GetByPlayerIDAndSkillCategoryIDOrDefault(Guid playerID, int skillCategoryID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
         }
 
         public IEnumerable<PCSkillPool> GetByPlayerIDWithLevelsUndistributed(Guid playerID)

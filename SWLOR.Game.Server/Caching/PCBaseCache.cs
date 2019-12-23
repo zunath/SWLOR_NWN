@@ -2,35 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.Messaging;
 
 namespace SWLOR.Game.Server.Caching
 {
     public class PCBaseCache: CacheBase<PCBase>
     {
-        // Primary Index: PlayerID
-        // Secondary Index: PCBaseID 
-        private Dictionary<Guid, Dictionary<Guid, PCBase>> ByPlayerIDAndPCBaseID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBase>>();
+        public PCBaseCache() 
+            : base("PCBase")
+        {
+        }
 
-        // Primary Index: AreaResref
-        // Secondary Index: Sector
-        private Dictionary<string, Dictionary<string, PCBase>> ByAreaResrefAndSector { get; } = new Dictionary<string, Dictionary<string, PCBase>>();
-
-        private Dictionary<Guid, DateTime> RentDueTimes { get; } = new Dictionary<Guid, DateTime>();
+        private const string ByPlayerIDIndex = "ByPlayerID";
+        private const string ByAreaResrefAndSectorIndex = "ByAreaResrefAndSector";
+        private const string RentDueTimesIndex = "RentDueTimes";
 
         protected override void OnCacheObjectSet(PCBase entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerIDAndPCBaseID);
-            SetEntityIntoDictionary(entity.AreaResref, entity.Sector, entity, ByAreaResrefAndSector);
-            RentDueTimes[entity.ID] = entity.DateRentDue;
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+            SetIntoIndex($"{ByAreaResrefAndSectorIndex}:{entity.AreaResref}", entity.Sector, entity);
+            SetIntoListIndex(RentDueTimesIndex, "Active", entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBase entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerIDAndPCBaseID);
-            RemoveEntityFromDictionary(entity.AreaResref, entity.Sector, ByAreaResrefAndSector);
-            RentDueTimes.Remove(entity.ID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+            RemoveFromIndex($"{ByAreaResrefAndSectorIndex}:{entity.AreaResref}", entity.Sector);
+            RemoveFromListIndex(RentDueTimesIndex, "Active", entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -51,58 +48,49 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
         {
-            var list = new List<PCBase>();
-            if (!ByPlayerIDAndPCBaseID.ContainsKey(playerID))
-                return list;
+            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+                return new List<PCBase>();
 
-            var apartments = ByPlayerIDAndPCBaseID[playerID].Values
+            var apartments = GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
                 .Where(x => x.ApartmentBuildingID == apartmentBuildingID &&
                             x.DateRentDue > DateTime.UtcNow)
                 .OrderBy(o => o.DateInitialPurchase);
 
-            foreach (var apartment in apartments)
-            {
-                list.Add( (PCBase)apartment.Clone());
-            }
-
-            return list;
+            return apartments;
         }
 
         public PCBase GetByAreaResrefAndSector(string areaResref, string sector)
         {
-            return GetEntityFromDictionary(areaResref, sector, ByAreaResrefAndSector);
+            return GetFromIndex($"{ByAreaResrefAndSectorIndex}:{areaResref}", sector);
         }
 
         public PCBase GetByAreaResrefAndSectorOrDefault(string areaResref, string sector)
         {
-            return GetEntityFromDictionaryOrDefault(areaResref, sector, ByAreaResrefAndSector);
+            if (!ExistsByIndex($"{ByAreaResrefAndSectorIndex}:{areaResref}", sector))
+                return default;
+
+            return GetFromIndex($"{ByAreaResrefAndSectorIndex}:{areaResref}", sector);
         }
 
         public PCBase GetByShipLocationOrDefault(string shipLocation)
         {
             if(string.IsNullOrWhiteSpace(shipLocation)) throw new ArgumentException(nameof(shipLocation) + " cannot be null or whitespace.");
-            return (PCBase)All.SingleOrDefault(x => x.ShipLocation == shipLocation)?.Clone();
+            return (PCBase)GetAll().SingleOrDefault(x => x.ShipLocation == shipLocation)?.Clone();
         }
 
         public IEnumerable<PCBase> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayerIDAndPCBaseID.ContainsKey(playerID))
+            if(!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCBase>();
 
-            var list = new List<PCBase>();
-            foreach(var pcBase in ByPlayerIDAndPCBaseID[playerID].Values)
-            {
-                list.Add((PCBase)pcBase.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
         public IEnumerable<PCBase> GetAllNonApartmentPCBasesByAreaResref(string areaResref)
         {
             var list = new List<PCBase>();
             // This could be optimized with an index, but it only runs on module load so I figured we'd save the memory for a slightly longer boot time.
-            foreach(var pcBase in All.Where(x => x.AreaResref == areaResref && x.ApartmentBuildingID == null))
+            foreach(var pcBase in GetAll().Where(x => x.AreaResref == areaResref && x.ApartmentBuildingID == null))
             {
                 list.Add( (PCBase)pcBase.Clone());
             }
@@ -112,14 +100,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetAllWhereRentDue()
         {
-            var list = new List<PCBase>();
             DateTime now = DateTime.UtcNow;
-            foreach (var pcBaseID in RentDueTimes.Where(x => x.Value <= now))
-            {
-                list.Add(ByID(pcBaseID.Key));
-            }
+            var rentDueTimes = GetFromListIndex(RentDueTimesIndex, "Active");
 
-            return list;
+            return rentDueTimes.Where(x => x.DateRentDue <= now);
         }
     }
 }

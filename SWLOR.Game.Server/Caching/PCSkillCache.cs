@@ -6,19 +6,24 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCSkillCache: CacheBase<PCSkill>
     {
+        public PCSkillCache() 
+            : base("PCSkill")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<Guid, PCSkill>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCSkill>>();
         private Dictionary<Guid, Dictionary<int, PCSkill>> ByPlayerIDAndSkillID { get; } = new Dictionary<Guid, Dictionary<int, PCSkill>>();
 
         protected override void OnCacheObjectSet(PCSkill entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
-            SetEntityIntoDictionary(entity.PlayerID, entity.SkillID, entity, ByPlayerIDAndSkillID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.SkillID, entity, ByPlayerIDAndSkillID);
         }
 
         protected override void OnCacheObjectRemoved(PCSkill entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
-            RemoveEntityFromDictionary(entity.PlayerID, entity.SkillID, ByPlayerIDAndSkillID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.SkillID, ByPlayerIDAndSkillID);
         }
 
         protected override void OnSubscribeEvents()
@@ -48,12 +53,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCSkill GetByPlayerIDAndSkillID(Guid playerID, int skillID)
         {
-            return GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID);
+            return null;
+            //return GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID);
         }
 
         public PCSkill GetByPlayerIDAndSkillIDOrDefault(Guid playerID, int skillID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, skillID, ByPlayerIDAndSkillID);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(playerID, skillID, ByPlayerIDAndSkillID);
         }
 
         public IEnumerable<PCSkill> GetAllByPlayerIDAndSkillIDs(Guid playerID, IEnumerable<int> skillIDs)
@@ -61,7 +68,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<PCSkill>();
             foreach(var skillID in skillIDs)
             {
-                list.Add(GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID));
+                //list.Add(GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID));
             }
 
             return list;

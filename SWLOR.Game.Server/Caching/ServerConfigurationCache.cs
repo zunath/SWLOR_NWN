@@ -4,6 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class ServerConfigurationCache: CacheBase<ServerConfiguration>
     {
+        public ServerConfigurationCache() 
+            : base("ServerConfiguration")
+        {
+        }
+
         protected override void OnCacheObjectSet(ServerConfiguration entity)
         {
         }

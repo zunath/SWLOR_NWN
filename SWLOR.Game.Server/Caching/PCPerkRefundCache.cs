@@ -5,6 +5,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCPerkRefundCache: CacheBase<PCPerkRefund>
     {
+        public PCPerkRefundCache() 
+            : base("PCPerkRefund")
+        {
+        }
+
         protected override void OnCacheObjectSet(PCPerkRefund entity)
         {
         }

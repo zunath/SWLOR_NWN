@@ -4,6 +4,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class StructureModeCache: CacheBase<StructureMode>
     {
+        public StructureModeCache() 
+            : base("StructureMode")
+        {
+        }
+
         protected override void OnCacheObjectSet(StructureMode entity)
         {
         }

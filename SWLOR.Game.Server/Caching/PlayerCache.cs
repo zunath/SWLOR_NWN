@@ -7,7 +7,11 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PlayerCache: CacheBase<Player>
     {
-        // Links PrimaryResidencePCBaseID to PlayerID
+        public PlayerCache() 
+            : base("Player")
+        {
+        }
+
         private Dictionary<Guid, Guid> ByPrimaryResidencePCBaseID { get; } = new Dictionary<Guid, Guid>();
 
         // Links PrimaryResidencePCBaseStructureID to PlayerID

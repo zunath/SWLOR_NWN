@@ -7,16 +7,21 @@ namespace SWLOR.Game.Server.Caching
 {
     public class PCObjectVisibilityCache: CacheBase<PCObjectVisibility>
     {
+        public PCObjectVisibilityCache() 
+            : base("PCObjectVisibility")
+        {
+        }
+
         private Dictionary<Guid, Dictionary<string, PCObjectVisibility>> ByPlayer { get; } = new Dictionary<Guid, Dictionary<string, PCObjectVisibility>>();
 
         protected override void OnCacheObjectSet(PCObjectVisibility entity)
         {
-            SetEntityIntoDictionary(entity.PlayerID, entity.VisibilityObjectID, entity, ByPlayer);
+            //SetEntityIntoDictionary(entity.PlayerID, entity.VisibilityObjectID, entity, ByPlayer);
         }
 
         protected override void OnCacheObjectRemoved(PCObjectVisibility entity)
         {
-            RemoveEntityFromDictionary(entity.PlayerID, entity.VisibilityObjectID, ByPlayer);
+            //RemoveEntityFromDictionary(entity.PlayerID, entity.VisibilityObjectID, ByPlayer);
         }
 
         protected override void OnSubscribeEvents()
@@ -30,7 +35,8 @@ namespace SWLOR.Game.Server.Caching
 
         public PCObjectVisibility GetByPlayerIDAndVisibilityObjectIDOrDefault(Guid playerID, string visibilityObjectID)
         {
-            return GetEntityFromDictionaryOrDefault(playerID, visibilityObjectID, ByPlayer);
+            return null;
+            //return GetEntityFromDictionaryOrDefault(playerID, visibilityObjectID, ByPlayer);
         }
 
         public IEnumerable<PCObjectVisibility> GetAllByPlayerID(Guid playerID)

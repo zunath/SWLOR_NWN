@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
                 .Cast<IDataMigration>()
                 .ToList();
 
-            const string ConfigKey = "ServerConfiguration";
+            const string ConfigKey = "ServerConfiguration:1";
 
             var db = _redis.GetDatabase();
             var serverConfig =

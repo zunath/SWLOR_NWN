@@ -10,16 +10,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, Dictionary<int, SpawnObject>> BySpawnTableID { get; } = new Dictionary<int, Dictionary<int, SpawnObject>>();
+        private const string BySpawnTableIDIndex = "BySpawnTableID";
 
         protected override void OnCacheObjectSet(SpawnObject entity)
         {
-            //SetEntityIntoDictionary(entity.SpawnID, entity.ID, entity, BySpawnTableID);
+            SetIntoListIndex(BySpawnTableIDIndex, entity.SpawnID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(SpawnObject entity)
         {
-            //RemoveEntityFromDictionary(entity.SpawnID, entity.ID, BySpawnTableID);
+            RemoveFromListIndex(BySpawnTableIDIndex, entity.SpawnID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -33,16 +33,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<SpawnObject> GetAllBySpawnTableID(int spawnTableID)
         {
-            var list = new List<SpawnObject>();
-            if (!BySpawnTableID.ContainsKey(spawnTableID))
-                return list;
+            if (!ExistsByListIndex(BySpawnTableIDIndex, spawnTableID.ToString()))
+                return new List<SpawnObject>();
 
-            foreach (var record in BySpawnTableID[spawnTableID].Values)
-            {
-                list.Add((SpawnObject)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(BySpawnTableIDIndex, spawnTableID.ToString());
         }
     }
 }

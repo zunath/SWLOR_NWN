@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCBase>();
 
             var apartments = GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetAllByPlayerID(Guid playerID)
         {
-            if(!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCBase>();
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());

@@ -34,15 +34,15 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetByCurrentlyOffered(GuildTask entity)
         {
-            if (!ExistsByIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue) && entity.IsCurrentlyOffered)
+            if (!ExistsInListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity) && entity.IsCurrentlyOffered)
                 SetIntoListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity);
-            else if (ExistsByIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue) && !entity.IsCurrentlyOffered)
+            else if (ExistsInListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity) && !entity.IsCurrentlyOffered)
                 RemoveFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity);
         }
 
         private void RemoveByCurrentlyOffered(GuildTask entity)
         {
-            if (ExistsByIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedIndex))
+            if (ExistsInListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedIndex, entity))
                 RemoveFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue, entity);
         }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<GuildTask> GetAllByGuildIDAndRequiredRank(int requiredRank, int guildID)
         {
-            if (!ExistsByIndex(ByRequiredRankIndex, requiredRank.ToString()))
+            if (!ExistsByListIndex(ByRequiredRankIndex, requiredRank.ToString()))
                 return new List<GuildTask>();
 
             return GetFromListIndex(ByRequiredRankIndex, requiredRank.ToString()).Where(x => x.GuildID == guildID);

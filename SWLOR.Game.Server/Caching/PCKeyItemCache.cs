@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, int keyItemID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).SingleOrDefault(x => x.KeyItemID == keyItemID);
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCKeyItem GetByPlayerAndKeyItemID(Guid playerID, int keyItemID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).Single(x => x.KeyItemID == keyItemID);
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCKeyItem> GetAllByPlayerID(Guid playerID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCKeyItem>();
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());

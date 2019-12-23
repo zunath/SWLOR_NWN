@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<LootTableItem> GetAllByLootTableID(int lootTableID)
         {
-            if (!ExistsByIndex(ByLootTableIDIndex, lootTableID.ToString()))
+            if (!ExistsByListIndex(ByLootTableIDIndex, lootTableID.ToString()))
                 return new List<LootTableItem>();
 
             return GetFromListIndex(ByLootTableIDIndex, lootTableID.ToString());

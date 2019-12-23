@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCMapPin> GetAllByPlayerID(Guid playerID)
         {
-            if(!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCMapPin>();
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());

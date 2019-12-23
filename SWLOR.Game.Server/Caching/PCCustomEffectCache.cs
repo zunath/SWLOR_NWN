@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByStancePerkOrDefault(Guid playerID, int stancePerkID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByPlayerStanceOrDefault(Guid playerID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, int customEffectID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCCustomEffect> GetAllByPlayerID(Guid playerID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCCustomEffect>();
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());

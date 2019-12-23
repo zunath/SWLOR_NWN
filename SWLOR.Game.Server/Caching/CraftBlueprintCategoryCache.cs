@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetByCategoryIDActive(CraftBlueprintCategory entity)
         {
-            if (!entity.IsActive && ExistsByIndex(CategoryIDActiveIndex, CategoryIDActiveValue))
+            if (!entity.IsActive && ExistsInListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity))
                 RemoveFromListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity);
             else if (entity.IsActive)
                 SetIntoListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Caching
 
         private void RemoveByCategoryIDActive(CraftBlueprintCategory entity)
         {
-            if (ExistsByIndex(CategoryIDActiveIndex, CategoryIDActiveValue))
+            if (ExistsInListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity))
                 RemoveFromListIndex(CategoryIDActiveIndex, CategoryIDActiveValue, entity);
         }
 

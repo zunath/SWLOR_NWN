@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<BankItem> GetAllByPlayerIDAndBankID(Guid playerID, int bankID)
         {
-            if(!ExistsByIndex(playerID.ToString(), bankID.ToString()))
+            if(!ExistsByListIndex(playerID.ToString(), bankID.ToString()))
                 return new List<BankItem>();
 
             return GetFromListIndex(playerID.ToString(), bankID.ToString());

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<Message> GetAllByBoardID(Guid boardID)
         {
-            if(!ExistsByIndex(ByBoardIDIndex, boardID.ToString()))
+            if(!ExistsByListIndex(ByBoardIDIndex, boardID.ToString()))
                 return new List<Message>();
 
             return GetFromListIndex(ByBoardIDIndex, boardID.ToString());

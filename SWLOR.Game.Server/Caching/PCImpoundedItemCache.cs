@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Caching
             if (entity.DateRetrieved != null)
             {
                 // If it exists in the dictionary, remove it.
-                if (ExistsByIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString()))
+                if (ExistsInListIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString(), entity))
                 {
                     RemoveFromListIndex(ByPlayerIDAndNotRetrievedIndex, entity.PlayerID.ToString(), entity);
                 }
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCImpoundedItem> GetAllByPlayerIDAndNotRetrieved(Guid playerID)
         {
-            if(!ExistsByIndex(ByPlayerIDAndNotRetrievedIndex, playerID.ToString()))
+            if(!ExistsByListIndex(ByPlayerIDAndNotRetrievedIndex, playerID.ToString()))
                 return new List<PCImpoundedItem>();
 
             return GetFromListIndex(ByPlayerIDAndNotRetrievedIndex, playerID.ToString());

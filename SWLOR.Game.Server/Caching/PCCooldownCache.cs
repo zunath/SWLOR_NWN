@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCooldown GetByPlayerAndCooldownCategoryIDOrDefault(Guid playerID, int cooldownCategoryID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).SingleOrDefault(x => x.CooldownCategoryID == cooldownCategoryID);
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCCooldown> GetAllByPlayerID(Guid playerID)
         {
-            if (!ExistsByIndex(ByPlayerIDIndex, playerID.ToString()))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
             {
                 return new List<PCCooldown>();
             }

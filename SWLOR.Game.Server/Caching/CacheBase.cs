@@ -28,6 +28,10 @@ namespace SWLOR.Game.Server.Caching
             OnSubscribeEvents();
         }
 
+        /// <summary>
+        /// Retrieves index details for this entity type.
+        /// </summary>
+        /// <returns>The Index details for this entity type.</returns>
         private Index GetIndexDetails()
         {
             var key = $"{_setName}:Index";
@@ -39,6 +43,10 @@ namespace SWLOR.Game.Server.Caching
             return index;
         }
 
+        /// <summary>
+        /// Stores index details for this entity type.
+        /// </summary>
+        /// <param name="index">The index to store.</param>
         private void SetIndexDetails(Index index)
         {
             var key = $"{_setName}:Index";
@@ -46,6 +54,10 @@ namespace SWLOR.Game.Server.Caching
             DataService.DB.StringSet(key, json);
         }
 
+        /// <summary>
+        /// Fires when an entity is added or updated in the cache.
+        /// </summary>
+        /// <param name="entity">The entity which was added or updated.</param>
         private void CacheObjectSet(T entity)
         {
             // Update the entity data.
@@ -63,6 +75,10 @@ namespace SWLOR.Game.Server.Caching
             OnCacheObjectSet(entity);
         }
 
+        /// <summary>
+        /// Fires when an entity is removed from the cache.
+        /// </summary>
+        /// <param name="entity">The entity which was removed from the cache.</param>
         private void CacheObjectRemoved(T entity)
         {
             // Remove the entity data.
@@ -79,6 +95,11 @@ namespace SWLOR.Game.Server.Caching
             OnCacheObjectRemoved(entity);
         }
 
+        /// <summary>
+        /// Retrieves an entity by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the entity.</param>
+        /// <returns>An entity with a matching ID.</returns>
         protected T ByID(object id)
         {
             var key = $"{_setName}:{id}";
@@ -87,6 +108,11 @@ namespace SWLOR.Game.Server.Caching
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        /// <summary>
+        /// Returns all of the entities stored in the cache for this object type.
+        /// This should be used sparingly and only on small data sets.
+        /// </summary>
+        /// <returns>An enumerable of entities</returns>
         public IEnumerable<T> GetAll()
         {
             var index = GetIndexDetails();
@@ -104,12 +130,22 @@ namespace SWLOR.Game.Server.Caching
             }
         }
 
+        /// <summary>
+        /// Returns whether an entity exists in the cache.
+        /// </summary>
+        /// <param name="id">The ID of the entity to check.</param>
+        /// <returns>true if it exists, false otherwise</returns>
         protected bool Exists(object id)
         {
             var key = $"{_setName}:{id}";
             return DataService.DB.KeyExists(key);
         }
 
+        /// <summary>
+        /// Retrieves the unique key for an entity. This is denoted with the KeyAttribute attribute.
+        /// </summary>
+        /// <param name="entity">The entity whose ID we want to retrieve.</param>
+        /// <returns></returns>
         private static object GetEntityKey(IEntity entity)
         {
             // Locate a Key attribute on this type.
@@ -134,6 +170,12 @@ namespace SWLOR.Game.Server.Caching
             return propertyWithKey.GetValue(entity);
         }
 
+        /// <summary>
+        /// Stores an entity into a given index.
+        /// </summary>
+        /// <param name="indexName">The name of the index</param>
+        /// <param name="indexValue">The value of the index.</param>
+        /// <param name="entity">The entity to store</param>
         protected void SetIntoIndex(string indexName, string indexValue, T entity)
         {
             var index = GetIndexDetails();
@@ -144,6 +186,12 @@ namespace SWLOR.Game.Server.Caching
             SetIndexDetails(index);
         }
 
+        /// <summary>
+        /// Stores an entity into a given list index.
+        /// </summary>
+        /// <param name="indexName">The name of the list index.</param>
+        /// <param name="indexValue">The value of the list index.</param>
+        /// <param name="entity">The entity to store</param>
         protected void SetIntoListIndex(string indexName, string indexValue, T entity)
         {
             var index = GetIndexDetails();
@@ -156,10 +204,19 @@ namespace SWLOR.Game.Server.Caching
             }
 
             var list = index.SecondaryListIndexes[key];
-            list.Add(id);
-            SetIndexDetails(index);
+
+            if (!list.Contains(id))
+            {
+                list.Add(id);
+                SetIndexDetails(index);
+            }
         }
 
+        /// <summary>
+        /// Removes an entity located at an index.
+        /// </summary>
+        /// <param name="indexName">The name of the index.</param>
+        /// <param name="indexValue">The value of the index.</param>
         protected void RemoveFromIndex(string indexName, string indexValue)
         {
             var index = GetIndexDetails();
@@ -168,6 +225,12 @@ namespace SWLOR.Game.Server.Caching
             SetIndexDetails(index);
         }
 
+        /// <summary>
+        /// Removes an entity located at a list index.
+        /// </summary>
+        /// <param name="indexName">The name of the list index.</param>
+        /// <param name="indexValue">The value of the list index.</param>
+        /// <param name="entity">The entity to remove.</param>
         protected void RemoveFromListIndex(string indexName, string indexValue, T entity)
         {
             var index = GetIndexDetails();
@@ -179,6 +242,12 @@ namespace SWLOR.Game.Server.Caching
             SetIndexDetails(index);
         }
 
+        /// <summary>
+        /// Retrieves an entity from a given index.
+        /// </summary>
+        /// <param name="indexName">The name of the index.</param>
+        /// <param name="indexValue">The value of the index.</param>
+        /// <returns>An entity stored at a given index.</returns>
         protected T GetFromIndex(string indexName, string indexValue)
         {
             var index = GetIndexDetails();
@@ -188,6 +257,12 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
+        /// <summary>
+        /// Retrieves a list of entities from a list index.
+        /// </summary>
+        /// <param name="indexName">The name of the list index.</param>
+        /// <param name="indexValue">The value of the list index.</param>
+        /// <returns>An enumerable of entities stored at the provided list index.</returns>
         protected IEnumerable<T> GetFromListIndex(string indexName, string indexValue)
         {
             var index = GetIndexDetails();
@@ -209,11 +284,49 @@ namespace SWLOR.Game.Server.Caching
             }
         }
 
+        /// <summary>
+        /// Returns whether an object exists in an index.
+        /// </summary>
+        /// <param name="indexName">The name of the index.</param>
+        /// <param name="indexValue">The value of the index.</param>
+        /// <returns>true if an object exists in this index, false otherwise</returns>
         protected bool ExistsByIndex(string indexName, string indexValue)
         {
             var index = GetIndexDetails();
             var key = $"{indexName}:{indexValue}";
-            return index.SecondaryIndexes.ContainsKey(key) || index.SecondaryListIndexes.ContainsKey(key);
+            return index.SecondaryIndexes.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Returns whether any object exists in a list index.
+        /// </summary>
+        /// <param name="indexName">The name of the index.</param>
+        /// <param name="indexValue">The value of the index.</param>
+        /// <returns>true if any object exists in this list index, false otherwise</returns>
+        protected bool ExistsByListIndex(string indexName, string indexValue)
+        {
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+            return index.SecondaryListIndexes.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Returns whether an object exists within a list index.
+        /// </summary>
+        /// <param name="indexName">The name of the index.</param>
+        /// <param name="indexValue">The value of the index.</param>
+        /// <param name="entity">The entity to locate.</param>
+        /// <returns>true if object exists, false otherwise</returns>
+        protected bool ExistsInListIndex(string indexName, string indexValue, T entity)
+        {
+            var id = GetEntityKey(entity);
+            var index = GetIndexDetails();
+            var key = $"{indexName}:{indexValue}";
+
+            if (!index.SecondaryListIndexes.ContainsKey(key))
+                return false;
+
+            return index.SecondaryListIndexes[key].Contains(id);
         }
 
         protected abstract void OnCacheObjectSet(T entity);

@@ -12,19 +12,19 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<string, Dictionary<Guid, Starport>> ByPlanet { get; } = new Dictionary<string, Dictionary<Guid, Starport>>();
-        private Dictionary<Guid, Dictionary<int, Starport>> ByStarportID { get; } = new Dictionary<Guid, Dictionary<int, Starport>>();
+        private const string ByPlanetIndex = "ByPlanet";
+        private const string ByStarportIDIndex = "ByStarportID";
 
         protected override void OnCacheObjectSet(Starport entity)
         {
-            //SetEntityIntoDictionary(entity.PlanetName, entity.StarportID, entity, ByPlanet);
-            //SetEntityIntoDictionary(entity.StarportID, entity.ID, entity, ByStarportID);
+            SetIntoIndex(ByPlanetIndex, entity.PlanetName, entity);
+            SetIntoIndex(ByStarportIDIndex, entity.StarportID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(Starport entity)
         {
-            //RemoveEntityFromDictionary(entity.PlanetName, entity.StarportID, ByPlanet);
-            //RemoveEntityFromDictionary(entity.StarportID, entity.ID, ByStarportID);
+            RemoveFromIndex(ByPlanetIndex, entity.PlanetName);
+            RemoveFromIndex(ByStarportIDIndex, entity.StarportID.ToString());
         }
 
         protected override void OnSubscribeEvents()
@@ -48,22 +48,25 @@ namespace SWLOR.Game.Server.Caching
 
         public Starport GetByStarportID(Guid starportID)
         {
-            return ByStarportID[starportID].Values.Single();
+            return GetFromIndex(ByStarportIDIndex, starportID.ToString());
         }
 
         public Starport GetByStarportIDOrDefault(Guid starportID)
         {
-            if (!ByStarportID.ContainsKey(starportID))
+            if (!ExistsByIndex(ByStarportIDIndex, starportID.ToString()))
             {
                 return default;
             }
 
-            return ByStarportID[starportID].Values.SingleOrDefault();
+            return GetFromIndex(ByStarportIDIndex, starportID.ToString());
         }
 
         public Starport GetByPlanetNameOrDefault(string planet)
         {
-            return ByPlanet[planet].Values.FirstOrDefault();
+            if (!ExistsByIndex(ByPlanetIndex, planet))
+                return default;
+
+            return GetFromIndex(ByPlanetIndex, planet);
         }
     }
 }

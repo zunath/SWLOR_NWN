@@ -10,16 +10,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, Dictionary<int, PerkLevelQuestRequirement>> ByPerkLevelID { get; } = new Dictionary<int, Dictionary<int, PerkLevelQuestRequirement>>();
+        private const string ByPerkLevelIDIndex = "ByPerkLevelID";
 
         protected override void OnCacheObjectSet(PerkLevelQuestRequirement entity)
         {
-            //SetEntityIntoDictionary(entity.PerkLevelID, entity.ID, entity, ByPerkLevelID);
+            SetIntoListIndex(ByPerkLevelIDIndex, entity.PerkLevelID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PerkLevelQuestRequirement entity)
         {
-            //RemoveEntityFromDictionary(entity.PerkLevelID, entity.ID, ByPerkLevelID);
+            RemoveFromListIndex(ByPerkLevelIDIndex, entity.PerkLevelID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -33,16 +33,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PerkLevelQuestRequirement> GetAllByPerkLevelID(int perkLevelID)
         {
-            if (!ByPerkLevelID.ContainsKey(perkLevelID))
+            if (!ExistsByIndex(ByPerkLevelIDIndex, perkLevelID.ToString()))
                 return new List<PerkLevelQuestRequirement>();
 
-            var list = new List<PerkLevelQuestRequirement>();
-            foreach (var record in ByPerkLevelID[perkLevelID].Values)
-            {
-                list.Add((PerkLevelQuestRequirement)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPerkLevelIDIndex, perkLevelID.ToString());
         }
     }
 }

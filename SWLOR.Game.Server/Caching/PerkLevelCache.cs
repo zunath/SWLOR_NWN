@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
@@ -12,16 +11,19 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, Dictionary<int, PerkLevel>> ByPerkIDAndLevel { get; } = new Dictionary<int, Dictionary<int, PerkLevel>>();
+        private const string ByPerkIDAndLevelIndex = "ByPerkIDAndLevel";
+        private const string ByPerkIDIndex = "ByPerkID";
 
         protected override void OnCacheObjectSet(PerkLevel entity)
         {
-            //SetEntityIntoDictionary(entity.PerkID, entity.Level, entity, ByPerkIDAndLevel);
+            SetIntoIndex($"{ByPerkIDAndLevelIndex}:{entity.PerkID}", entity.Level.ToString(), entity);
+            SetIntoListIndex(ByPerkIDIndex, entity.PerkID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PerkLevel entity)
         {
-            //RemoveEntityFromDictionary(entity.PerkID, entity.Level, ByPerkIDAndLevel);
+            RemoveFromIndex($"{ByPerkIDAndLevelIndex}:{entity.PerkID}", entity.Level.ToString());
+            RemoveFromListIndex(ByPerkIDIndex, entity.PerkID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -35,35 +37,23 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkLevel GetByPerkIDAndLevel(int perkID, int level)
         {
-            return null;
-            //return GetEntityFromDictionary(perkID, level, ByPerkIDAndLevel);
+            return GetFromIndex($"{ByPerkIDAndLevelIndex}:{perkID}", $"{level}");
         }
 
         public IEnumerable<PerkLevel> GetAllByPerkID(int perkID)
         {
-            var list = new List<PerkLevel>();
-            if (!ByPerkIDAndLevel.ContainsKey(perkID))
-                return list;
+            if (!ExistsByListIndex(ByPerkIDIndex, perkID.ToString()))
+                return new List<PerkLevel>();
 
-            foreach (var record in ByPerkIDAndLevel[perkID].Values)
-            {
-                list.Add( (PerkLevel)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPerkIDIndex, perkID.ToString());
         }
 
         public IEnumerable<PerkLevel> GetAllAtOrBelowPerkIDAndLevel(int perkID, int level)
         {
-            if(!ByPerkIDAndLevel.ContainsKey(perkID))
+            if(!ExistsByIndex($"{ByPerkIDAndLevelIndex}:{perkID}", $"{level}"))
                 return new List<PerkLevel>();
 
-            var list = new List<PerkLevel>();
-            foreach (var record in ByPerkIDAndLevel[perkID].Values.Where(x => x.Level <= level))
-            {
-                list.Add((PerkLevel)record.Clone());
-            }
-            return list;
+            return GetAll().Where(x => x.PerkID == perkID && x.Level <= level); // May need to index this.
         }
     }
 }

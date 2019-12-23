@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, SkillCategory> ByActive { get; } = new Dictionary<int, SkillCategory>();
-
+        private const string ByActiveIndex = "ByActive";
+        
         protected override void OnCacheObjectSet(SkillCategory entity)
         {
             SetByActive(entity);
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Caching
 
         protected override void OnCacheObjectRemoved(SkillCategory entity)
         {
-            ByActive.Remove(entity.ID);
+            RemoveFromListIndex(ByActiveIndex, "Active", entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -29,16 +29,16 @@ namespace SWLOR.Game.Server.Caching
         private void SetByActive(SkillCategory entity)
         {
             // Exclude inactive / remove if swapped to inactive.
-            if (!entity.IsActive && ByActive.ContainsKey(entity.ID))
+            if (!entity.IsActive && ExistsInListIndex(ByActiveIndex, "Active", entity))
             {
-                ByActive.Remove(entity.ID);
+                RemoveFromListIndex(ByActiveIndex, "Active", entity);
                 return;
             }
 
             // Exclude zero
             if (entity.ID <= 0) return;
 
-            ByActive[entity.ID] = (SkillCategory)entity.Clone();
+            SetIntoListIndex(ByActiveIndex, "Active", entity);
         }
 
         public SkillCategory GetByID(int id)
@@ -48,13 +48,7 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<SkillCategory> GetAllActive()
         {
-            var list = new List<SkillCategory>();
-            foreach (var record in ByActive.Values)
-            {
-                list.Add((SkillCategory) record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByActiveIndex, "Active");
         }
 
     }

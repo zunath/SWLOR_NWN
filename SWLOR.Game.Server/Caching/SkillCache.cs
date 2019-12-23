@@ -12,19 +12,19 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, Dictionary<int, Skill>> ByCategoryID { get; } = new Dictionary<int, Dictionary<int, Skill>>();
-        private Dictionary<int, Skill> ByContributesToSkillCap { get; } = new Dictionary<int, Skill>();
+        private const string ByCategoryIDIndex = "ByCategoryID";
+        private const string ByContributesToSkillCapIndex = "ByContributesToSkillCap";
 
         protected override void OnCacheObjectSet(Skill entity)
         {
-            //SetEntityIntoDictionary(entity.SkillCategoryID, entity.ID, entity, ByCategoryID);
+            SetIntoListIndex(ByCategoryIDIndex, entity.SkillCategoryID.ToString(), entity);
             SetByContributesToSkillCap(entity);
         }
 
         protected override void OnCacheObjectRemoved(Skill entity)
         {
-            //RemoveEntityFromDictionary(entity.SkillCategoryID, entity.ID, ByCategoryID);
-            ByContributesToSkillCap.Remove(entity.ID);
+            RemoveFromListIndex(ByCategoryIDIndex, entity.SkillCategoryID.ToString(), entity);
+            RemoveFromListIndex(ByContributesToSkillCapIndex, "Active", entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -34,14 +34,14 @@ namespace SWLOR.Game.Server.Caching
         private void SetByContributesToSkillCap(Skill entity)
         {
             // No longer contributing to skill cap. Remove it.
-            if (!entity.ContributesToSkillCap && ByContributesToSkillCap.ContainsKey(entity.ID))
+            if (!entity.ContributesToSkillCap && ExistsInListIndex(ByContributesToSkillCapIndex, "Active", entity))
             {
-                ByContributesToSkillCap.Remove(entity.ID);
+                RemoveFromListIndex(ByContributesToSkillCapIndex, "Active", entity);
             }
             // Contributes to skill cap and doesn't exist in the dictionary yet.
             else if (entity.ContributesToSkillCap)
             {
-                ByContributesToSkillCap[entity.ID] = (Skill)entity.Clone();
+                SetIntoListIndex(ByContributesToSkillCapIndex, "Active", entity);
             }
         }
 
@@ -52,41 +52,19 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<Skill> GetByCategoryIDAndContributesToSkillCap(int skillCategoryID)
         {
-            var list = new List<Skill>();
-            if (!ByCategoryID.ContainsKey(skillCategoryID))
-                return list;
-
-            foreach(var record in ByCategoryID[skillCategoryID].Values.Where(x => x.ContributesToSkillCap))
-            {
-                list.Add((Skill)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByCategoryIDIndex, skillCategoryID.ToString())
+                .Where(x => x.ContributesToSkillCap);
         }
 
         public IEnumerable<Skill> GetAllWhereContributesToSkillCap()
         {
-            var list = new List<Skill>();
-            foreach (var record in ByContributesToSkillCap.Values)
-            {
-                list.Add((Skill)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByContributesToSkillCapIndex, "Active");
         }
 
         public IEnumerable<Skill> GetAllBySkillCategoryIDAndActive(int skillCategoryID)
         {
-            var list = new List<Skill>();
-            if (!ByCategoryID.ContainsKey(skillCategoryID))
-                return list;
-
-            foreach(var record in ByCategoryID[skillCategoryID].Values.Where(x => x.IsActive))
-            {
-                list.Add((Skill)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByCategoryIDIndex, skillCategoryID.ToString())
+                .Where(x => x.IsActive);
         }
     }
 }

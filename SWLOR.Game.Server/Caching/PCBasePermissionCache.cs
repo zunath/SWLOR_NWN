@@ -12,36 +12,28 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
-        
-        // Primary Index: PCBaseID
-        // Secondary Index: PlayerID
-        // Only includes private (non-IsPublic) records.
-        private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPCBaseIDPrivate { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
-
-        // Primary Index: PCBaseID
-        // Secondary Index: PCBasePermissionID
-        // Includes ALL records, both public and private.
-        private Dictionary<Guid, Dictionary<Guid, PCBasePermission>> ByPCBaseIDAll { get; } = new Dictionary<Guid, Dictionary<Guid, PCBasePermission>>();
+        private const string ByPlayerIDIndex = "ByPlayerID";
+        private const string ByPCBaseIDPrivateIndex = "ByPCBaseID";
+        private const string ByPCBaseIDAllIndex = "ByPCBaseIDAll";
 
         protected override void OnCacheObjectSet(PCBasePermission entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
 
-            //if(!entity.IsPublicPermission)
-            //    SetEntityIntoDictionary(entity.PCBaseID, entity.PlayerID, entity, ByPCBaseIDPrivate);
+            if (!entity.IsPublicPermission)
+                SetIntoListIndex(ByPCBaseIDPrivateIndex, entity.PCBaseID.ToString(), entity);
 
-            //SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseIDAll);
+            SetIntoListIndex(ByPCBaseIDAllIndex, entity.PCBaseID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBasePermission entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
 
-            //if(!entity.IsPublicPermission)
-            //    RemoveEntityFromDictionary(entity.PCBaseID, entity.PlayerID, ByPCBaseIDPrivate);
+            if (!entity.IsPublicPermission)
+                RemoveFromListIndex(ByPCBaseIDPrivateIndex, entity.PCBaseID.ToString(), entity);
 
-            //RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseIDAll);
+            RemoveFromListIndex(ByPCBaseIDAllIndex, entity.PCBaseID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -52,7 +44,7 @@ namespace SWLOR.Game.Server.Caching
         /// Returns a PCBasePermission by its unique ID.
         /// Throws KeyNotFound exception if ID doesn't exist.
         /// </summary>
-        /// <param name="id">The unique iD to retrieve</param>
+        /// <param name="id">The unique ID to retrieve</param>
         /// <returns></returns>
         public PCBasePermission GetByID(Guid id)
         {
@@ -61,64 +53,49 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBasePermission> GetAllByPlayerID(Guid id)
         {
-            var list = new List<PCBasePermission>();
-            if (!ByPlayerID.ContainsKey(id))
-                return list;
+            if (!ExistsByListIndex(ByPlayerIDIndex, id.ToString()))
+                return new List<PCBasePermission>();
 
-            foreach (var pcBasePermission in ByPlayerID[id].Values)
-            {
-                list.Add((PCBasePermission)pcBasePermission.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, id.ToString());
         }
 
         public PCBasePermission GetByPlayerAndPCBaseIDOrDefault(Guid playerID, Guid pcBaseID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, pcBaseID, ByPlayerID);
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .FirstOrDefault(x => x.PCBaseID == pcBaseID);
         }
 
         public PCBasePermission GetPublicPermissionOrDefault(Guid pcBaseID)
         {
-            return null;
-            //return (PCBasePermission)ByID.Values.SingleOrDefault(x => x.PCBaseID == pcBaseID && x.IsPublicPermission)?.Clone();
+            return GetAll().SingleOrDefault(x => x.PCBaseID == pcBaseID && x.IsPublicPermission);
         }
 
         public PCBasePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseID)
         {
-            if (!ByPlayerID.ContainsKey(playerID))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
-            var permissions = ByPlayerID[playerID].Values;
-            return (PCBasePermission)permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseID == pcBaseID)?.Clone();
+            var permissions = GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
+            return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseID == pcBaseID);
         }
 
         public IEnumerable<PCBasePermission> GetAllByHasPrivatePermissionToBase(Guid pcBaseID)
         {
-            var list = new List<PCBasePermission>();
-            if (!ByPCBaseIDPrivate.ContainsKey(pcBaseID))
-                return list;
+            if (!ExistsByListIndex(ByPCBaseIDPrivateIndex, pcBaseID.ToString()))
+                return new List<PCBasePermission>();
 
-            foreach (var record in ByPCBaseIDPrivate[pcBaseID].Values)
-            {
-                list.Add( (PCBasePermission)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPCBaseIDPrivateIndex, pcBaseID.ToString());
         }
 
         public IEnumerable<PCBasePermission> GetAllPermissionsByPCBaseID(Guid pcBaseID)
         {
-            var list = new List<PCBasePermission>();
-            if (!ByPCBaseIDAll.ContainsKey(pcBaseID))
-                return list;
+            if (!ExistsByListIndex(ByPCBaseIDAllIndex, pcBaseID.ToString()))
+                return new List<PCBasePermission>();
 
-            foreach (var record in ByPCBaseIDAll[pcBaseID].Values)
-            {
-                list.Add((PCBasePermission)record.Clone());
-            }
-            return list;
+            return GetFromListIndex(ByPCBaseIDAllIndex, pcBaseID.ToString());
         }
         
     }

@@ -150,12 +150,12 @@ namespace SWLOR.Game.Server.Caching
             var id = GetEntityKey(entity);
             var key = $"{indexName}:{indexValue}";
 
-            if (!index.SecondaryIndexes.ContainsKey(key))
+            if (!index.SecondaryListIndexes.ContainsKey(key))
             {
-                index.SecondaryIndexes[key] = new List<object>();
+                index.SecondaryListIndexes[key] = new List<object>();
             }
 
-            var list = (List<object>)index.SecondaryIndexes[key];
+            var list = index.SecondaryListIndexes[key];
             list.Add(id);
             SetIndexDetails(index);
         }
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Caching
             var key = $"{indexName}:{indexValue}";
             var id = GetEntityKey(entity);
 
-            var list = (List<object>) index.SecondaryIndexes[key];
+            var list = index.SecondaryListIndexes[key];
             list.Remove(id);
             SetIndexDetails(index);
         }
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Caching
             var index = GetIndexDetails();
             var key = $"{indexName}:{indexValue}";
 
-            var list = (List<object>) index.SecondaryIndexes[key];
+            var list = index.SecondaryListIndexes[key];
             var redisKeys = new List<RedisKey>();
 
             foreach (var id in list)
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Caching
         {
             var index = GetIndexDetails();
             var key = $"{indexName}:{indexValue}";
-            return index.SecondaryIndexes.ContainsKey(key);
+            return index.SecondaryIndexes.ContainsKey(key) || index.SecondaryListIndexes.ContainsKey(key);
         }
 
         protected abstract void OnCacheObjectSet(T entity);

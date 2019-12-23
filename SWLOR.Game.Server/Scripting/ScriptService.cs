@@ -39,7 +39,11 @@ namespace SWLOR.Game.Server.Scripting
         /// </summary>
         public static void Initialize()
         {
-            string scriptsDirectory = Environment.GetEnvironmentVariable("NWNX_MONO_BASE_DIRECTORY") + "/Scripts/";
+            string scriptsDirectory = Environment.GetEnvironmentVariable("SWLOR_SCRIPT_DIRECTORY");
+
+            if (!Directory.Exists(scriptsDirectory))
+                Directory.CreateDirectory(scriptsDirectory);
+
             string[] files = Directory.GetFiles(scriptsDirectory, "*.cs", SearchOption.AllDirectories);
 
             Console.WriteLine("Compiling script files...");

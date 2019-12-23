@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Data
 {
@@ -8,11 +6,13 @@ namespace SWLOR.Game.Server.Data
     {
         public List<object> IDs { get; set; }
         public Dictionary<string, object> SecondaryIndexes { get; set; }
+        public Dictionary<string, List<object>> SecondaryListIndexes { get; set; }
 
         public Index()
         {
             IDs = new List<object>();
             SecondaryIndexes = new Dictionary<string, object>();
+            SecondaryListIndexes = new Dictionary<string, List<object>>();
         }
     }
 }

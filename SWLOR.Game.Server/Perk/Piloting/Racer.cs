@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Piloting
     public class Racer: IPerkHandler
     {
         public PerkType PerkType => PerkType.Racer;
+        public string Name => "Racer";
+        public bool IsActive => true;
+        public string Description => "Increases movement speed when piloting a starship or speeder by 10% per rank.";
+        public PerkCategoryType Category => PerkCategoryType.Piloting;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Piloting
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

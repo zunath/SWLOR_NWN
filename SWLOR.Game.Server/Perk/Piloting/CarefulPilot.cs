@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Piloting
     public class CarefulPilot: IPerkHandler
     {
         public PerkType PerkType => PerkType.CarefulPilot;
+        public string Name => "Careful Pilot";
+        public bool IsActive => true;
+        public string Description => "You may re-roll a failed Piloting check to take off, land, or jump through hyperspace, conserving fuel.";
+        public PerkCategoryType Category => PerkCategoryType.Piloting;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Piloting
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

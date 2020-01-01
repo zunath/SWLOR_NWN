@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Piloting
     public class SystemsOptimization: IPerkHandler
     {
         public PerkType PerkType => PerkType.SystemsOptimization;
+        public string Name => "System Optimization";
+        public bool IsActive => true;
+        public string Description => "When in a starship but not piloting or crewing the guns, reduces Stronidium consumption by 1 per rank on each attack and defense (to a min of 1).";
+        public PerkCategoryType Category => PerkCategoryType.Piloting;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Piloting
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

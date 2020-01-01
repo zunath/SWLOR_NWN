@@ -13,6 +13,16 @@ namespace SWLOR.Game.Server.Perk.Weapons
     public abstract class WeaponFocusBase : IPerkHandler
     {
         public abstract PerkType PerkType { get; }
+        public abstract string Name { get; }
+        public abstract bool IsActive { get; }
+        public abstract string Description { get; }
+        public abstract PerkCategoryType Category { get; }
+        public abstract PerkCooldownGroup CooldownGroup { get; }
+        public abstract PerkExecutionType ExecutionType { get; }
+        public abstract bool IsTargetSelfOnly { get; }
+        public abstract int Enmity { get; }
+        public abstract EnmityAdjustmentRuleType EnmityAdjustmentType { get; }
+        public abstract ForceBalanceType ForceBalanceType { get; }
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -26,7 +36,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

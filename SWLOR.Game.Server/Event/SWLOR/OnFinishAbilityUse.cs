@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Event.SWLOR
 {
@@ -6,7 +7,7 @@ namespace SWLOR.Game.Server.Event.SWLOR
     {
         public NWCreature Activator { get; set; }
         public string SpellUUID { get; set; }
-        public int PerkID { get; set; }
+        public PerkType PerkType { get; set; }
         public NWObject Target { get; set; }
         public int PCPerkLevel { get; set; }
         public int SpellTier { get; set; }
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Event.SWLOR
         public OnFinishAbilityUse(
             NWCreature activator,
             string spellUUID,
-            int perkID,
+            PerkType perkType,
             NWObject target,
             int pcPerkLevel,
             int spellTier,
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Event.SWLOR
         {
             Activator = activator;
             SpellUUID = spellUUID;
-            PerkID = perkID;
+            PerkType = perkType;
             Target = target;
             PCPerkLevel = pcPerkLevel;
             SpellTier = spellTier;

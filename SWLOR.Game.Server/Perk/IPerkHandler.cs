@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk
 {
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Perk
         int Enmity { get; }
         EnmityAdjustmentRuleType EnmityAdjustmentType { get; }
         ForceBalanceType ForceBalanceType { get; }
+        Animation CastAnimation { get; }
 
         string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier);
         int FPCost(NWCreature creature, int baseFPCost, int spellTier);

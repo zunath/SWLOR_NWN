@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
         public int Enmity => 0;
         public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
         public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+        public Animation CastAnimation => Animation.Invalid;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

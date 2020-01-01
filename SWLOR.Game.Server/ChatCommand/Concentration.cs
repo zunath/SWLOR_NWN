@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 }
                 else
                 {
-                    var perk = PerkService.GetPerkByID((int)effect.Type);
+                    var perk = PerkService.GetPerkByID(effect.Type);
                     user.SendMessage("Currently active concentration ability: " + perk.Name);
                 }
             }

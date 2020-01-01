@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Perk;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
             string header = ColorTokenService.Green("Perks purchased:") + "\n\n";
             foreach (PCPerk pcPerk in perks)
             {
-                var perk = DataService.Perk.GetByID(pcPerk.PerkID);
+                var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
                 header += perk.Name + " (Lvl. " + pcPerk.PerkLevel + ") \n";
             }
 
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildCategoryList()
         {
             var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
-            var categoryIDs = perksAvailable.Select(x => x.PerkCategoryID).Distinct();
+            var categoryIDs = perksAvailable.Select(x => (int)x.Category).Distinct();
             List<PerkCategory> categories = DataService.PerkCategory.GetAllByIDs(categoryIDs).ToList();
 
             ClearPageResponses("CategoryPage");
@@ -101,22 +102,22 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
-            List<Data.Entity.Perk> perks = perksAvailable.Where(x => x.PerkCategoryID == vm.SelectedCategoryID).ToList();
+            List<IPerkHandler> perks = perksAvailable.Where(x => (int)x.Category == vm.SelectedCategoryID).ToList();
 
             ClearPageResponses("PerkListPage");
-            foreach (Data.Entity.Perk perk in perks)
+            foreach (var perk in perks)
             {
-                AddResponseToPage("PerkListPage", perk.Name, true, perk.ID);
+                AddResponseToPage("PerkListPage", perk.Name, true, (int)perk.PerkType);
             }
         }
 
         private void BuildPerkDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            Data.Entity.Perk perk = PerkService.GetPerkByID(vm.SelectedPerkID);
-            PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, perk.ID);
+            var perk = PerkService.GetPerkHandler(vm.SelectedPerkID);
+            PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, (int)perk.PerkType);
             Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
-            var perkLevels = DataService.PerkLevel.GetAllByPerkID(perk.ID).ToList();
+            var perkLevels = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
@@ -183,10 +184,10 @@ namespace SWLOR.Game.Server.Conversation
                     nextSpecializationRequired = ((SpecializationType)nextPerkLevel.SpecializationID).ToString();
                 }
             }
-            var perkCategory = DataService.PerkCategory.GetByID(perk.PerkCategoryID);
-            var cooldownCategory = perk.CooldownCategoryID == null ?
-                null :
-                DataService.CooldownCategory.GetByID(Convert.ToInt32(perk.CooldownCategoryID));
+            var perkCategory = DataService.PerkCategory.GetByID((int)perk.Category);
+            var cooldownDelay = perk.CooldownGroup == PerkCooldownGroup.None ?
+                0.0f :
+                perk.CooldownGroup.GetDelay();
 
             string header = ColorTokenService.Green("Name: ") + perk.Name + "\n" +
                             ColorTokenService.Green("Category: ") + perkCategory.Name + "\n" +
@@ -194,7 +195,7 @@ namespace SWLOR.Game.Server.Conversation
                             ColorTokenService.Green("Price: ") + price + "\n" +
                             currentFPCost +
                             currentConcentrationCost +
-                            (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? ColorTokenService.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
+                            (cooldownDelay > 0.0f ? ColorTokenService.Green("Cooldown: ") + cooldownDelay + "s" : "") + "\n" +
                             ColorTokenService.Green("Description: ") + perk.Description + "\n" +
                             ColorTokenService.Green("Current Bonus: ") + currentBonus + "\n" +
                             ColorTokenService.Green("Requires Specialization: ") + currentSpecializationRequired + "\n" +

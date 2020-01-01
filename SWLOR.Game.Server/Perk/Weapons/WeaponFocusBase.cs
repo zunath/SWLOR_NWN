@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
         public abstract int Enmity { get; }
         public abstract EnmityAdjustmentRuleType EnmityAdjustmentType { get; }
         public abstract ForceBalanceType ForceBalanceType { get; }
+        public Animation CastAnimation => Animation.Invalid;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

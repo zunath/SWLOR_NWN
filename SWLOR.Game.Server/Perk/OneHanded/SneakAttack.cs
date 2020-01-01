@@ -1,6 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         public int Enmity => 120;
         public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
         public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+        public Animation CastAnimation => Animation.Invalid;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

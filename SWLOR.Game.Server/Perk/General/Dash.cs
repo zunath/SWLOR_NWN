@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Perk.General
         public int Enmity => 0;
         public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
         public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+        public Animation CastAnimation => Animation.FireForget_Victory2;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

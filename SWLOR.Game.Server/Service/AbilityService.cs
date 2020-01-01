@@ -198,16 +198,18 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the cooldown information and determine the unlock time.
-            int? cooldownCategoryID = handler.CooldownCategoryID(activator, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
-            DateTime now = DateTime.UtcNow;
-            DateTime unlockDateTime = cooldownCategoryID == null ? now : GetAbilityCooldownUnlocked(activator, (int)cooldownCategoryID);
-
-            // Check if we've passed the unlock date. Exit early if we have not.
-            if (unlockDateTime > now)
+            if(perk.CooldownGroup != PerkCooldownGroup.None)
             {
-                string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                activator.SendMessage("That ability can be used in " + timeToWait + ".");
-                return false;
+                DateTime now = DateTime.UtcNow;
+                DateTime unlockDateTime = GetAbilityCooldownUnlocked(activator, (int)perk.CooldownGroup);
+
+                // Check if we've passed the unlock date. Exit early if we have not.
+                if (unlockDateTime > now)
+                {
+                    string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
+                    activator.SendMessage("That ability can be used in " + timeToWait + ".");
+                    return false;
+                }
             }
 
             // Passed all checks. Return true.
@@ -231,41 +233,41 @@ namespace SWLOR.Game.Server.Service
 
             // Retrieve information necessary for activation of perk feat.
             var perkFeat = DataService.PerkFeat.GetByFeatID((int)featID);
-            Data.Entity.Perk perk = DataService.Perk.GetByID(perkFeat.PerkID);
-            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
+            var perk = PerkService.GetPerkHandler(perkFeat.PerkID);
+            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.PerkType);
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 
             SendAOEMessage(activator, activator.Name + " readies " + perk.Name + ".");
 
             // Force Abilities (aka Spells)
-            if (perk.ExecutionTypeID == PerkExecutionType.ForceAbility)
+            if (perk.ExecutionType == PerkExecutionType.ForceAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_FORCE);
-                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
             }
             // Combat Abilities
-            else if (perk.ExecutionTypeID == PerkExecutionType.CombatAbility)
+            else if (perk.ExecutionType == PerkExecutionType.CombatAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_PHYSICAL);
-                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
             }
             // Queued Weapon Skills
-            else if (perk.ExecutionTypeID == PerkExecutionType.QueuedWeaponSkill)
+            else if (perk.ExecutionType == PerkExecutionType.QueuedWeaponSkill)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_PHYSICAL);
-                HandleQueueWeaponSkill(activator, perk, handler, featID);
+                HandleQueueWeaponSkill(activator, handler, featID);
             }
             // Stances
-            else if (perk.ExecutionTypeID == PerkExecutionType.Stance)
+            else if (perk.ExecutionType == PerkExecutionType.Stance)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_COMBATABILITY);
-                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
             }
             // Concentration Abilities
-            else if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
+            else if (perk.ExecutionType == PerkExecutionType.ConcentrationAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_FORCE);
-                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
             }
         }
 
@@ -495,7 +497,6 @@ namespace SWLOR.Game.Server.Service
         private static void ActivateAbility(
             NWCreature activator,
             NWObject target,
-            Data.Entity.Perk entity,
             IPerkHandler perkHandler,
             int pcPerkLevel,
             PerkExecutionType executionType,
@@ -570,7 +571,7 @@ namespace SWLOR.Game.Server.Service
 
             // If an animation has been specified, make the player play that animation now.
             // bypassing if perk is throw saber due to couldn't get the animation to work via db table edit
-            if (animationID != Animation.Invalid && entity.ID != (int) PerkType.ThrowSaber)                
+            if (animationID != Animation.Invalid && perkHandler.PerkType != PerkType.ThrowSaber)                
             {
                 activator.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
@@ -594,13 +595,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Run the FinishAbilityUse event at the end of the activation time.
-            int perkID = entity.ID;
-
-            var @event = new OnFinishAbilityUse(activator, uuid, perkID, target, pcPerkLevel, spellTier, armorPenalty);
+            var @event = new OnFinishAbilityUse(activator, uuid, perkHandler.PerkType, target, pcPerkLevel, spellTier, armorPenalty);
             activator.DelayEvent(activationTime + 0.2f, @event);
         }
 
-        public static void ApplyCooldown(NWCreature creature, CooldownCategory cooldown, IPerkHandler handler, int spellTier, float armorPenalty)
+        public static void ApplyCooldown(NWCreature creature, PerkCooldownGroup cooldown, IPerkHandler handler, int spellTier, float armorPenalty)
         {
             if (armorPenalty <= 0.0f) armorPenalty = 1.0f;
             
@@ -619,14 +618,14 @@ namespace SWLOR.Game.Server.Service
             if (armorPenalty < 0.5f)
                 armorPenalty = 0.5f;
             
-            float finalCooldown = handler.CooldownTime(creature, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
+            float finalCooldown = handler.CooldownTime(creature, cooldown.GetDelay(), spellTier) * armorPenalty;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
             DateTime unlockDate = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
 
             if (creature.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryID(creature.GlobalID, cooldown.ID);
+                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryID(creature.GlobalID, (int)cooldown);
                 pcCooldown.DateUnlocked = unlockDate;
                 DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
             }
@@ -663,17 +662,16 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
-        private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, Feat spellFeatID)
+        private static void HandleQueueWeaponSkill(NWCreature activator, IPerkHandler ability, Feat spellFeatID)
         {
             var perkFeat = DataService.PerkFeat.GetByFeatID((int)spellFeatID);
-            int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
-            var cooldownCategory = DataService.CooldownCategory.GetByID(Convert.ToInt32(cooldownCategoryID));
+            var cooldownCategory = ability.CooldownGroup;
             string queueUUID = Guid.NewGuid().ToString();
-            activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
+            activator.SetLocalInt("ACTIVE_WEAPON_SKILL", (int)ability.PerkType);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", (int)spellFeatID);
-            activator.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
-            SendAOEMessage(activator, activator.Name + " readies weapon skill '" + entity.Name + "'.");
+            activator.SendMessage("Weapon skill '" + ability.Name + "' queued for next attack.");
+            SendAOEMessage(activator, activator.Name + " readies weapon skill '" + ability.Name + "'.");
 
             ApplyCooldown(activator, cooldownCategory, ability, perkFeat.PerkLevelUnlocked, 0.0f);
 
@@ -685,8 +683,8 @@ namespace SWLOR.Game.Server.Service
                     activator.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
                     activator.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
                     activator.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
-                    activator.SendMessage("Your weapon skill '" + entity.Name + "' is no longer queued.");
-                    SendAOEMessage(activator, activator.Name + " no longer has weapon skill '" + entity.Name + "' readied.");
+                    activator.SendMessage("Your weapon skill '" + ability.Name + "' is no longer queued.");
+                    SendAOEMessage(activator, activator.Name + " no longer has weapon skill '" + ability.Name + "' readied.");
                 }
             });
         }
@@ -819,7 +817,7 @@ namespace SWLOR.Game.Server.Service
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
             PCPerk entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
-            var perk = DataService.Perk.GetByID(entity.PerkID);
+            var perk = PerkService.GetPerkHandler(entity.PerkID);
             var perkFeat = DataService.PerkFeat.GetByFeatID(activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
@@ -975,9 +973,9 @@ namespace SWLOR.Game.Server.Service
                 int level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
                 if (level >= perkFeat.PerkLevelUnlocked) continue;
 
-                var perk = DataService.Perk.GetByID(perkFeat.PerkID);
+                var perk = PerkService.GetPerkHandler(perkFeat.PerkID);
                 self.SetLocalInt("PERK_LEVEL_" + perkFeat.PerkID, perkFeat.PerkLevelUnlocked);
-                perkFeatCache[perkFeat.PerkID] = new AIPerkDetails(perkFeat.FeatID, perk.ExecutionTypeID);
+                perkFeatCache[perkFeat.PerkID] = new AIPerkDetails(perkFeat.FeatID, perk.ExecutionType);
                 hasPerkFeat = true;
             }
 

@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         public int Enmity => 25;
         public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
         public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+        public Animation CastAnimation => Animation.Invalid;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

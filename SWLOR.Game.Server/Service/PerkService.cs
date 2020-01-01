@@ -83,11 +83,11 @@ namespace SWLOR.Game.Server.Service
             // Calculating effective perk levels can be expensive. To aid with the performance,
             // organize skill IDs and quest IDs by which perks require them.
             // That way, later checks are much quicker than iterating through the data cache for this info.
-            foreach (var perk in DataService.Perk.GetAll())
+            foreach (var perk in _perkHandlers.Values)
             {
                 Console.WriteLine("Organizing perk: " + perk.Name);
 
-                var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID(perk.ID).Select(s => s.ID).ToList();
+                var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType).Select(s => s.ID).ToList();
 
                 Console.WriteLine("perkLevelIDs = " + string.Join(',', perkLevelIDs));
 
@@ -110,9 +110,9 @@ namespace SWLOR.Game.Server.Service
                     // Get the perk ID hashset and see if this perk is already contained.
                     // If not, add it.
                     var perkIDs = _perkRequirementsBySkill[skillReq.SkillID];
-                    if (!perkIDs.Contains(perk.ID))
+                    if (!perkIDs.Contains((int)perk.PerkType))
                     {
-                        _perkRequirementsBySkill[skillReq.SkillID].Add(perk.ID);
+                        _perkRequirementsBySkill[skillReq.SkillID].Add((int)perk.PerkType);
                     }
                 }
 
@@ -135,9 +135,9 @@ namespace SWLOR.Game.Server.Service
                     // Get the perk ID hashset and see if this perk is already contained.
                     // If not, add it.
                     var perkIDs = _perkRequirementsByQuest[questReq.RequiredQuestID];
-                    if (!perkIDs.Contains(perk.ID))
+                    if (!perkIDs.Contains((int)perk.PerkType))
                     {
-                        _perkRequirementsByQuest[questReq.RequiredQuestID].Add(perk.ID);
+                        _perkRequirementsByQuest[questReq.RequiredQuestID].Add((int)perk.PerkType);
                     }
                 }
             }
@@ -165,8 +165,8 @@ namespace SWLOR.Game.Server.Service
             return pcPerks.Where(x =>
             {
                 // Filter on equipment-based execution type.
-                var perk = DataService.Perk.GetByID(x.PerkID);
-                bool matchesExecutionType = perk.ExecutionTypeID == executionType;
+                var perk = GetPerkHandler(x.PerkID);
+                bool matchesExecutionType = perk.ExecutionType == executionType;
                 if (!matchesExecutionType) return false;
 
                 // Filter out any perks the PC doesn't meet the requirements for.
@@ -278,8 +278,8 @@ namespace SWLOR.Game.Server.Service
                 if (oPC.GlobalID != x.PlayerID) return false;
 
                 // Only pull back perks which have a Shield On Hit execution type.
-                var perk = DataService.Perk.GetByID(x.PerkID);
-                if (perk.ExecutionTypeID != PerkExecutionType.ShieldOnHit)
+                var perk = GetPerkHandler(x.PerkID);
+                if (perk.ExecutionType != PerkExecutionType.ShieldOnHit)
                     return false;
 
                 // If player's effective level is zero, it's not in effect.
@@ -293,8 +293,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (PCPerk pcPerk in pcPerks)
                 {
-                    var perk = GetPerkByID(pcPerk.PerkID);
-                    if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
+                    var perk = GetPerkHandler(pcPerk.PerkID);
+                    if (perk.ExecutionType == (int)PerkExecutionType.None) continue;
                     var perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(pcPerk.PerkID, pcPerk.PerkLevel);
                     int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
 
@@ -310,17 +310,17 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
+        public static List<IPerkHandler> GetPerksAvailableToPC(NWPlayer player)
         {
             var playerID = player.GlobalID;
             var pcSkills = DataService.PCSkill.GetAllByPlayerID(playerID).ToList();
 
-            return DataService.Perk.GetAll().Where(x =>
+            return _perkHandlers.Values.Where(x =>
             {
                 if (!x.IsActive) return false;
                 // Determination for whether a player can see a perk in the menu is based on whether they meet the
                 // requirements for the first level in that perk.
-                var perkLevel = DataService.PerkLevel.GetByPerkIDAndLevel(x.ID, 1);
+                var perkLevel = DataService.PerkLevel.GetByPerkIDAndLevel((int)x.PerkType, 1);
                 var skillRequirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(perkLevel.ID);
                 var questRequirements = DataService.PerkLevelQuestRequirement.GetAllByPerkLevelID(perkLevel.ID);
 
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="freeUpgrade">If true, no SP will be deducted. Otherwise, SP will be deducted from player.</param>
         public static void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
-            var perk = DataService.Perk.GetByID(perkID);
+            var perk = GetPerkHandler(perkID);
             var perkLevels = DataService.PerkLevel.GetAllByPerkID(perkID);
             var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(oPC.GlobalID, perkID);
             var player = DataService.Player.GetByID(oPC.GlobalID);
@@ -451,7 +451,7 @@ namespace SWLOR.Game.Server.Service
                     pcPerk = new PCPerk();
                     DateTime dt = DateTime.UtcNow;
                     pcPerk.AcquiredDate = dt;
-                    pcPerk.PerkID = perk.ID;
+                    pcPerk.PerkID = (int)perk.PerkType;
                     pcPerk.PlayerID = oPC.GlobalID;
                     pcPerk.PerkLevel = 0;
 

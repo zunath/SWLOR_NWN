@@ -91,13 +91,13 @@ namespace SWLOR.Game.Server.Conversation
                 var pcPerks = DataService.PCPerk.GetAllByPlayerID(player.GlobalID)
                     .OrderBy(o =>
                     {
-                        var perk = DataService.Perk.GetByID(o.PerkID);
+                        var perk = PerkService.GetPerkHandler(o.PerkID);
                         return perk.Name;
                     }).ToList();
 
                 foreach (var pcPerk in pcPerks)
                 {
-                    var perk = DataService.Perk.GetByID(pcPerk.PerkID);
+                    var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
                     AddResponseToPage("MainPage", perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")", true, pcPerk.ID);
                 }
             }
@@ -108,13 +108,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var pcPerk = DataService.PCPerk.GetByID(model.PCPerkID);
-            var perk = DataService.Perk.GetByID(pcPerk.PerkID);
+            var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
             var minimumLevel = 1;
 
-            if (IsGrantedByBackground((PerkType) perk.ID))
+            if (IsGrantedByBackground(perk.PerkType))
                 minimumLevel = 2;
 
-            int refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID).Where(x => 
+            int refundAmount = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType).Where(x => 
                 x.Level <= pcPerk.PerkLevel &&
                 x.Level >= minimumLevel).Sum(x => x.Price);
 
@@ -185,13 +185,13 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
             var pcPerk = DataService.PCPerk.GetByID(model.PCPerkID);
-            var perk = DataService.Perk.GetByID(pcPerk.PerkID);
+            var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
             var minimumLevel = 1;
 
-            if (IsGrantedByBackground((PerkType) perk.ID))
+            if (IsGrantedByBackground(perk.PerkType))
                 minimumLevel = 2;
 
-            var refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID)
+            var refundAmount = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType)
                 .Where(x => x.Level <= pcPerk.PerkLevel && 
                             x.Level >= minimumLevel).Sum(x => x.Price);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Conversation
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 
-            var handler = PerkService.GetPerkHandler(perk.ID);
+            var handler = PerkService.GetPerkHandler(perk.PerkType);
             handler.OnRemoved(player);
             MessageHub.Instance.Publish(new OnPerkRefunded(player, pcPerk.PerkID));
         }

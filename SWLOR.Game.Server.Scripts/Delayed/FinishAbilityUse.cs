@@ -37,24 +37,19 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 // These arguments are sent from the AbilityService's ActivateAbility method.
                 NWCreature activator = data.Activator;
                 string spellUUID = data.SpellUUID;
-                int perkID = data.PerkID;
                 NWObject target = data.Target;
                 int pcPerkLevel = data.PCPerkLevel;
                 int spellTier = data.SpellTier;
                 float armorPenalty = data.ArmorPenalty;
 
                 // Get the relevant perk information from the database.
-                Data.Entity.Perk dbPerk = DataService.Perk.GetByID(perkID);
+                var dbPerk = PerkService.GetPerkHandler(data.PerkType);
 
                 // The execution type determines how the perk behaves and the rules surrounding it.
-                PerkExecutionType executionType = dbPerk.ExecutionTypeID;
+                PerkExecutionType executionType = dbPerk.ExecutionType;
 
                 // Get the class which handles this perk's behaviour.
-                IPerkHandler perk = PerkService.GetPerkHandler(perkID);
-
-                // Pull back cooldown information.
-                int? cooldownID = perk.CooldownCategoryID(activator, dbPerk.CooldownCategoryID, spellTier);
-                CooldownCategory cooldown = cooldownID == null ? null : DataService.CooldownCategory.GetByIDOrDefault((int)cooldownID);
+                IPerkHandler perk = PerkService.GetPerkHandler(data.PerkType);
 
                 // If the activator interrupted the spell or died, we can bail out early.
                 if (activator.GetLocalInt(spellUUID) == (int)SpellStatusType.Interrupted || // Moved during casting
@@ -77,9 +72,9 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                     perk.OnImpact(activator, target, pcPerkLevel, spellTier);
 
                     // If an animation is specified for this perk, play it now.
-                    if (dbPerk.CastAnimationID != null && dbPerk.CastAnimationID > 0)
+                    if (dbPerk.CastAnimation != Animation.Invalid)
                     {
-                        activator.AssignCommand(() => { _.ActionPlayAnimation((Animation)dbPerk.CastAnimationID, 1f, 1f); });
+                        activator.AssignCommand(() => { _.ActionPlayAnimation(dbPerk.CastAnimation, 1f, 1f); });
                     }
 
                     // If the target is an NPC, assign enmity towards this creature for that NPC.
@@ -91,7 +86,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
                 // Adjust creature's current FP, if necessary.
                 // Adjust FP only if spell cost > 0
-                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, spellTier);
+                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked((int)data.PerkType, spellTier);
                 int fpCost = perk.FPCost(activator, perkFeat.BaseFPCost, spellTier);
 
                 if (fpCost > 0)
@@ -106,7 +101,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 // Notify activator of concentration ability change and also update it in the DB.
                 if (executionType == PerkExecutionType.ConcentrationAbility)
                 {
-                    AbilityService.StartConcentrationEffect(activator, perkID, spellTier);
+                    AbilityService.StartConcentrationEffect(activator, (int)data.PerkType, spellTier);
                     activator.SendMessage("Concentration ability activated: " + dbPerk.Name);
 
                     // The Skill Increase effect icon and name has been overwritten. Apply the effect to the player now.
@@ -115,7 +110,8 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 }
 
                 // Handle applying cooldowns, if necessary.
-                if (cooldown != null)
+                var cooldown = perk.CooldownGroup;
+                if (cooldown != PerkCooldownGroup.None)
                 {
                     AbilityService.ApplyCooldown(activator, cooldown, perk, spellTier, armorPenalty);
                 }

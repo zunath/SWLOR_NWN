@@ -1,11 +1,22 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Armor
+namespace SWLOR.Game.Server.Perk.Shields
 {
     public class ShieldProficiency: IPerkHandler
     {
         public PerkType PerkType => PerkType.ShieldProficiency;
+        public string Name => "Shield Proficiency";
+        public bool IsActive => true;
+        public string Description => "Increases your damage reduction by 2% while equipped with a shield.";
+        public PerkCategoryType Category => PerkCategoryType.Shields;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -18,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

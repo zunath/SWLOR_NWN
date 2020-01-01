@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Shields
     public class ExpulsionManeuver : IPerkHandler
     {
         public PerkType PerkType => PerkType.ExpulsionManeuver;
+        public string Name => "Expulsion Maneuver";
+        public bool IsActive => true;
+        public string Description => "Occasionally receive increased Attack Bonus when blocking with a shield.";
+        public PerkCategoryType Category => PerkCategoryType.Shields;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ShieldOnHit;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 15;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

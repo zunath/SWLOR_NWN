@@ -8,6 +8,16 @@ namespace SWLOR.Game.Server.Perk.Stances
     public class BalancedStance: IPerkHandler
     {
         public PerkType PerkType => PerkType.BalancedStance;
+        public string Name => "Balanced Stance";
+        public bool IsActive => true;
+        public string Description => "Grants immunity to knockdown. Only one stance may be active at a time.";
+        public PerkCategoryType Category => PerkCategoryType.Stances;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Stance;
+        public PerkExecutionType ExecutionType => PerkExecutionType.Stance;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -21,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.Stances
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 3f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

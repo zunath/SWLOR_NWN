@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Shields
     public class BlockingRecovery: IPerkHandler
     {
         public PerkType PerkType => PerkType.BlockingRecovery;
+        public string Name => "Blocking Recovery";
+        public bool IsActive => true;
+        public string Description => "Occasionally recover hit points on a successful block with a shield.";
+        public PerkCategoryType Category => PerkCategoryType.Shields;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ShieldOnHit;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 10;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

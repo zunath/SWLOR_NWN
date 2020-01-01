@@ -10,6 +10,17 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class Rage: IPerkHandler
     {
         public PerkType PerkType => PerkType.Rage;
+        public string Name => "Rage";
+        public bool IsActive => true;
+        public string Description => "Increases STR and CON at the cost of AC and HP damage each round.  At higher ranks grants additional attacks, that do not stack with Force Speed.";
+        public PerkCategoryType Category => PerkCategoryType.ForceControl;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Rage;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 10;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Dark;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -22,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

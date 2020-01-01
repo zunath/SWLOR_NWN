@@ -9,6 +9,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForcePush: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForcePush;
+        public string Name => "Force Push";
+        public bool IsActive => true;
+        public string Description => "Knocks down a single target or, if resisted, slows the target instead.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForcePush;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             var size = _.GetCreatureSize(oTarget);
@@ -50,7 +61,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

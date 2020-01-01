@@ -6,6 +6,17 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class ForceDetection: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceDetection;
+        public string Name => "Force Detection";
+        public bool IsActive => false;
+        public string Description => "The caster senses nearby hidden creatures.";
+        public PerkCategoryType Category => PerkCategoryType.ForceSense;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceDetection;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -18,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

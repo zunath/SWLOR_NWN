@@ -6,6 +6,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class SithAlchemy: IPerkHandler
     {
         public PerkType PerkType => PerkType.SithAlchemy;
+        public string Name => "Sith Alchemy";
+        public bool IsActive => false;
+        public string Description => "The power to transform living (or recently-living) flesh.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.SithAlchemy;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Dark;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -18,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Medicine
     public class ImmediateImprovement : IPerkHandler
     {
         public PerkType PerkType => PerkType.ImmediateImprovement;
+        public string Name => "Immediate Improvment";
+        public bool IsActive => true;
+        public string Description => "Healing kits immediately recover HP in addition to their natural recovery over time.";
+        public PerkCategoryType Category => PerkCategoryType.Medicine;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Medicine
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

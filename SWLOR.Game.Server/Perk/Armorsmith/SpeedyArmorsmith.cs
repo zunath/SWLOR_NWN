@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
     public class SpeedyArmorsmith : IPerkHandler
     {
         public PerkType PerkType => PerkType.SpeedyArmorsmith;
+        public string Name => "Speedy Armorsmith";
+        public bool IsActive => true;
+        public string Description => "Reduces the amount of time it takes to craft armorsmith items and install mods into armors.";
+        public PerkCategoryType Category => PerkCategoryType.Armorsmith;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

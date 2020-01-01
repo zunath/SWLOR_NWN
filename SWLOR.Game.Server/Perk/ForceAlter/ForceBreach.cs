@@ -10,6 +10,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForceBreach: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceBreach;
+        public string Name => "Force Breach";
+        public bool IsActive => true;
+        public string Description => "Deals direct damage to a single target.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceBreach;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -22,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

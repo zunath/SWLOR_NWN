@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Cooking
     public class SpeedyCooking : IPerkHandler
     {
         public PerkType PerkType => PerkType.SpeedyCooking;
+        public string Name => "Speedy Cooking";
+        public bool IsActive => false;
+        public string Description => "Reduces the amount of time it takes to craft cooking items.";
+        public PerkCategoryType Category => PerkCategoryType.Cooking;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Cooking
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

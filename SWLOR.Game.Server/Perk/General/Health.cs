@@ -8,6 +8,16 @@ namespace SWLOR.Game.Server.Perk.General
     public class Health: IPerkHandler
     {
         public PerkType PerkType => PerkType.Health;
+        public string Name => "Health";
+        public bool IsActive => true;
+        public string Description => "Improves your hit points.";
+        public PerkCategoryType Category => PerkCategoryType.General;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -21,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

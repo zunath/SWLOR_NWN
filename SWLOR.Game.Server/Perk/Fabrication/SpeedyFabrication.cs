@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Fabrication
     public class SpeedyFabrication: IPerkHandler
     {
         public PerkType PerkType => PerkType.SpeedyFabrication;
+        public string Name => "Speedy Fabrication";
+        public bool IsActive => true;
+        public string Description => "Reduces the amount of time it takes to craft fabrication items.";
+        public PerkCategoryType Category => PerkCategoryType.Fabrication;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -17,9 +27,9 @@ namespace SWLOR.Game.Server.Perk.Fabrication
             return baseFPCost;
         }
 
-        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Service
             int spellTier)
         {
             string uuid = Guid.NewGuid().ToString();
-            float baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
+            float baseActivationTime = perkHandler.CastingTime(activator, spellTier);
             float activationTime = baseActivationTime;
             var vfxID = Vfx.None;
             var animationID = Animation.Invalid;

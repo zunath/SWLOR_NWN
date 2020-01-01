@@ -6,6 +6,17 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Clarity: IPerkHandler
     {
         public PerkType PerkType => PerkType.Clarity;
+        public string Name => "Clarity";
+        public bool IsActive => true;
+        public string Description => "Increases natural FP regeneration. Must be equipped with force armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier)
         {
             return null;
@@ -16,9 +27,9 @@ namespace SWLOR.Game.Server.Perk.Armor
             return baseFPCost;
         }
 
-        public float CastingTime(NWCreature creature, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature creature, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature creature, float baseCooldownTime, int spellTier)

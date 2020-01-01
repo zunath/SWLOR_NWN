@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return baseFPCost;
         }
 
-        public float CastingTime(NWCreature creature, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature creature, int spellTier)
         {
             return baseCastingTime;
         }

@@ -6,6 +6,17 @@ namespace SWLOR.Game.Server.Perk.Fabrication
     public class FabricationBlueprints: IPerkHandler
     {
         public PerkType PerkType => PerkType.FabricationBlueprints;
+        public string Name => "Fabrication Blueprints";
+        public bool IsActive => true;
+        public string Description => "Unlocks new fabrication blueprints on every odd level (1, 3, 5, 7) and adds an enhancement slot for every even level (2, 4, 6, 8) for fabrication.";
+        public PerkCategoryType Category => PerkCategoryType.Fabrication;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -17,9 +28,9 @@ namespace SWLOR.Game.Server.Perk.Fabrication
             return baseFPCost;
         }
 
-        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

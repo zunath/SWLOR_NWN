@@ -197,7 +197,6 @@ namespace SWLOR.Game.Server.Conversation
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
-            RemovePerkItem(perk);
             RemovePerkFeat(perk);
             CustomEffectService.RemoveStance(GetPC());
             PlayerStatService.ApplyStatChanges(GetPC(), null);
@@ -245,23 +244,6 @@ namespace SWLOR.Game.Server.Conversation
             if (IsGrantedByBackground(perkType))
             {
                 BackgroundService.ApplyBackgroundBonuses(player);
-            }
-        }
-
-        private void RemovePerkItem(Data.Entity.Perk perk)
-        {
-            if (string.IsNullOrWhiteSpace(perk.ItemResref)) return;
-
-            var items = GetPC().InventoryItems.Where(x => x.Resref == perk.ItemResref);
-            foreach (var item in items)
-            {
-                item.Destroy();
-            }
-
-            items = GetPC().EquippedItems.Where(x => x.Resref == perk.ItemResref);
-            foreach (var item in items)
-            {
-                item.Destroy();
             }
         }
 

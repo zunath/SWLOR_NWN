@@ -88,6 +88,9 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine("Organizing perk: " + perk.Name);
 
                 var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID(perk.ID).Select(s => s.ID).ToList();
+
+                Console.WriteLine("perkLevelIDs = " + string.Join(',', perkLevelIDs));
+
                 // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
                 // we only care to know that there IS one.
                 var skillReqs = DataService.PerkLevelSkillRequirement

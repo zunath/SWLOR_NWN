@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Perk.Engineering
             return baseFPCost;
         }
 
-        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, int spellTier)
         {
             return baseCastingTime;
         }

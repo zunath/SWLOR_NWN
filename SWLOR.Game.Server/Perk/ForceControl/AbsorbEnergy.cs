@@ -7,6 +7,17 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class AbsorbEnergy: IPerkHandler
     {
         public PerkType PerkType => PerkType.AbsorbEnergy;
+        public string Name => "Force Speed";
+        public bool IsActive => true;
+        public string Description => "Unlocks new fabrication blueprints on every odd level (1, 3, 5, 7) and adds an enhancement slot for every even level (2, 4, 6, 8) for fabrication.";
+        public PerkCategoryType Category => PerkCategoryType.ForceControl;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceSpeed;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -17,9 +28,9 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return baseFPCost;
         }
 
-        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

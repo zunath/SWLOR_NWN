@@ -1,0 +1,38 @@
+﻿namespace SWLOR.Game.Server.Perk
+{
+    public enum PerkCategoryType
+    {
+        Fabrication = 1,
+        LightsabersAndSaberstaffs = 2,
+        Gathering = 3,
+        General = 4,
+        Stances = 5,
+        Shields = 6,
+        Armor = 7,
+        FirearmsGeneral = 8,
+        OneHandedGeneral = 9,
+        OneHandedVibroblades = 10,
+        OneHandedFinesseVibroblades = 11,
+        OneHandedBatons = 12,
+        TwoHandedHeavyVibroblades = 13,
+        Saberstaffs = 14,
+        TwoHandedPolearms = 15,
+        TwinBladesTwinVibroblades = 16,
+        MartialArts = 17,
+        BlastersBlasterPistols = 18,
+        BlastersBlasterRifles = 19,
+        Throwing = 20,
+        Medicine = 22,
+        Weaponsmith = 23,
+        Armorsmith = 25,
+        Cooking = 27,
+        Survival = 32,
+        Engineering = 33,
+        Harvesting = 34,
+        Lightsabers = 36,
+        Piloting = 37,
+        ForceAlter = 40,
+        ForceControl = 43,
+        ForceSense = 46,
+    }
+}

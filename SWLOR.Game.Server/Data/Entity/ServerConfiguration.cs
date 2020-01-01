@@ -17,17 +17,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string MessageOfTheDay { get; set; }
         public int DataVersion { get; set; }
         public DateTime LastGuildTaskUpdate { get; set; }
-
-        public IEntity Clone()
-        {
-            return new ServerConfiguration
-            {
-                ID = ID,
-                ServerName = ServerName,
-                MessageOfTheDay = MessageOfTheDay,
-                DataVersion = DataVersion,
-                LastGuildTaskUpdate = LastGuildTaskUpdate
-            };
-        }
     }
 }

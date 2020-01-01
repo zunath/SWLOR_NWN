@@ -13,15 +13,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Name { get; set; }
         public double BaseCooldownTime { get; set; }
-
-        public IEntity Clone()
-        {
-            return new CooldownCategory
-            {
-                ID = ID,
-                Name = Name,
-                BaseCooldownTime = BaseCooldownTime
-            };
-        }
     }
 }

@@ -23,20 +23,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public string Instructions { get; set; }
-
-        public IEntity Clone()
-        {
-            return new Download
-            {
-                ID = ID,
-                Name = Name,
-                Description = Description,
-                IsActive = IsActive,
-                LocalPath = LocalPath,
-                FileName = FileName,
-                ContentType = ContentType,
-                Instructions = Instructions
-            };
-        }
     }
 }

@@ -38,5 +38,17 @@ namespace SWLOR.Game.Server.Caching
 
             return GetFromListIndex(ByPerkLevelIDIndex, perkLevelID.ToString());
         }
+
+        public IEnumerable<PerkLevelSkillRequirement> GetAllByPerkLevelID(IEnumerable<int> perkLevelIDs)
+        {
+            var result = new List<PerkLevelSkillRequirement>();
+
+            foreach (var perkLevelID in perkLevelIDs)
+            {
+                result.AddRange(GetAllByPerkLevelID(perkLevelID));
+            }
+
+            return result;
+        }
     }
 }

@@ -16,16 +16,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid PlayerID { get; set; }
         public string VisibilityObjectID { get; set; }
         public bool IsVisible { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCObjectVisibility
-            {
-                ID = ID,
-                PlayerID = PlayerID,
-                VisibilityObjectID = VisibilityObjectID,
-                IsVisible = IsVisible
-            };
-        }
     }
 }

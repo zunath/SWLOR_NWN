@@ -23,23 +23,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int PurchasePrice { get; set; }
         public int DailyUpkeep { get; set; }
         public int FurnitureLimit { get; set; }
-
-        public IEntity Clone()
-        {
-            return new BuildingStyle
-            {
-                ID = ID,
-                Name = Name,
-                Resref = Resref,
-                BaseStructureID = BaseStructureID,
-                IsDefault = IsDefault,
-                DoorRule = DoorRule,
-                IsActive = IsActive,
-                BuildingTypeID = BuildingTypeID,
-                PurchasePrice = PurchasePrice,
-                DailyUpkeep = DailyUpkeep,
-                FurnitureLimit = FurnitureLimit
-            };
-        }
     }
 }

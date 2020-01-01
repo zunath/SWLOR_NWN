@@ -9,16 +9,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public int IconID { get; set; }
         public int CustomEffectCategoryID { get; set; }
-
-        public IEntity Clone()
-        {
-            return new CustomEffect
-            {
-                ID = ID,
-                Name = Name,
-                IconID = IconID,
-                CustomEffectCategoryID = CustomEffectCategoryID
-            };
-        }
     }
 }

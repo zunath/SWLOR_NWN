@@ -14,16 +14,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public bool IsActive { get; set; }
         public int Sequence { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PerkCategory
-            {
-                ID = ID,
-                Name = Name,
-                IsActive = IsActive,
-                Sequence = Sequence
-            };
-        }
     }
 }

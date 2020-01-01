@@ -30,29 +30,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? BuildingStyleID { get; set; }
         public string ShipLocation { get; set; }
         public int? Starcharts { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCBase
-            {
-                ID = ID,
-                PlayerID = PlayerID,
-                AreaResref = AreaResref,
-                Sector = Sector,
-                DateInitialPurchase = DateInitialPurchase,
-                DateRentDue = DateRentDue,
-                ShieldHP = ShieldHP,
-                IsInReinforcedMode = IsInReinforcedMode,
-                Fuel = Fuel,
-                ReinforcedFuel = ReinforcedFuel,
-                DateFuelEnds = DateFuelEnds,
-                PCBaseTypeID = PCBaseTypeID,
-                ApartmentBuildingID = ApartmentBuildingID,
-                CustomName = CustomName,
-                BuildingStyleID = BuildingStyleID,
-                ShipLocation = ShipLocation,
-                Starcharts = Starcharts
-            };
-        }
     }
 }

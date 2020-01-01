@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Caching
 
         public AuthorizedDM GetByCDKeyAndActiveOrDefault(string cdKey)
         {
-            return (AuthorizedDM)GetAll().SingleOrDefault(x => x.CDKey == cdKey && x.IsActive)?.Clone();
+            return GetAll().SingleOrDefault(x => x.CDKey == cdKey && x.IsActive);
         }
 
     }

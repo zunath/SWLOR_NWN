@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Caching
         public PCBase GetByShipLocationOrDefault(string shipLocation)
         {
             if(string.IsNullOrWhiteSpace(shipLocation)) throw new ArgumentException(nameof(shipLocation) + " cannot be null or whitespace.");
-            return (PCBase)GetAll().SingleOrDefault(x => x.ShipLocation == shipLocation)?.Clone();
+            return GetAll().SingleOrDefault(x => x.ShipLocation == shipLocation);
         }
 
         public IEnumerable<PCBase> GetAllByPlayerID(Guid playerID)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Caching
             // This could be optimized with an index, but it only runs on module load so I figured we'd save the memory for a slightly longer boot time.
             foreach(var pcBase in GetAll().Where(x => x.AreaResref == areaResref && x.ApartmentBuildingID == null))
             {
-                list.Add( (PCBase)pcBase.Clone());
+                list.Add( pcBase);
             }
 
             return list;

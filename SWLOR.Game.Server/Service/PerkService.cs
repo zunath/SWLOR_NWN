@@ -87,15 +87,14 @@ namespace SWLOR.Game.Server.Service
             {
                 Console.WriteLine("Organizing perk: " + perk.Name);
 
-                var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID(perk.ID).Select(s => s.ID);
+                var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID(perk.ID).Select(s => s.ID).ToList();
                 // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
                 // we only care to know that there IS one.
                 var skillReqs = DataService.PerkLevelSkillRequirement
-                    .GetAll()
-                    .Where(x => perkLevelIDs.Contains(x.PerkLevelID))
-                    .Distinct();
+                    .GetAllByPerkLevelID(perkLevelIDs)
+                    .ToList();
                 
-                Console.WriteLine("Got skillReqs count = " + skillReqs.Count());
+                Console.WriteLine("Got skillReqs count = " + skillReqs.Count);
 
                 foreach (var skillReq in skillReqs)
                 {
@@ -117,9 +116,8 @@ namespace SWLOR.Game.Server.Service
                 // Now check for a quest requirement on this perk. Again, we don't care which perk level has which quest requirement,
                 // we only care to know that there IS one.
                 var questReqs = DataService.PerkLevelQuestRequirement
-                    .GetAll()
-                    .Where(x => perkLevelIDs.Contains(x.PerkLevelID))
-                    .Distinct();
+                    .GetAllByPerkLevelID(perkLevelIDs)
+                    .ToList();
 
                 Console.WriteLine("Got questReqs count = " + questReqs.Count());
 

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructurePermission GetPublicPermissionOrDefault(Guid pcBaseStructureID)
         {
-            return (PCBaseStructurePermission)GetAll().SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission)?.Clone();
+            return GetAll().SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission);
         }
 
         public PCBaseStructurePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseStructureID)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Caching
                 return default;
 
             var permissions = GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
-            return (PCBaseStructurePermission)permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID)?.Clone();
+            return permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID);
         }
 
         public IEnumerable<PCBaseStructurePermission> GetAllByPCBaseStructureID(Guid pcBaseStructureID)

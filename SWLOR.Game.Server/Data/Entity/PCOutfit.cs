@@ -19,23 +19,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Outfit8 { get; set; }
         public string Outfit9 { get; set; }
         public string Outfit10 { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCOutfit
-            {
-                PlayerID = PlayerID,
-                Outfit1 = Outfit1,
-                Outfit2 = Outfit2,
-                Outfit3 = Outfit3,
-                Outfit4 = Outfit4,
-                Outfit5 = Outfit5,
-                Outfit6 = Outfit6,
-                Outfit7 = Outfit7,
-                Outfit8 = Outfit8,
-                Outfit9 = Outfit9,
-                Outfit10 = Outfit10
-            };
-        }
     }
 }

@@ -17,17 +17,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid PCQuestStatusID { get; set; }
         public int NPCGroupID { get; set; }
         public int RemainingToKill { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCQuestKillTargetProgress
-            {
-                ID = ID,
-                PlayerID = PlayerID,
-                PCQuestStatusID = PCQuestStatusID,
-                NPCGroupID = NPCGroupID,
-                RemainingToKill = RemainingToKill
-            };
-        }
     }
 }

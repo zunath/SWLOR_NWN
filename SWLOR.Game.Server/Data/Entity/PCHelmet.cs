@@ -19,23 +19,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Helmet8 { get; set; }
         public string Helmet9 { get; set; }
         public string Helmet10 { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCHelmet
-            {
-                PlayerID = PlayerID,
-                Helmet1 = Helmet1,
-                Helmet2 = Helmet2,
-                Helmet3 = Helmet3,
-                Helmet4 = Helmet4,
-                Helmet5 = Helmet5,
-                Helmet6 = Helmet6,
-                Helmet7 = Helmet7,
-                Helmet8 = Helmet8,
-                Helmet9 = Helmet9,
-                Helmet10 = Helmet10
-            };
-        }
     }
 }

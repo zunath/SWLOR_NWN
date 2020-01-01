@@ -16,17 +16,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public bool CanPlaceInside { get; set; }
         public bool CanPlaceOutside { get; set; }
-
-        public IEntity Clone()
-        {
-            return new BaseStructureType
-            {
-                ID = ID,
-                Name = Name,
-                IsActive = IsActive,
-                CanPlaceInside = CanPlaceInside,
-                CanPlaceOutside = CanPlaceOutside
-            };
-        }
     }
 }

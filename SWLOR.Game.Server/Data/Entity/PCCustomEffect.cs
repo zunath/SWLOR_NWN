@@ -23,20 +23,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Data { get; set; }
         public string CasterNWNObjectID { get; set; }
         public int? StancePerkID { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCCustomEffect
-            {
-                ID = ID,
-                PlayerID = PlayerID,
-                CustomEffectID = CustomEffectID,
-                Ticks = Ticks,
-                EffectiveLevel = EffectiveLevel,
-                Data = Data,
-                CasterNWNObjectID = CasterNWNObjectID,
-                StancePerkID = StancePerkID
-            };
-        }
     }
 }

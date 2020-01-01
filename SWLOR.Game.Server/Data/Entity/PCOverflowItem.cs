@@ -18,18 +18,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemTag { get; set; }
         public string ItemResref { get; set; }
         public string ItemObject { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCOverflowItem
-            {
-                ID = ID,
-                PlayerID = PlayerID,
-                ItemName = ItemName,
-                ItemTag = ItemTag,
-                ItemResref = ItemResref,
-                ItemObject = ItemObject
-            };
-        }
     }
 }

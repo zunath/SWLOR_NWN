@@ -27,27 +27,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? CastAnimationID { get; set; }
         public SpecializationType Specialization { get; set; }
         public ForceBalanceType ForceBalance { get; set; }
-
-        public IEntity Clone()
-        {
-            return new Perk
-            {
-                ID = ID,
-                Name = Name,
-                IsActive = IsActive,
-                BaseCastingTime = BaseCastingTime,
-                Description = Description,
-                PerkCategoryID = PerkCategoryID,
-                CooldownCategoryID = CooldownCategoryID,
-                ExecutionTypeID = ExecutionTypeID,
-                ItemResref = ItemResref,
-                IsTargetSelfOnly = IsTargetSelfOnly,
-                Enmity = Enmity,
-                EnmityAdjustmentRuleID = EnmityAdjustmentRuleID,
-                CastAnimationID = CastAnimationID,
-                Specialization = Specialization,
-                ForceBalance = ForceBalance
-            };
-        }
     }
 }

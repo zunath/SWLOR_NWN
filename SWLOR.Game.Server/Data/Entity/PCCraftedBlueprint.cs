@@ -16,16 +16,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid PlayerID { get; set; }
         public int CraftBlueprintID { get; set; }
         public DateTime DateFirstCrafted { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCCraftedBlueprint
-            {
-                ID = ID,
-                PlayerID = PlayerID,
-                CraftBlueprintID = CraftBlueprintID,
-                DateFirstCrafted = DateFirstCrafted
-            };
-        }
     }
 }

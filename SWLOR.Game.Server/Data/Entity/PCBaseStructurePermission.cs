@@ -26,27 +26,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsPublicPermission { get; set; }
         public bool CanAdjustPublicPermissions { get; set; }
         public bool CanFlyStarship { get; set; }
-
-        public IEntity Clone()
-        {
-            return new PCBaseStructurePermission
-            {
-                ID = ID,
-                PCBaseStructureID = PCBaseStructureID,
-                PlayerID = PlayerID,
-                CanPlaceEditStructures = CanPlaceEditStructures,
-                CanAccessStructureInventory = CanAccessStructureInventory,
-                CanEnterBuilding = CanEnterBuilding,
-                CanRetrieveStructures = CanRetrieveStructures,
-                CanAdjustPermissions = CanAdjustPermissions,
-                CanRenameStructures = CanRenameStructures,
-                CanEditPrimaryResidence = CanEditPrimaryResidence,
-                CanRemovePrimaryResidence = CanRemovePrimaryResidence,
-                CanChangeStructureMode = CanChangeStructureMode,
-                IsPublicPermission = IsPublicPermission,
-                CanAdjustPublicPermissions = CanAdjustPublicPermissions,
-                CanFlyStarship = CanFlyStarship
-            };
-        }
     }
 }

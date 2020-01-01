@@ -11,6 +11,17 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class BattleInsight: IPerkHandler
     {
         public PerkType PerkType => PerkType.BattleInsight;
+        public string Name => "Battle insight";
+        public bool IsActive => true;
+        public string Description => "The caster boosts their nearby allies at the expense of their own abilities.";
+        public PerkCategoryType Category => PerkCategoryType.ForceSense;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.BattleAndForceInsight;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 10;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -23,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

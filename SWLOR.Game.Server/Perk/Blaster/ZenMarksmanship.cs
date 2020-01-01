@@ -9,7 +9,17 @@ namespace SWLOR.Game.Server.Perk.Blaster
     public class ZenMarksmanship : IPerkHandler
     {
         public PerkType PerkType => PerkType.ZenMarksmanship;
-        
+        public string Name => "Zen Marksmanship";
+        public bool IsActive => true;
+        public string Description => "Wisdom guides your ranged attacks. If your WIS modifier is higher than DEX, it will be used when firing ranged weapons. Must be equipped with a blaster or rifle.";
+        public PerkCategoryType Category => PerkCategoryType.FirearmsGeneral;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -23,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

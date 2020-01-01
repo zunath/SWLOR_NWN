@@ -8,6 +8,16 @@ namespace SWLOR.Game.Server.Perk.General
     public class GuildRelations : IPerkHandler
     {
         public PerkType PerkType => PerkType.GuildRelations;
+        public string Name => "Guild Relations";
+        public bool IsActive => true;
+        public string Description => "Improves your GP acquisition with all guilds.";
+        public PerkCategoryType Category => PerkCategoryType.General;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -21,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

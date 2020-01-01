@@ -12,6 +12,16 @@ namespace SWLOR.Game.Server.Perk.Blaster
     public class MassTranquilizer : IPerkHandler
     {
         public PerkType PerkType => PerkType.MassTranquilizer;
+        public string Name => "Mass Tranquilizer";
+        public bool IsActive => true;
+        public string Description => "Your next attack will tranquilize all creatures within range of your target, putting them to sleep for a short time. Damage will break the effect prematurely. Must be equipped with a Blaster Rifle to use. Length of effect depends on Tranquilizer perk.";
+        public PerkCategoryType Category => PerkCategoryType.BlastersBlasterRifles;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.MassTranquilizer;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -28,7 +38,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

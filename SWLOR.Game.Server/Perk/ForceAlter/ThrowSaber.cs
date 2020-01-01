@@ -12,6 +12,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ThrowSaber : IPerkHandler
     {
         public PerkType PerkType => PerkType.ThrowSaber;
+        public string Name => "Throw Saber";
+        public bool IsActive => true;
+        public string Description => "The caster throws their lightsaber at nearby enemies and pulls it back to their hand.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ThrowSaber;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 10;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier)
         {
             NWItem weapon = creature.RightHand;
@@ -63,7 +74,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature creature, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature creature, float baseCooldownTime, int spellTier)

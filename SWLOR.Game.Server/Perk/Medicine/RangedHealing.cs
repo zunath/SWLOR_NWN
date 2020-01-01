@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Medicine
     public class RangedHealing: IPerkHandler
     {
         public PerkType PerkType => PerkType.RangedHealing;
+        public string Name => "Ranged Healing";
+        public bool IsActive => true;
+        public string Description => "Increases the range you can use medical devices and kits.";
+        public PerkCategoryType Category => PerkCategoryType.Medicine;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Medicine
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

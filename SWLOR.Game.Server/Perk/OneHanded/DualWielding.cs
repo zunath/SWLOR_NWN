@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class DualWielding : IPerkHandler
     {
         public PerkType PerkType => PerkType.OneHandedDualWielding;
+        public string Name => "One-Handed Dual Wielding";
+        public bool IsActive => true;
+        public string Description => "Grants bonuses while wielding two weapons. Must be equipped with a non-lightsaber one-handed weapon.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedGeneral;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class Opportunist : IPerkHandler
     {
         public PerkType PerkType => PerkType.Opportunist;
+        public string Name => "Opportunist";
+        public bool IsActive => true;
+        public string Description => "You gain a +4 bonus to attack rolls when making an attack of opportunity. Must be equipped with a Finesse Blade.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedFinesseVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

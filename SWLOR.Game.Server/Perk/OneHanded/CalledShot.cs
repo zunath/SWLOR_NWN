@@ -9,6 +9,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class CalledShot : IPerkHandler
     {
         public PerkType PerkType => PerkType.CalledShot;
+        public string Name => "Called Shot";
+        public bool IsActive => true;
+        public string Description => "Grants the ability to make a potentially disabling attack against an opponent's arms or legs. Must be equipped with a Finesse Blade.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedFinesseVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -22,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

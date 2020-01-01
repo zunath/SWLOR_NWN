@@ -13,6 +13,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class BladePowerAttack : IPerkHandler
     {
         public PerkType PerkType => PerkType.BladePowerAttack;
+        public string Name => "Blade Power Attack";
+        public bool IsActive => true;
+        public string Description => "Increases damage at the cost of reduced attack rolls. Only available when equipped with a blade.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -26,7 +36,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

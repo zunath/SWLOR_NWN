@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class Knockdown: IPerkHandler
     {
         public PerkType PerkType => PerkType.Knockdown;
+        public string Name => "Knockdown";
+        public bool IsActive => true;
+        public string Description => "Your next attack deals additional bludgeoning damage and knocks down the target for a short period of time. Must be equipped with a baton.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedBatons;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Knockdown;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 20;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -28,7 +38,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

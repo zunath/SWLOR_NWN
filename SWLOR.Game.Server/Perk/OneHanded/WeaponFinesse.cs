@@ -11,7 +11,17 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class WeaponFinesse : IPerkHandler
     {
         public PerkType PerkType => PerkType.WeaponFinesse;
-        
+        public string Name => "Weapon Finesse";
+        public bool IsActive => true;
+        public string Description => "You make melee attack rolls with your DEX if it is higher than your STR. Must be equipped with a finesse blade.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedFinesseVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

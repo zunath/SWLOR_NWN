@@ -9,6 +9,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class SneakAttack: IPerkHandler
     {
         public PerkType PerkType => PerkType.SneakAttack;
+        public string Name => "Sneak Attack";
+        public bool IsActive => true;
+        public string Description => "Deals extreme damage to a target on your next attack. Highest amount of damage is done from behind the target. Must be equipped with a finesse blade.";
+        public PerkCategoryType Category => PerkCategoryType.OneHandedFinesseVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.SneakAttack;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 120;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

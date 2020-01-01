@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
     public class Cleave : IPerkHandler
     {
         public PerkType PerkType => PerkType.Cleave;
+        public string Name => "Cleave";
+        public bool IsActive => true;
+        public string Description => "Grants a free attack against any opponent who is within melee range when an enemy is killed. Must be equipped with a Two-Handed Heavy Blade weapon.";
+        public PerkCategoryType Category => PerkCategoryType.TwinBladesTwinVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

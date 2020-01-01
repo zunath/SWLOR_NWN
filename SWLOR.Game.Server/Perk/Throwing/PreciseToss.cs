@@ -12,6 +12,16 @@ namespace SWLOR.Game.Server.Perk.Throwing
     public class PreciseToss: IPerkHandler
     {
         public PerkType PerkType => PerkType.PreciseToss;
+        public string Name => "Precise Toss";
+        public bool IsActive => true;
+        public string Description => "Your next attack deals extra piercing damage and inflicts bleeding on your target, which deals damage over time for a short time. Must be equipped with a throwing weapon.";
+        public PerkCategoryType Category => PerkCategoryType.Throwing;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.PreciseToss;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -28,7 +38,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

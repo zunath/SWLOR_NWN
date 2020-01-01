@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
     public class CrossCut: IPerkHandler
     {
         public PerkType PerkType => PerkType.CrossCut;
+        public string Name => "Cross Cut";
+        public bool IsActive => true;
+        public string Description => "Your next attack deals additional slashing damage and inflicts Breach, which reduces target's AC for a short period of time. Must be equipped with a twin blade.";
+        public PerkCategoryType Category => PerkCategoryType.TwinBladesTwinVibroblades;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.CrossCut;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

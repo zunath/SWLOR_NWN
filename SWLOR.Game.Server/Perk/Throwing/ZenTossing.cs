@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Throwing
     public class ZenTossing : IPerkHandler
     {
         public PerkType PerkType => PerkType.ZenTossing;
+        public string Name => "Zen Tossing";
+        public bool IsActive => true;
+        public string Description => "Wisdom guides your ranged attacks. If your WIS modifier is higher than DEX, it will be used when firing ranged weapons. Must be equipped with a throwing weapon.";
+        public PerkCategoryType Category => PerkCategoryType.Throwing;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

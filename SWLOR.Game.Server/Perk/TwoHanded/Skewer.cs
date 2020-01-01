@@ -8,6 +8,16 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
     public class Skewer : IPerkHandler
     {
         public PerkType PerkType => PerkType.Skewer;
+        public string Name => "Skewer";
+        public bool IsActive => true;
+        public string Description => "Interrupts your target's concentration effect. Must be equipped with a Polearm.";
+        public PerkCategoryType Category => PerkCategoryType.TwoHandedPolearms;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Skewer;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

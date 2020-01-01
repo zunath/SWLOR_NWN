@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     public class SaberstaffMastery : IPerkHandler
     {
         public PerkType PerkType => PerkType.SaberstaffMastery;
+        public string Name => "Saberstaff Mastery";
+        public bool IsActive => true;
+        public string Description => "Grants bonuses and reduces penalties while wielding saberstaffs.";
+        public PerkCategoryType Category => PerkCategoryType.LightsabersAndSaberstaffs;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

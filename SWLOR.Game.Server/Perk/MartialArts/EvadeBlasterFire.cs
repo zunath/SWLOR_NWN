@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.MartialArts
     public class EvadeBlasterFire : IPerkHandler
     {
         public PerkType PerkType => PerkType.EvadeBlasterFire;
+        public string Name => "Evade Blaster Fire";
+        public bool IsActive => true;
+        public string Description => "Enables you to evade a blaster shot if you meet the difficulty check. DEX modifier increases chance of evasion. Must be equipped with martial arts weapon.";
+        public PerkCategoryType Category => PerkCategoryType.MartialArts;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

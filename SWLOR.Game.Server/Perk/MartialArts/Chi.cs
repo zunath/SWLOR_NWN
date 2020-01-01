@@ -12,6 +12,16 @@ namespace SWLOR.Game.Server.Perk.MartialArts
     public class Chi: IPerkHandler
     {
         public PerkType PerkType => PerkType.Chi;
+        public string Name => "Chi";
+        public bool IsActive => true;
+        public string Description => "Restores the user's HP. At rank 7, this ability also heals all party members within area of effect.";
+        public PerkCategoryType Category => PerkCategoryType.MartialArts;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Chi;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -25,7 +35,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

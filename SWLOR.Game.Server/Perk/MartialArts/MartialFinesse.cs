@@ -9,6 +9,16 @@ namespace SWLOR.Game.Server.Perk.MartialArts
     public class MartialFinesse: IPerkHandler
     {
         public PerkType PerkType => PerkType.MartialFinesse;
+        public string Name => "Martial Finesse";
+        public bool IsActive => true;
+        public string Description => "Grants the Weapon Finesse feat which enables you to make attack rolls with your dexterity modifier instead of strength, if it is higher. Requires a martial arts weapon or unarmed to use.";
+        public PerkCategoryType Category => PerkCategoryType.MartialArts;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -22,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

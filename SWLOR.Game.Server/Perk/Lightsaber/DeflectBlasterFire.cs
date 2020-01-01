@@ -6,6 +6,17 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     public class DeflectBlasterFire: IPerkHandler
     {
         public PerkType PerkType => PerkType.DeflectBlasterFire;
+        public string Name => "Deflect Blaster Fire";
+        public bool IsActive => true;
+        public string Description => "Enables you to evade a blaster shot if you meet the difficulty check. CHA modifier increases chance of evasion. Must be equipped with either a lightsaber or saberstaff.";
+        public PerkCategoryType Category => PerkCategoryType.LightsabersAndSaberstaffs;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +30,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

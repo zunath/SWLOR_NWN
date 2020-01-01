@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.MartialArts
     public class ElectricFist: IPerkHandler
     {
         public PerkType PerkType => PerkType.ElectricFist;
+        public string Name => "Electric Fist";
+        public bool IsActive => true;
+        public string Description => "Your next attack deals extra electrical damage and inflicts shock, which paralyzes your target for a short period of time. Must be equipped with a power glove.";
+        public PerkCategoryType Category => PerkCategoryType.MartialArts;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ElectricFist;
+        public PerkExecutionType ExecutionType => PerkExecutionType.QueuedWeaponSkill;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

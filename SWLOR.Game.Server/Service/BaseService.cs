@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("BaseService -> OnModuleLoad");
             RegisterDoorRules();
             foreach (var area in NWModule.Get().Areas)
             {
@@ -107,6 +108,8 @@ namespace SWLOR.Game.Server.Service
                 }
 
             }
+
+            Console.WriteLine("BaseService -> OnModuleLoad Complete");
         }
 
         private static void RegisterDoorRules()

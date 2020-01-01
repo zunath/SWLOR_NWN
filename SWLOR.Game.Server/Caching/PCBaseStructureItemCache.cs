@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Caching
@@ -39,22 +40,23 @@ namespace SWLOR.Game.Server.Caching
         private void SetCountsByPCBaseStructureID(PCBaseStructureItem entity)
         {
             var key = CountsByPCBaseStructureIDIndex + ":" + entity.PCBaseStructureID;
-            if (!DataService.DB.KeyExists(key))
-                DataService.DB.StringSet(key, JsonConvert.SerializeObject(0));
+            if (!NWNXRedis.Exists(key))
+                
+                NWNXRedis.Set(key, JsonConvert.SerializeObject(0));
 
-            var count = JsonConvert.DeserializeObject<int>(DataService.DB.StringGet(key)) + 1;
-            DataService.DB.StringSet( key, JsonConvert.SerializeObject(count));
+            var count = JsonConvert.DeserializeObject<int>(NWNXRedis.Get(key)) + 1;
+            NWNXRedis.Set( key, JsonConvert.SerializeObject(count));
         }
 
         private void RemoveCountsByPCBaseStructureID(PCBaseStructureItem entity)
         {
             var key = CountsByPCBaseStructureIDIndex + ":" + entity.PCBaseStructureID;
 
-            if (!DataService.DB.KeyExists(key))
-                DataService.DB.StringSet(key, JsonConvert.SerializeObject(0));
+            if (!NWNXRedis.Exists(key))
+                NWNXRedis.Set(key, JsonConvert.SerializeObject(0));
 
-            var count = JsonConvert.DeserializeObject<int>(DataService.DB.StringGet(key)) - 1;
-            DataService.DB.StringSet(key, JsonConvert.SerializeObject(count));
+            var count = JsonConvert.DeserializeObject<int>(NWNXRedis.Get(key)) - 1;
+            NWNXRedis.Set(key, JsonConvert.SerializeObject(count));
         }
 
         public PCBaseStructureItem GetByID(Guid id)
@@ -80,7 +82,7 @@ namespace SWLOR.Game.Server.Caching
         {
             var key = CountsByPCBaseStructureIDIndex + ":" + pcBaseStructureID;
 
-            if (!DataService.DB.KeyExists(key))
+            if (!NWNXRedis.Exists(key))
                 return 0;
 
             return JsonConvert.DeserializeObject<int>(key);

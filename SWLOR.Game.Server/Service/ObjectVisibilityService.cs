@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("OPSVisibilityService -> OnModuleLoad");
             foreach (var area in NWModule.Get().Areas)
             {
                 NWObject obj = _.GetFirstObjectInArea(area);
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Service
                     obj = _.GetNextObjectInArea(area);
                 }
             }
+            Console.WriteLine("OPSVisibilityService -> OnModuleLoad Complete");
         }
 
 

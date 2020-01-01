@@ -48,7 +48,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("ItemService -> OnModuleLoad");
             RegisterActionItemHandlers();
+            Console.WriteLine("ItemService -> OnModuleLoad Complete");
         }
 
         private static void RegisterActionItemHandlers()

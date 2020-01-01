@@ -54,8 +54,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("PerkService -> OnModuleLoad RegisterPerkHandlers");
             RegisterPerkHandlers();
+
+            Console.WriteLine("PerkService -> OnModuleLoad OrganizePerkRequirements");
             OrganizePerkRequirements();
+            Console.WriteLine("PerkService -> OnModuleLoad Complete");
         }
 
         private static void RegisterPerkHandlers()
@@ -81,6 +85,8 @@ namespace SWLOR.Game.Server.Service
             // That way, later checks are much quicker than iterating through the data cache for this info.
             foreach (var perk in DataService.Perk.GetAll())
             {
+                Console.WriteLine("Organizing perk: " + perk.Name);
+
                 var perkLevelIDs = DataService.PerkLevel.GetAllByPerkID(perk.ID).Select(s => s.ID);
                 // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
                 // we only care to know that there IS one.
@@ -89,6 +95,8 @@ namespace SWLOR.Game.Server.Service
                     .Where(x => perkLevelIDs.Contains(x.PerkLevelID))
                     .Distinct();
                 
+                Console.WriteLine("Got skillReqs count = " + skillReqs.Count());
+
                 foreach (var skillReq in skillReqs)
                 {
                     // Add a new skill hashset if it doesn't exist yet.
@@ -112,6 +120,8 @@ namespace SWLOR.Game.Server.Service
                     .GetAll()
                     .Where(x => perkLevelIDs.Contains(x.PerkLevelID))
                     .Distinct();
+
+                Console.WriteLine("Got questReqs count = " + questReqs.Count());
 
                 foreach (var questReq in questReqs)
                 {

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using SWLOR.Game.Server.Caching.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.NWNX;
 using Index = SWLOR.Game.Server.Data.Index;
 
 namespace SWLOR.Game.Server.Caching
@@ -36,8 +35,8 @@ namespace SWLOR.Game.Server.Caching
         {
             var key = $"{_setName}:Index";
             var index = 
-                DataService.DB.KeyExists(key) ?
-                JsonConvert.DeserializeObject<Index>(DataService.DB.StringGet(key)) :
+                NWNXRedis.Exists(key) ?
+                JsonConvert.DeserializeObject<Index>(NWNXRedis.Get(key)) :
                 new Index();
 
             return index;
@@ -51,7 +50,7 @@ namespace SWLOR.Game.Server.Caching
         {
             var key = $"{_setName}:Index";
             var json = JsonConvert.SerializeObject(index);
-            DataService.DB.StringSet(key, json);
+            NWNXRedis.Set(key, json);
         }
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace SWLOR.Game.Server.Caching
             var id = GetEntityKey(entity);
             var key = $"{_setName}:{id}";
             var json = JsonConvert.SerializeObject(entity);
-            DataService.DB.StringSet(key, json);
+            NWNXRedis.Set(key, json);
 
             // Update the index data.
             var index = GetIndexDetails();
@@ -84,7 +83,8 @@ namespace SWLOR.Game.Server.Caching
             // Remove the entity data.
             var id = GetEntityKey(entity);
             var key = $"{_setName}:{id}" ;
-            DataService.DB.KeyDelete(key);
+
+            NWNXRedis.Delete(key);
 
             // Update the index data.
             var index = GetIndexDetails();
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Caching
         protected T ByID(object id)
         {
             var key = $"{_setName}:{id}";
-            var json = DataService.DB.StringGet(key);
+            var json = NWNXRedis.Get(key);
 
             return JsonConvert.DeserializeObject<T>(json);
         }
@@ -116,17 +116,10 @@ namespace SWLOR.Game.Server.Caching
         public IEnumerable<T> GetAll()
         {
             var index = GetIndexDetails();
-            List<RedisKey> redisKeys = new List<RedisKey>();
-
+            
             foreach(var id in index.IDs)
             {
-                redisKeys.Add($"{_setName}:{id}");
-            }
-
-            var data = DataService.DB.StringGet(redisKeys.ToArray());
-            foreach (var record in data)
-            {
-                yield return JsonConvert.DeserializeObject<T>(record);
+                yield return JsonConvert.DeserializeObject<T>(NWNXRedis.Get($"{_setName}:{id}"));
             }
         }
 
@@ -138,7 +131,7 @@ namespace SWLOR.Game.Server.Caching
         protected bool Exists(object id)
         {
             var key = $"{_setName}:{id}";
-            return DataService.DB.KeyExists(key);
+            return NWNXRedis.Exists(key);
         }
 
         /// <summary>
@@ -269,18 +262,11 @@ namespace SWLOR.Game.Server.Caching
             var key = $"{indexName}:{indexValue}";
 
             var list = index.SecondaryListIndexes[key];
-            var redisKeys = new List<RedisKey>();
-
+            
             foreach (var id in list)
             {
-                redisKeys.Add($"{_setName}:{id}");
-            }
-
-            var results = DataService.DB.StringGet(redisKeys.ToArray());
-
-            foreach(var result in results)
-            {
-                yield return JsonConvert.DeserializeObject<T>(result);
+                var entityKey = $"{_setName}:{id}";
+                yield return JsonConvert.DeserializeObject<T>(NWNXRedis.Get(entityKey));
             }
         }
 

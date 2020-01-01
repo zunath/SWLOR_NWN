@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
@@ -18,10 +17,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class DataService
     {
-        private static ConnectionMultiplexer _redis;
-        public static IDatabase DB => _redis.GetDatabase();
+        static DataService()
+        {
+            ApartmentBuilding = new ApartmentBuildingCache();
+        }
 
-        public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
+        public static ApartmentBuildingCache ApartmentBuilding { get; }
         public static AreaCache Area { get; } = new AreaCache();
         public static AssociationCache Association { get; } = new AssociationCache();
         public static AttributeCache Attribute { get; } = new AttributeCache();
@@ -127,18 +128,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void Initialize()
-        {
-            var host = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
-
-            var sw = new Stopwatch();
-            sw.Start();
-            Console.WriteLine("Connecting to Redis...");
-            _redis = ConnectionMultiplexer.Connect(host);
-            sw.Stop();
-            Console.WriteLine($"Redis finished connecting. (Took {sw.ElapsedMilliseconds}ms)");
-        }
-
         public static void RunMigration()
         {
             Console.WriteLine("Starting DB migration...");
@@ -152,10 +141,9 @@ namespace SWLOR.Game.Server.Service
 
             const string ConfigKey = "ServerConfiguration:1";
 
-            var db = _redis.GetDatabase();
             var serverConfig =
-                db.KeyExists(ConfigKey)
-                    ? JsonConvert.DeserializeObject<ServerConfiguration>(db.StringGet(ConfigKey))
+                NWNXRedis.Exists(ConfigKey)
+                    ? JsonConvert.DeserializeObject<ServerConfiguration>(NWNXRedis.Get(ConfigKey))
                     : new ServerConfiguration()
                     {
                         ID = 1,
@@ -174,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            db.StringSet(ConfigKey, JsonConvert.SerializeObject(serverConfig));
+            NWNXRedis.Set(ConfigKey, JsonConvert.SerializeObject(serverConfig));
         }
     }
 }

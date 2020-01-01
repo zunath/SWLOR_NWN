@@ -32,7 +32,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("ModService -> OnModuleLoad");
             RegisterModHandlers();
+            Console.WriteLine("ModService -> OnModuleLoad Complete");
         }
 
         private static void RegisterModHandlers()

@@ -48,8 +48,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("SpawnService -> OnModuleLoad");
             RegisterSpawnRules();
             InitializeSpawns();
+            Console.WriteLine("SpawnService -> OnModuleLoad Complete");
         }
 
         private static void RegisterSpawnRules()

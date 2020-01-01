@@ -55,8 +55,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            Console.WriteLine("AIService -> OnModuleLoad");
             RegisterAIBehaviours();
             RegisterAreaAICreatures();
+            Console.WriteLine("AIService -> OnModuleLoad Complete");
         }
 
         private static void RegisterAIBehaviours()

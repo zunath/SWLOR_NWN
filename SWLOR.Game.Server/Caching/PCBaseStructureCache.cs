@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Caching
@@ -58,8 +59,8 @@ namespace SWLOR.Game.Server.Caching
                 }
             }
 
-            DataService.DB.StringSet(PowerInUseByPCBaseIDIndex + ":" + entity.PCBaseID, JsonConvert.SerializeObject(power));
-            DataService.DB.StringSet(CPUInUseByPCBaseIDIndex + ":" + entity.PCBaseID, JsonConvert.SerializeObject(cpu));
+            NWNXRedis.Set(PowerInUseByPCBaseIDIndex + ":" + entity.PCBaseID, JsonConvert.SerializeObject(power));
+            NWNXRedis.Set(CPUInUseByPCBaseIDIndex + ":" + entity.PCBaseID, JsonConvert.SerializeObject(cpu));
         }
 
         public PCBaseStructure GetByID(Guid id)
@@ -85,17 +86,17 @@ namespace SWLOR.Game.Server.Caching
         public double GetPowerInUseByPCBaseID(Guid pcBaseID)
         {
             var key = PowerInUseByPCBaseIDIndex + ":" + pcBaseID;
-            if (!DataService.DB.KeyExists(key)) return 0.0d;
+            if (!NWNXRedis.Exists(key)) return 0.0d;
 
-            return JsonConvert.DeserializeObject<double>(DataService.DB.StringGet(key));
+            return JsonConvert.DeserializeObject<double>(NWNXRedis.Get(key));
         }
 
         public double GetCPUInUseByPCBaseID(Guid pcBaseID)
         {
             var key = CPUInUseByPCBaseIDIndex + ":" + pcBaseID;
-            if (!DataService.DB.KeyExists(key)) return 0.0d;
+            if (!NWNXRedis.Exists(key)) return 0.0d;
 
-            return JsonConvert.DeserializeObject<double>(DataService.DB.StringGet(key));
+            return JsonConvert.DeserializeObject<double>(NWNXRedis.Get(key));
         }
 
         public PCBaseStructure GetStarshipInteriorByPCBaseIDOrDefault(Guid pcBaseID)

@@ -53,6 +53,9 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<GuildTask> GetAllByCurrentlyOffered()
         {
+            if(!ExistsByListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue))
+                return new List<GuildTask>();
+
             return GetFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue);
         }
 

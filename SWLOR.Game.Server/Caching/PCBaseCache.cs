@@ -100,6 +100,9 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBase> GetAllWhereRentDue()
         {
+            if(!ExistsByListIndex(RentDueTimesIndex, "Active"))
+                return new List<PCBase>();
+
             DateTime now = DateTime.UtcNow;
             var rentDueTimes = GetFromListIndex(RentDueTimesIndex, "Active");
 

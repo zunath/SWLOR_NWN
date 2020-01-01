@@ -10,6 +10,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class DeflectDamage: IPerkHandler
     {
         public PerkType PerkType => PerkType.DeflectDamage;
+        public string Name => "Deflect Damage";
+        public bool IsActive => true;
+        public string Description => "You are protected by a damage shield for a limited time. Must be wearing heavy armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Evasiveness;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 10;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -10,6 +10,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Expertise : IPerkHandler
     {
         public PerkType PerkType => PerkType.Expertise;
+        public string Name => "Expertise";
+        public bool IsActive => true;
+        public string Description => "Gives you the ability to make defensive attacks, gaining +5 AC but receiving -5 penalty to attack rolls. Must be equipped with Heavy Armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -23,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

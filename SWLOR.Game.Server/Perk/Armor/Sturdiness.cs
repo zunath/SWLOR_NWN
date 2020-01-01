@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Sturdiness : IPerkHandler
     {
         public PerkType PerkType => PerkType.Sturdiness;
+        public string Name => "Sturdiness";
+        public bool IsActive => true;
+        public string Description => "Increases natural HP regeneration. Must be equipped with heavy armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

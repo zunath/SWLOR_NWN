@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Hide: IPerkHandler
     {
         public PerkType PerkType => PerkType.Hide;
+        public string Name => "Hide";
+        public bool IsActive => true;
+        public string Description => "Reduces the user's enmity towards all targets by a sharp amount. Must be equipped with light armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Hide;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

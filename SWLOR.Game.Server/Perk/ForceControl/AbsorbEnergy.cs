@@ -7,15 +7,15 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class AbsorbEnergy: IPerkHandler
     {
         public PerkType PerkType => PerkType.AbsorbEnergy;
-        public string Name => "Force Speed";
+        public string Name => "Absorb Energy";
         public bool IsActive => true;
-        public string Description => "Unlocks new fabrication blueprints on every odd level (1, 3, 5, 7) and adds an enhancement slot for every even level (2, 4, 6, 8) for fabrication.";
+        public string Description => "Absorbs a percentage of damage that the caster would take, from all sources.";
         public PerkCategoryType Category => PerkCategoryType.ForceControl;
-        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceSpeed;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.AbsorbEnergy;
         public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
         public bool IsTargetSelfOnly => true;
-        public int Enmity => 0;
-        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public int Enmity => 20;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
         public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)

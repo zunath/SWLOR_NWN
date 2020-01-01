@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Provoke: IPerkHandler
     {
         public PerkType PerkType => PerkType.Provoke;
+        public string Name => "Provoke";
+        public bool IsActive => true;
+        public string Description => "Increases the enmity of a single target towards the user. Must be equipped with Heavy Armor to use.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Provoke;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -32,7 +42,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

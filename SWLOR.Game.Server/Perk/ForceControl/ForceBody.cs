@@ -10,6 +10,17 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class ForceBody: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceBody;
+        public string Name => "Force Body";
+        public bool IsActive => true;
+        public string Description => "Converts a percentage of the casters current HP into FP.";
+        public PerkCategoryType Category => PerkCategoryType.ForceControl;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceBody;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ForceAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             if (oPC.CurrentHP <= 1)
@@ -32,7 +43,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

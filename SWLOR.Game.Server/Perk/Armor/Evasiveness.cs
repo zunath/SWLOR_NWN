@@ -10,6 +10,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Evasiveness : IPerkHandler
     {
         public PerkType PerkType => PerkType.Evasiveness;
+        public string Name => "Evasiveness";
+        public bool IsActive => true;
+        public string Description => "Grants a concealment bonus for a short period of time when equipped with light armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.Evasiveness;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 20;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class ShieldBoost: IPerkHandler
     {
         public PerkType PerkType => PerkType.ShieldBoost;
+        public string Name => "Shield Boost";
+        public bool IsActive => true;
+        public string Description => "Increases user's maximum hit points for a limited time. Increases enmity of all nearby enemies by a sharp amount. Must be equipped with Heavy Armor.";
+        public PerkCategoryType Category => PerkCategoryType.Armor;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ShieldBoost;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 100;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -27,7 +37,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 3f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Harvesting
     public class StronidiumRefining: IPerkHandler
     {
         public PerkType PerkType => PerkType.StronidiumRefining;
+        public string Name => "Stronidium Refining";
+        public bool IsActive => true;
+        public string Description => "Increases the yield of Stronidium when refining. (Refining requires the 'Refining' perk.)";
+        public PerkCategoryType Category => PerkCategoryType.Harvesting;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Harvesting
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

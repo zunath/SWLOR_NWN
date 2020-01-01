@@ -6,6 +6,17 @@ namespace SWLOR.Game.Server.Perk.Harvesting
     public class RefineryManagement : IPerkHandler
     {
         public PerkType PerkType => PerkType.RefineryManagement;
+        public string Name => "Refinery Management";
+        public bool IsActive => true;
+        public string Description => "Increases the time power sources last in a refinery.";
+        public PerkCategoryType Category => PerkCategoryType.Harvesting;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +30,7 @@ namespace SWLOR.Game.Server.Perk.Harvesting
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

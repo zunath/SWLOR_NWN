@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Harvesting
     public class Refining : IPerkHandler
     {
         public PerkType PerkType => PerkType.Refining;
+        public string Name => "Refining";
+        public bool IsActive => true;
+        public string Description => "Enables you to refine more difficult raw materials at a refinery.";
+        public PerkCategoryType Category => PerkCategoryType.Harvesting;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {

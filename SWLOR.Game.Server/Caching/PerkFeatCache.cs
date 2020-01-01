@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
@@ -12,19 +13,19 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, Dictionary<int, PerkFeat>> ByPerkIDAndLevelUnlocked { get; } = new Dictionary<int, Dictionary<int, PerkFeat>>();
-        private Dictionary<int, PerkFeat> ByFeatID { get; } = new Dictionary<int, PerkFeat>();
+        private const string ByPerkIDAndLevelUnlockedIndex = "ByPerkIDAndLevelUnlocked";
+        private const string ByFeatIDIndex = "ByFeatID";
 
         protected override void OnCacheObjectSet(PerkFeat entity)
         {
-            //SetEntityIntoDictionary(entity.PerkID, entity.PerkLevelUnlocked, entity, ByPerkIDAndLevelUnlocked);
-            ByFeatID[entity.FeatID] = (PerkFeat)entity.Clone();
+            SetIntoListIndex(ByPerkIDAndLevelUnlockedIndex, entity.PerkID.ToString(), entity);
+            SetIntoIndex(ByFeatIDIndex, entity.FeatID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PerkFeat entity)
         {
-            //RemoveEntityFromDictionary(entity.PerkID, entity.PerkLevelUnlocked, ByPerkIDAndLevelUnlocked);
-            ByFeatID.Remove(entity.FeatID);
+            RemoveFromListIndex(ByPerkIDAndLevelUnlockedIndex, entity.PerkID.ToString(), entity);
+            RemoveFromIndex(ByFeatIDIndex, entity.FeatID.ToString());
         }
 
         protected override void OnSubscribeEvents()
@@ -38,29 +39,30 @@ namespace SWLOR.Game.Server.Caching
 
         public PerkFeat GetByPerkIDAndLevelUnlocked(int perkID, int levelUnlocked)
         {
-            return null;
-            //return GetEntityFromDictionary(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
+            return GetFromListIndex(ByPerkIDAndLevelUnlockedIndex, perkID.ToString()).Single(x => x.PerkLevelUnlocked == levelUnlocked);
         }
 
         public PerkFeat GetByPerkIDAndLevelUnlockedOrDefault(int perkID, int levelUnlocked)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(perkID, levelUnlocked, ByPerkIDAndLevelUnlocked);
+            if (!ExistsByListIndex(ByPerkIDAndLevelUnlockedIndex, perkID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPerkIDAndLevelUnlockedIndex, perkID.ToString()).Single(x => x.PerkLevelUnlocked == levelUnlocked);
         }
 
         public PerkFeat GetByFeatID(int featID)
         {
-            return (PerkFeat)ByFeatID[featID].Clone();
+            return GetFromIndex(ByFeatIDIndex, featID.ToString());
         }
-
+         
         public PerkFeat GetByFeatIDOrDefault(int featID)
         {
-            if (!ByFeatID.ContainsKey(featID))
+            if (!ExistsByIndex(ByFeatIDIndex, featID.ToString()))
             {
                 return default;
             }
 
-            return (PerkFeat)ByFeatID[featID].Clone();
+            return GetFromIndex(ByFeatIDIndex, featID.ToString());
         }
 
         public IEnumerable<PerkFeat> GetAllByIDs(IEnumerable<Feat> perkIDs)
@@ -68,9 +70,9 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<PerkFeat>();
             foreach (var perkID in perkIDs)
             {
-                if (ByFeatID.ContainsKey((int)perkID))
+                if (ExistsByIndex(ByFeatIDIndex, ((int)perkID).ToString()))
                 {
-                    list.Add((PerkFeat)ByFeatID[(int)perkID].Clone());
+                    list.Add(GetFromIndex(ByFeatIDIndex, ((int) perkID).ToString()));
                 }
             }
 
@@ -79,16 +81,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PerkFeat> GetAllByPerkID(int perkID)
         {
-            if(!ByPerkIDAndLevelUnlocked.ContainsKey(perkID))
+            if(!ExistsByListIndex(ByPerkIDAndLevelUnlockedIndex, perkID.ToString()))
                 return new List<PerkFeat>();
 
-            var list = new List<PerkFeat>();
-            foreach (var record in ByPerkIDAndLevelUnlocked[perkID].Values)
-            {
-                list.Add((PerkFeat)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPerkIDAndLevelUnlockedIndex, perkID.ToString());
         }
     }
 }

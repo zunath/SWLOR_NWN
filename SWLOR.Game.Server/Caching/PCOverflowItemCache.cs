@@ -11,16 +11,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<Guid, PCOverflowItem>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCOverflowItem>>();
+        private const string ByPlayerIDIndex = "ByPlayerID";
 
         protected override void OnCacheObjectSet(PCOverflowItem entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCOverflowItem entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -34,16 +34,10 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCOverflowItem> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayerID.ContainsKey(playerID))
+            if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCOverflowItem>();
 
-            var list = new List<PCOverflowItem>();
-            foreach (var record in ByPlayerID[playerID].Values)
-            {
-                list.Add((PCOverflowItem)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
     }
 }

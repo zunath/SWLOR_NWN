@@ -12,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<int, PCSkillPool>> ByPlayerIDAndSkillCategoryID { get; } = new Dictionary<Guid, Dictionary<int, PCSkillPool>>();
-
+        private const string ByPlayerIDAndSkillCategoryIDIndex = "ByPlayerIDAndSkillCategory";
+        
         protected override void OnCacheObjectSet(PCSkillPool entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.SkillCategoryID, entity, ByPlayerIDAndSkillCategoryID);
+            SetIntoListIndex(ByPlayerIDAndSkillCategoryIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCSkillPool entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.SkillCategoryID, ByPlayerIDAndSkillCategoryID);
+            RemoveFromListIndex(ByPlayerIDAndSkillCategoryIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -35,28 +35,26 @@ namespace SWLOR.Game.Server.Caching
 
         public PCSkillPool GetByPlayerIDAndSkillCategoryID(Guid playerID, int skillCategoryID)
         {
-            return null;
-            //return GetEntityFromDictionary(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
+            return GetFromListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString())
+                .Single(x => x.SkillCategoryID == skillCategoryID);
         }
 
         public PCSkillPool GetByPlayerIDAndSkillCategoryIDOrDefault(Guid playerID, int skillCategoryID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, skillCategoryID, ByPlayerIDAndSkillCategoryID);
+            if (!ExistsByListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString())
+                .Single(x => x.SkillCategoryID == skillCategoryID);
         }
 
         public IEnumerable<PCSkillPool> GetByPlayerIDWithLevelsUndistributed(Guid playerID)
         {
-            if(!ByPlayerIDAndSkillCategoryID.ContainsKey(playerID))
+            if(!ExistsByListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString()))
                 return new List<PCSkillPool>();
 
-            var list = new List<PCSkillPool>();
-            foreach (var record in ByPlayerIDAndSkillCategoryID[playerID].Values.Where(x => x.Levels > 0))
-            {
-                list.Add((PCSkillPool)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString())
+                .Where(x => x.Levels > 0);
         }
     }
 }

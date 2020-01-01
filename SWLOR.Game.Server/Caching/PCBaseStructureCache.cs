@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 
@@ -13,29 +14,29 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<Guid, PCBaseStructure>> ByPCBaseID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructure>>();
-        private Dictionary<Guid, double> PowerInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
-        private Dictionary<Guid, double> CPUInUseByPCBaseID { get; } = new Dictionary<Guid, double>();
-        private Dictionary<Guid, Dictionary<Guid, PCBaseStructure>> ByParentPCBaseStructureID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructure>>();
+        private const string ByPCBaseIDIndex = "ByPCBaseID";
+        private const string PowerInUseByPCBaseIDIndex = "PowerInUseByPCBaseID";
+        private const string CPUInUseByPCBaseIDIndex = "CPUInUseByPCBaseID";
+        private const string ByParentPCBaseStructureIDIndex = "ByParentPCBaseStructureID";
 
         protected override void OnCacheObjectSet(PCBaseStructure entity)
         {
-            //SetEntityIntoDictionary(entity.PCBaseID, entity.ID, entity, ByPCBaseID);
-            //RecalculatePowerAndCPU(entity);
-            //if (entity.ParentPCBaseStructureID != null)
-            //{
-            //    SetEntityIntoDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, entity, ByParentPCBaseStructureID);
-            //}
+            SetIntoListIndex(ByPCBaseIDIndex, entity.PCBaseID.ToString(), entity);
+            RecalculatePowerAndCPU(entity);
+            if (entity.ParentPCBaseStructureID != null)
+            {
+                SetIntoListIndex(ByParentPCBaseStructureIDIndex, entity.ParentPCBaseStructureID.ToString(), entity);
+            }
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructure entity)
         {
-            //RemoveEntityFromDictionary(entity.PCBaseID, entity.ID, ByPCBaseID);
-            //RecalculatePowerAndCPU(entity);
-            //if (entity.ParentPCBaseStructureID != null)
-            //{
-            //    RemoveEntityFromDictionary((Guid)entity.ParentPCBaseStructureID, entity.ID, ByParentPCBaseStructureID);
-            //}
+            RemoveFromListIndex(ByPCBaseIDIndex, entity.PCBaseID.ToString(), entity);
+            RecalculatePowerAndCPU(entity);
+            if (entity.ParentPCBaseStructureID != null)
+            {
+                RemoveFromListIndex(ByParentPCBaseStructureIDIndex, entity.ParentPCBaseStructureID.ToString(), entity);
+            }
         }
 
         protected override void OnSubscribeEvents()
@@ -46,8 +47,8 @@ namespace SWLOR.Game.Server.Caching
         {
             double power = 0.0d;
             double cpu = 0.0d;
-            var entities = ByPCBaseID[entity.PCBaseID];
-            foreach (var structure in entities.Values)
+            var entities = GetFromListIndex(ByPCBaseIDIndex, entity.PCBaseID.ToString());
+            foreach (var structure in entities)
             {
                 var baseStructureType = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                 if (baseStructureType.BaseStructureTypeID != (int) Enumeration.BaseStructureType.ControlTower)
@@ -57,8 +58,8 @@ namespace SWLOR.Game.Server.Caching
                 }
             }
 
-            PowerInUseByPCBaseID[entity.PCBaseID] = power;
-            CPUInUseByPCBaseID[entity.PCBaseID] = cpu;
+            DataService.DB.StringSet(PowerInUseByPCBaseIDIndex + ":" + entity.PCBaseID, JsonConvert.SerializeObject(power));
+            DataService.DB.StringSet(CPUInUseByPCBaseIDIndex + ":" + entity.PCBaseID, JsonConvert.SerializeObject(cpu));
         }
 
         public PCBaseStructure GetByID(Guid id)
@@ -75,53 +76,52 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBaseStructure> GetAllByPCBaseID(Guid pcBaseID)
         {
-            if(!ByPCBaseID.ContainsKey(pcBaseID))
+            if(!ExistsByListIndex(ByPCBaseIDIndex, pcBaseID.ToString()))
                 return new List<PCBaseStructure>();
 
-            var list = new List<PCBaseStructure>();
-            foreach (var record in ByPCBaseID[pcBaseID].Values)
-            {
-                list.Add((PCBaseStructure)record.Clone());
-            }
-            return list;
+            return GetFromListIndex(ByPCBaseIDIndex, pcBaseID.ToString());
         }
 
         public double GetPowerInUseByPCBaseID(Guid pcBaseID)
         {
-            if (!PowerInUseByPCBaseID.ContainsKey(pcBaseID)) return 0.0d;
+            var key = PowerInUseByPCBaseIDIndex + ":" + pcBaseID;
+            if (!DataService.DB.KeyExists(key)) return 0.0d;
 
-            return PowerInUseByPCBaseID[pcBaseID];
+            return JsonConvert.DeserializeObject<double>(DataService.DB.StringGet(key));
         }
 
         public double GetCPUInUseByPCBaseID(Guid pcBaseID)
         {
-            if (!CPUInUseByPCBaseID.ContainsKey(pcBaseID)) return 0.0d;
+            var key = CPUInUseByPCBaseIDIndex + ":" + pcBaseID;
+            if (!DataService.DB.KeyExists(key)) return 0.0d;
 
-            return CPUInUseByPCBaseID[pcBaseID];
+            return JsonConvert.DeserializeObject<double>(DataService.DB.StringGet(key));
         }
 
         public PCBaseStructure GetStarshipInteriorByPCBaseIDOrDefault(Guid pcBaseID)
         {
-            return (PCBaseStructure)ByPCBaseID[pcBaseID].Values.SingleOrDefault(x => x.InteriorStyleID != null)?.Clone();
+            if (!ExistsByListIndex(ByPCBaseIDIndex, pcBaseID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPCBaseIDIndex, pcBaseID.ToString())
+                .SingleOrDefault(x => x.InteriorStyleID != null);
         }
 
         public PCBaseStructure GetStarshipExteriorByPCBaseID(Guid pcBaseID)
         {
-            return (PCBaseStructure)ByPCBaseID[pcBaseID].Values.SingleOrDefault(x => x.ExteriorStyleID > 0)?.Clone();
+            if (!ExistsByListIndex(ByPCBaseIDIndex, pcBaseID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPCBaseIDIndex, pcBaseID.ToString())
+                .SingleOrDefault(x => x.ExteriorStyleID > 0);
         }
 
         public IEnumerable<PCBaseStructure> GetAllByParentPCBaseStructureID(Guid parentPCBaseStructureID)
         {
-            if(!ByParentPCBaseStructureID.ContainsKey(parentPCBaseStructureID))
+            if(!ExistsByListIndex(ByParentPCBaseStructureIDIndex, parentPCBaseStructureID.ToString()))
                 return new List<PCBaseStructure>();
 
-            var list = new List<PCBaseStructure>();
-            foreach (var record in ByParentPCBaseStructureID[parentPCBaseStructureID].Values)
-            {
-                list.Add((PCBaseStructure)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByParentPCBaseStructureIDIndex, parentPCBaseStructureID.ToString());
         }
     }
 }

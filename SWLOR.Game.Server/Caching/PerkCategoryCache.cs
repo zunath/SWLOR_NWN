@@ -10,16 +10,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, PerkCategory> ByCategoryID { get; } = new Dictionary<int, PerkCategory>();
+        private const string ByCategoryIDIndex = "ByCategoryID";
 
         protected override void OnCacheObjectSet(PerkCategory entity)
         {
-            ByCategoryID[entity.ID] = (PerkCategory)entity.Clone();
+            SetIntoIndex(ByCategoryIDIndex, entity.ID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PerkCategory entity)
         {
-            ByCategoryID.Remove(entity.ID);
+            RemoveFromIndex(ByCategoryIDIndex, entity.ID.ToString());
         }
 
         protected override void OnSubscribeEvents()
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<PerkCategory>();
             foreach (var perkCategoryID in perkCategoryIDs)
             {
-                list.Add((PerkCategory)ByCategoryID[perkCategoryID].Clone());
+                list.Add(GetFromIndex(ByCategoryIDIndex, perkCategoryID.ToString()));
             }
 
             return list;

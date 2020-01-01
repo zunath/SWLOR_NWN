@@ -12,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<string, PCQuestItemProgress>> ByQuestStatusIDAndResref { get; } = new Dictionary<Guid, Dictionary<string, PCQuestItemProgress>>();
-
+        private const string ByQuestStatusIDIndex = "ByQuestStatusID";
+        
         protected override void OnCacheObjectSet(PCQuestItemProgress entity)
         {
-            //SetEntityIntoDictionary(entity.PCQuestStatusID, entity.Resref, entity, ByQuestStatusIDAndResref);
+            SetIntoListIndex(ByQuestStatusIDIndex, entity.ID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCQuestItemProgress entity)
         {
-            //RemoveEntityFromDictionary(entity.PCQuestStatusID, entity.Resref, ByQuestStatusIDAndResref);
+            RemoveFromListIndex(ByQuestStatusIDIndex, entity.ID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -35,28 +35,24 @@ namespace SWLOR.Game.Server.Caching
 
         public int GetCountByPCQuestStatusID(Guid pcQuestStatusID)
         {
-            return 0;
-            //return ByID.Values.Count(x => x.PCQuestStatusID == pcQuestStatusID);
+            return GetFromListIndex(ByQuestStatusIDIndex, pcQuestStatusID.ToString()).Count();
         }
 
         public PCQuestItemProgress GetByPCQuestStatusIDAndResrefOrDefault(Guid pcQuestStatusID, string resref)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(pcQuestStatusID, resref, ByQuestStatusIDAndResref);
+            if (!ExistsByListIndex(ByQuestStatusIDIndex, pcQuestStatusID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByQuestStatusIDIndex, pcQuestStatusID.ToString())
+                .SingleOrDefault(x => x.Resref == resref);
         }
 
         public IEnumerable<PCQuestItemProgress> GetAllByPCQuestStatusID(Guid pcQuestStatusID)
         {
-            var list = new List<PCQuestItemProgress>();
-            if (!ByQuestStatusIDAndResref.ContainsKey(pcQuestStatusID))
-                return list;
+            if (!ExistsByListIndex( ByQuestStatusIDIndex, pcQuestStatusID.ToString()))
+                return new List<PCQuestItemProgress>();
 
-            foreach (var record in ByQuestStatusIDAndResref[pcQuestStatusID].Values)
-            {
-                list.Add((PCQuestItemProgress)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByQuestStatusIDIndex, pcQuestStatusID.ToString());
         }
     }
 }

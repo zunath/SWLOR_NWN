@@ -12,22 +12,20 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>>();
+        private const string ByPCBaseStructureIDIndex = "ByPCBaseStructureID";
+        private const string ByPlayerIDIndex = "ByPlayerID";
 
-        // Primary INdex: PCBaseStructureID
-        // Secondary Index: PCBaseStructurePermissionID
-        private Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>> ByPCBaseStructureID { get; } = new Dictionary<Guid, Dictionary<Guid, PCBaseStructurePermission>>();
-
+        
         protected override void OnCacheObjectSet(PCBaseStructurePermission entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
-            //SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ID, entity, ByPCBaseStructureID);
+            SetIntoListIndex(ByPCBaseStructureIDIndex, entity.PCBaseStructureID.ToString(), entity);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructurePermission entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
-            //RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ID, ByPCBaseStructureID);
+            RemoveFromListIndex(ByPCBaseStructureIDIndex, entity.PCBaseStructureID.ToString(), entity);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -41,48 +39,34 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCBaseStructurePermission> GetAllByPlayerID(Guid playerID)
         {
-            if (!ByPlayerID.ContainsKey(playerID))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCBaseStructurePermission>();
 
-            var list = new List<PCBaseStructurePermission>();
-            foreach (var record in ByPlayerID[playerID].Values)
-            {
-                list.Add((PCBaseStructurePermission)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
         public PCBaseStructurePermission GetPublicPermissionOrDefault(Guid pcBaseStructureID)
         {
-            return null;
-            //return (PCBaseStructurePermission)ByID.Values.SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission)?.Clone();
+            return (PCBaseStructurePermission)GetAll().SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.IsPublicPermission)?.Clone();
         }
 
         public PCBaseStructurePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseStructureID)
         {
-            if (!ByPlayerID.ContainsKey(playerID))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
 
-            var permissions = ByPlayerID[playerID].Values;
+            var permissions = GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
             return (PCBaseStructurePermission)permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseStructureID == pcBaseStructureID)?.Clone();
         }
 
         public IEnumerable<PCBaseStructurePermission> GetAllByPCBaseStructureID(Guid pcBaseStructureID)
         {
-            if (!ByPCBaseStructureID.ContainsKey(pcBaseStructureID))
+            if (!ExistsByListIndex(ByPCBaseStructureIDIndex, pcBaseStructureID.ToString()))
             {
                 return new List<PCBaseStructurePermission>();
             }
 
-            var list = new List<PCBaseStructurePermission>();
-
-            foreach (var record in ByPCBaseStructureID[pcBaseStructureID].Values)
-            {
-                list.Add((PCBaseStructurePermission)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPCBaseStructureIDIndex, pcBaseStructureID.ToString());
         }
     }
 }

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -11,22 +14,22 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<string, PCBaseStructureItem> ByItemGlobalID { get; } = new Dictionary<string, PCBaseStructureItem>();
-        private Dictionary<Guid, Dictionary<string, PCBaseStructureItem>> ByPCBaseStructureIDAndItemGlobalID { get; } = new Dictionary<Guid, Dictionary<string, PCBaseStructureItem>>();
-        private Dictionary<Guid, int> CountsByPCBaseStructureID { get;  } = new Dictionary<Guid, int>();
+        private const string ByItemGlobalIDIndex = "ByItemGlobalID";
+        private const string ByPCBaseStructureIDIndex = "ByPCBaseStructureID";
+        private const string CountsByPCBaseStructureIDIndex = "CountsByPCBaseStructureID";
 
         protected override void OnCacheObjectSet(PCBaseStructureItem entity)
         {
-            //ByItemGlobalID[entity.ItemGlobalID] = (PCBaseStructureItem)entity.Clone();
-            //SetEntityIntoDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, entity, ByPCBaseStructureIDAndItemGlobalID);
-            //SetCountsByPCBaseStructureID(entity);
+            SetIntoIndex(ByItemGlobalIDIndex, entity.ItemGlobalID, entity);
+            SetIntoListIndex(ByPCBaseStructureIDIndex, entity.PCBaseStructureID.ToString(), entity);
+            SetCountsByPCBaseStructureID(entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructureItem entity)
         {
-            //ByItemGlobalID.Remove(entity.ItemGlobalID);
-            //RemoveEntityFromDictionary(entity.PCBaseStructureID, entity.ItemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
-            //RemoveCountsByPCBaseStructureID(entity);
+            RemoveFromIndex(ByItemGlobalIDIndex, entity.ItemGlobalID);
+            RemoveFromListIndex(ByPCBaseStructureIDIndex, entity.PCBaseStructureID.ToString(), entity);
+            RemoveCountsByPCBaseStructureID(entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -35,16 +38,23 @@ namespace SWLOR.Game.Server.Caching
 
         private void SetCountsByPCBaseStructureID(PCBaseStructureItem entity)
         {
-            if (!CountsByPCBaseStructureID.ContainsKey(entity.PCBaseStructureID))
-                CountsByPCBaseStructureID[entity.PCBaseStructureID] = 0;
-            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] + 1;
+            var key = CountsByPCBaseStructureIDIndex + ":" + entity.PCBaseStructureID;
+            if (!DataService.DB.KeyExists(key))
+                DataService.DB.StringSet(key, JsonConvert.SerializeObject(0));
+
+            var count = JsonConvert.DeserializeObject<int>(DataService.DB.StringGet(key)) + 1;
+            DataService.DB.StringSet( key, JsonConvert.SerializeObject(count));
         }
 
         private void RemoveCountsByPCBaseStructureID(PCBaseStructureItem entity)
         {
-            if (!CountsByPCBaseStructureID.ContainsKey(entity.PCBaseStructureID))
-                CountsByPCBaseStructureID[entity.PCBaseStructureID] = 0;
-            CountsByPCBaseStructureID[entity.PCBaseStructureID] = CountsByPCBaseStructureID[entity.PCBaseStructureID] - 1;
+            var key = CountsByPCBaseStructureIDIndex + ":" + entity.PCBaseStructureID;
+
+            if (!DataService.DB.KeyExists(key))
+                DataService.DB.StringSet(key, JsonConvert.SerializeObject(0));
+
+            var count = JsonConvert.DeserializeObject<int>(DataService.DB.StringGet(key)) - 1;
+            DataService.DB.StringSet(key, JsonConvert.SerializeObject(count));
         }
 
         public PCBaseStructureItem GetByID(Guid id)
@@ -54,35 +64,34 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructureItem GetByItemGlobalID(string itemGlobalID)
         {
-            return (PCBaseStructureItem)ByItemGlobalID[itemGlobalID].Clone();
+            return GetFromIndex(ByItemGlobalIDIndex, itemGlobalID);
         }
 
         public PCBaseStructureItem GetByPCBaseStructureIDAndItemGlobalIDOrDefault(Guid pcBaseStructureID, string itemGlobalID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(pcBaseStructureID, itemGlobalID, ByPCBaseStructureIDAndItemGlobalID);
+            if (!ExistsByListIndex(ByPCBaseStructureIDIndex, pcBaseStructureID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPCBaseStructureIDIndex, pcBaseStructureID.ToString())
+                .SingleOrDefault(x => x.ItemGlobalID == itemGlobalID);
         }
 
         public int GetNumberOfItemsContainedBy(Guid pcBaseStructureID)
         {
-            if (!CountsByPCBaseStructureID.ContainsKey(pcBaseStructureID))
+            var key = CountsByPCBaseStructureIDIndex + ":" + pcBaseStructureID;
+
+            if (!DataService.DB.KeyExists(key))
                 return 0;
 
-            return CountsByPCBaseStructureID[pcBaseStructureID];
+            return JsonConvert.DeserializeObject<int>(key);
         }
 
         public IEnumerable<PCBaseStructureItem> GetAllByPCBaseStructureID(Guid pcBaseStructureID)
         {
-            if(!ByPCBaseStructureIDAndItemGlobalID.ContainsKey(pcBaseStructureID))
+            if(!ExistsByListIndex(ByPCBaseStructureIDIndex, pcBaseStructureID.ToString()))
                 return new List<PCBaseStructureItem>();
 
-            var list = new List<PCBaseStructureItem>();
-            foreach (var record in ByPCBaseStructureIDAndItemGlobalID[pcBaseStructureID].Values)
-            {
-                list.Add((PCBaseStructureItem)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPCBaseStructureIDIndex, pcBaseStructureID.ToString());
         }
     }
 }

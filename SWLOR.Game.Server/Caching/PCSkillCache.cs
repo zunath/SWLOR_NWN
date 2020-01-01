@@ -11,19 +11,19 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<Guid, PCSkill>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCSkill>>();
-        private Dictionary<Guid, Dictionary<int, PCSkill>> ByPlayerIDAndSkillID { get; } = new Dictionary<Guid, Dictionary<int, PCSkill>>();
+        private const string ByPlayerIDIndex = "ByPlayerID";
+        private const string ByPlayerIDAndSkillIDIndex = "ByPlayerIDAndSkillID";
 
         protected override void OnCacheObjectSet(PCSkill entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
-            //SetEntityIntoDictionary(entity.PlayerID, entity.SkillID, entity, ByPlayerIDAndSkillID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+            SetIntoIndex(ByPlayerIDAndSkillIDIndex, entity.PlayerID + ":" + entity.SkillID, entity);
         }
 
         protected override void OnCacheObjectRemoved(PCSkill entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.SkillID, ByPlayerIDAndSkillID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
+            RemoveFromIndex(ByPlayerIDAndSkillIDIndex, entity.PlayerID + ":" + entity.SkillID);
         }
 
         protected override void OnSubscribeEvents()
@@ -37,30 +37,25 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCSkill> GetAllByPlayerID(Guid playerID)
         {
-            if (!ByPlayerID.ContainsKey(playerID))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
             {
                 return new List<PCSkill>();
             }
 
-            var list = new List<PCSkill>();
-            foreach (var record in ByPlayerID[playerID].Values)
-            {
-                list.Add((PCSkill)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
         public PCSkill GetByPlayerIDAndSkillID(Guid playerID, int skillID)
         {
-            return null;
-            //return GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID);
+            return GetFromIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID);
         }
 
         public PCSkill GetByPlayerIDAndSkillIDOrDefault(Guid playerID, int skillID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, skillID, ByPlayerIDAndSkillID);
+            if (!ExistsByIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID))
+                return default;
+
+            return GetFromIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID);
         }
 
         public IEnumerable<PCSkill> GetAllByPlayerIDAndSkillIDs(Guid playerID, IEnumerable<int> skillIDs)
@@ -68,7 +63,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<PCSkill>();
             foreach(var skillID in skillIDs)
             {
-                //list.Add(GetEntityFromDictionary(playerID, skillID, ByPlayerIDAndSkillID));
+                list.Add(GetFromIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID));
             }
 
             return list;

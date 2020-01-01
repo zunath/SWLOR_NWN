@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -12,11 +11,8 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Guid> ByPrimaryResidencePCBaseID { get; } = new Dictionary<Guid, Guid>();
-
-        // Links PrimaryResidencePCBaseStructureID to PlayerID
-        private Dictionary<Guid, Guid> ByPrimaryResidencePCBaseStructureID { get; }  = new Dictionary<Guid, Guid>();
-
+        private const string ByPrimaryResidencePCBaseIDIndex = "ByPrimaryResidencePCBaseID";
+        private const string ByPrimaryResidencePCBaseStructureIDIndex = "ByPrimaryResidencePCBaseStructureID";
 
         protected override void OnCacheObjectSet(Player entity)
         {
@@ -39,7 +35,7 @@ namespace SWLOR.Game.Server.Caching
             // Entity has a primary residence. Set it into the cache.
             if (entity.PrimaryResidencePCBaseID != null)
             {
-                ByPrimaryResidencePCBaseID[(Guid)entity.PrimaryResidencePCBaseID] = entity.ID;
+                SetIntoIndex(ByPrimaryResidencePCBaseIDIndex, entity.PrimaryResidencePCBaseID.ToString(), entity);
             }
             // Entity doesn't have a primary residence. Look for any entries which do and remove them.
             else
@@ -50,11 +46,10 @@ namespace SWLOR.Game.Server.Caching
 
         private void RemoveByPrimaryResidencePCBaseID(Player entity)
         {
-            var existingPlayers = ByPrimaryResidencePCBaseID.Where(x => x.Value == entity.ID).ToList();
-            for(int x = existingPlayers.Count - 1; x >= 0; x--)
+            if (entity.PrimaryResidencePCBaseID != null &&
+                ExistsByIndex(ByPrimaryResidencePCBaseIDIndex, entity.PrimaryResidencePCBaseID.ToString()))
             {
-                var existing = existingPlayers.ElementAt(x);
-                ByPrimaryResidencePCBaseID.Remove(existing.Key);
+                RemoveFromIndex(ByPrimaryResidencePCBaseIDIndex, entity.PrimaryResidencePCBaseID.ToString());
             }
         }
 
@@ -63,7 +58,7 @@ namespace SWLOR.Game.Server.Caching
             // Entity has a primary residence. Set it into the cache.
             if (entity.PrimaryResidencePCBaseStructureID != null)
             {
-                ByPrimaryResidencePCBaseStructureID[(Guid) entity.PrimaryResidencePCBaseStructureID] = entity.ID;
+                SetIntoIndex(ByPrimaryResidencePCBaseStructureIDIndex, entity.PrimaryResidencePCBaseStructureID.ToString(), entity);
             }
             // Entity doesn't have a primary residence. Look for any entries which do and remove them.
             else
@@ -74,11 +69,10 @@ namespace SWLOR.Game.Server.Caching
 
         private void RemoveByPrimaryResidencePCBaseStructureID(Player entity)
         {
-            var existingPlayers = ByPrimaryResidencePCBaseStructureID.Where(x => x.Value == entity.ID).ToList();
-            for(int x = existingPlayers.Count - 1; x >= 0; x--)
+            if (entity.PrimaryResidencePCBaseStructureID != null &&
+                ExistsByIndex(ByPrimaryResidencePCBaseStructureIDIndex, entity.PrimaryResidencePCBaseStructureID.ToString()))
             {
-                var existing = existingPlayers.ElementAt(x);
-                ByPrimaryResidencePCBaseStructureID.Remove(existing.Key);
+                RemoveFromIndex(ByPrimaryResidencePCBaseStructureIDIndex, entity.PrimaryResidencePCBaseStructureID.ToString());
             }
         }
 
@@ -110,13 +104,13 @@ namespace SWLOR.Game.Server.Caching
         /// <returns></returns>
         public Player GetByPrimaryResidencePCBaseIDOrDefault(Guid pcBaseID)
         {
-            if (!ByPrimaryResidencePCBaseID.ContainsKey(pcBaseID))
+            if (!ExistsByIndex(ByPrimaryResidencePCBaseIDIndex, pcBaseID.ToString()))
             {
                 return default;
             }
             else
             {
-                var playerID = ByPrimaryResidencePCBaseID[pcBaseID];
+                var playerID = GetFromIndex(ByPrimaryResidencePCBaseIDIndex, pcBaseID.ToString());
                 return ByID(playerID);
             }
         }
@@ -128,13 +122,13 @@ namespace SWLOR.Game.Server.Caching
         /// <returns></returns>
         public Player GetByPrimaryResidencePCBaseStructureIDOrDefault(Guid pcStructureID)
         {
-            if (!ByPrimaryResidencePCBaseStructureID.ContainsKey(pcStructureID))
+            if (!ExistsByIndex(ByPrimaryResidencePCBaseStructureIDIndex, pcStructureID.ToString()))
             {
                 return default;
             }
             else
             {
-                var playerID = ByPrimaryResidencePCBaseStructureID[pcStructureID];
+                var playerID = GetFromIndex(ByPrimaryResidencePCBaseStructureIDIndex, pcStructureID.ToString());
                 return ByID(playerID);
             }
         }

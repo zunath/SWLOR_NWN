@@ -12,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<string, PCObjectVisibility>> ByPlayer { get; } = new Dictionary<Guid, Dictionary<string, PCObjectVisibility>>();
-
+        private const string ByPlayerIDIndex = "ByPlayerID";
+        
         protected override void OnCacheObjectSet(PCObjectVisibility entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.VisibilityObjectID, entity, ByPlayer);
+            SetIntoListIndex(ByPlayerIDIndex, entity.VisibilityObjectID, entity);
         }
 
         protected override void OnCacheObjectRemoved(PCObjectVisibility entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.VisibilityObjectID, ByPlayer);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.VisibilityObjectID, entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -35,22 +35,19 @@ namespace SWLOR.Game.Server.Caching
 
         public PCObjectVisibility GetByPlayerIDAndVisibilityObjectIDOrDefault(Guid playerID, string visibilityObjectID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, visibilityObjectID, ByPlayer);
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .SingleOrDefault(x => x.VisibilityObjectID == visibilityObjectID);
         }
 
         public IEnumerable<PCObjectVisibility> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayer.ContainsKey(playerID))
+            if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCObjectVisibility>();
 
-            var list = new List<PCObjectVisibility>();
-            foreach (var record in ByPlayer[playerID].Values)
-            {
-                list.Add((PCObjectVisibility)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
         public IEnumerable<PCObjectVisibility> GetAllByPlayerIDsAndVisibilityObjectID(IEnumerable<Guid> playerIDs, string visibilityObjectID)
@@ -59,9 +56,12 @@ namespace SWLOR.Game.Server.Caching
 
             foreach (var playerID in playerIDs)
             {
-                if (!ByPlayer.ContainsKey(playerID)) continue;
+                if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString())) continue;
 
-                var results = ByPlayer[playerID].Where(x => x.Key == visibilityObjectID).Select(s => (PCObjectVisibility)s.Value.Clone());
+                var results = GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                    .Where(x => x.VisibilityObjectID == visibilityObjectID)
+                    .Select(s => s);
+
                 list.AddRange(results);
             }
 

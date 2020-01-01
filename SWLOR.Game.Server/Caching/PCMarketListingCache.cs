@@ -11,19 +11,19 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<int, Dictionary<Guid, PCMarketListing>> ByMarketRegionID { get; } = new Dictionary<int, Dictionary<Guid, PCMarketListing>>();
-        private Dictionary<Guid, Dictionary<Guid, PCMarketListing>> BySellerPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCMarketListing>>();
+        private const string ByMarketRegionIDIndex = "ByMarketRegionID";
+        private const string BySellerPlayerIDIndex = "BySellerPlayerID";
 
         protected override void OnCacheObjectSet(PCMarketListing entity)
         {
-            //SetEntityIntoDictionary(entity.MarketRegionID, entity.ID, entity, ByMarketRegionID);
-            //SetEntityIntoDictionary(entity.SellerPlayerID, entity.ID, entity, BySellerPlayerID);
+            SetIntoListIndex(ByMarketRegionIDIndex, entity.MarketRegionID.ToString(), entity);
+            SetIntoListIndex(BySellerPlayerIDIndex, entity.SellerPlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCMarketListing entity)
         {
-            //RemoveEntityFromDictionary(entity.MarketRegionID, entity.ID, ByMarketRegionID);
-            //RemoveEntityFromDictionary(entity.SellerPlayerID, entity.ID, BySellerPlayerID);
+            RemoveFromListIndex(ByMarketRegionIDIndex, entity.MarketRegionID.ToString(), entity);
+            RemoveFromListIndex(BySellerPlayerIDIndex, entity.SellerPlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -45,31 +45,18 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCMarketListing> GetAllByMarketRegionID(int marketRegionID)
         {
-            if(!ByMarketRegionID.ContainsKey(marketRegionID))
+            if(!ExistsByListIndex(ByMarketRegionIDIndex, marketRegionID.ToString()))
                 return new List<PCMarketListing>();
 
-            var list = new List<PCMarketListing>();
-
-            foreach (var record in ByMarketRegionID[marketRegionID].Values)
-            {
-                list.Add((PCMarketListing)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByMarketRegionIDIndex, marketRegionID.ToString());
         }
 
         public IEnumerable<PCMarketListing> GetAllBySellerPlayerID(Guid sellerPlayerID)
         {
-            if(!BySellerPlayerID.ContainsKey(sellerPlayerID))
+            if(!ExistsByListIndex(BySellerPlayerIDIndex, sellerPlayerID.ToString()))
                 return new List<PCMarketListing>();
 
-            var list = new List<PCMarketListing>();
-            foreach (var record in BySellerPlayerID[sellerPlayerID].Values)
-            {
-                list.Add((PCMarketListing)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(BySellerPlayerIDIndex, sellerPlayerID.ToString());
         }
     }
 }

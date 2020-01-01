@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -11,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<int, PCRegionalFame>> ByPlayerIDAndFameRegionID { get; } = new Dictionary<Guid, Dictionary<int, PCRegionalFame>>();
-
+        private const string ByPlayerID = "ByPlayerID";
+        
         protected override void OnCacheObjectSet(PCRegionalFame entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.FameRegionID, entity, ByPlayerIDAndFameRegionID);
+            SetIntoListIndex(ByPlayerID, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCRegionalFame entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.FameRegionID, ByPlayerIDAndFameRegionID);
+            RemoveFromListIndex(ByPlayerID, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -34,8 +35,11 @@ namespace SWLOR.Game.Server.Caching
 
         public PCRegionalFame GetByPlayerIDAndFameRegionIDOrDefault(Guid playerID, int fameRegionID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, fameRegionID, ByPlayerIDAndFameRegionID);
+            if (!ExistsByIndex(ByPlayerID, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerID, playerID.ToString())
+                .SingleOrDefault(x => x.FameRegionID == fameRegionID);
         }
     }
 }

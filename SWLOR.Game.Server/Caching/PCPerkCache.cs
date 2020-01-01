@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -11,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<int, PCPerk>> ByPlayerAndPerkID { get; } = new Dictionary<Guid, Dictionary<int, PCPerk>>();
+        private const string ByPlayerIDIndex = "ByPlayerID";
 
         protected override void OnCacheObjectSet(PCPerk entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.PerkID, entity, ByPlayerAndPerkID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCPerk entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.PerkID, ByPlayerAndPerkID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -34,30 +35,27 @@ namespace SWLOR.Game.Server.Caching
 
         public PCPerk GetByPlayerAndPerkID(Guid playerID, int perkID)
         {
-            return null;
-            //return GetEntityFromDictionary(playerID, perkID, ByPlayerAndPerkID);
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .Single(x => x.PerkID == perkID);
         }
 
         public PCPerk GetByPlayerAndPerkIDOrDefault(Guid playerID, int perkID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, perkID, ByPlayerAndPerkID);
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .SingleOrDefault(x => x.PerkID == perkID);
         }
 
         public IEnumerable<PCPerk> GetAllByPlayerID(Guid playerID)
         {
-            if (!ByPlayerAndPerkID.ContainsKey(playerID))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
             {
                 return new List<PCPerk>();
             }
 
-            var list = new List<PCPerk>();
-            foreach (var record in ByPlayerAndPerkID[playerID].Values)
-            {
-                list.Add((PCPerk)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
     }
 }

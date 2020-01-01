@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching
@@ -11,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<int, PCQuestStatus>> ByPlayerAndQuestID { get; } = new Dictionary<Guid, Dictionary<int, PCQuestStatus>>();
-
+        private const string ByPlayerIDIndex = "ByPlayerID";
+        
         protected override void OnCacheObjectSet(PCQuestStatus entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.QuestID, entity, ByPlayerAndQuestID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCQuestStatus entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.QuestID, ByPlayerAndQuestID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -34,27 +35,25 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestStatus GetByPlayerAndQuestID(Guid playerID, int questID)
         {
-            return null;
-            //return GetEntityFromDictionary(playerID, questID, ByPlayerAndQuestID);
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .Single(x => x.QuestID == questID);
         }
 
         public PCQuestStatus GetByPlayerAndQuestIDOrDefault(Guid playerID, int questID)
         {
-            return null;
-            //return GetEntityFromDictionaryOrDefault(playerID, questID, ByPlayerAndQuestID);
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
+                return default;
+
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .SingleOrDefault(x => x.QuestID == questID);
         }
 
         public IEnumerable<PCQuestStatus> GetAllByPlayerID(Guid playerID)
         {
-            if(!ByPlayerAndQuestID.ContainsKey(playerID))
+            if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCQuestStatus>();
 
-            var list = new List<PCQuestStatus>();
-            foreach (var record in ByPlayerAndQuestID[playerID].Values)
-            {
-                list.Add((PCQuestStatus)record.Clone());
-            }
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
     }

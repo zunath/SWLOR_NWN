@@ -12,16 +12,16 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        private Dictionary<Guid, Dictionary<Guid, PCQuestKillTargetProgress>> ByPlayerID { get; } = new Dictionary<Guid, Dictionary<Guid, PCQuestKillTargetProgress>>();
-
+        private const string ByPlayerIDIndex = "ByPlayerID";
+        
         protected override void OnCacheObjectSet(PCQuestKillTargetProgress entity)
         {
-            //SetEntityIntoDictionary(entity.PlayerID, entity.ID, entity, ByPlayerID);
+            SetIntoListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnCacheObjectRemoved(PCQuestKillTargetProgress entity)
         {
-            //RemoveEntityFromDictionary(entity.PlayerID, entity.ID, ByPlayerID);
+            RemoveFromListIndex(ByPlayerIDIndex, entity.PlayerID.ToString(), entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -35,31 +35,20 @@ namespace SWLOR.Game.Server.Caching
 
         public IEnumerable<PCQuestKillTargetProgress> GetAllByPlayerIDAndPCQuestStatusID(Guid playerID, Guid pcQuestStatusID)
         {
-            if (!ByPlayerID.ContainsKey(playerID))
+            if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCQuestKillTargetProgress>();
 
-            var list = new List<PCQuestKillTargetProgress>();
-
-            foreach (var record in ByPlayerID[playerID].Values.Where(x => x.PCQuestStatusID == pcQuestStatusID))
-            {
-                list.Add((PCQuestKillTargetProgress)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .Where(x => x.PCQuestStatusID == pcQuestStatusID);
         }
 
         public IEnumerable<PCQuestKillTargetProgress> GetAllByPlayerIDAndNPCGroupID(Guid playerID, int npcGroupID)
         {
-            if(!ByPlayerID.ContainsKey(playerID))
+            if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCQuestKillTargetProgress>();
 
-            var list = new List<PCQuestKillTargetProgress>();
-            foreach(var record in ByPlayerID[playerID].Values.Where(x => x.NPCGroupID == npcGroupID))
-            {
-                list.Add((PCQuestKillTargetProgress)record.Clone());
-            }
-
-            return list;
+            return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
+                .Where(x => x.NPCGroupID == npcGroupID);
         }
     }
 }

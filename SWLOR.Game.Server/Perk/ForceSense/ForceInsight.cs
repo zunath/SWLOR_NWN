@@ -11,6 +11,17 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class ForceInsight : IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceInsight;
+        public string Name => "Force Insight";
+        public bool IsActive => true;
+        public string Description => "The caster boosts their AB and AC. Only affects themselves.";
+        public PerkCategoryType Category => PerkCategoryType.ForceSense;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.BattleAndForceInsight;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 25;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -23,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

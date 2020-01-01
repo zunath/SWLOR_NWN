@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Blaster
     public class PlasmaCell: IPerkHandler
     {
         public PerkType PerkType => PerkType.PlasmaCell;
+        public string Name => "Plasma Cell";
+        public bool IsActive => true;
+        public string Description => "Your attacks have a chance to inflict additional elemental damage over time on each hit. Must be equipped with a Blaster Pistol or Blaster Rifle.";
+        public PerkCategoryType Category => PerkCategoryType.FirearmsGeneral;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.PlasmaCell;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

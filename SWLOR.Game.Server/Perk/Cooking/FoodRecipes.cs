@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Cooking
     public class FoodRecipes : IPerkHandler
     {
         public PerkType PerkType => PerkType.FoodRecipes;
+        public string Name => "Food Recipes";
+        public bool IsActive => false;
+        public string Description => "Unlocks additional food recipes on every odd level (1, 3, 5, 7) and adds an enhancement slot for every even level (2, 4, 6, 8) for cooking.";
+        public PerkCategoryType Category => PerkCategoryType.Cooking;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Cooking
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

@@ -10,6 +10,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForceLightning: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceLightning;
+        public string Name => "Force Lightning";
+        public bool IsActive => true;
+        public string Description => "Deals electrical damage over time to a single target.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceLightning;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Dark;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -22,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

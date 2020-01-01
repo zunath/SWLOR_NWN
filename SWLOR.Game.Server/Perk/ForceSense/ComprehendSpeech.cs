@@ -8,6 +8,17 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class ComprehendSpeech: IPerkHandler
     {
         public PerkType PerkType => PerkType.ComprehendSpeech;
+        public string Name => "Comprehend Speech";
+        public bool IsActive => true;
+        public string Description => "The caster improves their ability to understand other languages.";
+        public PerkCategoryType Category => PerkCategoryType.ForceSense;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ComprehendSpeech;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -20,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

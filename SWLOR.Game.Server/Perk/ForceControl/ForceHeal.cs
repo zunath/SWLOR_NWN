@@ -9,6 +9,17 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class ForceHeal: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceHeal;
+        public string Name => "Force Heal";
+        public bool IsActive => true;
+        public string Description => "Restores HP on a single target over time.";
+        public PerkCategoryType Category => PerkCategoryType.ForceControl;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Light;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
@@ -21,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

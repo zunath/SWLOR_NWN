@@ -12,6 +12,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForceStun: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceStun;
+        public string Name => "Force Stun";
+        public bool IsActive => true;
+        public string Description => "Tranquilises an enemy or slows their reaction time.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.ForceStun;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 10;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.TargetOnly;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Light;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWCreature targetCreature = oTarget.Object;
@@ -51,7 +62,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

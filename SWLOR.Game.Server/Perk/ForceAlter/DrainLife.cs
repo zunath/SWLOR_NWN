@@ -10,6 +10,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class DrainLife: IPerkHandler
     {
         public PerkType PerkType => PerkType.DrainLife;
+        public string Name => "Drain Life";
+        public bool IsActive => true;
+        public string Description => "Steals HP from a single target every second.";
+        public PerkCategoryType Category => PerkCategoryType.ForceAlter;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.DrainLife;
+        public PerkExecutionType ExecutionType => PerkExecutionType.ConcentrationAbility;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Dark;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             if (!oTarget.IsCreature)
@@ -28,7 +39,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

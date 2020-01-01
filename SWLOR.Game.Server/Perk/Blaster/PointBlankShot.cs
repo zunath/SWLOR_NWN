@@ -9,6 +9,16 @@ namespace SWLOR.Game.Server.Perk.Blaster
     public class PointBlankShot: IPerkHandler
     {
         public PerkType PerkType => PerkType.PointBlankShot;
+        public string Name => "Point Blank Shot";
+        public bool IsActive => true;
+        public string Description => "Negates the -4 penalty for using missile weapons in melee and gains +1 to attack roll and damage with ranged weapons when the target is within 15 feet.";
+        public PerkCategoryType Category => PerkCategoryType.FirearmsGeneral;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.EquipmentBased;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -22,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

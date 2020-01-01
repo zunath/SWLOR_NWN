@@ -8,6 +8,16 @@ namespace SWLOR.Game.Server.Perk.General
     public class Meditate: IPerkHandler
     {
         public PerkType PerkType => PerkType.Meditate;
+        public string Name => "Meditate";
+        public bool IsActive => true;
+        public string Description => "Restores FP quickly as long as you stay in one place. Must be out of combat to use. Moving or combat will interrupt the ability. Shares a cooldown with the Rest perk.";
+        public PerkCategoryType Category => PerkCategoryType.General;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.RestAndMeditate;
+        public PerkExecutionType ExecutionType => PerkExecutionType.CombatAbility;
+        public bool IsTargetSelfOnly => true;
+        public int Enmity => 1;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.AllTaggedTargets;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -24,7 +34,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 1f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

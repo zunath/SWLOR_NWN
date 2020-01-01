@@ -6,6 +6,16 @@ namespace SWLOR.Game.Server.Perk.Engineering
     public class LightsaberBlueprints : IPerkHandler
     {
         public PerkType PerkType => PerkType.LightsaberBlueprints;
+        public string Name => "Lightsaber Blueprints";
+        public bool IsActive => true;
+        public string Description => "Unlocks new lightsaber blueprints on every odd level (1, 3, 5, 7, 9) and adds an enhancement slot for every even level (2, 4, 6, 8, 10) for engineering.";
+        public PerkCategoryType Category => PerkCategoryType.Engineering;
+        public PerkCooldownGroup CooldownGroup => PerkCooldownGroup.None;
+        public PerkExecutionType ExecutionType => PerkExecutionType.None;
+        public bool IsTargetSelfOnly => false;
+        public int Enmity => 0;
+        public EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
+        public ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
@@ -19,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Engineering
 
         public float CastingTime(NWCreature oPC, int spellTier)
         {
-            return baseCastingTime;
+            return 0f;
         }
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)

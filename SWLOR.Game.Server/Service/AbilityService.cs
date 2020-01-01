@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             if (perkFeat == null) return false;
 
             // Retrieve the perk information.
-            Data.Entity.Perk perk = DataService.Perk.GetByIDOrDefault(perkFeat.PerkID);
+            var perk = PerkService.GetPerkHandler(perkFeat.PerkID);
 
             // No perk could be found. Exit early.
             if (perk == null) return false;
@@ -108,16 +108,16 @@ namespace SWLOR.Game.Server.Service
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 
             // Get the creature's perk level.
-            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
+            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.PerkType);
 
             // If player is disabling an existing stance, remove that effect.
-            if (perk.ExecutionTypeID == PerkExecutionType.Stance)
+            if (perk.ExecutionType == PerkExecutionType.Stance)
             {
                 // Can't process NPC stances at the moment. Need to do some more refactoring before this is possible.
                 // todo: handle NPC stances.
                 if (!activator.IsPlayer) return false;
 
-                PCCustomEffect stanceEffect = DataService.PCCustomEffect.GetByStancePerkOrDefault(activator.GlobalID, perk.ID);
+                PCCustomEffect stanceEffect = DataService.PCCustomEffect.GetByStancePerkOrDefault(activator.GlobalID, (int)perk.PerkType);
 
                 if (stanceEffect != null)
                 {
@@ -183,11 +183,11 @@ namespace SWLOR.Game.Server.Service
             // If we're executing a concentration ability, check and see if the activator currently has this ability
             // active. If it's active, then we immediately remove its effect and bail out.
             // Any other ability (including other concentration abilities) execute as normal.
-            if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
+            if (perk.ExecutionType == PerkExecutionType.ConcentrationAbility)
             {
                 // Retrieve the concentration effect for this creature.
                 var concentrationEffect = GetActiveConcentrationEffect(activator);
-                if ((int)concentrationEffect.Type == perk.ID)
+                if (concentrationEffect.Type == perk.PerkType)
                 {
                     // It's active. Time to disable it.
                     EndConcentrationEffect(activator);
@@ -472,9 +472,9 @@ namespace SWLOR.Game.Server.Service
             EndConcentrationEffect(player);
         }
         
-        public static void ApplyEnmity(NWCreature attacker, NWCreature target, Data.Entity.Perk perk)
+        public static void ApplyEnmity(NWCreature attacker, NWCreature target, IPerkHandler perk)
         {
-            switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
+            switch (perk.EnmityAdjustmentType)
             {
                 case EnmityAdjustmentRuleType.AllTaggedTargets:
                     EnmityService.AdjustEnmityOnAllTaggedCreatures(attacker, perk.Enmity);
@@ -486,7 +486,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:
-                    var handler = PerkService.GetPerkHandler(perk.ID);
+                    var handler = PerkService.GetPerkHandler(perk.PerkType);
                     handler.OnCustomEnmityRule(attacker, perk.Enmity);
                     break;
             }

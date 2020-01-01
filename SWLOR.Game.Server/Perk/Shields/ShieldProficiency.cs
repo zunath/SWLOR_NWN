@@ -37,11 +37,6 @@ namespace SWLOR.Game.Server.Perk.Shields
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
-        {
-            return null;
-        }
-
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }

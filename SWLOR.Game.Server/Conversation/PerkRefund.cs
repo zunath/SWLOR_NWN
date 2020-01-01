@@ -247,9 +247,9 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private void RemovePerkFeat(Data.Entity.Perk perk)
+        private void RemovePerkFeat(IPerkHandler perk)
         {
-            var feats = DataService.PerkFeat.GetAllByPerkID(perk.ID);
+            var feats = DataService.PerkFeat.GetAllByPerkID((int)perk.PerkType);
 
             foreach (var feat in feats)
             {

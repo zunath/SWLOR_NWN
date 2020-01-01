@@ -57,11 +57,6 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return cooldown;
         }
 
-        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
-        {
-            return baseCooldownCategoryID;
-        }
-
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             float minimum = creature.Facing - 20;

@@ -28,11 +28,6 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
-        {
-            return baseCooldownCategoryID;
-        }
-
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Imp_Will_Saving_Throw_Use), target);

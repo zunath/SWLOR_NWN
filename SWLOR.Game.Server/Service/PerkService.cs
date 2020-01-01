@@ -350,9 +350,9 @@ namespace SWLOR.Game.Server.Service
             }).ToList();
         }
 
-        public static Data.Entity.Perk GetPerkByID(int perkID)
+        public static IPerkHandler GetPerkByID(PerkType perkType)
         {
-            return DataService.Perk.GetByID(perkID);
+            return GetPerkHandler(perkType);
         }
 
         public static PCPerk GetPCPerkByID(Guid playerID, int perkID)

@@ -43,11 +43,6 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
-        {
-            return baseCooldownCategoryID;
-        }
-
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }

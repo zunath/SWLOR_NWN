@@ -35,11 +35,6 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
-        {
-            return baseCooldownCategoryID;
-        }
-
         public void OnImpact(NWCreature creature, NWObject target, int level, int spellTier)
         {
             int damage;

@@ -47,11 +47,6 @@ namespace SWLOR.Game.Server.Perk.General
             }
         }
 
-        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
-        {
-            return baseCooldownCategoryID;
-        }
-
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             CustomEffectService.ApplyCustomEffect(creature, creature, CustomEffectType.Meditate, -1, 0, null);

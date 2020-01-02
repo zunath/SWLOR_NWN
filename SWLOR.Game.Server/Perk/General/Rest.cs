@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.CustomEffect;
@@ -89,6 +90,8 @@ namespace SWLOR.Game.Server.Perk.General
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
 {
     public class WeaponFocusLightsabers : WeaponFocusBase
     {
-        public override PerkType PerkType => PerkType.WeaponFocusLightsaber;
+        public override PerkType PerkType => PerkType.WeaponFocusLightsabers;
         public override string Name => "Weapon Focus - Lightsabers";
         public override bool IsActive => true;
         public override string Description => "You gain a bonus to attack rolls and damage when using a lightsaber. The first level will grant a bonus to your attack roll. The second level will grant a bonus to your damage.";

@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
@@ -73,6 +74,8 @@ namespace SWLOR.Game.Server.Perk.General
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

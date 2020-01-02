@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -121,14 +122,14 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case CustomItemType.BlasterPistol: perkType = PerkType.WeaponFocusBlasterPistols; break;
                 case CustomItemType.BlasterRifle: perkType = PerkType.WeaponFocusBlasterRifles; break;
                 case CustomItemType.Throwing: perkType = PerkType.WeaponFocusThrowing; break;
-                case CustomItemType.Lightsaber: perkType = PerkType.WeaponFocusLightsaber; break;
-                case CustomItemType.Saberstaff: perkType = PerkType.WeaponFocusSaberstaff; break;
+                case CustomItemType.Lightsaber: perkType = PerkType.WeaponFocusLightsabers; break;
+                case CustomItemType.Saberstaff: perkType = PerkType.WeaponFocusSaberstaffs; break;
                 default: return;
             }
 
             if (equipped.GetLocalBoolean("LIGHTSABER") == true)
             {
-                perkType = PerkType.WeaponFocusLightsaber;
+                perkType = PerkType.WeaponFocusLightsabers;
             }
             
             int perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
@@ -342,6 +343,8 @@ namespace SWLOR.Game.Server.Perk.Weapons
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

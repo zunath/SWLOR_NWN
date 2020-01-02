@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
@@ -71,6 +72,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

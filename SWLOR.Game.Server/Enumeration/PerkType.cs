@@ -65,7 +65,7 @@
         WeaponFocusFinesseVibroblades = 60,
         WeaponFocusBatons = 61,
         WeaponFocusHeavyVibroblades = 62,
-        WeaponFocusSaberstaff = 63,
+        WeaponFocusSaberstaffs = 63,
         WeaponFocusPolearms = 64,
         WeaponFocusTwinVibroblades = 65,
         WeaponFocusMartialArts = 66,
@@ -89,7 +89,7 @@
         WeaponBlueprints = 84,
         ScavengingExpert = 85,
         ForceInsight = 86,
-        WeaponFocusLightsaber = 87,
+        WeaponFocusLightsabers = 87,
         // 88 is free
         Dash = 89,
         CarefulScavenger = 90,

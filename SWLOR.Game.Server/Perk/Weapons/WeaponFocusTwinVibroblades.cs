@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Weapons
 {
-    public class WeaponFocusTwinBlades : WeaponFocusBase
+    public class WeaponFocusTwinVibroblades : WeaponFocusBase
     {
         public override PerkType PerkType => PerkType.WeaponFocusTwinVibroblades;
         public override string Name => "Weapon Focus - Twin Vibroblades";

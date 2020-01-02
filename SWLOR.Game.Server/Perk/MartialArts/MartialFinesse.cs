@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System.Collections.Generic;
+using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
@@ -119,5 +120,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
     }
 }

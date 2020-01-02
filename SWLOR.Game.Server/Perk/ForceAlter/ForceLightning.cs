@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -70,6 +71,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {

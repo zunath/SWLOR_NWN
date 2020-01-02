@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -8,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class DualWielding : IPerk
+    public class LightsaberDualWielding : IPerk
     {
         public PerkType PerkType => PerkType.LightsaberDualWielding;
         public string Name => "Lightsaber Dual Wielding";
@@ -135,6 +136,8 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         {
             return false;
         }
+
+        public Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

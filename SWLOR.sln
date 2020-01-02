@@ -7,15 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SWLOR.Tools", "SWLOR.Tools"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{675F8DFD-6FDB-4317-B936-AF9FCAC69D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server.Scripts", "SWLOR.Game.Server.Scripts\SWLOR.Game.Server.Scripts.csproj", "{D8E67E7F-266A-4981-AED0-A8FE0490D2B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server.Tests", "SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj", "{3D2E9A70-63B8-45BD-BFE5-7F9979D01D55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server.Tests", "SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj", "{3D2E9A70-63B8-45BD-BFE5-7F9979D01D55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Tools.Hak.Builder", "SWLOR.Tools.Hak.Builder\SWLOR.Tools.Hak.Builder.csproj", "{6D6828C9-0BF3-4C10-AD7F-7FBDA6CA3080}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.Hak.Builder", "SWLOR.Tools.Hak.Builder\SWLOR.Tools.Hak.Builder.csproj", "{6D6828C9-0BF3-4C10-AD7F-7FBDA6CA3080}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Tools.LanguageGenerator", "SWLOR.Tools.LanguageGenerator\SWLOR.Tools.LanguageGenerator.csproj", "{895690B4-3C04-469E-8164-75AC9400A3AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.LanguageGenerator", "SWLOR.Tools.LanguageGenerator\SWLOR.Tools.LanguageGenerator.csproj", "{895690B4-3C04-469E-8164-75AC9400A3AE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Tools.Module.Packer", "SWLOR.Tools.Module.Packer\SWLOR.Tools.Module.Packer.csproj", "{15322687-1012-4FFA-94E5-AE3E67CEA355}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Tools.Module.Packer", "SWLOR.Tools.Module.Packer\SWLOR.Tools.Module.Packer.csproj", "{15322687-1012-4FFA-94E5-AE3E67CEA355}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +25,6 @@ Global
 		{675F8DFD-6FDB-4317-B936-AF9FCAC69D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{675F8DFD-6FDB-4317-B936-AF9FCAC69D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{675F8DFD-6FDB-4317-B936-AF9FCAC69D63}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8E67E7F-266A-4981-AED0-A8FE0490D2B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8E67E7F-266A-4981-AED0-A8FE0490D2B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8E67E7F-266A-4981-AED0-A8FE0490D2B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8E67E7F-266A-4981-AED0-A8FE0490D2B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D2E9A70-63B8-45BD-BFE5-7F9979D01D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3D2E9A70-63B8-45BD-BFE5-7F9979D01D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D2E9A70-63B8-45BD-BFE5-7F9979D01D55}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,6 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Scripting;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -17,13 +25,10 @@ namespace SWLOR.Game.Server.Event.Legacy
 
             using (new Profiler(nameof(ScriptEvent) + "." + script))
             {
-                string rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
-                string scriptNamespace = rootNamespace + ".Scripts." + script;
-
                 // Check the script cache first. If it exists, we run it.
-                if (ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
+                if (Script.IsScriptRegistered(script))
                 {
-                    ScriptService.RunScriptByNamespace(scriptNamespace);
+                    Script.RunScript(script);
                 }
                 else
                 {

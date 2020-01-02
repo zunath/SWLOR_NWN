@@ -33,7 +33,6 @@ namespace SWLOR.Game.Server.Service
             
             // Scripting Events
             MessageHub.Instance.Subscribe<OnQuestLoaded>(message => LoadQuest(message.Quest.Quest));
-            MessageHub.Instance.Subscribe<OnQuestUnloaded>(message => UnloadQuest(message.Quest.Quest));
         }
 
         private static void LoadQuest(IQuest quest)
@@ -45,14 +44,6 @@ namespace SWLOR.Game.Server.Service
 
             _quests[quest.QuestID] = quest;
             Console.WriteLine("Registered quest: " + quest.Name + " ( " + quest.QuestID + " )");
-        }
-
-        private static void UnloadQuest(IQuest quest)
-        {
-            if (!_quests.ContainsKey(quest.QuestID)) return;
-
-            _quests.Remove(quest.QuestID);
-            Console.WriteLine("Unregistered quest: " + quest.Name + " ( " + quest.QuestID + " )");
         }
 
         /// <summary>

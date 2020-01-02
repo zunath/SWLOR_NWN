@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.CodeAnalysis.Scripting;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Messaging;
 
 namespace NWN
 {

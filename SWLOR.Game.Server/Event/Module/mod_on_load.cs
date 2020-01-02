@@ -30,10 +30,8 @@ namespace NWN.Scripts
                 MessageHub.Instance.Publish(new OnServerStopped());
             };
 
-            Console.WriteLine("Running migration");
             DataService.RunMigration();
 
-            Console.WriteLine("Setting events");
             using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))
             {
                 NWNXChat.RegisterChatScript("mod_on_nwnxchat");
@@ -45,16 +43,11 @@ namespace NWN.Scripts
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
 
-            Console.WriteLine("Registering subscribe events");
             using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
             {
                 RegisterServiceSubscribeEvents();
             }
 
-            Console.WriteLine("Initializing script service");
-            ScriptService.Initialize();
-
-            Console.WriteLine("publishing on module load");
             MessageHub.Instance.Publish(new OnModuleLoad());
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");

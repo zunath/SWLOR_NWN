@@ -20,5 +20,16 @@ namespace SWLOR.Game.Server.Perk.Weapons
         public override int Enmity => 0;
         public override EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
         public override ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+        		public override Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Grants the Improved Critical feat when equipped with a finesse blade.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 10}, 
+				})
+			},
+		};
+
     }
 }

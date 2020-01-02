@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Perk.Weapons
@@ -15,5 +16,23 @@ namespace SWLOR.Game.Server.Perk.Weapons
         public override int Enmity => 0;
         public override EnmityAdjustmentRuleType EnmityAdjustmentType => EnmityAdjustmentRuleType.None;
         public override ForceBalanceType ForceBalanceType => ForceBalanceType.Universal;
+        		public override Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with lightsabers.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Lightsaber, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "You gain the Weapon Specialization feat which grants a +2 damage when equipped with lightsabers.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Lightsaber, 15}, 
+				})
+			},
+		};
+
     }
 }

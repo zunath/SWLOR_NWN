@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        public abstract Dictionary<int, PerkLevel> PerkLevels { get; }
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

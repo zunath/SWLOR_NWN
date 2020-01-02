@@ -103,8 +103,9 @@ namespace SWLOR.Game.Server.Service
             {
                 // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
                 // we only care to know that there IS one.
-
-                var skillReqs = perk.PerkLevels.Where(x => x.Value.SkillRequirements.Count > 0)
+                var skillReqs = perk.PerkLevels
+                    .DefaultIfEmpty()
+                    .Where(x => x.Value.SkillRequirements.Count > 0)
                     .SelectMany(s => s.Value.SkillRequirements);
                 foreach (var skillReq in skillReqs)
                 {
@@ -126,7 +127,9 @@ namespace SWLOR.Game.Server.Service
                 // Now check for a quest requirement on this perk. Again, we don't care which perk level has which quest requirement,
                 // we only care to know that there IS one.
 
-                var questReqs = perk.PerkLevels.Where(x => x.Value.QuestRequirements.Count > 0)
+                var questReqs = perk.PerkLevels
+                    .DefaultIfEmpty()
+                    .Where(x => x.Value.QuestRequirements.Count > 0)
                     .SelectMany(s => s.Value.QuestRequirements);
                 foreach (var questReq in questReqs)
                 {

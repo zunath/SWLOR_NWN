@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -71,7 +71,31 @@ namespace SWLOR.Game.Server.Perk.General
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(6, "Doubles GP gain.",
+				new Dictionary<SkillType, int>
+				{
+
+				})
+			},
+			{
+				2, new PerkLevel(6, "Triples GP gain.",
+				new Dictionary<SkillType, int>
+				{
+
+				})
+			},
+			{
+				3, new PerkLevel(6, "Quadruples GP gain.",
+				new Dictionary<SkillType, int>
+				{
+
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

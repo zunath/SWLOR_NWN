@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Bioware;
@@ -73,7 +73,31 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(4, "The caster gets -5 AB & AC but their nearby party members get +5 AB & AC",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 40}, 
+				})
+			},
+			{
+				2, new PerkLevel(6, "The caster gets -10 AB & AC but their nearby party members get +10 AB & AC",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 60}, 
+				})
+			},
+			{
+				3, new PerkLevel(8, "The caster and nearby enemies get -10 AB & AC but the nearby party members get +10 AB & AC",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 80}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -147,7 +147,38 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Knockdown a small target. If resisted, target is slowed for 6 seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(3, "Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(4, "Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 20}, 
+				})
+			},
+			{
+				4, new PerkLevel(5, "Knockdown any size target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 30}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

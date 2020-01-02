@@ -288,7 +288,45 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 100%.  This ability hits automatically.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 0},
+                })
+            },
+            {
+                2, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 125%.  This ability hits automatically.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 10},
+                })
+            },
+            {
+                3, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 160%.  This ability hits automatically.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 20},
+                })
+            },
+            {
+                4, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 200%.  This ability hits automatically and will chain to a second target within 5m of the first.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 30},
+                })
+            },
+            {
+                5, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 250%.  This ability hits automatically and will chain to a second and third target within 5m each.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 40},
+                })
+            },
+        };
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

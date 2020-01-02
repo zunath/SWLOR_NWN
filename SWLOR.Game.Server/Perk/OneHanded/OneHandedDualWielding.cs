@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
@@ -145,7 +145,31 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Grants Two-weapon Fighting feat which reduces attack penalty from -6/-10 to -4/-8 when fighting with two weapons. Must be equipped with a one-handed non-lightsaber weapon",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "Grants Ambidexterity feat which reduces the attack penalty of your off-hand weapon by 4. Must be equipped with a one-handed non-lightsaber weapon",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(6, "Grants Improved two-weapon fighting which gives you a second off-hand attack at a penalty of -5 to your attack roll. Must be equipped with a one-handed non-lightsaber weapon",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 25}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

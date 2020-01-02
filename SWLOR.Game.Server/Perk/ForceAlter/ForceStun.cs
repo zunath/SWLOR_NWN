@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -101,7 +101,31 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(4, "Single target is Tranquilised while the caster concentrates or, if resisted, gets -5 to AB and AC.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(7, "Target and nearest other enemy within 10m is Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 50}, 
+				})
+			},
+			{
+				3, new PerkLevel(10, "Target and all other enemies within 10 are Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 80}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -114,7 +114,45 @@ namespace SWLOR.Game.Server.Perk.Shields
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "50% chance to recover 1 HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Shields, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "50% chance to recover 2 HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Shields, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "50% chance to recover 3 HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Shields, 15}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "75% chance to recover 3 HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Shields, 20}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "75% chance to recover 4 HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Shields, 25}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

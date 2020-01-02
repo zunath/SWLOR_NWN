@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -111,7 +111,52 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "1d4 damage, knockdown lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "2d4 damage, knockdown lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "2d6 damage, knockdown lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 15}, 
+				})
+			},
+			{
+				4, new PerkLevel(4, "2d6 damage, knockdown lasts 9 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 20}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "3d6 damage, knockdown lasts 9 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 30}, 
+				})
+			},
+			{
+				6, new PerkLevel(5, "3d8 damage, knockdown lasts 9 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

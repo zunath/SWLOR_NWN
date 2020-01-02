@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -70,7 +70,66 @@ namespace SWLOR.Game.Server.Perk.Fabrication
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Tier 1 fabrication blueprints.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Tier 1 fabrication blueprints. +1 enhancement slot",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 5}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Tier 2 fabrication blueprints. +1 enhancement slot",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 10}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Tier 2 fabrication blueprints. +2 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 15}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Tier 3 fabrication blueprints. +2 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 20}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "Tier 3 fabrication blueprints. +3 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 25}, 
+				})
+			},
+			{
+				7, new PerkLevel(5, "Tier 4 fabrication blueprints. +3 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 30}, 
+				})
+			},
+			{
+				8, new PerkLevel(5, "Tier 4 fabrication blueprints. +4 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Fabrication, 35}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,66 @@ namespace SWLOR.Game.Server.Perk.Weaponsmith
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Tier 1 weaponsmith blueprints.",
+				new Dictionary<SkillType, int>
+				{
+
+				})
+			},
+			{
+				2, new PerkLevel(2, "Tier 1 weaponsmith blueprints. +1 enhancement slot",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 5}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Tier 2 weaponsmith blueprints. +1 enhancement slot",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 10}, 
+				})
+			},
+			{
+				4, new PerkLevel(4, "Tier 2 weaponsmith blueprints. +2 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 15}, 
+				})
+			},
+			{
+				5, new PerkLevel(5, "Tier 3 weaponsmith blueprints. +2 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 20}, 
+				})
+			},
+			{
+				6, new PerkLevel(5, "Tier 3 weaponsmith blueprints. +3 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 25}, 
+				})
+			},
+			{
+				7, new PerkLevel(5, "Tier 4 weaponsmith blueprints. +3 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 30}, 
+				})
+			},
+			{
+				8, new PerkLevel(6, "Tier 4 weaponsmith blueprints. +4 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Weaponsmith, 35}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

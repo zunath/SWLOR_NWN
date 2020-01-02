@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class DeflectDamage : IPerk
+    public class DeflectDamage: IPerk
     {
         public PerkType PerkType => PerkType.DeflectDamage;
         public string Name => "Deflect Damage";
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
             return string.Empty;
         }
-
+        
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -114,49 +114,49 @@ namespace SWLOR.Game.Server.Perk.Armor
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-        {
-            {
-                1, new PerkLevel(2, "Damage shield damage: 1 + 1d4 for 12 seconds",
-                new Dictionary<SkillType, int>
-                {
-                    { SkillType.HeavyArmor, 10},
-                })
-            },
-            {
-                2, new PerkLevel(2, "Damage shield damage: 1 + 1d8 for 12 seconds",
-                new Dictionary<SkillType, int>
-                {
-                    { SkillType.HeavyArmor, 15},
-                })
-            },
-            {
-                3, new PerkLevel(3, "Damage shield damage: 2 + 2d6 for 12 seconds",
-                new Dictionary<SkillType, int>
-                {
-                    { SkillType.HeavyArmor, 30},
-                })
-            },
-            {
-                4, new PerkLevel(3, "Damage shield damage: 2 + 2d8 for 12 seconds",
-                new Dictionary<SkillType, int>
-                {
-                    { SkillType.HeavyArmor, 40},
-                })
-            },
-            {
-                5, new PerkLevel(4, "Damage shield damage: 3 + 2d12 for 12 seconds",
-                new Dictionary<SkillType, int>
-                {
-                    { SkillType.HeavyArmor, 50},
-                })
-            },
-        };
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Damage shield damage: 1 + 1d4 for 12 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Damage shield damage: 1 + 1d8 for 12 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Damage shield damage: 2 + 2d6 for 12 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Damage shield damage: 2 + 2d8 for 12 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 40}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Damage shield damage: 3 + 2d12 for 12 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 50}, 
+				})
+			},
+		};
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-
+            
         }
     }
 }

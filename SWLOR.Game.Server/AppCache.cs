@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server
         public static Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public static List<Guid> PCEffectsForRemoval { get; set; }
         public static List<NWObject> ConnectedDMs { get; set; }
-        public static Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
+        public static Dictionary<Guid, Dictionary<PerkType, int>> PlayerEffectivePerkLevels { get; set; }
 
         static AppCache()
         {
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<Guid>();
             ConnectedDMs = new List<NWObject>();
-            PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<int, int>>();
+            PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<PerkType, int>>();
 
             for (int x = 1; x <= DialogService.NumberOfDialogs; x++)
             {

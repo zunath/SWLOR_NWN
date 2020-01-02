@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN;
@@ -12,7 +12,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class MindShield: IPerk
+    public class MindShield : IPerk
     {
         public PerkType PerkType => PerkType.MindShield;
         public string Name => "Mind Shield";
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -76,7 +76,31 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "Immune to Tranquilisation effects while concentrating.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 10},
+                })
+            },
+            {
+                2, new PerkLevel(6, "Immune to Tranquilisation, Confusion and Persuade effects while concentrating.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 30},
+                })
+            },
+            {
+                3, new PerkLevel(8, "Immune to Tranquilisation, Confusion, Persuade and Drain effects while concentrating.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 50},
+                })
+            },
+        };
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
@@ -91,7 +115,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             switch (spellTier)
             {
                 case 1:
-                    effectMindShield =_.EffectImmunity(ImmunityType.Dazed);
+                    effectMindShield = _.EffectImmunity(ImmunityType.Dazed);
 
                     creature.AssignCommand(() =>
                     {
@@ -114,12 +138,12 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                     effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(ImmunityType.Dominate)); // Force Pursuade is DOMINATION effect
 
                     if (target.GetLocalInt("FORCE_DRAIN_IMMUNITY") == 1)
-                
-                    creature.SetLocalInt("FORCE_DRAIN_IMMUNITY",0);                   
+
+                        creature.SetLocalInt("FORCE_DRAIN_IMMUNITY", 0);
                     creature.DelayAssignCommand(() =>
                     {
                         creature.DeleteLocalInt("FORCE_DRAIN_IMMUNITY");
-                    },6.1f);
+                    }, 6.1f);
 
                     creature.AssignCommand(() =>
                     {

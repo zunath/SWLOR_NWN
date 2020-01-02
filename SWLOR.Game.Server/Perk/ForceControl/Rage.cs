@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -73,7 +73,45 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Increases Strength and Dexterity by 2 while concentrating but reduces AC by 2 and deals 2 damage per round.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Increases Strength and Dexterity by 4 while concentrating but reduces AC by 2 and deals 4 damage per round.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 30}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "Increases Strength and Dexterity by 6 while concentrating and grants an extra attack but reduces AC by 4 and deals 6 damage per round.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 50}, 
+				})
+			},
+			{
+				4, new PerkLevel(5, "Increases Strength and Dexterity by 8 while concentrating and grants an extra attack but reduces AC by 4 and deals 8 damage per round.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 70}, 
+				})
+			},
+			{
+				5, new PerkLevel(8, "Increases Strength and Dexterity by 10 while concentrating and grants two extra attacks but reduces AC by 2 and deals 10 damage per round.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 90}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {

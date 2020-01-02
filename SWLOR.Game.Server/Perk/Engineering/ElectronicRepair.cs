@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,38 @@ namespace SWLOR.Game.Server.Perk.Engineering
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Gains +2 to electronic repair when using an electronic repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(3, "Gains +4 to electronic repair when using an electronic repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 20}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Gains +6 to electronic repair when using an electronic repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Gains +8 to electronic repair when using an electronic repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 40}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

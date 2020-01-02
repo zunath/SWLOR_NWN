@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Service
 
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
                 DataService.SubmitDataChange(player, DatabaseActionType.Update);
-                MessageHub.Instance.Publish(new OnSkillGained(oPC, skillID));
+                MessageHub.Instance.Publish(new OnSkillGained(oPC, (SkillType)skillID));
 
                 pcSkill = GetPCSkill(oPC, skillID);
                 player = DataService.Player.GetByID(oPC.GlobalID);
@@ -761,7 +761,7 @@ namespace SWLOR.Game.Server.Service
                     XP = decaySkill.XP
                 };
                 DataService.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
-                MessageHub.Instance.Publish(new OnSkillDecayed(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
+                MessageHub.Instance.Publish(new OnSkillDecayed(oPC, (SkillType)decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 
             PlayerStatService.ApplyStatChanges(oPC, null);

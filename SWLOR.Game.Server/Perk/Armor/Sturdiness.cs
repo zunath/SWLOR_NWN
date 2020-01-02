@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,45 @@ namespace SWLOR.Game.Server.Perk.Armor
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "+2 to natural HP regen",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(3, "+3 to natural HP regen",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(4, "+4 to natural HP regen",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 25}, 
+				})
+			},
+			{
+				4, new PerkLevel(5, "+5 to natural HP regen",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 40}, 
+				})
+			},
+			{
+				5, new PerkLevel(6, "+6 to natural HP regen",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 60}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

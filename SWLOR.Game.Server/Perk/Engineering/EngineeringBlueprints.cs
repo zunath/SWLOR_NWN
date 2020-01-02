@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,66 @@ namespace SWLOR.Game.Server.Perk.Engineering
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Tier 1 engineering blueprints.",
+				new Dictionary<SkillType, int>
+				{
+
+				})
+			},
+			{
+				2, new PerkLevel(3, "Tier 1 engineering blueprints. +1 enhancement slot",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 5}, 
+				})
+			},
+			{
+				3, new PerkLevel(4, "Tier 2 engineering blueprints. +1 enhancement slot",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 10}, 
+				})
+			},
+			{
+				4, new PerkLevel(5, "Tier 2 engineering blueprints. +2 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 15}, 
+				})
+			},
+			{
+				5, new PerkLevel(6, "Tier 3 engineering blueprints. +2 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 20}, 
+				})
+			},
+			{
+				6, new PerkLevel(7, "Tier 3 engineering blueprints. +3 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 25}, 
+				})
+			},
+			{
+				7, new PerkLevel(8, "Tier 4 engineering blueprints. +3 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 30}, 
+				})
+			},
+			{
+				8, new PerkLevel(9, "Tier 4 engineering blueprints. +4 enhancement slots",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 35}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

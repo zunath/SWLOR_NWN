@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Conversation
             var perk = PerkService.GetPerkHandler(vm.SelectedPerkID);
             PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, (int)perk.PerkType);
             Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
-            var perkLevels = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType).ToList();
+            var perkLevels = perk.PerkLevels;
 
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
@@ -135,14 +135,14 @@ namespace SWLOR.Game.Server.Conversation
             string nextConcentrationCost = string.Empty;
             string price = "N/A";
             string nextSpecializationRequired = "None";
-            PerkLevel currentPerkLevel = PerkService.FindPerkLevel(perkLevels, rank);
-            PerkLevel nextPerkLevel = PerkService.FindPerkLevel(perkLevels, rank + 1);
+            PerkLevel currentPerkLevel = perkLevels.ContainsKey(rank) ? perkLevels[rank] : null;
+            PerkLevel nextPerkLevel = perkLevels.ContainsKey(rank + 1) ? perkLevels[rank + 1] : null;
             SetResponseVisible("PerkDetailsPage", 1, PerkService.CanPerkBeUpgraded(GetPC(), vm.SelectedPerkID));
 
             // Player has purchased at least one rank in this perk. Show their current bonuses.
             if (rank > 0 && currentPerkLevel != null)
             {
-                var currentPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(vm.SelectedPerkID, currentPerkLevel.Level);
+                var currentPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(vm.SelectedPerkID, rank);
                 currentBonus = currentPerkLevel.Description;
 
                 // Not every perk is going to have a perk feat. Don't display this information if not necessary.
@@ -158,11 +158,11 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 // If this perk level has required specialization, change the text to that.
-                if (currentPerkLevel.SpecializationID > 0)
+                if (currentPerkLevel.Specialization != SpecializationType.None)
                 {
                     // Convert ID to enum, then get the string of the enum value. If we ever get a specialization with
                     // more than one word, another process will need to be used.
-                    currentSpecializationRequired = ((SpecializationType)currentPerkLevel.SpecializationID).ToString();
+                    currentSpecializationRequired = (currentPerkLevel.Specialization).ToString();
                 }
             }
 
@@ -184,9 +184,9 @@ namespace SWLOR.Game.Server.Conversation
                     }
                 }
 
-                if (nextPerkLevel.SpecializationID > 0)
+                if (nextPerkLevel.Specialization > 0)
                 {
-                    nextSpecializationRequired = ((SpecializationType)nextPerkLevel.SpecializationID).ToString();
+                    nextSpecializationRequired = (nextPerkLevel.Specialization).ToString();
                 }
             }
 
@@ -213,22 +213,22 @@ namespace SWLOR.Game.Server.Conversation
 
             if (nextPerkLevel != null)
             {
-                List<PerkLevelSkillRequirement> requirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(nextPerkLevel.ID).ToList();
+                var requirements = nextPerkLevel.SkillRequirements; 
                 if (requirements.Count > 0)
                 {
                     header += "\n" + ColorTokenService.Green("Next Upgrade Skill Requirements:\n\n");
 
                     bool hasRequirement = false;
-                    foreach (PerkLevelSkillRequirement req in requirements)
+                    foreach (var req in requirements)
                     {
-                        if (req.RequiredRank > 0)
+                        if (req.Value > 0)
                         {
-                            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), req.SkillID);
+                            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), (int)req.Key);
                             Skill skill = SkillService.GetSkill(pcSkill.SkillID);
 
-                            string detailLine = skill.Name + " Rank " + req.RequiredRank;
+                            string detailLine = skill.Name + " Rank " + req.Value;
 
-                            if (pcSkill.Rank >= req.RequiredRank)
+                            if (pcSkill.Rank >= req.Value)
                             {
                                 header += ColorTokenService.Green(detailLine) + "\n";
                             }

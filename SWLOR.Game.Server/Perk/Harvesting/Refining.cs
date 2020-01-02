@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,80 @@ namespace SWLOR.Game.Server.Perk.Harvesting
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "You can refine Veldite.",
+				new Dictionary<SkillType, int>
+				{
+
+				})
+			},
+			{
+				2, new PerkLevel(2, "You can refine Veldite and Scordspar.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 5}, 
+				})
+			},
+			{
+				3, new PerkLevel(2, "You can refine Veldite, Scordspar, and Plagionite.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 10}, 
+				})
+			},
+			{
+				4, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, and Keromber.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 15}, 
+				})
+			},
+			{
+				5, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, Keromber, and Jasioclase.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 20}, 
+				})
+			},
+			{
+				6, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, Keromber, Jasioclase, and Hemorgite.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 25}, 
+				})
+			},
+			{
+				7, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, Keromber, Jasioclase, Hemorgite, and Ochne.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 30}, 
+				})
+			},
+			{
+				8, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, Keromber, Jasioclase, Hemorgite, Ochne, and Croknor.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 35}, 
+				})
+			},
+			{
+				9, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, Keromber, Jasioclase, Hemorgite, Ochne, Croknor, and Arkoxit.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 40}, 
+				})
+			},
+			{
+				10, new PerkLevel(2, "You can refine Veldite, Scordspar, Plagionite, Keromber, Jasioclase, Hemorgite, Ochne, Croknor, Arkoxit, and Bisteiss.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 45}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

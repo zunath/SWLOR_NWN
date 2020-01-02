@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,45 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 5}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 20}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 35}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

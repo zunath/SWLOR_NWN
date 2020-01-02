@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,80 @@ namespace SWLOR.Game.Server.Perk.Medicine
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Length +25%",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "+50% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "+75% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 15}, 
+				})
+			},
+			{
+				4, new PerkLevel(4, "+100% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 20}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "+125% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 25}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "+150% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 30}, 
+				})
+			},
+			{
+				7, new PerkLevel(5, "+175% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 35}, 
+				})
+			},
+			{
+				8, new PerkLevel(5, "+200% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 40}, 
+				})
+			},
+			{
+				9, new PerkLevel(6, "+225% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 45}, 
+				})
+			},
+			{
+				10, new PerkLevel(6, "+250% length",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

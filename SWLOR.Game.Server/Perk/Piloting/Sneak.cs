@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,45 @@ namespace SWLOR.Game.Server.Perk.Piloting
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Decreases relative chance of hostile encounters by 1 each.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 15}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Decreases relative chance of hostile encounters by 2 each.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 30}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Decreases relative chance of hostile encounters by 3 each.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 45}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Decreases relative chance of hostile encounters by 4 each.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 60}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Decreases relative chance of hostile encounters by 5 each.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 75}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

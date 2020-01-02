@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,52 @@ namespace SWLOR.Game.Server.Perk.Engineering
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "+10% Chance",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "+20% Chance",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(2, "+30% Chance",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 15}, 
+				})
+			},
+			{
+				4, new PerkLevel(2, "+40% Chance",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 20}, 
+				})
+			},
+			{
+				5, new PerkLevel(2, "+50% Chance",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 35}, 
+				})
+			},
+			{
+				6, new PerkLevel(2, "+60% Chance",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Engineering, 40}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

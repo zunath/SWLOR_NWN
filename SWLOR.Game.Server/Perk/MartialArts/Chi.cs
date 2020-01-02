@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -103,7 +103,66 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Restores up to 10% of maximum HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "Restores up to 20% of maximum HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "Restores up to 30% of maximum HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(5, "Restores up to 40% of maximum HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 45}, 
+				})
+			},
+			{
+				5, new PerkLevel(6, "Restores up to 50% of maximum HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 60}, 
+				})
+			},
+			{
+				6, new PerkLevel(6, "Restores up to 60% of maximum HP",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 75}, 
+				})
+			},
+			{
+				7, new PerkLevel(7, "Restores up to 70% of maximum HP. All party members within range also receive the healing.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 90}, 
+				})
+			},
+			{
+				8, new PerkLevel(7, "Restores up to 80% of maximum HP. All party members within range also receive the healing.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 100}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

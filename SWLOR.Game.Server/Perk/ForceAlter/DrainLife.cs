@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -78,7 +78,45 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(4, "Steals 5 HP from a single target every second.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 30}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "Steals 6 HP from a single target every second.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 45}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "Steals 7 HP from a single target every second.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 60}, 
+				})
+			},
+			{
+				4, new PerkLevel(5, "Steals 8 HP from a single target every second.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 75}, 
+				})
+			},
+			{
+				5, new PerkLevel(6, "Steals 10 HP from a single target every second.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 90}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {

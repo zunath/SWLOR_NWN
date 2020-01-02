@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -121,6 +121,16 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Grants the Weapon Finesse feat when equipped with a martial arts weapon or unarmed.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 1}, 
+				})
+			},
+		};
+
     }
 }

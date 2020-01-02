@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -125,7 +125,52 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "1d12 HP restored",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "2d8 HP restored",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 20}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "3d8 HP restored",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "4d8 HP restored",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 40}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "5d8 HP restored",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 50}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "6d8 HP restored",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 60}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

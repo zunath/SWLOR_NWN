@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -71,7 +71,38 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(6, "The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 45}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

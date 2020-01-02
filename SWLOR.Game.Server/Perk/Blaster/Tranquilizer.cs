@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -152,7 +152,80 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Lasts 12 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Lasts 24 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Lasts 36 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 15}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Lasts 48 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 20}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Lasts 60 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 25}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "Lasts 72 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 30}, 
+				})
+			},
+			{
+				7, new PerkLevel(5, "Lasts 84 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 35}, 
+				})
+			},
+			{
+				8, new PerkLevel(5, "Lasts 96 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 40}, 
+				})
+			},
+			{
+				9, new PerkLevel(6, "Lasts 108 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 45}, 
+				})
+			},
+			{
+				10, new PerkLevel(6, "Lasts 120 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

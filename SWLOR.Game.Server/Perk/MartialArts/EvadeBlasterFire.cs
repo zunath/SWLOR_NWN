@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,31 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "18 second delay between evasion attempts.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "12 second delay between evasion attempts.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 25}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "6 second delay between evasion attempts.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

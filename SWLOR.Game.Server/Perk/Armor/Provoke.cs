@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -119,7 +119,38 @@ namespace SWLOR.Game.Server.Perk.Armor
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Grants the Provoke ability.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 2}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Reduces cooldown by 5 seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(4, "Reduces cooldown by 10 seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 20}, 
+				})
+			},
+			{
+				4, new PerkLevel(4, "Reduces cooldown by 15 seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.HeavyArmor, 30}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

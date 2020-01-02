@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -70,7 +70,45 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Grants 10% immunity to all damage while the caster retains concentration.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Grants 20% immunity to all damage while the caster retains concentration.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Grants 30% immunity to all damage while the caster retains concentration.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Grants 40% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 45}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Grants 50% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 60}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

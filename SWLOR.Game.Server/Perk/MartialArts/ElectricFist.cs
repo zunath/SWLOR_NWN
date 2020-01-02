@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -127,7 +127,80 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "1d8 damage, shock lasts 3 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "2d8 damage, shock lasts 3 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 20}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "3d8 damage, shock lasts 3 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "3d8 damage, shock lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 40}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "4d8 damage, shock lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 50}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "5d8 damage, shock lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 60}, 
+				})
+			},
+			{
+				7, new PerkLevel(5, "6d8 damage, shock lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 70}, 
+				})
+			},
+			{
+				8, new PerkLevel(5, "7d8 damage, shock lasts 6 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 80}, 
+				})
+			},
+			{
+				9, new PerkLevel(5, "7d8 damage, shock lasts 9 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 90}, 
+				})
+			},
+			{
+				10, new PerkLevel(5, "8d8 damage, shock lasts 9 seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.MartialArts, 100}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

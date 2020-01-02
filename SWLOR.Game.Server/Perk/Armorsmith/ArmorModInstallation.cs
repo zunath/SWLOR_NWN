@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,80 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Install mods up to level 5 on items up to level 10.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Install mods up to level 10 on items up to level 20.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(2, "Install mods up to level 15 on items up to level 30.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 15}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Install mods up to level 20 on items up to level 40.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 20}, 
+				})
+			},
+			{
+				5, new PerkLevel(3, "Install mods up to level 25 on items up to level 50.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 25}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "Install mods up to level 30 on items up to level 60.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 30}, 
+				})
+			},
+			{
+				7, new PerkLevel(4, "Install mods up to level 35 on items up to level 70.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 35}, 
+				})
+			},
+			{
+				8, new PerkLevel(5, "Install mods up to level 40 on items up to level 80.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 40}, 
+				})
+			},
+			{
+				9, new PerkLevel(5, "Install mods up to level 45 on items up to level 90.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 45}, 
+				})
+			},
+			{
+				10, new PerkLevel(5, "Install mods up to level 50 on items up to level 100.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,45 @@ namespace SWLOR.Game.Server.Perk.Medicine
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "+6 Seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "+12 Seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 20}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "+18 Seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "+24 Seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 40}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "+30 Seconds",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Medicine, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

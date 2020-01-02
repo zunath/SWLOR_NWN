@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,54 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(0, "Unlocks Sith Alchemy.", SpecializationType.Consular,
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 0}, 
+				},
+                new List<int>
+                {
+                    99
+                })
+			},
+			{
+				2, new PerkLevel(7, "When used on a corpse, raises the creature as a henchman while the caster concentrates.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 80}, 
+				},
+                new List<int>
+                {
+                    99
+                })
+			},
+			{
+				3, new PerkLevel(7, "Alchemist can create monsters.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 90}, 
+				},
+                new List<int>
+                {
+                    99
+                })
+			},
+			{
+				4, new PerkLevel(0, "Alchemist can employ monsters as henchmen while they concentrate.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceAlter, 90}, 
+				},
+                new List<int>
+                {
+                    99
+                })
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,38 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Gain +2 to armor repair when using an armor repair kit.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(3, "Gains +4 to armor repair when using an armor repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 20}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Gains +6 to armor repair when using an armor repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Gains +8 to armor repair when using an armor repair kit",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Armorsmith, 40}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

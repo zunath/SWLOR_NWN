@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class ForceSpeed: IPerk
+    public class ForceSpeed : IPerk
     {
         public PerkType PerkType => PerkType.ForceSpeed;
         public string Name => "Force Speed";
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             switch (spellTier)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 default:
                     throw new ArgumentException(nameof(perkLevel) + " invalid. Value " + perkLevel + " is unhandled.");
             }
-            
+
             // Check lucky chance.
             int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             if (RandomService.D100(1) <= luck)
@@ -135,7 +135,45 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Increases movement speed by 10% and Dexterity by 2.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 0},
+                })
+            },
+            {
+                2, new PerkLevel(2, "Increases movement speed by 20% and Dexterity by 4.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 10},
+                })
+            },
+            {
+                3, new PerkLevel(3, "Increases movement speed by 30%, Dexterity by 6 and grants an extra attack.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 25},
+                })
+            },
+            {
+                4, new PerkLevel(3, "Increases movement speed by 40%, Dexterity by 8 and grants an extra attack.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 40},
+                })
+            },
+            {
+                5, new PerkLevel(12, "Increases movement speed by 50%, Dexterity by 10 and grants an extra attack.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 80},
+                })
+            },
+        };
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

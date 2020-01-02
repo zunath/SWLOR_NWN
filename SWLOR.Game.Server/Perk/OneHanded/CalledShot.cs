@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
@@ -92,7 +92,17 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Grants the Called Shot feat which have a chance to reduce a target's movement rate by 20% and inflicts a penalty to DEX. This feat is only available when equipped with a Finesse Blade.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.OneHanded, 5}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

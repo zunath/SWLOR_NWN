@@ -78,9 +78,6 @@ namespace SWLOR.Game.Server.Service
         public static PCSkillCache PCSkill { get; } = new PCSkillCache();
         public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
         public static PerkFeatCache PerkFeat { get; } = new PerkFeatCache();
-        public static PerkLevelCache PerkLevel { get; } = new PerkLevelCache();
-        public static PerkLevelQuestRequirementCache PerkLevelQuestRequirement { get; } = new PerkLevelQuestRequirementCache();
-        public static PerkLevelSkillRequirementCache PerkLevelSkillRequirement { get; } = new PerkLevelSkillRequirementCache();
         public static PlayerCache Player { get; } = new PlayerCache();
         public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
         public static SkillCache Skill { get; } = new SkillCache();

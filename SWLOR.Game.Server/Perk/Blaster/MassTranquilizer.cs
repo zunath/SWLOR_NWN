@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
@@ -194,7 +194,31 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(5, "Range: 5 meters",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 25}, 
+				})
+			},
+			{
+				2, new PerkLevel(5, "Range: 10 meters",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 30}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "Range: 15 meters",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Firearms, 35}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

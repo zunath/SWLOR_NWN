@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,52 @@ namespace SWLOR.Game.Server.Perk.Harvesting
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "+10% Speed",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 5}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "+20% Speed",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "+30% Speed",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 25}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "+40% Speed",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 35}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "+50% Speed",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 45}, 
+				})
+			},
+			{
+				6, new PerkLevel(4, "+60% Speed",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Harvesting, 55}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -92,7 +92,38 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(4, "25% chance to interrupt",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.TwoHanded, 15}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "50% chance to interrupt",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.TwoHanded, 30}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "75% chance to interrupt",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.TwoHanded, 50}, 
+				})
+			},
+			{
+				4, new PerkLevel(6, "100% chance to interrupt",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.TwoHanded, 80}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

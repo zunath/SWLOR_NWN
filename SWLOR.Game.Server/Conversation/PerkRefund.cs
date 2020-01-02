@@ -114,9 +114,9 @@ namespace SWLOR.Game.Server.Conversation
             if (IsGrantedByBackground(perk.PerkType))
                 minimumLevel = 2;
 
-            int refundAmount = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType).Where(x => 
-                x.Level <= pcPerk.PerkLevel &&
-                x.Level >= minimumLevel).Sum(x => x.Price);
+            int refundAmount = perk.PerkLevels.Where(x => 
+                x.Key <= pcPerk.PerkLevel &&
+                x.Key >= minimumLevel).Sum(x => x.Value.Price);
 
             string header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
             header += ColorTokenService.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
@@ -191,9 +191,9 @@ namespace SWLOR.Game.Server.Conversation
             if (IsGrantedByBackground(perk.PerkType))
                 minimumLevel = 2;
 
-            var refundAmount = DataService.PerkLevel.GetAllByPerkID((int)perk.PerkType)
-                .Where(x => x.Level <= pcPerk.PerkLevel && 
-                            x.Level >= minimumLevel).Sum(x => x.Price);
+            var refundAmount = perk.PerkLevels
+                .Where(x => x.Key <= pcPerk.PerkLevel && 
+                            x.Key >= minimumLevel).Sum(x => x.Value.Price);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var handler = PerkService.GetPerkHandler(perk.PerkType);
             handler.OnRemoved(player);
-            MessageHub.Instance.Publish(new OnPerkRefunded(player, pcPerk.PerkID));
+            MessageHub.Instance.Publish(new OnPerkRefunded(player, (PerkType)pcPerk.PerkID));
         }
 
         private bool IsGrantedByBackground(PerkType perkType)

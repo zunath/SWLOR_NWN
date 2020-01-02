@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -69,7 +69,45 @@ namespace SWLOR.Game.Server.Perk.Piloting
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Increases piloting by 3 when evading.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 10}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Increases piloting by 6 when evading.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 20}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Increases piloting by 9 when evading.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 30}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Increases piloting by 12 when evading.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 40}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Increases piloting by 15 when evading.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.Piloting, 50}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

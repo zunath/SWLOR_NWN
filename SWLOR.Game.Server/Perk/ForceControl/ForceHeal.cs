@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -71,7 +71,45 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(2, "Heals a single target for 2 HP every three seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(2, "Heals a single target for 3 HP every three seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 10}, 
+				})
+			},
+			{
+				3, new PerkLevel(3, "Heals a single target for 5 HP every three seconds.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 20}, 
+				})
+			},
+			{
+				4, new PerkLevel(3, "Heals a single target for 7 HP every three seconds.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 30}, 
+				})
+			},
+			{
+				5, new PerkLevel(4, "Heals a single target for 10 HP every three seconds.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceControl, 40}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

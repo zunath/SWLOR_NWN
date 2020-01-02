@@ -1,4 +1,4 @@
-﻿using NWN;
+using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
@@ -73,7 +73,31 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        public Dictionary<int, PerkLevel> PerkLevels { get; }
+        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+		{
+			{
+				1, new PerkLevel(3, "Caster gets +3 AB.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 0}, 
+				})
+			},
+			{
+				2, new PerkLevel(4, "Caster gets +5 AB and +2 AC.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 15}, 
+				})
+			},
+			{
+				3, new PerkLevel(5, "Caster gets +5 AB and +4 AC.",
+				new Dictionary<SkillType, int>
+				{
+					{ SkillType.ForceSense, 30}, 
+				})
+			},
+		};
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

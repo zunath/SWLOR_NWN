@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 
 namespace SWLOR.Game.Server.Perk
 {
@@ -73,23 +75,32 @@ namespace SWLOR.Game.Server.Perk
 
     public static class PerkCategoryTypeExtensions
     {
+        private static PerkCategoryAttribute GetAttribute(PerkCategoryType category)
+        {
+            var enumType = typeof(PerkCategoryType);
+            var memberInfos = enumType.GetMember(category.ToString());
+            var enumValueMemberInfo = memberInfos.First(m => m.DeclaringType == enumType);
+            var valueAttributes = enumValueMemberInfo.GetCustomAttributes(typeof(PerkCategoryAttribute), false);
+            return ((PerkCategoryAttribute)valueAttributes[0]);
+        }
+
         public static int GetSequence(this PerkCategoryType category)
         {
-            var attribute = (PerkCategoryAttribute)category.GetType().GetCustomAttribute(typeof(PerkCategoryAttribute));
+            var attribute = GetAttribute(category);
 
             return attribute.Sequence;
         }
 
         public static bool GetIsActive(this PerkCategoryType category)
         {
-            var attribute = (PerkCategoryAttribute)category.GetType().GetCustomAttribute(typeof(PerkCategoryAttribute));
+            var attribute = GetAttribute(category);
 
             return attribute.IsActive;
         }
 
         public static string GetName(this PerkCategoryType category)
         {
-            var attribute = (PerkCategoryAttribute)category.GetType().GetCustomAttribute(typeof(PerkCategoryAttribute));
+            var attribute = GetAttribute(category);
 
             return attribute.Name;
         }

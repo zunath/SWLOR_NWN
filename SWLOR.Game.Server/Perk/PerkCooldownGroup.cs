@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 
 namespace SWLOR.Game.Server.Perk
 {
@@ -88,16 +89,25 @@ namespace SWLOR.Game.Server.Perk
 
     public static class PerkCooldownGroupExtensions
     {
+        private static PerkCooldownAttribute GetAttribute(PerkCooldownGroup @group)
+        {
+            var enumType = typeof(PerkCooldownGroup);
+            var memberInfos = enumType.GetMember(@group.ToString());
+            var enumValueMemberInfo = memberInfos.First(m => m.DeclaringType == enumType);
+            var valueAttributes = enumValueMemberInfo.GetCustomAttributes(typeof(PerkCooldownAttribute), false);
+            return ((PerkCooldownAttribute)valueAttributes[0]);
+        }
+
         public static float GetDelay(this PerkCooldownGroup group)
         {
-            var attribute = (PerkCooldownAttribute)group.GetType().GetCustomAttribute(typeof(PerkCooldownAttribute));
+            var attribute = GetAttribute(group);
 
             return attribute.Delay;
         }
 
         public static string GetName(this PerkCooldownGroup group)
         {
-            var attribute = (PerkCooldownAttribute)group.GetType().GetCustomAttribute(typeof(PerkCooldownAttribute));
+            var attribute = GetAttribute(group);
 
             return attribute.Name;
         }

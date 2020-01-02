@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class EngineeringModInstallation: IPerkHandler
+    public class EngineeringModInstallation: IPerk
     {
         public PerkType PerkType => PerkType.EngineeringModInstallation;
         public string Name => "Engineering Mod Installation";

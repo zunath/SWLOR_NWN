@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class Sneak: IPerkHandler
+    public class Sneak: IPerk
     {
         public PerkType PerkType => PerkType.Sneak;
         public string Name => "Sneak";

@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Dash: IPerkHandler
+    public class Dash: IPerk
     {
         public PerkType PerkType => PerkType.Dash;
         public string Name => "Dash";

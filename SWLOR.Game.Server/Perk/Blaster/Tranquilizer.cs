@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class Tranquilizer: IPerkHandler
+    public class Tranquilizer: IPerk
     {
         public PerkType PerkType => PerkType.Tranquilizer;
         public string Name => "Tranquilizer";

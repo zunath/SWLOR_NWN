@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class ForceDetection: IPerkHandler
+    public class ForceDetection: IPerk
     {
         public PerkType PerkType => PerkType.ForceDetection;
         public string Name => "Force Detection";

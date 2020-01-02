@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class StimFiend: IPerkHandler
+    public class StimFiend: IPerk
     {
         public PerkType PerkType => PerkType.StimFiend;
         public string Name => "Stim Fiend";

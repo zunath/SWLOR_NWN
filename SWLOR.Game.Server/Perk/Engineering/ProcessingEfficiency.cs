@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class ProcessingEfficiency : IPerkHandler
+    public class ProcessingEfficiency : IPerk
     {
         public PerkType PerkType => PerkType.ProcessingEfficiency;
         public string Name => "Processing Efficiency";

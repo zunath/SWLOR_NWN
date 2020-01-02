@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk
 {
-    public interface IPerkHandler
+    public interface IPerk
     {
         PerkType PerkType { get; }
         string Name { get; }

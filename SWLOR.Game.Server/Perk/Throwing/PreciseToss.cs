@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class PreciseToss: IPerkHandler
+    public class PreciseToss: IPerk
     {
         public PerkType PerkType => PerkType.PreciseToss;
         public string Name => "Precise Toss";

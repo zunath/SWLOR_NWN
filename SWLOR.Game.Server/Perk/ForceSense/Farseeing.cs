@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class Farseeing: IPerkHandler
+    public class Farseeing: IPerk
     {
         public PerkType PerkType => PerkType.Farseeing;
         public string Name => "Farseeing";

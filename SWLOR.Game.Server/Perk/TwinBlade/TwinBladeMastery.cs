@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class TwinBladeMastery : IPerkHandler
+    public class TwinBladeMastery : IPerk
     {
         public PerkType PerkType => PerkType.TwinBladeMastery;
         public string Name => "Twin Blade Mastery";

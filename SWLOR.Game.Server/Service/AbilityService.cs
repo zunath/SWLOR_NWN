@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Service
             EndConcentrationEffect(player);
         }
         
-        public static void ApplyEnmity(NWCreature attacker, NWCreature target, IPerkHandler perk)
+        public static void ApplyEnmity(NWCreature attacker, NWCreature target, IPerk perk)
         {
             switch (perk.EnmityAdjustmentType)
             {
@@ -497,13 +497,13 @@ namespace SWLOR.Game.Server.Service
         private static void ActivateAbility(
             NWCreature activator,
             NWObject target,
-            IPerkHandler perkHandler,
+            IPerk perk,
             int pcPerkLevel,
             PerkExecutionType executionType,
             int spellTier)
         {
             string uuid = Guid.NewGuid().ToString();
-            float baseActivationTime = perkHandler.CastingTime(activator, spellTier);
+            float baseActivationTime = perk.CastingTime(activator, spellTier);
             float activationTime = baseActivationTime;
             var vfxID = Vfx.None;
             var animationID = Animation.Invalid;
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Service
 
             // If an animation has been specified, make the player play that animation now.
             // bypassing if perk is throw saber due to couldn't get the animation to work via db table edit
-            if (animationID != Animation.Invalid && perkHandler.PerkType != PerkType.ThrowSaber)                
+            if (animationID != Animation.Invalid && perk.PerkType != PerkType.ThrowSaber)                
             {
                 activator.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
@@ -595,11 +595,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Run the FinishAbilityUse event at the end of the activation time.
-            var @event = new OnFinishAbilityUse(activator, uuid, perkHandler.PerkType, target, pcPerkLevel, spellTier, armorPenalty);
+            var @event = new OnFinishAbilityUse(activator, uuid, perk.PerkType, target, pcPerkLevel, spellTier, armorPenalty);
             activator.DelayEvent(activationTime + 0.2f, @event);
         }
 
-        public static void ApplyCooldown(NWCreature creature, PerkCooldownGroup cooldown, IPerkHandler handler, int spellTier, float armorPenalty)
+        public static void ApplyCooldown(NWCreature creature, PerkCooldownGroup cooldown, IPerk handler, int spellTier, float armorPenalty)
         {
             if (armorPenalty <= 0.0f) armorPenalty = 1.0f;
             
@@ -662,7 +662,7 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
-        private static void HandleQueueWeaponSkill(NWCreature activator, IPerkHandler ability, Feat spellFeatID)
+        private static void HandleQueueWeaponSkill(NWCreature activator, IPerk ability, Feat spellFeatID)
         {
             var perkFeat = DataService.PerkFeat.GetByFeatID((int)spellFeatID);
             var cooldownCategory = ability.CooldownGroup;

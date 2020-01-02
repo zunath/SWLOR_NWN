@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Meditate: IPerkHandler
+    public class Meditate: IPerk
     {
         public PerkType PerkType => PerkType.Meditate;
         public string Name => "Meditate";

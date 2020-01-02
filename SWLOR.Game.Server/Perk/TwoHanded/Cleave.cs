@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class Cleave : IPerkHandler
+    public class Cleave : IPerk
     {
         public PerkType PerkType => PerkType.Cleave;
         public string Name => "Cleave";

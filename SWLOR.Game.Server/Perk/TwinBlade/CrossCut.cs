@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class CrossCut: IPerkHandler
+    public class CrossCut: IPerk
     {
         public PerkType PerkType => PerkType.CrossCut;
         public string Name => "Cross Cut";

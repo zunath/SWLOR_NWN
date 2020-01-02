@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class ResuscitationDevices : IPerkHandler
+    public class ResuscitationDevices : IPerk
     {
         public PerkType PerkType => PerkType.ResuscitationDevices;
         public string Name => "Resuscitation Devices";

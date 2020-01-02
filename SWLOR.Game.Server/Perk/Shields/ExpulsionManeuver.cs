@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
-    public class ExpulsionManeuver : IPerkHandler
+    public class ExpulsionManeuver : IPerk
     {
         public PerkType PerkType => PerkType.ExpulsionManeuver;
         public string Name => "Expulsion Maneuver";

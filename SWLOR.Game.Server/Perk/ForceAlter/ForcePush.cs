@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForcePush: IPerkHandler
+    public class ForcePush: IPerk
     {
         public PerkType PerkType => PerkType.ForcePush;
         public string Name => "Force Push";

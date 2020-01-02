@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Cooking
 {
-    public class FoodRecipes : IPerkHandler
+    public class FoodRecipes : IPerk
     {
         public PerkType PerkType => PerkType.FoodRecipes;
         public string Name => "Food Recipes";

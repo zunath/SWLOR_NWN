@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Weaponsmith
 {
-    public class WeaponModInstallation: IPerkHandler
+    public class WeaponModInstallation: IPerk
     {
         public PerkType PerkType => PerkType.WeaponModInstallation;
         public string Name => "Weapon Mod Installation";

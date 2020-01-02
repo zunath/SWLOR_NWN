@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Health: IPerkHandler
+    public class Health: IPerk
     {
         public PerkType PerkType => PerkType.Health;
         public string Name => "Health";

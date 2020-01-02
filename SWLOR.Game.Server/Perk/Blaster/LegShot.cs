@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class LegShot: IPerkHandler
+    public class LegShot: IPerk
     {
         public PerkType PerkType => PerkType.LegShot;
         public string Name => "Leg Shot";

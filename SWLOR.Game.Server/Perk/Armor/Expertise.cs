@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Expertise : IPerkHandler
+    public class Expertise : IPerk
     {
         public PerkType PerkType => PerkType.Expertise;
         public string Name => "Expertise";

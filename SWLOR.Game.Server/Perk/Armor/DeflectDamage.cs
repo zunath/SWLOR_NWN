@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class DeflectDamage: IPerkHandler
+    public class DeflectDamage: IPerk
     {
         public PerkType PerkType => PerkType.DeflectDamage;
         public string Name => "Deflect Damage";

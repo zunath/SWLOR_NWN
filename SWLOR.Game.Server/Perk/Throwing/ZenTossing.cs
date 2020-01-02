@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class ZenTossing : IPerkHandler
+    public class ZenTossing : IPerk
     {
         public PerkType PerkType => PerkType.ZenTossing;
         public string Name => "Zen Tossing";

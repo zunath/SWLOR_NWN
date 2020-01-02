@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Sturdiness : IPerkHandler
+    public class Sturdiness : IPerk
     {
         public PerkType PerkType => PerkType.Sturdiness;
         public string Name => "Sturdiness";

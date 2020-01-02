@@ -11,7 +11,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class MindShield: IPerkHandler
+    public class MindShield: IPerk
     {
         public PerkType PerkType => PerkType.MindShield;
         public string Name => "Mind Shield";

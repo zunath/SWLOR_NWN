@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class BattleInsight: IPerkHandler
+    public class BattleInsight: IPerk
     {
         public PerkType PerkType => PerkType.BattleInsight;
         public string Name => "Battle insight";

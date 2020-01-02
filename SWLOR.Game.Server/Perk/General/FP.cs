@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class FP : IPerkHandler
+    public class FP : IPerk
     {
         public PerkType PerkType => PerkType.FP;
         public string Name => "FP";

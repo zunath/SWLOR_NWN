@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class Chi: IPerkHandler
+    public class Chi: IPerk
     {
         public PerkType PerkType => PerkType.Chi;
         public string Name => "Chi";

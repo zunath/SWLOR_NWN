@@ -383,47 +383,6 @@ namespace SWLOR.Game.Server.Data.Migration
             DataService.SubmitDataChange(new ComponentType { ID = 64, Name = "Hull Plating", ReassembledResref = "" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new ComponentType { ID = 65, Name = "Starship Weapon", ReassembledResref = "" }, DatabaseActionType.Insert);
 
-            // Cooldown Category
-            DataService.SubmitDataChange(new CooldownCategory { ID = 1, Name = "Evasiveness", BaseCooldownTime = 60f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 2, Name = "Force Speed", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 3, Name = "Knockdown", BaseCooldownTime = 60f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 4, Name = "Absorb Energy", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 5, Name = "Force Body", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 6, Name = "Mind Shield", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 7, Name = "Rage", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 8, Name = "Force Persuade", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 9, Name = "Confusion", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 10, Name = "Force Stun", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 11, Name = "Sith Alchemy", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 12, Name = "Throw Saber", BaseCooldownTime = 10f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 13, Name = "Rest/Meditate", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 14, Name = "Provoke", BaseCooldownTime = 30f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 15, Name = "Sneak Attack", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 16, Name = "Premonition", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 17, Name = "Comprehend Speech", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 18, Name = "Cross-Cut", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 19, Name = "Hide", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 20, Name = "Force Detection", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 21, Name = "Farseeing", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 22, Name = "Shield Boost", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 23, Name = "Recovery Blast", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 24, Name = "Leg Shot", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 25, Name = "Tranquilizer", BaseCooldownTime = 120f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 26, Name = "Mass Tranquilizer", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 27, Name = "Precise Toss", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 28, Name = "Battle/Force Insight", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 29, Name = "Dash", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 30, Name = "Electric Fist", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 31, Name = "Plasma Cell", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 32, Name = "Chi", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 33, Name = "Stance", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 34, Name = "Animal Bond", BaseCooldownTime = 600f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 35, Name = "Drain Life", BaseCooldownTime = 12f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 36, Name = "Force Lightning", BaseCooldownTime = 12f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 37, Name = "Force Push", BaseCooldownTime = 10f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 38, Name = "Force Breach", BaseCooldownTime = 10f }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new CooldownCategory { ID = 40, Name = "Skewer", BaseCooldownTime = 300f }, DatabaseActionType.Insert);
-
             // Craft Blueprint
             DataService.SubmitDataChange(new CraftBlueprint { ID = 1, CraftCategoryID = 5, BaseLevel = 5, ItemName = "Basic Heavy Vibroblade GA", ItemResref = "greataxe_b", Quantity = 1, SkillID = 12, CraftDeviceID = 2, PerkID = null, RequiredPerkLevel = 0, IsActive = true, MainComponentTypeID = 6, MainMinimum = 1, SecondaryComponentTypeID = 10, SecondaryMinimum = 1, TertiaryComponentTypeID = 0, TertiaryMinimum = 0, EnhancementSlots = 2, MainMaximum = 2, SecondaryMaximum = 2, TertiaryMaximum = 0, BaseStructureID = null }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new CraftBlueprint { ID = 2, CraftCategoryID = 5, BaseLevel = 7, ItemName = "Heavy Vibroblade GA1", ItemResref = "greataxe_1", Quantity = 1, SkillID = 12, CraftDeviceID = 2, PerkID = 84, RequiredPerkLevel = 1, IsActive = true, MainComponentTypeID = 6, MainMinimum = 1, SecondaryComponentTypeID = 10, SecondaryMinimum = 1, TertiaryComponentTypeID = 0, TertiaryMinimum = 0, EnhancementSlots = 3, MainMaximum = 2, SecondaryMaximum = 2, TertiaryMaximum = 0, BaseStructureID = null }, DatabaseActionType.Insert);
@@ -3055,40 +3014,6 @@ namespace SWLOR.Game.Server.Data.Migration
             DataService.SubmitDataChange(new NPCGroup { ID = 28, Name = "Hutlar - Byysk" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new NPCGroup { ID = 29, Name = "Hutlar - Qion Slugs" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new NPCGroup { ID = 30, Name = "Qion Tiger" }, DatabaseActionType.Insert);
-
-            // Perk Category
-            DataService.SubmitDataChange(new PerkCategory { ID = 1, Name = "Fabrication", IsActive = true, Sequence = 1 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 2, Name = "Lightsabers & Saberstaffs", IsActive = true, Sequence = 2 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 3, Name = "Gathering", IsActive = true, Sequence = 25 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 4, Name = "General", IsActive = true, Sequence = 1 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 5, Name = "Stances", IsActive = true, Sequence = 5 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 6, Name = "Shields", IsActive = true, Sequence = 3 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 7, Name = "Armor", IsActive = true, Sequence = 2 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 8, Name = "Firearms - General", IsActive = true, Sequence = 13 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 9, Name = "One-Handed - General", IsActive = true, Sequence = 4 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 10, Name = "One-Handed - Vibroblades", IsActive = true, Sequence = 5 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 11, Name = "One-Handed - Finesse Vibroblades", IsActive = true, Sequence = 6 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 12, Name = "One-Handed - Batons", IsActive = true, Sequence = 7 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 13, Name = "Two-Handed - Heavy Vibroblades", IsActive = true, Sequence = 8 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 14, Name = "Saberstaffs", IsActive = true, Sequence = 9 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 15, Name = "Two-Handed - Polearms", IsActive = true, Sequence = 10 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 16, Name = "Twin Blades - Twin Vibroblades", IsActive = true, Sequence = 11 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 17, Name = "Martial Arts", IsActive = true, Sequence = 12 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 18, Name = "Blasters - Blaster Pistols", IsActive = true, Sequence = 14 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 19, Name = "Blasters - Blaster Rifles", IsActive = true, Sequence = 15 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 20, Name = "Throwing", IsActive = true, Sequence = 16 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 22, Name = "Medicine", IsActive = true, Sequence = 22 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 23, Name = "Weaponsmith", IsActive = true, Sequence = 20 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 25, Name = "Armorsmith", IsActive = true, Sequence = 21 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 27, Name = "Cooking", IsActive = false, Sequence = 23 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 32, Name = "Survival", IsActive = false, Sequence = 27 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 33, Name = "Engineering", IsActive = true, Sequence = 22 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 34, Name = "Harvesting", IsActive = true, Sequence = 26 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 36, Name = "Lightsabers", IsActive = true, Sequence = 28 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 37, Name = "Piloting", IsActive = true, Sequence = 29 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 40, Name = "Force Alter", IsActive = true, Sequence = 30 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 43, Name = "Force Control", IsActive = true, Sequence = 33 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new PerkCategory { ID = 46, Name = "Force Sense", IsActive = true, Sequence = 36 }, DatabaseActionType.Insert);
 
             // Perk Feat
             DataService.SubmitDataChange(new PerkFeat { ID = 4, PerkID = 7, FeatID = 1139, PerkLevelUnlocked = 1, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0 }, DatabaseActionType.Insert);

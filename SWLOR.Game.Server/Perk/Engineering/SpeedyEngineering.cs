@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class SpeedyEngineering : IPerkHandler
+    public class SpeedyEngineering : IPerk
     {
         public PerkType PerkType => PerkType.SpeedyEngineering;
         public string Name => "Speedy Engineering";

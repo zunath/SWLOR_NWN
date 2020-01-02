@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class LightsaberBlueprints : IPerkHandler
+    public class LightsaberBlueprints : IPerk
     {
         public PerkType PerkType => PerkType.LightsaberBlueprints;
         public string Name => "Lightsaber Blueprints";

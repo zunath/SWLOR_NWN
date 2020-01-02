@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class Skewer : IPerkHandler
+    public class Skewer : IPerk
     {
         public PerkType PerkType => PerkType.Skewer;
         public string Name => "Skewer";

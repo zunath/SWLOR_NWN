@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForcePersuade: IPerkHandler
+    public class ForcePersuade: IPerk
     {
         public PerkType PerkType => PerkType.ForcePersuade;
         public string Name => "Force Persuade";

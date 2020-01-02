@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class DrainLife: IPerkHandler
+    public class DrainLife: IPerk
     {
         public PerkType PerkType => PerkType.DrainLife;
         public string Name => "Drain Life";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class RangedHealing: IPerkHandler
+    public class RangedHealing: IPerk
     {
         public PerkType PerkType => PerkType.RangedHealing;
         public string Name => "Ranged Healing";

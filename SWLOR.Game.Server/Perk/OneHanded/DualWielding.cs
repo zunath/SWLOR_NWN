@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class DualWielding : IPerkHandler
+    public class DualWielding : IPerk
     {
         public PerkType PerkType => PerkType.OneHandedDualWielding;
         public string Name => "One-Handed Dual Wielding";

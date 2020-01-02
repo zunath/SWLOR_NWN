@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class SneakAttack: IPerkHandler
+    public class SneakAttack: IPerk
     {
         public PerkType PerkType => PerkType.SneakAttack;
         public string Name => "Sneak Attack";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class CarefulPilot: IPerkHandler
+    public class CarefulPilot: IPerk
     {
         public PerkType PerkType => PerkType.CarefulPilot;
         public string Name => "Careful Pilot";

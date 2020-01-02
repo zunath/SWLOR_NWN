@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
-    public class ArmorModInstallation : IPerkHandler
+    public class ArmorModInstallation : IPerk
     {
         public PerkType PerkType => PerkType.ArmorModInstallation;
         public string Name => "Armor Mod Installation";

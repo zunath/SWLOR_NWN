@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class AnimalBond: IPerkHandler
+    public class AnimalBond: IPerk
     {
         public PerkType PerkType => PerkType.AnimalBond;
         public string Name => "Animal Bond";

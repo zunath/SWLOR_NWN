@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class ForceSpeed: IPerkHandler
+    public class ForceSpeed: IPerk
     {
         public PerkType PerkType => PerkType.ForceSpeed;
         public string Name => "Force Speed";

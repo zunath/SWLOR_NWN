@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ThrowSaber : IPerkHandler
+    public class ThrowSaber : IPerk
     {
         public PerkType PerkType => PerkType.ThrowSaber;
         public string Name => "Throw Saber";

@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Evasiveness : IPerkHandler
+    public class Evasiveness : IPerk
     {
         public PerkType PerkType => PerkType.Evasiveness;
         public string Name => "Evasiveness";

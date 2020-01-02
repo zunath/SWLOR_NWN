@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class CombatRepair: IPerkHandler
+    public class CombatRepair: IPerk
     {
         public PerkType PerkType => PerkType.CombatRepair;
         public string Name => "Combat Repair";

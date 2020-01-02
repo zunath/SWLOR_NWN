@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class Rage: IPerkHandler
+    public class Rage: IPerk
     {
         public PerkType PerkType => PerkType.Rage;
         public string Name => "Rage";

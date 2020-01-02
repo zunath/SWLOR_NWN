@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceStun: IPerkHandler
+    public class ForceStun: IPerk
     {
         public PerkType PerkType => PerkType.ForceStun;
         public string Name => "Force Stun";

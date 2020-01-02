@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class ShieldOath: IPerkHandler
+    public class ShieldOath: IPerk
     {
         public PerkType PerkType => PerkType.ShieldOath;
         public string Name => "Shield Oath";

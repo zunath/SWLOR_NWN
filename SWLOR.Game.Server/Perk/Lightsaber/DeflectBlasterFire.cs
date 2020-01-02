@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class DeflectBlasterFire: IPerkHandler
+    public class DeflectBlasterFire: IPerk
     {
         public PerkType PerkType => PerkType.DeflectBlasterFire;
         public string Name => "Deflect Blaster Fire";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class CrackShot: IPerkHandler
+    public class CrackShot: IPerk
     {
         public PerkType PerkType => PerkType.CrackShot;
         public string Name => "Crack Shot";

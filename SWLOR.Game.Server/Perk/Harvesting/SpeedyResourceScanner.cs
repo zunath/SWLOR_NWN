@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class SpeedyResourceScanner: IPerkHandler
+    public class SpeedyResourceScanner: IPerk
     {
         public PerkType PerkType => PerkType.SpeedyResourceScanner;
         public string Name => "Speedy Resource Scanner";

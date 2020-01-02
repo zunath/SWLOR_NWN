@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class Premonition: IPerkHandler
+    public class Premonition: IPerk
     {
         public PerkType PerkType => PerkType.Premonition;
         public string Name => "Premonition";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Gathering
 {
-    public class CarefulScavenger : IPerkHandler
+    public class CarefulScavenger : IPerk
     {
         public PerkType PerkType => PerkType.CarefulScavenger;
         public string Name => "Careful Scavenger";

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class ForceHeal: IPerkHandler
+    public class ForceHeal: IPerk
     {
         public PerkType PerkType => PerkType.ForceHeal;
         public string Name => "Force Heal";

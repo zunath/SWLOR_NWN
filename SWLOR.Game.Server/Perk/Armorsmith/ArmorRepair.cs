@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
-    public class ArmorRepair: IPerkHandler
+    public class ArmorRepair: IPerk
     {
         public PerkType PerkType => PerkType.ArmorRepair;
         public string Name => "Armor Repair";

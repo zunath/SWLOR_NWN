@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class ComprehendSpeech: IPerkHandler
+    public class ComprehendSpeech: IPerk
     {
         public PerkType PerkType => PerkType.ComprehendSpeech;
         public string Name => "Comprehend Speech";

@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class WeaponFinesse : IPerkHandler
+    public class WeaponFinesse : IPerk
     {
         public PerkType PerkType => PerkType.WeaponFinesse;
         public string Name => "Weapon Finesse";

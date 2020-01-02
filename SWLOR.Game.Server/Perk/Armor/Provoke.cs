@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Provoke: IPerkHandler
+    public class Provoke: IPerk
     {
         public PerkType PerkType => PerkType.Provoke;
         public string Name => "Provoke";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PlasmaCell: IPerkHandler
+    public class PlasmaCell: IPerk
     {
         public PerkType PerkType => PerkType.PlasmaCell;
         public string Name => "Plasma Cell";

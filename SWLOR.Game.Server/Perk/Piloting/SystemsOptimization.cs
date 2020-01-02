@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class SystemsOptimization: IPerkHandler
+    public class SystemsOptimization: IPerk
     {
         public PerkType PerkType => PerkType.SystemsOptimization;
         public string Name => "System Optimization";

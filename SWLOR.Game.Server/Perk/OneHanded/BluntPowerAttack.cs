@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class BluntPowerAttack : IPerkHandler
+    public class BluntPowerAttack : IPerk
     {
         public PerkType PerkType => PerkType.BluntPowerAttack;
         public string Name => "Blunt Power Attack";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class MolecularReassemblyProficiency: IPerkHandler
+    public class MolecularReassemblyProficiency: IPerk
     {
         public PerkType PerkType => PerkType.MolecularReassemblyProficiency;
         public string Name => "Molecular Reassembly Proficiency";

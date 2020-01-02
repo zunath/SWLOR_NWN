@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class BalancedStance: IPerkHandler
+    public class BalancedStance: IPerk
     {
         public PerkType PerkType => PerkType.BalancedStance;
         public string Name => "Balanced Stance";

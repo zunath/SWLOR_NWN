@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class GuildRelations : IPerkHandler
+    public class GuildRelations : IPerk
     {
         public PerkType PerkType => PerkType.GuildRelations;
         public string Name => "Guild Relations";

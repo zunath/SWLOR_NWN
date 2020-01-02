@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceBreach: IPerkHandler
+    public class ForceBreach: IPerk
     {
         public PerkType PerkType => PerkType.ForceBreach;
         public string Name => "Force Breach";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class StronidiumRefining: IPerkHandler
+    public class StronidiumRefining: IPerk
     {
         public PerkType PerkType => PerkType.StronidiumRefining;
         public string Name => "Stronidium Refining";

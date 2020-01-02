@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceLightning: IPerkHandler
+    public class ForceLightning: IPerk
     {
         public PerkType PerkType => PerkType.ForceLightning;
         public string Name => "Force Lightning";

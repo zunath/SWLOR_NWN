@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Clarity: IPerkHandler
+    public class Clarity: IPerk
     {
         public PerkType PerkType => PerkType.Clarity;
         public string Name => "Clarity";

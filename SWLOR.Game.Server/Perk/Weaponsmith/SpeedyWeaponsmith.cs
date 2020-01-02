@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Weaponsmith
 {
-    public class SpeedyWeaponsmith : IPerkHandler
+    public class SpeedyWeaponsmith : IPerk
     {
         public PerkType PerkType => PerkType.SpeedyWeaponsmith;
         public string Name => "Speedy Weaponsmith";

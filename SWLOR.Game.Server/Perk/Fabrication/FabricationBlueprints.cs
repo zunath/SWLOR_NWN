@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Fabrication
 {
-    public class FabricationBlueprints: IPerkHandler
+    public class FabricationBlueprints: IPerk
     {
         public PerkType PerkType => PerkType.FabricationBlueprints;
         public string Name => "Fabrication Blueprints";

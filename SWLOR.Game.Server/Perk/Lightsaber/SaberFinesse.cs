@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class SaberFinesse : IPerkHandler
+    public class SaberFinesse : IPerk
     {
         public PerkType PerkType => PerkType.SaberFinesse;
         public string Name => "Saber Finesse";

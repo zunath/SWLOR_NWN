@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
-    public class BlockingRecovery: IPerkHandler
+    public class BlockingRecovery: IPerk
     {
         public PerkType PerkType => PerkType.BlockingRecovery;
         public string Name => "Blocking Recovery";

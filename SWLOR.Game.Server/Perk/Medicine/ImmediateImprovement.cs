@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class ImmediateImprovement : IPerkHandler
+    public class ImmediateImprovement : IPerk
     {
         public PerkType PerkType => PerkType.ImmediateImprovement;
         public string Name => "Immediate Improvment";

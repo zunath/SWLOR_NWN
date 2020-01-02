@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class RefineryManagement : IPerkHandler
+    public class RefineryManagement : IPerk
     {
         public PerkType PerkType => PerkType.RefineryManagement;
         public string Name => "Refinery Management";

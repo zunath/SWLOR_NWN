@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class CalledShot : IPerkHandler
+    public class CalledShot : IPerk
     {
         public PerkType PerkType => PerkType.CalledShot;
         public string Name => "Called Shot";

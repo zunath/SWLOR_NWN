@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class HealingKitExpert : IPerkHandler
+    public class HealingKitExpert : IPerk
     {
         public PerkType PerkType => PerkType.HealingKitExpert;
         public string Name => "Healing Kit Expert";

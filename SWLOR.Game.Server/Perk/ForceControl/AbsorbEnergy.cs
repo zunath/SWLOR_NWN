@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class AbsorbEnergy: IPerkHandler
+    public class AbsorbEnergy: IPerk
     {
         public PerkType PerkType => PerkType.AbsorbEnergy;
         public string Name => "Absorb Energy";

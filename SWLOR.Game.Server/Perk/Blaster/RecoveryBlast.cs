@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RecoveryBlast: IPerkHandler
+    public class RecoveryBlast: IPerk
     {
         public PerkType PerkType => PerkType.RecoveryBlast;
         public string Name => "Recovery Blast";

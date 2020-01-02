@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class ShieldBoost: IPerkHandler
+    public class ShieldBoost: IPerk
     {
         public PerkType PerkType => PerkType.ShieldBoost;
         public string Name => "Shield Boost";

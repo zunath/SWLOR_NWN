@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Lucky : IPerkHandler
+    public class Lucky : IPerk
     {
         public PerkType PerkType => PerkType.Lucky;
         public string Name => "Lucky";

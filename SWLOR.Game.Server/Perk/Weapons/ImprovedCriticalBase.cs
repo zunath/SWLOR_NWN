@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Weapons
 {
-    public abstract class ImprovedCriticalBase : IPerkHandler
+    public abstract class ImprovedCriticalBase : IPerk
     {
         public abstract PerkType PerkType { get; }
         public abstract string Name { get; }

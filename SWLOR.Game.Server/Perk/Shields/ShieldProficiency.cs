@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
-    public class ShieldProficiency: IPerkHandler
+    public class ShieldProficiency: IPerk
     {
         public PerkType PerkType => PerkType.ShieldProficiency;
         public string Name => "Shield Proficiency";

@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PointBlankShot: IPerkHandler
+    public class PointBlankShot: IPerk
     {
         public PerkType PerkType => PerkType.PointBlankShot;
         public string Name => "Point Blank Shot";

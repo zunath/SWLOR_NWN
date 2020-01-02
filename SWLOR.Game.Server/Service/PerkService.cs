@@ -23,13 +23,15 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PerkService
     {
-        private static readonly Dictionary<PerkType, IPerkHandler> _perkHandlers;
+        private static readonly Dictionary<PerkType, IPerk> _perkHandlers;
+        private static readonly Dictionary<PerkCategoryType, PerkCategory> _perkCategories;
         private static readonly Dictionary<int, HashSet<int>> _perkRequirementsBySkill;
         private static readonly Dictionary<int, HashSet<int>> _perkRequirementsByQuest;
 
         static PerkService()
         {
-            _perkHandlers = new Dictionary<PerkType, IPerkHandler>();
+            _perkHandlers = new Dictionary<PerkType, IPerk>();
+            _perkCategories = new Dictionary<PerkCategoryType, PerkCategory>();
             _perkRequirementsBySkill = new Dictionary<int, HashSet<int>>();
             _perkRequirementsByQuest = new Dictionary<int, HashSet<int>>();
         }
@@ -56,6 +58,8 @@ namespace SWLOR.Game.Server.Service
         {
             Console.WriteLine("PerkService -> OnModuleLoad RegisterPerkHandlers");
             RegisterPerkHandlers();
+            Console.WriteLine("PerkService -> OnModuleLoad RegisterPerkCategories");
+            RegisterPerkCategories();
 
             Console.WriteLine("PerkService -> OnModuleLoad OrganizePerkRequirements");
             OrganizePerkRequirements();
@@ -66,15 +70,26 @@ namespace SWLOR.Game.Server.Service
         {
             // Use reflection to get all of IPerkHandler implementations.
             var classes = Assembly.GetCallingAssembly().GetTypes()
-                .Where(p => typeof(IPerkHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+                .Where(p => typeof(IPerk).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
-                IPerkHandler instance = Activator.CreateInstance(type) as IPerkHandler;
+                IPerk instance = Activator.CreateInstance(type) as IPerk;
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 _perkHandlers.Add(instance.PerkType, instance);
+            }
+        }
+
+        private static void RegisterPerkCategories()
+        {
+            var values = Enum.GetValues(typeof(PerkCategoryType)).Cast<PerkCategoryType>();
+
+            foreach (var value in values)
+            {
+                var category = new PerkCategory(value, value.GetName(), value.GetIsActive(), value.GetSequence());
+                _perkCategories[value] = category;
             }
         }
 
@@ -143,7 +158,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static IPerkHandler GetPerkHandler(PerkType perkType)
+        public static IPerk GetPerkHandler(PerkType perkType)
         {
             if (!_perkHandlers.ContainsKey(perkType))
             {
@@ -153,10 +168,15 @@ namespace SWLOR.Game.Server.Service
             return _perkHandlers[perkType];
         }
 
-        public static IPerkHandler GetPerkHandler(int perkID)
+        public static IPerk GetPerkHandler(int perkID)
         {
             PerkType perkType = (PerkType)perkID;
             return GetPerkHandler(perkType);
+        }
+
+        public static PerkCategory GetPerkCategory(PerkCategoryType categoryType)
+        {
+            return _perkCategories[categoryType];
         }
 
         private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -310,7 +330,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static List<IPerkHandler> GetPerksAvailableToPC(NWPlayer player)
+        public static List<IPerk> GetPerksAvailableToPC(NWPlayer player)
         {
             var playerID = player.GlobalID;
             var pcSkills = DataService.PCSkill.GetAllByPlayerID(playerID).ToList();
@@ -350,7 +370,7 @@ namespace SWLOR.Game.Server.Service
             }).ToList();
         }
 
-        public static IPerkHandler GetPerkByID(PerkType perkType)
+        public static IPerk GetPerkByID(PerkType perkType)
         {
             return GetPerkHandler(perkType);
         }

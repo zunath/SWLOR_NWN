@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class DualWielding : IPerkHandler
+    public class DualWielding : IPerk
     {
         public PerkType PerkType => PerkType.LightsaberDualWielding;
         public string Name => "Lightsaber Dual Wielding";

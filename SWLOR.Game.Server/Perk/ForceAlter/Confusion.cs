@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class Confusion : IPerkHandler
+    public class Confusion : IPerk
     {
         public PerkType PerkType => PerkType.Confusion;
         public string Name => "Confusion";

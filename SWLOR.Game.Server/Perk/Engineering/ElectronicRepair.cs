@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class ElectronicRepair: IPerkHandler
+    public class ElectronicRepair: IPerk
     {
         public PerkType PerkType => PerkType.ElectronicRepair;
         public string Name => "Electronic Repair";

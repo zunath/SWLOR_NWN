@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 PerkExecutionType executionType = dbPerk.ExecutionType;
 
                 // Get the class which handles this perk's behaviour.
-                IPerkHandler perk = PerkService.GetPerkHandler(data.PerkType);
+                IPerk perk = PerkService.GetPerkHandler(data.PerkType);
 
                 // If the activator interrupted the spell or died, we can bail out early.
                 if (activator.GetLocalInt(spellUUID) == (int)SpellStatusType.Interrupted || // Moved during casting

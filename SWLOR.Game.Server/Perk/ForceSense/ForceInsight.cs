@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class ForceInsight : IPerkHandler
+    public class ForceInsight : IPerk
     {
         public PerkType PerkType => PerkType.ForceInsight;
         public string Name => "Force Insight";

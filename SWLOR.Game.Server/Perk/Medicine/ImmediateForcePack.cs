@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class ImmediateForcePack: IPerkHandler
+    public class ImmediateForcePack: IPerk
     {
         public PerkType PerkType => PerkType.ImmediateForcePack;
         public string Name => "Immediate Force Pack";

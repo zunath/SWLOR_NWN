@@ -88,13 +88,18 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildCategoryList()
         {
             var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
-            var categoryIDs = perksAvailable.Select(x => (int)x.Category).Distinct();
-            List<PerkCategory> categories = DataService.PerkCategory.GetAllByIDs(categoryIDs).ToList();
+            var categoryIDs = perksAvailable.Select(x => x.Category).Distinct();
+            List<PerkCategory> categories = new List<PerkCategory>();
+
+            foreach (var id in categoryIDs)
+            {
+                categories.Add(PerkService.GetPerkCategory(id));
+            }
 
             ClearPageResponses("CategoryPage");
             foreach (PerkCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, category.ID);
+                AddResponseToPage("CategoryPage", category.Name, true, (int)category.CategoryType);
             }
         }
 
@@ -102,7 +107,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
-            List<IPerkHandler> perks = perksAvailable.Where(x => (int)x.Category == vm.SelectedCategoryID).ToList();
+            List<IPerk> perks = perksAvailable.Where(x => (int)x.Category == vm.SelectedCategoryID).ToList();
 
             ClearPageResponses("PerkListPage");
             foreach (var perk in perks)
@@ -184,7 +189,8 @@ namespace SWLOR.Game.Server.Conversation
                     nextSpecializationRequired = ((SpecializationType)nextPerkLevel.SpecializationID).ToString();
                 }
             }
-            var perkCategory = DataService.PerkCategory.GetByID((int)perk.Category);
+
+            var perkCategory = PerkService.GetPerkCategory(perk.Category);
             var cooldownDelay = perk.CooldownGroup == PerkCooldownGroup.None ?
                 0.0f :
                 perk.CooldownGroup.GetDelay();

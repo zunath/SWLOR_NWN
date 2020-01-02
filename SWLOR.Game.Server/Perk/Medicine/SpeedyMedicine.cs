@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class SpeedyMedicine: IPerkHandler
+    public class SpeedyMedicine: IPerk
     {
         public PerkType PerkType => PerkType.SpeedyMedicine;
         public string Name => "Speedy Medicine";

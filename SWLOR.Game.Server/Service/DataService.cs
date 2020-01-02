@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Service
         public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
         public static BuildingTypeCache BuildingType { get; } = new BuildingTypeCache();
         public static ComponentTypeCache ComponentType { get; } = new ComponentTypeCache();
-        public static CooldownCategoryCache CooldownCategory { get; } = new CooldownCategoryCache();
         public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
         public static CraftBlueprintCategoryCache CraftBlueprintCategory { get; } = new CraftBlueprintCategoryCache();
         public static CraftDeviceCache CraftDevice { get; } = new CraftDeviceCache();
@@ -78,7 +77,6 @@ namespace SWLOR.Game.Server.Service
         public static PCRegionalFameCache PCRegionalFame { get; } = new PCRegionalFameCache();
         public static PCSkillCache PCSkill { get; } = new PCSkillCache();
         public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
-        public static PerkCategoryCache PerkCategory { get; } = new PerkCategoryCache();
         public static PerkFeatCache PerkFeat { get; } = new PerkFeatCache();
         public static PerkLevelCache PerkLevel { get; } = new PerkLevelCache();
         public static PerkLevelQuestRequirementCache PerkLevelQuestRequirement { get; } = new PerkLevelQuestRequirementCache();

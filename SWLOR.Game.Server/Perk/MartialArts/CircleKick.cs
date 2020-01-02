@@ -9,7 +9,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class CircleKick : IPerkHandler
+    public class CircleKick : IPerk
     {
         public PerkType PerkType => PerkType.CircleKick;
         public string Name => "Circle Kick";

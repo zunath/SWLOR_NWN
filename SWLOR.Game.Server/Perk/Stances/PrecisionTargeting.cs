@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class PrecisionTargeting : IPerkHandler
+    public class PrecisionTargeting : IPerk
     {
         public PerkType PerkType => PerkType.PrecisionTargeting;
         public string Name => "Precision Targeting";

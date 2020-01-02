@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RapidShot : IPerkHandler
+    public class RapidShot : IPerk
     {
         public PerkType PerkType => PerkType.RapidShot;
         public string Name => "Rapid Shot";

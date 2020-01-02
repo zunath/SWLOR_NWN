@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class ZenMarksmanship : IPerkHandler
+    public class ZenMarksmanship : IPerk
     {
         public PerkType PerkType => PerkType.ZenMarksmanship;
         public string Name => "Zen Marksmanship";

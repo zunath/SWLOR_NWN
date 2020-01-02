@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class FrugalMedic : IPerkHandler
+    public class FrugalMedic : IPerk
     {
         public PerkType PerkType => PerkType.FrugalMedic;
         public string Name => "Frugal Medic";

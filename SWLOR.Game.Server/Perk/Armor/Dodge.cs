@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Dodge: IPerkHandler
+    public class Dodge: IPerk
     {
         public PerkType PerkType => PerkType.Dodge;
         public string Name => "Dodge";

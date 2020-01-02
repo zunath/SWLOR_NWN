@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class SaberstaffMastery : IPerkHandler
+    public class SaberstaffMastery : IPerk
     {
         public PerkType PerkType => PerkType.SaberstaffMastery;
         public string Name => "Saberstaff Mastery";

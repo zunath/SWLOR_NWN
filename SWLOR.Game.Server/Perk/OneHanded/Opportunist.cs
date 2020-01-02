@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Opportunist : IPerkHandler
+    public class Opportunist : IPerk
     {
         public PerkType PerkType => PerkType.Opportunist;
         public string Name => "Opportunist";

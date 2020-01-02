@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Hide: IPerkHandler
+    public class Hide: IPerk
     {
         public PerkType PerkType => PerkType.Hide;
         public string Name => "Hide";

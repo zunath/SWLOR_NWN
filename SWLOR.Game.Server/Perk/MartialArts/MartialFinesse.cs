@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class MartialFinesse: IPerkHandler
+    public class MartialFinesse: IPerk
     {
         public PerkType PerkType => PerkType.MartialFinesse;
         public string Name => "Martial Finesse";

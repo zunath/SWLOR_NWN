@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Weaponsmith
 {
-    public class WeaponBlueprints : IPerkHandler
+    public class WeaponBlueprints : IPerk
     {
         public PerkType PerkType => PerkType.WeaponBlueprints;
         public string Name => "Weaponsmith Blueprints";

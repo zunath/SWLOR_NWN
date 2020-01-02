@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class GrenadeProficiency: IPerkHandler
+    public class GrenadeProficiency: IPerk
     {
         public PerkType PerkType => PerkType.GrenadeProficiency;
         public string Name => "Grenade Proficiency";

@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class ElectricFist: IPerkHandler
+    public class ElectricFist: IPerk
     {
         public PerkType PerkType => PerkType.ElectricFist;
         public string Name => "Electric Fist";

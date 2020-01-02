@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class EvadeBlasterFire : IPerkHandler
+    public class EvadeBlasterFire : IPerk
     {
         public PerkType PerkType => PerkType.EvadeBlasterFire;
         public string Name => "Evade Blaster Fire";

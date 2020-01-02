@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Knockdown: IPerkHandler
+    public class Knockdown: IPerk
     {
         public PerkType PerkType => PerkType.Knockdown;
         public string Name => "Knockdown";

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class SithAlchemy: IPerkHandler
+    public class SithAlchemy: IPerk
     {
         public PerkType PerkType => PerkType.SithAlchemy;
         public string Name => "Sith Alchemy";

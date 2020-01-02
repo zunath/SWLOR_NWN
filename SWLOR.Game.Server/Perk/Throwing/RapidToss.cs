@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class RapidToss: IPerkHandler
+    public class RapidToss: IPerk
     {
         public PerkType PerkType => PerkType.RapidToss;
         public string Name => "Rapid Toss";

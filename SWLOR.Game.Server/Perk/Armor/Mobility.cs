@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Mobility : IPerkHandler
+    public class Mobility : IPerk
     {
         public PerkType PerkType => PerkType.Mobility;
         public string Name => "Mobility";

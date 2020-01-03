@@ -2,10 +2,10 @@
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -139,12 +139,9 @@ namespace SWLOR.Game.Server.Conversation
 
             string rpXP = ColorTokenService.Green("Roleplay XP: ") + player.RoleplayXP + "\n";
 
-            Attribute primaryAttribute = DataService.Attribute.GetByID(skill.Primary);
-            Attribute secondaryAttribute = DataService.Attribute.GetByID(skill.Secondary);
-            Attribute tertiaryAttribute = DataService.Attribute.GetByID(skill.Tertiary);
-            string primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
-            string secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
-            string tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
+            string primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + skill.Primary.GetDescriptionAttribute() + "\n";
+            string secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + skill.Secondary.GetDescriptionAttribute() + "\n";
+            string tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + skill.Tertiary.GetDescriptionAttribute() + "\n";
 
             return
                     ColorTokenService.Green("Skill: ") + skill.Name + "\n" +

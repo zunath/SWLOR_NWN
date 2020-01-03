@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -17,9 +18,9 @@ namespace SWLOR.Game.Server.Data.Entity
         public int MaxRank { get; set; }
         public bool IsActive { get; set; }
         public string Description { get; set; }
-        public int Primary { get; set; }
-        public int Secondary { get; set; }
-        public int Tertiary { get; set; }
+        public Ability Primary { get; set; }
+        public Ability Secondary { get; set; }
+        public Ability Tertiary { get; set; }
         public bool ContributesToSkillCap { get; set; }
     }
 }

@@ -38,8 +38,17 @@ namespace NWN
                     if (method == null)
                         throw new Exception("Could not locate Main method on script instance: " + script);
 
-                    method.Invoke(instance, null);
-                    return SCRIPT_HANDLED;
+                    if(method.ReturnType == typeof(int))
+                    {
+                        return (int)method.Invoke(instance, null);
+                    }
+                    else
+                    {
+                        method.Invoke(instance, null);
+                        return SCRIPT_HANDLED;
+                    }
+
+
                 }
             }
             catch (Exception ex)

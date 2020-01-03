@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
             PlayerDialog dialog = AppCache.PlayerDialogs[player.GlobalID];
 
             // NPC conversations
-            
+
             if (_.GetObjectType(talkTo.Object) == ObjectType.Creature &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)

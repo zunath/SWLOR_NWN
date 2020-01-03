@@ -19,11 +19,10 @@ namespace SWLOR.Game.Server.Service
     {
         static DataService()
         {
-            ApartmentBuilding = new ApartmentBuildingCache();
+            Area = new AreaCache();
         }
 
-        public static ApartmentBuildingCache ApartmentBuilding { get; }
-        public static AreaCache Area { get; } = new AreaCache();
+        public static AreaCache Area { get; }
         public static AssociationCache Association { get; } = new AssociationCache();
         public static AttributeCache Attribute { get; } = new AttributeCache();
         public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();

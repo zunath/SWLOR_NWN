@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
@@ -46,9 +47,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             var data = BaseService.GetPlayerTempData(GetPC());
-            data.ApartmentBuildingID = terminal.GetLocalInt("APARTMENT_BUILDING_ID");
+            data.ApartmentType = (ApartmentType)terminal.GetLocalInt("APARTMENT_BUILDING_ID");
 
-            if (data.ApartmentBuildingID <= 0)
+            if (data.ApartmentType <= 0)
             {
                 _.SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
                 return;
@@ -108,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(player);
             var bases = DataService
                 .PCBase.GetAllByPlayerID(player.GlobalID)
-                .Where(x => x.ApartmentBuildingID == data.ApartmentBuildingID)
+                .Where(x => x.ApartmentBuildingID == data.ApartmentType)
                 .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
@@ -160,13 +161,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadLeasePage()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var apartmentBuilding = DataService.ApartmentBuilding.GetByID(data.ApartmentBuildingID);
             var styles = DataService.BuildingStyle
                 .GetAll()
                 .Where(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && 
                             x.IsActive).ToList();
 
-            string header = ColorTokenService.Green(apartmentBuilding.Name) + "\n\n";
+            string header = ColorTokenService.Green(data.ApartmentType.GetDescriptionAttribute()) + "\n\n";
 
             header += "You may rent an apartment here. Select a layout style from the list below to learn more about pricing details.";
             SetPageHeader("LeasePage", header);
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Conversation
                 PlayerID = player.GlobalID,
                 BuildingStyleID = style.ID,
                 PCBaseTypeID = (int)Enumeration.PCBaseType.Apartment,
-                ApartmentBuildingID = data.ApartmentBuildingID,
+                ApartmentBuildingID = data.ApartmentType,
                 CustomName = string.Empty,
                 DateInitialPurchase = DateTime.UtcNow,
                 DateRentDue = DateTime.UtcNow.AddDays(7),

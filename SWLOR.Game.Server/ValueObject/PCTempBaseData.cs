@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.ValueObject
         public BuildingType BuildingType { get; set; }
         public Guid? ParentStructureID { get; set; }
         public AreaStructure ManipulatingStructure { get; set; }
-        public int ApartmentBuildingID { get; set; }
+        public ApartmentType ApartmentType { get; set; }
         public int BuildingStyleID { get; set; }
         public int ExtensionDays { get; set; }
     }

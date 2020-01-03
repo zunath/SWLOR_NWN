@@ -1185,7 +1185,8 @@ namespace SWLOR.Game.Server.Service
                         while (entrance.IsValid)
                         {
                             LoggingService.Trace(TraceComponent.Space, "Found apartment entrance in " + _.GetName(entrance.Location.Area) + " with ID " + entrance.GetLocalInt("APARTMENT_BUILDING_ID").ToString());
-                            if (entrance.GetLocalInt("APARTMENT_BUILDING_ID") == pcBase.ApartmentBuildingID)
+                            ApartmentType apartmentType = (ApartmentType) entrance.GetLocalInt("APARTMENT_BUILDING_ID");
+                            if (apartmentType == pcBase.ApartmentBuildingID)
                             {
                                 // Found it!
                                 location = entrance.Location;

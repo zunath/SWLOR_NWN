@@ -1,6 +1,7 @@
 
 using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ReinforcedFuel { get; set; }
         public DateTime DateFuelEnds { get; set; }
         public int PCBaseTypeID { get; set; }
-        public int? ApartmentBuildingID { get; set; }
+        public ApartmentType? ApartmentBuildingID { get; set; }
         public string CustomName { get; set; }
         public int? BuildingStyleID { get; set; }
         public string ShipLocation { get; set; }

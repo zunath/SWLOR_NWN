@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, int apartmentBuildingID)
+        public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, ApartmentType apartmentBuildingID)
         {
             if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCBase>();

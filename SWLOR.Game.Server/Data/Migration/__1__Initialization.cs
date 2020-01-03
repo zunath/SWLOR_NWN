@@ -14,18 +14,6 @@ namespace SWLOR.Game.Server.Data.Migration
         public int Version => 1;
         public void Up()
         {
-            // Apartment Building
-            DataService.SubmitDataChange(new ApartmentBuilding
-            {
-                ID = 1,
-                Name = "Starchaser Homes"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new ApartmentBuilding
-            {
-                ID = 3,
-                Name = "Under the Sea"
-            }, DatabaseActionType.Insert);
-
             // Association
             DataService.SubmitDataChange(new Association
             {

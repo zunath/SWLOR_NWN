@@ -2,6 +2,7 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWPlaceable door = NWGameObject.OBJECT_SELF;
-            int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
+            ApartmentType apartmentBuildingID = (ApartmentType)door.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (apartmentBuildingID <= 0)
             {

@@ -14,53 +14,6 @@ namespace SWLOR.Game.Server.Data.Migration
         public int Version => 1;
         public void Up()
         {
-            // Association
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 1,
-                Name = "Jedi Order"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 2,
-                Name = "Mandalorian"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 3,
-                Name = "Sith Empire"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 4,
-                Name = "Smugglers"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 5,
-                Name = "Unaligned"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 6,
-                Name = "Hutt Cartel"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 7,
-                Name = "Republic"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 8,
-                Name = "Czerka"
-            }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Association
-            {
-                ID = 9,
-                Name = "Sith Order"
-            }, DatabaseActionType.Insert);
-
             // Attribute
             DataService.SubmitDataChange(new Attribute
             {

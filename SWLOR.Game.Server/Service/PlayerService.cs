@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Service
                 DisplayHelmet = true,
                 PrimaryResidencePCBaseStructureID = null,
                 PrimaryResidencePCBaseID = null,
-                AssociationID = (int)assType,
+                AssociationID = assType,
                 DisplayHolonet = true,
                 DisplayDiscord = true, 
                 XPBonus = 0,

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private class Model
         {
-            public int AssociationID { get; set; }
+            public AssociationType AssociationType { get; set; }
             public CreaturePart BodyPartID { get; set; }
             public int[] Parts { get; set; }
             public string PartName { get; set; }
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var model = GetDialogCustomData<Model>();
-            model.AssociationID = responseID;
+            model.AssociationType = (AssociationType)responseID;
             SetPageHeader("ConfirmAssociationPage", header);
             ChangePage("ConfirmAssociationPage");
         }
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ApplyAssociationAlignment()
         {
             var model = GetDialogCustomData<Model>();
-            int association = model.AssociationID;
+            var association = model.AssociationType;
             var player = GetPC();
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 

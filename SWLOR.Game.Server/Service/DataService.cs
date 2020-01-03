@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static AreaCache Area { get; }
-        public static AssociationCache Association { get; } = new AssociationCache();
         public static AttributeCache Attribute { get; } = new AttributeCache();
         public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();
         public static BankCache Bank { get; } = new BankCache();

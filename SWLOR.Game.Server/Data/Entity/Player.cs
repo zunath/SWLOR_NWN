@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool DisplayHelmet { get; set; }
         public Guid? PrimaryResidencePCBaseStructureID { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
-        public int AssociationID { get; set; }
+        public AssociationType AssociationID { get; set; }
         public bool DisplayHolonet { get; set; }
         public bool DisplayDiscord { get; set; }
         public Guid? PrimaryResidencePCBaseID { get; set; }

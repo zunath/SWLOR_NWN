@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
@@ -111,7 +112,6 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildMainPageHeader(NWPlayer player)
         {
             Player playerEntity = DataService.Player.GetByID(player.GlobalID);
-            var association = DataService.Association.GetByID(playerEntity.AssociationID);
 
             // Get all player skills and then sum them up by the rank.
             int totalSkillCount = DataService.PCSkill
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Conversation
                 .Sum(s => s.Rank);
 
             string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
-            header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
+            header += ColorTokenService.Green("Association: ") + playerEntity.AssociationID.GetDescriptionAttribute() + "\n\n";
             header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
             header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
             header += ColorTokenService.Green("Roleplay XP: ") + playerEntity.RoleplayXP + "\n";

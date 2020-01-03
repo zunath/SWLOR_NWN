@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
-using BuildingType = SWLOR.Game.Server.Data.Entity.BuildingType;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using CustomEffect = SWLOR.Game.Server.Data.Entity.CustomEffect;
 using Ability = SWLOR.Game.Server.NWScript.Enumerations.Ability;
@@ -206,12 +205,6 @@ namespace SWLOR.Game.Server.Data.Migration
             DataService.SubmitDataChange(new BuildingStyle { ID = 21, Name = "Light Escort 1", Resref = "starship2", BaseStructureID = 181, IsDefault = true, DoorRule = "Starship2Rule", IsActive = true, BuildingTypeID = 1, PurchasePrice = 0, DailyUpkeep = 0, FurnitureLimit = 0 }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new BuildingStyle { ID = 22, Name = "Light Freighter 1 Interior", Resref = "starship1_int", BaseStructureID = 180, IsDefault = true, DoorRule = "", IsActive = true, BuildingTypeID = 4, PurchasePrice = 0, DailyUpkeep = 0, FurnitureLimit = 60 }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new BuildingStyle { ID = 23, Name = "Light Escort 1 Interior", Resref = "starship2_int", BaseStructureID = 181, IsDefault = true, DoorRule = "", IsActive = true, BuildingTypeID = 4, PurchasePrice = 0, DailyUpkeep = 0, FurnitureLimit = 45 }, DatabaseActionType.Insert);
-
-            // Building Type
-            DataService.SubmitDataChange(new BuildingType { ID = 1, Name = "Exterior" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new BuildingType { ID = 2, Name = "Interior" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new BuildingType { ID = 3, Name = "Apartment" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new BuildingType { ID = 4, Name = "Starship" }, DatabaseActionType.Insert);
 
             // Component Type
             DataService.SubmitDataChange(new ComponentType { ID = 0, Name = "Invalid", ReassembledResref = "" }, DatabaseActionType.Insert);

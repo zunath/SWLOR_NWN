@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
+namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
 {
     public class OnOpened: IScript
     {

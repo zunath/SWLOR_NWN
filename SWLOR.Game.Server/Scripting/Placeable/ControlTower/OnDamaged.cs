@@ -11,7 +11,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
+namespace SWLOR.Game.Server.Scripting.Placeable.ControlTower
 {
     public class OnDamaged: IScript
     {

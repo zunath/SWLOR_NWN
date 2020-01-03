@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using static NWN._;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
+namespace SWLOR.Game.Server.Scripting.Placeable.Quests.AbandonedStation
 {
     public class ShuttleExit: IScript
     {

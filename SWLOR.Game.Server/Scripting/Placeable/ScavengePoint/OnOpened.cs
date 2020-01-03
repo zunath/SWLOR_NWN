@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
+namespace SWLOR.Game.Server.Scripting.Placeable.ScavengePoint
 {
     public class OnOpened: IScript
     {

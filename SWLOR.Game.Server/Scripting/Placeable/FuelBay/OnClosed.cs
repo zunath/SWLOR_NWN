@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
+namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
 {
     public class OnClosed: IScript
     {

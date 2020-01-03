@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
+namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem.ItemCollector
 {
     public class OnOpened : IScript
     {

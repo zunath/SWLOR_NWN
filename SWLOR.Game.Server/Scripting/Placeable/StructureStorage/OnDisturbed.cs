@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
+namespace SWLOR.Game.Server.Scripting.Placeable.StructureStorage
 {
     public class OnDisturbed : IScript
     {

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.TutorialPortal
+namespace SWLOR.Game.Server.Scripting.Placeable.TutorialPortal
 {
     public class OnUsed: IScript
     {

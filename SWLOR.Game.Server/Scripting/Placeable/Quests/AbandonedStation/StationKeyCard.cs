@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
+namespace SWLOR.Game.Server.Scripting.Placeable.Quests.AbandonedStation
 {
     public class StationKeyCard: IScript
     {

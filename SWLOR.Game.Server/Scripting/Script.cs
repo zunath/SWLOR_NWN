@@ -48,11 +48,8 @@ namespace SWLOR.Game.Server.Scripting
 
         }
 
-        public static bool IsScriptRegistered(string scriptName)
+        private static bool IsScriptRegistered(string scriptNamespace)
         {
-            string rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
-            string scriptNamespace = rootNamespace + ".Scripting." + scriptName;
-
             return _scripts.ContainsKey(scriptNamespace);
         }
 

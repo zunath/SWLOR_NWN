@@ -10,7 +10,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.Bank
+namespace SWLOR.Game.Server.Scripting.Placeable.Bank
 {
     public class OnDisturbed : IScript
     {

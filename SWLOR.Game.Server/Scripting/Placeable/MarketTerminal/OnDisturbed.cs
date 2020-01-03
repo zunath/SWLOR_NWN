@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
+namespace SWLOR.Game.Server.Scripting.Placeable.MarketTerminal
 {
     public class OnDisturbed: IScript
     {

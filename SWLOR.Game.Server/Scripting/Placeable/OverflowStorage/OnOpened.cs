@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
+namespace SWLOR.Game.Server.Scripting.Placeable.OverflowStorage
 {
     public class OnOpened: IScript
     {

@@ -13,7 +13,7 @@ using SWLOR.Game.Server.ValueObject;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
+namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
 {
     public class ReassembleComplete: IScript
     {

@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
+namespace SWLOR.Game.Server.Scripting.Placeable.StructureStorage
 {
     public class OnClosed : IScript
     {

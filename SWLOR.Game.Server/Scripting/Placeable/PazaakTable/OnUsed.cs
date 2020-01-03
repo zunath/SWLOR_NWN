@@ -1,9 +1,9 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.PazaakTable
+namespace SWLOR.Game.Server.Scripting.Placeable.PazaakTable
 {
     class OnUsed: IScript
     {

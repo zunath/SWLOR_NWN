@@ -1,11 +1,10 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.Quests
+namespace SWLOR.Game.Server.Scripting.Placeable.Quests
 {
     public class ForceCrystal: IScript
     {

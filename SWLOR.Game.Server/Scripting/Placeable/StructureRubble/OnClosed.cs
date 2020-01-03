@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
+namespace SWLOR.Game.Server.Scripting.Placeable.StructureRubble
 {
     public class OnClosed: IScript
     {

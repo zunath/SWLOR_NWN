@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem
+namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem
 {
     public class OnUsed: IScript
     {

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.WeatherModifier
+namespace SWLOR.Game.Server.Scripting.Placeable.WeatherModifier
 {
     public class OnHeartbeat : IScript
     {

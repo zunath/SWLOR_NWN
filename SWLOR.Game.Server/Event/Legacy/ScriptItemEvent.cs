@@ -25,15 +25,7 @@ namespace SWLOR.Game.Server.Event.Legacy
 
             using (new Profiler(nameof(ScriptEvent) + "." + script))
             {
-                // Check the script cache first. If it exists, we run it.
-                if (Script.IsScriptRegistered(script))
-                {
-                    Script.RunScript(script);
-                }
-                else
-                {
-                    Console.WriteLine("Unable to locate item script: " + script);
-                }
+                Script.RunScript(script);
             }
         }
     }

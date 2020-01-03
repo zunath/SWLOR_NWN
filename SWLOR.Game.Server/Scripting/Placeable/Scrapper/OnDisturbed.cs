@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using LocalVariableType = SWLOR.Game.Server.Enumeration.LocalVariableType;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
+namespace SWLOR.Game.Server.Scripting.Placeable.Scrapper
 {
     public class OnDisturbed: IScript
     {

@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
+namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem.ItemCollector
 {
     public class OnClosed: IScript
     {

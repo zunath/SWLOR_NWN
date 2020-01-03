@@ -1,10 +1,9 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using static NWN._;
 
-namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
+namespace SWLOR.Game.Server.Scripting.Placeable.Quests.AbandonedStation
 {
     public class TransitionClick: IScript
     {

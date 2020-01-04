@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public IEnumerable<Skill> GetByCategoryIDAndContributesToSkillCap(int skillCategoryID)
+        public IEnumerable<Skill> GetByCategoryIDAndContributesToSkillCap(SkillCategory skillCategoryID)
         {
             return GetFromListIndex(ByCategoryIDIndex, skillCategoryID.ToString())
                 .Where(x => x.ContributesToSkillCap);
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.Caching
             return GetFromListIndex(ByContributesToSkillCapIndex, "Active");
         }
 
-        public IEnumerable<Skill> GetAllBySkillCategoryIDAndActive(int skillCategoryID)
+        public IEnumerable<Skill> GetAllBySkillCategoryIDAndActive(SkillCategory skillCategoryID)
         {
             return GetFromListIndex(ByCategoryIDIndex, skillCategoryID.ToString())
                 .Where(x => x.IsActive);

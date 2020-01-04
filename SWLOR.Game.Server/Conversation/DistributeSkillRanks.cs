@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private class Model
         {
-            public int SkillCategoryID { get; set; }
+            public SkillCategory SkillCategoryID { get; set; }
             public int SkillID { get; set; }
             public int DistributionType { get; set; }
         }
@@ -51,15 +52,16 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var pool in pools)
             {
-                var category = DataService.SkillCategory.GetByID(pool.SkillCategoryID);
-                AddResponseToPage("MainPage", category.Name, true, category.ID);
+                var category = pool.SkillCategoryID;
+                var attr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
+                AddResponseToPage("MainPage", attr.Name, true, category);
             }
         }
 
         private void MainResponses(int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
-            var categoryID = (int)response.CustomData;
+            var categoryID = (SkillCategory)response.CustomData;
             var model = GetDialogCustomData<Model>();
             model.SkillCategoryID = categoryID;
 
@@ -70,11 +72,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillListPage()
         {
             var model = GetDialogCustomData<Model>();
-            var category = DataService.SkillCategory.GetByID(model.SkillCategoryID);
+            var category = model.SkillCategoryID;
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
             var skills = DataService.Skill.GetAllBySkillCategoryIDAndActive(model.SkillCategoryID);
+            var categoryAttr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
 
-            string header = ColorTokenService.Green("Category: ") + category.Name + "\n";
+            string header = ColorTokenService.Green("Category: ") + categoryAttr.Name + "\n";
             header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
             header += "You may distribute ranks to any of the following skills. Note that you may only increase a rank to a maximum level of 40. You will not gain any new experience towards any of the following skills until *ALL* ranks have been distributed.";
 

@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Service
                 var ranks = new PCSkillPool
                 {
                     PlayerID = dbPlayer.ID,
-                    SkillCategoryID = 8, // 8 = Languages
+                    SkillCategoryID = SkillCategory.Languages, // 8 = Languages
                     Levels = 40
                 };
                 DataService.SubmitDataChange(ranks, DatabaseActionType.Insert);

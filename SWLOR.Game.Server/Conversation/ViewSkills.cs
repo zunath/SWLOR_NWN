@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private class Model
         {
-            public int SelectedCategoryID { get; set; }
+            public SkillCategory SelectedCategoryID { get; set; }
             public int SelectedSkillID { get; set; }
             public int RPXPDistributing { get; set; }
             public bool IsConfirming { get; set; }
@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Conversation
             
             foreach (SkillCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, category.ID);
+                var categoryAttr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
+                AddResponseToPage("CategoryPage", categoryAttr.Name, true, category);
             }
         }
 
@@ -194,7 +195,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
             
-            vm.SelectedCategoryID = (int)response.CustomData;
+            vm.SelectedCategoryID = (SkillCategory)response.CustomData;
             LoadSkillResponses();
             ChangePage("SkillListPage");
         }

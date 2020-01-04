@@ -69,7 +69,6 @@ namespace SWLOR.Game.Server.Service
         public static PlayerCache Player { get; } = new PlayerCache();
         public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
         public static SkillCache Skill { get; } = new SkillCache();
-        public static SkillCategoryCache SkillCategory { get; } = new SkillCategoryCache();
         public static SpaceEncounterCache SpaceEncounter { get; } = new SpaceEncounterCache();
         public static StarportCache Starport { get; } = new StarportCache();
         public static SpawnCache Spawn { get; } = new SpawnCache();

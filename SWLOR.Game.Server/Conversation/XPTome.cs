@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -44,13 +46,14 @@ namespace SWLOR.Game.Server.Conversation
         {
             List<SkillCategory> categories = SkillService.GetActiveCategories().Where(x =>
             {
-                var skills = DataService.Skill.GetByCategoryIDAndContributesToSkillCap(x.ID);
+                var skills = DataService.Skill.GetByCategoryIDAndContributesToSkillCap(x);
                 return skills.Any();
             }).ToList();
 
             foreach (SkillCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, category.ID);
+                var attr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
+                AddResponseToPage("CategoryPage", attr.Name, true, category);
             }
 
             Model vm = GetDialogCustomData<Model>();
@@ -80,8 +83,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleCategoryPageResponse(int responseID)
         {
-            DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            int categoryID = (int)response.CustomData;
+            var response = GetResponseByID("CategoryPage", responseID);
+            var categoryID = (SkillCategory)response.CustomData;
             
             List<PCSkill> pcSkills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
 

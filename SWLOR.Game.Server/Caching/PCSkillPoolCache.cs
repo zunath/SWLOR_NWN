@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -33,13 +34,13 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public PCSkillPool GetByPlayerIDAndSkillCategoryID(Guid playerID, int skillCategoryID)
+        public PCSkillPool GetByPlayerIDAndSkillCategoryID(Guid playerID, SkillCategory skillCategoryID)
         {
             return GetFromListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString())
                 .Single(x => x.SkillCategoryID == skillCategoryID);
         }
 
-        public PCSkillPool GetByPlayerIDAndSkillCategoryIDOrDefault(Guid playerID, int skillCategoryID)
+        public PCSkillPool GetByPlayerIDAndSkillCategoryIDOrDefault(Guid playerID, SkillCategory skillCategoryID)
         {
             if (!ExistsByListIndex(ByPlayerIDAndSkillCategoryIDIndex, playerID.ToString()))
                 return default;

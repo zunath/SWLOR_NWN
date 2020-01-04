@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
@@ -219,7 +220,6 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skillID">The ID of the skill we're granting XP to.</param>
         /// <param name="xp">The amount of XP to give.</param>
         /// <param name="enableResidencyBonus">If enabled, a player's primary residence will be factored into the XP gain.</param>
-        /// <param name="enableTotalSkillPointPenalty">If enabled, penalties will be applied to the XP if the player falls into the ranges of the skill penalties.</param>
         /// <param name="enableDMBonus">If enabled, bonuses granted by DMs will be applied.</param>
         public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableDMBonus = true)
         {
@@ -367,10 +367,12 @@ namespace SWLOR.Game.Server.Service
 
         public static List<SkillCategory> GetActiveCategories()
         {
-            return DataService.SkillCategory.GetAllActive().ToList();
+            var categories = Enum.GetValues(typeof(SkillCategory)).Cast<SkillCategory>()
+                .Where(x => x.GetAttribute<SkillCategory, SkillCategoryAttribute>().IsActive);
+            return categories.ToList();
         }
 
-        public static List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID)
+        public static List<PCSkill> GetPCSkillsForCategory(Guid playerID, SkillCategory skillCategoryID)
         {
             // Get list of skills part of this category.
             var skillIDs = DataService

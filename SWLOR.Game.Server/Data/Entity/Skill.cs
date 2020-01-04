@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         [Key]
         public int ID { get; set; }
-        public int SkillCategoryID { get; set; }
+        public SkillCategory SkillCategoryID { get; set; }
         public string Name { get; set; }
         public int MaxRank { get; set; }
         public bool IsActive { get; set; }

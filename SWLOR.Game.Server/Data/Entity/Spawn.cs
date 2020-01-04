@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -7,6 +8,6 @@ namespace SWLOR.Game.Server.Data.Entity
         [Key]
         public int ID { get; set; }
         public string Name { get; set; }
-        public int SpawnObjectTypeID { get; set; }
+        public ObjectType SpawnObjectTypeID { get; set; }
     }
 }

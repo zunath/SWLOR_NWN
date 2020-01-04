@@ -1,6 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.AI;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.ValueObject
 {
@@ -14,10 +16,10 @@ namespace SWLOR.Game.Server.ValueObject
         public NWLocation SpawnLocation { get; set; }
         public bool IsStaticSpawnPoint { get; }
         public ResourceDetails Resource { get; set; }
-        public int NPCGroupID { get; set; }
+        public NPCGroup NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
         public string SpawnRule { get; set; }
-        public int DeathVFXID { get; set; }
+        public Vfx DeathVFXID { get; set; }
         public bool Respawns { get; set; }
         public bool HasSpawnedOnce { get; set; }
         public AIFlags AIFlags { get; set; }

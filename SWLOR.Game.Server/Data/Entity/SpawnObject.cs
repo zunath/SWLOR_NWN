@@ -1,5 +1,7 @@
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -17,9 +19,9 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Resref { get; set; }
         public int Weight { get; set; }
         public string SpawnRule { get; set; }
-        public int? NPCGroupID { get; set; }
+        public NPCGroup? NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
-        public int DeathVFXID { get; set; }
+        public Vfx DeathVFXID { get; set; }
         public AIFlags AIFlags { get; set; }
     }
 }

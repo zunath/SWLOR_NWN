@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.AI;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Service
                     var spawnType = (ObjectType)obj.GetLocalInt("SPAWN_TYPE");
                     var objectType = spawnType == 0 || spawnType == ObjectType.Creature ? ObjectType.Creature : spawnType;
                     int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
-                    int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
+                    var npcGroupID = (NPCGroup)obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
                     string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
                     if (string.IsNullOrWhiteSpace(behaviourScript))
                         behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR");
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                     string spawnResref = obj.GetLocalString("SPAWN_RESREF");
                     float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                     string spawnRule = obj.GetLocalString("SPAWN_RULE");
-                    int deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
+                    var deathVFXID = (Vfx)obj.GetLocalInt("SPAWN_DEATH_VFX");
                     AIFlags aiFlags = (AIFlags)obj.GetLocalInt("SPAWN_AI_FLAGS");
                     bool useResref = true;
 
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                             useResref = false;
 
                             if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
-                                npcGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
+                                npcGroupID = (NPCGroup)dbSpawn.NPCGroupID;
 
                             if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript))
                                 behaviourScript = dbSpawn.BehaviourScript;
@@ -296,7 +297,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                 {
                     plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
-                    spawn.NPCGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
+                    spawn.NPCGroupID = (NPCGroup)dbSpawn.NPCGroupID;
                 }
 
                 if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript) &&
@@ -462,10 +463,10 @@ namespace SWLOR.Game.Server.Service
             // Time to respawn!
             if (spawn.Timer >= spawn.RespawnTime || forceSpawn)
             {
-                string resref = spawn.Resref;
-                int npcGroupID = spawn.NPCGroupID;
-                int deathVFXID = spawn.DeathVFXID;
-                string behaviour = spawn.BehaviourScript;
+                var resref = spawn.Resref;
+                var npcGroupID = spawn.NPCGroupID;
+                var deathVFXID = spawn.DeathVFXID;
+                var behaviour = spawn.BehaviourScript;
                 NWLocation location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
                 AIFlags aiFlags = spawn.AIFlags;
 
@@ -508,10 +509,10 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (npcGroupID > 0)
-                    spawn.Spawn.SetLocalInt("NPC_GROUP", npcGroupID);
+                    spawn.Spawn.SetLocalInt("NPC_GROUP", (int)npcGroupID);
 
                 if (deathVFXID > 0)
-                    spawn.Spawn.SetLocalInt("DEATH_VFX", deathVFXID);
+                    spawn.Spawn.SetLocalInt("DEATH_VFX", (int)deathVFXID);
 
                 if (!string.IsNullOrWhiteSpace(behaviour) &&
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))

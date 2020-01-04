@@ -62,14 +62,14 @@ namespace SWLOR.Game.Server.Service
             }).ToList();
         }
 
-        public static List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID)
+        public static List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, CraftDeviceType deviceID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
             var categories = blueprints.Select(x => x.CraftCategoryID).Distinct();
             return categories.ToList();
         }
 
-        public static List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, CraftBlueprintCategory categoryID)
+        public static List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, CraftDeviceType deviceID, CraftBlueprintCategory categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID &&
                                                                                       x.CraftCategoryID == categoryID)

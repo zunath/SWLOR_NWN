@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemResref { get; set; }
         public int Quantity { get; set; }
         public int SkillID { get; set; }
-        public int CraftDeviceID { get; set; }
+        public CraftDeviceType CraftDeviceID { get; set; }
         public int? PerkID { get; set; }
         public int RequiredPerkLevel { get; set; }
         public bool IsActive { get; set; }

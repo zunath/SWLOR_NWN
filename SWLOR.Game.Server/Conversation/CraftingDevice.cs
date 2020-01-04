@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadCategoryResponses()
         {
             NWPlaceable device = (NWPlaceable)GetDialogTarget();
-            int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
+            var deviceID = (CraftDeviceType)device.GetLocalInt("CRAFT_DEVICE_ID");
             List<CraftBlueprintCategory> categories = CraftService.GetCategoriesAvailableToPCByDeviceID(GetPC().GlobalID, deviceID);
 
             ClearPageResponses("MainPage");
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadBlueprintListPage(CraftBlueprintCategory categoryID)
         {
             NWObject device = GetDialogTarget();
-            int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
+            var deviceID = (CraftDeviceType)device.GetLocalInt("CRAFT_DEVICE_ID");
 
             List<CraftBlueprint> blueprints = CraftService.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
 

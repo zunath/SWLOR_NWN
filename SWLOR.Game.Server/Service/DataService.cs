@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Service
         public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
         public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
         public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
-        public static CraftDeviceCache CraftDevice { get; } = new CraftDeviceCache();
         public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
         public static DownloadCache Download { get; } = new DownloadCache();
         public static FameRegionCache FameRegion { get; } = new FameRegionCache();

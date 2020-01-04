@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Service
     public static class BaseService
     {
         private static readonly Dictionary<string, IDoorRule> _doorRules;
+        private static readonly Dictionary<BaseStructureType, BaseStructureTypeAttribute> _baseStructureTypes = new Dictionary<BaseStructureType, BaseStructureTypeAttribute>();
 
         static BaseService()
         {
@@ -81,9 +83,19 @@ namespace SWLOR.Game.Server.Service
             DialogService.StartConversation(player, player, "BaseManagementTool");
         }
 
+        private static void LoadBaseStructureTypes()
+        {
+            var types = Enum.GetValues(typeof(BaseStructureType)).Cast<BaseStructureType>();
+
+            foreach (var type in types)
+            {
+                _baseStructureTypes[type] = type.GetAttribute<BaseStructureType, BaseStructureTypeAttribute>();
+            }
+        }
+
         private static void OnModuleLoad()
         {
-            Console.WriteLine("BaseService -> OnModuleLoad");
+            LoadBaseStructureTypes();
             RegisterDoorRules();
             foreach (var area in NWModule.Get().Areas)
             {
@@ -416,7 +428,8 @@ namespace SWLOR.Game.Server.Service
             return structures.SingleOrDefault(x =>
             {
                 var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                return (baseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower || baseStructure.BaseStructureTypeID == (int)BaseStructureType.Starship);
+                return (baseStructure.BaseStructureTypeID == BaseStructureType.ControlTower || 
+                        baseStructure.BaseStructureTypeID == BaseStructureType.Starship);
             });
         }
 
@@ -583,9 +596,9 @@ namespace SWLOR.Game.Server.Service
                 BasePermissionService.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
 
             var baseStructure = DataService.BaseStructure.GetByID(baseStructureID);
-            var baseStructureType = DataService.BaseStructureType.GetByID(baseStructure.BaseStructureTypeID);
+            var baseStructureType = _baseStructureTypes[baseStructure.BaseStructureTypeID];
 
-            if (baseStructureType.ID == (int)BaseStructureType.Starship)
+            if (baseStructure.BaseStructureTypeID == BaseStructureType.Starship)
             {
                 canPlaceOrEditStructures = BasePermissionService.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship);
             }
@@ -615,22 +628,22 @@ namespace SWLOR.Game.Server.Service
                                            .SingleOrDefault(x =>
                                            {
                                                var bs = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                                               return bs.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
+                                               return bs.BaseStructureTypeID == BaseStructureType.ControlTower;
                                            }) != null;
 
-                if (!hasControlTower && baseStructureType.ID != (int)BaseStructureType.ControlTower)
+                if (!hasControlTower && baseStructure.BaseStructureTypeID != BaseStructureType.ControlTower)
                 {
                     return "A control tower must be placed down in the sector first.";
                 }
 
-                if (hasControlTower && baseStructureType.ID == (int)BaseStructureType.ControlTower)
+                if (hasControlTower && baseStructure.BaseStructureTypeID == BaseStructureType.ControlTower)
                 {
                     return "Only one control tower can be placed down per sector.";
                 }
             }
 
             // Crafting devices may only be placed inside buildings set to the 'Workshop' mode.
-            if (baseStructureType.ID == (int)BaseStructureType.CraftingDevice)
+            if (baseStructure.BaseStructureTypeID == BaseStructureType.CraftingDevice)
             {
                 if (buildingType == BuildingType.Interior)
                 {
@@ -645,7 +658,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Starships may only be placed on an empty bay.
-            if (baseStructureType.ID == (int)BaseStructureType.Starship)
+            if (baseStructure.BaseStructureTypeID == BaseStructureType.Starship)
             {
                 int nNth = 1;
                 NWObject dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
@@ -671,7 +684,7 @@ namespace SWLOR.Game.Server.Service
                         PCBaseStructure dockStructure = DataService.PCBaseStructure.GetByID(dockPCBaseStructureGuid);
                         BaseStructure dockBaseStructure = DataService.BaseStructure.GetByID(dockStructure.BaseStructureID);
 
-                        if (dockBaseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
+                        if (dockBaseStructure.BaseStructureTypeID == BaseStructureType.StarshipProduction)
                         {
                             // We've found a dock!
                             dock.SetLocalInt("DOCKED_STARSHIP", 1);
@@ -919,7 +932,7 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     // Control Towers are assumed to be destroyed at this point and won't be dropped.
-                    if (baseStructure.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
+                    if (baseStructure.BaseStructureTypeID != BaseStructureType.ControlTower)
                     {
                         // We aren't impounding items, so convert the structure into the world and leave it in the rubble container.
                         ConvertStructureToItem(pcBaseStructure, rubbleContainer);
@@ -974,7 +987,7 @@ namespace SWLOR.Game.Server.Service
                 item.SetLocalInt("BASE_STRUCTURE_ID", structure.ID);
                 item.Name = structure.Name;
 
-                if (structure.BaseStructureTypeID == (int)BaseStructureType.Building)
+                if (structure.BaseStructureTypeID == BaseStructureType.Building)
                 {
                     var defaultInterior = DataService.BuildingStyle.GetDefaultInteriorByBaseStructureID(structure.ID).ID;
                     var defaultExterior = DataService.BuildingStyle.GetDefaultExteriorByBaseStructureID(structure.ID).ID;
@@ -1296,7 +1309,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateMaxFuel(Guid pcBaseID)
         {
-            const int siloType = (int)BaseStructureType.FuelSilo;
+            const BaseStructureType siloType = BaseStructureType.FuelSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
 
             if (tower == null)
@@ -1328,7 +1341,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateMaxReinforcedFuel(Guid pcBaseID)
         {
-            const int siloType = (int)BaseStructureType.StronidiumSilo;
+            const BaseStructureType siloType = BaseStructureType.StronidiumSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
 
             if (tower == null)
@@ -1361,7 +1374,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateResourceCapacity(Guid pcBaseID)
         {
-            const int siloType = (int)BaseStructureType.ResourceSilo;
+            const BaseStructureType siloType = BaseStructureType.ResourceSilo;
             PCBaseStructure tower = GetBaseControlTower(pcBaseID);
 
             if (tower == null)
@@ -1407,7 +1420,7 @@ namespace SWLOR.Game.Server.Service
             //--------------------------------------------------------------------------
             int newTowerStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             BaseStructure newTower = DataService.BaseStructure.GetByID(newTowerStructureID);
-            if (newTower.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
+            if (newTower.BaseStructureTypeID != BaseStructureType.ControlTower)
             {
                 return "";
             }
@@ -1431,7 +1444,7 @@ namespace SWLOR.Game.Server.Service
 
             PCBaseStructure towerStructure = DataService.PCBaseStructure.GetByID(towerGuid);
             BaseStructure oldTower = DataService.BaseStructure.GetByID(towerStructure.BaseStructureID);
-            if (oldTower.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
+            if (oldTower.BaseStructureTypeID != BaseStructureType.ControlTower)
             {
                 return "";
             }

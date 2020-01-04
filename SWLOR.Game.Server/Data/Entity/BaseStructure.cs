@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         [Key]
         public int ID { get; set; }
-        public int BaseStructureTypeID { get; set; }
+        public BaseStructureType BaseStructureTypeID { get; set; }
         public string Name { get; set; }
         public string PlaceableResref { get; set; }
         public string ItemResref { get; set; }

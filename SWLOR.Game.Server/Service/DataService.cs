@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Service
         public static BankCache Bank { get; } = new BankCache();
         public static BankItemCache BankItem { get; } = new BankItemCache();
         public static BaseStructureCache BaseStructure { get; } = new BaseStructureCache();
-        public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
         public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
         public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
         public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();

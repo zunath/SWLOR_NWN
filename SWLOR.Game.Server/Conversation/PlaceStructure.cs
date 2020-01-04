@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Conversation
             var towerBaseStructure = tower == null ? null : DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
             bool canPlaceStructure = true;
-            bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
-            bool isPlacingBuilding = structure.BaseStructureTypeID == (int)BaseStructureType.Building;
+            bool isPlacingTower = structure.BaseStructureTypeID == BaseStructureType.ControlTower;
+            bool isPlacingBuilding = structure.BaseStructureTypeID == BaseStructureType.Building;
             bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalBoolean("STRUCTURE_BUILDING_INITIALIZED") == false;
 
             double powerInUse = BaseService.GetPowerInUse(data.PCBaseID);
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Conversation
             string resref = structure.PlaceableResref;
 
             if (string.IsNullOrWhiteSpace(resref) &&
-                structure.BaseStructureTypeID == (int)BaseStructureType.Building)
+                structure.BaseStructureTypeID == BaseStructureType.Building)
             {
                 int exteriorID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
                 var style = DataService.BuildingStyle.GetByID(exteriorID);
@@ -414,7 +414,7 @@ namespace SWLOR.Game.Server.Conversation
             DataService.SubmitDataChange(structure, DatabaseActionType.Insert);
             
             // Placing a control tower. Set base shields to 100%
-            if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower)
+            if (baseStructure.BaseStructureTypeID == BaseStructureType.ControlTower)
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 pcBase.ShieldHP = BaseService.CalculateMaxShieldHP(structure);

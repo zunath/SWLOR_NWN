@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Caching
             foreach (var structure in entities)
             {
                 var baseStructureType = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-                if (baseStructureType.BaseStructureTypeID != (int) Enumeration.BaseStructureType.ControlTower)
+                if (baseStructureType.BaseStructureTypeID != BaseStructureType.ControlTower)
                 {
                     power += baseStructureType.Power;
                     cpu += baseStructureType.CPU;

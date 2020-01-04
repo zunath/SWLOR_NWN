@@ -616,7 +616,7 @@ namespace SWLOR.Game.Server.Service
                             foreach (var structure in structures)
                             {
                                 BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-                                if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
+                                if (baseStructure.BaseStructureTypeID == BaseStructureType.StarshipProduction)
                                 {
                                     LoggingService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID);
 

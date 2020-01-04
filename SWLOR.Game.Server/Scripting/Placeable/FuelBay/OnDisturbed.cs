@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
 
             var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
 
-            if (towerStructure.BaseStructureTypeID == (int)BaseStructureType.Starship)
+            if (towerStructure.BaseStructureTypeID == BaseStructureType.Starship)
             {
                 // This is a spaceship, so don't give the feedback message.
                 return;

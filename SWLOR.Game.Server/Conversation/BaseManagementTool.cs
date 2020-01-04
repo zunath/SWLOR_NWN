@@ -910,7 +910,7 @@ namespace SWLOR.Game.Server.Conversation
             var baseStructure = DataService.BaseStructure.GetByID(dbStructure.BaseStructureID);
             dbStructure.LocationOrientation = facing;
 
-            if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.Building)
+            if (baseStructure.BaseStructureTypeID == BaseStructureType.Building)
             {
                 // The structure's facing isn't updated until after this code executes.
                 // Build a new location object for use with spawning the door.

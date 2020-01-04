@@ -323,8 +323,6 @@ namespace SWLOR.Game.Server.Item
                             throw new ArgumentOutOfRangeException(nameof(grenadeType));
                     }
 
-                    Console.WriteLine("applying effects to " + GetName(targetCreature));
-
                     if (damageEffect != null) ApplyEffectToObject(DurationType.Instant, damageEffect, targetCreature);
                     if (durationEffect != null) ApplyEffectToObject(DurationType.Temporary, durationEffect, targetCreature, duration * 6.0f);
 

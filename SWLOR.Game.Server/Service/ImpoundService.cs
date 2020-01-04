@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(x => (now - x.DateImpounded).TotalDays >= appSettings.ImpoundPruneDays)
                 .ToList();
 
-            Console.WriteLine($"{impoundedItems.Count} impounded items are older than a year. Pruning them now.");
+            Console.WriteLine($"{impoundedItems.Count} impounded items are older than {appSettings.ImpoundPruneDays} days. Pruning them now.");
             foreach (var item in impoundedItems)
             {
                 DataService.SubmitDataChange(item, DatabaseActionType.Delete);

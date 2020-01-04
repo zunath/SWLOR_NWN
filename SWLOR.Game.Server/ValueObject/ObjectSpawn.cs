@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.ValueObject
         public NWObject Spawn { get; set; }
         public float RespawnTime { get; set; }
         public float Timer { get; set; }
-        public int SpawnTableID { get; set; }
+        public Spawn SpawnTableID { get; set; }
         public string Resref { get; set; }
         public NWLocation SpawnLocation { get; set; }
         public bool IsStaticSpawnPoint { get; }
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.ValueObject
             Resref = resref;
             Respawns = true;
         }
-        public ObjectSpawn(NWLocation location, bool isStaticSpawnPoint, int spawnTableID, float respawnTime = 120.0f)
+        public ObjectSpawn(NWLocation location, bool isStaticSpawnPoint, Spawn spawnTableID, float respawnTime = 120.0f)
         {
             Spawn = new NWGameObject();
             SpawnLocation = location;

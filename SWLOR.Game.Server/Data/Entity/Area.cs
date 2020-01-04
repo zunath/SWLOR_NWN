@@ -1,6 +1,7 @@
 
 using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Resref { get; set; }
         public string Name { get; set; }
         public string Tag { get; set; }
-        public int ResourceSpawnTableID { get; set; }
+        public Spawn ResourceSpawnTableID { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public bool IsBuildable { get; set; }

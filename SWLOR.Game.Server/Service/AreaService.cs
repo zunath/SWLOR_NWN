@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
 
                 dbArea.Name = area.Name;
                 dbArea.Tag = area.Tag;
-                dbArea.ResourceSpawnTableID = area.GetLocalInt("RESOURCE_SPAWN_TABLE_ID");
+                dbArea.ResourceSpawnTableID = (Spawn)area.GetLocalInt("RESOURCE_SPAWN_TABLE_ID");
                 dbArea.Width = width;
                 dbArea.Height = height;
                 dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");

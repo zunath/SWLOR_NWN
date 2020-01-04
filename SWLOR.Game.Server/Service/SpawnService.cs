@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, ISpawnRule> _spawnRules;
         private static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; } = new Dictionary<NWArea, AreaSpawn>();
+        private static Dictionary<Spawn, SpawnAttribute> _spawns { get; } = new Dictionary<Spawn, SpawnAttribute>();
 
         static SpawnService()
         {
@@ -51,6 +53,7 @@ namespace SWLOR.Game.Server.Service
         {
             Console.WriteLine("SpawnService -> OnModuleLoad");
             RegisterSpawnRules();
+            RegisterSpawns();
             InitializeSpawns();
             Console.WriteLine("SpawnService -> OnModuleLoad Complete");
         }
@@ -68,6 +71,24 @@ namespace SWLOR.Game.Server.Service
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 _spawnRules.Add(type.Name, instance);
+            }
+        }
+
+        private static void RegisterSpawns()
+        {
+            var spawnTypes = Enum.GetValues(typeof(Spawn)).Cast<Spawn>();
+
+            foreach (var spawnType in spawnTypes)
+            {
+                var attr = spawnType.GetAttribute<Spawn, SpawnAttribute>();
+
+                var spawnObjects = spawnType.GetType().GetCustomAttributes<SpawnObjectAttribute>();
+                foreach (var spawnObject in spawnObjects)
+                {
+                    attr.SpawnObjects.Add(spawnObject);
+                }
+
+                _spawns[spawnType] = attr;
             }
         }
 
@@ -103,7 +124,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var spawnType = (ObjectType)obj.GetLocalInt("SPAWN_TYPE");
                     var objectType = spawnType == 0 || spawnType == ObjectType.Creature ? ObjectType.Creature : spawnType;
-                    int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
+                    Spawn spawnTable = (Spawn)obj.GetLocalInt("SPAWN_TABLE_ID");
                     var npcGroupID = (NPCGroup)obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
                     string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
                     if (string.IsNullOrWhiteSpace(behaviourScript))
@@ -117,21 +138,21 @@ namespace SWLOR.Game.Server.Service
                     bool useResref = true;
 
                     // No resref specified but a table was, look in the database for a random record.
-                    if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
+                    if (string.IsNullOrWhiteSpace(spawnResref) && spawnTable != Spawn.None)
                     {
-                        // Pick a random record.   
-                        var spawnObjects = DataService.SpawnObject.GetAllBySpawnTableID(spawnTableID).ToList();
+                        // Pick a random record.
+                        var spawnObjects = _spawns[spawnTable].SpawnObjects;
                         int count = spawnObjects.Count;
                         int index = count <= 0 ? 0 : RandomService.Random(count);
-                        var dbSpawn = spawnObjects[index];
+                        var dbSpawn = count <= 0 ? null : spawnObjects.ElementAt(index);
 
                         if (dbSpawn != null)
                         {
                             spawnResref = dbSpawn.Resref;
                             useResref = false;
 
-                            if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
-                                npcGroupID = (NPCGroup)dbSpawn.NPCGroupID;
+                            if (dbSpawn.NPCGroup != NPCGroup.Invalid)
+                                npcGroupID = (NPCGroup)dbSpawn.NPCGroup;
 
                             if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript))
                                 behaviourScript = dbSpawn.BehaviourScript;
@@ -140,7 +161,7 @@ namespace SWLOR.Game.Server.Service
                                 spawnRule = dbSpawn.SpawnRule;
 
                             if (deathVFXID <= 0)
-                                deathVFXID = dbSpawn.DeathVFXID;
+                                deathVFXID = dbSpawn.DeathVFX;
 
                             if (aiFlags == AIFlags.None)
                                 aiFlags = dbSpawn.AIFlags;
@@ -161,7 +182,7 @@ namespace SWLOR.Game.Server.Service
                         }
                         else
                         {
-                            newSpawn = new ObjectSpawn(location, true, spawnTableID, respawnTime);
+                            newSpawn = new ObjectSpawn(location, true, spawnTable, respawnTime);
                         }
 
                         if (npcGroupID > 0)
@@ -244,7 +265,7 @@ namespace SWLOR.Game.Server.Service
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
-            var possibleSpawns = DataService.SpawnObject.GetAllBySpawnTableID(dbArea.ResourceSpawnTableID).ToList();
+            var possibleSpawns = _spawns[dbArea.ResourceSpawnTableID].SpawnObjects;
 
             // 1024 size = 32x32
             // 256  size = 16x16
@@ -286,6 +307,8 @@ namespace SWLOR.Game.Server.Service
             for (int x = 1; x <= maxSpawns; x++)
             {
                 int index = RandomService.GetRandomWeightedIndex(weights);
+                if (index <= -1) continue;
+
                 var dbSpawn = possibleSpawns.ElementAt(index);
                 Location location = GetRandomSpawnPoint(area);
                 NWPlaceable plc = (CreateObject(ObjectType.Placeable, dbSpawn.Resref, location));
@@ -294,10 +317,10 @@ namespace SWLOR.Game.Server.Service
 
                 ObjectVisibilityService.ApplyVisibilityForObject(plc);
                 
-                if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
+                if (dbSpawn.NPCGroup > 0)
                 {
-                    plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
-                    spawn.NPCGroupID = (NPCGroup)dbSpawn.NPCGroupID;
+                    plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroup));
+                    spawn.NPCGroupID = dbSpawn.NPCGroup;
                 }
 
                 if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript) &&
@@ -475,12 +498,12 @@ namespace SWLOR.Game.Server.Service
                 // Look for a spawn out of the database set. Update spawn data if one is found.
                 if (string.IsNullOrWhiteSpace(resref))
                 {
-                    var dbSpawn = DataService.SpawnObject.GetAllBySpawnTableID(spawn.SpawnTableID)
+                    var dbSpawn = _spawns[spawn.SpawnTableID].SpawnObjects
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;
-                    npcGroupID = dbSpawn.NPCGroupID ?? 0;
-                    deathVFXID = dbSpawn.DeathVFXID;
+                    npcGroupID = dbSpawn.NPCGroup;
+                    deathVFXID = dbSpawn.DeathVFX;
                     behaviour = dbSpawn.BehaviourScript;
                     aiFlags = dbSpawn.AIFlags;
 

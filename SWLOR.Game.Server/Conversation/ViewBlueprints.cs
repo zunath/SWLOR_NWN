@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprintCategory category in vm.CraftCategories)
             {
-                AddResponseToPage("CraftCategoriesPage", category.Name, true, category.ID);
+                var name = category.GetDescriptionAttribute();
+                AddResponseToPage("CraftCategoriesPage", name, true, category);
             }
 
             SetDialogCustomData(vm);
@@ -94,7 +97,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             ClearPageResponses("BlueprintListPage");
             DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
-            int categoryID = (int) response.CustomData;
+            var categoryID = (CraftBlueprintCategory) response.CustomData;
             
             vm.CraftBlueprints = CraftService.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 

@@ -65,13 +65,11 @@ namespace SWLOR.Game.Server.Service
         public static List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
-            var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
-
-            var categories = DataService.CraftBlueprintCategory.GetAllActiveByIDs(categoryIDs);
+            var categories = blueprints.Select(x => x.CraftCategoryID).Distinct();
             return categories.ToList();
         }
 
-        public static List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, int categoryID)
+        public static List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, CraftBlueprintCategory categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID &&
                                                                                       x.CraftCategoryID == categoryID)
@@ -174,11 +172,10 @@ namespace SWLOR.Game.Server.Service
 
         public static List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
         {
-            var blueprintIDs = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
-            return DataService.CraftBlueprintCategory.GetAllActiveByIDs(blueprintIDs).ToList();
+            return GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct().ToList();
         }
 
-        public static List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
+        public static List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, CraftBlueprintCategory categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftCategoryID == categoryID).ToList();
         }

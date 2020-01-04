@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
@@ -66,18 +68,21 @@ namespace SWLOR.Game.Server.Conversation
             var lastBlueprintId = GetPC().GetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + deviceID);
             var bp = CraftService.GetBlueprintByID(lastBlueprintId);
 
-            if(bp != null)
+            if (bp != null)
+            {
                 AddResponseToPage("MainPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, new Tuple<int, Type>(bp.ID, typeof(CraftBlueprint)));
+            }
 
             AddResponseToPage("MainPage", "Scrap Item");
 
             foreach (CraftBlueprintCategory category in categories)
             {
-                AddResponseToPage("MainPage", category.Name, category.IsActive, new Tuple<int, Type>(category.ID, typeof(CraftBlueprintCategory)));
+                var name = category.GetDescriptionAttribute();
+                AddResponseToPage("MainPage", name, true, new Tuple<int, Type>((int)category, typeof(CraftBlueprintCategory)));
             }
         }
 
-        private void LoadBlueprintListPage(int categoryID)
+        private void LoadBlueprintListPage(CraftBlueprintCategory categoryID)
         {
             NWObject device = GetDialogTarget();
             int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
@@ -109,7 +114,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else // Blueprint List
             {
-                LoadBlueprintListPage(customData.Item1);
+                LoadBlueprintListPage((CraftBlueprintCategory)customData.Item1);
                 ChangePage("BlueprintListPage");
             }
         }

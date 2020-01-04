@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         [Key]
         public int ID { get; set; }
-        public int CraftCategoryID { get; set; }
+        public CraftBlueprintCategory CraftCategoryID { get; set; }
         public int BaseLevel { get; set; }
         public string ItemName { get; set; }
         public string ItemResref { get; set; }

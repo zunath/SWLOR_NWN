@@ -2771,12 +2771,6 @@ namespace SWLOR.Game.Server.Data.Migration
             DataService.SubmitDataChange(new SpawnObject { ID = 109, SpawnID = 46, Resref = "ext_tusken_tr003", Weight = 50, SpawnRule = "", NPCGroupID = NPCGroup.TuskenRaider, BehaviourScript = "StandardBehaviour", DeathVFXID = Vfx.None, AIFlags = (AI.AIFlags)7 }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new SpawnObject { ID = 110, SpawnID = 47, Resref = "fiberplast_shrub", Weight = 100, SpawnRule = "FiberplastSpawnRule", NPCGroupID = null, BehaviourScript = "", DeathVFXID = Vfx.None, AIFlags = (AI.AIFlags)0 }, DatabaseActionType.Insert);
 
-            // Starport
-            DataService.SubmitDataChange(new Starport { ID = 1, PlanetName = "Viscara", Name = "Veles Starport", CustomsDC = 20, Cost = 400, WaypointTag = "VISCARA_LANDING" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Starport { ID = 2, PlanetName = "Tatooine", Name = "Mos Eisley Starport", CustomsDC = 5, Cost = 400, WaypointTag = "TATOOINE_LANDING" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Starport { ID = 3, PlanetName = "Mon Cala", Name = "Dac City Starport", CustomsDC = 50, Cost = 400, WaypointTag = "MON_CALA_LANDING" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Starport { ID = 4, PlanetName = "Hutlar", Name = "Hutlar Outpost Starport", CustomsDC = 50, Cost = 400, WaypointTag = "HUTLAR_LANDING" }, DatabaseActionType.Insert);
-
             // Structure Mode
             DataService.SubmitDataChange(new StructureMode { ID = 0, Name = "None" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new StructureMode { ID = 1, Name = "Residence" }, DatabaseActionType.Insert);

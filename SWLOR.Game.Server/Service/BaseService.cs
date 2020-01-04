@@ -1087,7 +1087,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             // Retrieve the dock waypoint and jump to it.  
                             Guid shipLocationGuid = new Guid(pcBase.ShipLocation);
-                            Starport starport = DataService.Starport.GetByStarportID(shipLocationGuid);
+                            var starportType = SpaceService.GetStarportByID(shipLocationGuid);
+                            var starport = SpaceService.GetStarport(starportType);
 
                             NWObject waypoint = _.GetWaypointByTag(starport.WaypointTag);
 

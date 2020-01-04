@@ -332,9 +332,10 @@ namespace SWLOR.Game.Server.Conversation
                 Guid dockStructureID = dialog.CustomData["LAND_" + response.Text];
 
                 // This could be a public startport ID or a private dock base structure ID.  
-                Starport starport = DataService.Starport.GetByStarportIDOrDefault(dockStructureID);
-                if (starport != null)
+                if (SpaceService.StarportExistsByID(dockStructureID))
                 {
+                    var starportType = SpaceService.GetStarportByID(dockStructureID);
+                    var starport = SpaceService.GetStarport(starportType);
                     // We have a public starport.  
                     if (player.Gold < starport.Cost)
                     {

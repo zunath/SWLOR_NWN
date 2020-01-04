@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Player;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
@@ -34,9 +35,41 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnPlayerHeartbeat>(message => OnCreatureHeartbeat());
 
             // Module Events
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+        }
+
+        private static readonly Dictionary<Starport, StarportAttribute> _allStarports = new Dictionary<Starport, StarportAttribute>();
+        private static readonly Dictionary<Guid, Starport> _starportsByID = new Dictionary<Guid, Starport>();
+        private static readonly Dictionary<string, Starport> _starportsByPlanetName = new Dictionary<string, Starport>();
+
+        private static void OnModuleLoad()
+        {
+            var starports = Enum.GetValues(typeof(Starport)).Cast<Starport>();
+            foreach (var starport in starports)
+            {
+                var attr = starport.GetAttribute<Starport, StarportAttribute>();
+                _allStarports[starport] = attr;
+                _starportsByID[attr.StarportID] = starport;
+                _starportsByPlanetName[attr.PlanetName] = starport;
+            }
+        }
+
+        public static StarportAttribute GetStarport(Starport starport)
+        {
+            return _allStarports[starport];
+        }
+
+        public static Starport GetStarportByID(Guid starportID)
+        {
+            return _starportsByID[starportID];
+        }
+
+        public static bool StarportExistsByID(Guid starportID)
+        {
+            return _starportsByID.ContainsKey(starportID);
         }
 
         private struct ShipStats
@@ -303,8 +336,11 @@ namespace SWLOR.Game.Server.Service
         {
             if (!Guid.TryParse(location, out var locationGuid)) return false;
 
-            Starport starport = DataService.Starport.GetByStarportIDOrDefault(locationGuid);
-            return starport != null;
+            if (!_starportsByID.ContainsKey(locationGuid))
+                return false;
+
+            var starport = _starportsByID[locationGuid];
+            return _allStarports.ContainsKey(starport);
 
         }
 
@@ -334,11 +370,10 @@ namespace SWLOR.Game.Server.Service
                 else 
                 {
                     // Not on a PC dock.  Are we on a starport dock?
-                    Starport starport = DataService.Starport.GetByStarportIDOrDefault(new Guid(location));
-
-                    if (starport != null)
+                    var locationGuid = new Guid(location);
+                    if (_starportsByID.ContainsKey(locationGuid))
                     {
-                        return starport.PlanetName;
+                        return GetStarport(_starportsByID[locationGuid]).PlanetName;
                     }
                 }
 
@@ -542,9 +577,10 @@ namespace SWLOR.Game.Server.Service
             Hashtable landingSpots = new Hashtable();
 
             // First get any public starport.
-            var starport = DataService.Starport.GetByPlanetNameOrDefault(planet);
-            if (starport != null)
+            if (_starportsByPlanetName.ContainsKey(planet))
             {
+                var starportType = _starportsByPlanetName[planet];
+                var starport = _allStarports[starportType];
                 landingSpots.Add(starport.Name, starport.StarportID);
             }
 

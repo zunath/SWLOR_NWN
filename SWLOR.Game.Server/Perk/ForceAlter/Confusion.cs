@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             switch (spellTier)
-            {                
+            {
                 case 1:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
@@ -91,24 +91,39 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(7, "Applies Confusion effect to a single non-mechanical target with lower WIS than the caster, while the caster concentrates.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 40}, 
-				})
-			},
-			{
-				2, new PerkLevel(7, "Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIS than the caster, while the caster concentrates.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(7, "Applies Confusion effect to a single non-mechanical target with lower WIS than the caster, while the caster concentrates.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 80}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 40},
+                })
+            },
+            {
+                2, new PerkLevel(7, "Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIS than the caster, while the caster concentrates.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 80},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Confusion1, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Confusion2, BaseFPCost = 20, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {

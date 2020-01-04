@@ -73,31 +73,53 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(3, "Caster gets +3 AB.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "Caster gets +5 AB and +2 AC.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 15}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Caster gets +5 AB and +4 AC.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 30}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(3, "Caster gets +3 AB.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 0},
+                })
+            },
+            {
+                2, new PerkLevel(4, "Caster gets +5 AB and +2 AC.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 15},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Caster gets +5 AB and +4 AC.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 30},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceInsight1, BaseFPCost = 0, ConcentrationFPCost = 3, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceInsight2, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceInsight3, BaseFPCost = 0, ConcentrationFPCost = 5, ConcentrationTickInterval = 6}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
@@ -128,11 +150,11 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             effect = _.TagEffect(effect, "EFFECT_FORCE_INSIGHT");
 
             // Remove any existing force insight effects.
-            foreach(var existing in creature.Effects.Where(x => _.GetEffectTag(x) == "EFFECT_FORCE_INSIGHT"))
+            foreach (var existing in creature.Effects.Where(x => _.GetEffectTag(x) == "EFFECT_FORCE_INSIGHT"))
             {
                 _.RemoveEffect(creature, existing);
             }
-            
+
             // Apply the new effect.
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Dur_Magic_Resistance), target);

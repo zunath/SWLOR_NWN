@@ -132,5 +132,6 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 			},
 		};
 
+                public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>();
     }
 }

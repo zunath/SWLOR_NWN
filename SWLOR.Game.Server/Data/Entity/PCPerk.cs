@@ -1,6 +1,7 @@
 
 using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public DateTime AcquiredDate { get; set; }
-        public int PerkID { get; set; }
+        public PerkType PerkID { get; set; }
         public int PerkLevel { get; set; }
     }
 }

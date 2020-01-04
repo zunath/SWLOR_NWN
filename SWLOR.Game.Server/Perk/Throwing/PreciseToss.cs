@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class PreciseToss: IPerk
+    public class PreciseToss : IPerk
     {
         public PerkType PerkType => PerkType.PreciseToss;
         public string Name => "Precise Toss";
@@ -135,73 +135,82 @@ namespace SWLOR.Game.Server.Perk.Throwing
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "1d4 damage, bleeding lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "1d8 damage, bleeding lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "2d8 damage, bleeding lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "2d8 damage, bleeding lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "3d8 damage, bleeding lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "4d8 damage, bleeding lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 60}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "5d8 damage, bleeding lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 70}, 
-				})
-			},
-			{
-				8, new PerkLevel(5, "5d8 damage, bleeding lasts 18 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 80}, 
-				})
-			},
-			{
-				9, new PerkLevel(6, "6d8 damage, bleeding lasts 24 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Throwing, 90}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "1d4 damage, bleeding lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "1d8 damage, bleeding lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "2d8 damage, bleeding lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "2d8 damage, bleeding lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "3d8 damage, bleeding lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "4d8 damage, bleeding lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 60},
+                })
+            },
+            {
+                7, new PerkLevel(5, "5d8 damage, bleeding lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 70},
+                })
+            },
+            {
+                8, new PerkLevel(5, "5d8 damage, bleeding lasts 18 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 80},
+                })
+            },
+            {
+                9, new PerkLevel(6, "6d8 damage, bleeding lasts 24 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Throwing, 90},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.PreciseToss, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

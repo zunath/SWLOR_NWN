@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceLightning: IPerk
+    public class ForceLightning : IPerk
     {
         public PerkType PerkType => PerkType.ForceLightning;
         public string Name => "Force Lightning";
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -72,45 +72,78 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "Damages a single target for 10 HP every three seconds.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "Damages a single target for 10 HP every three seconds.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 30}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "Damages a single target for 12 HP every three seconds.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 30},
+                })
+            },
+            {
+                2, new PerkLevel(4, "Damages a single target for 12 HP every three seconds.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 45}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Damages a single target for 14 HP every three seconds.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 45},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Damages a single target for 14 HP every three seconds.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 60}, 
-				})
-			},
-			{
-				4, new PerkLevel(5, "Damages a single target for 16 HP every three seconds.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 60},
+                })
+            },
+            {
+                4, new PerkLevel(5, "Damages a single target for 16 HP every three seconds.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 75}, 
-				})
-			},
-			{
-				5, new PerkLevel(6, "Damages a single target for 20 HP every three seconds.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 75},
+                })
+            },
+            {
+                5, new PerkLevel(6, "Damages a single target for 20 HP every three seconds.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 90}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 90},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceLightning1, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 3}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceLightning2, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 3}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceLightning3, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 3}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceLightning4, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 3}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceLightning5, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 3}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
@@ -142,7 +175,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;
             amount = amount + (int)(amount * delta);
-            
+
             creature.AssignCommand(() =>
             {
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Electrical), target);

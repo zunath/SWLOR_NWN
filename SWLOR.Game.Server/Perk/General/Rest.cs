@@ -91,63 +91,73 @@ namespace SWLOR.Game.Server.Perk.General
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "Restores 6 HP every 6 seconds. Recast time: 5 minutes",
-				new Dictionary<SkillType, int>
-				{
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Restores 6 HP every 6 seconds. Recast time: 5 minutes",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				2, new PerkLevel(3, "Restores 6 HP every 6 seconds. Recast time: 4 minutes, 30 seconds",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                2, new PerkLevel(3, "Restores 6 HP every 6 seconds. Recast time: 4 minutes, 30 seconds",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				3, new PerkLevel(4, "Restores 6 HP every 6 seconds. Recast time: 4 minutes",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                3, new PerkLevel(4, "Restores 6 HP every 6 seconds. Recast time: 4 minutes",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				4, new PerkLevel(5, "Restores 10 HP every 6 seconds. Recast time: 4 minutes",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                4, new PerkLevel(5, "Restores 10 HP every 6 seconds. Recast time: 4 minutes",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				5, new PerkLevel(6, "Restores 10 HP every 6 seconds. Recast time: 3 minutes, 30 seconds",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                5, new PerkLevel(6, "Restores 10 HP every 6 seconds. Recast time: 3 minutes, 30 seconds",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				6, new PerkLevel(7, "Restores 10 HP every 6 seconds. Recast time: 3 minutes",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                6, new PerkLevel(7, "Restores 10 HP every 6 seconds. Recast time: 3 minutes",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				7, new PerkLevel(8, "Restores 14 HP every 6 seconds. Recast time: 3 minutes",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                7, new PerkLevel(8, "Restores 14 HP every 6 seconds. Recast time: 3 minutes",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-		};
+                })
+            },
+        };
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Rest, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

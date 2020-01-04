@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class Premonition: IPerk
+    public class Premonition : IPerk
     {
         public PerkType PerkType => PerkType.Premonition;
         public string Name => "Premonition";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -69,35 +69,57 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "The next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(7, "The next time the caster would die in the next 30 minutes, they are instead healed to 50% of their max HP.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(10, "For 12s after casting, the caster is immune to all damage, and the next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.", SpecializationType.Sentinel,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "The next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 50}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceSense, 0},
+                })
+            },
+            {
+                2, new PerkLevel(7, "The next time the caster would die in the next 30 minutes, they are instead healed to 50% of their max HP.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 20},
+                })
+            },
+            {
+                3, new PerkLevel(10, "For 12s after casting, the caster is immune to all damage, and the next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 50},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Premonition1, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Premonition2, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Premonition3, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

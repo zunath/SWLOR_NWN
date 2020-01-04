@@ -34,5 +34,6 @@ namespace SWLOR.Game.Server.Perk
         bool IsHostile();
 
         Dictionary<int, PerkLevel> PerkLevels { get; }
+        Dictionary<int, List<PerkFeat>> PerkFeats { get; }
     }
 }

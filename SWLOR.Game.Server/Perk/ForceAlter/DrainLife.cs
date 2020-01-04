@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class DrainLife: IPerk
+    public class DrainLife : IPerk
     {
         public PerkType PerkType => PerkType.DrainLife;
         public string Name => "Drain Life";
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -78,44 +78,78 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "Steals 5 HP from a single target every second.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "Steals 5 HP from a single target every second.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 30}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "Steals 6 HP from a single target every second.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 30},
+                })
+            },
+            {
+                2, new PerkLevel(4, "Steals 6 HP from a single target every second.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 45}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Steals 7 HP from a single target every second.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 45},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Steals 7 HP from a single target every second.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 60}, 
-				})
-			},
-			{
-				4, new PerkLevel(5, "Steals 8 HP from a single target every second.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 60},
+                })
+            },
+            {
+                4, new PerkLevel(5, "Steals 8 HP from a single target every second.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 75}, 
-				})
-			},
-			{
-				5, new PerkLevel(6, "Steals 10 HP from a single target every second.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 75},
+                })
+            },
+            {
+                5, new PerkLevel(6, "Steals 10 HP from a single target every second.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 90}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 90},
+                })
+            },
+        };
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.DrainLife1, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.DrainLife2, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.DrainLife3, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.DrainLife4, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.DrainLife5, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 1}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
@@ -165,7 +199,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), creature);
             }
 
-            if(creature.IsPlayer)
+            if (creature.IsPlayer)
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }

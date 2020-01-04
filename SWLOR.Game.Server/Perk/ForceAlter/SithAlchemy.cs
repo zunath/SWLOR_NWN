@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class SithAlchemy: IPerk
+    public class SithAlchemy : IPerk
     {
         public PerkType PerkType => PerkType.SithAlchemy;
         public string Name => "Sith Alchemy";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -69,58 +69,80 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(0, "Unlocks Sith Alchemy.", SpecializationType.Consular,
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 0}, 
-				},
-                new List<int>
-                {
-                    99
-                })
-			},
-			{
-				2, new PerkLevel(7, "When used on a corpse, raises the creature as a henchman while the caster concentrates.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(0, "Unlocks Sith Alchemy.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 80}, 
-				},
+                {
+                    { SkillType.ForceAlter, 0},
+                },
                 new List<int>
                 {
                     99
                 })
-			},
-			{
-				3, new PerkLevel(7, "Alchemist can create monsters.", SpecializationType.Consular,
+            },
+            {
+                2, new PerkLevel(7, "When used on a corpse, raises the creature as a henchman while the caster concentrates.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 90}, 
-				},
+                {
+                    { SkillType.ForceAlter, 80},
+                },
                 new List<int>
                 {
                     99
                 })
-			},
-			{
-				4, new PerkLevel(0, "Alchemist can employ monsters as henchmen while they concentrate.", SpecializationType.Consular,
+            },
+            {
+                3, new PerkLevel(7, "Alchemist can create monsters.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 90}, 
-				},
+                {
+                    { SkillType.ForceAlter, 90},
+                },
                 new List<int>
                 {
                     99
                 })
-			},
-		};
+            },
+            {
+                4, new PerkLevel(0, "Alchemist can employ monsters as henchmen while they concentrate.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 90},
+                },
+                new List<int>
+                {
+                    99
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.SithAlchemy1, BaseFPCost = 25, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.SithAlchemy2, BaseFPCost = 300, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.SithAlchemy3, BaseFPCost = 0, ConcentrationFPCost = 5, ConcentrationTickInterval = 1}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

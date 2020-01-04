@@ -101,6 +101,29 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             },
         };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.MindShield1, BaseFPCost = 0, ConcentrationFPCost = 1, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.MindShield2, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.MindShield3, BaseFPCost = 0, ConcentrationFPCost = 3, ConcentrationTickInterval = 1}
+                }
+            },
+        };
+
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {

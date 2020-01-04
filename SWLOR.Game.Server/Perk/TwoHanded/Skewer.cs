@@ -50,12 +50,12 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
             int chance = perkLevel * 25;
 
             // Failed to interrupt.
-            if(RandomService.D100(1) > chance)
+            if (RandomService.D100(1) > chance)
             {
                 creature.SendMessage("You fail to interrupt your target's concentration.");
                 return;
             }
-            
+
             NWCreature targetCreature = target.Object;
             var effect = AbilityService.GetActiveConcentrationEffect(targetCreature);
             if (effect.Type != PerkType.Unknown)
@@ -86,44 +86,54 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
         public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
-        
+
         public bool IsHostile()
         {
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "25% chance to interrupt",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwoHanded, 15}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "50% chance to interrupt",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwoHanded, 30}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "75% chance to interrupt",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwoHanded, 50}, 
-				})
-			},
-			{
-				4, new PerkLevel(6, "100% chance to interrupt",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwoHanded, 80}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "25% chance to interrupt",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwoHanded, 15},
+                })
+            },
+            {
+                2, new PerkLevel(4, "50% chance to interrupt",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwoHanded, 30},
+                })
+            },
+            {
+                3, new PerkLevel(5, "75% chance to interrupt",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwoHanded, 50},
+                })
+            },
+            {
+                4, new PerkLevel(6, "100% chance to interrupt",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwoHanded, 80},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Skewer, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

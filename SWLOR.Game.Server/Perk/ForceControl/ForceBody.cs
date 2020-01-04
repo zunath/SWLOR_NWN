@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class ForceBody: IPerk
+    public class ForceBody : IPerk
     {
         public PerkType PerkType => PerkType.ForceBody;
         public string Name => "Force Body";
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
             // Damage user.
             _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(recovery), creature);
-            
+
             // Check lucky chance.
             int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             if (RandomService.D100(1) <= luck)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 recovery *= 2;
                 creature.SendMessage("Lucky Force Body!");
             }
-            
+
             // Recover FP on target.
             AbilityService.RestorePlayerFP(target.Object, recovery);
 
@@ -133,42 +133,69 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(3, "Converts 10% of the casters current HP into FP.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "Converts 20% of the casters current HP into FP.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 25}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Converts 35% of the casters current HP into FP.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 40}, 
-				})
-			},
-			{
-				4, new PerkLevel(6, "Converts 50% of the casters current HP into FP.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 55}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(3, "Converts 10% of the casters current HP into FP.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 10},
+                })
+            },
+            {
+                2, new PerkLevel(4, "Converts 20% of the casters current HP into FP.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 25},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Converts 35% of the casters current HP into FP.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 40},
+                })
+            },
+            {
+                4, new PerkLevel(6, "Converts 50% of the casters current HP into FP.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 55},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBody1, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBody2, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBody3, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBody4, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            }
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

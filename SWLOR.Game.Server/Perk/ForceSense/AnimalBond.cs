@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class AnimalBond: IPerk
+    public class AnimalBond : IPerk
     {
         public PerkType PerkType => PerkType.AnimalBond;
         public string Name => "Animal Bond";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -69,56 +69,96 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "The caster befriends an animal or beast with up to Challenge Rating 4.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "The caster befriends an animal or beast with up to Challenge Rating 8.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 25}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "The caster befriends an animal or beast with up to Challenge Rating 12.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 40}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "The caster befriends an animal or beast with up to Challenge Rating 16.", SpecializationType.Sentinel,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "The caster befriends an animal or beast with up to Challenge Rating 4.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 55}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "The caster befriends an animal or beast with up to Challenge Rating 20.", SpecializationType.Sentinel,
+                {
+                    { SkillType.ForceSense, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "The caster befriends an animal or beast with up to Challenge Rating 8.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 70}, 
-				})
-			},
-			{
-				6, new PerkLevel(5, "The caster befriends an animal or beast with any Challenge Rating.", SpecializationType.Sentinel,
+                {
+                    { SkillType.ForceSense, 25},
+                })
+            },
+            {
+                3, new PerkLevel(3, "The caster befriends an animal or beast with up to Challenge Rating 12.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 85}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceSense, 40},
+                })
+            },
+            {
+                4, new PerkLevel(3, "The caster befriends an animal or beast with up to Challenge Rating 16.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 55},
+                })
+            },
+            {
+                5, new PerkLevel(4, "The caster befriends an animal or beast with up to Challenge Rating 20.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 70},
+                })
+            },
+            {
+                6, new PerkLevel(5, "The caster befriends an animal or beast with any Challenge Rating.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 85},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AnimalBond1, BaseFPCost = 4, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AnimalBond2, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AnimalBond3, BaseFPCost = 12, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AnimalBond4, BaseFPCost = 16, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AnimalBond5, BaseFPCost = 20, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                6, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AnimalBond6, BaseFPCost = 30, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

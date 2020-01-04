@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class CrossCut: IPerk
+    public class CrossCut : IPerk
     {
         public PerkType PerkType => PerkType.CrossCut;
         public string Name => "Cross Cut";
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             {
                 case 1:
                     damage = RandomService.D4(1);
-                    duration = 6;   
+                    duration = 6;
                     break;
                 case 2:
                     damage = RandomService.D4(2);
@@ -128,84 +128,94 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "1d4 slashing damage. Breach lasts for 6 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 5}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "2d4 slashing damage. Breach lasts for 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 10}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "2d4 slashing damage. Breach lasts for 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 15}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "2d8 slashing damage. Breach lasts for 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 20}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "2d8 slashing damage. Breach lasts for 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 25}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "3d6 slashing damage. Breach lasts for 15 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 30}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "3d8 slashing damage. Breach lasts for 15 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 35}, 
-				})
-			},
-			{
-				8, new PerkLevel(5, "3d8 slashing damage. Breach lasts for 18 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 40}, 
-				})
-			},
-			{
-				9, new PerkLevel(6, "4d8 slashing damage. Breach lasts for 18 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 45}, 
-				})
-			},
-			{
-				10, new PerkLevel(6, "4d8 slashing damage. Breach lasts for 21 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.TwinBlades, 50}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "1d4 slashing damage. Breach lasts for 6 seconds.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 5},
+                })
+            },
+            {
+                2, new PerkLevel(2, "2d4 slashing damage. Breach lasts for 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 10},
+                })
+            },
+            {
+                3, new PerkLevel(3, "2d4 slashing damage. Breach lasts for 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 15},
+                })
+            },
+            {
+                4, new PerkLevel(3, "2d8 slashing damage. Breach lasts for 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 20},
+                })
+            },
+            {
+                5, new PerkLevel(4, "2d8 slashing damage. Breach lasts for 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 25},
+                })
+            },
+            {
+                6, new PerkLevel(4, "3d6 slashing damage. Breach lasts for 15 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 30},
+                })
+            },
+            {
+                7, new PerkLevel(5, "3d8 slashing damage. Breach lasts for 15 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 35},
+                })
+            },
+            {
+                8, new PerkLevel(5, "3d8 slashing damage. Breach lasts for 18 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 40},
+                })
+            },
+            {
+                9, new PerkLevel(6, "4d8 slashing damage. Breach lasts for 18 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 45},
+                })
+            },
+            {
+                10, new PerkLevel(6, "4d8 slashing damage. Breach lasts for 21 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.TwinBlades, 50},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.CrossCut, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceBreach: IPerk
+    public class ForceBreach : IPerk
     {
         public PerkType PerkType => PerkType.ForceBreach;
         public string Name => "Force Breach";
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -112,49 +112,82 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "Deals 100 damage to a single target.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "Deals 100 damage to a single target.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 50}, 
-				})
-			},
-			{
-				2, new PerkLevel(5, "Deals 125 damage to a single target.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 50},
+                })
+            },
+            {
+                2, new PerkLevel(5, "Deals 125 damage to a single target.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 60}, 
-				})
-			},
-			{
-				3, new PerkLevel(6, "Deals 160 damage to a single target.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 60},
+                })
+            },
+            {
+                3, new PerkLevel(6, "Deals 160 damage to a single target.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 70}, 
-				})
-			},
-			{
-				4, new PerkLevel(7, "Deals 200 damage to a single target.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 70},
+                })
+            },
+            {
+                4, new PerkLevel(7, "Deals 200 damage to a single target.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 80}, 
-				})
-			},
-			{
-				5, new PerkLevel(8, "Deals 250 damage to a single target.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 80},
+                })
+            },
+            {
+                5, new PerkLevel(8, "Deals 250 damage to a single target.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 90}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 90},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBreach1, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBreach2, BaseFPCost = 10, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBreach3, BaseFPCost = 12, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBreach4, BaseFPCost = 14, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceBreach5, BaseFPCost = 16, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

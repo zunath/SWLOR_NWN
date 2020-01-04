@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Hide: IPerk
+    public class Hide : IPerk
     {
         public PerkType PerkType => PerkType.Hide;
         public string Name => "Hide";
@@ -79,77 +79,87 @@ namespace SWLOR.Game.Server.Perk.Armor
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "-10% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "-20% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "-30% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "-40% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "-50% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "-60% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 60}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "-70% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 70}, 
-				})
-			},
-			{
-				8, new PerkLevel(6, "-80% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 80}, 
-				})
-			},
-			{
-				9, new PerkLevel(7, "-90% enmity",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.LightArmor, 90}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "-10% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "-20% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "-30% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "-40% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "-50% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "-60% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 60},
+                })
+            },
+            {
+                7, new PerkLevel(5, "-70% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 70},
+                })
+            },
+            {
+                8, new PerkLevel(6, "-80% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 80},
+                })
+            },
+            {
+                9, new PerkLevel(7, "-90% enmity",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.LightArmor, 90},
+                })
+            },
+        };
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Hide, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class ForceHeal: IPerk
+    public class ForceHeal : IPerk
     {
         public PerkType PerkType => PerkType.ForceHeal;
         public string Name => "Force Heal";
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -71,44 +71,79 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "Heals a single target for 2 HP every three seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "Heals a single target for 3 HP every three seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 10}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "Heals a single target for 5 HP every three seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 20}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "Heals a single target for 7 HP every three seconds.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Heals a single target for 2 HP every three seconds.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 30}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "Heals a single target for 10 HP every three seconds.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceControl, 0},
+                })
+            },
+            {
+                2, new PerkLevel(2, "Heals a single target for 3 HP every three seconds.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 40}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceControl, 10},
+                })
+            },
+            {
+                3, new PerkLevel(3, "Heals a single target for 5 HP every three seconds.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 20},
+                })
+            },
+            {
+                4, new PerkLevel(3, "Heals a single target for 7 HP every three seconds.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 30},
+                })
+            },
+            {
+                5, new PerkLevel(4, "Heals a single target for 10 HP every three seconds.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 40},
+                })
+            },
+        };
+
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceHeal1, BaseFPCost = 0, ConcentrationFPCost = 1, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceHeal2, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceHeal3, BaseFPCost = 0, ConcentrationFPCost = 3, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceHeal4, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceHeal5, BaseFPCost = 0, ConcentrationFPCost = 5, ConcentrationTickInterval = 6}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
@@ -141,7 +176,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             {
                 SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, amount * 10);
             }
-            
+
             EnmityService.AdjustEnmityOnAllTaggedCreatures(creature, amount * 3, 2);
         }
     }

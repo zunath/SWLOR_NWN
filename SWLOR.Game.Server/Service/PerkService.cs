@@ -83,6 +83,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static List<IPerk> GetAllHandlers()
+        {
+            return _perkHandlers.Values.ToList();
+        }
+
         private static void RegisterPerkCategories()
         {
             var values = Enum.GetValues(typeof(PerkCategoryType)).Cast<PerkCategoryType>();
@@ -302,8 +307,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     var perk = GetPerkHandler(pcPerk.PerkID);
                     if (perk.ExecutionType == (int)PerkExecutionType.None) continue;
-                    var perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(pcPerk.PerkID, pcPerk.PerkLevel);
-                    int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
+                    var perkFeat = perk.PerkFeats.ContainsKey(pcPerk.PerkLevel) ? perk.PerkFeats[pcPerk.PerkLevel].First() : null;
+                    int spellTier = perkFeat?.Tier ?? 0;
 
                     var handler = GetPerkHandler(pcPerk.PerkID);
                     handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, spellTier);
@@ -362,7 +367,7 @@ namespace SWLOR.Game.Server.Service
             return GetPerkHandler(perkType);
         }
 
-        public static PCPerk GetPCPerkByID(Guid playerID, int perkID)
+        public static PCPerk GetPCPerkByID(Guid playerID, PerkType perkID)
         {
             return DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(playerID, perkID);
         }
@@ -373,7 +378,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player upgrading.</param>
         /// <param name="perkID">The perk that's being upgraded.</param>
         /// <returns>true if the perk can be upgraded, false otherwise.</returns>
-        public static bool CanPerkBeUpgraded(NWPlayer player, int perkID)
+        public static bool CanPerkBeUpgraded(NWPlayer player, PerkType perkID)
         {
             // Retrieve database records.
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
@@ -442,7 +447,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="oPC">The player receiving the perk upgrade.</param>
         /// <param name="perkID">The ID number of the perk.</param>
         /// <param name="freeUpgrade">If true, no SP will be deducted. Otherwise, SP will be deducted from player.</param>
-        public static void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
+        public static void DoPerkUpgrade(NWPlayer oPC, PerkType perkID, bool freeUpgrade = false)
         {
             var perk = GetPerkHandler(perkID);
             var perkLevels = perk.PerkLevels;
@@ -457,7 +462,7 @@ namespace SWLOR.Game.Server.Service
                     pcPerk = new PCPerk();
                     DateTime dt = DateTime.UtcNow;
                     pcPerk.AcquiredDate = dt;
-                    pcPerk.PerkID = (int)perk.PerkType;
+                    pcPerk.PerkID = perk.PerkType;
                     pcPerk.PlayerID = oPC.GlobalID;
                     pcPerk.PerkLevel = 0;
 
@@ -479,14 +484,14 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Look for a perk feat to grant.
-                var perkFeatToGrant = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(perkID, pcPerk.PerkLevel);
+                var perkFeatToGrant = perk.PerkFeats.ContainsKey(pcPerk.PerkLevel) ? perk.PerkFeats[pcPerk.PerkLevel].First() : null;
 
                 // Add the feat(s) to the player if it doesn't exist yet.
-                if (perkFeatToGrant != null && _.GetHasFeat((Feat)perkFeatToGrant.FeatID, oPC.Object) == false)
+                if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.Feat, oPC.Object) == false)
                 {
-                    NWNXCreature.AddFeatByLevel(oPC, (Feat)perkFeatToGrant.FeatID, 1);
+                    NWNXCreature.AddFeatByLevel(oPC, perkFeatToGrant.Feat, 1);
 
-                    var qbs = NWNXPlayerQuickBarSlot.UseFeat((Feat)perkFeatToGrant.FeatID);
+                    var qbs = NWNXPlayerQuickBarSlot.UseFeat(perkFeatToGrant.Feat);
 
                     // Try to add the new feat to the player's hotbar.
                     if (NWNXPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)
@@ -525,18 +530,6 @@ namespace SWLOR.Game.Server.Service
                 oPC.FloatingText(ColorTokenService.Red("You cannot purchase the perk at this time."));
             }
         }
-        /// <summary>
-        /// Performs a perk purchase for a player. This handles deducting SP, inserting perk records,
-        /// and adjusting hotbar slots as necessary. 
-        /// </summary>
-        /// <param name="player">The player receiving the upgrade.</param>
-        /// <param name="perkType">The type of perk to upgrade.</param>
-        /// <param name="freeUpgrade">If true, no SP will be deducted. Otherwise, SP will be deducted from player.</param>
-        public static void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false)
-        {
-            DoPerkUpgrade(player, (int)perkType, freeUpgrade);
-        }
-
         /// <summary>
         /// Returns the EFFECTIVE perk level of a player.
         /// This takes into account the player's skills. If they are too low to use the perk, the level will be
@@ -590,7 +583,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var pcSkills = DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
                 // Get the PC's perk information and all of the perk levels at or below their current level.
-                var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, (int)perkType);
+                var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkType);
                 if (pcPerk == null) return 0;
 
                 // Get all of the perk levels in range, starting with the highest level.

@@ -133,5 +133,6 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
 			},
 		};
 
+                public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>();
     }
 }

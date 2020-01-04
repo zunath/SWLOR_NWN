@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Provoke: IPerk
+    public class Provoke : IPerk
     {
         public PerkType PerkType => PerkType.Provoke;
         public string Name => "Provoke";
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Perk.Armor
             NWCreature npc = (target.Object);
             Effect vfx = _.EffectVisualEffect(Vfx.Vfx_Imp_Charm);
             _.ApplyEffectToObject(DurationType.Instant, vfx, target.Object);
-            
+
             creature.AssignCommand(() =>
             {
                 _.ActionPlayAnimation(Animation.FireForget_Taunt, 1f, 1f);
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
             NWItem equipped = oItem ?? creature.Chest;
-            
+
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {
                 NWNXCreature.RemoveFeat(creature, Feat.Provoke);
@@ -119,42 +119,52 @@ namespace SWLOR.Game.Server.Perk.Armor
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(3, "Grants the Provoke ability.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 2}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "Reduces cooldown by 5 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 10}, 
-				})
-			},
-			{
-				3, new PerkLevel(4, "Reduces cooldown by 10 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 20}, 
-				})
-			},
-			{
-				4, new PerkLevel(4, "Reduces cooldown by 15 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 30}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(3, "Grants the Provoke ability.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 2},
+                })
+            },
+            {
+                2, new PerkLevel(2, "Reduces cooldown by 5 seconds.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 10},
+                })
+            },
+            {
+                3, new PerkLevel(4, "Reduces cooldown by 10 seconds.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 20},
+                })
+            },
+            {
+                4, new PerkLevel(4, "Reduces cooldown by 15 seconds.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 30},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Provoke, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

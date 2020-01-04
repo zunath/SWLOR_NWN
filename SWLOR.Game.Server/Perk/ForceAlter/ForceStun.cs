@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceStun: IPerk
+    public class ForceStun : IPerk
     {
         public PerkType PerkType => PerkType.ForceStun;
         public string Name => "Force Stun";
@@ -37,8 +37,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         return "This ability can only be used on living creatures.";
                     if (targetCreature.RacialType == RacialType.Robot)
                         return "This ability cannot be used on droids.";
-                    if (concentrationEffect.Type == PerkType.MindShield)                    
-                        return "Your target is immune to tranquilization effects.";                    
+                    if (concentrationEffect.Type == PerkType.MindShield)
+                        return "Your target is immune to tranquilization effects.";
                     break;
                 case 2:
                     if (!oTarget.IsCreature)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -101,31 +101,54 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "Single target is Tranquilised while the caster concentrates or, if resisted, gets -5 to AB and AC.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(7, "Target and nearest other enemy within 10m is Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "Single target is Tranquilised while the caster concentrates or, if resisted, gets -5 to AB and AC.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 50}, 
-				})
-			},
-			{
-				3, new PerkLevel(10, "Target and all other enemies within 10 are Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceAlter, 10},
+                })
+            },
+            {
+                2, new PerkLevel(7, "Target and nearest other enemy within 10m is Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 80}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 50},
+                })
+            },
+            {
+                3, new PerkLevel(10, "Target and all other enemies within 10 are Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 80},
+                })
+            },
+        };
 
+
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceStun1, BaseFPCost = 0, ConcentrationFPCost = 8, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceStun2, BaseFPCost = 0, ConcentrationFPCost = 12, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceStun3, BaseFPCost = 0, ConcentrationFPCost = 20, ConcentrationTickInterval = 6}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
@@ -143,7 +166,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             }
 
             AbilityResistanceResult result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
-            
+
             // Tranquilization effect - Daze target(s). Occurs on succeeding the DC check.
             Effect successEffect = EffectDazed();
             successEffect = EffectLinkEffects(successEffect, EffectVisualEffect(Vfx.Vfx_Dur_Iounstone_Blue));
@@ -180,7 +203,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             const float radiusSize = 10.0f;
             NWCreature targetCreature;
-            
+
             switch (spellTier)
             {
                 // Tier 1 - Single target is Tranquilized or, if resisted, receives -5 to AB and AC
@@ -190,7 +213,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 // Tier 2 - Target and nearest other enemy within 10m are tranquilized using tier 1 rules.
                 case 2:
                     RunEffect(creature, target);
-                    
+
                     // Target the next nearest creature and do the same thing.
                     targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
                     while (targetCreature.IsValid)
@@ -208,7 +231,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 // Tier 3 - All creatures within 10m are tranquilized using tier 1 rules.
                 case 3:
                     RunEffect(creature, target);
-                    
+
                     targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
                     while (targetCreature.IsValid)
                     {

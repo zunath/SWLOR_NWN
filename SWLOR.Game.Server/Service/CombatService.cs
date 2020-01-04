@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Service
             {
                 NWPlayer player = damager.Object;
                 NWCreature target = NWGameObject.OBJECT_SELF;
-                var pcPerk = PerkService.GetPCPerkByID(damager.GlobalID, (int) PerkType.SneakAttack);
+                var pcPerk = PerkService.GetPCPerkByID(damager.GlobalID, PerkType.SneakAttack);
                 int perkRank = pcPerk?.PerkLevel ?? 0;
                 int perkBonus = 1;
 

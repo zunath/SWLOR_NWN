@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class ShieldBoost: IPerk
+    public class ShieldBoost : IPerk
     {
         public PerkType PerkType => PerkType.ShieldBoost;
         public string Name => "Shield Boost";
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -83,84 +83,93 @@ namespace SWLOR.Game.Server.Perk.Armor
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "5% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "10% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "15% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "20% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "25% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "30% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 60}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "35% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 70}, 
-				})
-			},
-			{
-				8, new PerkLevel(5, "40% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 80}, 
-				})
-			},
-			{
-				9, new PerkLevel(6, "45% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 90}, 
-				})
-			},
-			{
-				10, new PerkLevel(6, "50% increase",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.HeavyArmor, 100}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "5% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "10% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "15% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "20% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "25% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "30% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 60},
+                })
+            },
+            {
+                7, new PerkLevel(5, "35% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 70},
+                })
+            },
+            {
+                8, new PerkLevel(5, "40% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 80},
+                })
+            },
+            {
+                9, new PerkLevel(6, "45% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 90},
+                })
+            },
+            {
+                10, new PerkLevel(6, "50% increase",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.HeavyArmor, 100},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ShieldBoost, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

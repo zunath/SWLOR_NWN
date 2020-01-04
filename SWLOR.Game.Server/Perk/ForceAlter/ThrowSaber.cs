@@ -328,6 +328,41 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         };
 
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ThrowSaber1, BaseFPCost = 5, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ThrowSaber2, BaseFPCost = 5, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ThrowSaber3, BaseFPCost = 16, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ThrowSaber4, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ThrowSaber5, BaseFPCost = 10, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
+
+
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
 

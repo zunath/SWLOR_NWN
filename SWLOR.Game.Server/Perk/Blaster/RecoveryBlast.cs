@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RecoveryBlast: IPerk
+    public class RecoveryBlast : IPerk
     {
         public PerkType PerkType => PerkType.RecoveryBlast;
         public string Name => "Recovery Blast";
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
         private void HealTarget(NWCreature member, int level, int luck)
         {
             int amount;
-            
+
             switch (level)
             {
                 case 1:
@@ -125,56 +125,65 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "1d12 HP restored",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "2d8 HP restored",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "3d8 HP restored",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "4d8 HP restored",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "5d8 HP restored",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "6d8 HP restored",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 60}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "1d12 HP restored",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "2d8 HP restored",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "3d8 HP restored",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "4d8 HP restored",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "5d8 HP restored",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "6d8 HP restored",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 60},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.RecoveryBlast, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

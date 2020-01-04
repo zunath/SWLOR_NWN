@@ -139,13 +139,13 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.VersionNumber < 8)
             {
                 // Point Blank Shot
-                if(PerkService.GetPCPerkByID(player.GlobalID, (int)PerkType.PointBlankShot) != null)
+                if(PerkService.GetPCPerkByID(player.GlobalID, PerkType.PointBlankShot) != null)
                 {
                     NWNXCreature.AddFeat(player, Feat.Point_Blank_Shot);
                 }
 
                 // Rapid Reload
-                if (PerkService.GetPCPerkByID(player.GlobalID, (int) PerkType.RapidReload) != null)
+                if (PerkService.GetPCPerkByID(player.GlobalID, PerkType.RapidReload) != null)
                 {
                     NWNXCreature.AddFeat(player, Feat.Rapid_Reload);
                 }

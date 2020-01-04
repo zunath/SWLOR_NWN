@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class ElectricFist: IPerk
+    public class ElectricFist : IPerk
     {
         public PerkType PerkType => PerkType.ElectricFist;
         public string Name => "Electric Fist";
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
                     break;
                 default: return;
             }
-            
+
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectStunned(), target, duration);
             _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Electrical), target);
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Imp_Sunstrike), target);
@@ -127,84 +127,94 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "1d8 damage, shock lasts 3 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "2d8 damage, shock lasts 3 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "3d8 damage, shock lasts 3 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "3d8 damage, shock lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "4d8 damage, shock lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "5d8 damage, shock lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 60}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "6d8 damage, shock lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 70}, 
-				})
-			},
-			{
-				8, new PerkLevel(5, "7d8 damage, shock lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 80}, 
-				})
-			},
-			{
-				9, new PerkLevel(5, "7d8 damage, shock lasts 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 90}, 
-				})
-			},
-			{
-				10, new PerkLevel(5, "8d8 damage, shock lasts 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 100}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "1d8 damage, shock lasts 3 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "2d8 damage, shock lasts 3 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "3d8 damage, shock lasts 3 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "3d8 damage, shock lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "4d8 damage, shock lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "5d8 damage, shock lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 60},
+                })
+            },
+            {
+                7, new PerkLevel(5, "6d8 damage, shock lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 70},
+                })
+            },
+            {
+                8, new PerkLevel(5, "7d8 damage, shock lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 80},
+                })
+            },
+            {
+                9, new PerkLevel(5, "7d8 damage, shock lasts 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 90},
+                })
+            },
+            {
+                10, new PerkLevel(5, "8d8 damage, shock lasts 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 100},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ElectricFist, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

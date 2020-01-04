@@ -1153,6 +1153,10 @@
         AnimalBond3 = 1243,
         AnimalBond4 = 1244,
         AnimalBond5 = 1245,
-        AnimalBond6 = 1246
+        AnimalBond6 = 1246,
+        Skewer = 1247,
+        ForceInsight1 = 1248,
+        ForceInsight2 = 1249,
+        ForceInsight3 = 1250
     }
 }

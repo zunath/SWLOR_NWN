@@ -66,7 +66,6 @@ namespace SWLOR.Game.Server.Service
         public static PCRegionalFameCache PCRegionalFame { get; } = new PCRegionalFameCache();
         public static PCSkillCache PCSkill { get; } = new PCSkillCache();
         public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
-        public static PerkFeatCache PerkFeat { get; } = new PerkFeatCache();
         public static PlayerCache Player { get; } = new PlayerCache();
         public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
         public static SkillCache Skill { get; } = new SkillCache();

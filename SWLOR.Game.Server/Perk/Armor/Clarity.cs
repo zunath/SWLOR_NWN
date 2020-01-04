@@ -111,5 +111,7 @@ namespace SWLOR.Game.Server.Perk.Armor
                     })
             },
         };
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>();
     }
 }

@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class LegShot: IPerk
+    public class LegShot : IPerk
     {
         public PerkType PerkType => PerkType.LegShot;
         public string Name => "Leg Shot";
@@ -124,77 +124,87 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "1d4 damage, immobilization lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "1d8 damage, immobilization lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "2d8 damage, immobilization lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "2d8 damage, immobilization lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "3d8 damage, immobilization lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "4d8 damage, immobilization lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 60}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "5d8 damage, immobilization lasts 12 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 70}, 
-				})
-			},
-			{
-				8, new PerkLevel(5, "5d8 damage, immobilization lasts 18 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 80}, 
-				})
-			},
-			{
-				9, new PerkLevel(6, "6d8 damage, immobilization lasts 24 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 90}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "1d4 damage, immobilization lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "1d8 damage, immobilization lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "2d8 damage, immobilization lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "2d8 damage, immobilization lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "3d8 damage, immobilization lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "4d8 damage, immobilization lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 60},
+                })
+            },
+            {
+                7, new PerkLevel(5, "5d8 damage, immobilization lasts 12 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 70},
+                })
+            },
+            {
+                8, new PerkLevel(5, "5d8 damage, immobilization lasts 18 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 80},
+                })
+            },
+            {
+                9, new PerkLevel(6, "6d8 damage, immobilization lasts 24 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 90},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.LegShot, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

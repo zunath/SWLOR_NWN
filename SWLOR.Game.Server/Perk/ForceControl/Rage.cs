@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class Rage: IPerk
+    public class Rage : IPerk
     {
         public PerkType PerkType => PerkType.Rage;
         public string Name => "Rage";
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -73,44 +73,78 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "Increases Strength and Dexterity by 2 while concentrating but reduces AC by 2 and deals 2 damage per round.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "Increases Strength and Dexterity by 4 while concentrating but reduces AC by 2 and deals 4 damage per round.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 30}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Increases Strength and Dexterity by 6 while concentrating and grants an extra attack but reduces AC by 4 and deals 6 damage per round.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 50}, 
-				})
-			},
-			{
-				4, new PerkLevel(5, "Increases Strength and Dexterity by 8 while concentrating and grants an extra attack but reduces AC by 4 and deals 8 damage per round.", SpecializationType.Guardian,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Increases Strength and Dexterity by 2 while concentrating but reduces AC by 2 and deals 2 damage per round.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 70}, 
-				})
-			},
-			{
-				5, new PerkLevel(8, "Increases Strength and Dexterity by 10 while concentrating and grants two extra attacks but reduces AC by 2 and deals 10 damage per round.", SpecializationType.Guardian,
+                {
+                    { SkillType.ForceControl, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "Increases Strength and Dexterity by 4 while concentrating but reduces AC by 2 and deals 4 damage per round.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 90}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceControl, 30},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Increases Strength and Dexterity by 6 while concentrating and grants an extra attack but reduces AC by 4 and deals 6 damage per round.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 50},
+                })
+            },
+            {
+                4, new PerkLevel(5, "Increases Strength and Dexterity by 8 while concentrating and grants an extra attack but reduces AC by 4 and deals 8 damage per round.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 70},
+                })
+            },
+            {
+                5, new PerkLevel(8, "Increases Strength and Dexterity by 10 while concentrating and grants two extra attacks but reduces AC by 2 and deals 10 damage per round.", SpecializationType.Guardian,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 90},
+                })
+            },
+        };
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Rage1, BaseFPCost = 2, ConcentrationFPCost = 0, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Rage2, BaseFPCost = 4, ConcentrationFPCost = 0, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Rage3, BaseFPCost = 6, ConcentrationFPCost = 0, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Rage4, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Rage5, BaseFPCost = 10, ConcentrationFPCost = 0, ConcentrationTickInterval = 6}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
@@ -184,7 +218,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             Effect attackEffect = _.EffectModifyAttacks(attacks);
             Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);
             finalEffect = _.EffectLinkEffects(finalEffect, acEffect);
-                       
+
             // Only apply the attack effect if this spell tier increases it.
             if (attacks > 0)
             {

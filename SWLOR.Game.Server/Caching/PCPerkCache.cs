@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -33,13 +34,13 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public PCPerk GetByPlayerAndPerkID(Guid playerID, int perkID)
+        public PCPerk GetByPlayerAndPerkID(Guid playerID, PerkType perkID)
         {
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
                 .Single(x => x.PerkID == perkID);
         }
 
-        public PCPerk GetByPlayerAndPerkIDOrDefault(Guid playerID, int perkID)
+        public PCPerk GetByPlayerAndPerkIDOrDefault(Guid playerID, PerkType perkID)
         {
             if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;

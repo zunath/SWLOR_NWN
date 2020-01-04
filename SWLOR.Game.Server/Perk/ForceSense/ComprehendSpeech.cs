@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class ComprehendSpeech: IPerk
+    public class ComprehendSpeech : IPerk
     {
         public PerkType PerkType => PerkType.ComprehendSpeech;
         public string Name => "Comprehend Speech";
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -71,42 +71,70 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(3, "The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 15}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(3, "The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(6, "The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
+                {
+                    { SkillType.ForceSense, 0},
+                })
+            },
+            {
+                2, new PerkLevel(4, "The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 45}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceSense, 15},
+                })
+            },
+            {
+                3, new PerkLevel(5, "The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 30},
+                })
+            },
+            {
+                4, new PerkLevel(6, "The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 45},
+                })
+            },
+        };
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ComprehendSpeech1, BaseFPCost = 0, ConcentrationFPCost = 1, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ComprehendSpeech2, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ComprehendSpeech3, BaseFPCost = 0, ConcentrationFPCost = 3, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ComprehendSpeech4, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 6}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

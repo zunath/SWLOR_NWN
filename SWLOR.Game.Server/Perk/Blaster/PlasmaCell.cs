@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PlasmaCell: IPerk
+    public class PlasmaCell : IPerk
     {
         public PerkType PerkType => PerkType.PlasmaCell;
         public string Name => "Plasma Cell";
@@ -69,84 +69,94 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "10% chance. Damage types: Fire",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 10}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "10% chance. Damage types: Fire, Electric",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "20% chance. Damage types: Fire, Electric",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "20% chance. Damage types: Fire, Electric, Sonic",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 40}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "30% chance. Damage types: Fire, Electric, Sonic",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 50}, 
-				})
-			},
-			{
-				6, new PerkLevel(4, "30% chance. Damage types: Fire, Electric, Sonic, Acid",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 60}, 
-				})
-			},
-			{
-				7, new PerkLevel(5, "40% chance. Damage types: Fire, Electric, Sonic, Acid",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 70}, 
-				})
-			},
-			{
-				8, new PerkLevel(5, "40% chance. Damage types: Fire, Electric, Sonic, Acid, Cold",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 80}, 
-				})
-			},
-			{
-				9, new PerkLevel(6, "50% chance. Damage types: Fire, Electric, Sonic, Acid, Cold",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 90}, 
-				})
-			},
-			{
-				10, new PerkLevel(7, "50% chance. Damage types: Fire, Electric, Sonic, Acid, Cold, Divine",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 100}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "10% chance. Damage types: Fire",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 10},
+                })
+            },
+            {
+                2, new PerkLevel(2, "10% chance. Damage types: Fire, Electric",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 20},
+                })
+            },
+            {
+                3, new PerkLevel(3, "20% chance. Damage types: Fire, Electric",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "20% chance. Damage types: Fire, Electric, Sonic",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 40},
+                })
+            },
+            {
+                5, new PerkLevel(4, "30% chance. Damage types: Fire, Electric, Sonic",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 50},
+                })
+            },
+            {
+                6, new PerkLevel(4, "30% chance. Damage types: Fire, Electric, Sonic, Acid",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 60},
+                })
+            },
+            {
+                7, new PerkLevel(5, "40% chance. Damage types: Fire, Electric, Sonic, Acid",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 70},
+                })
+            },
+            {
+                8, new PerkLevel(5, "40% chance. Damage types: Fire, Electric, Sonic, Acid, Cold",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 80},
+                })
+            },
+            {
+                9, new PerkLevel(6, "50% chance. Damage types: Fire, Electric, Sonic, Acid, Cold",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 90},
+                })
+            },
+            {
+                10, new PerkLevel(7, "50% chance. Damage types: Fire, Electric, Sonic, Acid, Cold, Divine",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 100},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.PlasmaCell, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

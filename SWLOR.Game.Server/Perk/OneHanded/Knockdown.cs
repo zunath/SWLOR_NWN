@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Knockdown: IPerk
+    public class Knockdown : IPerk
     {
         public PerkType PerkType => PerkType.Knockdown;
         public string Name => "Knockdown";
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -111,56 +111,66 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "1d4 damage, knockdown lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 5}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "2d4 damage, knockdown lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 10}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "2d6 damage, knockdown lasts 6 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 15}, 
-				})
-			},
-			{
-				4, new PerkLevel(4, "2d6 damage, knockdown lasts 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 20}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "3d6 damage, knockdown lasts 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 30}, 
-				})
-			},
-			{
-				6, new PerkLevel(5, "3d8 damage, knockdown lasts 9 seconds",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 50}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "1d4 damage, knockdown lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 5},
+                })
+            },
+            {
+                2, new PerkLevel(2, "2d4 damage, knockdown lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 10},
+                })
+            },
+            {
+                3, new PerkLevel(3, "2d6 damage, knockdown lasts 6 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 15},
+                })
+            },
+            {
+                4, new PerkLevel(4, "2d6 damage, knockdown lasts 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 20},
+                })
+            },
+            {
+                5, new PerkLevel(4, "3d6 damage, knockdown lasts 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 30},
+                })
+            },
+            {
+                6, new PerkLevel(5, "3d8 damage, knockdown lasts 9 seconds",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 50},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Knockdown, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

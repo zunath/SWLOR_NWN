@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class BattleInsight: IPerk
+    public class BattleInsight : IPerk
     {
         public PerkType PerkType => PerkType.BattleInsight;
         public string Name => "Battle insight";
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -73,31 +73,53 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "The caster gets -5 AB & AC but their nearby party members get +5 AB & AC",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 40}, 
-				})
-			},
-			{
-				2, new PerkLevel(6, "The caster gets -10 AB & AC but their nearby party members get +10 AB & AC",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 60}, 
-				})
-			},
-			{
-				3, new PerkLevel(8, "The caster and nearby enemies get -10 AB & AC but the nearby party members get +10 AB & AC",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 80}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "The caster gets -5 AB & AC but their nearby party members get +5 AB & AC",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 40},
+                })
+            },
+            {
+                2, new PerkLevel(6, "The caster gets -10 AB & AC but their nearby party members get +10 AB & AC",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 60},
+                })
+            },
+            {
+                3, new PerkLevel(8, "The caster and nearby enemies get -10 AB & AC but the nearby party members get +10 AB & AC",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 80},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.BattleInsight1, BaseFPCost = 0, ConcentrationFPCost = 3, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.BattleInsight2, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 6}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.BattleInsight3, BaseFPCost = 0, ConcentrationFPCost = 5, ConcentrationTickInterval = 6}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
@@ -144,8 +166,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         {
                             nth++;
                             targetCreature = _.GetNearestCreature((int)CreatureType.IsAlive, 1, creature, nth);
-                            continue;        
-                        }                            
+                            continue;
+                        }
                         break;
                     case 2:
                         amount = 10;
@@ -177,11 +199,11 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
                 _.ApplyEffectToObject(DurationType.Temporary, effect, targetCreature, 6.1f);
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Dur_Magic_Resistance), targetCreature);
-                
+
                 nth++;
                 targetCreature = _.GetNearestCreature((int)CreatureType.IsAlive, 1, creature, nth);
             }
-            
+
         }
     }
 }

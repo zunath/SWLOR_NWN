@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Dash: IPerk
+    public class Dash : IPerk
     {
         public PerkType PerkType => PerkType.Dash;
         public string Name => "Dash";
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Perk.General
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -110,63 +110,73 @@ namespace SWLOR.Game.Server.Perk.General
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "+25% speed, lasts 1 minute",
-				new Dictionary<SkillType, int>
-				{
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "+25% speed, lasts 1 minute",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				2, new PerkLevel(2, "+30% speed, lasts 1 minute",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                2, new PerkLevel(2, "+30% speed, lasts 1 minute",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				3, new PerkLevel(3, "+35% speed, lasts 1 minute",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                3, new PerkLevel(3, "+35% speed, lasts 1 minute",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				4, new PerkLevel(3, "+40% speed, lasts 1 minute",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                4, new PerkLevel(3, "+40% speed, lasts 1 minute",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				5, new PerkLevel(3, "+45% speed, lasts 1 minute",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                5, new PerkLevel(3, "+45% speed, lasts 1 minute",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				6, new PerkLevel(4, "+50% speed, lasts 1 minute",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                6, new PerkLevel(4, "+50% speed, lasts 1 minute",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-			{
-				7, new PerkLevel(5, "+50% speed, lasts 2 minutes",
-				new Dictionary<SkillType, int>
-				{
+                })
+            },
+            {
+                7, new PerkLevel(5, "+50% speed, lasts 2 minutes",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-		};
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Dash, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

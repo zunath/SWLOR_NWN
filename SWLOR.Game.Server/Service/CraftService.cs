@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Exclude blueprints which the player doesn't meet the required perk level for.
                 var pcPerk = pcPerks.SingleOrDefault(p => p.PerkID == x.PerkID);
-                int perkLevel = pcPerk == null ? 0 : pcPerk.PerkLevel;
+                int perkLevel = pcPerk?.PerkLevel ?? 0;
                 if (x.PerkID != null && perkLevel < x.RequiredPerkLevel)
                     found = false;
 

@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForcePush: IPerk
+    public class ForcePush : IPerk
     {
         public PerkType PerkType => PerkType.ForcePush;
         public string Name => "Force Push";
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             switch (spellTier)
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceAlter, target.Object);
             }
-            
+
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Com_Blood_Spark_Small), target);
         }
 
@@ -147,42 +147,70 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "Knockdown a small target. If resisted, target is slowed for 6 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(3, "Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 10}, 
-				})
-			},
-			{
-				3, new PerkLevel(4, "Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Knockdown a small target. If resisted, target is slowed for 6 seconds.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 20}, 
-				})
-			},
-			{
-				4, new PerkLevel(5, "Knockdown any size target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
+                {
+                    { SkillType.ForceAlter, 0},
+                })
+            },
+            {
+                2, new PerkLevel(3, "Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 30}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 10},
+                })
+            },
+            {
+                3, new PerkLevel(4, "Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 20},
+                })
+            },
+            {
+                4, new PerkLevel(5, "Knockdown any size target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 30},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForcePush1, BaseFPCost = 4, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForcePush2, BaseFPCost = 6, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForcePush3, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForcePush4, BaseFPCost = 10, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class BalancedStance: IPerk
+    public class BalancedStance : IPerk
     {
         public PerkType PerkType => PerkType.BalancedStance;
         public string Name => "Balanced Stance";
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Perk.Stances
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -45,10 +45,10 @@ namespace SWLOR.Game.Server.Perk.Stances
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             CustomEffectService.ApplyStance(
-                creature, 
-                CustomEffectType.BalancedStance, 
-                PerkType.BalancedStance, 
-                perkLevel, 
+                creature,
+                CustomEffectType.BalancedStance,
+                PerkType.BalancedStance,
+                perkLevel,
                 null);
         }
 
@@ -77,21 +77,31 @@ namespace SWLOR.Game.Server.Perk.Stances
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(8, "Grants Balanced Stance perk",
-				new Dictionary<SkillType, int>
-				{
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(8, "Grants Balanced Stance perk",
+                new Dictionary<SkillType, int>
+                {
 
-				})
-			},
-		};
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.BalancedStance, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public int SelectedCategoryID { get; set; }
-            public int SelectedPerkID { get; set; }
+            public PerkType SelectedPerkID { get; set; }
             public bool IsConfirmingPurchase { get; set; }
         }
 
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             var perk = PerkService.GetPerkHandler(vm.SelectedPerkID);
-            PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, (int)perk.PerkType);
+            PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, perk.PerkType);
             Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
             var perkLevels = perk.PerkLevels;
 
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Conversation
             // Player has purchased at least one rank in this perk. Show their current bonuses.
             if (rank > 0 && currentPerkLevel != null)
             {
-                var currentPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(vm.SelectedPerkID, rank);
+                var currentPerkFeat = perk.PerkFeats.ContainsKey(rank) ? perk.PerkFeats[rank].First() : null;
                 currentBonus = currentPerkLevel.Description;
 
                 // Not every perk is going to have a perk feat. Don't display this information if not necessary.
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Conversation
             // Player hasn't reached max rank and this perk has another perk level to display.
             if (rank + 1 <= maxRank && nextPerkLevel != null)
             {
-                var nextPerkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(vm.SelectedPerkID, rank + 1);
+                var nextPerkFeat = perk.PerkFeats.ContainsKey(rank + 1) ? perk.PerkFeats[rank + 1].First() : null; 
                 nextBonus = nextPerkLevel.Description;
                 price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
 
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("PerkListPage", responseID);
 
-            vm.SelectedPerkID = (int)response.CustomData;
+            vm.SelectedPerkID = (PerkType)response.CustomData;
             BuildPerkDetails();
             ChangePage("PerkDetailsPage");
         }

@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class Chi: IPerk
+    public class Chi : IPerk
     {
         public PerkType PerkType => PerkType.Chi;
         public string Name => "Chi";
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             // Rank 7 and up: AOE heal party members
             if (perkLevel >= 7)
             {
-                var members = creature.PartyMembers.Where(x => Equals(x, creature) || 
+                var members = creature.PartyMembers.Where(x => Equals(x, creature) ||
                                                              _.GetDistanceBetween(creature, x) <= 10.0f && x.CurrentHP < x.MaxHP);
                 foreach (var member in members)
                 {
@@ -103,70 +103,80 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(3, "Restores up to 10% of maximum HP",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 5}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "Restores up to 20% of maximum HP",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 15}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Restores up to 30% of maximum HP",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(5, "Restores up to 40% of maximum HP",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 45}, 
-				})
-			},
-			{
-				5, new PerkLevel(6, "Restores up to 50% of maximum HP",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 60}, 
-				})
-			},
-			{
-				6, new PerkLevel(6, "Restores up to 60% of maximum HP",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 75}, 
-				})
-			},
-			{
-				7, new PerkLevel(7, "Restores up to 70% of maximum HP. All party members within range also receive the healing.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 90}, 
-				})
-			},
-			{
-				8, new PerkLevel(7, "Restores up to 80% of maximum HP. All party members within range also receive the healing.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.MartialArts, 100}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(3, "Restores up to 10% of maximum HP",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 5},
+                })
+            },
+            {
+                2, new PerkLevel(4, "Restores up to 20% of maximum HP",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 15},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Restores up to 30% of maximum HP",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 30},
+                })
+            },
+            {
+                4, new PerkLevel(5, "Restores up to 40% of maximum HP",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 45},
+                })
+            },
+            {
+                5, new PerkLevel(6, "Restores up to 50% of maximum HP",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 60},
+                })
+            },
+            {
+                6, new PerkLevel(6, "Restores up to 60% of maximum HP",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 75},
+                })
+            },
+            {
+                7, new PerkLevel(7, "Restores up to 70% of maximum HP. All party members within range also receive the healing.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 90},
+                })
+            },
+            {
+                8, new PerkLevel(7, "Restores up to 80% of maximum HP. All party members within range also receive the healing.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.MartialArts, 100},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.Chi, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

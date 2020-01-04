@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             float duration;
             float range = 5 * massLevel;
-            
+
             switch (tranqLevel)
             {
                 case 0:
@@ -194,35 +194,45 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(5, "Range: 5 meters",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 25}, 
-				})
-			},
-			{
-				2, new PerkLevel(5, "Range: 10 meters",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 30}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Range: 15 meters",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.Firearms, 35}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(5, "Range: 5 meters",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 25},
+                })
+            },
+            {
+                2, new PerkLevel(5, "Range: 10 meters",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 30},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Range: 15 meters",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.Firearms, 35},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.MassTranquilizer, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

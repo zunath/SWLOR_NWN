@@ -183,6 +183,8 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
         };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>();
+
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

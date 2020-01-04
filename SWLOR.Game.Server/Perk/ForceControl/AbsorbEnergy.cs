@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
-    public class AbsorbEnergy: IPerk
+    public class AbsorbEnergy : IPerk
     {
         public PerkType PerkType => PerkType.AbsorbEnergy;
         public string Name => "Absorb Energy";
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -70,44 +70,79 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "Grants 10% immunity to all damage while the caster retains concentration.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "Grants 20% immunity to all damage while the caster retains concentration.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 15}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "Grants 30% immunity to all damage while the caster retains concentration.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 30}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "Grants 40% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "Grants 10% immunity to all damage while the caster retains concentration.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 45}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "Grants 50% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
+                {
+                    { SkillType.ForceControl, 0},
+                })
+            },
+            {
+                2, new PerkLevel(2, "Grants 20% immunity to all damage while the caster retains concentration.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceControl, 60}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceControl, 15},
+                })
+            },
+            {
+                3, new PerkLevel(3, "Grants 30% immunity to all damage while the caster retains concentration.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 30},
+                })
+            },
+            {
+                4, new PerkLevel(3, "Grants 40% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 45},
+                })
+            },
+            {
+                5, new PerkLevel(4, "Grants 50% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceControl, 60},
+                })
+            },
+        };
+
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AbsorbEnergy1, BaseFPCost = 2, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AbsorbEnergy2, BaseFPCost = 4, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AbsorbEnergy3, BaseFPCost = 6, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AbsorbEnergy4, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.AbsorbEnergy5, BaseFPCost = 10, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+        };
 
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)

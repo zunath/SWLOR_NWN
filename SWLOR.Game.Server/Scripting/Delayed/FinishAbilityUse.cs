@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -86,7 +87,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
                 // Adjust creature's current FP, if necessary.
                 // Adjust FP only if spell cost > 0
-                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked((int)data.PerkType, spellTier);
+                PerkFeat perkFeat = perk.PerkFeats[spellTier].First();
                 int fpCost = perk.FPCost(activator, perkFeat.BaseFPCost, spellTier);
 
                 if (fpCost > 0)

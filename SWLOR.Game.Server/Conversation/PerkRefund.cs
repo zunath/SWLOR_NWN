@@ -249,11 +249,14 @@ namespace SWLOR.Game.Server.Conversation
 
         private void RemovePerkFeat(IPerk perk)
         {
-            var feats = DataService.PerkFeat.GetAllByPerkID((int)perk.PerkType);
+            if (perk.PerkFeats == null || perk.PerkFeats.Count <= 0) return;
 
-            foreach (var feat in feats)
+            foreach (var perkFeat in perk.PerkFeats.Values)
             {
-                NWNXCreature.RemoveFeat(GetPC(), (Feat)feat.FeatID);
+                foreach(var feat in perkFeat)
+                {
+                    NWNXCreature.RemoveFeat(GetPC(), feat.Feat);
+                }
             }
         }
 

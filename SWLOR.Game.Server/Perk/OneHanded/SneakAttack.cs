@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class SneakAttack: IPerk
+    public class SneakAttack : IPerk
     {
         public PerkType PerkType => PerkType.SneakAttack;
         public string Name => "Sneak Attack";
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWItem weapon = oPC.RightHand;
-            
+
             if (weapon.CustomItemType != CustomItemType.FinesseVibroblade)
                 return "You must be equipped with a finesse blade to use that ability";
 
@@ -103,38 +103,48 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(4, "Deals 2x damage from behind, 1.5x damage from any other direction.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 10}, 
-				})
-			},
-			{
-				4, new PerkLevel(6, "Deals 3x damage from behind, 2x damage from any other direction. Reduces cooldown by 1 minute.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 40}, 
-				})
-			},
-			{
-				2, new PerkLevel(4, "Deals 2x damage from behind, 1.5x damage from any other direction. Reduces cooldown by 30 seconds.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 20}, 
-				})
-			},
-			{
-				3, new PerkLevel(5, "Deals 2x damage from behind, 1.5x damage from any other direction. Reduces cooldown by 1 minute.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.OneHanded, 30}, 
-				})
-			},
-		};
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(4, "Deals 2x damage from behind, 1.5x damage from any other direction.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 10},
+                })
+            },
+            {
+                4, new PerkLevel(6, "Deals 3x damage from behind, 2x damage from any other direction. Reduces cooldown by 1 minute.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 40},
+                })
+            },
+            {
+                2, new PerkLevel(4, "Deals 2x damage from behind, 1.5x damage from any other direction. Reduces cooldown by 30 seconds.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 20},
+                })
+            },
+            {
+                3, new PerkLevel(5, "Deals 2x damage from behind, 1.5x damage from any other direction. Reduces cooldown by 1 minute.",
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.OneHanded, 30},
+                })
+            },
+        };
 
+
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.SneakAttack, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

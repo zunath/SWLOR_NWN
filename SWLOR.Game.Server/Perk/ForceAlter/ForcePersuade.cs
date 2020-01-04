@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForcePersuade: IPerk
+    public class ForcePersuade : IPerk
     {
         public PerkType PerkType => PerkType.ForcePersuade;
         public string Name => "Force Persuade";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -69,24 +69,39 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(7, "Applies Domination effect to a single humanoid target with lower WIS than the caster, while the caster concentrates.",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 40}, 
-				})
-			},
-			{
-				2, new PerkLevel(7, "Applies Domination effect to all hostile humanoid targets within 5m with lower WIS than the caster, while the caster concentrates.", SpecializationType.Consular,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(7, "Applies Domination effect to a single humanoid target with lower WIS than the caster, while the caster concentrates.",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceAlter, 80}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceAlter, 40},
+                })
+            },
+            {
+                2, new PerkLevel(7, "Applies Domination effect to all hostile humanoid targets within 5m with lower WIS than the caster, while the caster concentrates.", SpecializationType.Consular,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceAlter, 80},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForcePersuade1, BaseFPCost = 8, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForcePersuade2, BaseFPCost = 20, ConcentrationFPCost = 0, ConcentrationTickInterval = 1}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {

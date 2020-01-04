@@ -38,9 +38,11 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_DOT = 4; // Subsequent damage effects
 
         private static readonly List<NWCreature> ConcentratingCreatures = new List<NWCreature>();
+        private static readonly Dictionary<Feat, PerkType> _featToPerkFeatMapping = new Dictionary<Feat, PerkType>();
 
         public static void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
@@ -48,6 +50,28 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
             MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => RegisterCreaturePerks(message.Self));
             MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
+        }
+
+        private static void OnModuleLoad()
+        {
+            var handlers = PerkService.GetAllHandlers();
+
+            // Retrieve all of the perk handlers.
+            foreach (var handler in handlers)
+            {
+                // Now get all of the PerkFeat mappings.
+                foreach (var perkFeat in handler.PerkFeats.Values)
+                {
+                    // Iterate over the feats granted for this PerkFeat
+                    foreach (var feat in perkFeat)
+                    {
+                        if (_featToPerkFeatMapping.ContainsKey(feat.Feat))
+                            throw new Exception("Feat '" + feat.Feat + "' has already been registered.");
+
+                        _featToPerkFeatMapping[feat.Feat] = handler.PerkType;
+                    }
+                }
+            }
         }
 
         private static void OnRequestCacheStats(NWPlayer player)
@@ -86,13 +110,14 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if able to use perk feat on target, false otherwise.</returns>
         public static bool CanUsePerkFeat(NWCreature activator, NWObject target, Feat featID)
         {
-            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault((int)featID);
-
             // There's no matching feat in the DB for this ability. Exit early.
-            if (perkFeat == null) return false;
+            if (!_featToPerkFeatMapping.ContainsKey(featID))
+                return false;
+
+            var perkType = _featToPerkFeatMapping[featID];
 
             // Retrieve the perk information.
-            var perk = PerkService.GetPerkHandler(perkFeat.PerkID);
+            var perk = PerkService.GetPerkHandler(perkType);
 
             // No perk could be found. Exit early.
             if (perk == null) return false;
@@ -104,11 +129,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // Retrieve the perk-specific handler logic.
-            var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
-
             // Get the creature's perk level.
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.PerkType);
+            var perkFeat = perk.PerkFeats[creaturePerkLevel].First();
 
             // If player is disabling an existing stance, remove that effect.
             if (perk.ExecutionType == PerkExecutionType.Stance)
@@ -136,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Verify that this hostile action meets PVP sanctuary restriction rules. 
-            if (handler.IsHostile() && target.IsPlayer)
+            if (perk.IsHostile() && target.IsPlayer)
             {
                 if (!PVPSanctuaryService.IsPVPAttackAllowed(activator.Object, target.Object)) return false;
             }
@@ -150,7 +173,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Run this perk's specific checks on whether the activator may use this perk on the target.
-            string canCast = handler.CanCastSpell(activator, target, perkFeat.PerkLevelUnlocked);
+            string canCast = perk.CanCastSpell(activator, target, creaturePerkLevel);
             if (!string.IsNullOrWhiteSpace(canCast))
             {
                 activator.SendMessage(canCast);
@@ -158,7 +181,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Calculate the FP cost to use this ability. Verify activator has sufficient FP.
-            int fpCost = handler.FPCost(activator, handler.FPCost(activator, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
+            int fpCost = perk.FPCost(activator, perk.FPCost(activator, perkFeat.BaseFPCost, creaturePerkLevel), perkFeat.Tier);
             int currentFP = GetCurrentFP(activator);
             if (currentFP < fpCost)
             {
@@ -232,10 +255,9 @@ namespace SWLOR.Game.Server.Service
             if (!CanUsePerkFeat(activator, target, featID)) return;
 
             // Retrieve information necessary for activation of perk feat.
-            var perkFeat = DataService.PerkFeat.GetByFeatID((int)featID);
-            var perk = PerkService.GetPerkHandler(perkFeat.PerkID);
+            var perkType = _featToPerkFeatMapping[featID];
+            var perk = PerkService.GetPerkHandler(perkType);
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.PerkType);
-            var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 
             SendAOEMessage(activator, activator.Name + " readies " + perk.Name + ".");
 
@@ -243,31 +265,31 @@ namespace SWLOR.Game.Server.Service
             if (perk.ExecutionType == PerkExecutionType.ForceAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_FORCE);
-                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, perk, creaturePerkLevel, PerkExecutionType.ForceAbility, creaturePerkLevel);
             }
             // Combat Abilities
             else if (perk.ExecutionType == PerkExecutionType.CombatAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_PHYSICAL);
-                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, perk, creaturePerkLevel, PerkExecutionType.CombatAbility, creaturePerkLevel);
             }
             // Queued Weapon Skills
             else if (perk.ExecutionType == PerkExecutionType.QueuedWeaponSkill)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_PHYSICAL);
-                HandleQueueWeaponSkill(activator, handler, featID);
+                HandleQueueWeaponSkill(activator, perk, featID);
             }
             // Stances
             else if (perk.ExecutionType == PerkExecutionType.Stance)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_COMBATABILITY);
-                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, perk, creaturePerkLevel, PerkExecutionType.Stance, creaturePerkLevel);
             }
             // Concentration Abilities
             else if (perk.ExecutionType == PerkExecutionType.ConcentrationAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_FORCE);
-                ActivateAbility(activator, target, handler, creaturePerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
+                ActivateAbility(activator, target, perk, creaturePerkLevel, PerkExecutionType.ConcentrationAbility, creaturePerkLevel);
             }
         }
 
@@ -395,7 +417,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var creature = ConcentratingCreatures.ElementAt(index);
                 var activeAbility = GetActiveConcentrationEffect(creature);
-                int perkID = (int)activeAbility.Type;
+                var perkType = activeAbility.Type;
                 int tier = activeAbility.Tier;
                 bool ended = false;
 
@@ -409,15 +431,15 @@ namespace SWLOR.Game.Server.Service
                 // Track the current tick.
                 int tick = creature.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
                 creature.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
-                
-                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, tier);
+
+                var perk = PerkService.GetPerkHandler(perkType);
+                PerkFeat perkFeat = perk.PerkFeats[tier].First();
 
                 // Are we ready to continue processing this concentration effect?
                 if (tick % perkFeat.ConcentrationTickInterval != 0) continue;
 
                 // Get the perk handler, FP cost, and the target.
-                var handler = PerkService.GetPerkHandler(perkID);
-                int fpCost = handler.FPCost(creature, perkFeat.ConcentrationFPCost, tier);
+                int fpCost = perk.FPCost(creature, perkFeat.ConcentrationFPCost, tier);
                 NWObject target = creature.GetLocalObject("CONCENTRATION_TARGET");
                 int currentFP = GetCurrentFP(creature);
                 int maxFP = GetMaxFP(creature);
@@ -461,7 +483,7 @@ namespace SWLOR.Game.Server.Service
                 // Run this individual perk's concentration tick method if it didn't end this tick.
                 if (!ended && target.IsValid)
                 {
-                    handler.OnConcentrationTick(creature, target, tier, tick);
+                    perk.OnConcentrationTick(creature, target, tier, tick);
                 }
             }
         }
@@ -662,18 +684,18 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
-        private static void HandleQueueWeaponSkill(NWCreature activator, IPerk ability, Feat spellFeatID)
+        private static void HandleQueueWeaponSkill(NWCreature activator, IPerk perk, Feat spellFeatID)
         {
-            var perkFeat = DataService.PerkFeat.GetByFeatID((int)spellFeatID);
-            var cooldownCategory = ability.CooldownGroup;
+            var spellTier = PerkService.GetCreaturePerkLevel(activator, perk.PerkType);
+            var cooldownCategory = perk.CooldownGroup;
             string queueUUID = Guid.NewGuid().ToString();
-            activator.SetLocalInt("ACTIVE_WEAPON_SKILL", (int)ability.PerkType);
+            activator.SetLocalInt("ACTIVE_WEAPON_SKILL", (int)perk.PerkType);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", (int)spellFeatID);
-            activator.SendMessage("Weapon skill '" + ability.Name + "' queued for next attack.");
-            SendAOEMessage(activator, activator.Name + " readies weapon skill '" + ability.Name + "'.");
+            activator.SendMessage("Weapon skill '" + perk.Name + "' queued for next attack.");
+            SendAOEMessage(activator, activator.Name + " readies weapon skill '" + perk.Name + "'.");
 
-            ApplyCooldown(activator, cooldownCategory, ability, perkFeat.PerkLevelUnlocked, 0.0f);
+            ApplyCooldown(activator, cooldownCategory, perk, spellTier, 0.0f);
 
             // Player must attack within 30 seconds after queueing or else it wears off.
             _.DelayCommand(30f, () =>
@@ -683,8 +705,8 @@ namespace SWLOR.Game.Server.Service
                     activator.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
                     activator.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
                     activator.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
-                    activator.SendMessage("Your weapon skill '" + ability.Name + "' is no longer queued.");
-                    SendAOEMessage(activator, activator.Name + " no longer has weapon skill '" + ability.Name + "' readied.");
+                    activator.SendMessage("Your weapon skill '" + perk.Name + "' is no longer queued.");
+                    SendAOEMessage(activator, activator.Name + " no longer has weapon skill '" + perk.Name + "' readied.");
                 }
             });
         }
@@ -811,20 +833,21 @@ namespace SWLOR.Game.Server.Service
 
             HandleGrenadeProficiency(oPC, oTarget);
             HandlePlasmaCellPerk(oPC, oTarget);
-            int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
+            PerkType activeWeaponSkillID = (PerkType)oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
             int activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
             PCPerk entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
+            var spellTier = PerkService.GetCreaturePerkLevel(oPC, entity.PerkID);
             var perk = PerkService.GetPerkHandler(entity.PerkID);
-            var perkFeat = DataService.PerkFeat.GetByFeatID(activeWeaponSkillFeatID);
+            var perkFeat = perk.PerkFeats[spellTier].First();
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-            string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.PerkLevelUnlocked);
+            string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.Tier);
             if (string.IsNullOrWhiteSpace(canCast))
             {
-                handler.OnImpact(oPC, oTarget, entity.PerkLevel, perkFeat.PerkLevelUnlocked);
+                handler.OnImpact(oPC, oTarget, entity.PerkLevel, perkFeat.Tier);
 
                 if (oTarget.IsNPC)
                 {
@@ -952,7 +975,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="self">The creature whose perks we're registering.</param>
         private static void RegisterCreaturePerks(NWCreature self)
         {
-            var perkFeatCache = new Dictionary<int, AIPerkDetails>();
+            var perkFeatCache = new Dictionary<PerkType, AIPerkDetails>();
             var featIDs = new List<Feat>();
 
             // Add all feats the creature has to the list.
@@ -965,17 +988,18 @@ namespace SWLOR.Game.Server.Service
 
             bool hasPerkFeat = false;
             // Retrieve perk feat information for only those feats registered as a perk.
-            var perkFeats = DataService.PerkFeat.GetAllByIDs(featIDs);
+            var perks = _featToPerkFeatMapping.Where(x => featIDs.Contains(x.Key))
+                .Select(s => PerkService.GetPerkHandler(s.Value));
 
             // Mark the highest perk level on the creature.
-            foreach (var perkFeat in perkFeats)
+            foreach (var perk in perks)
             {
-                int level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
-                if (level >= perkFeat.PerkLevelUnlocked) continue;
+                int level = self.GetLocalInt("PERK_LEVEL_" + (int)perk.PerkType);
+                var perkFeat = perk.PerkFeats[level].First();
+                if (level >= perkFeat.Tier) continue;
 
-                var perk = PerkService.GetPerkHandler(perkFeat.PerkID);
-                self.SetLocalInt("PERK_LEVEL_" + perkFeat.PerkID, perkFeat.PerkLevelUnlocked);
-                perkFeatCache[perkFeat.PerkID] = new AIPerkDetails(perkFeat.FeatID, perk.ExecutionType);
+                self.SetLocalInt("PERK_LEVEL_" + (int)perk.PerkType, perkFeat.Tier);
+                perkFeatCache[perk.PerkType] = new AIPerkDetails(perkFeat.Feat, perk.ExecutionType);
                 hasPerkFeat = true;
             }
 

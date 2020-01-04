@@ -5,7 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
-    public class ForceDetection: IPerk
+    public class ForceDetection : IPerk
     {
         public PerkType PerkType => PerkType.ForceDetection;
         public string Name => "Force Detection";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -69,49 +69,82 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        		public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
-		{
-			{
-				1, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 0}, 
-				})
-			},
-			{
-				2, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
-				new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 5}, 
-				})
-			},
-			{
-				3, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+        public Dictionary<int, PerkLevel> PerkLevels => new Dictionary<int, PerkLevel>
+        {
+            {
+                1, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 20}, 
-				})
-			},
-			{
-				4, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                {
+                    { SkillType.ForceSense, 0},
+                })
+            },
+            {
+                2, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 35}, 
-				})
-			},
-			{
-				5, new PerkLevel(4, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                {
+                    { SkillType.ForceSense, 5},
+                })
+            },
+            {
+                3, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
                 new Dictionary<SkillType, int>
-				{
-					{ SkillType.ForceSense, 50}, 
-				})
-			},
-		};
+                {
+                    { SkillType.ForceSense, 20},
+                })
+            },
+            {
+                4, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 35},
+                })
+            },
+            {
+                5, new PerkLevel(4, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
+                new Dictionary<SkillType, int>
+                {
+                    { SkillType.ForceSense, 50},
+                })
+            },
+        };
 
+        public Dictionary<int, List<PerkFeat>> PerkFeats { get; } = new Dictionary<int, List<PerkFeat>>
+        {
+            {
+                1, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceDetection1, BaseFPCost = 0, ConcentrationFPCost = 1, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                2, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceDetection2, BaseFPCost = 0, ConcentrationFPCost = 2, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                3, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceDetection3, BaseFPCost = 0, ConcentrationFPCost = 3, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                4, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceDetection4, BaseFPCost = 0, ConcentrationFPCost = 4, ConcentrationTickInterval = 1}
+                }
+            },
+            {
+                5, new List<PerkFeat>
+                {
+                    new PerkFeat {Feat = Feat.ForceDetection5, BaseFPCost = 0, ConcentrationFPCost = 5, ConcentrationTickInterval = 1}
+                }
+            },
+        };
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

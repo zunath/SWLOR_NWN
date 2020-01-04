@@ -23,11 +23,12 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int lootTableID = GetLootTable(targetLocation);
-            if (lootTableID <= 0) return;
+            var lootTableID = GetLootTable(targetLocation);
+            if (lootTableID == LootTable.Invalid) return;
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var items = DataService.LootTableItem.GetAllByLootTableID(lootTableID)
+            var items =
+                LootService.GetLootTable(lootTableID).LootTableItems
                 .OrderByDescending(o => o.Weight);
             string sector = BaseService.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
@@ -86,26 +87,26 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        private int GetLootTable(Location targetLocation)
+        private LootTable GetLootTable(Location targetLocation)
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
             var dbArea = DataService.Area.GetByResref(area.Resref);
             var sector = BaseService.GetSectorOfLocation(targetLocation);
-            int lootTableID = 0;
+            var lootTableID = LootTable.Invalid;
 
             switch (sector)
             {
                 case "NW":
-                    lootTableID = dbArea.NorthwestLootTableID ?? 0;
+                    lootTableID = dbArea.NorthwestLootTableID ?? LootTable.Invalid;
                     break;
                 case "NE":
-                    lootTableID = dbArea.NortheastLootTableID ?? 0;
+                    lootTableID = dbArea.NortheastLootTableID ?? LootTable.Invalid;
                     break;
                 case "SW":
-                    lootTableID = dbArea.SouthwestLootTableID ?? 0;
+                    lootTableID = dbArea.SouthwestLootTableID ?? LootTable.Invalid;
                     break;
                 case "SE":
-                    lootTableID = dbArea.SoutheastLootTableID ?? 0;
+                    lootTableID = dbArea.SoutheastLootTableID ?? LootTable.Invalid;
                     break;
             }
 
@@ -114,8 +115,8 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            int lootTableID = GetLootTable(targetLocation);
-            if (lootTableID <= 0) return "That location cannot be scanned.";
+            var lootTableID = GetLootTable(targetLocation);
+            if (lootTableID == LootTable.Invalid) return "That location cannot be scanned.";
             
             return null;
         }

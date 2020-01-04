@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
@@ -14,15 +19,42 @@ namespace SWLOR.Game.Server.Service
 {
     public static class LootService
     {
+        private static readonly Dictionary<LootTable, LootTableAttribute> _allLootTables = new Dictionary<LootTable, LootTableAttribute>();
+
         public static void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnModuleLoad> (Message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
         }
 
-        public static ItemVO PickRandomItemFromLootTable(int lootTableID)
+        private static void OnModuleLoad()
+        {
+            var lootTables = Enum.GetValues(typeof(LootTable)).Cast<LootTable>();
+
+            foreach (var lt in lootTables)
+            {
+                var ltAttr = lt.GetAttribute<LootTable, LootTableAttribute>();
+
+                var lootItemAttrs = lt.GetType().GetCustomAttributes<LootTableItemAttribute>();
+
+                foreach (var lti in lootItemAttrs)
+                {
+                    ltAttr.LootTableItems.Add(lti);
+                }
+
+                _allLootTables[lt] = ltAttr;
+            }
+        }
+
+        public static LootTableAttribute GetLootTable(LootTable lootTable)
+        {
+            return _allLootTables[lootTable];
+        }
+
+        public static ItemVO PickRandomItemFromLootTable(LootTable lootTableID)
         {
             if (lootTableID <= 0) return null;
-            var lootTableItems = DataService.LootTableItem.GetAllByLootTableID(lootTableID).ToList();
+            var lootTableItems = _allLootTables[lootTableID].LootTableItems;
 
             if (lootTableItems.Count <= 0) return null;
             int[] weights = new int[lootTableItems.Count];
@@ -32,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             int randomIndex = RandomService.GetRandomWeightedIndex(weights);
-            LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
+            var itemEntity = lootTableItems.ElementAt(randomIndex);
             int quantity = RandomService.Random(itemEntity.MaxQuantity) + 1;
             ItemVO result = new ItemVO
             {
@@ -55,7 +87,7 @@ namespace SWLOR.Game.Server.Service
             NWCreature creature = NWGameObject.OBJECT_SELF;
             
             // Single loot table (without an index)
-            int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
+            var singleLootTableID = (LootTable)creature.GetLocalInt("LOOT_TABLE_ID");
             if (singleLootTableID > 0)
             {
                 int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE");
@@ -66,7 +98,7 @@ namespace SWLOR.Game.Server.Service
 
             // Multiple loot tables (with an index)
             int lootTableNumber = 1;
-            int lootTableID = creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
+            var lootTableID = (LootTable)creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
             while (lootTableID > 0)
             {
                 int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE_" + lootTableNumber);
@@ -75,11 +107,11 @@ namespace SWLOR.Game.Server.Service
                 RunLootAttempt(creature, lootTableID, chance, attempts);
 
                 lootTableNumber++;
-                lootTableID = creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
+                lootTableID = (LootTable)creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
             }
         }
 
-        private static void RunLootAttempt(NWCreature target, int lootTableID, int chance, int attempts)
+        private static void RunLootAttempt(NWCreature target, LootTable lootTableID, int chance, int attempts)
         {
             if (chance <= 0)
                 chance = 75;

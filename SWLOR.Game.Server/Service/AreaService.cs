@@ -56,22 +56,12 @@ namespace SWLOR.Game.Server.Service
                     action = DatabaseActionType.Insert;
                 }
 
-                int width = _.GetAreaSize(AreaProperty.Width, area.Object);
-                int height = _.GetAreaSize(AreaProperty.Height, area.Object);
-                int northwestLootTableID = area.GetLocalInt("RESOURCE_NORTHWEST_LOOT_TABLE_ID");
-                int northeastLootTableID = area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
-                int southwestLootTableID = area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
-                int southeastLootTableID = area.GetLocalInt("RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
-
-                // If the loot tables don't exist, don't assign them to this DB entry or we'll get foreign key reference errors.
-                if (DataService.LootTable.GetByIDOrDefault(northwestLootTableID) == null)
-                    northwestLootTableID = 0;
-                if (DataService.LootTable.GetByIDOrDefault(northeastLootTableID) == null)
-                    northeastLootTableID = 0;
-                if (DataService.LootTable.GetByIDOrDefault(southwestLootTableID) == null)
-                    southwestLootTableID = 0;
-                if (DataService.LootTable.GetByIDOrDefault(southeastLootTableID) == null)
-                    southeastLootTableID = 0;
+                var width = _.GetAreaSize(AreaProperty.Width, area.Object);
+                var height = _.GetAreaSize(AreaProperty.Height, area.Object);
+                var northwestLootTableID = (LootTable)area.GetLocalInt("RESOURCE_NORTHWEST_LOOT_TABLE_ID");
+                var northeastLootTableID = (LootTable)area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
+                var southwestLootTableID = (LootTable)area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
+                var southeastLootTableID = (LootTable)area.GetLocalInt("RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
 
                 dbArea.Name = area.Name;
                 dbArea.Tag = area.Tag;
@@ -80,10 +70,10 @@ namespace SWLOR.Game.Server.Service
                 dbArea.Height = height;
                 dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");
                 dbArea.DailyUpkeep = area.GetLocalInt("DAILY_UPKEEP");
-                dbArea.NorthwestLootTableID = northwestLootTableID > 0 ? northwestLootTableID : new int?();
-                dbArea.NortheastLootTableID = northeastLootTableID > 0 ? northeastLootTableID : new int?();
-                dbArea.SouthwestLootTableID = southwestLootTableID > 0 ? southwestLootTableID : new int?();
-                dbArea.SoutheastLootTableID = southeastLootTableID > 0 ? southeastLootTableID : new int?();
+                dbArea.NorthwestLootTableID = northwestLootTableID;
+                dbArea.NortheastLootTableID = northeastLootTableID;
+                dbArea.SouthwestLootTableID = southwestLootTableID;
+                dbArea.SoutheastLootTableID = southeastLootTableID;
                 dbArea.IsBuildable =
                     (area.GetLocalBoolean("IS_BUILDABLE") == true &&
                     dbArea.Width == 32 &&

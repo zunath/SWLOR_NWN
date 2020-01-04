@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ScavengePoint
 
             if (!oPC.IsPlayer && !oPC.IsDM) return;
             int rank = SkillService.GetPCSkillRank(oPC, Skill.Scavenging);
-            int lootTableID = point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
+            var lootTableID = (LootTable)point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
             int level = point.GetLocalInt("SCAVENGE_POINT_LEVEL");
             int delta = level - rank;
 

@@ -30,10 +30,10 @@ namespace SWLOR.Game.Server.Data.Entity
         public int DailyUpkeep { get; set; }
         public bool AutoSpawnResources { get; set; }
         public int ResourceQuality { get; set; }
-        public int? NorthwestLootTableID { get; set; }
-        public int? NortheastLootTableID { get; set; }
-        public int? SouthwestLootTableID { get; set; }
-        public int? SoutheastLootTableID { get; set; }
+        public LootTable? NorthwestLootTableID { get; set; }
+        public LootTable? NortheastLootTableID { get; set; }
+        public LootTable? SouthwestLootTableID { get; set; }
+        public LootTable? SoutheastLootTableID { get; set; }
         public int MaxResourceQuality { get; set; }
     }
 }

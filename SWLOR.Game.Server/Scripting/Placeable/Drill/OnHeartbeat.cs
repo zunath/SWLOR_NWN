@@ -84,14 +84,14 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
             // Time to spawn a new item and reset the timer.
             var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             string sector = pcBase.Sector;
-            int lootTableID = 0;
+            var lootTableID = LootTable.Invalid;
 
             switch (sector)
             {
-                case "NE": lootTableID = dbArea.NortheastLootTableID ?? 0; break;
-                case "NW": lootTableID = dbArea.NorthwestLootTableID ?? 0; break;
-                case "SE": lootTableID = dbArea.SoutheastLootTableID ?? 0; break;
-                case "SW": lootTableID = dbArea.SouthwestLootTableID ?? 0; break;
+                case "NE": lootTableID = dbArea.NortheastLootTableID ?? LootTable.Invalid; break;
+                case "NW": lootTableID = dbArea.NorthwestLootTableID ?? LootTable.Invalid; break;
+                case "SE": lootTableID = dbArea.SoutheastLootTableID ?? LootTable.Invalid; break;
+                case "SW": lootTableID = dbArea.SouthwestLootTableID ?? LootTable.Invalid; break;
             }
 
             if (lootTableID <= 0)

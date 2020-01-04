@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Service;
 
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveUseObject(1)
 
                 .AddRewardGold(550)
-                .AddRewardFame(3, 25)
+                .AddRewardFame(FameRegion.VelesColony, 25)
                 .AddRewardItem("xp_tome_1", 1)
                 
                 .OnAccepted((player, questSource) =>

@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -6,10 +7,10 @@ namespace SWLOR.Game.Server.Quest.Prerequisite
 {
     public class FamePrerequisite: IQuestPrerequisite
     {
-        private readonly int _fameRegionID;
+        private readonly FameRegion _fameRegionID;
         private readonly int _amount;
 
-        public FamePrerequisite(int fameRegionID, int amount)
+        public FamePrerequisite(FameRegion fameRegionID, int amount)
         {
             _fameRegionID = fameRegionID;
             _amount = amount;

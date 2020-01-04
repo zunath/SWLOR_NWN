@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
 
                 .EnableRewardSelection()
                 .AddRewardGold(85)
-                .AddRewardFame(2, 20)
+                .AddRewardFame(FameRegion.CZ220, 20)
                 .AddRewardItem("rune_cstspd1", 1)
                 .AddRewardItem("rune_mining1", 1)
                 .AddRewardItem("rune_dmg1", 1)

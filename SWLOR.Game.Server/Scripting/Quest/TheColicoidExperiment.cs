@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripting.Quest
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
 
                 .EnableRewardSelection()
                 .AddRewardGold(250)
-                .AddRewardFame(2, 20)
+                .AddRewardFame(FameRegion.CZ220, 20)
                 .AddRewardItem("colicoid_cap_y", 1)
                 .AddRewardItem("colicoid_cap_b", 1)
                 .AddRewardItem("colicoid_cap_r", 1)

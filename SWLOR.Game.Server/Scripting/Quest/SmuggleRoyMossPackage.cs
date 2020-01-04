@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripting.Quest
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 
                 .AddObjectiveTalkToNPC(1)
 
-                .AddRewardFame(3, 25)
+                .AddRewardFame(FameRegion.VelesColony, 25)
                 
                 .OnAccepted((player, o) =>
                 {

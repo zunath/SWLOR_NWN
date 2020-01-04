@@ -411,7 +411,7 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest AddRewardFame(int regionID, int amount, bool isSelectable = false)
+        public IQuest AddRewardFame(FameRegion regionID, int amount, bool isSelectable = false)
         {
             AddReward(new QuestFameReward(regionID, amount, isSelectable));
             return this;
@@ -425,7 +425,7 @@ namespace SWLOR.Game.Server.Quest
 
         // Convenience functions for commonly used prerequisites
 
-        public IQuest AddPrerequisiteFame(int regionID, int amount)
+        public IQuest AddPrerequisiteFame(FameRegion regionID, int amount)
         {
             AddPrerequisite(new FamePrerequisite(regionID, amount));
             return this;

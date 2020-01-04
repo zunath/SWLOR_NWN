@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Service;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveUseObject(1)
                 .AddObjectiveUseObject(2)
 
-                .AddRewardFame(1, 10)
+                .AddRewardFame(FameRegion.Global, 10)
                 
                 .OnAccepted((player, questSource) =>
                 {

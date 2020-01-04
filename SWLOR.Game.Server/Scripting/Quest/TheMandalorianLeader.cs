@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripting.Quest
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
 
                 .EnableRewardSelection()
                 .AddRewardGold(350)
-                .AddRewardFame(3, 40)
+                .AddRewardFame(FameRegion.VelesColony, 40)
                 .AddRewardItem("rifle_tran", 1)
                 .AddRewardItem("blaster_tran", 1)
                 .AddRewardItem("xp_tome_1", 1)

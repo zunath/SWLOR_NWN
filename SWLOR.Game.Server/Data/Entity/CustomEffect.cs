@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -8,6 +9,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Name { get; set; }
         public int IconID { get; set; }
-        public int CustomEffectCategoryID { get; set; }
+        public CustomEffectCategoryType CustomEffectCategoryID { get; set; }
     }
 }

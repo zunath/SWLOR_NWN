@@ -45,10 +45,10 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest AddRewardGold(int amount, bool isSelectable = false);
         IQuest AddRewardItem(string resref, int quantity, bool isSelectable = true);
         IQuest AddRewardKeyItem(int keyItemID, bool isSelectable = true);
-        IQuest AddRewardFame(int regionID, int amount, bool isSelectable = false);
+        IQuest AddRewardFame(FameRegion regionID, int amount, bool isSelectable = false);
         IQuest AddRewardGuildPoints(GuildType guild, int amount, bool isSelectable = false);
 
-        IQuest AddPrerequisiteFame(int regionID, int amount);
+        IQuest AddPrerequisiteFame(FameRegion regionID, int amount);
         IQuest AddPrerequisiteKeyItem(int keyItemID);
         IQuest AddPrerequisiteQuest(int questID);
     }

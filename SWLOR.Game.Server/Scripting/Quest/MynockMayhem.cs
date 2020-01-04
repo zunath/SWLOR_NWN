@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest
 {
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
 
                 .AddRewardGold(100)
                 .AddRewardKeyItem(2)
-                .AddRewardFame(2, 5);
+                .AddRewardFame(FameRegion.CZ220, 5);
         }
     }
 }

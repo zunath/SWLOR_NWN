@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public PCRegionalFame GetByPlayerIDAndFameRegionIDOrDefault(Guid playerID, int fameRegionID)
+        public PCRegionalFame GetByPlayerIDAndFameRegionIDOrDefault(Guid playerID, FameRegion fameRegionID)
         {
             if (!ExistsByIndex(ByPlayerID, playerID.ToString()))
                 return default;

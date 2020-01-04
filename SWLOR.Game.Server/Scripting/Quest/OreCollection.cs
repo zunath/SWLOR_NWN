@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Scripting.Quest
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
 
                 .AddRewardGold(50)
                 .AddRewardKeyItem(1)
-                .AddRewardFame(2, 5)
+                .AddRewardFame(FameRegion.CZ220, 5)
 
                 .OnAccepted((player, questGiver) => { CreateItemOnObject("harvest_r_old", player); });
         }

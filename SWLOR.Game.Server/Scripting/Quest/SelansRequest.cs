@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripting.Quest
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveCollectKeyItem(1, 3)
 
                 .AddRewardGold(500)
-                .AddRewardFame(2, 15)
+                .AddRewardFame(FameRegion.CZ220, 15)
                 .AddRewardKeyItem(5)
 
                 .OnCompleted((player, questGiver) =>

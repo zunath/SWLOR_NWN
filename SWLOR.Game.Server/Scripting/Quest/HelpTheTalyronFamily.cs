@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveTalkToNPC(4)
 
                 .AddRewardGold(800)
-                .AddRewardFame(4, 30)
+                .AddRewardFame(FameRegion.CoxxionOrganization, 30)
                 .AddRewardItem("xp_tome_2", 1);
         }
     }

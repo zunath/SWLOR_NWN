@@ -32,7 +32,6 @@ namespace SWLOR.Game.Server.Service
         public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
         public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
         public static DownloadCache Download { get; } = new DownloadCache();
-        public static FameRegionCache FameRegion { get; } = new FameRegionCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
         public static GuildCache Guild { get; } = new GuildCache();
         public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();

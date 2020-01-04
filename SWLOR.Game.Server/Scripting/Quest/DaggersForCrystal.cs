@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest
 {
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveCollectItem(1, "dagger_b", 5, false)
                 .AddObjectiveTalkToNPC(2)
 
-                .AddRewardFame(3, 15)
+                .AddRewardFame(FameRegion.VelesColony, 15)
                 .AddRewardItem("p_crystal_red_qs", 1);
         }
     }

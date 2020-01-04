@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.MarketTerminal
             if (model.IsSellingItem)
             {
                 // Check the item's category. If one cannot be determined, the player cannot put it on the market.
-                int marketCategoryID = MarketService.DetermineMarketCategory(item);
+                var marketCategoryID = MarketService.DetermineMarketCategory(item);
                 if (marketCategoryID <= 0)
                 {
                     ItemService.ReturnItem(player, item);

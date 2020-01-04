@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Note { get; set; }
         public int Price { get; set; }
         public int MarketRegionID { get; set; }
-        public int MarketCategoryID { get; set; }
+        public MarketCategory MarketCategoryID { get; set; }
         public DateTime DatePosted { get; set; }
         public DateTime DateExpires { get; set; }
         public DateTime? DateSold { get; set; }

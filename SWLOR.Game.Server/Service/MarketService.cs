@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to use for the determination.</param>
         /// <returns>The market category ID or a value of -1 if item is not supported.</returns>
-        public static int DetermineMarketCategory(NWItem item)
+        public static MarketCategory DetermineMarketCategory(NWItem item)
         {
             // ===============================================================================
             // The following items are intentionally excluded from market transactions:
@@ -180,34 +180,34 @@ namespace SWLOR.Game.Server.Service
             // Weapons - These IDs are based solely on the NWN BaseItemType
             switch (item.BaseItemType)
             {
-                case BaseItemType.GreatAxe: return 1;
-                case BaseItemType.BattleAxe: return 2;
-                case BaseItemType.BastardSword: return 3;
-                case BaseItemType.Dagger: return 4;
-                case BaseItemType.GreatSword: return 5;
-                case BaseItemType.LongSword: return 7;
-                case BaseItemType.Rapier: return 8;
-                case BaseItemType.Katana: return 9;
-                case BaseItemType.ShortSword: return 10;
-                case BaseItemType.Club: return 11;
-                case BaseItemType.LightMace: return 12;
-                case BaseItemType.Morningstar: return 13;
-                case BaseItemType.QuarterStaff: return 15;
-                case BaseItemType.DoubleAxe: return 16;
-                case BaseItemType.TwoBladedSword: return 17;
-                case BaseItemType.Kukri: return 18;
-                case BaseItemType.Halberd: return 19;
-                case BaseItemType.ShortSpear: return 20;
-                case BaseItemType.LightCrossBow: return 21; // Blaster Rifles
-                case BaseItemType.ShortBow: return 22; // Blaster Pistols
-                case BaseItemType.Helmet: return 23;
-                case BaseItemType.SmallShield: return 28; // Shields
-                case BaseItemType.LargeShield: return 28; // Shields
-                case BaseItemType.TowerShield: return 28; // Shields
-                case BaseItemType.Book: return 29;
-                case BaseItemType.Gloves: return 30; // Power Gloves
-                case BaseItemType.Amulet: return 102; // Necklace
-                case BaseItemType.Ring: return 103;
+                case BaseItemType.GreatAxe: return MarketCategory.HeavyVibrobladeGA;
+                case BaseItemType.BattleAxe: return MarketCategory.VibrobladeBA;
+                case BaseItemType.BastardSword: return MarketCategory.VibrobladeBS;
+                case BaseItemType.Dagger: return MarketCategory.FinesseVibrobladeD;
+                case BaseItemType.GreatSword: return MarketCategory.HeavyVibrobladeGS;
+                case BaseItemType.LongSword: return MarketCategory.VibrobladeLS;
+                case BaseItemType.Rapier: return MarketCategory.FinesseVibrobladeR;
+                case BaseItemType.Katana: return MarketCategory.VibrobladeK;
+                case BaseItemType.ShortSword: return MarketCategory.VibrobladeSS;
+                case BaseItemType.Club: return MarketCategory.BatonC;
+                case BaseItemType.LightMace: return MarketCategory.BatonM;
+                case BaseItemType.Morningstar: return MarketCategory.BatonMS;
+                case BaseItemType.QuarterStaff: return MarketCategory.Quarterstaff;
+                case BaseItemType.DoubleAxe: return MarketCategory.TwinVibrobladeDA;
+                case BaseItemType.TwoBladedSword: return MarketCategory.TwinVibrobladeTS;
+                case BaseItemType.Kukri: return MarketCategory.FinesseVibrobladeK;
+                case BaseItemType.Halberd: return MarketCategory.PolearmH;
+                case BaseItemType.ShortSpear: return MarketCategory.PolearmS;
+                case BaseItemType.LightCrossBow: return MarketCategory.BlasterRifle; // Blaster Rifles
+                case BaseItemType.ShortBow: return MarketCategory.BlasterPistol; // Blaster Pistols
+                case BaseItemType.Helmet: return MarketCategory.Helmet;
+                case BaseItemType.SmallShield: return MarketCategory.Shield; // Shields
+                case BaseItemType.LargeShield: return MarketCategory.Shield; // Shields
+                case BaseItemType.TowerShield: return MarketCategory.Shield; // Shields
+                case BaseItemType.Book: return MarketCategory.Book;
+                case BaseItemType.Gloves: return MarketCategory.PowerGlove; // Power Gloves
+                case BaseItemType.Amulet: return MarketCategory.Necklace; // Necklace
+                case BaseItemType.Ring: return MarketCategory.Ring;
             }
 
             // Check for armor.
@@ -218,45 +218,45 @@ namespace SWLOR.Game.Server.Service
             {
                 switch (item.CustomItemType)
                 {
-                    case CustomItemType.LightArmor: return 24;
-                    case CustomItemType.ForceArmor: return 25;
-                    case CustomItemType.HeavyArmor: return 26;
-                    default: return 23; // Default to clothes if no armor type is specified.
+                    case CustomItemType.LightArmor: return MarketCategory.LightArmor;
+                    case CustomItemType.ForceArmor: return MarketCategory.ForceArmor;
+                    case CustomItemType.HeavyArmor: return MarketCategory.HeavyArmor;
+                    default: return MarketCategory.Clothing; // Default to clothes if no armor type is specified.
                 }
             }
 
             // Check for Scanners
             if (item.GetLocalString("SCRIPT") == "ResourceScanner" ||
                 item.GetLocalString("SCRIPT") == "MineralScanner")
-                return 31;
+                return MarketCategory.Scanner;
             // Check for Harvesters
             if (item.GetLocalString("SCRIPT") == "ResourceHarvester")
-                return 32;
+                return MarketCategory.Harvester;
             // Check for Repair Kits
             if (item.GetLocalString("SCRIPT") == "RepairKit")
-                return 104;
+                return MarketCategory.RepairKit;
             // Check for Stim Packs
             if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.StimPack")
-                return 105;
+                return MarketCategory.StimPack;
             // Check for Force Packs
             if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.ForcePack")
-                return 106;
+                return MarketCategory.ForcePack;
             // Check for Healing Kits
             if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.HealingKit")
-                return 107;
+                return MarketCategory.HealingKit;
             // Check for Resuscitation Devices
             if (item.GetLocalString("ACTION_SCRIPT") == "Medicine.ResuscitationKit")
-                return 108;
+                return MarketCategory.ResuscitationDevice;
             // Check for Starcharts
             if (item.GetLocalString("SCRIPT") == "StarchartDisk" &&
                 item.GetLocalInt("Starcharts") > 0)
-                return 109;
+                return MarketCategory.Starchart;
             // Check for Starship Equipment
             if (item.GetLocalString("SCRIPT") == "SSEnhancement")
-                return 124;
+                return MarketCategory.StarshipEquipment;
             // Check for Starship Repair Kits
             if (item.GetLocalString("SCRIPT") == "SSRepairKit")
-                return 104;
+                return MarketCategory.RepairKit;
 
             // Check item properties
             foreach (var prop in properties)
@@ -268,90 +268,90 @@ namespace SWLOR.Game.Server.Service
                     // IDs are mapped to the iprp_comptype.2da file.
                     switch (_.GetItemPropertyCostTableValue(prop))
                     {
-                        case 1: return 33;
-                        case 2: return 34;
-                        case 3: return 35;
-                        case 4: return 36;
-                        case 5: return 37;
-                        case 6: return 38;
-                        case 7: return 39;
-                        case 8: return 40;
-                        case 9: return 41;
-                        case 10: return 42;
-                        case 11: return 43;
-                        case 12: return 44;
-                        case 13: return 45;
-                        case 14: return 46;
-                        case 15: return 47;
-                        case 16: return 48;
-                        case 17: return 49;
-                        case 18: return 50;
-                        case 19: return 51;
-                        case 20: return 52;
-                        case 21: return 53;
-                        case 22: return 54;
-                        case 23: return 55;
-                        case 24: return 56;
-                        case 25: return 57;
-                        case 26: return 58;
-                        case 27: return 59;
-                        case 28: return 60;
-                        case 29: return 61;
-                        case 30: return 62;
-                        case 31: return 63;
-                        case 32: return 64;
-                        case 33: return 65;
-                        case 34: return 66;
-                        case 35: return 67;
-                        case 36: return 68;
-                        case 37: return 69;
-                        case 38: return 70;
-                        case 39: return 71;
-                        case 40: return 72;
-                        case 41: return 73;
-                        case 42: return 74;
-                        case 43: return 75;
-                        case 44: return 76;
-                        case 45: return 77;
-                        case 46: return 78;
-                        case 47: return 79;
-                        case 48: return 80;
-                        case 49: return 81;
-                        case 50: return 82;
-                        case 51: return 83;
-                        case 52: return 84;
-                        case 53: return 85;
-                        case 54: return 86;
-                        case 55: return 87;
-                        case 56: return 88;
-                        case 57: return 89;
-                        case 58: return 90;
-                        case 59: return 91;
-                        case 60: return 92;
-                        case 61: return 93;
-                        case 62: return 94;
-                        case 63: return 95;
-                        case 64: return 96;
-                        case 65: return 97;
+                        case 1: return MarketCategory.ComponentRawOre;
+                        case 2: return MarketCategory.ComponentMetal;
+                        case 3: return MarketCategory.ComponentOrganic;
+                        case 4: return MarketCategory.ComponentSmallBlade;
+                        case 5: return MarketCategory.ComponentMediumBlade;
+                        case 6: return MarketCategory.ComponentLargeBlade;
+                        case 7: return MarketCategory.ComponentShaft;
+                        case 8: return MarketCategory.ComponentSmallHandle;
+                        case 9: return MarketCategory.ComponentMediumHandle;
+                        case 10: return MarketCategory.ComponentLargeHandle;
+                        case 11: return MarketCategory.ComponentEnhancement;
+                        case 12: return MarketCategory.ComponentFiberplast;
+                        case 13: return MarketCategory.ComponentLeather;
+                        case 14: return MarketCategory.ComponentPadding;
+                        case 15: return MarketCategory.ComponentElectronics;
+                        case 16: return MarketCategory.ComponentWoodBatonFrame;
+                        case 17: return MarketCategory.ComponentMetalBatonFrame;
+                        case 18: return MarketCategory.ComponentRangedWeaponCore;
+                        case 19: return MarketCategory.ComponentRifleBarrel;
+                        case 20: return MarketCategory.ComponentPistolBarrel;
+                        case 21: return MarketCategory.ComponentPowerCrystal;
+                        case 22: return MarketCategory.ComponentSaberHilt;
+                        case 23: return MarketCategory.ComponentSeeds;
+                        case 24: return MarketCategory.ComponentBlueCrystal;
+                        case 25: return MarketCategory.ComponentRedCrystal;
+                        case 26: return MarketCategory.ComponentGreenCrystal;
+                        case 27: return MarketCategory.ComponentYellowCrystal;
+                        case 28: return MarketCategory.ComponentBlueCrystalCluster;
+                        case 29: return MarketCategory.ComponentRedCrystalCluster;
+                        case 30: return MarketCategory.ComponentGreenCrystalCluster;
+                        case 31: return MarketCategory.ComponentYellowCrystalCluster;
+                        case 32: return MarketCategory.ComponentPowerCrystalCluster;
+                        case 33: return MarketCategory.ComponentHeavyArmorCore;
+                        case 34: return MarketCategory.ComponentLightArmorCore;
+                        case 35: return MarketCategory.ComponentForceArmorCore;
+                        case 36: return MarketCategory.ComponentHeavyArmorSegment;
+                        case 37: return MarketCategory.ComponentLightArmorSegment;
+                        case 38: return MarketCategory.ComponentForceArmorSegment;
+                        case 39: return MarketCategory.ComponentSmallStructureFrame;
+                        case 40: return MarketCategory.ComponentMediumStructureFrame;
+                        case 41: return MarketCategory.ComponentLargeStructureFrame;
+                        case 42: return MarketCategory.ComponentComputingModule;
+                        case 43: return MarketCategory.ComponentConstructionParts;
+                        case 44: return MarketCategory.ComponentMainframe;
+                        case 45: return MarketCategory.ComponentPowerRelay;
+                        case 46: return MarketCategory.ComponentPowerCore;
+                        case 47: return MarketCategory.ComponentIngredient;
+                        case 48: return MarketCategory.ComponentHerb;
+                        case 49: return MarketCategory.ComponentCarbosyrup;
+                        case 50: return MarketCategory.ComponentMeat;
+                        case 51: return MarketCategory.ComponentCereal;
+                        case 52: return MarketCategory.ComponentGrain;
+                        case 53: return MarketCategory.ComponentVegetable;
+                        case 54: return MarketCategory.ComponentWater;
+                        case 55: return MarketCategory.ComponentCurryPaste;
+                        case 56: return MarketCategory.ComponentSoup;
+                        case 57: return MarketCategory.ComponentSpicedMilk;
+                        case 58: return MarketCategory.ComponentDough;
+                        case 59: return MarketCategory.ComponentButter;
+                        case 60: return MarketCategory.ComponentNoodles;
+                        case 61: return MarketCategory.ComponentEggs;
+                        case 62: return MarketCategory.ComponentEmitter;
+                        case 63: return MarketCategory.ComponentHyperdrive;
+                        case 64: return MarketCategory.ComponentHullPlating;
+                        case 65: return MarketCategory.ComponentStarshipWeapon;
                     }
                 }
 
                 // Check for mods
                 if (propertyType == ItemPropertyType.BlueMod)
                 {
-                    return 98;
+                    return MarketCategory.BlueMod;
                 }
                 if (propertyType == ItemPropertyType.GreenMod)
                 {
-                    return 99;
+                    return MarketCategory.GreenMod;
                 }
                 if (propertyType == ItemPropertyType.RedMod)
                 {
-                    return 100;
+                    return MarketCategory.RedMod;
                 }
                 if (propertyType == ItemPropertyType.YellowMod)
                 {
-                    return 101;
+                    return MarketCategory.YellowMod;
                 }
             }
 
@@ -364,19 +364,19 @@ namespace SWLOR.Game.Server.Service
 
                 switch (baseStructureType)
                 {
-                    case BaseStructureType.ControlTower: return 111;
-                    case BaseStructureType.Drill: return 112;
-                    case BaseStructureType.ResourceSilo: return 113;
-                    case BaseStructureType.Turret: return 114;
-                    case BaseStructureType.Building: return 115;
-                    case BaseStructureType.MassProduction: return 116;
-                    case BaseStructureType.StarshipProduction: return 117;
-                    case BaseStructureType.Furniture: return 118;
-                    case BaseStructureType.StronidiumSilo: return 119;
-                    case BaseStructureType.FuelSilo: return 120;
-                    case BaseStructureType.CraftingDevice: return 121;
-                    case BaseStructureType.PersistentStorage: return 122;
-                    case BaseStructureType.Starship: return 123;
+                    case BaseStructureType.ControlTower: return MarketCategory.ControlTower;
+                    case BaseStructureType.Drill: return MarketCategory.Drill;
+                    case BaseStructureType.ResourceSilo: return MarketCategory.ResourceSilo;
+                    case BaseStructureType.Turret: return MarketCategory.Turret;
+                    case BaseStructureType.Building: return MarketCategory.Building;
+                    case BaseStructureType.MassProduction: return MarketCategory.MassProduction;
+                    case BaseStructureType.StarshipProduction: return MarketCategory.StarshipProduction;
+                    case BaseStructureType.Furniture: return MarketCategory.Furniture;
+                    case BaseStructureType.StronidiumSilo: return MarketCategory.StronidiumSilo;
+                    case BaseStructureType.FuelSilo: return MarketCategory.FuelSilo;
+                    case BaseStructureType.CraftingDevice: return MarketCategory.CraftingDevice;
+                    case BaseStructureType.PersistentStorage: return MarketCategory.PersistentStorage;
+                    case BaseStructureType.Starship: return MarketCategory.Starship;
                 }
             }
 
@@ -385,13 +385,13 @@ namespace SWLOR.Game.Server.Service
             {
                 case "fuel_cell":
                 case "stronidium":
-                    return 110;
+                    return MarketCategory.Fuel;
             }
 
             // A -1 represents that this item is not supported on the market system.
             // This could be because we forgot to add a determination for it but more than likely it was
             // excluded on purpose. Lightsabers and Saberstaffs are an example of this.
-            return -1;
+            return MarketCategory.Invalid;
         }
 
     }

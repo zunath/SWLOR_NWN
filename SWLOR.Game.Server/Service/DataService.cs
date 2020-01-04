@@ -38,7 +38,6 @@ namespace SWLOR.Game.Server.Service
         public static KeyItemCache KeyItem { get; } = new KeyItemCache();
         public static LootTableCache LootTable { get; } = new LootTableCache();
         public static LootTableItemCache LootTableItem { get; } = new LootTableItemCache();
-        public static MarketCategoryCache MarketCategory { get; } = new MarketCategoryCache();
         public static MessageCache Message { get; } = new MessageCache();
         public static NPCGroupCache NPCGroup { get; } = new NPCGroupCache();
         public static PCBaseCache PCBase { get; } = new PCBaseCache();

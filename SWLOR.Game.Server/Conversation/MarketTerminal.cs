@@ -4,6 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
@@ -227,31 +228,34 @@ namespace SWLOR.Game.Server.Conversation
 
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             int marketRegionID = MarketService.GetMarketRegionID(terminal);
-            IEnumerable<PCMarketListing> listings = DataService.PCMarketListing
+            var validCategories = DataService.PCMarketListing
                 .GetAllByMarketRegionID(marketRegionID)
                 .Where(x => x.DateExpires > DateTime.UtcNow &&
                             x.DateSold == null &&
-                            x.DateRemoved == null);
+                            x.DateRemoved == null)
+                .Select(s => s.MarketCategoryID)
+                .Distinct();
 
-            IEnumerable<int> categoryIDs = listings.Select(s => s.MarketCategoryID).Distinct();
-            IEnumerable<MarketCategory> categories = DataService.MarketCategory.GetAllByIDs(categoryIDs)
-                .OrderBy(o => o.Name);
+            IEnumerable<MarketCategory> categories = Enum.GetValues(typeof(MarketCategory)).Cast<MarketCategory>()
+                .Where(x => validCategories.Contains(x))
+                .OrderBy(o => o.GetDescriptionAttribute());
 
             ClearPageResponses("BrowseByCategoryPage");
             AddResponseToPage("BrowseByCategoryPage", ColorTokenService.Green("Refresh"), true, -1);
             foreach (var category in categories)
             {
-                AddResponseToPage("BrowseByCategoryPage", category.Name, true, category.ID);
+                if (category == MarketCategory.Invalid) continue;
+                AddResponseToPage("BrowseByCategoryPage", category.GetDescriptionAttribute(), true, category);
             }
         }
 
         private void BrowseByCategoryResponses(int responseID)
         {
             DialogResponse response = GetResponseByID("BrowseByCategoryPage", responseID);
-            int categoryID = (int)response.CustomData;
+            var categoryID = (MarketCategory)response.CustomData;
 
             // Refresh listing
-            if (categoryID == -1)
+            if (categoryID == MarketCategory.Invalid)
             {
                 LoadBrowseByCategoryPage();
                 return;
@@ -526,7 +530,7 @@ namespace SWLOR.Game.Server.Conversation
             // Otherwise an item has already been picked.
             else
             {
-                MarketCategory category = DataService.MarketCategory.GetByID(model.ItemMarketCategoryID);
+                var name = model.ItemMarketCategoryID.GetDescriptionAttribute();
                 float feeRate = MarketService.CalculateFeePercentage(model.LengthDays);
                 int fees = (int)(model.SellPrice * feeRate);
                 if (fees < 1) fees = 1;
@@ -537,7 +541,7 @@ namespace SWLOR.Game.Server.Conversation
                 
                 header = ColorTokenService.Green("Galactic Trade Network - Sell Item") + "\n\n";
                 header += ColorTokenService.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
-                header += ColorTokenService.Green("Category: ") + category.Name + "\n";
+                header += ColorTokenService.Green("Category: ") + name + "\n";
 
                 if(model.ItemRecommendedLevel > 0)
                     header += ColorTokenService.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
@@ -817,12 +821,12 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = MarketService.GetPlayerMarketData(player);
-            var category = DataService.MarketCategory.GetByID(model.ItemMarketCategoryID);
+            var name = model.ItemMarketCategoryID.GetDescriptionAttribute();
 
             // Build the header
             string header = ColorTokenService.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
             header += ColorTokenService.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
-            header += ColorTokenService.Green("Category: ") + category.Name + "\n";
+            header += ColorTokenService.Green("Category: ") + name + "\n";
 
             if (model.ItemRecommendedLevel > 0)
                 header += ColorTokenService.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.ValueObject
     {
         // Buy / Browse Mode
         public MarketBrowseMode BrowseMode { get; set; }
-        public int BrowseCategoryID { get; set; }
+        public MarketCategory BrowseCategoryID { get; set; }
         public Guid BrowsePlayerID { get; set; }
         public Guid BrowseListingID { get; set; }
         public bool IsConfirming { get; set; }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.ValueObject
         public string ItemObject { get; set; }
         public int ItemRecommendedLevel { get; set; }
         public int ItemStackSize { get; set; }
-        public int ItemMarketCategoryID { get; set; }
+        public MarketCategory ItemMarketCategoryID { get; set; }
         public bool IsSellingItem { get; set; }
         public int SellPrice { get; set; }
         public bool IsReturningFromItemPicking { get; set; }

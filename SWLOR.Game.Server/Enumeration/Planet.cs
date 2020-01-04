@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿using System.ComponentModel;
+
+namespace SWLOR.Game.Server.Enumeration
 {
     // Note - these MUST be assigned with power-of-2 values to allow them to be
     // used as bitwise flags in starcharts.
@@ -11,9 +13,13 @@
     //   hyphen, except the trailing space. 
     public enum Planet
     {
+        [Description("Viscara")]
         Viscara = 1,
+        [Description("Tatooine")]
         Tatooine = 2,
+        [Description("Mon Cala")]
         MonCala = 4,
+        [Description("Hutlar")]
         Hutlar = 8
     }
 }

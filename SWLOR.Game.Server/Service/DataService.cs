@@ -67,7 +67,6 @@ namespace SWLOR.Game.Server.Service
         public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
         public static PlayerCache Player { get; } = new PlayerCache();
         public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
-        public static SpaceEncounterCache SpaceEncounter { get; } = new SpaceEncounterCache();
 
         private static void SetIntoCache<T>(T entity)
             where T: class, IEntity

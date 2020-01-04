@@ -44,6 +44,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<Starport, StarportAttribute> _allStarports = new Dictionary<Starport, StarportAttribute>();
         private static readonly Dictionary<Guid, Starport> _starportsByID = new Dictionary<Guid, Starport>();
         private static readonly Dictionary<string, Starport> _starportsByPlanetName = new Dictionary<string, Starport>();
+        private static readonly Dictionary<Planet, List<SpaceEncounterAttribute>> _spaceEncountersByPlanet = new Dictionary<Planet, List<SpaceEncounterAttribute>>();
+        private static readonly Dictionary<string, Planet> _planetsByName = new Dictionary<string, Planet>();
 
         private static void OnModuleLoad()
         {
@@ -54,6 +56,23 @@ namespace SWLOR.Game.Server.Service
                 _allStarports[starport] = attr;
                 _starportsByID[attr.StarportID] = starport;
                 _starportsByPlanetName[attr.PlanetName] = starport;
+            }
+
+            var spaceEncounters = Enum.GetValues(typeof(SpaceEncounter)).Cast<SpaceEncounter>();
+            foreach (var spaceEncounter in spaceEncounters)
+            {
+                var attr = spaceEncounter.GetAttribute<SpaceEncounter, SpaceEncounterAttribute>();
+
+                if(!_spaceEncountersByPlanet.ContainsKey(attr.Planet))
+                    _spaceEncountersByPlanet[attr.Planet] = new List<SpaceEncounterAttribute>();
+
+                _spaceEncountersByPlanet[attr.Planet].Add(attr);
+            }
+
+            var planets = Enum.GetValues(typeof(Planet)).Cast<Planet>();
+            foreach (var planet in planets)
+            {
+                _planetsByName[planet.GetDescriptionAttribute()] = planet;
             }
         }
 
@@ -1082,19 +1101,20 @@ namespace SWLOR.Game.Server.Service
 
             LoggingService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
 
-            List<SpaceEncounter> encounters = DataService.SpaceEncounter.GetAllByPlanet(planet).ToList();
+            var planetType = _planetsByName[planet];
+            var encounters = _spaceEncountersByPlanet[planetType];
             int totalChance = 0;
 
             foreach (var encounter in encounters)
             {
-                LoggingService.Trace(TraceComponent.Space, "Found encounter: " + encounter.TypeID + " with base chance " + encounter.Chance);
+                LoggingService.Trace(TraceComponent.Space, "Found encounter: " + encounter.Type + " with base chance " + encounter.Chance);
 
-                if (encounter.TypeID == 1 || encounter.TypeID == 4)
+                if (encounter.Type == SpaceEncounterType.Customs || encounter.Type == SpaceEncounterType.Pirates)
                 {
                     encounter.Chance += PerkService.GetCreaturePerkLevel(player, PerkType.Hunter);
                     encounter.Chance -= PerkService.GetCreaturePerkLevel(player, PerkType.Sneak);
                 }
-                else if (encounter.TypeID == 3)
+                else if (encounter.Type == SpaceEncounterType.Salvage)
                 {
                     encounter.Chance += PerkService.GetCreaturePerkLevel(player, PerkType.Scavenger);
                 }
@@ -1112,7 +1132,7 @@ namespace SWLOR.Game.Server.Service
                 if (random < encounter.Chance)
                 {
                     // Process the encounter.
-                    if (encounter.TypeID == 1 || encounter.TypeID == 4)
+                    if (encounter.Type == SpaceEncounterType.Customs || encounter.Type == SpaceEncounterType.Pirates)
                     {
                         // For now, do pirates (4) instead of customs (1).
                         string resref = RandomService.D20(1) == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
@@ -1121,7 +1141,7 @@ namespace SWLOR.Game.Server.Service
                         pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTableID);
                         // TODO - play proximity alert sound.
                     }
-                    else if (encounter.TypeID == 2)
+                    else if (encounter.Type == SpaceEncounterType.AsteroidField)
                     {
                         // Asteroid!
                         if (DoPilotingSkillCheck(player, encounter.Difficulty))
@@ -1156,7 +1176,7 @@ namespace SWLOR.Game.Server.Service
                             DoImpactFeedback(ship, "Something hit the hull! Hull points: " + (targetHP) + "/" + player.GetLocalInt("MAX_HP"));
                         }
                     }
-                    else if (encounter.TypeID == 3)
+                    else if (encounter.Type == SpaceEncounterType.Salvage)
                     { 
                         // Salvage.
                         if (DoPilotingSkillCheck(player, encounter.Difficulty))

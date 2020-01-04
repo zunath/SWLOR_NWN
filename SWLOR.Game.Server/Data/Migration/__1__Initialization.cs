@@ -2593,25 +2593,6 @@ namespace SWLOR.Game.Server.Data.Migration
             DataService.SubmitDataChange(new LootTableItem { ID = 1821, LootTableID = 110, Resref = "qa_heavy_belt", MaxQuantity = 1, Weight = 10, IsActive = true, SpawnRule = "" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new LootTableItem { ID = 1822, LootTableID = 110, Resref = "qa_heavy_amm", MaxQuantity = 1, Weight = 4, IsActive = true, SpawnRule = "" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new LootTableItem { ID = 1823, LootTableID = 110, Resref = "qa_heavy_helm", MaxQuantity = 1, Weight = 8, IsActive = true, SpawnRule = "" }, DatabaseActionType.Insert);
-
-            // Space Encounter
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 1, Planet = "Viscara", TypeID = 1, Chance = 15, Difficulty = 10, LootTableID = 52 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 2, Planet = "Viscara", TypeID = 1, Chance = 4, Difficulty = 20, LootTableID = 53 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 3, Planet = "Viscara", TypeID = 2, Chance = 1, Difficulty = 5, LootTableID = 0 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 4, Planet = "Viscara", TypeID = 3, Chance = 20, Difficulty = 15, LootTableID = 51 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 5, Planet = "Tatooine", TypeID = 4, Chance = 20, Difficulty = 10, LootTableID = 52 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 6, Planet = "Tatooine", TypeID = 4, Chance = 5, Difficulty = 20, LootTableID = 52 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 7, Planet = "Tatooine", TypeID = 4, Chance = 1, Difficulty = 30, LootTableID = 53 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 8, Planet = "Tatooine", TypeID = 2, Chance = 1, Difficulty = 15, LootTableID = 0 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 9, Planet = "Tatooine", TypeID = 3, Chance = 15, Difficulty = 15, LootTableID = 51 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 10, Planet = "Tatooine", TypeID = 3, Chance = 5, Difficulty = 25, LootTableID = 51 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 11, Planet = "Tatooine", TypeID = 3, Chance = 3, Difficulty = 35, LootTableID = 51 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 12, Planet = "Mon Cala", TypeID = 1, Chance = 15, Difficulty = 40, LootTableID = 52 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 13, Planet = "Mon Cala", TypeID = 2, Chance = 1, Difficulty = 40, LootTableID = 0 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 14, Planet = "Mon Cala", TypeID = 3, Chance = 15, Difficulty = 45, LootTableID = 0 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 15, Planet = "Hutlar", TypeID = 1, Chance = 15, Difficulty = 40, LootTableID = 52 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 16, Planet = "Hutlar", TypeID = 2, Chance = 1, Difficulty = 40, LootTableID = 0 }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new SpaceEncounter { ID = 17, Planet = "Hutlar", TypeID = 3, Chance = 15, Difficulty = 45, LootTableID = 0 }, DatabaseActionType.Insert);
         }
 
         public void Down()

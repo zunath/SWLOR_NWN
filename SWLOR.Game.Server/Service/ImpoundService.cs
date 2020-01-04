@@ -1,13 +1,44 @@
 ﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ImpoundService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => PruneOldImpoundItems());
+        }
+
+        private static void PruneOldImpoundItems()
+        {
+            var appSettings = ApplicationSettings.Get();
+
+            if (appSettings.ImpoundPruneDays <= 0)
+            {
+                Console.WriteLine("Impound item pruning is disabled. Set the SWLOR_IMPOUND_PRUNE_DAYS environment variable if you wish to enable this.");
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+            var impoundedItems = DataService.PCImpoundedItem.GetAll()
+                .Where(x => (now - x.DateImpounded).TotalDays >= appSettings.ImpoundPruneDays)
+                .ToList();
+
+            Console.WriteLine($"{impoundedItems.Count} impounded items are older than a year. Pruning them now.");
+            foreach (var item in impoundedItems)
+            {
+                DataService.SubmitDataChange(item, DatabaseActionType.Delete);
+            }
+            Console.WriteLine($"{impoundedItems.Count} impounded items have been pruned.");
+        }
+
         public static void Impound(PCBaseStructureItem pcBaseStructureItem)
         {
             var pcBaseStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureItem.PCBaseStructureID);

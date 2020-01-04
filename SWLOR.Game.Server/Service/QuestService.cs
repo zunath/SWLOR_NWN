@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
@@ -110,8 +111,8 @@ namespace SWLOR.Game.Server.Service
         {
             NWCreature creature = NWGameObject.OBJECT_SELF;
 
-            int npcGroupID = creature.GetLocalInt("NPC_GROUP");
-            if (npcGroupID <= 0) return;
+            var npcGroupID = (NPCGroup)creature.GetLocalInt("NPC_GROUP");
+            if (npcGroupID == NPCGroup.Invalid) return;
 
             NWObject oKiller = GetLastKiller();
 
@@ -142,10 +143,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     var questStatus = DataService.PCQuestStatus.GetByID(kt.PCQuestStatusID);
                     var quest = GetQuestByID(questStatus.QuestID);
-                    var npcGroup = DataService.NPCGroup.GetByID(kt.NPCGroupID);
 
                     kt.RemainingToKill--;
-                    string targetGroupName = npcGroup.Name;
+                    string targetGroupName = npcGroupID.GetDescriptionAttribute();
                     string updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
                     DatabaseActionType action = DatabaseActionType.Update;
 

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
             CreateQuest(28, "Help the Talyron Family", "help_talyron_family")
 
                 .AddObjectiveTalkToNPC(1)
-                .AddObjectiveKillTarget(2, NPCGroupType.Viscara_ValleyCairnmogs, 10)
+                .AddObjectiveKillTarget(2, NPCGroup.ValleyCairnmogs, 10)
                 .AddObjectiveTalkToNPC(3)
                 .AddObjectiveTalkToNPC(4)
 

@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest 
 {
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
         {
             CreateQuest(32, "Workin' for the Man", "workin_for_man")
                 .IsRepeatable()
-                .AddObjectiveKillTarget(1, NPCGroupType.Tatooine_TuskenRaider, 20)
+                .AddObjectiveKillTarget(1, NPCGroup.TuskenRaider, 20)
                 .AddObjectiveTalkToNPC(2)
                 .AddRewardGold(500)
                 .AddRewardItem("xp_tome_4", 1);

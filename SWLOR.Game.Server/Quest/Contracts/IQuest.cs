@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest AddReward(IQuestReward reward);
         IQuest AddPrerequisite(IQuestPrerequisite prerequisite);
 
-        IQuest AddObjectiveKillTarget(int state, NPCGroupType group, int amount);
+        IQuest AddObjectiveKillTarget(int state, NPCGroup group, int amount);
         IQuest AddObjectiveCollectItem(int state, string resref, int quantity, bool mustBeCraftedByPlayer);
         IQuest AddObjectiveCollectKeyItem(int state, int keyItemID);
         IQuest AddObjectiveTalkToNPC(int state);

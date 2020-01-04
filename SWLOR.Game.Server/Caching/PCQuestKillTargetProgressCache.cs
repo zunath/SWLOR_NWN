@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Caching
                 .Where(x => x.PCQuestStatusID == pcQuestStatusID);
         }
 
-        public IEnumerable<PCQuestKillTargetProgress> GetAllByPlayerIDAndNPCGroupID(Guid playerID, int npcGroupID)
+        public IEnumerable<PCQuestKillTargetProgress> GetAllByPlayerIDAndNPCGroupID(Guid playerID, NPCGroup npcGroupID)
         {
             if(!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return new List<PCQuestKillTargetProgress>();

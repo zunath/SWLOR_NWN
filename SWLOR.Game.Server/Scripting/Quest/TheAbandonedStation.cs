@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
             CreateQuest(31, "The Abandoned Station", "aban_station")
                 .AddPrerequisiteQuest(29)
 
-                .AddObjectiveKillTarget(1, NPCGroupType.AbandonedStation_Boss, 1)
+                .AddObjectiveKillTarget(1, NPCGroup.AbandonedStationBoss, 1)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(4000)

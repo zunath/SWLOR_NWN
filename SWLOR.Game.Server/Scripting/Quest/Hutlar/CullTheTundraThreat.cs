@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest.Hutlar
 {
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Scripting.Quest.Hutlar
         public CullTheTundraThreat()
         {
             CreateQuest(1001, "Cull the Tundra Tiger Threat", "tundra_tiger_threat")
-                .AddObjectiveKillTarget(1, NPCGroupType.Hutlar_QionTigers, 10)
+                .AddObjectiveKillTarget(1, NPCGroup.QionTiger, 10)
                 .AddObjectiveTalkToNPC(2)
                 
                 .AddRewardGold(550)

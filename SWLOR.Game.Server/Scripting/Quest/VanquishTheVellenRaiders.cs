@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
             CreateQuest(29, "Vanquish the Vellen Raiders", "vanquish_vellen")
                 .AddPrerequisiteQuest(28)
 
-                .AddObjectiveKillTarget(1, NPCGroupType.Viscara_VellenFleshleader, 1)
+                .AddObjectiveKillTarget(1, NPCGroup.VellenFleshleader, 1)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(750)

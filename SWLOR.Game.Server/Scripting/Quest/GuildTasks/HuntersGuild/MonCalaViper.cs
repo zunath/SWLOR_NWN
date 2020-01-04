@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
             CreateQuest(605, "Hunter's Guild Task: 10x Mon Cala Viper", "hun_tsk_605")
                 .IsRepeatable()
 
-                .AddObjectiveKillTarget(1, NPCGroupType.MonCala_Viper, 10)
+                .AddObjectiveKillTarget(1, NPCGroup.MonCalaViper, 10)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(212)

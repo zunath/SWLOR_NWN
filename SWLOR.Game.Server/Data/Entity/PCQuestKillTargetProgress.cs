@@ -2,6 +2,7 @@
 
 using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
         public Guid PCQuestStatusID { get; set; }
-        public int NPCGroupID { get; set; }
+        public NPCGroup NPCGroupID { get; set; }
         public int RemainingToKill { get; set; }
     }
 }

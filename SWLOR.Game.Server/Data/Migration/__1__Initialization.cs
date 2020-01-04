@@ -2609,38 +2609,6 @@ namespace SWLOR.Game.Server.Data.Migration
             DataService.SubmitDataChange(new LootTableItem { ID = 1822, LootTableID = 110, Resref = "qa_heavy_amm", MaxQuantity = 1, Weight = 4, IsActive = true, SpawnRule = "" }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new LootTableItem { ID = 1823, LootTableID = 110, Resref = "qa_heavy_helm", MaxQuantity = 1, Weight = 8, IsActive = true, SpawnRule = "" }, DatabaseActionType.Insert);
 
-            // NPC Group
-            DataService.SubmitDataChange(new NPCGroup { ID = 1, Name = "CZ-220 Mynocks" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 2, Name = "CZ-220 Malfunctioning Droids" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 3, Name = "CZ-220 Colicoid Experiment" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 4, Name = "Viscara Wildland Kath Hounds" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 5, Name = "Mandalorian Leader" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 6, Name = "Mandalorian Warriors" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 7, Name = "Mandalorian Rangers" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 8, Name = "Wildwoods Looters" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 9, Name = "Wildwoods Gimpassas" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 10, Name = "Wildwoods Kinraths" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 11, Name = "Valley Cairnmogs" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 12, Name = "Vellen Fleshleader" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 13, Name = "Viscara Deep Mountain Raivors" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 14, Name = "Viscara Warocas" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 15, Name = "Valley Nashtah" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 16, Name = "Viscara Crystal Spider" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 17, Name = "Mon Cala Aradile" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 18, Name = "Mon Cala Viper" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 19, Name = "Mon Cala Amphi-Hydrus" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 20, Name = "Mon Cala Eco Terrorist" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 21, Name = "Vellen Flesheater" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 22, Name = "Abandoned Station Boss" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 23, Name = "Womprat" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 24, Name = "Sandswimmer" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 25, Name = "Wraid" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 26, Name = "Sand Demon" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 27, Name = "Tusken Raider" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 28, Name = "Hutlar - Byysk" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 29, Name = "Hutlar - Qion Slugs" }, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new NPCGroup { ID = 30, Name = "Qion Tiger" }, DatabaseActionType.Insert);
-
             // Perk Feat
             DataService.SubmitDataChange(new PerkFeat { ID = 4, PerkID = 7, FeatID = 1139, PerkLevelUnlocked = 1, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0 }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new PerkFeat { ID = 6, PerkID = 12, FeatID = 1142, PerkLevelUnlocked = 1, BaseFPCost = 0, ConcentrationFPCost = 0, ConcentrationTickInterval = 0 }, DatabaseActionType.Insert);

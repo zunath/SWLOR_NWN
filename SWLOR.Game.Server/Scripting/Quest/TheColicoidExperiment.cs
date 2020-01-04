@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddPrerequisiteQuest(8)
                 .AddPrerequisiteQuest(10)
 
-                .AddObjectiveKillTarget(1, NPCGroupType.CZ220_ColicoidExperiment, 1)
+                .AddObjectiveKillTarget(1, NPCGroup.CZ220ColicoidExperiment, 1)
                 .AddObjectiveTalkToNPC(2)
 
                 .EnableRewardSelection()

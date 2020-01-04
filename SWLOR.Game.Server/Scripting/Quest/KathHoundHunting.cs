@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
         public KathHoundHunting()
         {
             CreateQuest(14, "Kath Hound Hunting", "k_hound_hunting")
-                .AddObjectiveKillTarget(1, NPCGroupType.Viscara_WildlandKathHounds, 7)
+                .AddObjectiveKillTarget(1, NPCGroup.ViscaraWildlandKathHounds, 7)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(350)

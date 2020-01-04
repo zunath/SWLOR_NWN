@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
         public MynockMayhem()
         {
             CreateQuest(8, "Mynock Mayhem", "mynock_mayhem")
-                .AddObjectiveKillTarget(1, NPCGroupType.CZ220_Mynocks, 5)
+                .AddObjectiveKillTarget(1, NPCGroup.CZ220Mynocks, 5)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(100)

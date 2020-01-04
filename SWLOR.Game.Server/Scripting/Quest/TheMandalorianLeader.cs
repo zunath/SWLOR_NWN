@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
             CreateQuest(18, "The Mandalorian Leader", "the_manda_leader")
                 .AddPrerequisiteQuest(17)
                 
-                .AddObjectiveKillTarget(1, NPCGroupType.Viscara_MandalorianLeader, 1)
+                .AddObjectiveKillTarget(1, NPCGroup.MandalorianLeader, 1)
                 .AddObjectiveTalkToNPC(2)
 
                 .EnableRewardSelection()

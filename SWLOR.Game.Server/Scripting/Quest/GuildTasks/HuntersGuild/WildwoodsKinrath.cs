@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
             CreateQuest(574, "Hunter's Guild Task: 10x Wildwoods Kinrath", "hun_tsk_574")
                 .IsRepeatable()
 
-                .AddObjectiveKillTarget(1, NPCGroupType.Viscara_WildwoodsKinraths, 10)
+                .AddObjectiveKillTarget(1, NPCGroup.WildwoodsKinraths, 10)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(70)

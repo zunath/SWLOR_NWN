@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Quest;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Quest;
 
 namespace SWLOR.Game.Server.Scripting.Quest.Hutlar
 {
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Scripting.Quest.Hutlar
         public BeatTheByysk()
         {
             CreateQuest(1000, "Beat the Byysk", "beat_byysk")
-                .AddObjectiveKillTarget(1, NPCGroupType.Hutlar_Byysk, 15)
+                .AddObjectiveKillTarget(1, NPCGroup.HutlarByysk, 15)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(800);

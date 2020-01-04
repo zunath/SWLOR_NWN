@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
             CreateQuest(20, "War With the Mandalorian Warriors", "war_mand_warriors")
                 .AddPrerequisiteQuest(17)
 
-                .AddObjectiveKillTarget(1, NPCGroupType.Viscara_MandalorianWarriors, 9)
+                .AddObjectiveKillTarget(1, NPCGroup.MandalorianWarriors, 9)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(200)

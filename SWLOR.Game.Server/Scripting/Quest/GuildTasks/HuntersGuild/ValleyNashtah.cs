@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
             CreateQuest(590, "Hunter's Guild Task: 10x Valley Nashtah", "hun_tsk_590")
                 .IsRepeatable()
 
-                .AddObjectiveKillTarget(1, NPCGroupType.Viscara_ValleyNashtah, 10)
+                .AddObjectiveKillTarget(1, NPCGroup.ValleyNashtah, 10)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(84)

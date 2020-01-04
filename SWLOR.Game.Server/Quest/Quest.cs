@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Quest
         }
 
         // Convenience functions for commonly used objectives
-        public IQuest AddObjectiveKillTarget(int state, NPCGroupType group, int amount)
+        public IQuest AddObjectiveKillTarget(int state, NPCGroup group, int amount)
         {
             AddObjective(state, new KillTargetObjective(group, amount));
             return this;

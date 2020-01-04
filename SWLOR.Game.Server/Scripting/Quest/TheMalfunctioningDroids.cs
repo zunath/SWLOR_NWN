@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
             CreateQuest(10, "The Malfunctioning Droids", "malfun_droids")
                 .AddPrerequisiteQuest(8)
 
-                .AddObjectiveKillTarget(1, NPCGroupType.CZ220_MalfunctioningDroids, 5)
+                .AddObjectiveKillTarget(1, NPCGroup.CZ220MalfunctioningDroids, 5)
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardFame(FameRegion.CZ220, 10)

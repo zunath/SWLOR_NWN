@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<SkillCategory> _categoriesWithSkillContributing = new HashSet<SkillCategory>();
 
         private static readonly Dictionary<Skill, SkillTypeAttribute> _allSkills = new Dictionary<Skill, SkillTypeAttribute>();
+        private static readonly HashSet<Skill> _activeSkills = new HashSet<Skill>();
         private static readonly Dictionary<Skill, SkillTypeAttribute> _skillsContributingToCap = new Dictionary<Skill, SkillTypeAttribute>();
 
         public static void SubscribeEvents()
@@ -76,6 +77,11 @@ namespace SWLOR.Game.Server.Service
             {
                 var attr = skill.GetAttribute<Skill, SkillTypeAttribute>();
                 _allSkills[skill] = attr;
+
+                if (attr.IsActive)
+                {
+                    _activeSkills.Add(skill);
+                }
 
                 if (attr.ContributesToSkillCap)
                 {
@@ -409,9 +415,7 @@ namespace SWLOR.Game.Server.Service
 
         public static List<SkillCategory> GetActiveCategories()
         {
-            var categories = Enum.GetValues(typeof(SkillCategory)).Cast<SkillCategory>()
-                .Where(x => _allCategories[x].IsActive);
-            return categories.ToList();
+            return _allCategories.Keys.ToList();
         }
 
         public static List<PCSkill> GetPCSkillsForCategory(Guid playerID, SkillCategory skillCategoryID)
@@ -421,6 +425,8 @@ namespace SWLOR.Game.Server.Service
 
             // Get all PC Skills with a matching category.
             var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(playerID, skillIDs).ToList();
+
+            Console.WriteLine("pcSkills found = " + pcSkills.Count);
 
             return pcSkills;
         }

@@ -73,7 +73,11 @@ namespace SWLOR.Game.Server.Conversation
             foreach (SkillCategory category in categories)
             {
                 var categoryAttr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
-                AddResponseToPage("CategoryPage", categoryAttr.Name, true, category);
+
+                if (categoryAttr.IsActive)
+                {
+                    AddResponseToPage("CategoryPage", categoryAttr.Name, true, category);
+                }
             }
         }
 
@@ -86,7 +90,11 @@ namespace SWLOR.Game.Server.Conversation
             foreach (PCSkill pcSkill in skills)
             {
                 var skill = SkillService.GetSkill(pcSkill.SkillID);
-                AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, pcSkill.SkillID);
+
+                if(skill.IsActive)
+                {
+                    AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, pcSkill.SkillID);
+                }
             }
         }
 

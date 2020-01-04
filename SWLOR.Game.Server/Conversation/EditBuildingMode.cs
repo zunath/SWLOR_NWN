@@ -1,6 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -57,17 +58,16 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
-            var mode = DataService.StructureMode.GetByID(structure.StructureModeID);
-            var modeType = (StructureModeType) mode.ID;
+            var modeName = structure.StructureModeID.GetDescriptionAttribute();
 
             string header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
-            header += ColorTokenService.Green("Current Mode: ") + mode.Name;
+            header += ColorTokenService.Green("Current Mode: ") + modeName;
 
-            if (modeType == StructureModeType.Residence)
+            if (structure.StructureModeID == StructureModeType.Residence)
                 SetResponseVisible("MainPage", 1, false);
-            else if (modeType == StructureModeType.Workshop)
+            else if (structure.StructureModeID == StructureModeType.Workshop)
                 SetResponseVisible("MainPage", 2, false);
-            else if (modeType == StructureModeType.Storefront)
+            else if (structure.StructureModeID == StructureModeType.Storefront)
                 SetResponseVisible("MainPage", 3, false);
 
             SetResponseVisible("MainPage", 3, false); // Temporarily hide the Storefront option until it's implemented.
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             // Change mode
-            structure.StructureModeID = (int)model.Mode;
+            structure.StructureModeID = model.Mode;
             DataService.SubmitDataChange(structure, DatabaseActionType.Update);
 
             player.FloatingText("Building mode updated! " + impoundedItems + " item(s) were impounded.");

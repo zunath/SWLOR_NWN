@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -29,6 +30,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ResourceStorage { get; set; }
         public int RetrievalRating { get; set; }
         public int FuelRating { get; set; }
-        public int DefaultStructureModeID { get; set; }
+        public StructureModeType DefaultStructureModeID { get; set; }
     }
 }

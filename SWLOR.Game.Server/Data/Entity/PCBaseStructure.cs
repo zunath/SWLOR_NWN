@@ -1,6 +1,7 @@
 
 using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -27,6 +28,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CustomName { get; set; }
         public int StructureBonus { get; set; }
         public DateTime? DateNextActivity { get; set; }
-        public int StructureModeID { get; set; }
+        public StructureModeType StructureModeID { get; set; }
     }
 }

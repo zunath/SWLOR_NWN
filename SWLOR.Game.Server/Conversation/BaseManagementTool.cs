@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Conversation
                 header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
-                if (structure.StructureModeID == (int)StructureModeType.Residence)
+                if (structure.StructureModeID == StructureModeType.Residence)
                 {
                     canEditPrimaryResidence = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanEditPrimaryResidence);
                     canRemovePrimaryResidence = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRemovePrimaryResidence);

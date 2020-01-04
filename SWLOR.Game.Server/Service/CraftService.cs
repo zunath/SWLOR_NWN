@@ -619,7 +619,7 @@ namespace SWLOR.Game.Server.Service
             var building = DataService.PCBaseStructure.GetByID(buildingID);
 
             // Building must be in "Workshop" mode in order for the atmosphere bonuses to take effect.
-            if (building.StructureModeID != (int)StructureModeType.Workshop) return 0;
+            if (building.StructureModeID != StructureModeType.Workshop) return 0;
 
             // Get all child structures contained by this building which improve atmosphere.
             var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingID)

@@ -2,11 +2,11 @@
 {
     public class PlayerSkillPointTracker
     {
-        public int SkillID { get; set; }
+        public Enumeration.Skill SkillID { get; set; }
         public int Points { get; set; }
         public int RegisteredLevel { get; set; }
 
-        public PlayerSkillPointTracker(int skillID)
+        public PlayerSkillPointTracker(Enumeration.Skill skillID)
         {
             SkillID = skillID;
             Points = 0;

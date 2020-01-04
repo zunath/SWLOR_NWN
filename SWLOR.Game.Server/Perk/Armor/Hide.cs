@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
@@ -83,65 +84,65 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             {
                 1, new PerkLevel(2, "-10% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 10},
+                    { Skill.LightArmor, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "-20% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 20},
+                    { Skill.LightArmor, 20},
                 })
             },
             {
                 3, new PerkLevel(3, "-30% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 30},
+                    { Skill.LightArmor, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "-40% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 40},
+                    { Skill.LightArmor, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "-50% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 50},
+                    { Skill.LightArmor, 50},
                 })
             },
             {
                 6, new PerkLevel(4, "-60% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 60},
+                    { Skill.LightArmor, 60},
                 })
             },
             {
                 7, new PerkLevel(5, "-70% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 70},
+                    { Skill.LightArmor, 70},
                 })
             },
             {
                 8, new PerkLevel(6, "-80% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 80},
+                    { Skill.LightArmor, 80},
                 })
             },
             {
                 9, new PerkLevel(7, "-90% enmity",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 90},
+                    { Skill.LightArmor, 90},
                 })
             },
         };

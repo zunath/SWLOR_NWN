@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
@@ -73,30 +74,30 @@ namespace SWLOR.Game.Server.Perk.Medicine
 		{
 			{
 				1, new PerkLevel(2, "1x Healing Kit Effectiveness",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 5}, 
+					{ Skill.Medicine, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "2x Healing Kit Effectiveness",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 10}, 
+					{ Skill.Medicine, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "3x Healing Kit Effectiveness",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 15}, 
+					{ Skill.Medicine, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "4x Healing Kit Effectiveness",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 20}, 
+					{ Skill.Medicine, 20}, 
 				})
 			},
 		};

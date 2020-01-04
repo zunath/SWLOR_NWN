@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.Piloting
 		{
 			{
 				1, new PerkLevel(2, "Increases range of the ship by 1.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 50}, 
+					{ Skill.Piloting, 50}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Increases range of the ship by 2.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 60}, 
+					{ Skill.Piloting, 60}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Increases range of the ship by 3.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 70}, 
+					{ Skill.Piloting, 70}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "Increases range of the ship by 4.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 80}, 
+					{ Skill.Piloting, 80}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "Increases range of the ship by 5.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 90}, 
+					{ Skill.Piloting, 90}, 
 				})
 			},
 		};

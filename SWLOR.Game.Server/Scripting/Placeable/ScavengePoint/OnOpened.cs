@@ -5,6 +5,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Scripting.Placeable.ScavengePoint
 {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ScavengePoint
 
 
             if (!oPC.IsPlayer && !oPC.IsDM) return;
-            int rank = SkillService.GetPCSkillRank(oPC, SkillType.Scavenging);
+            int rank = SkillService.GetPCSkillRank(oPC, Skill.Scavenging);
             int lootTableID = point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
             int level = point.GetLocalInt("SCAVENGE_POINT_LEVEL");
             int delta = level - rank;
@@ -79,14 +80,14 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ScavengePoint
                     }
 
                     float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(200, level, rank);
-                    SkillService.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
+                    SkillService.GiveSkillXP(oPC, Skill.Scavenging, (int)xp);
                 }
                 else
                 {
                     oPC.FloatingText(ColorTokenService.SkillCheck("Search: *failure*: (" + roll + " vs. DC: " + dc + ")"));
 
                     float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
-                    SkillService.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
+                    SkillService.GiveSkillXP(oPC, Skill.Scavenging, (int)xp);
                 }
                 dc += RandomService.Random(3) + 1;
             }

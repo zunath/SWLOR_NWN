@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -38,11 +39,11 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
-            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(user.Object, Skill.Medicine);
             
             if(target.IsPlayer){
                 int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-                SkillService.GiveSkillXP(user.Object, SkillType.Medicine, xp);
+                SkillService.GiveSkillXP(user.Object, Skill.Medicine, xp);
             }
         }
 
@@ -56,7 +57,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(player, Skill.Medicine);
             return 12.0f - (rank + effectiveStats.Medicine / 2) * 0.1f;
         }
 
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "This player is not diseased or poisoned.";
             }
 
-            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(user.Object, Skill.Medicine);
 
             if (rank < item.RecommendedLevel)
             {

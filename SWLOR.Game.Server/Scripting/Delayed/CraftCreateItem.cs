@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Scripting.Delayed
 {
@@ -66,11 +67,11 @@ namespace SWLOR.Game.Server.Scripting.Delayed
             BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
             PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
 
-            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
+            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (Skill)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;
             int atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
-            float equipmentBonus = CalculateEquipmentBonus(player, (SkillType)blueprint.SkillID);
+            float equipmentBonus = CalculateEquipmentBonus(player, (Skill)blueprint.SkillID);
 
             if (chance <= 1.0f)
             {
@@ -250,7 +251,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
         }
 
 
-        private float CalculateEquipmentBonus(NWPlayer player, SkillType skillType)
+        private float CalculateEquipmentBonus(NWPlayer player, Skill skill)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int equipmentBonus = 0;
@@ -266,14 +267,14 @@ namespace SWLOR.Game.Server.Scripting.Delayed
                 multiplier = 0.6f;
             }
 
-            switch (skillType)
+            switch (skill)
             {
-                case SkillType.Armorsmith: equipmentBonus = effectiveStats.Armorsmith; break;
-                case SkillType.Weaponsmith: equipmentBonus = effectiveStats.Weaponsmith; break;
-                case SkillType.Cooking: equipmentBonus = effectiveStats.Cooking; break;
-                case SkillType.Engineering: equipmentBonus = effectiveStats.Engineering; break;
-                case SkillType.Fabrication: equipmentBonus = effectiveStats.Fabrication; break;
-                case SkillType.Medicine: equipmentBonus = effectiveStats.Medicine; break;
+                case Skill.Armorsmith: equipmentBonus = effectiveStats.Armorsmith; break;
+                case Skill.Weaponsmith: equipmentBonus = effectiveStats.Weaponsmith; break;
+                case Skill.Cooking: equipmentBonus = effectiveStats.Cooking; break;
+                case Skill.Engineering: equipmentBonus = effectiveStats.Engineering; break;
+                case Skill.Fabrication: equipmentBonus = effectiveStats.Fabrication; break;
+                case Skill.Medicine: equipmentBonus = effectiveStats.Medicine; break;
             }
 
             return equipmentBonus * multiplier; // +0.5%, +0.6%, or +0.7% per equipment bonus

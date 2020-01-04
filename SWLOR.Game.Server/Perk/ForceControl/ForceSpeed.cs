@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -104,9 +105,9 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             if (creature.IsPlayer)
             {
                 NWPlayer player = creature.Object;
-                int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
+                int skillLevel = SkillService.GetPCSkillRank(player, Skill.ForceControl);
                 int xp = skillLevel * 10 + 50;
-                SkillService.GiveSkillXP(player, SkillType.ForceControl, xp);
+                SkillService.GiveSkillXP(player, Skill.ForceControl, xp);
             }
         }
 
@@ -139,37 +140,37 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             {
                 1, new PerkLevel(2, "Increases movement speed by 10% and Dexterity by 2.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 0},
+                    { Skill.ForceControl, 0},
                 })
             },
             {
                 2, new PerkLevel(2, "Increases movement speed by 20% and Dexterity by 4.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 10},
+                    { Skill.ForceControl, 10},
                 })
             },
             {
                 3, new PerkLevel(3, "Increases movement speed by 30%, Dexterity by 6 and grants an extra attack.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 25},
+                    { Skill.ForceControl, 25},
                 })
             },
             {
                 4, new PerkLevel(3, "Increases movement speed by 40%, Dexterity by 8 and grants an extra attack.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 40},
+                    { Skill.ForceControl, 40},
                 })
             },
             {
                 5, new PerkLevel(12, "Increases movement speed by 50%, Dexterity by 10 and grants an extra attack.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 80},
+                    { Skill.ForceControl, 80},
                 })
             },
         };

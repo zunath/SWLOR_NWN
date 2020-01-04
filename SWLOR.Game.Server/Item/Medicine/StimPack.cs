@@ -7,6 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = user.Object;
             var ability = (Ability)item.GetLocalInt("ABILITY_TYPE");
             int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
-            int rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, SkillType.Medicine) : 0;
+            int rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, Skill.Medicine) : 0;
             int recommendedLevel = item.RecommendedLevel;
             float duration = 30.0f;
             int perkLevel = player.IsPlayer ? PerkService.GetCreaturePerkLevel(player, PerkType.StimFiend) : 0;
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
             int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-            SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
+            SkillService.GiveSkillXP(player, Skill.Medicine, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

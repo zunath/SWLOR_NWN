@@ -7,6 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -156,72 +157,72 @@ namespace SWLOR.Game.Server.Perk.Blaster
         {
             {
                 1, new PerkLevel(2, "Lasts 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 5},
+                    { Skill.Blasters, 5},
                 })
             },
             {
                 2, new PerkLevel(2, "Lasts 24 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 10},
+                    { Skill.Blasters, 10},
                 })
             },
             {
                 3, new PerkLevel(3, "Lasts 36 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 15},
+                    { Skill.Blasters, 15},
                 })
             },
             {
                 4, new PerkLevel(3, "Lasts 48 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 20},
+                    { Skill.Blasters, 20},
                 })
             },
             {
                 5, new PerkLevel(4, "Lasts 60 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 25},
+                    { Skill.Blasters, 25},
                 })
             },
             {
                 6, new PerkLevel(4, "Lasts 72 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 30},
+                    { Skill.Blasters, 30},
                 })
             },
             {
                 7, new PerkLevel(5, "Lasts 84 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 35},
+                    { Skill.Blasters, 35},
                 })
             },
             {
                 8, new PerkLevel(5, "Lasts 96 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 40},
+                    { Skill.Blasters, 40},
                 })
             },
             {
                 9, new PerkLevel(6, "Lasts 108 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 45},
+                    { Skill.Blasters, 45},
                 })
             },
             {
                 10, new PerkLevel(6, "Lasts 120 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 50},
+                    { Skill.Blasters, 50},
                 })
             },
         };

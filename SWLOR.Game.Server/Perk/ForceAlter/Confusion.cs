@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -95,16 +96,16 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(7, "Applies Confusion effect to a single non-mechanical target with lower WIS than the caster, while the caster concentrates.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 40},
+                    { Skill.ForceAlter, 40},
                 })
             },
             {
                 2, new PerkLevel(7, "Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIS than the caster, while the caster concentrates.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 80},
+                    { Skill.ForceAlter, 80},
                 })
             },
         };
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         });
                         if (!creature.IsPlayer)
                         {
-                            SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+                            SkillService.RegisterPCToNPCForSkill(creature.Object, target, Skill.ForceAlter);
                         }
                     }
                     else
@@ -180,7 +181,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                             if (!creature.IsPlayer)
                             {
-                                SkillService.RegisterPCToNPCForSkill(creature.Object, targetCreature, SkillType.ForceAlter);
+                                SkillService.RegisterPCToNPCForSkill(creature.Object, targetCreature, Skill.ForceAlter);
                             }
                         }
                         else

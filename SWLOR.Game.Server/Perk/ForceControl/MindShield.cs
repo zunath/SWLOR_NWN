@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -80,23 +81,23 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             {
                 1, new PerkLevel(4, "Immune to Tranquilisation effects while concentrating.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 10},
+                    { Skill.ForceControl, 10},
                 })
             },
             {
                 2, new PerkLevel(6, "Immune to Tranquilisation, Confusion and Persuade effects while concentrating.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 30},
+                    { Skill.ForceControl, 30},
                 })
             },
             {
                 3, new PerkLevel(8, "Immune to Tranquilisation, Confusion, Persuade and Drain effects while concentrating.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 50},
+                    { Skill.ForceControl, 50},
                 })
             },
         };

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -73,16 +74,16 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(7, "Applies Domination effect to a single humanoid target with lower WIS than the caster, while the caster concentrates.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 40},
+                    { Skill.ForceAlter, 40},
                 })
             },
             {
                 2, new PerkLevel(7, "Applies Domination effect to all hostile humanoid targets within 5m with lower WIS than the caster, while the caster concentrates.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 80},
+                    { Skill.ForceAlter, 80},
                 })
             },
         };

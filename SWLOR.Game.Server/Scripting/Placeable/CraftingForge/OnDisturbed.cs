@@ -8,6 +8,7 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Scripting.Placeable.CraftingForge
 {
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingForge
             }
 
             int level = CraftService.GetIngotLevel(item.Resref);
-            int rank = SkillService.GetPCSkillRank(pc, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(pc, Skill.Harvesting);
             
             int delta = rank - level;
             if (delta <= -4)

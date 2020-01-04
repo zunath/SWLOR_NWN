@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Perk.Weapons
 		{
 			{
 				1, new PerkLevel(3, "Grants the Improved Critical feat when equipped with a finesse blade.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.OneHanded, 10}, 
+					{ Skill.OneHanded, 10}, 
 				})
 			},
 		};

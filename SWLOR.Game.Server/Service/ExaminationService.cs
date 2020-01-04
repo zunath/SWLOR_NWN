@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PCSkill pcSkill in pcSkills)
             {
-                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
                 description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
             }
 

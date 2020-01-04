@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public SkillCategory SelectedCategoryID { get; set; }
-            public int SelectedSkillID { get; set; }
+            public Skill SelectedSkillID { get; set; }
             public int RPXPDistributing { get; set; }
             public bool IsConfirming { get; set; }
         }
@@ -85,15 +85,15 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("SkillListPage");
             foreach (PCSkill pcSkill in skills)
             {
-                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
-                AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.ID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
+                AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, pcSkill.SkillID);
             }
         }
 
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
+            var skill = SkillService.GetSkill(vm.SelectedSkillID);
             PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), vm.SelectedSkillID);
             int req = SkillService.SkillXPRequirements[pcSkill.Rank];
             string header = CreateSkillDetailsHeader(pcSkill, req);
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Conversation
         private string CreateSkillDetailsHeader(PCSkill pcSkill, int req)
         {
             Player player = DataService.Player.GetByID(pcSkill.PlayerID);
-            Skill skill = SkillService.GetSkill(pcSkill.SkillID);
+            var skill = SkillService.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
             else if (pcSkill.Rank <= 7) title = "Neophyte";
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
-            int skillID = (int)response.CustomData;
+            var skillID = (Skill)response.CustomData;
             
             vm.SelectedSkillID = skillID;
             LoadSkillDetails();
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer player = GetPC();
             Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Model vm = GetDialogCustomData<Model>();
-            Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
+            var skill = SkillService.GetSkill(vm.SelectedSkillID);
 
             string header = ColorTokenService.Green("Roleplay XP Distribution") + "\n\n";
             header += ColorTokenService.Green("Skill: ") + skill.Name + "\n";

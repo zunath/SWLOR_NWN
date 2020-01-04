@@ -6,6 +6,7 @@ using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
@@ -114,23 +115,23 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 		{
 			{
 				1, new PerkLevel(3, "Grants two-weapon fighting feat which reduces attack penalty from -6/-10 to -2/-6. Must be equipped with a Twin Blade.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.TwinBlades, 1}, 
+					{ Skill.TwinBlades, 1}, 
 				})
 			},
 			{
 				2, new PerkLevel(4, "Grants Ambidexterity feat which reduces the attack penatly fo your off-hand weapon by 4. Must be equipped with a Twin Blade.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.TwinBlades, 8}, 
+					{ Skill.TwinBlades, 8}, 
 				})
 			},
 			{
 				3, new PerkLevel(6, "Grants Improved two-weapon fighting which gives you a second off-hand attack at a penalty of -5 to your attack roll. Must be equipped with a Twin Blade.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.TwinBlades, 15}, 
+					{ Skill.TwinBlades, 15}, 
 				})
 			},
 		};

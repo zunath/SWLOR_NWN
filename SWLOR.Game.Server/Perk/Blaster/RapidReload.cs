@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Blaster
@@ -78,9 +79,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
 		{
 			{
 				1, new PerkLevel(4, "You gain the Rapid Reload feat.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Firearms, 5}, 
+					{ Skill.Blasters, 5}, 
 				})
 			},
 		};

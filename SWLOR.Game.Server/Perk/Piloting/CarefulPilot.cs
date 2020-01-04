@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
@@ -73,9 +74,9 @@ namespace SWLOR.Game.Server.Perk.Piloting
 		{
 			{
 				1, new PerkLevel(4, "Grants a re-roll on failure to take off, land, or jump through hyperspace.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 20}, 
+					{ Skill.Piloting, 20}, 
 				})
 			},
 		};

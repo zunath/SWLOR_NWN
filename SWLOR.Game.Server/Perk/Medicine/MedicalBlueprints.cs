@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
@@ -73,58 +74,58 @@ namespace SWLOR.Game.Server.Perk.Medicine
 		{
 			{
 				1, new PerkLevel(2, "Tier 1 medical blueprints.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Tier 1 medical blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 5}, 
+					{ Skill.Medicine, 5}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Tier 2 medical blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 10}, 
+					{ Skill.Medicine, 10}, 
 				})
 			},
 			{
 				4, new PerkLevel(4, "Tier 2 medical blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 15}, 
+					{ Skill.Medicine, 15}, 
 				})
 			},
 			{
 				5, new PerkLevel(5, "Tier 3 medical blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 20}, 
+					{ Skill.Medicine, 20}, 
 				})
 			},
 			{
 				6, new PerkLevel(5, "Tier 3 medical blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 25}, 
+					{ Skill.Medicine, 25}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "Tier 4 medical blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 30}, 
+					{ Skill.Medicine, 30}, 
 				})
 			},
 			{
 				8, new PerkLevel(6, "Tier 4 medical blueprints. +4 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 35}, 
+					{ Skill.Medicine, 35}, 
 				})
 			},
 		};

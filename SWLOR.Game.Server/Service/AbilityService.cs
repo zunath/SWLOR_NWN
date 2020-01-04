@@ -19,7 +19,6 @@ using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
-using Skill = SWLOR.Game.Server.NWScript.Enumerations.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -91,7 +90,7 @@ namespace SWLOR.Game.Server.Service
             Player dbPlayer = DataService.Player.GetByID(pc.GlobalID);
             if (dbPlayer.ActiveConcentrationPerkID != null)
             {
-                _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(Skill.UseMagicDevice, 1), pc);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(NWNSkill.UseMagicDevice, 1), pc);
                 ConcentratingCreatures.Add(pc.Object); // Ensure you use .Object because we need to add it as an NWCreature, not an NWPlayer
             }
         }

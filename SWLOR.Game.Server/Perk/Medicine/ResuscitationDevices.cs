@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
@@ -73,65 +74,65 @@ namespace SWLOR.Game.Server.Perk.Medicine
 		{
 			{
 				1, new PerkLevel(3, "Enables the use of tech 1 resuscitation devices.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 5}, 
+					{ Skill.Medicine, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(3, "Can use tech 1 resuscitation devices. Resuscitation HP/FP recovery +1",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 10}, 
+					{ Skill.Medicine, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Can use tech 1 resuscitation devices. Resuscitation HP/FP recovery +2",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 15}, 
+					{ Skill.Medicine, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "Can use tech 2 resuscitation devices. Resuscitation HP/FP recovery +2",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 20}, 
+					{ Skill.Medicine, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "Can use tech 2 resuscitation devices. Resuscitation HP/FP recovery +3",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 25}, 
+					{ Skill.Medicine, 25}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "Can use tech 3 resuscitation devices. Resuscitation HP/FP recovery +3",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 30}, 
+					{ Skill.Medicine, 30}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "Can use tech 3 resuscitation devices. Resuscitation HP/FP recovery +4",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 35}, 
+					{ Skill.Medicine, 35}, 
 				})
 			},
 			{
 				8, new PerkLevel(5, "Can use tech 4 resuscitation devices. Resuscitation HP/FP recovery +4",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 40}, 
+					{ Skill.Medicine, 40}, 
 				})
 			},
 			{
 				9, new PerkLevel(6, "Can use tech 4 resuscitation devices. Resuscitation HP/FP recovery +5",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 45}, 
+					{ Skill.Medicine, 45}, 
 				})
 			},
 		};

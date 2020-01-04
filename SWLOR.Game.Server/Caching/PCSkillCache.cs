@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -45,12 +46,12 @@ namespace SWLOR.Game.Server.Caching
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
-        public PCSkill GetByPlayerIDAndSkillID(Guid playerID, int skillID)
+        public PCSkill GetByPlayerIDAndSkillID(Guid playerID, Skill skillID)
         {
             return GetFromIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID);
         }
 
-        public PCSkill GetByPlayerIDAndSkillIDOrDefault(Guid playerID, int skillID)
+        public PCSkill GetByPlayerIDAndSkillIDOrDefault(Guid playerID, Skill skillID)
         {
             if (!ExistsByIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID))
                 return default;
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Caching
             return GetFromIndex(ByPlayerIDAndSkillIDIndex, playerID + ":" + skillID);
         }
 
-        public IEnumerable<PCSkill> GetAllByPlayerIDAndSkillIDs(Guid playerID, IEnumerable<int> skillIDs)
+        public IEnumerable<PCSkill> GetAllByPlayerIDAndSkillIDs(Guid playerID, IEnumerable<Skill> skillIDs)
         {
             var list = new List<PCSkill>();
             foreach(var skillID in skillIDs)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -73,23 +74,23 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             {
                 1, new PerkLevel(4, "The next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 0},
+                    { Skill.ForceSense, 0},
                 })
             },
             {
                 2, new PerkLevel(7, "The next time the caster would die in the next 30 minutes, they are instead healed to 50% of their max HP.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 20},
+                    { Skill.ForceSense, 20},
                 })
             },
             {
                 3, new PerkLevel(10, "For 12s after casting, the caster is immune to all damage, and the next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 50},
+                    { Skill.ForceSense, 50},
                 })
             },
         };

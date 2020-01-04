@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -391,14 +392,14 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION", ItemPropertyType.CraftBonusFabrication, value);
         }
-        public virtual SkillType AssociatedSkillType
+        public virtual Skill AssociatedSkill
         {
             get
             {
                 int skillType = GetItemPropertyValueAndRemove(ItemPropertyType.AssociatedSkill);
-                if (skillType <= -1) return (SkillType)_.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID");
-                AssociatedSkillType = (SkillType)skillType;
-                return (SkillType)skillType;
+                if (skillType <= -1) return (Skill)_.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID");
+                AssociatedSkill = (Skill)skillType;
+                return (Skill)skillType;
             }
             set 
             {

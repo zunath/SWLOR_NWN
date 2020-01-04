@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
@@ -73,23 +74,23 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 		{
 			{
 				1, new PerkLevel(2, "18 second delay between evasion attempts.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.MartialArts, 10}, 
+					{ Skill.MartialArts, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(4, "12 second delay between evasion attempts.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.MartialArts, 25}, 
+					{ Skill.MartialArts, 25}, 
 				})
 			},
 			{
 				3, new PerkLevel(5, "6 second delay between evasion attempts.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.MartialArts, 50}, 
+					{ Skill.MartialArts, 50}, 
 				})
 			},
 		};

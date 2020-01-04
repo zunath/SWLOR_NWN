@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -115,44 +116,44 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         {
             {
                 1, new PerkLevel(2, "1d4 damage, knockdown lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 5},
+                    { Skill.OneHanded, 5},
                 })
             },
             {
                 2, new PerkLevel(2, "2d4 damage, knockdown lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 10},
+                    { Skill.OneHanded, 10},
                 })
             },
             {
                 3, new PerkLevel(3, "2d6 damage, knockdown lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 15},
+                    { Skill.OneHanded, 15},
                 })
             },
             {
                 4, new PerkLevel(4, "2d6 damage, knockdown lasts 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 20},
+                    { Skill.OneHanded, 20},
                 })
             },
             {
                 5, new PerkLevel(4, "3d6 damage, knockdown lasts 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 30},
+                    { Skill.OneHanded, 30},
                 })
             },
             {
                 6, new PerkLevel(5, "3d8 damage, knockdown lasts 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 50},
+                    { Skill.OneHanded, 50},
                 })
             },
         };

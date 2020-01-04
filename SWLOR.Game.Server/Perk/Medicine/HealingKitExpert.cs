@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.Medicine
 		{
 			{
 				1, new PerkLevel(2, "+6 Seconds",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 10}, 
+					{ Skill.Medicine, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+12 Seconds",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 20}, 
+					{ Skill.Medicine, 20}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "+18 Seconds",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 30}, 
+					{ Skill.Medicine, 30}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "+24 Seconds",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 40}, 
+					{ Skill.Medicine, 40}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "+30 Seconds",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 50}, 
+					{ Skill.Medicine, 50}, 
 				})
 			},
 		};

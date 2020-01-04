@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -247,15 +248,15 @@ namespace SWLOR.Game.Server.Service
                     sender = HoloComService.GetHoloGramOwner(sender);
                 }
 
-                SkillType language = LanguageService.GetActiveLanguage(sender);
+                Skill language = LanguageService.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
                 RacialType race = (RacialType) _.GetRacialType(sender);                
-                if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
+                if (race == RacialType.Wookiee && language != Skill.Shyriiwook)
                 {
-                    LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
-                    language = SkillType.Shyriiwook;
+                    LanguageService.SetActiveLanguage(sender, Skill.Shyriiwook);
+                    language = Skill.Shyriiwook;
                 }
 
                 int colour = LanguageService.GetColour(language);
@@ -263,7 +264,7 @@ namespace SWLOR.Game.Server.Service
                 byte g = (byte)(colour >> 16 & 0xFF);
                 byte b = (byte)(colour >> 8 & 0xFF);
 
-                if (language != SkillType.Basic)
+                if (language != Skill.Basic)
                 {
                     string languageName = LanguageService.GetName(language);
                     finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
@@ -273,7 +274,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     string text = component.m_Text;
 
-                    if (component.m_Translatable && language != SkillType.Basic)
+                    if (component.m_Translatable && language != Skill.Basic)
                     {
                         text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 

@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -75,30 +76,30 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             {
                 1, new PerkLevel(3, "The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 0},
+                    { Skill.ForceSense, 0},
                 })
             },
             {
                 2, new PerkLevel(4, "The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 15},
+                    { Skill.ForceSense, 15},
                 })
             },
             {
                 3, new PerkLevel(5, "The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 30},
+                    { Skill.ForceSense, 30},
                 })
             },
             {
                 4, new PerkLevel(6, "The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 45},
+                    { Skill.ForceSense, 45},
                 })
             },
         };

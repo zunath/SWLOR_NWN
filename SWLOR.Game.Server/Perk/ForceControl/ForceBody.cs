@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             // Grant XP, if player.
             if (creature.IsPlayer)
             {
-                SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, recovery * 2);
+                SkillService.GiveSkillXP(creature.Object, Skill.ForceControl, recovery * 2);
             }
         }
 
@@ -137,30 +138,30 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             {
                 1, new PerkLevel(3, "Converts 10% of the casters current HP into FP.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 10},
+                    { Skill.ForceControl, 10},
                 })
             },
             {
                 2, new PerkLevel(4, "Converts 20% of the casters current HP into FP.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 25},
+                    { Skill.ForceControl, 25},
                 })
             },
             {
                 3, new PerkLevel(5, "Converts 35% of the casters current HP into FP.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 40},
+                    { Skill.ForceControl, 40},
                 })
             },
             {
                 4, new PerkLevel(6, "Converts 50% of the casters current HP into FP.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 55},
+                    { Skill.ForceControl, 55},
                 })
             },
         };

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -82,37 +83,37 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(4, "Steals 5 HP from a single target every second.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 30},
+                    { Skill.ForceAlter, 30},
                 })
             },
             {
                 2, new PerkLevel(4, "Steals 6 HP from a single target every second.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 45},
+                    { Skill.ForceAlter, 45},
                 })
             },
             {
                 3, new PerkLevel(5, "Steals 7 HP from a single target every second.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 60},
+                    { Skill.ForceAlter, 60},
                 })
             },
             {
                 4, new PerkLevel(5, "Steals 8 HP from a single target every second.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 75},
+                    { Skill.ForceAlter, 75},
                 })
             },
             {
                 5, new PerkLevel(6, "Steals 10 HP from a single target every second.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 90},
+                    { Skill.ForceAlter, 90},
                 })
             },
         };
@@ -177,7 +178,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, Skill.ForceAlter, ForceBalanceType.Dark);
 
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;
@@ -201,7 +202,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             if (creature.IsPlayer)
             {
-                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, Skill.ForceAlter);
             }
 
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Com_Hit_Negative), target);

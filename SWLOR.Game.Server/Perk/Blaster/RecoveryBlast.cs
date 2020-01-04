@@ -7,6 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -129,44 +130,44 @@ namespace SWLOR.Game.Server.Perk.Blaster
         {
             {
                 1, new PerkLevel(2, "1d12 HP restored",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 10},
+                    { Skill.Blasters, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "2d8 HP restored",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 20},
+                    { Skill.Blasters, 20},
                 })
             },
             {
                 3, new PerkLevel(3, "3d8 HP restored",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 30},
+                    { Skill.Blasters, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "4d8 HP restored",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 40},
+                    { Skill.Blasters, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "5d8 HP restored",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 50},
+                    { Skill.Blasters, 50},
                 })
             },
             {
                 6, new PerkLevel(4, "6d8 HP restored",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 60},
+                    { Skill.Blasters, 60},
                 })
             },
         };

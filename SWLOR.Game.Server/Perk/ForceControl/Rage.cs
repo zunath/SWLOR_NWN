@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -77,37 +78,37 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             {
                 1, new PerkLevel(2, "Increases Strength and Dexterity by 2 while concentrating but reduces AC by 2 and deals 2 damage per round.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 10},
+                    { Skill.ForceControl, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "Increases Strength and Dexterity by 4 while concentrating but reduces AC by 2 and deals 4 damage per round.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 30},
+                    { Skill.ForceControl, 30},
                 })
             },
             {
                 3, new PerkLevel(5, "Increases Strength and Dexterity by 6 while concentrating and grants an extra attack but reduces AC by 4 and deals 6 damage per round.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 50},
+                    { Skill.ForceControl, 50},
                 })
             },
             {
                 4, new PerkLevel(5, "Increases Strength and Dexterity by 8 while concentrating and grants an extra attack but reduces AC by 4 and deals 8 damage per round.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 70},
+                    { Skill.ForceControl, 70},
                 })
             },
             {
                 5, new PerkLevel(8, "Increases Strength and Dexterity by 10 while concentrating and grants two extra attacks but reduces AC by 2 and deals 10 damage per round.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 90},
+                    { Skill.ForceControl, 90},
                 })
             },
         };

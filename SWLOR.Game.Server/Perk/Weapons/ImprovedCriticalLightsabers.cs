@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Perk.Weapons
 		{
 			{
 				1, new PerkLevel(3, "Grants the Improved Critical feat when equipped with a lightsaber.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 10}, 
+					{ Skill.Lightsaber, 10}, 
 				})
 			},
 		};

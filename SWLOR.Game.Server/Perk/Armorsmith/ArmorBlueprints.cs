@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
@@ -77,58 +78,58 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
 		{
 			{
 				1, new PerkLevel(2, "Tier 1 armorsmith blueprints.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 0}, 
+					{ Skill.Armorsmith, 0}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Tier 1 armorsmith blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 5}, 
+					{ Skill.Armorsmith, 5}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Tier 2 armorsmith blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 10}, 
+					{ Skill.Armorsmith, 10}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "Tier 2 armorsmith blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 15}, 
+					{ Skill.Armorsmith, 15}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "Tier 3 armorsmith blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 20}, 
+					{ Skill.Armorsmith, 20}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "Tier 3 armorsmith blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 25}, 
+					{ Skill.Armorsmith, 25}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "Tier 4 armorsmith blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 30}, 
+					{ Skill.Armorsmith, 30}, 
 				})
 			},
 			{
 				8, new PerkLevel(5, "Tier 4 armorsmith blueprints. +4 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 35}, 
+					{ Skill.Armorsmith, 35}, 
 				})
 			},
 		};

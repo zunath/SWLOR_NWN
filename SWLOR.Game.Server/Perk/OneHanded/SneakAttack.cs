@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.OneHanded
@@ -107,30 +108,30 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         {
             {
                 1, new PerkLevel(4, "Deals 2x damage from behind, 1.5x damage from any other direction.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 10},
+                    { Skill.OneHanded, 10},
                 })
             },
             {
                 4, new PerkLevel(6, "Deals 3x damage from behind, 2x damage from any other direction. Reduces cooldown by 1 minute.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 40},
+                    { Skill.OneHanded, 40},
                 })
             },
             {
                 2, new PerkLevel(4, "Deals 2x damage from behind, 1.5x damage from any other direction. Reduces cooldown by 30 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 20},
+                    { Skill.OneHanded, 20},
                 })
             },
             {
                 3, new PerkLevel(5, "Deals 2x damage from behind, 1.5x damage from any other direction. Reduces cooldown by 1 minute.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.OneHanded, 30},
+                    { Skill.OneHanded, 30},
                 })
             },
         };

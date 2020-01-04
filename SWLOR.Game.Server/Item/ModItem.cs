@@ -8,6 +8,7 @@ using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -87,29 +88,29 @@ namespace SWLOR.Game.Server.Item
             targetItem.RecommendedLevel += levelIncrease;
             modItem.Destroy();
 
-            SkillType skillType;
+            Skill skill;
             
             if(targetItem.GetLocalBoolean("LIGHTSABER") == true)
             {
-                skillType = SkillType.Engineering;
+                skill = Skill.Engineering;
             }
             else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                skillType = SkillType.Armorsmith;
+                skill = Skill.Armorsmith;
             }
             else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                skillType = SkillType.Weaponsmith;
+                skill = Skill.Weaponsmith;
             }
             else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                skillType = SkillType.Engineering;
+                skill = Skill.Engineering;
             }
             else return;
 
-            int rank = SkillService.GetPCSkillRank(player, skillType);
+            int rank = SkillService.GetPCSkillRank(player, skill);
             int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
-            SkillService.GiveSkillXP(player, skillType, xp);
+            SkillService.GiveSkillXP(player, skill, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

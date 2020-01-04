@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
@@ -73,30 +74,30 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
 		{
 			{
 				1, new PerkLevel(3, "Gain +2 to armor repair when using an armor repair kit.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 10}, 
+					{ Skill.Armorsmith, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(3, "Gains +4 to armor repair when using an armor repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 20}, 
+					{ Skill.Armorsmith, 20}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Gains +6 to armor repair when using an armor repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 30}, 
+					{ Skill.Armorsmith, 30}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "Gains +8 to armor repair when using an armor repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 40}, 
+					{ Skill.Armorsmith, 40}, 
 				})
 			},
 		};

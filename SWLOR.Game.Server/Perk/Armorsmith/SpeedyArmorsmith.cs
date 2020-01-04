@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
@@ -73,72 +74,72 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
 		{
 			{
 				1, new PerkLevel(2, "+10% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+20% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 5}, 
+					{ Skill.Armorsmith, 5}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "+30% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 10}, 
+					{ Skill.Armorsmith, 10}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "+40% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 15}, 
+					{ Skill.Armorsmith, 15}, 
 				})
 			},
 			{
 				5, new PerkLevel(3, "+50% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 20}, 
+					{ Skill.Armorsmith, 20}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "+60% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 25}, 
+					{ Skill.Armorsmith, 25}, 
 				})
 			},
 			{
 				7, new PerkLevel(4, "+70% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 30}, 
+					{ Skill.Armorsmith, 30}, 
 				})
 			},
 			{
 				8, new PerkLevel(4, "+80% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 35}, 
+					{ Skill.Armorsmith, 35}, 
 				})
 			},
 			{
 				9, new PerkLevel(5, "+90% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 40}, 
+					{ Skill.Armorsmith, 40}, 
 				})
 			},
 			{
 				10, new PerkLevel(6, "+99% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Armorsmith, 50}, 
+					{ Skill.Armorsmith, 50}, 
 				})
 			},
 		};

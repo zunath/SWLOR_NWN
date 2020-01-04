@@ -7,29 +7,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Service
 {
     public static class LanguageService
     {
-        public static string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
+        public static string TranslateSnippetForListener(NWObject speaker, NWObject listener, Skill language, string snippet)
         {
-            Dictionary<SkillType, Type> map = new Dictionary<SkillType, Type>
+            Dictionary<Skill, Type> map = new Dictionary<Skill, Type>
             {
-                { SkillType.Bothese, typeof(TranslatorBothese) },
-                { SkillType.Catharese, typeof(TranslatorCatharese) },
-                { SkillType.Cheunh, typeof(TranslatorCheunh) },
-                { SkillType.Dosh, typeof(TranslatorDosh) },
-                { SkillType.Droidspeak, typeof(TranslatorDroidspeak) },
-                { SkillType.Huttese, typeof(TranslatorHuttese) },
-                { SkillType.Mandoa, typeof(TranslatorMandoa) },
-                { SkillType.Shyriiwook, typeof(TranslatorShyriiwook) },
-                { SkillType.Twileki, typeof(TranslatorTwileki) },
-                { SkillType.Zabraki, typeof(TranslatorZabraki) },
-                { SkillType.Mirialan, typeof(TranslatorMirialan) },
-                { SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) },
-                { SkillType.Ugnaught, typeof(TranslatorUgnaught) }
+                { Skill.Bothese, typeof(TranslatorBothese) },
+                { Skill.Catharese, typeof(TranslatorCatharese) },
+                { Skill.Cheunh, typeof(TranslatorCheunh) },
+                { Skill.Dosh, typeof(TranslatorDosh) },
+                { Skill.Droidspeak, typeof(TranslatorDroidspeak) },
+                { Skill.Huttese, typeof(TranslatorHuttese) },
+                { Skill.Mandoa, typeof(TranslatorMandoa) },
+                { Skill.Shyriiwook, typeof(TranslatorShyriiwook) },
+                { Skill.Twileki, typeof(TranslatorTwileki) },
+                { Skill.Zabraki, typeof(TranslatorZabraki) },
+                { Skill.Mirialan, typeof(TranslatorMirialan) },
+                { Skill.MonCalamarian, typeof(TranslatorMonCalamarian) },
+                { Skill.Ugnaught, typeof(TranslatorUgnaught) }
             };
 
             Type type = typeof(TranslatorGeneric);
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Grant Sense XP if player is concentrating Comprehend Speech.
                 if (grantSenseXP)
-                    SkillService.GiveSkillXP(listenerAsPlayer, SkillType.ForceSense, amount * 10);
+                    SkillService.GiveSkillXP(listenerAsPlayer, Skill.ForceSense, amount * 10);
 
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
@@ -145,7 +146,7 @@ namespace SWLOR.Game.Server.Service
             return textAsForeignLanguage;
         }
 
-        public static int GetColour(SkillType language)
+        public static int GetColour(Skill language)
         {
             byte r = 0;
             byte g = 0;
@@ -153,41 +154,41 @@ namespace SWLOR.Game.Server.Service
 
             switch (language)
             {
-                case SkillType.Bothese: r = 132; g = 56; b = 18; break;
-                case SkillType.Catharese: r = 235; g = 235; b = 199; break;
-                case SkillType.Cheunh: r = 82; g = 143; b = 174; break;
-                case SkillType.Dosh: r = 166; g = 181; b = 73; break;
-                case SkillType.Droidspeak: r = 192; g = 192; b = 192; break;
-                case SkillType.Huttese: r = 162; g = 74; b = 10; break;
-                case SkillType.Mandoa: r = 255; g = 215; b = 0; break;
-                case SkillType.Shyriiwook: r = 149; g = 125; b = 86; break;
-                case SkillType.Twileki: r = 65; g = 105; b = 225; break;
-                case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
-                case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
-                case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
-                case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
+                case Skill.Bothese: r = 132; g = 56; b = 18; break;
+                case Skill.Catharese: r = 235; g = 235; b = 199; break;
+                case Skill.Cheunh: r = 82; g = 143; b = 174; break;
+                case Skill.Dosh: r = 166; g = 181; b = 73; break;
+                case Skill.Droidspeak: r = 192; g = 192; b = 192; break;
+                case Skill.Huttese: r = 162; g = 74; b = 10; break;
+                case Skill.Mandoa: r = 255; g = 215; b = 0; break;
+                case Skill.Shyriiwook: r = 149; g = 125; b = 86; break;
+                case Skill.Twileki: r = 65; g = 105; b = 225; break;
+                case Skill.Zabraki: r = 255; g = 102; b = 102; break;
+                case Skill.Mirialan: r = 77; g = 230; b = 215; break;
+                case Skill.MonCalamarian: r = 128; g = 128; b = 192; break;
+                case Skill.Ugnaught: r = 255; g = 193; b = 233; break;
             }
 
             return r << 24 | g << 16 | b << 8;
         }
 
-        public static string GetName(SkillType language)
+        public static string GetName(Skill language)
         {
             switch (language)
             {
-                case SkillType.Bothese: return "Bothese";
-                case SkillType.Catharese: return "Catharese";
-                case SkillType.Cheunh: return "Cheunh";
-                case SkillType.Dosh: return "Dosh";
-                case SkillType.Droidspeak: return "Droidspeak";
-                case SkillType.Huttese: return "Huttese";
-                case SkillType.Mandoa: return "Mandoa";
-                case SkillType.Shyriiwook: return "Shyriiwook";
-                case SkillType.Twileki: return "Twi'leki";
-                case SkillType.Zabraki: return "Zabraki";
-                case SkillType.Mirialan: return "Mirialan";
-                case SkillType.MonCalamarian: return "Mon Calamarian";
-                case SkillType.Ugnaught: return "Ugnaught";
+                case Skill.Bothese: return "Bothese";
+                case Skill.Catharese: return "Catharese";
+                case Skill.Cheunh: return "Cheunh";
+                case Skill.Dosh: return "Dosh";
+                case Skill.Droidspeak: return "Droidspeak";
+                case Skill.Huttese: return "Huttese";
+                case Skill.Mandoa: return "Mandoa";
+                case Skill.Shyriiwook: return "Shyriiwook";
+                case Skill.Twileki: return "Twi'leki";
+                case Skill.Zabraki: return "Zabraki";
+                case Skill.Mirialan: return "Mirialan";
+                case Skill.MonCalamarian: return "Mon Calamarian";
+                case Skill.Ugnaught: return "Ugnaught";
             }
 
             return "Basic";
@@ -197,49 +198,49 @@ namespace SWLOR.Game.Server.Service
         {
             RacialType race = (RacialType)player.RacialType;
             ClassType background = (ClassType)player.Class1;
-            var languages = new List<SkillType>(new[] { SkillType.Basic });
+            var languages = new List<Skill>(new[] { Skill.Basic });
 
             switch (race)
             {
                 case RacialType.Bothan:
-                    languages.Add(SkillType.Bothese);
+                    languages.Add(Skill.Bothese);
                     break;
                 case RacialType.Chiss:
-                    languages.Add(SkillType.Cheunh);
+                    languages.Add(Skill.Cheunh);
                     break;
                 case RacialType.Zabrak:
-                    languages.Add(SkillType.Zabraki);
+                    languages.Add(Skill.Zabraki);
                     break;
                 case RacialType.Wookiee:
-                    languages.Add(SkillType.Shyriiwook);
+                    languages.Add(Skill.Shyriiwook);
                     break;
                 case RacialType.Twilek:
-                    languages.Add(SkillType.Twileki);
+                    languages.Add(Skill.Twileki);
                     break;
                 case RacialType.Cathar:
-                    languages.Add(SkillType.Catharese);
+                    languages.Add(Skill.Catharese);
                     break;
                 case RacialType.Trandoshan:
-                    languages.Add(SkillType.Dosh);
+                    languages.Add(Skill.Dosh);
                     break;
                 case RacialType.Cyborg:
-                    languages.Add(SkillType.Droidspeak);
+                    languages.Add(Skill.Droidspeak);
                     break;
                 case RacialType.Mirialan:
-                    languages.Add(SkillType.Mirialan);
+                    languages.Add(Skill.Mirialan);
                     break;
                 case RacialType.MonCalamari:
-                    languages.Add(SkillType.MonCalamarian);
+                    languages.Add(Skill.MonCalamarian);
                     break;
                 case RacialType.Ugnaught:
-                    languages.Add(SkillType.Ugnaught);
+                    languages.Add(Skill.Ugnaught);
                     break;
             }
 
             switch (background)
             {
                 case ClassType.Mandalorian:
-                    languages.Add(SkillType.Mandoa);
+                    languages.Add(Skill.Mandoa);
                     break;
             }
 
@@ -247,12 +248,11 @@ namespace SWLOR.Game.Server.Service
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
 
-            List<int> languageSkillIDs = languages.ConvertAll(x => (int) x);
-            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languageSkillIDs).ToList();
+            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languages).ToList();
 
             foreach (var pcSkill in pcSkills)
             {
-                var skill = DataService.Skill.GetByID(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
                 int maxRank = skill.MaxRank;
                 int maxRankXP = SkillService.SkillXPRequirements[maxRank];
 
@@ -264,21 +264,21 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public static SkillType GetActiveLanguage(NWObject obj)
+        public static Skill GetActiveLanguage(NWObject obj)
         {
             int ret = obj.GetLocalInt("ACTIVE_LANGUAGE");
 
             if (ret == 0)
             {
-                return SkillType.Basic;
+                return Skill.Basic;
             }
 
-            return (SkillType)ret;
+            return (Skill)ret;
         }
 
-        public static void SetActiveLanguage(NWObject obj, SkillType language)
+        public static void SetActiveLanguage(NWObject obj, Skill language)
         {
-            if (language == SkillType.Basic)
+            if (language == Skill.Basic)
             {
                 obj.DeleteLocalInt("ACTIVE_LANGUAGE");
             }
@@ -298,20 +298,20 @@ namespace SWLOR.Game.Server.Service
                 {
                     var languages = new List<LanguageCommand>
                     {
-                        new LanguageCommand("Basic", SkillType.Basic, new [] { "basic" }),
-                        new LanguageCommand("Bothese", SkillType.Bothese, new[] {"bothese"}),
-                        new LanguageCommand("Catharese", SkillType.Catharese, new []{"catharese"}),
-                        new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"cheunh"}),
-                        new LanguageCommand("Dosh", SkillType.Dosh, new []{"dosh"}),
-                        new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"droidspeak"}),
-                        new LanguageCommand("Huttese", SkillType.Huttese, new []{"huttese"}),
-                        new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
-                        new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
-                        new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
-                        new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
-                        new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
-                        new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
-                        new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
+                        new LanguageCommand("Basic", Skill.Basic, new [] { "basic" }),
+                        new LanguageCommand("Bothese", Skill.Bothese, new[] {"bothese"}),
+                        new LanguageCommand("Catharese", Skill.Catharese, new []{"catharese"}),
+                        new LanguageCommand("Cheunh", Skill.Cheunh, new []{"cheunh"}),
+                        new LanguageCommand("Dosh", Skill.Dosh, new []{"dosh"}),
+                        new LanguageCommand("Droidspeak", Skill.Droidspeak, new []{"droidspeak"}),
+                        new LanguageCommand("Huttese", Skill.Huttese, new []{"huttese"}),
+                        new LanguageCommand("Mando'a", Skill.Mandoa, new []{"mandoa"}),
+                        new LanguageCommand("Mirialan", Skill.Mirialan, new []{"mirialan"}),
+                        new LanguageCommand("Mon Calamarian", Skill.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new LanguageCommand("Shyriiwook", Skill.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
+                        new LanguageCommand("Twi'leki", Skill.Twileki, new []{"twileki", "ryl"}),
+                        new LanguageCommand("Ugnaught", Skill.Ugnaught, new []{"ugnaught"}),
+                        new LanguageCommand("Zabraki", Skill.Zabraki, new []{"zabraki", "zabrak"}),
                     };
 
                     _languages = languages;

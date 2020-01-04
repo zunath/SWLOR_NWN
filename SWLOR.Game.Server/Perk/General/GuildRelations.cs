@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.General
 {
@@ -75,21 +76,21 @@ namespace SWLOR.Game.Server.Perk.General
 		{
 			{
 				1, new PerkLevel(6, "Doubles GP gain.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(6, "Triples GP gain.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				3, new PerkLevel(6, "Quadruples GP gain.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})

@@ -12,7 +12,6 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
-using Skill = SWLOR.Game.Server.NWScript.Enumerations.Skill;
 
 namespace SWLOR.Game.Server.Scripting.Delayed
 {
@@ -107,7 +106,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
                     // The Skill Increase effect icon and name has been overwritten. Apply the effect to the player now.
                     // This doesn't do anything - it simply gives a visual cue that the player has an active concentration effect.
-                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(Skill.UseMagicDevice, 1), activator);
+                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectSkillIncrease(NWNSkill.UseMagicDevice, 1), activator);
                 }
 
                 // Handle applying cooldowns, if necessary.

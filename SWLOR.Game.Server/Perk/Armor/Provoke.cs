@@ -6,6 +6,7 @@ using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
@@ -123,30 +124,30 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             {
                 1, new PerkLevel(3, "Grants the Provoke ability.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 2},
+                    { Skill.HeavyArmor, 2},
                 })
             },
             {
                 2, new PerkLevel(2, "Reduces cooldown by 5 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 10},
+                    { Skill.HeavyArmor, 10},
                 })
             },
             {
                 3, new PerkLevel(4, "Reduces cooldown by 10 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 20},
+                    { Skill.HeavyArmor, 20},
                 })
             },
             {
                 4, new PerkLevel(4, "Reduces cooldown by 15 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 30},
+                    { Skill.HeavyArmor, 30},
                 })
             },
         };

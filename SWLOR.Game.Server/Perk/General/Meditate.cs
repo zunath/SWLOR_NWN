@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.General
 {
@@ -94,49 +95,49 @@ namespace SWLOR.Game.Server.Perk.General
         {
             {
                 1, new PerkLevel(2, "Restores 6 FP every 6 seconds. Recast time: 5 minutes",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 2, new PerkLevel(3, "Restores 6 FP every 6 seconds. Recast time: 4 minutes, 30 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 3, new PerkLevel(4, "Restores 6 FP every 6 seconds. Recast time: 4 minutes",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 4, new PerkLevel(5, "Restores 10 FP every 6 seconds. Recast time: 4 minutes",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 5, new PerkLevel(6, "Restores 10 FP every 6 seconds. Recast time: 3 minutes, 30 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 6, new PerkLevel(7, "Restores 10 FP every 6 seconds. Recast time: 3 minutes",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 7, new PerkLevel(8, "Restores 14 FP every 6 seconds. Recast time: 3 minutes",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })

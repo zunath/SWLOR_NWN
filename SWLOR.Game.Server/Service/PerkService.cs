@@ -19,6 +19,7 @@ using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 using PerkType = SWLOR.Game.Server.Enumeration.PerkType;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -26,22 +27,22 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<PerkType, IPerk> _perkHandlers;
         private static readonly Dictionary<PerkCategoryType, PerkCategory> _perkCategories;
-        private static readonly Dictionary<SkillType, HashSet<PerkType>> _perkRequirementsBySkill;
+        private static readonly Dictionary<Skill, HashSet<PerkType>> _perkRequirementsBySkill;
         private static readonly Dictionary<int, HashSet<PerkType>> _perkRequirementsByQuest;
 
         static PerkService()
         {
             _perkHandlers = new Dictionary<PerkType, IPerk>();
             _perkCategories = new Dictionary<PerkCategoryType, PerkCategory>();
-            _perkRequirementsBySkill = new Dictionary<SkillType, HashSet<PerkType>>();
+            _perkRequirementsBySkill = new Dictionary<Skill, HashSet<PerkType>>();
             _perkRequirementsByQuest = new Dictionary<int, HashSet<PerkType>>();
         }
 
         public static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
-            MessageHub.Instance.Subscribe<OnSkillDecayed>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillType));
-            MessageHub.Instance.Subscribe<OnSkillGained>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillType));
+            MessageHub.Instance.Subscribe<OnSkillDecayed>(message => CachePerkIDsRequiringSkill(message.Player, message.Skill));
+            MessageHub.Instance.Subscribe<OnSkillGained>(message => CachePerkIDsRequiringSkill(message.Player, message.Skill));
             MessageHub.Instance.Subscribe<OnPerkUpgraded>(message => CacheEffectivePerkLevel(message.Player, message.PerkType));
             MessageHub.Instance.Subscribe<OnPerkRefunded>(message => CacheEffectivePerkLevel(message.Player, message.PerkType));
             MessageHub.Instance.Subscribe<OnQuestCompleted>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
@@ -196,9 +197,9 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private static void CachePerkIDsRequiringSkill(NWPlayer player, SkillType skillType)
+        private static void CachePerkIDsRequiringSkill(NWPlayer player, Skill skill)
         {
-            if (_perkRequirementsBySkill.TryGetValue(skillType, out var perkIDs))
+            if (_perkRequirementsBySkill.TryGetValue(skill, out var perkIDs))
             {
                 CacheEffectivePerkLevels(player, perkIDs);
             }
@@ -339,7 +340,7 @@ namespace SWLOR.Game.Server.Service
                 // Check the player's skill level against the perk requirements.
                 foreach (var skillReq in skillRequirements)
                 {
-                    var pcSkill = pcSkills.Single(s => s.SkillID == (int)skillReq.Key);
+                    var pcSkill = pcSkills.Single(s => s.SkillID == skillReq.Key);
 
                     if (pcSkill.Rank < skillReq.Value)
                     {
@@ -414,7 +415,7 @@ namespace SWLOR.Game.Server.Service
             // Cycle through the skill requirements
             foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(dbPlayer.ID, (int)req.Key);
+                PCSkill pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(dbPlayer.ID, req.Key);
 
                 // Player has not completed this required quest. Exit early and return false.
                 if (pcSkill.Rank < req.Value) return false;
@@ -605,7 +606,7 @@ namespace SWLOR.Game.Server.Service
                         // Check the skill requirements.
                         foreach (var req in skillRequirements)
                         {
-                            var pcSkill = pcSkills.Single(x => x.SkillID == (int)req.Key);
+                            var pcSkill = pcSkills.Single(x => x.SkillID == req.Key);
                             if (pcSkill.Rank < req.Value)
                             {
                                 effectiveLevel--;

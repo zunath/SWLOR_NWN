@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
@@ -98,9 +99,9 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 		{
 			{
 				1, new PerkLevel(2, "Grants the Cleave feat.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.TwoHanded, 5}, 
+					{ Skill.TwoHanded, 5}, 
 				})
 			},
 		};

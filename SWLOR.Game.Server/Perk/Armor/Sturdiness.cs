@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.Armor
 		{
 			{
 				1, new PerkLevel(2, "+2 to natural HP regen",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.HeavyArmor, 5}, 
+					{ Skill.HeavyArmor, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(3, "+3 to natural HP regen",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.HeavyArmor, 15}, 
+					{ Skill.HeavyArmor, 15}, 
 				})
 			},
 			{
 				3, new PerkLevel(4, "+4 to natural HP regen",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.HeavyArmor, 25}, 
+					{ Skill.HeavyArmor, 25}, 
 				})
 			},
 			{
 				4, new PerkLevel(5, "+5 to natural HP regen",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.HeavyArmor, 40}, 
+					{ Skill.HeavyArmor, 40}, 
 				})
 			},
 			{
 				5, new PerkLevel(6, "+6 to natural HP regen",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.HeavyArmor, 60}, 
+					{ Skill.HeavyArmor, 60}, 
 				})
 			},
 		};

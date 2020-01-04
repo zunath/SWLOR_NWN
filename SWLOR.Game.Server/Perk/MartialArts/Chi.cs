@@ -7,6 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
@@ -107,58 +108,58 @@ namespace SWLOR.Game.Server.Perk.MartialArts
         {
             {
                 1, new PerkLevel(3, "Restores up to 10% of maximum HP",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 5},
+                    { Skill.MartialArts, 5},
                 })
             },
             {
                 2, new PerkLevel(4, "Restores up to 20% of maximum HP",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 15},
+                    { Skill.MartialArts, 15},
                 })
             },
             {
                 3, new PerkLevel(5, "Restores up to 30% of maximum HP",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 30},
+                    { Skill.MartialArts, 30},
                 })
             },
             {
                 4, new PerkLevel(5, "Restores up to 40% of maximum HP",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 45},
+                    { Skill.MartialArts, 45},
                 })
             },
             {
                 5, new PerkLevel(6, "Restores up to 50% of maximum HP",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 60},
+                    { Skill.MartialArts, 60},
                 })
             },
             {
                 6, new PerkLevel(6, "Restores up to 60% of maximum HP",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 75},
+                    { Skill.MartialArts, 75},
                 })
             },
             {
                 7, new PerkLevel(7, "Restores up to 70% of maximum HP. All party members within range also receive the healing.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 90},
+                    { Skill.MartialArts, 90},
                 })
             },
             {
                 8, new PerkLevel(7, "Restores up to 80% of maximum HP. All party members within range also receive the healing.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 100},
+                    { Skill.MartialArts, 100},
                 })
             },
         };

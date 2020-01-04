@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public SkillCategory SkillCategoryID { get; set; }
-            public int SkillID { get; set; }
+            public Skill SkillID { get; set; }
             public int DistributionType { get; set; }
         }
         
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var category = model.SkillCategoryID;
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
-            var skills = DataService.Skill.GetAllBySkillCategoryIDAndActive(model.SkillCategoryID);
+            var skillTypes = SkillService.GetAllSkillsInCategory(model.SkillCategoryID);
             var categoryAttr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
 
             string header = ColorTokenService.Green("Category: ") + categoryAttr.Name + "\n";
@@ -84,9 +84,10 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("SkillListPage", header);
 
             ClearPageResponses("SkillListPage");
-            foreach (var skill in skills)
+            foreach (var skillType in skillTypes)
             {
-                AddResponseToPage("SkillListPage", skill.Name, true, skill.ID);
+                var skill = SkillService.GetSkill(skillType);
+                AddResponseToPage("SkillListPage", skill.Name, true, skillType);
             }
 
         }
@@ -95,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var response = GetResponseByID("SkillListPage", responseID);
             var model = GetDialogCustomData<Model>();
-            model.SkillID = (int) response.CustomData;
+            model.SkillID = (Skill) response.CustomData;
 
             LoadSkillPage();
             ChangePage("SkillPage");
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
         private bool CanDistribute(int amount)
         {
             var model = GetDialogCustomData<Model>();
-            var skill = DataService.Skill.GetByID(model.SkillID);
+            var skill = SkillService.GetSkill(model.SkillID);
             var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(GetPC().GlobalID, model.SkillID);
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
 
@@ -114,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillPage()
         {
             var model = GetDialogCustomData<Model>();
-            var skill = DataService.Skill.GetByID(model.SkillID);
+            var skill = SkillService.GetSkill(model.SkillID);
             var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(GetPC().GlobalID, model.SkillID);
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
             
@@ -196,7 +197,7 @@ namespace SWLOR.Game.Server.Conversation
                 // all of that's already been applied. You don't want to reapply the SP gains because they'll get more than they should.
                 // Just set the ranks on the DB record and recalc stats.
                 var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(GetPC().GlobalID, model.SkillID);
-                var skill = DataService.Skill.GetByID(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
 
                 // Prevent the player from adding too many ranks.
                 if (pcSkill.Rank + amount > skill.MaxRank)

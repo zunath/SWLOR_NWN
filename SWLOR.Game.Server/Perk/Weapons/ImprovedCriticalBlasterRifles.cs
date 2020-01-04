@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Perk.Weapons
 		{
 			{
 				1, new PerkLevel(3, "Grants the Improved Critical feat when equipped with crossbows.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Firearms, 10}, 
+					{ Skill.Blasters, 10}, 
 				})
 			},
 		};

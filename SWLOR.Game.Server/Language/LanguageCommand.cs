@@ -7,9 +7,9 @@ namespace SWLOR.Game.Server.Language
     {
         public string ProperName { get; }
         public IEnumerable<string> ChatNames { get; }
-        public SkillType Skill { get; }
+        public Skill Skill { get; }
 
-        public LanguageCommand(string properName, SkillType skill, IEnumerable<string> chatNames)
+        public LanguageCommand(string properName, Skill skill, IEnumerable<string> chatNames)
         {
             ProperName = properName;
             Skill = skill;

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -128,65 +129,65 @@ namespace SWLOR.Game.Server.Perk.Blaster
         {
             {
                 1, new PerkLevel(2, "1d4 damage, immobilization lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 10},
+                    { Skill.Blasters, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "1d8 damage, immobilization lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 20},
+                    { Skill.Blasters, 20},
                 })
             },
             {
                 3, new PerkLevel(3, "2d8 damage, immobilization lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 30},
+                    { Skill.Blasters, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "2d8 damage, immobilization lasts 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 40},
+                    { Skill.Blasters, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "3d8 damage, immobilization lasts 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 50},
+                    { Skill.Blasters, 50},
                 })
             },
             {
                 6, new PerkLevel(4, "4d8 damage, immobilization lasts 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 60},
+                    { Skill.Blasters, 60},
                 })
             },
             {
                 7, new PerkLevel(5, "5d8 damage, immobilization lasts 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 70},
+                    { Skill.Blasters, 70},
                 })
             },
             {
                 8, new PerkLevel(5, "5d8 damage, immobilization lasts 18 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 80},
+                    { Skill.Blasters, 80},
                 })
             },
             {
                 9, new PerkLevel(6, "6d8 damage, immobilization lasts 24 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 90},
+                    { Skill.Blasters, 90},
                 })
             },
         };

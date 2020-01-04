@@ -8,6 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Item
             Spell spellId = Spell.Invalid;
             string soundName = null;
             int perkLevel = 1 + PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
-            int skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Throwing);
+            int skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, Skill.Throwing);
             if (perkLevel == 0) perkLevel += 1;
 
             if (GetIsObjectValid(target) == true) targetLocation = GetLocation(target);
@@ -329,7 +330,7 @@ namespace SWLOR.Game.Server.Item
 
                     if (!targetCreature.IsPlayer)
                     {
-                        SkillService.RegisterPCToNPCForSkill(user.Object, targetCreature, SkillType.Throwing);
+                        SkillService.RegisterPCToNPCForSkill(user.Object, targetCreature, Skill.Throwing);
                     }                    
 
                     targetCreature = GetNextObjectInShape(Shape.Sphere, fExplosionRadius, targetLocation, true, nObjectFilter);
@@ -381,7 +382,7 @@ namespace SWLOR.Game.Server.Item
                 if (durationEffect != null) ApplyEffectToObject(DurationType.Temporary, durationEffect, oTarget, duration * 6.0f);
                 if (!oTarget.IsPlayer)
                 {
-                    SkillService.RegisterPCToNPCForSkill(user.Object, oTarget, SkillType.Throwing);
+                    SkillService.RegisterPCToNPCForSkill(user.Object, oTarget, Skill.Throwing);
                 }
             }
         }

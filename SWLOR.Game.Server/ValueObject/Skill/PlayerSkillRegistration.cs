@@ -7,17 +7,17 @@ namespace SWLOR.Game.Server.ValueObject.Skill
     public class PlayerSkillRegistration
     {
         public NWPlayer Player { get; private set; }
-        private Dictionary<int, PlayerSkillPointTracker> SkillPoints { get; set; }
+        private Dictionary<Enumeration.Skill, PlayerSkillPointTracker> SkillPoints { get; set; }
         public int HighestRank { get; private set; }
 
         public PlayerSkillRegistration(NWPlayer oPC)
         {
-            SkillPoints = new Dictionary<int, PlayerSkillPointTracker>();
+            SkillPoints = new Dictionary<Enumeration.Skill, PlayerSkillPointTracker>();
             Player = oPC;
         }
 
 
-        public void AddSkillPointRegistration(int skillID, int weaponLevel, int skillRank)
+        public void AddSkillPointRegistration(Enumeration.Skill skillID, int weaponLevel, int skillRank)
         {
             if (skillRank > HighestRank) HighestRank = skillRank;
             PlayerSkillPointTracker tracker;
@@ -39,13 +39,13 @@ namespace SWLOR.Game.Server.ValueObject.Skill
             SkillPoints[skillID] = tracker;
         }
 
-        public List<Tuple<int, PlayerSkillPointTracker>> GetSkillRegistrationPoints()
+        public List<Tuple<Enumeration.Skill, PlayerSkillPointTracker>> GetSkillRegistrationPoints()
         {
-            List<Tuple<int, PlayerSkillPointTracker>> result = new List<Tuple<int, PlayerSkillPointTracker>>();
+            List<Tuple<Enumeration.Skill, PlayerSkillPointTracker>> result = new List<Tuple<Enumeration.Skill, PlayerSkillPointTracker>>();
 
             foreach (var sp in SkillPoints)
             {
-                Tuple<int, PlayerSkillPointTracker> pair = new Tuple<int, PlayerSkillPointTracker>(sp.Key, sp.Value);
+                Tuple<Enumeration.Skill, PlayerSkillPointTracker> pair = new Tuple<Enumeration.Skill, PlayerSkillPointTracker>(sp.Key, sp.Value);
                 result.Add(pair);
             }
             
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.ValueObject.Skill
         {
             int totalPoints = 0;
 
-            foreach (Tuple<int, PlayerSkillPointTracker> reg in GetSkillRegistrationPoints())
+            foreach (Tuple<Enumeration.Skill, PlayerSkillPointTracker> reg in GetSkillRegistrationPoints())
             {
                 totalPoints += reg.Item2.Points;
             }

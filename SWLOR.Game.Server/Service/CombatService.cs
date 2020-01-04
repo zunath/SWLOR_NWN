@@ -11,6 +11,7 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -199,7 +200,7 @@ namespace SWLOR.Game.Server.Service
                     int xp = (int)(data.Total * reduction * 3);
                     if (xp < 5) xp = 5;
 
-                    SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
+                    SkillService.GiveSkillXP(target.Object, Skill.ForceControl, xp);
                     // Play a visual effect signifying the ability was activated.
                     _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(Vfx.Dur_Blur), target, 0.5f);
                 }
@@ -385,18 +386,18 @@ namespace SWLOR.Game.Server.Service
         /// <param name="balanceType">The force balance type to use for this ability.</param>
         /// <param name="sendRollMessage">If true, the roll message will be sent. Otherwise it won't be.</param>
         /// <returns>Data regarding the ability resistance roll</returns>
-        public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
+        public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, Skill skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {
             Ability abilityScoreType;
             switch (skill)
             {
-                case SkillType.ForceAlter:
+                case Skill.ForceAlter:
                     abilityScoreType = Ability.Intelligence;
                     break;
-                case SkillType.ForceControl:
+                case Skill.ForceControl:
                     abilityScoreType = Ability.Wisdom;
                     break;
-                case SkillType.ForceSense:
+                case Skill.ForceSense:
                     abilityScoreType = Ability.Charisma;
                     break;
                 default:
@@ -416,13 +417,13 @@ namespace SWLOR.Game.Server.Service
             if (defender.RightHand.CustomItemType == CustomItemType.Lightsaber ||
                 defender.LeftHand.CustomItemType == CustomItemType.Lightsaber)
             {
-                int lightsaberSkill = SkillService.GetPCSkillRank(defender.Object, SkillType.Lightsaber);
+                int lightsaberSkill = SkillService.GetPCSkillRank(defender.Object, Skill.Lightsaber);
                 if (lightsaberSkill > defenderSkill)
                     defenderSkill = lightsaberSkill;
             }
 
             // If the defender's martial arts skill is greater than the current skill they're using, we'll use that instead.
-            int defenderMASkill = SkillService.GetPCSkillRank(defender.Object, SkillType.MartialArts);
+            int defenderMASkill = SkillService.GetPCSkillRank(defender.Object, Skill.MartialArts);
             if (defenderMASkill > defenderSkill)
                 defenderSkill = defenderMASkill;
 

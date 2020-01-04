@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -73,9 +74,9 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 		{
 			{
 				1, new PerkLevel(10, "The caster attempts to view what another character is currently doing.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.ForceSense, 80}, 
+					{ Skill.ForceSense, 80}, 
 				})
 			},
 		};

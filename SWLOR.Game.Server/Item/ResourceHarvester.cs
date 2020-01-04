@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Item
             string itemResref = target.GetLocalString("RESOURCE_RESREF");
             int gemChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = RandomService.Random(1, 100);
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(player, Skill.Harvesting);
             if (item.RecommendedLevel < rank)
                 rank = item.RecommendedLevel;
 
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Item
 
             DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
             int xp = baseXP;
-            SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
+            SkillService.GiveSkillXP(player, Skill.Harvesting, xp);
 
             if (remaining <= 0)
             {
@@ -197,7 +198,7 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = (user.Object);
             ResourceQuality quality = (ResourceQuality)qualityID;
             int tier = target.GetLocalInt("RESOURCE_TIER");
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(player, Skill.Harvesting);
             int difficulty = (tier - 1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 

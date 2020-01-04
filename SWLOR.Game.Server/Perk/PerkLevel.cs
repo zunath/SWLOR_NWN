@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk
         public string Description { get; set; }
         public SpecializationType Specialization { get; set; }
         
-        public Dictionary<SkillType, int> SkillRequirements { get; set; }
+        public Dictionary<Skill, int> SkillRequirements { get; set; }
         public List<int> QuestRequirements { get; set; }
 
         public PerkLevel(int price, string description)
@@ -20,11 +20,11 @@ namespace SWLOR.Game.Server.Perk
             Description = description;
             Specialization = SpecializationType.None;
 
-            SkillRequirements = new Dictionary<SkillType, int>();
+            SkillRequirements = new Dictionary<Skill, int>();
             QuestRequirements = new List<int>();
         }
 
-        public PerkLevel(int price, string description, Dictionary<SkillType, int> skillRequirements)
+        public PerkLevel(int price, string description, Dictionary<Skill, int> skillRequirements)
         {
             Price = price;
             Description = description;
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Perk
             QuestRequirements = new List<int>();
         }
 
-        public PerkLevel(int price, string description, Dictionary<SkillType, int> skillRequirements, List<int> questRequirements)
+        public PerkLevel(int price, string description, Dictionary<Skill, int> skillRequirements, List<int> questRequirements)
         {
             Price = price;
             Description = description;
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Perk
             QuestRequirements = questRequirements;
         }
 
-        public PerkLevel(int price, string description, SpecializationType specialization, Dictionary<SkillType, int> skillRequirements)
+        public PerkLevel(int price, string description, SpecializationType specialization, Dictionary<Skill, int> skillRequirements)
         {
             Price = price;
             Description = description;
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Perk
             QuestRequirements = new List<int>();
         }
 
-        public PerkLevel(int price, string description, SpecializationType specialization, Dictionary<SkillType, int> skillRequirements, List<int> questRequirements)
+        public PerkLevel(int price, string description, SpecializationType specialization, Dictionary<Skill, int> skillRequirements, List<int> questRequirements)
         {
             Price = price;
             Description = description;

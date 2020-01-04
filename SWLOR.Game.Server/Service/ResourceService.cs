@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
         {
-            int rank = (scavenging ? SkillService.GetPCSkillRank(player, SkillType.Scavenging) : SkillService.GetPCSkillRank(player, SkillType.Harvesting));
+            int rank = (scavenging ? SkillService.GetPCSkillRank(player, Skill.Scavenging) : SkillService.GetPCSkillRank(player, Skill.Harvesting));
             int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 

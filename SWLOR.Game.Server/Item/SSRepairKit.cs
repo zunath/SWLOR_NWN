@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Item
             PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
-            int repair = SkillService.GetPCSkillRank(player, SkillType.Piloting);
+            int repair = SkillService.GetPCSkillRank(player, Skill.Piloting);
             int maxRepair = (int)structure.Durability - (int)pcbs.Durability;
 
             if (maxRepair < repair) repair = maxRepair;

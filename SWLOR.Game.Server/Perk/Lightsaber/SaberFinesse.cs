@@ -6,6 +6,8 @@ using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
+
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
     public class SaberFinesse : IPerk
@@ -94,9 +96,9 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 		{
 			{
 				1, new PerkLevel(3, "You gain the Weapon Finesse feat.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 5}, 
+					{ Skill.Lightsaber, 5}, 
 				})
 			},
 		};

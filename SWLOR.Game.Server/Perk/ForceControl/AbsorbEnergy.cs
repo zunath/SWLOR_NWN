@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -74,37 +75,37 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             {
                 1, new PerkLevel(2, "Grants 10% immunity to all damage while the caster retains concentration.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 0},
+                    { Skill.ForceControl, 0},
                 })
             },
             {
                 2, new PerkLevel(2, "Grants 20% immunity to all damage while the caster retains concentration.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 15},
+                    { Skill.ForceControl, 15},
                 })
             },
             {
                 3, new PerkLevel(3, "Grants 30% immunity to all damage while the caster retains concentration.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 30},
+                    { Skill.ForceControl, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "Grants 40% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 45},
+                    { Skill.ForceControl, 45},
                 })
             },
             {
                 5, new PerkLevel(4, "Grants 50% immunity to all damage while the caster retains concentration.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 60},
+                    { Skill.ForceControl, 60},
                 })
             },
         };

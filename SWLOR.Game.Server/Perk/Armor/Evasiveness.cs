@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -117,37 +118,37 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             {
                 1, new PerkLevel(2, "+10% Concealment for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 10},
+                    { Skill.LightArmor, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "+15% Concealment for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 15},
+                    { Skill.LightArmor, 15},
                 })
             },
             {
                 3, new PerkLevel(3, "+20% Concealment for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 30},
+                    { Skill.LightArmor, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "+25% Concealment for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 40},
+                    { Skill.LightArmor, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "+30% Concealment for 18 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.LightArmor, 50},
+                    { Skill.LightArmor, 50},
                 })
             },
         };

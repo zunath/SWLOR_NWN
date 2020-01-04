@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.ValueObject.Skill
             }
         }
 
-        public void AddSkillRegistrationPoint(NWPlayer oPC, int skillID, int weaponLevel, int skillRank)
+        public void AddSkillRegistrationPoint(NWPlayer oPC, Enumeration.Skill skillID, int weaponLevel, int skillRank)
         {
             PlayerSkillRegistration reg = GetRegistration(oPC);
             reg.AddSkillPointRegistration(skillID, weaponLevel, skillRank);

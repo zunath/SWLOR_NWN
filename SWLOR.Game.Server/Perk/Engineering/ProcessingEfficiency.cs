@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
@@ -73,44 +74,44 @@ namespace SWLOR.Game.Server.Perk.Engineering
 		{
 			{
 				1, new PerkLevel(2, "+10% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 5}, 
+					{ Skill.Engineering, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+20% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 10}, 
+					{ Skill.Engineering, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(2, "+30% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 15}, 
+					{ Skill.Engineering, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(2, "+40% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 20}, 
+					{ Skill.Engineering, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(2, "+50% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 35}, 
+					{ Skill.Engineering, 35}, 
 				})
 			},
 			{
 				6, new PerkLevel(2, "+60% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 40}, 
+					{ Skill.Engineering, 40}, 
 				})
 			},
 		};

@@ -6,12 +6,12 @@ namespace SWLOR.Game.Server.Event.SWLOR
     public class OnSkillGained
     {
         public NWPlayer Player { get; set; }
-        public SkillType SkillType { get; set; }
+        public Skill Skill { get; set; }
 
-        public OnSkillGained(NWPlayer player, SkillType skillType)
+        public OnSkillGained(NWPlayer player, Skill skill)
         {
             Player = player;
-            SkillType = skillType;
+            Skill = skill;
         }
     }
 }

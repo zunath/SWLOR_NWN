@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingForge
 
             player.IsBusy = false;
 
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(player, Skill.Harvesting);
             int level = CraftService.GetIngotLevel(oreResref);
             string ingotResref = CraftService.GetIngotResref(oreResref);
             if (level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return;
@@ -81,14 +81,14 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingForge
             }
 
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int harvestingSkill = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            int harvestingSkill = SkillService.GetPCSkillRank(player, Skill.Harvesting);
             int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.StronidiumRefining) + 1;
             int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
             stronidiumAmount *= perkBonus;
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
             int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
-            SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
+            SkillService.GiveSkillXP(player, Skill.Harvesting, xp);
         }
 
         public void UnsubscribeEvents()

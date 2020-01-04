@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Shields
@@ -124,37 +125,37 @@ namespace SWLOR.Game.Server.Perk.Shields
 		{
 			{
 				1, new PerkLevel(2, "+1 AB for 12 seconds with a 10% of occurring",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 5}, 
+					{ Skill.Shields, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+1 AB for 12 seconds with a 20% of occurring",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 10}, 
+					{ Skill.Shields, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "+2 AB for 12 seconds with a 20% of occurring",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 15}, 
+					{ Skill.Shields, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "+2 AB for 12 seconds with a 30% of occurring",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 20}, 
+					{ Skill.Shields, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "+3 AB for 12 seconds with a 30% of occurring",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 25}, 
+					{ Skill.Shields, 25}, 
 				})
 			},
 		};

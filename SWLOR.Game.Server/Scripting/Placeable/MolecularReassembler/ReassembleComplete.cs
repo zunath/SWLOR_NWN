@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
 {
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
 
             item.Destroy();
 
-            SkillService.GiveSkillXP(_player, SkillType.Harvesting, xp);
+            SkillService.GiveSkillXP(_player, Skill.Harvesting, xp);
 
         }
 

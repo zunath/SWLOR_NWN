@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.NWScript.Enumerations
 {
-    public enum Skill
+    public enum NWNSkill
     {
         AnimalEmpathy = 0,
         Concentration = 1,

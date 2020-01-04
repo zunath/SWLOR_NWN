@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Perk.Engineering
         {
             {
                 1, new PerkLevel(3, "Tier 1 lightsaber blueprints.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 },
@@ -84,9 +85,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 2, new PerkLevel(3, "Tier 1 lightsaber blueprints. +1 enhancement slot",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 5},
+                    { Skill.Lightsaber, 5},
                 },
                 new List<int>
                 {
@@ -95,9 +96,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 3, new PerkLevel(4, "Tier 2 lightsaber blueprints. +1 enhancement slot",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 10},
+                    { Skill.Lightsaber, 10},
                 },
                 new List<int>
                 {
@@ -106,9 +107,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 4, new PerkLevel(5, "Tier 2 lightsaber blueprints. +2 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 15},
+                    { Skill.Lightsaber, 15},
                 },
                 new List<int>
                 {
@@ -117,9 +118,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 5, new PerkLevel(6, "Tier 3 lightsaber blueprints. +2 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 20},
+                    { Skill.Lightsaber, 20},
                 },
                 new List<int>
                 {
@@ -128,9 +129,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 6, new PerkLevel(6, "Tier 3 lightsaber blueprints. +3 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 25},
+                    { Skill.Lightsaber, 25},
                 },
                 new List<int>
                 {
@@ -139,9 +140,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 7, new PerkLevel(6, "Tier 4 lightsaber blueprints. +3 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 30},
+                    { Skill.Lightsaber, 30},
                 },
                 new List<int>
                 {
@@ -150,9 +151,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 8, new PerkLevel(7, "Tier 4 lightsaber blueprints. +4 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 35},
+                    { Skill.Lightsaber, 35},
                 },
                 new List<int>
                 {
@@ -161,9 +162,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 9, new PerkLevel(7, "Tier 5 lightsaber blueprints. +4 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 40},
+                    { Skill.Lightsaber, 40},
                 },
                 new List<int>
                 {
@@ -172,9 +173,9 @@ namespace SWLOR.Game.Server.Perk.Engineering
             },
             {
                 10, new PerkLevel(8, "Tier 5 lightsaber blueprints. +5 enhancement slots",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Lightsaber, 45},
+                    { Skill.Lightsaber, 45},
                 },
                 new List<int>
                 {

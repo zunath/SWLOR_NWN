@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
@@ -132,72 +133,72 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
         {
             {
                 1, new PerkLevel(2, "1d4 slashing damage. Breach lasts for 6 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 5},
+                    { Skill.TwinBlades, 5},
                 })
             },
             {
                 2, new PerkLevel(2, "2d4 slashing damage. Breach lasts for 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 10},
+                    { Skill.TwinBlades, 10},
                 })
             },
             {
                 3, new PerkLevel(3, "2d4 slashing damage. Breach lasts for 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 15},
+                    { Skill.TwinBlades, 15},
                 })
             },
             {
                 4, new PerkLevel(3, "2d8 slashing damage. Breach lasts for 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 20},
+                    { Skill.TwinBlades, 20},
                 })
             },
             {
                 5, new PerkLevel(4, "2d8 slashing damage. Breach lasts for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 25},
+                    { Skill.TwinBlades, 25},
                 })
             },
             {
                 6, new PerkLevel(4, "3d6 slashing damage. Breach lasts for 15 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 30},
+                    { Skill.TwinBlades, 30},
                 })
             },
             {
                 7, new PerkLevel(5, "3d8 slashing damage. Breach lasts for 15 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 35},
+                    { Skill.TwinBlades, 35},
                 })
             },
             {
                 8, new PerkLevel(5, "3d8 slashing damage. Breach lasts for 18 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 40},
+                    { Skill.TwinBlades, 40},
                 })
             },
             {
                 9, new PerkLevel(6, "4d8 slashing damage. Breach lasts for 18 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 45},
+                    { Skill.TwinBlades, 45},
                 })
             },
             {
                 10, new PerkLevel(6, "4d8 slashing damage. Breach lasts for 21 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwinBlades, 50},
+                    { Skill.TwinBlades, 50},
                 })
             },
         };

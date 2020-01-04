@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.Piloting
 		{
 			{
 				1, new PerkLevel(2, "Decreases relative chance of hostile encounters by 1 each.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 15}, 
+					{ Skill.Piloting, 15}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Decreases relative chance of hostile encounters by 2 each.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 30}, 
+					{ Skill.Piloting, 30}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Decreases relative chance of hostile encounters by 3 each.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 45}, 
+					{ Skill.Piloting, 45}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "Decreases relative chance of hostile encounters by 4 each.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 60}, 
+					{ Skill.Piloting, 60}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "Decreases relative chance of hostile encounters by 5 each.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Piloting, 75}, 
+					{ Skill.Piloting, 75}, 
 				})
 			},
 		};

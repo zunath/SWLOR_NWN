@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -206,8 +207,8 @@ namespace SWLOR.Game.Server.Service
 
             NWPlayer player = (damager.Object);
             int itemLevel = weapon.RecommendedLevel;
-            SkillType skill = ItemService.GetSkillTypeForItem(weapon);
-            if (skill == SkillType.Unknown) return;
+            Skill skill = ItemService.GetSkillTypeForItem(weapon);
+            if (skill == Skill.Unknown) return;
 
             int rank = SkillService.GetPCSkillRank(player, skill);
             int delta = itemLevel - rank;

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -36,24 +37,24 @@ namespace SWLOR.Game.Server.Conversation
                 model.Blueprint = CraftService.GetBlueprintByID(model.BlueprintID);
                 model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
 
-                switch ((SkillType)model.Blueprint.SkillID)
+                switch ((Skill)model.Blueprint.SkillID)
                 {
-                    case SkillType.Armorsmith:
+                    case Skill.Armorsmith:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.ArmorBlueprints);
                         break;
-                    case SkillType.Engineering:
+                    case Skill.Engineering:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.EngineeringBlueprints);
                         break;
-                    case SkillType.Weaponsmith:
+                    case Skill.Weaponsmith:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.WeaponBlueprints);
                         break;
-                    case SkillType.Fabrication:
+                    case Skill.Fabrication:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.FabricationBlueprints);
                         break;
-                    case SkillType.Medicine:
+                    case Skill.Medicine:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.MedicalBlueprints);
                         break;
-                    case SkillType.Lightsaber:
+                    case Skill.Lightsaber:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.LightsaberBlueprints);
 						// Lightsabers do not have Optimisation or Efficiency perks. 
                         break;
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    int effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (SkillType)model.Blueprint.SkillID);
+                    int effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (Skill)model.Blueprint.SkillID);
                     int difficulty = effectiveLevel - model.AdjustedLevel;
 
                     if(difficulty <= -5)

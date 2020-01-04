@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
@@ -73,72 +74,72 @@ namespace SWLOR.Game.Server.Perk.Harvesting
 		{
 			{
 				1, new PerkLevel(2, "+10% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 10}, 
+					{ Skill.Harvesting, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+20% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 20}, 
+					{ Skill.Harvesting, 20}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "+30% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 30}, 
+					{ Skill.Harvesting, 30}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "+40% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 40}, 
+					{ Skill.Harvesting, 40}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "+50% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 50}, 
+					{ Skill.Harvesting, 50}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "+60% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 60}, 
+					{ Skill.Harvesting, 60}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "+70% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 70}, 
+					{ Skill.Harvesting, 70}, 
 				})
 			},
 			{
 				8, new PerkLevel(5, "+80% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 80}, 
+					{ Skill.Harvesting, 80}, 
 				})
 			},
 			{
 				9, new PerkLevel(6, "+90% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 90}, 
+					{ Skill.Harvesting, 90}, 
 				})
 			},
 			{
 				10, new PerkLevel(7, "+99% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 100}, 
+					{ Skill.Harvesting, 100}, 
 				})
 			},
 		};

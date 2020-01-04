@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
@@ -87,72 +88,72 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             {
                 1, new PerkLevel(2, "5% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 10},
+                    { Skill.HeavyArmor, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "10% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 20},
+                    { Skill.HeavyArmor, 20},
                 })
             },
             {
                 3, new PerkLevel(3, "15% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 30},
+                    { Skill.HeavyArmor, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "20% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 40},
+                    { Skill.HeavyArmor, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "25% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 50},
+                    { Skill.HeavyArmor, 50},
                 })
             },
             {
                 6, new PerkLevel(4, "30% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 60},
+                    { Skill.HeavyArmor, 60},
                 })
             },
             {
                 7, new PerkLevel(5, "35% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 70},
+                    { Skill.HeavyArmor, 70},
                 })
             },
             {
                 8, new PerkLevel(5, "40% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 80},
+                    { Skill.HeavyArmor, 80},
                 })
             },
             {
                 9, new PerkLevel(6, "45% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 90},
+                    { Skill.HeavyArmor, 90},
                 })
             },
             {
                 10, new PerkLevel(6, "50% increase",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 100},
+                    { Skill.HeavyArmor, 100},
                 })
             },
         };

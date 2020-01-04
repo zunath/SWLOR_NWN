@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Perk.Weapons
 		{
 			{
 				1, new PerkLevel(3, "Grants the Improved Critical feat when equipped with martial arts weapons.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.MartialArts, 10}, 
+					{ Skill.MartialArts, 10}, 
 				})
 			},
 		};

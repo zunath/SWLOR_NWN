@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Stances
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.Stances
         {
             {
                 1, new PerkLevel(8, "Grants Balanced Stance perk",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })

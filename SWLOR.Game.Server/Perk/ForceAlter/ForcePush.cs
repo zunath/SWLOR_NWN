@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     break;
             }
 
-            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, Skill.ForceAlter, ForceBalanceType.Universal);
 
 
             // Resisted - Only apply slow for six seconds
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             if (creature.IsPlayer)
             {
-                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceAlter, target.Object);
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, Skill.ForceAlter, target.Object);
             }
 
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Com_Blood_Spark_Small), target);
@@ -151,30 +152,30 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(2, "Knockdown a small target. If resisted, target is slowed for 6 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 0},
+                    { Skill.ForceAlter, 0},
                 })
             },
             {
                 2, new PerkLevel(3, "Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 10},
+                    { Skill.ForceAlter, 10},
                 })
             },
             {
                 3, new PerkLevel(4, "Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 20},
+                    { Skill.ForceAlter, 20},
                 })
             },
             {
                 4, new PerkLevel(5, "Knockdown any size target. If resisted, target is slowed for 6 seconds.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 30},
+                    { Skill.ForceAlter, 30},
                 })
             },
         };

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -118,37 +119,37 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             {
                 1, new PerkLevel(2, "Damage shield damage: 1 + 1d4 for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 10},
+                    { Skill.HeavyArmor, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "Damage shield damage: 1 + 1d8 for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 15},
+                    { Skill.HeavyArmor, 15},
                 })
             },
             {
                 3, new PerkLevel(3, "Damage shield damage: 2 + 2d6 for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 30},
+                    { Skill.HeavyArmor, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "Damage shield damage: 2 + 2d8 for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 40},
+                    { Skill.HeavyArmor, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "Damage shield damage: 3 + 2d12 for 12 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.HeavyArmor, 50},
+                    { Skill.HeavyArmor, 50},
                 })
             },
         };

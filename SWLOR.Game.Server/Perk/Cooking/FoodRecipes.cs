@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Cooking
 {
@@ -73,58 +74,58 @@ namespace SWLOR.Game.Server.Perk.Cooking
 		{
 			{
 				1, new PerkLevel(2, "Unlocks tier 1 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Unlocks tier 2 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 10}, 
+					{ Skill.Cooking, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Unlocks tier 3 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 20}, 
+					{ Skill.Cooking, 20}, 
 				})
 			},
 			{
 				4, new PerkLevel(4, "Unlocks tier 4 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 30}, 
+					{ Skill.Cooking, 30}, 
 				})
 			},
 			{
 				5, new PerkLevel(5, "Unlocks tier 5 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 40}, 
+					{ Skill.Cooking, 40}, 
 				})
 			},
 			{
 				6, new PerkLevel(5, "Unlocks tier 6 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 50}, 
+					{ Skill.Cooking, 50}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "Unlocks tier 7 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 60}, 
+					{ Skill.Cooking, 60}, 
 				})
 			},
 			{
 				8, new PerkLevel(6, "Unlocks tier 8 cooking recipes.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Cooking, 70}, 
+					{ Skill.Cooking, 70}, 
 				})
 			},
 		};

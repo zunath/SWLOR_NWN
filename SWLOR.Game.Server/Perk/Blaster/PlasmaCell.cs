@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -73,72 +74,72 @@ namespace SWLOR.Game.Server.Perk.Blaster
         {
             {
                 1, new PerkLevel(2, "10% chance. Damage types: Fire",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 10},
+                    { Skill.Blasters, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "10% chance. Damage types: Fire, Electric",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 20},
+                    { Skill.Blasters, 20},
                 })
             },
             {
                 3, new PerkLevel(3, "20% chance. Damage types: Fire, Electric",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 30},
+                    { Skill.Blasters, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "20% chance. Damage types: Fire, Electric, Sonic",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 40},
+                    { Skill.Blasters, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "30% chance. Damage types: Fire, Electric, Sonic",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 50},
+                    { Skill.Blasters, 50},
                 })
             },
             {
                 6, new PerkLevel(4, "30% chance. Damage types: Fire, Electric, Sonic, Acid",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 60},
+                    { Skill.Blasters, 60},
                 })
             },
             {
                 7, new PerkLevel(5, "40% chance. Damage types: Fire, Electric, Sonic, Acid",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 70},
+                    { Skill.Blasters, 70},
                 })
             },
             {
                 8, new PerkLevel(5, "40% chance. Damage types: Fire, Electric, Sonic, Acid, Cold",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 80},
+                    { Skill.Blasters, 80},
                 })
             },
             {
                 9, new PerkLevel(6, "50% chance. Damage types: Fire, Electric, Sonic, Acid, Cold",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 90},
+                    { Skill.Blasters, 90},
                 })
             },
             {
                 10, new PerkLevel(7, "50% chance. Damage types: Fire, Electric, Sonic, Acid, Cold, Divine",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.Firearms, 100},
+                    { Skill.Blasters, 100},
                 })
             },
         };

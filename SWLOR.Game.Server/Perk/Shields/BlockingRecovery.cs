@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Shields
@@ -118,37 +119,37 @@ namespace SWLOR.Game.Server.Perk.Shields
 		{
 			{
 				1, new PerkLevel(2, "50% chance to recover 1 HP",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 5}, 
+					{ Skill.Shields, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "50% chance to recover 2 HP",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 10}, 
+					{ Skill.Shields, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "50% chance to recover 3 HP",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 15}, 
+					{ Skill.Shields, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "75% chance to recover 3 HP",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 20}, 
+					{ Skill.Shields, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "75% chance to recover 4 HP",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 25}, 
+					{ Skill.Shields, 25}, 
 				})
 			},
 		};

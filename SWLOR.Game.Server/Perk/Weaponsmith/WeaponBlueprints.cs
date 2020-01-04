@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Weaponsmith
 {
@@ -73,58 +74,58 @@ namespace SWLOR.Game.Server.Perk.Weaponsmith
 		{
 			{
 				1, new PerkLevel(2, "Tier 1 weaponsmith blueprints.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Tier 1 weaponsmith blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 5}, 
+					{ Skill.Weaponsmith, 5}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Tier 2 weaponsmith blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 10}, 
+					{ Skill.Weaponsmith, 10}, 
 				})
 			},
 			{
 				4, new PerkLevel(4, "Tier 2 weaponsmith blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 15}, 
+					{ Skill.Weaponsmith, 15}, 
 				})
 			},
 			{
 				5, new PerkLevel(5, "Tier 3 weaponsmith blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 20}, 
+					{ Skill.Weaponsmith, 20}, 
 				})
 			},
 			{
 				6, new PerkLevel(5, "Tier 3 weaponsmith blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 25}, 
+					{ Skill.Weaponsmith, 25}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "Tier 4 weaponsmith blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 30}, 
+					{ Skill.Weaponsmith, 30}, 
 				})
 			},
 			{
 				8, new PerkLevel(6, "Tier 4 weaponsmith blueprints. +4 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Weaponsmith, 35}, 
+					{ Skill.Weaponsmith, 35}, 
 				})
 			},
 		};

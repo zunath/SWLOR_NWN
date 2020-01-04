@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.Shields
 		{
 			{
 				1, new PerkLevel(3, "2% damage reduction",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 10}, 
+					{ Skill.Shields, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(3, "4% damage reduction",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 20}, 
+					{ Skill.Shields, 20}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "6% damage reduction",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 30}, 
+					{ Skill.Shields, 30}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "8% damage reduction",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 40}, 
+					{ Skill.Shields, 40}, 
 				})
 			},
 			{
 				5, new PerkLevel(3, "10% damage reduction",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Shields, 50}, 
+					{ Skill.Shields, 50}, 
 				})
 			},
 		};

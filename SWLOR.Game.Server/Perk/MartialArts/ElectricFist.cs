@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
@@ -131,72 +132,72 @@ namespace SWLOR.Game.Server.Perk.MartialArts
         {
             {
                 1, new PerkLevel(2, "1d8 damage, shock lasts 3 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 10},
+                    { Skill.MartialArts, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "2d8 damage, shock lasts 3 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 20},
+                    { Skill.MartialArts, 20},
                 })
             },
             {
                 3, new PerkLevel(3, "3d8 damage, shock lasts 3 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 30},
+                    { Skill.MartialArts, 30},
                 })
             },
             {
                 4, new PerkLevel(3, "3d8 damage, shock lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 40},
+                    { Skill.MartialArts, 40},
                 })
             },
             {
                 5, new PerkLevel(4, "4d8 damage, shock lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 50},
+                    { Skill.MartialArts, 50},
                 })
             },
             {
                 6, new PerkLevel(4, "5d8 damage, shock lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 60},
+                    { Skill.MartialArts, 60},
                 })
             },
             {
                 7, new PerkLevel(5, "6d8 damage, shock lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 70},
+                    { Skill.MartialArts, 70},
                 })
             },
             {
                 8, new PerkLevel(5, "7d8 damage, shock lasts 6 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 80},
+                    { Skill.MartialArts, 80},
                 })
             },
             {
                 9, new PerkLevel(5, "7d8 damage, shock lasts 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 90},
+                    { Skill.MartialArts, 90},
                 })
             },
             {
                 10, new PerkLevel(5, "8d8 damage, shock lasts 9 seconds",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 100},
+                    { Skill.MartialArts, 100},
                 })
             },
         };

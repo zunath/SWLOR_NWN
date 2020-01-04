@@ -8,6 +8,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -116,16 +117,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 		{
 			{
 				1, new PerkLevel(2, "Grants the Power Attack feat which grants a +5 bonus to damage roll at the cost of -5 to attack roll. Only available when equipped with a baton.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.OneHanded, 2}, 
+					{ Skill.OneHanded, 2}, 
 				})
 			},
 			{
 				2, new PerkLevel(3, "Grants the Improved Power Attack feat which grants a +10 bonus to damage roll at the cost of -10 to attack roll. Does not replace Power Attack. Only available when equipped with a baton.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.OneHanded, 15}, 
+					{ Skill.OneHanded, 15}, 
 				})
 			},
 		};

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
@@ -125,9 +126,9 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 		{
 			{
 				1, new PerkLevel(3, "Grants the Weapon Finesse feat when equipped with a martial arts weapon or unarmed.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.MartialArts, 1}, 
+					{ Skill.MartialArts, 1}, 
 				})
 			},
 		};

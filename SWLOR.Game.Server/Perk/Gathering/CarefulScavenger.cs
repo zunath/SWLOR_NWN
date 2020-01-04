@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Gathering
 {
@@ -73,44 +74,44 @@ namespace SWLOR.Game.Server.Perk.Gathering
 		{
 			{
 				1, new PerkLevel(2, "-5% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 5}, 
+					{ Skill.Scavenging, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "-10% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 10}, 
+					{ Skill.Scavenging, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "-15% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 15}, 
+					{ Skill.Scavenging, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(4, "-20% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 20}, 
+					{ Skill.Scavenging, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(5, "-25% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 25}, 
+					{ Skill.Scavenging, 25}, 
 				})
 			},
 			{
 				6, new PerkLevel(5, "-30% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 30}, 
+					{ Skill.Scavenging, 30}, 
 				})
 			},
 		};

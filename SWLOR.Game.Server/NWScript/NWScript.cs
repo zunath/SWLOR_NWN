@@ -3150,7 +3150,7 @@ namespace NWN
         ///  - nSkill: SKILL_*
         ///  - oCreature
         /// </summary>
-        public static bool GetHasSkill(Skill nSkill, NWGameObject oCreature = null)
+        public static bool GetHasSkill(NWNSkill nSkill, NWGameObject oCreature = null)
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -3178,7 +3178,7 @@ namespace NWN
         ///  - nSubSkill: SUBSKILL_*
         ///  - oItemUsed: Item to use in conjunction with the skill
         /// </summary>
-        public static void ActionUseSkill(Skill nSkill, NWGameObject oTarget, SubSkill nSubSkill = SubSkill.None, NWGameObject oItemUsed = null)
+        public static void ActionUseSkill(NWNSkill nSkill, NWGameObject oTarget, SubSkill nSubSkill = SubSkill.None, NWGameObject oItemUsed = null)
         {
             Internal.NativeFunctions.StackPushObject(oItemUsed != null ? oItemUsed.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushInteger((int)nSubSkill);
@@ -3353,7 +3353,7 @@ namespace NWN
         ///  Create a Skill Talent.
         ///  - nSkill: SKILL_*
         /// </summary>
-        public static NWN.Talent TalentSkill(Skill nSkill)
+        public static NWN.Talent TalentSkill(NWNSkill nSkill)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(303);
@@ -3498,7 +3498,7 @@ namespace NWN
         ///  * Returns -1 if oTarget doesn't have nSkill.
         ///  * Returns 0 if nSkill is untrained.
         /// </summary>
-        public static int GetSkillRank(Skill nSkill, NWGameObject oTarget = null, bool nBaseSkillRank = false)
+        public static int GetSkillRank(NWNSkill nSkill, NWGameObject oTarget = null, bool nBaseSkillRank = false)
         {
             Internal.NativeFunctions.StackPushInteger(nBaseSkillRank ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oTarget != null ? oTarget.Self : NWGameObject.OBJECT_INVALID);
@@ -3904,7 +3904,7 @@ namespace NWN
         ///  - nValue
         ///  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid.
         /// </summary>
-        public static Effect EffectSkillIncrease(Skill nSkill, int nValue)
+        public static Effect EffectSkillIncrease(NWNSkill nSkill, int nValue)
         {
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -5096,7 +5096,7 @@ namespace NWN
         ///  Create a Skill Decrease effect.
         ///  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid.
         /// </summary>
-        public static Effect EffectSkillDecrease(Skill nSkill, int nValue)
+        public static Effect EffectSkillDecrease(NWNSkill nSkill, int nValue)
         {
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -7609,7 +7609,7 @@ namespace NWN
         ///  skill to be decreased(SKILL_*) and the amount of the penalty.  The penalty
         ///  must be a POSITIVE integer between 1 and 10 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDecreaseSkill(Skill nSkill, int nPenalty)
+        public static NWN.ItemProperty ItemPropertyDecreaseSkill(NWNSkill nSkill, int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -7873,7 +7873,7 @@ namespace NWN
         ///  will get a bonus(SKILL_*) and the amount of the bonus.  The bonus amount must
         ///  be an integer between 1 and 50.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertySkillBonus(Skill nSkill, int nBonus)
+        public static NWN.ItemProperty ItemPropertySkillBonus(NWNSkill nSkill, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -8192,7 +8192,7 @@ namespace NWN
         ///  - nSkill: the skill being used
         ///  - nDifficulty: Difficulty class of skill
         /// </summary>
-        public static bool GetIsSkillSuccessful(NWGameObject oTarget, Skill nSkill, int nDifficulty)
+        public static bool GetIsSkillSuccessful(NWGameObject oTarget, NWNSkill nSkill, int nDifficulty)
         {
             Internal.NativeFunctions.StackPushInteger(nDifficulty);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);

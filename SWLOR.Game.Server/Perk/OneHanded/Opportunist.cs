@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.OneHanded
@@ -99,9 +100,9 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 		{
 			{
 				1, new PerkLevel(4, "You gain the Opportunist feat.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.OneHanded, 10}, 
+					{ Skill.OneHanded, 10}, 
 				})
 			},
 		};

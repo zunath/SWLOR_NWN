@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -75,37 +76,37 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             {
                 1, new PerkLevel(2, "Heals a single target for 2 HP every three seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 0},
+                    { Skill.ForceControl, 0},
                 })
             },
             {
                 2, new PerkLevel(2, "Heals a single target for 3 HP every three seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 10},
+                    { Skill.ForceControl, 10},
                 })
             },
             {
                 3, new PerkLevel(3, "Heals a single target for 5 HP every three seconds.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 20},
+                    { Skill.ForceControl, 20},
                 })
             },
             {
                 4, new PerkLevel(3, "Heals a single target for 7 HP every three seconds.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 30},
+                    { Skill.ForceControl, 30},
                 })
             },
             {
                 5, new PerkLevel(4, "Heals a single target for 10 HP every three seconds.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceControl, 40},
+                    { Skill.ForceControl, 40},
                 })
             },
         };
@@ -174,7 +175,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             // Give Control XP, if player.
             if (creature.IsPlayer)
             {
-                SkillService.GiveSkillXP(creature.Object, SkillType.ForceControl, amount * 10);
+                SkillService.GiveSkillXP(creature.Object, Skill.ForceControl, amount * 10);
             }
 
             EnmityService.AdjustEnmityOnAllTaggedCreatures(creature, amount * 3, 2);

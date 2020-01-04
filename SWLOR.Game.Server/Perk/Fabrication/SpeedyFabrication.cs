@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Fabrication
 {
@@ -73,72 +74,72 @@ namespace SWLOR.Game.Server.Perk.Fabrication
 		{
 			{
 				1, new PerkLevel(2, "+10% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+20% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 5}, 
+					{ Skill.Fabrication, 5}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "+30% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 10}, 
+					{ Skill.Fabrication, 10}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "+40% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 15}, 
+					{ Skill.Fabrication, 15}, 
 				})
 			},
 			{
 				5, new PerkLevel(3, "+50% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 20}, 
+					{ Skill.Fabrication, 20}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "+60% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 25}, 
+					{ Skill.Fabrication, 25}, 
 				})
 			},
 			{
 				7, new PerkLevel(4, "+70% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 30}, 
+					{ Skill.Fabrication, 30}, 
 				})
 			},
 			{
 				8, new PerkLevel(4, "+80% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 35}, 
+					{ Skill.Fabrication, 35}, 
 				})
 			},
 			{
 				9, new PerkLevel(5, "+90% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 40}, 
+					{ Skill.Fabrication, 40}, 
 				})
 			},
 			{
 				10, new PerkLevel(6, "+99% Crafting Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Fabrication, 50}, 
+					{ Skill.Fabrication, 50}, 
 				})
 			},
 		};

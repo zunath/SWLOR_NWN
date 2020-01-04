@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer && user.GetLocalBoolean(target.GlobalID.ToString()) == false)
             {
                 int scanningBonus = item.ScanningBonus;
-                SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);
+                SkillService.GiveSkillXP(player, Skill.Harvesting, 150);
                 user.SetLocalInt(target.GlobalID.ToString(), 1 + scanningBonus); 
             }
         }

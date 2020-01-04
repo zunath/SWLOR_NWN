@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            SkillType skillType = GetSkillType(item);
+            Skill skill = GetSkillType(item);
             NWItem targetitem = (target.Object);
             int tech = item.GetLocalInt("TECH_LEVEL");
             float maxDurabilityReductionPenalty = item.GetLocalFloat("MAX_DURABILITY_REDUCTION_PENALTY");
@@ -30,21 +31,21 @@ namespace SWLOR.Game.Server.Item
             int level = targetitem.RecommendedLevel;
             int delta = 0;
             int baseXP = 0;
-            if (skillType == SkillType.Armorsmith)
+            if (skill == Skill.Armorsmith)
             {
-                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skill));
                 repairAmount += item.CraftBonusArmorsmith + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.ArmorRepair) * 2);
                 delta = level - skillRank;
             }
-            else if (skillType == SkillType.Weaponsmith)
+            else if (skill == Skill.Weaponsmith)
             {
-                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skill));
                 repairAmount += item.CraftBonusWeaponsmith + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.WeaponRepair) * 2);
                 delta = level - skillRank;
             }
-            else if (skillType == SkillType.Engineering)
+            else if (skill == Skill.Engineering)
             {
-                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skill));
                 repairAmount += item.CraftBonusEngineering + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
                 delta = level - skillRank;
             }
@@ -62,15 +63,15 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -2) baseXP = 100;
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
-            SkillService.GiveSkillXP(user.Object, skillType, baseXP);
+            SkillService.GiveSkillXP(user.Object, skill, baseXP);
             DurabilityService.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
-        private static SkillType GetSkillType(NWItem item)
+        private static Skill GetSkillType(NWItem item)
         {
             if (item.GetLocalBoolean("LIGHTSABER") == true)
             {
-                return SkillType.Engineering;
+                return Skill.Engineering;
             }
 
             CustomItemType repairItemType = (CustomItemType)item.GetLocalInt("REPAIR_CUSTOM_ITEM_TYPE_ID");
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.HeavyArmor:
                 case CustomItemType.ForceArmor:
                 case CustomItemType.Shield:
-                    return SkillType.Armorsmith;
+                    return Skill.Armorsmith;
 
                 case CustomItemType.Vibroblade:
                 case CustomItemType.FinesseVibroblade:
@@ -90,16 +91,16 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.TwinBlade:
                 case CustomItemType.MartialArtWeapon:
                 case CustomItemType.Throwing:
-                    return SkillType.Weaponsmith;
+                    return Skill.Weaponsmith;
 
                 case CustomItemType.Lightsaber:
                 case CustomItemType.BlasterPistol:
                 case CustomItemType.BlasterRifle:
                 case CustomItemType.Saberstaff:
-                    return SkillType.Engineering;
+                    return Skill.Engineering;
             }
 
-            return SkillType.Unknown;
+            return Skill.Unknown;
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -159,7 +160,7 @@ namespace SWLOR.Game.Server.Item
                 return "You cannot repair that item any more.";
             }
 
-            SkillType skillType = GetSkillType(item);
+            Skill skill = GetSkillType(item);
             int techLevel = item.GetLocalInt("TECH_LEVEL");
             return null;
         }

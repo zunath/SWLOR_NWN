@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -73,44 +74,44 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             {
                 1, new PerkLevel(2, "The caster befriends an animal or beast with up to Challenge Rating 4.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 10},
+                    { Skill.ForceSense, 10},
                 })
             },
             {
                 2, new PerkLevel(2, "The caster befriends an animal or beast with up to Challenge Rating 8.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 25},
+                    { Skill.ForceSense, 25},
                 })
             },
             {
                 3, new PerkLevel(3, "The caster befriends an animal or beast with up to Challenge Rating 12.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 40},
+                    { Skill.ForceSense, 40},
                 })
             },
             {
                 4, new PerkLevel(3, "The caster befriends an animal or beast with up to Challenge Rating 16.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 55},
+                    { Skill.ForceSense, 55},
                 })
             },
             {
                 5, new PerkLevel(4, "The caster befriends an animal or beast with up to Challenge Rating 20.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 70},
+                    { Skill.ForceSense, 70},
                 })
             },
             {
                 6, new PerkLevel(5, "The caster befriends an animal or beast with any Challenge Rating.", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 85},
+                    { Skill.ForceSense, 85},
                 })
             },
         };

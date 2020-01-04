@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Gathering
 {
@@ -73,72 +74,72 @@ namespace SWLOR.Game.Server.Perk.Gathering
 		{
 			{
 				1, new PerkLevel(2, "10% chance to search one more time",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 5}, 
+					{ Skill.Scavenging, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "20% chance to search one more time",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 10}, 
+					{ Skill.Scavenging, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "30% chance to search one more time",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 15}, 
+					{ Skill.Scavenging, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "40% chance to search one more time",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 20}, 
+					{ Skill.Scavenging, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "50% chance to search one more time",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 25}, 
+					{ Skill.Scavenging, 25}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "50% chance to search one more time. 10% chance to search a second time.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 30}, 
+					{ Skill.Scavenging, 30}, 
 				})
 			},
 			{
 				7, new PerkLevel(5, "50% chance to search one more time. 20% chance to search a second time.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 35}, 
+					{ Skill.Scavenging, 35}, 
 				})
 			},
 			{
 				8, new PerkLevel(5, "50% chance to search one more time. 30% chance to search a second time.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 40}, 
+					{ Skill.Scavenging, 40}, 
 				})
 			},
 			{
 				9, new PerkLevel(6, "50% chance to search one more time. 40% chance to search a second time.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 45}, 
+					{ Skill.Scavenging, 45}, 
 				})
 			},
 			{
 				10, new PerkLevel(7, "50% chance to search one more time. 50% chance to search a second time.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Scavenging, 50}, 
+					{ Skill.Scavenging, 50}, 
 				})
 			},
 		};

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
@@ -77,37 +78,37 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             {
                 1, new PerkLevel(2, "+2 to natural FP regen", 
-                    new Dictionary<SkillType, int>
+                    new Dictionary<Skill, int>
                     {
-                        { SkillType.ForceArmor, 5 },
+                        { Skill.ForceArmor, 5 },
                     })
             },
             {
                 2, new PerkLevel(3, "+3 to natural FP regen",
-                    new Dictionary<SkillType, int>
+                    new Dictionary<Skill, int>
                     {
-                        { SkillType.ForceArmor, 15 }
+                        { Skill.ForceArmor, 15 }
                     })
             },
             {
                 3, new PerkLevel(3, "+4 to natural FP regen",
-                    new Dictionary<SkillType, int>
+                    new Dictionary<Skill, int>
                     {
-                        { SkillType.ForceArmor, 25 }
+                        { Skill.ForceArmor, 25 }
                     })
             },
             {
                 4, new PerkLevel(3, "+5 to natural FP regen",
-                    new Dictionary<SkillType, int>
+                    new Dictionary<Skill, int>
                     {
-                        { SkillType.ForceArmor, 40 }
+                        { Skill.ForceArmor, 40 }
                     })
             },
             {
                 5, new PerkLevel(3, "+6 to natural FP regen",
-                    new Dictionary<SkillType, int>
+                    new Dictionary<Skill, int>
                     {
-                        { SkillType.ForceArmor, 60 }
+                        { Skill.ForceArmor, 60 }
                     })
             },
         };

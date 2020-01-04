@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
@@ -73,44 +74,44 @@ namespace SWLOR.Game.Server.Perk.Harvesting
 		{
 			{
 				1, new PerkLevel(2, "+10% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 5}, 
+					{ Skill.Harvesting, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "+20% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 15}, 
+					{ Skill.Harvesting, 15}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "+30% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 25}, 
+					{ Skill.Harvesting, 25}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "+40% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 35}, 
+					{ Skill.Harvesting, 35}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "+50% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 45}, 
+					{ Skill.Harvesting, 45}, 
 				})
 			},
 			{
 				6, new PerkLevel(4, "+60% Speed",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 55}, 
+					{ Skill.Harvesting, 55}, 
 				})
 			},
 		};

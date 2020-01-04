@@ -705,12 +705,12 @@ namespace SWLOR.Game.Server.Service
         {
             LoggingService.Trace(TraceComponent.Weather, "Checking whether " + GetName(oCreature) + " is blown over");
             int nDC = (GetHitDice(oCreature) / 2) + 10;
-            int nDiscipline = GetSkillRank(Skill.Discipline, oCreature);
+            int nDiscipline = GetSkillRank(NWNSkill.Discipline, oCreature);
             int nReflexSave = GetReflexSavingThrow(oCreature);
             int nSuccess;
 
             if (nDiscipline > nReflexSave)
-                nSuccess = GetIsSkillSuccessful(oCreature, Skill.Discipline, nDC) ? 1 : 0;
+                nSuccess = GetIsSkillSuccessful(oCreature, NWNSkill.Discipline, nDC) ? 1 : 0;
             else
                 nSuccess = ReflexSave(oCreature, nDC);
 

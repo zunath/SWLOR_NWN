@@ -15,7 +15,6 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 using SWLOR.Game.Server.ValueObject;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
-using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -36,8 +35,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleEquipItem()
         {
-            NWPlayer player = _.GetPCItemLastEquippedBy();
-            NWItem item = _.GetPCItemLastEquipped();
+            NWPlayer player = GetPCItemLastEquippedBy();
+            NWItem item = GetPCItemLastEquipped();
 
             CalculateEffectiveStats(player, item);
             ApplyStatChanges(player, null);
@@ -45,8 +44,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer player = _.GetPCItemLastUnequippedBy();
-            NWItem item = _.GetPCItemLastUnequipped();
+            NWPlayer player = GetPCItemLastUnequippedBy();
+            NWItem item = GetPCItemLastUnequipped();
 
             RemoveCachedEffectiveStats(item);
             ApplyStatChanges(player, null);
@@ -56,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         {
             for (int itemSlot = 0; itemSlot < NWNConstants.NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -66,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         {
             for (int itemSlot = 0; itemSlot < NWNConstants.NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -99,7 +98,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PCSkill pcSkill in skills)
             {
-                Skill skill = DataService.Skill.GetByID(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
                 CustomAttribute primary = (CustomAttribute)skill.Primary;
                 CustomAttribute secondary = (CustomAttribute)skill.Secondary;
                 CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
@@ -194,8 +193,8 @@ namespace SWLOR.Game.Server.Service
             if (player.CurrentHP > player.MaxHP)
             {
                 int amount = player.CurrentHP - player.MaxHP;
-                Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(DurationType.Instant, damage, player.Object);
+                Effect damage = EffectDamage(amount);
+                ApplyEffectToObject(DurationType.Instant, damage, player.Object);
             }
 
             // Apply FP
@@ -209,7 +208,7 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
 
             // Attempt a refresh of the character sheet UI in a second.
-            _.DelayCommand(1.0f, () =>
+            DelayCommand(1.0f, () =>
             {
                 NWNXPlayer.UpdateCharacterSheet(player);
             });
@@ -276,13 +275,13 @@ namespace SWLOR.Game.Server.Service
                 switch (armorType)
                 {
                     case CustomItemType.LightArmor:
-                        skillRank = SkillService.GetPCSkillRank(player, SkillType.LightArmor);
+                        skillRank = SkillService.GetPCSkillRank(player, Skill.LightArmor);
                         break;
                     case CustomItemType.HeavyArmor:
-                        skillRank = SkillService.GetPCSkillRank(player, SkillType.HeavyArmor);
+                        skillRank = SkillService.GetPCSkillRank(player, Skill.HeavyArmor);
                         break;
                     case CustomItemType.ForceArmor:
-                        skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceArmor);
+                        skillRank = SkillService.GetPCSkillRank(player, Skill.ForceArmor);
                         break;
                 }
 
@@ -291,7 +290,7 @@ namespace SWLOR.Game.Server.Service
                 baseAC += skillACBonus;
             }
 
-            int totalAC = _.GetAC(player) - baseAC;
+            int totalAC = GetAC(player) - baseAC;
 
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
             var stance = CustomEffectService.GetCurrentStanceType(player);
@@ -316,24 +315,24 @@ namespace SWLOR.Game.Server.Service
             if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM || !player.IsInitializedAsPlayer) return;
 
             // Calculating effective stats can be expensive, so we cache it on the item.
-            SkillType skill; 
+            Skill skill; 
             
             if(item.BaseItemType == BaseItemType.Amulet || item.BaseItemType == BaseItemType.Ring)
             {
-                var forceArmor = SkillService.GetPCSkill(player, (int)SkillType.ForceArmor);
-                var lightArmor = SkillService.GetPCSkill(player, (int)SkillType.LightArmor);
-                var heavyArmor = SkillService.GetPCSkill(player, (int)SkillType.HeavyArmor);
+                var forceArmor = SkillService.GetPCSkill(player, Skill.ForceArmor);
+                var lightArmor = SkillService.GetPCSkill(player, Skill.LightArmor);
+                var heavyArmor = SkillService.GetPCSkill(player, Skill.HeavyArmor);
                 var highest = forceArmor.Rank;
-                skill = SkillType.ForceArmor;
+                skill = Skill.ForceArmor;
 
                 if (lightArmor.Rank > highest)
                 {
                     highest = lightArmor.Rank;
-                    skill = SkillType.LightArmor;
+                    skill = Skill.LightArmor;
                 }
                 if (heavyArmor.Rank > highest)
                 {
-                    skill = SkillType.HeavyArmor;
+                    skill = Skill.HeavyArmor;
                 }
             }
             else
@@ -341,7 +340,7 @@ namespace SWLOR.Game.Server.Service
                 skill = ItemService.GetSkillTypeForItem(item);
             }
                 
-            var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
+            var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, skill).Rank;
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalculateEffectiveStats"))
             {
                 // Only scale cooldown recovery if it's a bonus. Penalties remain regardless of skill level difference.
@@ -412,10 +411,10 @@ namespace SWLOR.Game.Server.Service
 
         public static EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
         {
-            int heavyRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)SkillType.HeavyArmor).Rank;
-            int lightRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)SkillType.LightArmor).Rank;
-            int forceRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)SkillType.ForceArmor).Rank;
-            int martialRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)SkillType.MartialArts).Rank;
+            int heavyRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.HeavyArmor).Rank;
+            int lightRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.LightArmor).Rank;
+            int forceRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.ForceArmor).Rank;
+            int martialRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.MartialArts).Rank;
 
             EffectiveItemStats stats = new EffectiveItemStats();
             stats.EnmityRate = 1.0f;
@@ -423,7 +422,7 @@ namespace SWLOR.Game.Server.Service
             HashSet<NWItem> processed = new HashSet<NWItem>();
             for (int itemSlot = 0; itemSlot < NWNConstants.NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
 
                 if (!item.IsValid || item.Equals(ignoreItem)) continue;
 
@@ -433,8 +432,8 @@ namespace SWLOR.Game.Server.Service
                 if (processed.Contains(item)) continue;
                 processed.Add(item);
 
-                SkillType skill = ItemService.GetSkillTypeForItem(item);
-                var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
+                Skill skill = ItemService.GetSkillTypeForItem(item);
+                var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, skill).Rank;
                 stats.CooldownRecovery += item.GetLocalInt("STAT_EFFECTIVE_LEVEL_COOLDOWN_RECOVERY");
                 stats.EnmityRate += item.GetLocalFloat("STAT_EFFECTIVE_LEVEL_ENMITY_RATE");
                 stats.Luck += item.GetLocalInt("STAT_EFFECTIVE_LEVEL_LUCK_BONUS");
@@ -598,15 +597,14 @@ namespace SWLOR.Game.Server.Service
             }
             if (!weapon.IsValid) return 0;
 
-            SkillType itemSkill = ItemService.GetSkillTypeForItem(weapon);
-            if (itemSkill == SkillType.Unknown ||
-                itemSkill == SkillType.LightArmor ||
-                itemSkill == SkillType.HeavyArmor ||
-                itemSkill == SkillType.ForceArmor ||
-                itemSkill == SkillType.Shields) return 0;
+            Skill itemSkill = ItemService.GetSkillTypeForItem(weapon);
+            if (itemSkill == Skill.Unknown ||
+                itemSkill == Skill.LightArmor ||
+                itemSkill == Skill.HeavyArmor ||
+                itemSkill == Skill.ForceArmor ||
+                itemSkill == Skill.Shields) return 0;
 
-            int weaponSkillID = (int)itemSkill;
-            PCSkill skill = DataService.PCSkill.GetByPlayerIDAndSkillID(oPC.GlobalID, weaponSkillID);
+            PCSkill skill = DataService.PCSkill.GetByPlayerIDAndSkillID(oPC.GlobalID, itemSkill);
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;

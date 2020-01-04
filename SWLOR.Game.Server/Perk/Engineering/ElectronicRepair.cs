@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
@@ -73,30 +74,30 @@ namespace SWLOR.Game.Server.Perk.Engineering
 		{
 			{
 				1, new PerkLevel(3, "Gains +2 to electronic repair when using an electronic repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 10}, 
+					{ Skill.Engineering, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(3, "Gains +4 to electronic repair when using an electronic repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 20}, 
+					{ Skill.Engineering, 20}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "Gains +6 to electronic repair when using an electronic repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 30}, 
+					{ Skill.Engineering, 30}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "Gains +8 to electronic repair when using an electronic repair kit",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 40}, 
+					{ Skill.Engineering, 40}, 
 				})
 			},
 		};

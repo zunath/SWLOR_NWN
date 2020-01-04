@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -44,9 +45,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
             // Wookiees cannot speak any language besides Shyriiwook.
             if (race == RacialType.Wookiee && 
-                command != SkillType.Shyriiwook.ToString().ToLower())
+                command != Skill.Shyriiwook.ToString().ToLower())
             {
-                LanguageService.SetActiveLanguage(user, SkillType.Shyriiwook);
+                LanguageService.SetActiveLanguage(user, Skill.Shyriiwook);
                 user.SendMessage(ColorTokenService.Red("Wookiees can only speak Shyriiwook."));
                 return;
             }

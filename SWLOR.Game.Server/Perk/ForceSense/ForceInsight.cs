@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -77,23 +78,23 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             {
                 1, new PerkLevel(3, "Caster gets +3 AB.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 0},
+                    { Skill.ForceSense, 0},
                 })
             },
             {
                 2, new PerkLevel(4, "Caster gets +5 AB and +2 AC.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 15},
+                    { Skill.ForceSense, 15},
                 })
             },
             {
                 3, new PerkLevel(5, "Caster gets +5 AB and +4 AC.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 30},
+                    { Skill.ForceSense, 30},
                 })
             },
         };
@@ -162,7 +163,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             // Register players to all combat targets for Force Sense.
             if (creature.IsPlayer)
             {
-                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceSense, null);
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, Skill.ForceSense, null);
             }
 
             EnmityService.AdjustEnmityOnAllTaggedCreatures(creature, 4);

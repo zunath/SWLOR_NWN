@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
@@ -96,30 +97,30 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
         {
             {
                 1, new PerkLevel(4, "25% chance to interrupt",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwoHanded, 15},
+                    { Skill.TwoHanded, 15},
                 })
             },
             {
                 2, new PerkLevel(4, "50% chance to interrupt",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwoHanded, 30},
+                    { Skill.TwoHanded, 30},
                 })
             },
             {
                 3, new PerkLevel(5, "75% chance to interrupt",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwoHanded, 50},
+                    { Skill.TwoHanded, 50},
                 })
             },
             {
                 4, new PerkLevel(6, "100% chance to interrupt",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.TwoHanded, 80},
+                    { Skill.TwoHanded, 80},
                 })
             },
         };

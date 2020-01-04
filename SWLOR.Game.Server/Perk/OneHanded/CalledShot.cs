@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -96,9 +97,9 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 		{
 			{
 				1, new PerkLevel(2, "Grants the Called Shot feat which have a chance to reduce a target's movement rate by 20% and inflicts a penalty to DEX. This feat is only available when equipped with a Finesse Blade.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.OneHanded, 5}, 
+					{ Skill.OneHanded, 5}, 
 				})
 			},
 		};

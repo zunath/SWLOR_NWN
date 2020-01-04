@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = user.Object;
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int skillRank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            int skillRank = SkillService.GetPCSkillRank(player, Skill.Medicine);
             int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ResuscitationDevices);
             int rank = item.GetLocalInt("RANK");
             int baseHeal;
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
 
                 int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
-                SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
+                SkillService.GiveSkillXP(player, Skill.Medicine, xp);
             }
             else
             {
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank((NWPlayer)user, Skill.Medicine);
             return 12.0f - (rank * 0.1f);
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.Medicine
 		{
 			{
 				1, new PerkLevel(2, "10% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 5}, 
+					{ Skill.Medicine, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "20% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 10}, 
+					{ Skill.Medicine, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(3, "30% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 15}, 
+					{ Skill.Medicine, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(3, "40% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 20}, 
+					{ Skill.Medicine, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(4, "50% Chance",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Medicine, 25}, 
+					{ Skill.Medicine, 25}, 
 				})
 			},
 		};

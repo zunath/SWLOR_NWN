@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
@@ -73,72 +74,72 @@ namespace SWLOR.Game.Server.Perk.Harvesting
 		{
 			{
 				1, new PerkLevel(2, "Stronidium yield increased by 100% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 5}, 
+					{ Skill.Harvesting, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(2, "Stronidium yield increased by 200% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 10}, 
+					{ Skill.Harvesting, 10}, 
 				})
 			},
 			{
 				3, new PerkLevel(2, "Stronidium yield increased by 300% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 15}, 
+					{ Skill.Harvesting, 15}, 
 				})
 			},
 			{
 				4, new PerkLevel(2, "Stronidium yield increased by 400% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 20}, 
+					{ Skill.Harvesting, 20}, 
 				})
 			},
 			{
 				5, new PerkLevel(2, "Stronidium yield increased by 500% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 25}, 
+					{ Skill.Harvesting, 25}, 
 				})
 			},
 			{
 				6, new PerkLevel(2, "Stronidium yield increased by 600% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 30}, 
+					{ Skill.Harvesting, 30}, 
 				})
 			},
 			{
 				7, new PerkLevel(2, "Stronidium yield increased by 700% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 35}, 
+					{ Skill.Harvesting, 35}, 
 				})
 			},
 			{
 				8, new PerkLevel(2, "Stronidium yield increased by 800% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 40}, 
+					{ Skill.Harvesting, 40}, 
 				})
 			},
 			{
 				9, new PerkLevel(2, "Stronidium yield increased by 900% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 45}, 
+					{ Skill.Harvesting, 45}, 
 				})
 			},
 			{
 				10, new PerkLevel(2, "Stronidium yield increased by 1000% of normal.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Harvesting, 50}, 
+					{ Skill.Harvesting, 50}, 
 				})
 			},
 		};

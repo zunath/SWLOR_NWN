@@ -20,16 +20,16 @@ namespace SWLOR.Game.Server.Perk.Weapons
 		{
 			{
 				1, new PerkLevel(3, "You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with a saberstaff weapon.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 5}, 
+					{ Skill.Lightsaber, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(4, "You gain the Weapon Specialization feat which grants a +2 damage when equipped with a saberstaff weapon.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 15}, 
+					{ Skill.Lightsaber, 15}, 
 				})
 			},
 		};

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -97,9 +98,9 @@ namespace SWLOR.Game.Server.Perk.Armor
 		{
 			{
 				1, new PerkLevel(2, "Grants the Expertise feat.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.HeavyArmor, 15}, 
+					{ Skill.HeavyArmor, 15}, 
 				})
 			},
 		};

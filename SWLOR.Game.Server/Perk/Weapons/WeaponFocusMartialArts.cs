@@ -20,16 +20,16 @@ namespace SWLOR.Game.Server.Perk.Weapons
         {
             {
                 1, new PerkLevel(3, "You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with martial arts weapons or unarmed.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 5},
+                    { Skill.MartialArts, 5},
                 })
             },
             {
                 2, new PerkLevel(4, "You gain the Weapon Specialization feat which grants a +2 damage when equipped with martial arts weapons or unarmed.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.MartialArts, 15},
+                    { Skill.MartialArts, 15},
                 })
             },
         };

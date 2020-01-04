@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -77,23 +78,23 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             {
                 1, new PerkLevel(4, "The caster gets -5 AB & AC but their nearby party members get +5 AB & AC",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 40},
+                    { Skill.ForceSense, 40},
                 })
             },
             {
                 2, new PerkLevel(6, "The caster gets -10 AB & AC but their nearby party members get +10 AB & AC",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 60},
+                    { Skill.ForceSense, 60},
                 })
             },
             {
                 3, new PerkLevel(8, "The caster and nearby enemies get -10 AB & AC but the nearby party members get +10 AB & AC",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 80},
+                    { Skill.ForceSense, 80},
                 })
             },
         };

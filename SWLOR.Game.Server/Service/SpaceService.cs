@@ -18,6 +18,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -618,7 +619,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return false;
             
             EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Piloting);
+            int rank = SkillService.GetPCSkillRank(player, Skill.Piloting);
 
             // Award XP. 
             float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(250, DC, rank);
@@ -629,12 +630,12 @@ namespace SWLOR.Game.Server.Service
                 (reRollIfFailed && RandomService.D100(1) <= (100 * rank) / (rank + DC)))
             {
                 // Success!
-                SkillService.GiveSkillXP(player, SkillType.Piloting, (int)xp);
+                SkillService.GiveSkillXP(player, Skill.Piloting, (int)xp);
                 return true;
             }
 
             // Failure.
-            SkillService.GiveSkillXP(player, SkillType.Piloting, (int)xp / 5);
+            SkillService.GiveSkillXP(player, Skill.Piloting, (int)xp / 5);
             return false;
         }
 
@@ -773,7 +774,7 @@ namespace SWLOR.Game.Server.Service
             player.AssignCommand(() => { ActionUnequipItem(player.RightHand); });
 
             // Set the player's movement speed, improved by their skill and the Racer perk. 
-            shipSpeed += SkillService.GetPCSkillRank(player, SkillType.Piloting) + PlayerStatService.GetPlayerItemEffectiveStats(player).Piloting +
+            shipSpeed += SkillService.GetPCSkillRank(player, Skill.Piloting) + PlayerStatService.GetPlayerItemEffectiveStats(player).Piloting +
                             10 * PerkService.GetCreaturePerkLevel(player, PerkType.Racer);
             if (shipSpeed > 100)
             {
@@ -1213,7 +1214,7 @@ namespace SWLOR.Game.Server.Service
             {
                 pcGunner = attackerArea.GetLocalObject("GUNNER");
                 EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pcGunner);
-                attackerPiloting += SkillService.GetPCSkillRank(pcGunner, SkillType.Piloting) + effectiveStats.Piloting;
+                attackerPiloting += SkillService.GetPCSkillRank(pcGunner, Skill.Piloting) + effectiveStats.Piloting;
 
                 attackerPiloting += 3 * PerkService.GetCreaturePerkLevel(pcGunner, PerkType.CrackShot);
             }
@@ -1221,7 +1222,7 @@ namespace SWLOR.Game.Server.Service
             if (attacker.IsPC)
             {
                 EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(new NWPlayer(attacker));
-                attackerPiloting += SkillService.GetPCSkillRank(new NWPlayer(attacker), SkillType.Piloting) + effectiveStats.Piloting;                
+                attackerPiloting += SkillService.GetPCSkillRank(new NWPlayer(attacker), Skill.Piloting) + effectiveStats.Piloting;                
             }
             else
             {
@@ -1231,7 +1232,7 @@ namespace SWLOR.Game.Server.Service
             if (target.IsPC)
             {
                 EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(new NWPlayer(target));
-                defenderPiloting += SkillService.GetPCSkillRank(new NWPlayer(target), SkillType.Piloting) + effectiveStats.Piloting;
+                defenderPiloting += SkillService.GetPCSkillRank(new NWPlayer(target), Skill.Piloting) + effectiveStats.Piloting;
 
                 defenderPiloting += 3 * PerkService.GetCreaturePerkLevel(new NWPlayer(target), PerkType.Evasive);
             }
@@ -1257,9 +1258,9 @@ namespace SWLOR.Game.Server.Service
             if (check < (100 * attackerPiloting) / (attackerPiloting + defenderPiloting))
             {
                 // Hit!
-                if (attacker.IsPC) SkillService.GiveSkillXP(new NWPlayer(attacker), SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
-                if (target.IsPC) SkillService.GiveSkillXP(new NWPlayer(target), SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, attackerPiloting, defenderPiloting));
-                if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
+                if (attacker.IsPC) SkillService.GiveSkillXP(new NWPlayer(attacker), Skill.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
+                if (target.IsPC) SkillService.GiveSkillXP(new NWPlayer(target), Skill.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, attackerPiloting, defenderPiloting));
+                if (gunner) SkillService.GiveSkillXP(pcGunner, Skill.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
 
                 Effect eBeam = _.EffectBeam(Vfx.Vfx_Beam_Disintegrate, attacker, BodyNode.Chest);
                 ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
@@ -1303,9 +1304,9 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 // Miss!
-                if (attacker.IsPC) SkillService.GiveSkillXP(new NWPlayer(attacker), SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
-                if (target.IsPC) SkillService.GiveSkillXP(new NWPlayer(target), SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, attackerPiloting, defenderPiloting));
-                if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
+                if (attacker.IsPC) SkillService.GiveSkillXP(new NWPlayer(attacker), Skill.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
+                if (target.IsPC) SkillService.GiveSkillXP(new NWPlayer(target), Skill.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, attackerPiloting, defenderPiloting));
+                if (gunner) SkillService.GiveSkillXP(pcGunner, Skill.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
 
                 // Get a miss location near the target.
                 Effect eBeam = _.EffectBeam(Vfx.Vfx_Beam_Disintegrate, attacker, BodyNode.Chest, true);

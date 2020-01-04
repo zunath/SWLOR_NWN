@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = (user.Object);
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             target.RemoveEffect(EffectType.Regenerate);
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(player, Skill.Medicine);
             int luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
             float duration = 30.0f + (rank * 0.4f) + perkDurationBonus;
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             if(target.IsPlayer){
                 int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-                SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
+                SkillService.GiveSkillXP(player, Skill.Medicine, xp);
             }
         }
 
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank((NWPlayer)user, Skill.Medicine);
             return 12.0f - (rank * 0.1f);
         }
 

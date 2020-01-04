@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -143,7 +144,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     if (player.IsPlayer)
                     {
-                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, Skill.ForceAlter);
                     }
 
                     break;
@@ -159,7 +160,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     if (player.IsPlayer)
                     {
-                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, Skill.ForceAlter);
                     }
 
                     break;
@@ -175,7 +176,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     if (player.IsPlayer)
                     {
-                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, Skill.ForceAlter);
                     }
 
                     break;
@@ -192,7 +193,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     if (player.IsPlayer)
                     {
-                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, Skill.ForceAlter);
                     }
 
                     iCount += 1;
@@ -212,7 +213,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                             if (player.IsPlayer)
                             {
-                                SkillService.RegisterPCToNPCForSkill(player.Object, oObject, SkillType.ForceAlter);
+                                SkillService.RegisterPCToNPCForSkill(player.Object, oObject, Skill.ForceAlter);
                             }
                             iCount += 1;
                         }
@@ -232,7 +233,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     if (player.IsPlayer)
                     {
-                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, Skill.ForceAlter);
                     }
                     iCount += 1;
 
@@ -251,7 +252,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                             if (player.IsPlayer)
                             {
-                                SkillService.RegisterPCToNPCForSkill(player.Object, oObject, SkillType.ForceAlter);
+                                SkillService.RegisterPCToNPCForSkill(player.Object, oObject, Skill.ForceAlter);
                             }
                             iCount += 1;
                         }
@@ -292,37 +293,37 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 100%.  This ability hits automatically.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 0},
+                    { Skill.ForceAlter, 0},
                 })
             },
             {
                 2, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 125%.  This ability hits automatically.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 10},
+                    { Skill.ForceAlter, 10},
                 })
             },
             {
                 3, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 160%.  This ability hits automatically.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 20},
+                    { Skill.ForceAlter, 20},
                 })
             },
             {
                 4, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 200%.  This ability hits automatically and will chain to a second target within 5m of the first.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 30},
+                    { Skill.ForceAlter, 30},
                 })
             },
             {
                 5, new PerkLevel(2, "Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 250%.  This ability hits automatically and will chain to a second and third target within 5m each.", SpecializationType.Guardian,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 40},
+                    { Skill.ForceAlter, 40},
                 })
             },
         };

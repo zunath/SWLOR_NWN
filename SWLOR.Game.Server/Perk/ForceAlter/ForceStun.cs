@@ -7,6 +7,7 @@ using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -105,23 +106,23 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(4, "Single target is Tranquilised while the caster concentrates or, if resisted, gets -5 to AB and AC.",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 10},
+                    { Skill.ForceAlter, 10},
                 })
             },
             {
                 2, new PerkLevel(7, "Target and nearest other enemy within 10m is Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 50},
+                    { Skill.ForceAlter, 50},
                 })
             },
             {
                 3, new PerkLevel(10, "Target and all other enemies within 10 are Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 80},
+                    { Skill.ForceAlter, 80},
                 })
             },
         };
@@ -165,7 +166,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 return;
             }
 
-            AbilityResistanceResult result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+            AbilityResistanceResult result = CombatService.CalculateAbilityResistance(creature, target.Object, Skill.ForceAlter, ForceBalanceType.Dark);
 
             // Tranquilization effect - Daze target(s). Occurs on succeeding the DC check.
             Effect successEffect = EffectDazed();
@@ -193,7 +194,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             if (creature.IsPlayer)
             {
-                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, Skill.ForceAlter);
             }
 
             EnmityService.AdjustEnmity(target.Object, creature, 1);

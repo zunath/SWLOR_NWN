@@ -20,16 +20,16 @@ namespace SWLOR.Game.Server.Perk.Weapons
 		{
 			{
 				1, new PerkLevel(3, "You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with twin vibroblades.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.TwinBlades, 5}, 
+					{ Skill.TwinBlades, 5}, 
 				})
 			},
 			{
 				2, new PerkLevel(4, "You gain the Weapon Specialization feat which grants a +2 damage when equipped with twin vibroblades.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.TwinBlades, 15}, 
+					{ Skill.TwinBlades, 15}, 
 				})
 			},
 		};

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
@@ -74,23 +75,23 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 		{
 			{
 				1, new PerkLevel(2, "18 second delay between deflection attempts.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 10}, 
+					{ Skill.Lightsaber, 10}, 
 				})
 			},
 			{
 				2, new PerkLevel(4, "12 second delay between deflection attempts.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 25}, 
+					{ Skill.Lightsaber, 25}, 
 				})
 			},
 			{
 				3, new PerkLevel(5, "6 second delay between deflection attempts.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Lightsaber, 50}, 
+					{ Skill.Lightsaber, 50}, 
 				})
 			},
 		};

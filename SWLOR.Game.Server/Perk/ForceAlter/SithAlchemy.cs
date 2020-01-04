@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -73,9 +74,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(0, "Unlocks Sith Alchemy.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 0},
+                    { Skill.ForceAlter, 0},
                 },
                 new List<int>
                 {
@@ -84,9 +85,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             },
             {
                 2, new PerkLevel(7, "When used on a corpse, raises the creature as a henchman while the caster concentrates.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 80},
+                    { Skill.ForceAlter, 80},
                 },
                 new List<int>
                 {
@@ -95,9 +96,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             },
             {
                 3, new PerkLevel(7, "Alchemist can create monsters.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 90},
+                    { Skill.ForceAlter, 90},
                 },
                 new List<int>
                 {
@@ -106,9 +107,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             },
             {
                 4, new PerkLevel(0, "Alchemist can employ monsters as henchmen while they concentrate.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 90},
+                    { Skill.ForceAlter, 90},
                 },
                 new List<int>
                 {

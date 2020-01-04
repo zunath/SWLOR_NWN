@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, Skill.ForceAlter, ForceBalanceType.Dark, true);
 
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             if (creature.IsPlayer)
             {
-                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, Skill.ForceAlter);
             }
 
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Imp_Silence), target);
@@ -116,37 +117,37 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             {
                 1, new PerkLevel(4, "Deals 100 damage to a single target.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 50},
+                    { Skill.ForceAlter, 50},
                 })
             },
             {
                 2, new PerkLevel(5, "Deals 125 damage to a single target.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 60},
+                    { Skill.ForceAlter, 60},
                 })
             },
             {
                 3, new PerkLevel(6, "Deals 160 damage to a single target.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 70},
+                    { Skill.ForceAlter, 70},
                 })
             },
             {
                 4, new PerkLevel(7, "Deals 200 damage to a single target.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 80},
+                    { Skill.ForceAlter, 80},
                 })
             },
             {
                 5, new PerkLevel(8, "Deals 250 damage to a single target.", SpecializationType.Consular,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceAlter, 90},
+                    { Skill.ForceAlter, 90},
                 })
             },
         };

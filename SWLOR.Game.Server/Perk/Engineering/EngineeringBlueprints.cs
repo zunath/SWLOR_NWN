@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
@@ -73,58 +74,58 @@ namespace SWLOR.Game.Server.Perk.Engineering
 		{
 			{
 				1, new PerkLevel(2, "Tier 1 engineering blueprints.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
 
 				})
 			},
 			{
 				2, new PerkLevel(3, "Tier 1 engineering blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 5}, 
+					{ Skill.Engineering, 5}, 
 				})
 			},
 			{
 				3, new PerkLevel(4, "Tier 2 engineering blueprints. +1 enhancement slot",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 10}, 
+					{ Skill.Engineering, 10}, 
 				})
 			},
 			{
 				4, new PerkLevel(5, "Tier 2 engineering blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 15}, 
+					{ Skill.Engineering, 15}, 
 				})
 			},
 			{
 				5, new PerkLevel(6, "Tier 3 engineering blueprints. +2 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 20}, 
+					{ Skill.Engineering, 20}, 
 				})
 			},
 			{
 				6, new PerkLevel(7, "Tier 3 engineering blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 25}, 
+					{ Skill.Engineering, 25}, 
 				})
 			},
 			{
 				7, new PerkLevel(8, "Tier 4 engineering blueprints. +3 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 30}, 
+					{ Skill.Engineering, 30}, 
 				})
 			},
 			{
 				8, new PerkLevel(9, "Tier 4 engineering blueprints. +4 enhancement slots",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.Engineering, 35}, 
+					{ Skill.Engineering, 35}, 
 				})
 			},
 		};

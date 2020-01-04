@@ -127,13 +127,13 @@ namespace SWLOR.Game.Server.Service
                 Player entity = CreateDBPCEntity(player);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
 
-                var skills = DataService.Skill.GetAll();
+                var skills = SkillService.GetAllSkills();
                 foreach (var skill in skills)
                 {
                     var pcSkill = new PCSkill
                     {
                         IsLocked = false,
-                        SkillID = skill.ID,
+                        SkillID = skill,
                         PlayerID = entity.ID,
                         Rank = 0,
                         XP = 0

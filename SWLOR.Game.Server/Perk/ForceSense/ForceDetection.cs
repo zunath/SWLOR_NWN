@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -73,37 +74,37 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             {
                 1, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 0},
+                    { Skill.ForceSense, 0},
                 })
             },
             {
                 2, new PerkLevel(2, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 5},
+                    { Skill.ForceSense, 5},
                 })
             },
             {
                 3, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 20},
+                    { Skill.ForceSense, 20},
                 })
             },
             {
                 4, new PerkLevel(3, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 35},
+                    { Skill.ForceSense, 35},
                 })
             },
             {
                 5, new PerkLevel(4, "The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).", SpecializationType.Sentinel,
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
-                    { SkillType.ForceSense, 50},
+                    { Skill.ForceSense, 50},
                 })
             },
         };

@@ -16,6 +16,7 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Service
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
-            int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
+            int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (Skill)bp.SkillID);
             var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(bp.BaseStructureID));
             var mainComponent = bp.MainComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
             var secondaryComponent = bp.SecondaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>(); 
@@ -222,21 +223,20 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static float CalculateCraftingDelay(NWPlayer oPC, int skillID)
+        public static float CalculateCraftingDelay(NWPlayer oPC, Skill skill)
         {
             int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
             float adjustedSpeed = 1.0f;
-            SkillType skillType = (SkillType)skillID;
 
             // Identify which perk to use for this skill.
-            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyWeaponsmith;
-            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
-            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
-            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
-            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
-            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
-            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
+            if (skill == Skill.Weaponsmith) perkType = PerkType.SpeedyWeaponsmith;
+            else if (skill == Skill.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
+            else if (skill == Skill.Cooking) perkType = PerkType.SpeedyCooking;
+            else if (skill == Skill.Engineering) perkType = PerkType.SpeedyEngineering;
+            else if (skill == Skill.Fabrication) perkType = PerkType.SpeedyFabrication;
+            else if (skill == Skill.Medicine) perkType = PerkType.SpeedyMedicine;
+            else if (skill == Skill.Harvesting) perkType = PerkType.SpeedyReassembly;
             else return BaseCraftDelay;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
@@ -324,30 +324,30 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
+        public static int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, Skill skill)
         {
             int effectiveLevel = skillRank;
             ClassType background = (ClassType)player.Class1;
 
             switch (skill)
             {
-                case SkillType.Armorsmith:
+                case Skill.Armorsmith:
                     if (background == ClassType.Armorsmith)
                         effectiveLevel++;
                     break;
-                case SkillType.Cooking:
+                case Skill.Cooking:
                     if (background == ClassType.Chef)
                         effectiveLevel++;
                     break;
-                case SkillType.Weaponsmith:
+                case Skill.Weaponsmith:
                     if (background == ClassType.Weaponsmith)
                         effectiveLevel++;
                     break;
-                case SkillType.Engineering:
+                case Skill.Engineering:
                     if (background == ClassType.Engineer)
                         effectiveLevel++;
                     break;
-                case SkillType.Fabrication:
+                case Skill.Fabrication:
                     if (background == ClassType.Fabricator)
                         effectiveLevel++;
                     break;
@@ -699,7 +699,7 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateReassemblyChance(NWPlayer player, int penalty)
         {
             const int BaseChance = 70;
-            int harvesting = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            int harvesting = SkillService.GetPCSkillRank(player, Skill.Harvesting);
             var itemBonuses = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.MolecularReassemblyProficiency);
 

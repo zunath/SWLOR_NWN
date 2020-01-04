@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -199,7 +200,7 @@ namespace SWLOR.Game.Server.Conversation
                     if (model.IsConfirmingReassemble)
                     {
                         // Calculate delay, fire off delayed event, and show timing bar.
-                        float delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
+                        float delay = CraftService.CalculateCraftingDelay(player, Skill.Harvesting);
                         NWNXPlayer.StartGuiTimingBar(player, delay, string.Empty);
                         var @event = new OnReassembleComplete(player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
                         player.DelayEvent(delay, @event);

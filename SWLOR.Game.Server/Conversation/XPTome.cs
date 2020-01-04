@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public NWItem Item { get; set; }
-            public int SkillID { get; set; }
+            public Skill SkillID { get; set; }
         }
 
 
@@ -44,12 +44,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            List<SkillCategory> categories = SkillService.GetActiveCategories().Where(x =>
-            {
-                var skills = DataService.Skill.GetByCategoryIDAndContributesToSkillCap(x);
-                return skills.Any();
-            }).ToList();
-
+            var categories = SkillService.GetAllSkillCategoriesWithContributingToCapSkills();
             foreach (SkillCategory category in categories)
             {
                 var attr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
@@ -91,7 +86,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("SkillListPage");
             foreach (PCSkill pcSkill in pcSkills)
             {
-                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name, true, pcSkill.SkillID);
             }
 
@@ -101,8 +96,8 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleSkillListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
-            int skillID = (int)response.CustomData;
-            Skill skill = SkillService.GetSkill(skillID);
+            var skillID = (Skill)response.CustomData;
+            var skill = SkillService.GetSkill(skillID);
             string header = "Are you sure you want to improve your " + skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
 
@@ -118,7 +113,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (vm.Item != null && vm.Item.IsValid)
             {
-                var skill = DataService.Skill.GetByID(vm.SkillID);
+                var skill = SkillService.GetSkill(vm.SkillID);
                 if (!skill.ContributesToSkillCap)
                 {
                     GetPC().FloatingText("You cannot raise that skill with this tome.");

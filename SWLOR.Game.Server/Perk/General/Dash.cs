@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.General
 {
@@ -114,49 +115,49 @@ namespace SWLOR.Game.Server.Perk.General
         {
             {
                 1, new PerkLevel(2, "+25% speed, lasts 1 minute",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 2, new PerkLevel(2, "+30% speed, lasts 1 minute",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 3, new PerkLevel(3, "+35% speed, lasts 1 minute",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 4, new PerkLevel(3, "+40% speed, lasts 1 minute",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 5, new PerkLevel(3, "+45% speed, lasts 1 minute",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 6, new PerkLevel(4, "+50% speed, lasts 1 minute",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })
             },
             {
                 7, new PerkLevel(5, "+50% speed, lasts 2 minutes",
-                new Dictionary<SkillType, int>
+                new Dictionary<Skill, int>
                 {
 
                 })

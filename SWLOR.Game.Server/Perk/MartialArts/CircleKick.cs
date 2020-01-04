@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 
 namespace SWLOR.Game.Server.Perk.MartialArts
@@ -122,9 +123,9 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 		{
 			{
 				1, new PerkLevel(2, "Grants the Circle Kick feat.",
-				new Dictionary<SkillType, int>
+				new Dictionary<Skill, int>
 				{
-					{ SkillType.MartialArts, 15}, 
+					{ Skill.MartialArts, 15}, 
 				})
 			},
 		};

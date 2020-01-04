@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
         [Key]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
-        public int GuildID { get; set; }
+        public GuildType GuildID { get; set; }
         public int Rank { get; set; }
         public int Points { get; set; }
     }

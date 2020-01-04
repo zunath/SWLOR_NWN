@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Quest.Reward;
@@ -31,16 +32,17 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             // If player is missing any entries for guild points, add them now.
-            foreach (var guild in DataService.Guild.GetAll())
+            var guilds = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
+            foreach (var guild in guilds)
             {
-                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildIDOrDefault(player.GlobalID, guild.ID);
+                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildIDOrDefault(player.GlobalID, guild);
 
                 // No GP entry found. Add one now.
                 if (pcGP == null)
                 {
                     pcGP = new PCGuildPoint
                     {
-                        GuildID = guild.ID,
+                        GuildID = guild,
                         PlayerID = player.GlobalID,
                         Points = 0,
                         Rank = 0
@@ -96,8 +98,8 @@ namespace SWLOR.Game.Server.Service
             if (baseAmount > 1000)
                 baseAmount = 1000;
 
-            var dbGuild = DataService.Guild.GetByID((int) guild);
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) guild);
+            var guildDetails = guild.GetAttribute<GuildType, GuildTypeAttribute>();
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild);
             pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
@@ -107,7 +109,7 @@ namespace SWLOR.Game.Server.Service
                 pcGP.Points = maxGP-1;
 
             // Notify player how much GP they earned.
-            player.SendMessage("You earned " + baseAmount + " " + dbGuild.Name + " guild points.");
+            player.SendMessage("You earned " + baseAmount + " " + guildDetails.Name + " guild points.");
 
             // Are we able to rank up?
             bool didRankUp = false;
@@ -119,7 +121,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Let's do a rank up.
                     pcGP.Rank++;
-                    player.SendMessage(ColorTokenService.Green("You've reached rank " + pcGP.Rank + " in the " + dbGuild.Name + "!"));
+                    player.SendMessage(ColorTokenService.Green("You've reached rank " + pcGP.Rank + " in the " + guildDetails.Name + "!"));
                     didRankUp = true;
                 }
             }
@@ -156,7 +158,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateGPReward(NWPlayer player, GuildType guild, int baseAmount)
         {
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild);
             float rankBonus = 0.25f * pcGP.Rank;
 
             // Grant a bonus based on the player's guild relations perk rank.
@@ -209,11 +211,12 @@ namespace SWLOR.Game.Server.Service
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
-            foreach (var guild in DataService.Guild.GetAll())
+            var guilds = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
+            foreach (var guild in guilds)
             {
                 for (int rank = 0; rank < maxRank; rank++)
                 {
-                    var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
+                    var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild).ToList();
                     IEnumerable<GuildTask> tasks;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.

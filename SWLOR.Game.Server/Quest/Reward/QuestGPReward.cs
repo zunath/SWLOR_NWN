@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Service;
@@ -16,8 +17,8 @@ namespace SWLOR.Game.Server.Quest.Reward
             Amount = amount;
             IsSelectable = isSelectable;
 
-            var dbGuild = DataService.Guild.GetByID((int) guild);
-            MenuName = Amount + " " + dbGuild.Name + " GP";
+            var guildDetails = guild.GetAttribute<GuildType, GuildTypeAttribute>();
+            MenuName = Amount + " " + guildDetails.Name + " GP";
         }
 
         public bool IsSelectable { get; }
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Quest.Reward
 
         public void GiveReward(NWPlayer player)
         {
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)Guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, Guild);
             float rankBonus = 0.25f * pcGP.Rank;
             int gp = Amount + (int)(Amount * rankBonus);
             GuildService.GiveGuildPoints(player, Guild, gp);

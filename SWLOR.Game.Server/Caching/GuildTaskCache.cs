@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Caching
             return GetFromListIndex(ByCurrentlyOfferedIndex, ByCurrentlyOfferedValue);
         }
 
-        public IEnumerable<GuildTask> GetAllByGuildIDAndRequiredRank(int requiredRank, int guildID)
+        public IEnumerable<GuildTask> GetAllByGuildIDAndRequiredRank(int requiredRank, GuildType guildID)
         {
             if (!ExistsByListIndex(ByRequiredRankIndex, requiredRank.ToString()))
                 return new List<GuildTask>();

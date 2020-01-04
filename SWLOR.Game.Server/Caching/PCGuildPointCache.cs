@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -37,12 +38,12 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public PCGuildPoint GetByPlayerIDAndGuildID(Guid playerID, int guildID)
+        public PCGuildPoint GetByPlayerIDAndGuildID(Guid playerID, GuildType guildID)
         {
             return GetFromIndex(playerID.ToString(), guildID.ToString());
         }
 
-        public PCGuildPoint GetByPlayerIDAndGuildIDOrDefault(Guid playerID, int guildID)
+        public PCGuildPoint GetByPlayerIDAndGuildIDOrDefault(Guid playerID, GuildType guildID)
         {
             if (!ExistsByIndex(playerID.ToString(), guildID.ToString()))
                 return default;

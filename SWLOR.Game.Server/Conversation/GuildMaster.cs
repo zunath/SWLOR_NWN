@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Quest.Reward;
@@ -14,7 +16,17 @@ namespace SWLOR.Game.Server.Conversation
     {
         private class Model
         {
-            public GuildType Guild { get; set; }
+            private GuildType _guild;
+            public GuildType Guild 
+            {
+                get => _guild;
+                set
+                {
+                    _guild = value;
+                    GuildDetails = _guild.GetAttribute<GuildType, GuildTypeAttribute>();
+                }
+            }
+            public GuildTypeAttribute GuildDetails { get; private set; }
             public int TaskID { get; set; }
         }
 
@@ -95,13 +107,12 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var guild = DataService.Guild.GetByID((int) model.Guild);
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild.ID);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
             int requiredPoints = GuildService.RankProgression[pcGP.Rank];
 
-            string header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
+            string header = ColorTokenService.Green("Guild: ") + model.GuildDetails.Name + "\n";
             header += ColorTokenService.Green("Rank: ") + pcGP.Rank + " (" + pcGP.Points + " / " + requiredPoints + " GP)\n"; 
-            header += ColorTokenService.Green("Description: ") + guild.Description + "\n\n";
+            header += ColorTokenService.Green("Description: ") + model.GuildDetails.Description + "\n\n";
             header += "Welcome to my guild, " + player.Name + ". What can I help you with?";
 
             SetPageHeader("MainPage", header);
@@ -127,7 +138,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadTellMePage()
         {
-            var guilds = DataService.Guild.GetAll();
+            var guilds = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
 
             string header = "Guilds are organizations focused on the advancement of a particular task. Every guild is freely open for you to contribute as you see fit. Those who contribute the most will receive the biggest benefits.\n\n";
             header += "One of the ways we reward contributors is by way of Guild Points or GP. When you complete a task - such as hunting a beast or creating needed supplies - you'll receive not only payment but also GP.\n\n";
@@ -136,7 +147,8 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var guild in guilds)
             {
-                header += ColorTokenService.Green(guild.Name) + ": " + guild.Description + "\n\n";
+                var guildDetails = guild.GetAttribute<GuildType, GuildTypeAttribute>();
+                header += ColorTokenService.Green(guildDetails.Name) + ": " + guildDetails.Description + "\n\n";
             }
 
             SetPageHeader("TellMePage", header);
@@ -146,7 +158,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) model.Guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
 
             // If player's rank is too low, send them to the page explaining that.
             if (pcGP.Rank <= 0)
@@ -169,7 +181,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)model.Guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
 
             // Check the player's rank and ensure they can access this store.
             if (pcGP.Rank < responseID)
@@ -213,7 +225,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("TaskListPage");
 
             var lastUpdate = DataService.ServerConfiguration.Get().LastGuildTaskUpdate;
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int) model.Guild);
+            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
 
             // It's possible for players to have tasks which are no longer offered. 
             // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.
@@ -225,7 +237,7 @@ namespace SWLOR.Game.Server.Conversation
                 .GetAll()
                 .Where(x => !x.IsCurrentlyOffered &&
                             questIDs.Contains(x.QuestID) &&
-                            x.GuildID == (int)model.Guild)
+                            x.GuildID == model.Guild)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in expiredTasks)
             {
@@ -237,7 +249,7 @@ namespace SWLOR.Game.Server.Conversation
             // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs.
             var tasks = DataService.GuildTask
                 .GetAllByCurrentlyOffered()
-                .Where(x => x.GuildID == (int) model.Guild &&
+                .Where(x => x.GuildID == model.Guild &&
                             x.RequiredRank <= pcGP.Rank)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in tasks)

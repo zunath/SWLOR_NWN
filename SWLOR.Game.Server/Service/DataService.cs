@@ -33,7 +33,6 @@ namespace SWLOR.Game.Server.Service
         public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
         public static DownloadCache Download { get; } = new DownloadCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
-        public static GuildCache Guild { get; } = new GuildCache();
         public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();
         public static JukeboxSongCache JukeboxSong { get; } = new JukeboxSongCache();
         public static KeyItemCache KeyItem { get; } = new KeyItemCache();

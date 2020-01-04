@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static IEnumerable<PCKeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, int categoryID)
+        public static IEnumerable<PCKeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, KeyItemCategoryType categoryID)
         {
             return DataService.PCKeyItem.GetAllByPlayerID(player.GlobalID).Where(x =>
             {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -46,11 +47,11 @@ namespace SWLOR.Game.Server.Conversation
                         case 2: // "Quest Items"
                         case 3: // "Documents"
                             GetPC().SetLocalInt("TEMP_MENU_KEY_ITEM_CATEGORY_ID", responseID);
-                            LoadKeyItemsOptions(responseID);
+                            LoadKeyItemsOptions((KeyItemCategoryType)responseID);
                             break;
                         case 4:
                             GetPC().SetLocalInt("TEMP_MENU_KEY_ITEM_CATEGORY_ID", 5);
-                            LoadKeyItemsOptions(5);
+                            LoadKeyItemsOptions(KeyItemCategoryType.Keys);
                             break;
                     }
                     break;
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("KeyItemsListPage", "Select a key item.");
         }
 
-        private void LoadKeyItemsOptions(int categoryID)
+        private void LoadKeyItemsOptions(KeyItemCategoryType categoryID)
         {
             List<PCKeyItem> items = KeyItemService.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
 

@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -6,7 +7,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         [Key]
         public int ID { get; set; }
-        public int KeyItemCategoryID { get; set; }
+        public KeyItemCategoryType KeyItemCategoryID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }

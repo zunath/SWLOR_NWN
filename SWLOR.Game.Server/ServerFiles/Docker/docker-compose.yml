@@ -4,7 +4,7 @@ services:
     redis:
         hostname: redis
         image: redis:latest
-        command: ["redis-server", "--appendonly", "no"]
+        command: redis-server --save 300 0
         volumes:
           - ${PWD-.}/redis:/data
         restart: always

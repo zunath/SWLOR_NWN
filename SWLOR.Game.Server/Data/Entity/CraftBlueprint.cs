@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -16,11 +17,11 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? PerkID { get; set; }
         public int RequiredPerkLevel { get; set; }
         public bool IsActive { get; set; }
-        public int MainComponentTypeID { get; set; }
+        public ComponentType MainComponentTypeID { get; set; }
         public int MainMinimum { get; set; }
-        public int SecondaryComponentTypeID { get; set; }
+        public ComponentType SecondaryComponentTypeID { get; set; }
         public int SecondaryMinimum { get; set; }
-        public int TertiaryComponentTypeID { get; set; }
+        public ComponentType TertiaryComponentTypeID { get; set; }
         public int TertiaryMinimum { get; set; }
         public int EnhancementSlots { get; set; }
         public int MainMaximum { get; set; }

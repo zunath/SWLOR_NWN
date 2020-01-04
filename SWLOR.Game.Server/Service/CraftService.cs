@@ -10,12 +10,12 @@ using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
-using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.Service
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
             var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(bp.BaseStructureID));
-            var mainComponent = DataService.ComponentType.GetByID(bp.MainComponentTypeID);
-            var secondaryComponent = DataService.ComponentType.GetByID(bp.SecondaryComponentTypeID);
-            var tertiaryComponent = DataService.ComponentType.GetByID(bp.TertiaryComponentTypeID);
+            var mainComponent = bp.MainComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
+            var secondaryComponent = bp.SecondaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>(); 
+            var tertiaryComponent = bp.TertiaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
 
             string header = ColorTokenService.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += ColorTokenService.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";

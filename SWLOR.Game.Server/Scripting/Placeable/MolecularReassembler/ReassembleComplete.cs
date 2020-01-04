@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
@@ -11,7 +12,6 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
-using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
 namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
 {
@@ -57,11 +57,11 @@ namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
             string serializedSalvageItem = data.SerializedSalvageItem;
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
-            int salvageComponentTypeID = data.SalvageComponentTypeID;
-            _componentType = DataService.ComponentType.GetByID(salvageComponentTypeID);
+            _componentType = data.SalvageComponentTypeID;
 
             // Create an item with no bonuses every time.
-            _.CreateItemOnObject(_componentType.ReassembledResref, _player);
+            var attr = _componentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
+            _.CreateItemOnObject(attr.ReassembledResref, _player);
 
             // Now check specific custom properties which are stored as local variables on the item.
             xp += ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
@@ -113,7 +113,8 @@ namespace SWLOR.Game.Server.Scripting.Placeable.MolecularReassembler
 
         private int ProcessProperty(int amount, int maxBonuses, ComponentBonusType bonus, float levelsPerBonus = 1.0f)
         {
-            string resref = _componentType.ReassembledResref;
+            var attr = _componentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
+            string resref = attr.ReassembledResref;
             int penalty = 0;
             int luck = PerkService.GetCreaturePerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
             int xp = 0;

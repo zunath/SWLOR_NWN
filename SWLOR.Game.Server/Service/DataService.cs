@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Service
         public static BaseStructureCache BaseStructure { get; } = new BaseStructureCache();
         public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
         public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
-        public static ComponentTypeCache ComponentType { get; } = new ComponentTypeCache();
         public static CraftBlueprintCache CraftBlueprint { get; } = new CraftBlueprintCache();
         public static CraftBlueprintCategoryCache CraftBlueprintCategory { get; } = new CraftBlueprintCategoryCache();
         public static CraftDeviceCache CraftDevice { get; } = new CraftDeviceCache();

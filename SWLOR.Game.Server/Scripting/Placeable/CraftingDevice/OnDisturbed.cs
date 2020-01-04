@@ -2,6 +2,7 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
@@ -47,9 +48,9 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingDevice
             }
 
             var model = CraftService.GetPlayerCraftingData(oPC);
-            var mainComponent = DataService.ComponentType.GetByID(model.Blueprint.MainComponentTypeID);
-            var secondaryComponent = DataService.ComponentType.GetByID(model.Blueprint.SecondaryComponentTypeID);
-            var tertiaryComponent = DataService.ComponentType.GetByID(model.Blueprint.TertiaryComponentTypeID);
+            var mainComponent = model.Blueprint.MainComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
+            var secondaryComponent = model.Blueprint.SecondaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>(); 
+            var tertiaryComponent = model.Blueprint.TertiaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
 
             NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
 

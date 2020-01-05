@@ -2,7 +2,7 @@
 {
     public enum PerkType
     {
-        Unknown = -1,
+        None = 0,
         SpeedyFabrication = 1, 
         FabricationBlueprints = 2, 
         ForceSpeed = 3,

@@ -48,9 +48,10 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingDevice
             }
 
             var model = CraftService.GetPlayerCraftingData(oPC);
-            var mainComponent = model.Blueprint.MainComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
-            var secondaryComponent = model.Blueprint.SecondaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>(); 
-            var tertiaryComponent = model.Blueprint.TertiaryComponentTypeID.GetAttribute<ComponentType, ComponentTypeAttribute>();
+            var bp = CraftService.GetBlueprintByID(model.Blueprint);
+            var mainComponent = bp.MainComponentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
+            var secondaryComponent = bp.SecondaryComponentType.GetAttribute<ComponentType, ComponentTypeAttribute>(); 
+            var tertiaryComponent = bp.TertiaryComponentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
 
             NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
 
@@ -63,26 +64,26 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingDevice
             switch (model.Access)
             {
                 case CraftingAccessType.MainComponent:
-                    allowedType = (ComponentType)model.Blueprint.MainComponentTypeID;
+                    allowedType = bp.MainComponentType;
                     reachedCap = model.MainMaximum < model.MainComponents.Count + 1;
                     list = model.MainComponents;
                     componentName = mainComponent.Name;
                     break;
                 case CraftingAccessType.SecondaryComponent:
-                    allowedType = (ComponentType)model.Blueprint.SecondaryComponentTypeID;
+                    allowedType = bp.SecondaryComponentType;
                     reachedCap = model.SecondaryMaximum < model.SecondaryComponents.Count + 1;
                     list = model.SecondaryComponents;
                     componentName = secondaryComponent.Name;
                     break;
                 case CraftingAccessType.TertiaryComponent:
-                    allowedType = (ComponentType)model.Blueprint.TertiaryComponentTypeID;
+                    allowedType = bp.TertiaryComponentType;
                     reachedCap = model.TertiaryMaximum < model.TertiaryComponents.Count + 1;
                     list = model.TertiaryComponents;
                     componentName = tertiaryComponent.Name;
                     break;
                 case CraftingAccessType.Enhancement:
                     allowedType = ComponentType.Enhancement;
-                    reachedCap = model.Blueprint.EnhancementSlots < model.EnhancementComponents.Count + 1;
+                    reachedCap = bp.EnhancementSlots < model.EnhancementComponents.Count + 1;
                     reachedEnhancementLimit = model.PlayerPerkLevel / 2 < model.EnhancementComponents.Count + 1;
                     list = model.EnhancementComponents;
                     componentName = "Enhancement";
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.CraftingDevice
 
             var props = oItem.ItemProperties.ToList();
             var allowedItemTypes = new List<CustomItemType>();
-            CustomItemType finishedItemType = ItemService.GetCustomItemTypeByResref(model.Blueprint.ItemResref);
+            CustomItemType finishedItemType = ItemService.GetCustomItemTypeByResref(bp.Resref);
 
             foreach (var ip in props)
             {

@@ -4,6 +4,8 @@ namespace SWLOR.Game.Server.Enumeration
 {
     public enum CraftDeviceType
     {
+        [Description("Invalid")]
+        Invalid = 0,
         [Description("Armorsmith Bench")]
         ArmorsmithBench = 1,
         [Description("Weaponsmith Bench")]

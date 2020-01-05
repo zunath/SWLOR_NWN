@@ -65,12 +65,12 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("MainPage");
 
-            var lastBlueprintId = GetPC().GetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + deviceID);
+            var lastBlueprintId = (CraftBlueprint)GetPC().GetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + deviceID);
             var bp = CraftService.GetBlueprintByID(lastBlueprintId);
 
             if (bp != null)
             {
-                AddResponseToPage("MainPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, new Tuple<int, Type>(bp.ID, typeof(CraftBlueprint)));
+                AddResponseToPage("MainPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, new Tuple<int, Type>((int)lastBlueprintId, typeof(CraftBlueprint)));
             }
 
             AddResponseToPage("MainPage", "Scrap Item");
@@ -87,12 +87,13 @@ namespace SWLOR.Game.Server.Conversation
             NWObject device = GetDialogTarget();
             var deviceID = (CraftDeviceType)device.GetLocalInt("CRAFT_DEVICE_ID");
 
-            List<CraftBlueprint> blueprints = CraftService.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
+            var blueprints = CraftService.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
 
             ClearPageResponses("BlueprintListPage");
-            foreach (CraftBlueprint bp in blueprints)
+            foreach (var bp in blueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, bp.ID);
+                var attr = CraftService.GetBlueprintByID(bp);
+                AddResponseToPage("BlueprintListPage", attr.Quantity + "x " + attr.ItemName, attr.IsActive, bp);
             }
         }
         
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadCraftPage(int blueprintID)
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
-            model.BlueprintID = blueprintID;
+            model.Blueprint = (CraftBlueprint)blueprintID;
             SwitchConversation("CraftItem");
         }
 

@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.AI
             var concentration = AbilityService.GetActiveConcentrationEffect(self);
 
             // Exclude any concentration effects, if necessary, then randomize potential feats to use.
-            var randomizedFeatIDs = concentration.Type == PerkType.Unknown 
+            var randomizedFeatIDs = concentration.Type == PerkType.None 
                 ? cache.Values // No concentration exclusions
                 : cache.Values.Where(x => x.ExecutionType != PerkExecutionType.ConcentrationAbility); // Exclude concentration abilities
             randomizedFeatIDs = randomizedFeatIDs.OrderBy(o => RandomService.Random());

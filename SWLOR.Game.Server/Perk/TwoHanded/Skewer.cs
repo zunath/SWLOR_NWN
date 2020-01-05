@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
             NWCreature targetCreature = target.Object;
             var effect = AbilityService.GetActiveConcentrationEffect(targetCreature);
-            if (effect.Type != PerkType.Unknown)
+            if (effect.Type != PerkType.None)
             {
                 targetCreature.SendMessage("Your concentration effect has been interrupted by " + creature.Name + ".");
                 AbilityService.EndConcentrationEffect(target.Object);

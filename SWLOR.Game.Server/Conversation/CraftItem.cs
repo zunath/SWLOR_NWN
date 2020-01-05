@@ -34,10 +34,10 @@ namespace SWLOR.Game.Server.Conversation
             if (!model.IsInitialized)
             {
                 model.IsInitialized = true;
-                model.Blueprint = CraftService.GetBlueprintByID(model.BlueprintID);
-                model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
+                var bp = CraftService.GetBlueprintByID(model.Blueprint);
+                model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), bp.Skill);
 
-                switch ((Skill)model.Blueprint.SkillID)
+                switch (bp.Skill)
                 {
                     case Skill.Armorsmith:
                         model.PlayerPerkLevel = PerkService.GetCreaturePerkLevel(GetPC(), PerkType.ArmorBlueprints);
@@ -64,19 +64,19 @@ namespace SWLOR.Game.Server.Conversation
 
                 }
                 GetDevice().IsLocked = true;
-                model.MainMinimum = model.Blueprint.MainMinimum ;
-                model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;
-                model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
+                model.MainMinimum = bp.MainComponentMinimum ;
+                model.SecondaryMinimum = bp.SecondaryComponentMinimum;
+                model.TertiaryMinimum = bp.TertiaryComponentMinimum;
 
-                model.MainMaximum = model.Blueprint.MainMaximum;
-                model.SecondaryMaximum = model.Blueprint.SecondaryMaximum > 0 ? model.Blueprint.SecondaryMaximum : 0;
-                model.TertiaryMaximum = model.Blueprint.TertiaryMaximum > 0 ? model.Blueprint.TertiaryMaximum : 0;
+                model.MainMaximum = bp.MainComponentMaximum;
+                model.SecondaryMaximum = bp.SecondaryComponentMaximum > 0 ? bp.SecondaryComponentMaximum : 0;
+                model.TertiaryMaximum = bp.TertiaryComponentMaximum > 0 ? bp.TertiaryComponentMaximum : 0;
 
                 if (model.MainMinimum <= 0)
                     model.MainMinimum = 1;
-                if (model.SecondaryMinimum <= 0 && model.Blueprint.SecondaryMinimum > 0)
+                if (model.SecondaryMinimum <= 0 && bp.SecondaryComponentMinimum > 0)
                     model.SecondaryMinimum = 1;
-                if (model.TertiaryMinimum <= 0 && model.Blueprint.TertiaryMinimum > 0)
+                if (model.TertiaryMinimum <= 0 && bp.TertiaryComponentMinimum > 0)
                     model.TertiaryMinimum = 1;
 
             }
@@ -128,14 +128,15 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildMainPageOptions()
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
+            var bp = CraftService.GetBlueprintByID(model.Blueprint);
             int maxEnhancements = model.PlayerPerkLevel / 2;
-            bool canAddEnhancements = model.Blueprint.EnhancementSlots > 0 && maxEnhancements > 0;
+            bool canAddEnhancements = bp.EnhancementSlots > 0 && maxEnhancements > 0;
 
             AddResponseToPage("MainPage", "Examine Base Item");
             AddResponseToPage("MainPage", "Create Item", model.CanBuildItem);
             AddResponseToPage("MainPage", "Select Main Components");
-            AddResponseToPage("MainPage", "Select Secondary Components", model.Blueprint.SecondaryMinimum > 0);
-            AddResponseToPage("MainPage", "Select Tertiary Components", model.Blueprint.TertiaryMinimum > 0);
+            AddResponseToPage("MainPage", "Select Secondary Components", bp.SecondaryComponentMinimum > 0);
+            AddResponseToPage("MainPage", "Select Tertiary Components", bp.TertiaryComponentMinimum > 0);
             AddResponseToPage("MainPage", "Select Enhancement Components", canAddEnhancements);
 
             AddResponseToPage("MainPage", "Change Blueprint");
@@ -145,13 +146,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
             NWPlaceable device = GetDevice();
+            var bp = CraftService.GetBlueprintByID(model.Blueprint);
 
             switch (responseID)
             {
                 case 1: // Examine Base Item
-                    CraftBlueprint entity = CraftService.GetBlueprintByID(model.BlueprintID);
                     NWPlaceable tempContainer = (_.GetObjectByTag("craft_temp_store"));
-                    NWItem examineItem = (_.CreateItemOnObject(entity.ItemResref, tempContainer.Object));
+                    NWItem examineItem = (_.CreateItemOnObject(bp.Resref, tempContainer.Object));
                     GetPC().AssignCommand(() => _.ActionExamine(examineItem.Object));
                     examineItem.Destroy(0.1f);
                     break;
@@ -162,7 +163,7 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    int effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (Skill)model.Blueprint.SkillID);
+                    int effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, bp.Skill);
                     int difficulty = effectiveLevel - model.AdjustedLevel;
 
                     if(difficulty <= -5)

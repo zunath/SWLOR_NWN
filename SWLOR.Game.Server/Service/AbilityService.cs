@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Service
             if (creature.IsPlayer)
             {
                 Player dbPlayer = DataService.Player.GetByID(creature.GlobalID);
-                if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
+                if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.None, 0);
 
                 return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
             }
@@ -353,7 +353,7 @@ namespace SWLOR.Game.Server.Service
                 // Creatures are assumed to always use the highest perk level available.
                 int perkID = creature.GetLocalInt("ACTIVE_CONCENTRATION_PERK_ID");
                 int tier = creature.GetLocalInt("PERK_LEVEL_" + perkID);
-                PerkType type = perkID <= 0 ? PerkType.Unknown : (PerkType) perkID;
+                PerkType type = perkID <= 0 ? PerkType.None : (PerkType) perkID;
                 return new ConcentrationEffect(type, tier);
             }
 
@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.Service
                 bool ended = false;
 
                 // If we have an invalid creature for any reason, remove it and move to the next one.
-                if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.Unknown)
+                if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.None)
                 {
                     ConcentratingCreatures.RemoveAt(index);
                     continue;

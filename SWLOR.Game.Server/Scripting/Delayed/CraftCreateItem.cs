@@ -63,15 +63,15 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
             var model = CraftService.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
+            var blueprint = CraftService.GetBlueprintByID(model.Blueprint);
             BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
-            PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
+            PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.Skill);
 
-            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (Skill)blueprint.SkillID);
+            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (Skill)blueprint.Skill);
             int itemLevel = model.AdjustedLevel;
             int atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
-            float equipmentBonus = CalculateEquipmentBonus(player, (Skill)blueprint.SkillID);
+            float equipmentBonus = CalculateEquipmentBonus(player, (Skill)blueprint.Skill);
 
             if (chance <= 1.0f)
             {
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
             int luckyBonus = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             var craftedItems = new List<NWItem>();
-            NWItem craftedItem = (_.CreateItemOnObject(blueprint.ItemResref, player.Object, blueprint.Quantity));
+            NWItem craftedItem = (_.CreateItemOnObject(blueprint.Resref, player.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;
             craftedItems.Add(craftedItem);
 
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
             {
                 for (int x = 2; x <= blueprint.Quantity; x++)
                 {
-                    craftedItem = (_.CreateItemOnObject(blueprint.ItemResref, player.Object));
+                    craftedItem = (_.CreateItemOnObject(blueprint.Resref, player.Object));
                     craftedItem.IsIdentified = true;
                     craftedItems.Add(craftedItem);
                 }
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
             int baseXP = 750 + successAmount * RandomService.Random(1, 50);
             float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            bool exists = DataService.PCCraftedBlueprint.ExistsByPlayerIDAndCraftedBlueprintID(player.GlobalID, blueprint.ID);
+            bool exists = DataService.PCCraftedBlueprint.ExistsByPlayerIDAndCraftedBlueprintID(player.GlobalID, model.Blueprint);
             if(!exists)
             {
                 xp = xp * 1.50f;
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
                 var pcCraftedBlueprint = new PCCraftedBlueprint
                 {
-                    CraftBlueprintID = blueprint.ID,
+                    CraftBlueprintID = model.Blueprint,
                     DateFirstCrafted = DateTime.UtcNow,
                     PlayerID = player.GlobalID
                 };
@@ -170,9 +170,9 @@ namespace SWLOR.Game.Server.Scripting.Delayed
                 DataService.SubmitDataChange(pcCraftedBlueprint, DatabaseActionType.Insert);
             }
 
-            SkillService.GiveSkillXP(player, blueprint.SkillID, (int)xp);
+            SkillService.GiveSkillXP(player, blueprint.Skill, (int)xp);
             CraftService.ClearPlayerCraftingData(player, true);
-            player.SetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + blueprint.CraftDeviceID, blueprint.ID);
+            player.SetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + blueprint.CraftDevice, (int)model.Blueprint);
         }
 
 

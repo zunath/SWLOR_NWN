@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.ChatCommand
             else
             {
                 var effect = AbilityService.GetActiveConcentrationEffect(user);
-                if (effect.Type == PerkType.Unknown)
+                if (effect.Type == PerkType.None)
                 {
                     user.SendMessage("No concentration ability is currently active.");
                 }

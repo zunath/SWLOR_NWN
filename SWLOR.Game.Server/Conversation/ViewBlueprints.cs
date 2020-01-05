@@ -101,9 +101,10 @@ namespace SWLOR.Game.Server.Conversation
             
             vm.CraftBlueprints = CraftService.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 
-            foreach (CraftBlueprint bp in vm.CraftBlueprints)
+            foreach (var bp in vm.CraftBlueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.ID);
+                var attr = CraftService.GetBlueprintByID(bp);
+                AddResponseToPage("BlueprintListPage", attr.ItemName, true, bp);
             }
 
             ChangePage("BlueprintListPage");
@@ -112,24 +113,24 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListPageResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            int blueprintID = (int)response.CustomData;
+            var blueprintID = (CraftBlueprint)response.CustomData;
 
-            if (blueprintID == -1)
+            if (blueprintID == CraftBlueprint.Invalid)
             {
                 ChangePage("CraftCategoriesPage");
                 return;
             }
 
+            var bp = CraftService.GetBlueprintByID(blueprintID);
             var model = CraftService.GetPlayerCraftingData(GetPC());
-            model.Blueprint = CraftService.GetBlueprintByID(blueprintID);
-            model.BlueprintID = blueprintID;
-            model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
-            model.MainMinimum = model.Blueprint.MainMinimum;
-            model.MainMaximum = model.Blueprint.MainMaximum;
-            model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;
-            model.SecondaryMaximum = model.Blueprint.SecondaryMaximum;
-            model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
-            model.TertiaryMaximum = model.Blueprint.TertiaryMaximum;
+            model.Blueprint = blueprintID;
+            model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), bp.Skill);
+            model.MainMinimum = bp.MainComponentMinimum;
+            model.MainMaximum = bp.MainComponentMaximum;
+            model.SecondaryMinimum = bp.SecondaryComponentMinimum;
+            model.SecondaryMaximum = bp.SecondaryComponentMaximum;
+            model.TertiaryMinimum = bp.TertiaryComponentMinimum;
+            model.TertiaryMaximum = bp.TertiaryComponentMaximum;
 
             string header = CraftService.BuildBlueprintHeader(GetPC(), false);
 

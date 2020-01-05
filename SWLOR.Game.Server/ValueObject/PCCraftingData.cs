@@ -2,13 +2,13 @@
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ValueObject
 {
     public class PCCraftingData
     {
         // Normal Crafting properties
-        public int BlueprintID { get; set; }
         public CraftBlueprint Blueprint { get; set; }
         public int MainMinimum { get; set; }
         public int MainMaximum { get; set; }
@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.ValueObject
         {
             get
             {
-                int adjustedLevel = Blueprint.BaseLevel;
+                var blueprint = CraftService.GetBlueprintByID(Blueprint);
+                int adjustedLevel = blueprint.BaseLevel;
                 foreach (var comp in MainComponents)
                 {
                     adjustedLevel += comp.LevelIncrease > 0 ? comp.LevelIncrease : comp.RecommendedLevel;

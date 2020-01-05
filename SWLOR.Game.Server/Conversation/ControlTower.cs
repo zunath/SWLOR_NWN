@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Conversation
                     return;
                 }
 
-                var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
+                var towerStructure = BaseService.GetBaseStructure(tower.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 

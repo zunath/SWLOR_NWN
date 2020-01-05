@@ -16,14 +16,14 @@ namespace SWLOR.Game.Server.Data.Entity
         [Key]
         public Guid ID { get; set; }
         public Guid PCBaseID { get; set; }
-        public int BaseStructureID { get; set; }
+        public BaseStructure BaseStructureID { get; set; }
         public double LocationX { get; set; }
         public double LocationY { get; set; }
         public double LocationZ { get; set; }
         public double LocationOrientation { get; set; }
         public double Durability { get; set; }
-        public int? InteriorStyleID { get; set; }
-        public int? ExteriorStyleID { get; set; }
+        public BuildingStyle InteriorStyleID { get; set; }
+        public BuildingStyle ExteriorStyleID { get; set; }
         public Guid? ParentPCBaseStructureID { get; set; }
         public string CustomName { get; set; }
         public int StructureBonus { get; set; }

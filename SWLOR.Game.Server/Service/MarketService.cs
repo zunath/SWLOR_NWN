@@ -356,11 +356,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check base structures.
-            int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
-            if (baseStructureID > 0)
+            var baseStructureID = (BaseStructure)item.GetLocalInt("BASE_STRUCTURE_ID");
+            if (baseStructureID != BaseStructure.Invalid)
             {
-                var baseStructure = DataService.BaseStructure.GetByID(baseStructureID);
-                var baseStructureType = (BaseStructureType) baseStructure.BaseStructureTypeID;
+                var baseStructure = BaseService.GetBaseStructure(baseStructureID);
+                var baseStructureType = baseStructure.BaseStructureType;
 
                 switch (baseStructureType)
                 {

@@ -4,6 +4,8 @@ namespace SWLOR.Game.Server.Enumeration
 {
     public enum BaseStructureType
     {
+        [BaseStructureType("Invalid", false, false)]
+        Invalid = 0,
         [BaseStructureType("Control Tower", false, true)]
         ControlTower = 1,
         [BaseStructureType("Drill", false, true)]

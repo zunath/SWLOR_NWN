@@ -634,10 +634,10 @@ namespace SWLOR.Game.Server.Service
                             var structures = DataService.PCBaseStructure.GetAllByPCBaseID(@base.ID);
                             foreach (var structure in structures)
                             {
-                                BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-                                if (baseStructure.BaseStructureTypeID == BaseStructureType.StarshipProduction)
+                                var baseStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
+                                if (baseStructure.BaseStructureType == BaseStructureType.StarshipProduction)
                                 {
-                                    LoggingService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID);
+                                    LoggingService.Trace(TraceComponent.Space, "Found a dock with ID " + structure.BaseStructureID);
 
                                     // Found a dock.  Is it open?  Find the actual placeable object for the dock so we can check its vars.
                                     List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
@@ -1183,7 +1183,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             player.SendMessage("You found some salvage!");
 
-                            BaseStructure structure = DataService.BaseStructure.GetByID(shipStructure.BaseStructureID);
+                            var structure = BaseService.GetBaseStructure(shipStructure.BaseStructureID);
                             int count = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(shipStructure.ID).Count() + 1;
                             if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
                             {

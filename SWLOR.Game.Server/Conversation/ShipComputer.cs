@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Conversation
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID); 
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+            var baseStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
 
             NWPlaceable bay = SpaceService.GetCargoBay(GetPC().Area, null);
 

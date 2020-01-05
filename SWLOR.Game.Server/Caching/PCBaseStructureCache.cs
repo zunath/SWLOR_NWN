@@ -52,8 +52,8 @@ namespace SWLOR.Game.Server.Caching
             var entities = GetFromListIndex(ByPCBaseIDIndex, entity.PCBaseID.ToString());
             foreach (var structure in entities)
             {
-                var baseStructureType = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-                if (baseStructureType.BaseStructureTypeID != BaseStructureType.ControlTower)
+                var baseStructureType = BaseService.GetBaseStructure(structure.BaseStructureID);
+                if (baseStructureType.BaseStructureType != BaseStructureType.ControlTower)
                 {
                     power += baseStructureType.Power;
                     cpu += baseStructureType.CPU;

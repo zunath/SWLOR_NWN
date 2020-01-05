@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ControlTower
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
             {
                 pcBase.Fuel--;
-                BaseStructure towerStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+                var towerStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 

@@ -138,9 +138,9 @@ namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
                 return;
             }
 
-            var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
+            var towerStructure = BaseService.GetBaseStructure(tower.BaseStructureID);
 
-            if (towerStructure.BaseStructureTypeID == BaseStructureType.Starship)
+            if (towerStructure.BaseStructureType == BaseStructureType.Starship)
             {
                 // This is a spaceship, so don't give the feedback message.
                 return;

@@ -553,7 +553,7 @@ namespace SWLOR.Game.Server.Service
 
             var atmoStructures = structures.Where(x =>
             {
-                var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                var baseStructure = BaseService.GetBaseStructure(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             }).ToList();
 

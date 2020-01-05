@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
             int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(tower.ID) + 1;
             if (count > capacity) return;
 
-            BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
+            var baseStructure = BaseService.GetBaseStructure(pcStructure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
             var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.ValueObject
         public bool IsConfirming { get; set; }
         public int ConfirmingPurchaseResponseID { get; set; }
         public Guid PCBaseID { get; set; }
-        public int BaseStructureID { get; set; }
+        public BaseStructure BaseStructureID { get; set; }
         public Guid StructureID { get; set; }
         public bool IsPreviewing { get; set; }
         public NWPlaceable StructurePreview { get; set; }

@@ -57,13 +57,13 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            BaseStructure structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
+            var structure = BaseService.GetBaseStructure(data.BaseStructureID);
             var tower = BaseService.GetBaseControlTower(data.PCBaseID);
-            var towerBaseStructure = tower == null ? null : DataService.BaseStructure.GetByID(tower.BaseStructureID);
+            var towerBaseStructure = tower == null ? null : BaseService.GetBaseStructure(tower.BaseStructureID);
 
             bool canPlaceStructure = true;
-            bool isPlacingTower = structure.BaseStructureTypeID == BaseStructureType.ControlTower;
-            bool isPlacingBuilding = structure.BaseStructureTypeID == BaseStructureType.Building;
+            bool isPlacingTower = structure.BaseStructureType == BaseStructureType.ControlTower;
+            bool isPlacingBuilding = structure.BaseStructureType == BaseStructureType.Building;
             bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalBoolean("STRUCTURE_BUILDING_INITIALIZED") == false;
 
             double powerInUse = BaseService.GetPowerInUse(data.PCBaseID);
@@ -82,14 +82,14 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior)
             {
                 var buildingStructure = DataService.PCBaseStructure.GetByID((Guid)data.ParentStructureID);
-                var baseStructure = DataService.BaseStructure.GetByID(buildingStructure.BaseStructureID);
+                var baseStructure = BaseService.GetBaseStructure(buildingStructure.BaseStructureID);
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
                 var structures = DataService.PCBaseStructure
                     .GetAllByParentPCBaseStructureID(buildingStructure.ID).Where(x =>
                     {
-                        var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                        var childStructure = BaseService.GetBaseStructure(x.BaseStructureID);
                         return childStructure.HasAtmosphere;
                     });
 
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
                 var structures = DataService.PCBaseStructure
                     .GetAllByParentPCBaseStructureID(buildingStructure.ID).Where(x =>
                     {
-                        var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                        var childStructure = BaseService.GetBaseStructure(x.BaseStructureID);
                         return childStructure.HasAtmosphere;
                     });
 
@@ -229,10 +229,11 @@ namespace SWLOR.Game.Server.Conversation
         private string GetPlaceableResref(BaseStructure structure)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            string resref = structure.PlaceableResref;
+            var baseStructure = BaseService.GetBaseStructure(structure);
+            string resref = baseStructure.PlaceableResref;
 
             if (string.IsNullOrWhiteSpace(resref) &&
-                structure.BaseStructureTypeID == BaseStructureType.Building)
+                baseStructure.BaseStructureType == BaseStructureType.Building)
             {
                 int exteriorID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
                 var style = DataService.BuildingStyle.GetByID(exteriorID);
@@ -249,8 +250,7 @@ namespace SWLOR.Game.Server.Conversation
             if (data.IsPreviewing) return;
 
             data.IsPreviewing = true;
-            var structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
-            string resref = GetPlaceableResref(structure);
+            string resref = GetPlaceableResref(data.BaseStructureID);
 
             NWPlaceable plc = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
             plc.IsUseable = false;
@@ -269,8 +269,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.StructurePreview == null || !data.StructurePreview.IsValid)
             {
-                var structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
-                string resref = GetPlaceableResref(structure);
+                string resref = GetPlaceableResref(data.BaseStructureID);
                 data.StructurePreview = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
                 _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(Vfx.Vfx_Dur_Aura_Green), data.StructurePreview.Object);
@@ -381,7 +380,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = BaseService.GetPlayerTempData(GetPC());
             string canPlaceStructure = BaseService.CanPlaceStructure(GetPC(), data.StructureItem, data.TargetLocation, data.BaseStructureID);
-            var baseStructure = DataService.BaseStructure.GetByID(data.BaseStructureID);
+            var baseStructure = BaseService.GetBaseStructure(data.BaseStructureID);
 
             if (!string.IsNullOrWhiteSpace(canPlaceStructure))
             {
@@ -409,12 +408,12 @@ namespace SWLOR.Game.Server.Conversation
                 CustomName = string.Empty,
                 ParentPCBaseStructureID = data.ParentStructureID,
                 StructureBonus = data.StructureItem.StructureBonus, 
-                StructureModeID = baseStructure.DefaultStructureModeID
+                StructureModeID = baseStructure.DefaultStructureMode
             };
             DataService.SubmitDataChange(structure, DatabaseActionType.Insert);
             
             // Placing a control tower. Set base shields to 100%
-            if (baseStructure.BaseStructureTypeID == BaseStructureType.ControlTower)
+            if (baseStructure.BaseStructureType == BaseStructureType.ControlTower)
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 pcBase.ShieldHP = BaseService.CalculateMaxShieldHP(structure);

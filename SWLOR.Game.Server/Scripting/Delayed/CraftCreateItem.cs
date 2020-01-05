@@ -64,14 +64,14 @@ namespace SWLOR.Game.Server.Scripting.Delayed
             var model = CraftService.GetPlayerCraftingData(player);
 
             var blueprint = CraftService.GetBlueprintByID(model.Blueprint);
-            BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
+            var baseStructure = BaseService.GetBaseStructure(blueprint.BaseStructureID);
             PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.Skill);
 
-            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (Skill)blueprint.Skill);
+            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, blueprint.Skill);
             int itemLevel = model.AdjustedLevel;
             int atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
-            float equipmentBonus = CalculateEquipmentBonus(player, (Skill)blueprint.Skill);
+            float equipmentBonus = CalculateEquipmentBonus(player, blueprint.Skill);
 
             if (chance <= 1.0f)
             {
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
                 item.RecommendedLevel = itemLevel < 0 ? 0 : itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", player.GlobalID.ToString());
 
-                BaseService.ApplyCraftedItemLocalVariables(item, baseStructure);
+                BaseService.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructureID);
             }
 
             if(RandomService.Random(1, 100) <= luckyBonus)
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
                 foreach (var item in craftedItems)
                 {
                     var maxDur = DurabilityService.GetMaxDurability(item);
-                    maxDur += (float)baseStructure.Durability;
+                    maxDur += baseStructure.Durability;
                     DurabilityService.SetMaxDurability(item, maxDur);
                     DurabilityService.SetDurability(item, maxDur);
                 }

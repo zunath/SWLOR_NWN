@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Conversation
                 // Get all child structures contained by this building which improve atmosphere.
                 var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(pcBaseStructureID).Where(x =>
                 {
-                    var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                    var childStructure = BaseService.GetBaseStructure(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
 
@@ -129,14 +129,14 @@ namespace SWLOR.Game.Server.Conversation
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
-                var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+                var baseStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
                 var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(pcBaseStructureID).Where(x =>
                 {
-                    var childStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                    var childStructure = BaseService.GetBaseStructure(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
 
@@ -626,9 +626,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = BaseService.GetPlayerTempData(GetPC());
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
-            BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+            var baseStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            BaseStructureType structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
+            BaseStructureType structureType = baseStructure.BaseStructureType;
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var pcStructureID = structure.ID;
             int impoundedCount = 0;
@@ -906,10 +906,10 @@ namespace SWLOR.Game.Server.Conversation
             LoadRotatePage();
 
             var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
-            var baseStructure = DataService.BaseStructure.GetByID(dbStructure.BaseStructureID);
+            var baseStructure = BaseService.GetBaseStructure(dbStructure.BaseStructureID);
             dbStructure.LocationOrientation = facing;
 
-            if (baseStructure.BaseStructureTypeID == BaseStructureType.Building)
+            if (baseStructure.BaseStructureType == BaseStructureType.Building)
             {
                 // The structure's facing isn't updated until after this code executes.
                 // Build a new location object for use with spawning the door.

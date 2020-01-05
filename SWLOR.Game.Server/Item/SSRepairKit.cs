@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Item
             Guid structureGuid = new Guid(structureID);
 
             PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
-            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
+            var structure = BaseService.GetBaseStructure(pcbs.BaseStructureID);
 
             int repair = SkillService.GetPCSkillRank(player, Skill.Piloting);
             int maxRepair = (int)structure.Durability - (int)pcbs.Durability;
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Item
             Guid structureGuid = new Guid(structureID);
 
             PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
-            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
+            var structure = BaseService.GetBaseStructure(pcbs.BaseStructureID);
 
             if (structure.Durability == pcbs.Durability)
             {

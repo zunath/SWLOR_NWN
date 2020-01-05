@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             var model = GetPlayerCraftingData(player);
             var bp = GetBlueprintByID(model.Blueprint);
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, bp.Skill);
-            var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(bp.BaseStructureID));
+            var baseStructure = BaseService.GetBaseStructure(bp.BaseStructureID);
             var mainComponent = bp.MainComponentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
             var secondaryComponent = bp.SecondaryComponentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
             var tertiaryComponent = bp.TertiaryComponentType.GetAttribute<ComponentType, ComponentTypeAttribute>();
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Service
             var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingID)
                     .Where(x =>
                     {
-                        var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
+                        var baseStructure = BaseService.GetBaseStructure(x.BaseStructureID);
                         return baseStructure.HasAtmosphere;
                     });
 

@@ -20,9 +20,8 @@ namespace SWLOR.Game.Server.Service
         public static bool HasBasePermission(Guid player, Guid pcBaseID, BasePermission permission)
         {
             // Public permissions take priority over all other permissions. Check those first.
-            var publicBasePermission = DataService.PCBasePermission.GetAll()
-                .SingleOrDefault(x => x.PCBaseID == pcBaseID &&
-                                      x.IsPublicPermission);
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var publicBasePermission = pcBase.PublicBasePermission;
 
             if (publicBasePermission != null)
             {
@@ -43,10 +42,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No matching public permissions. Now check the base permissions for this player.
-            var dbPermission = DataService.PCBasePermission.GetAll()
-                .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
-                                      x.PlayerID == player &&
-                                      !x.IsPublicPermission);
+            var dbPermission = pcBase.PlayerBasePermissions.ContainsKey(player) ?
+                pcBase.PlayerBasePermissions[player] : 
+                null;
             
             if (dbPermission == null) return false;
 
@@ -81,7 +79,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Public base permissions take priority over all other permissions. Check those first.
-            var publicBasePermission = DataService.PCBasePermission.GetPublicPermissionOrDefault(dbStructure.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(dbStructure.PCBaseID);
+            var publicBasePermission = pcBase.PublicBasePermission;
 
             if (publicBasePermission != null)
             {
@@ -117,11 +116,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Base permissions take priority over structure permissions. Check those next.
-            var basePermission = DataService.PCBasePermission.GetAll()
-                .SingleOrDefault(x => x.PlayerID == player.GlobalID &&
-                                      x.PCBaseID == dbStructure.PCBaseID &&
-                                      !x.IsPublicPermission);
-
+            var basePermission = pcBase.PlayerBasePermissions.ContainsKey(player.GlobalID) ?
+                pcBase.PlayerBasePermissions[player.GlobalID] :
+                null;
 
             if (basePermission != null)
             {
@@ -168,22 +165,11 @@ namespace SWLOR.Game.Server.Service
 
         public static void GrantBasePermissions(Guid player, Guid pcBaseID, params BasePermission[] permissions)
         {
-            var dbPermission = DataService.PCBasePermission.GetAll()
-                .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
-                                      x.PlayerID == player &&
-                                      !x.IsPublicPermission);
-            var action = DatabaseActionType.Update;
-
-            if (dbPermission == null)
-            {
-                dbPermission = new PCBasePermission
-                {
-                    PCBaseID = pcBaseID,
-                    PlayerID = player
-                };
-                action = DatabaseActionType.Insert;
-            }
-
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var dbPermission = pcBase.PlayerBasePermissions.ContainsKey(player) ?
+                pcBase.PlayerBasePermissions[player] :
+                new PCBasePermission();
+            
             foreach (var permission in permissions)
             {
                 switch (permission)
@@ -238,7 +224,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DataService.SubmitDataChange(dbPermission, action);
+            pcBase.PlayerBasePermissions[player] = dbPermission;
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
         }
 
         public static void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)

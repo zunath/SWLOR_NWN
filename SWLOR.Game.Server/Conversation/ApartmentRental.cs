@@ -273,15 +273,9 @@ namespace SWLOR.Game.Server.Conversation
                 DateFuelEnds = DateTime.UtcNow,
                 Sector = "AP",
             };
+            pcApartment.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
+
             DataService.SubmitDataChange(pcApartment, DatabaseActionType.Insert);
-            
-            PCBasePermission permission = new PCBasePermission
-            {
-                PCBaseID = pcApartment.ID,
-                PlayerID = player.GlobalID
-            };
-            DataService.SubmitDataChange(permission, DatabaseActionType.Insert);
-            
             
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();

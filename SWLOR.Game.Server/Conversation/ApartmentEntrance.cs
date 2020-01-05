@@ -62,10 +62,6 @@ namespace SWLOR.Game.Server.Conversation
             // Get apartments owned by player.
             var apartments = DataService.PCBase.GetApartmentsOwnedByPlayer(player.GlobalID, apartmentBuildingID);
             // Get apartments owned by other players and the current player currently has access to.
-            var permissions = DataService.PCBasePermission.GetAllByPlayerID(player.GlobalID);
-            
-            
-            
             var permissionedApartments = DataService.PCBase
                 .GetAll()
                 .Where(x =>
@@ -74,7 +70,9 @@ namespace SWLOR.Game.Server.Conversation
                         x.DateRentDue <= DateTime.UtcNow ||
                         x.PlayerID == player.GlobalID) return false;
                     
-                    var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
+                    var permission = x.PlayerBasePermissions.ContainsKey(player.GlobalID) ?
+                        x.PlayerBasePermissions[player.GlobalID] :
+                        null;
                     return permission != null && permission.CanEnterBuildings;
                 })
                 .OrderBy(o => o.DateInitialPurchase)
@@ -123,7 +121,10 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
 
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
-            var permission = DataService.PCBasePermission.GetPlayerPrivatePermissionOrDefault(oPC.GlobalID, pcBaseID);
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var permission = pcBase.PlayerBasePermissions.ContainsKey(oPC.GlobalID) ?
+                pcBase.PlayerBasePermissions[oPC.GlobalID] :
+                null;
 
             if (permission == null || !permission.CanEnterBuildings)
             {

@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Service
         public static KeyItemCache KeyItem { get; } = new KeyItemCache();
         public static MessageCache Message { get; } = new MessageCache();
         public static PCBaseCache PCBase { get; } = new PCBaseCache();
-        public static PCBasePermissionCache PCBasePermission { get; } = new PCBasePermissionCache();
         public static PCBaseStructureCache PCBaseStructure { get; } = new PCBaseStructureCache();
         public static PCBaseStructureItemCache PCBaseStructureItem { get; } = new PCBaseStructureItemCache();
         public static PCBaseStructurePermissionCache PCBaseStructurePermission { get; } = new PCBaseStructurePermissionCache();

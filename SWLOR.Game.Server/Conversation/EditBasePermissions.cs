@@ -126,7 +126,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            var permission = DataService.PCBasePermission.GetPlayerPrivatePermissionOrDefault(player.GlobalID, data.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            var permission = pcBase.PlayerBasePermissions.ContainsKey(player.GlobalID) ?
+                pcBase.PlayerBasePermissions[player.GlobalID] :
+                null;
             
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -222,20 +225,16 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(Guid playerID, BasePermission permission, bool isPublicPermission)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var dbPermission = isPublicPermission ?
-                DataService.PCBasePermission.GetPublicPermissionOrDefault(data.PCBaseID) :
-                DataService.PCBasePermission.GetPlayerPrivatePermissionOrDefault(playerID, data.PCBaseID);
 
-            DatabaseActionType action = DatabaseActionType.Update;
-            if (dbPermission == null)
+            var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            var dbPermission = isPublicPermission ? pcBase.PublicBasePermission : null;
+
+            // Not a public permission. Get or create the player's permission record.
+            if(dbPermission == null)
             {
-                dbPermission = new PCBasePermission
-                {
-                    PCBaseID = data.PCBaseID,
-                    PlayerID = playerID,
-                    IsPublicPermission = isPublicPermission
-                };
-                action = DatabaseActionType.Insert;
+                if (!pcBase.PlayerBasePermissions.ContainsKey(playerID))
+                    dbPermission = new PCBasePermission();
+                else dbPermission = pcBase.PlayerBasePermissions[playerID];
             }
 
             switch (permission)
@@ -283,7 +282,7 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            DataService.SubmitDataChange(dbPermission, action);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
         }
 
 
@@ -291,7 +290,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PublicPermissionsPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            var permission = DataService.PCBasePermission.GetPublicPermissionOrDefault(data.PCBaseID);
+            var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+            var permission = pcBase.PublicBasePermission;
 
             // Intentionally excluded permissions:
             // CanAdjustPermissions, CanCancelLease, CanPlaceEditStructures, CanAccessStructureInventory, CanAdjustPermissions,

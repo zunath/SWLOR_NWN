@@ -256,8 +256,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("MainPage", header);
 
-            bool showManage = DataService.PCBasePermission.GetAllByPlayerID(GetPC().GlobalID).Count(x => x.CanExtendLease) > 0;
-            AddResponseToPage("MainPage", "Manage My Leases", showManage);
+            AddResponseToPage("MainPage", "Manage My Leases", true);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
             AddResponseToPage("MainPage", "Edit Base Permissions", canEditBasePermissions || canEditPublicBasePermissions);

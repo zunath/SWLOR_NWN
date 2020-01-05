@@ -55,10 +55,15 @@ namespace SWLOR.Game.Server.Conversation
             var bases = DataService.PCBase.GetAll()
                 .Where(x =>
                 {
-                    var pcBasePermissions = DataService.PCBasePermission.GetAllPermissionsByPCBaseID(x.ID);
-                    return x.Sector != "AP" &&
-                           pcBasePermissions
-                               .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease));
+                    if (x.Sector == "AP") return false;
+
+                    var playerPermission = x.PlayerBasePermissions.ContainsKey(playerID) ?
+                        x.PlayerBasePermissions[playerID] : 
+                        null;
+
+                    if (playerPermission == null) return false;
+
+                    return playerPermission.CanExtendLease || playerPermission.CanCancelLease;
                 })
                 .ToList();
             

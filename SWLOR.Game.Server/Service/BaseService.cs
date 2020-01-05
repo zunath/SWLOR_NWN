@@ -370,15 +370,9 @@ namespace SWLOR.Game.Server.Service
                 PCBaseTypeID = (int)Enumeration.PCBaseType.RegularBase,
                 CustomName = string.Empty
             };
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Insert);
+            pcBase.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
 
-            PCBasePermission permission = new PCBasePermission
-            {
-                PCBaseID = pcBase.ID,
-                PlayerID = player.GlobalID
-            };
-            DataService.SubmitDataChange(permission, DatabaseActionType.Insert);
-
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
             BasePermissionService.GrantBasePermissions(player, pcBase.ID, allPermissions);
@@ -705,14 +699,8 @@ namespace SWLOR.Game.Server.Service
                                 CustomName = string.Empty,
                                 ShipLocation = dockPCBaseStructureID
                             };
+                            starkillerBase.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
                             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Insert);
-
-                            PCBasePermission permission = new PCBasePermission
-                            {
-                                PCBaseID = starkillerBase.ID,
-                                PlayerID = player.GlobalID
-                            };
-                            DataService.SubmitDataChange(permission, DatabaseActionType.Insert);
 
                             // Grant all base permissions to owner.
                             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
@@ -943,14 +931,7 @@ namespace SWLOR.Game.Server.Service
                 DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Delete);
             }
 
-            // Clear base permissions
-            var permissions = DataService.PCBasePermission.GetAllPermissionsByPCBaseID(pcBaseID).ToList();
-            for (int p = permissions.Count - 1; p >= 0; p--)
-            {
-                var permission = permissions.ElementAt(p);
-                DataService.SubmitDataChange(permission, DatabaseActionType.Delete);
-            }
-
+            // Delete the PCBase.
             DataService.SubmitDataChange(pcBase, DatabaseActionType.Delete);
 
             Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);

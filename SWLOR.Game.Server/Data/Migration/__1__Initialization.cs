@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using CustomEffect = SWLOR.Game.Server.Data.Entity.CustomEffect;
 using Ability = SWLOR.Game.Server.NWScript.Enumerations.Ability;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
@@ -13,29 +12,6 @@ namespace SWLOR.Game.Server.Data.Migration
         public int Version => 1;
         public void Up()
         {
-            // Custom Effect
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 1, Name = "Bleeding", IconID = 129, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 2, Name = "Burning", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 3, Name = "Poison", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 4, Name = "Force Aura", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 5, Name = "Force Breach", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 7, Name = "Force Shock", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 8, Name = "Absorption Field", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 9, Name = "Force Spread", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 11, Name = "Shield Boost", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 12, Name = "Meditate", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 13, Name = "Rest", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 14, Name = "Fire Cell", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 15, Name = "Balanced Stance", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.Stance}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 16, Name = "Electric Cell", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 17, Name = "Sonic Cell", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 18, Name = "Acid Cell", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 19, Name = "Ice Cell", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 20, Name = "Divine Cell", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 22, Name = "Shield Oath", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.Stance}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 23, Name = "Precision Targeting", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.Stance}, DatabaseActionType.Insert);
-            DataService.SubmitDataChange(new Entity.CustomEffect { ID = 24, Name = "Force Pack", IconID = 0, CustomEffectCategoryID = CustomEffectCategoryType.NormalEffect}, DatabaseActionType.Insert);
-
             // Download
             DataService.SubmitDataChange(new Download { ID = 1, Description = "This overrides the graphics of your user interface. It will affect all servers do you will need to move it out of your override folder if you no longer wish to use it.", IsActive = true, LocalPath = "/var/www/swlor_public_files/SWLOR GUI.rar", FileName = "SWLORGUI.rar", ContentType = "application/octet-stream", Instructions = "Extract all files to your My Documents/Neverwinter Nights/override directory." }, DatabaseActionType.Insert);
             DataService.SubmitDataChange(new Download { ID = 2, Description = "This is all of the music we use on SWLOR. Because we cannot currently distribute music files via NWSync, you will need to download this separately. We highly recommend it, but the download is optional! File last updated 2019-03-03.", IsActive = true, LocalPath = "/var/www/swlor_public_files/SWLOR_Music_v2.rar", FileName = "SWLORMusic.rar", ContentType = "application/octet-stream", Instructions = "Extract all files to your My Documents/Neverwinter Nights/music directory." }, DatabaseActionType.Insert);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Caching
                 .SingleOrDefault(x => x.StancePerkID != null);
         }
 
-        public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, int customEffectID)
+        public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, CustomEffectType customEffectID)
         {
             if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;

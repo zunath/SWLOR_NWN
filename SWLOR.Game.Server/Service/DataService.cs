@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Service
         public static AuthorizedDMCache AuthorizedDM { get; } = new AuthorizedDMCache();
         public static BankCache Bank { get; } = new BankCache();
         public static BankItemCache BankItem { get; } = new BankItemCache();
-        public static CustomEffectCache CustomEffect { get; } = new CustomEffectCache();
         public static DownloadCache Download { get; } = new DownloadCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
         public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();

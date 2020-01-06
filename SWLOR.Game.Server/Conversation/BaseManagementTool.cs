@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
+                var buildingStyle = BaseService.GetBuildingStyle(structure.InteriorStyleID);
                 int itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
+                var buildingStyle = BaseService.GetBuildingStyle(pcBase.BuildingStyleID);
                 int itemLimit = buildingStyle.FurnitureLimit;
                 var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
@@ -913,7 +913,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 // The structure's facing isn't updated until after this code executes.
                 // Build a new location object for use with spawning the door.
-                var exteriorStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(dbStructure.ExteriorStyleID));
+                var exteriorStyle = BaseService.GetBuildingStyle(dbStructure.ExteriorStyleID);
 
                 Location locationOverride = _.Location(data.TargetArea.Object,
                     structure.Position,

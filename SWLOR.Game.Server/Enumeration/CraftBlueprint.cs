@@ -231,13 +231,13 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.BlasterPistols, "Blaster Pistol IV", true, 20, " blaster_4", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.RangedWeaponCore, 1, 2, ComponentType.PistolBarrel, 1, 2, ComponentType.None, 0, 0, 6, BaseStructure.Invalid)]
         BlasterPistolIV = 112,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Green Crystal Cluster", true, 1, " c_cluster_green", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.GreenCrystal, 4, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        GreenCrystalCluster = 113,
+        GreenCluster = 113,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Blue Crystal Cluster", true, 1, " c_cluster_blue", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.BlueCrystal, 4, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        BlueCrystalCluster = 114,
+        BlueCluster = 114,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Red Crystal Cluster", true, 1, " c_cluster_red", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.RedCrystal, 4, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        RedCrystalCluster = 115,
+        RedCluster = 115,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Yellow Crystal Cluster", true, 1, " c_cluster_yellow", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.YellowCrystal, 4, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        YellowCrystalCluster = 116,
+        YellowCluster = 116,
         [CraftBlueprint(CraftBlueprintCategory.RedMods, "Attack Bonus +1", true, 9, " rune_ab1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.RedCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         AttackBonusPlus1 = 117,
         [CraftBlueprint(CraftBlueprintCategory.RedMods, "Constitution +1", true, 8, " rune_con1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.RedCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
@@ -295,11 +295,11 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Durability +1", true, 19, " rune_dur1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.YellowCluster, 2, 3, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DurabilityPlus1 = 144,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Reduced Enmity -1", true, 21, " rune_enmdown1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.YellowCluster, 2, 3, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        ReducedEnmityMinus1 = 145,
+        ReducedEnmity1 = 145,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Basic Dart", true, 2, " dart_b", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         BasicDart = 146,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Level Decrease -3", true, 22, " rune_lvldown1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.YellowCluster, 2, 3, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        LevelDecreaseMinus3 = 147,
+        LevelDecrease3 = 147,
         [CraftBlueprint(CraftBlueprintCategory.RedMods, "Attack Bonus +2", true, 24, " rune_ab2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.RedCluster, 2, 3, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         AttackBonusPlus2 = 148,
         [CraftBlueprint(CraftBlueprintCategory.RedMods, "Constitution +2", true, 23, " rune_con2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.RedCluster, 2, 3, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Durability +2", true, 34, " rune_dur2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.YellowCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DurabilityPlus2 = 177,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Reduced Enmity -2", true, 36, " rune_enmdown2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.YellowCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        ReducedEnmityMinus2 = 178,
+        ReducedEnmity2 = 178,
         [CraftBlueprint(CraftBlueprintCategory.RedMods, "Attack Bonus +3", true, 39, " rune_ab3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.RedCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         AttackBonusPlus3 = 179,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Mind Potency +3", true, 45, " rune_sum3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
@@ -414,12 +414,14 @@ namespace SWLOR.Game.Server.Enumeration
         EnhancementBonusPlus3 = 203,
         [CraftBlueprint(CraftBlueprintCategory.RedMods, "HP Regen +3", true, 50, " rune_hpregen3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.RedCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         HPRegenPlus3 = 204,
+        [CraftBlueprint(CraftBlueprintCategory.RedMods, "Base Attack Bonus +3", true, 52, " rune_bab3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.RedCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
+        BaseAttackBonusPlus3 = 205,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "FP Regen +3", true, 50, " rune_manareg3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         FPRegenPlus3 = 206,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Durability +3", true, 49, " rune_dur3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.YellowCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DurabilityPlus3 = 207,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Reduced Enmity -3", true, 51, " rune_enmdown3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.YellowCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        ReducedEnmityMinus3 = 208,
+        ReducedEnmity3 = 208,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Luck +2", true, 42, " rune_luck2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.YellowCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         LuckPlus2 = 209,
         [CraftBlueprint(CraftBlueprintCategory.YellowMods, "Meditate +2", true, 42, " rune_med2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 3, ComponentType.YellowCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
@@ -447,7 +449,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.Components, "Saber Hilt", true, 1, " ls_hilt", 1, Skill.Lightsaber, CraftDeviceType.EngineeringBench, PerkType.LightsaberBlueprints, 1, ComponentType.Metal, 3, 3, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         SaberHilt = 221,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Power Crystal Cluster", true, 1, " c_cluster_power", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.PowerCrystal, 2, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
-        PowerCrystalCluster = 222,
+        PowerCluster = 222,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Light Armor Segment", true, 1, " l_armor_segment", 1, Skill.Armorsmith, CraftDeviceType.ArmorsmithBench, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         LightArmorSegment = 223,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Force Armor Segment", true, 2, " f_armor_segment", 1, Skill.Armorsmith, CraftDeviceType.ArmorsmithBench, PerkType.None, 0, ComponentType.Leather, 3, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
@@ -624,11 +626,11 @@ namespace SWLOR.Game.Server.Enumeration
         FabricationPlus2 = 309,
         [CraftBlueprint(CraftBlueprintCategory.GreenMods, "Fabrication +3", true, 47, " rune_fab3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.GreenCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         FabricationPlus3 = 310,
-        [CraftBlueprint(CraftBlueprintCategory.ControlTowers, "Small Control Tower", true, 0, " control_tower", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.SmallStructureFrame, 1, 2, ComponentType.Mainframe, 1, 2, ComponentType.PowerRelay, 1, 2, 5, 1)]
+        [CraftBlueprint(CraftBlueprintCategory.ControlTowers, "Small Control Tower", true, 0, " control_tower", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.SmallStructureFrame, 1, 2, ComponentType.Mainframe, 1, 2, ComponentType.PowerRelay, 1, 2, 5, BaseStructure.SmallControlTower)]
         SmallControlTower = 311,
-        [CraftBlueprint(CraftBlueprintCategory.ControlTowers, "Medium Control Tower", true, 10, " control_tower", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.Mainframe, 2, 3, ComponentType.PowerRelay, 2, 3, 5, 2)]
+        [CraftBlueprint(CraftBlueprintCategory.ControlTowers, "Medium Control Tower", true, 10, " control_tower", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.Mainframe, 2, 3, ComponentType.PowerRelay, 2, 3, 5, BaseStructure.MediumControlTower)]
         MediumControlTower = 312,
-        [CraftBlueprint(CraftBlueprintCategory.ControlTowers, "Large Control Tower", true, 6, " control_tower", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.LargeStructureFrame, 1, 2, ComponentType.Mainframe, 3, 4, ComponentType.PowerRelay, 3, 4, 5, 3)]
+        [CraftBlueprint(CraftBlueprintCategory.ControlTowers, "Large Control Tower", true, 6, " control_tower", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.LargeStructureFrame, 1, 2, ComponentType.Mainframe, 3, 4, ComponentType.PowerRelay, 3, 4, 5, BaseStructure.LargeControlTower)]
         LargeControlTower = 313,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Mainframe", true, 3, " mainframe", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.ComputingModule, 3, 6, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, BaseStructure.Invalid)]
         Mainframe = 314,
@@ -646,271 +648,271 @@ namespace SWLOR.Game.Server.Enumeration
         ComputingModule = 320,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Power Core", true, 0, " power_core", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.PowerCrystal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         PowerCore = 321,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Obelisk, Large", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 4)]
-        ObeliskLarge = 322,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Obelisk, Large", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ObeliskLarge)]
+        Obelisk, Large = 322,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Electrical Potency +2", true, 30, " rune_ele2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         ElectricalPotencyPlus2 = 323,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Obelisk, Small", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 6)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Obelisk, Small", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ObeliskSmall)]
         ObeliskSmall = 324,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Ladder, Light", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 7)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Ladder, Light", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.LadderLight)]
         LadderLight = 325,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Ladder, Dark", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 8)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Ladder, Dark", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.LadderDark)]
         LadderDark = 326,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Huge", true, 8, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 9)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Huge", true, 8, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueHuge)]
         StatueHuge = 327,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Mining Well", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 1, 2, ComponentType.Organic, 1, 2, ComponentType.Fiberplast, 1, 2, 1, 10)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Mining Well", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 1, 2, ComponentType.Organic, 1, 2, ComponentType.Fiberplast, 1, 2, 1, BaseStructure.MiningWell)]
         MiningWell = 328,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Electrical Potency +3", true, 45, " rune_ele3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         ElectricalPotencyPlus3 = 329,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Wizard", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 12)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Wizard", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueWizard)]
         StatueWizard = 330,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Gong", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 13)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Gong", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Gong)]
         Gong = 331,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Monster", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 14)]
-        StatueMonster = 332,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Monster", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueMonster)]
+        Statue, Monster = 332,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Dark Defense +1", true, 16, " rune_ddef1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.BlueCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DarkDefensePlus1 = 333,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Dark Defense +2", true, 31, " rune_ddef2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DarkDefensePlus2 = 334,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Brazier, Stone", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 17)]
-        BrazierStone = 335,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Guardian", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 18)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Brazier, Stone", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BrazierStone)]
+        Brazier, Stone = 335,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Guardian", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueGuardian)]
         StatueGuardian = 336,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureDoors, "Doorway, Metal", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 19)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureDoors, "Doorway, Metal", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.DoorwayMetal)]
         DoorwayMetal = 337,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Flaming Statue", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 20)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Flaming Statue", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.FlamingStatue)]
         FlamingStatue = 338,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Brazier, Round", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 21)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Brazier, Round", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BrazierRound)]
         BrazierRound = 339,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Pedestal", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 22)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Pedestal", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Pedestal)]
         Pedestal = 340,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Rope Coil", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 23)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Rope Coil", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.RopeCoil)]
         RopeCoil = 341,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Wyvern", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 24)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Wyvern", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueWyvern)]
         StatueWyvern = 342,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Pedestal, Evil", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 25)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Pedestal, Evil", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.PedestalEvil)]
         PedestalEvil = 343,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Birdbath", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 26)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Birdbath", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Birdbath)]
         Birdbath = 344,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Sphinx Statue", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 27)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Sphinx Statue", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.SphinxStatue)]
         SphinxStatue = 345,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Mining Well Platform", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.Organic, 1, 2, ComponentType.None, 0, 0, 1, 28)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Mining Well Platform", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.Organic, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.MiningWellPlatform)]
         MiningWellPlatform = 346,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Pedestal, Sword", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 29)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Pedestal, Sword", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.PedestalSword)]
         PedestalSword = 347,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureDoors, "Doorway, Stone", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 30)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureDoors, "Doorway, Stone", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.DoorwayStone)]
         DoorwayStone = 348,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Female Statue", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 31)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Female Statue", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.FemaleStatue)]
         FemaleStatue = 349,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Gnomish Contraption", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 32)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Gnomish Contraption", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.GnomishContraption)]
         GnomishContraption = 350,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Stone", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 33)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Stone", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarStone)]
         PillarStone = 351,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Dark Defense +3", true, 46, " rune_ddef3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DarkDefensePlus3 = 352,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue of Lathander", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 35)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue of Lathander", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueofLathander)]
         StatueofLathander = 353,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Flame", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 36)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Flame", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarFlame)]
         PillarFlame = 354,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Cage", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 37)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Cage", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Cage)]
         Cage = 355,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Lamp Post", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 38)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Lamp Post", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.LampPost)]
         LampPost = 356,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Torch Bracket", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 39)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Torch Bracket", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.TorchBracket)]
         TorchBracket = 357,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Wood", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 40)]
-        PillarWood = 358,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Cyric", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 41)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Wood", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarWood)]
+        Pillar, Wood = 358,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Cyric", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueCyric)]
         StatueCyric = 359,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Sea Idol", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 42)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Sea Idol", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.SeaIdol)]
         SeaIdol = 360,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Fountain", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 43)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Fountain", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Fountain)]
         Fountain = 361,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Monster Statue", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 44)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Monster Statue", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.MonsterStatue)]
         MonsterStatue = 362,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Easel", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 45)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Easel", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Easel)]
         Easel = 363,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Light Defense +1", true, 16, " rune_ldef1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.BlueCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         LightDefensePlus1 = 364,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Keg", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 47)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Keg", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Keg)]
         Keg = 365,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Dran Statue", true, 8, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 48)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Dran Statue", true, 8, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.DranStatue)]
         DranStatue = 366,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Light Defense +2", true, 31, " rune_ldef2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         LightDefensePlus2 = 367,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Light Defense +3", true, 46, " rune_ldef3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         LightDefensePlus3 = 368,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Net", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 51)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Net", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Net)]
         Net = 369,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Extra Large", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, 52)]
-        BedExtraLarge = 370,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Extra Large", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedExtraLarge)]
+        Bed, ExtraLarge = 370,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Mind Defense +1", true, 16, " rune_mdef1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.BlueCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         MindDefensePlus1 = 371,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Round, Blue", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 54)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Round, Blue", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.CarpetRoundBlue)]
         CarpetRoundBlue = 372,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Altar, Evil", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 55)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Altar, Evil", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.AltarEvil)]
         AltarEvil = 373,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Wood, Large", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 56)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Wood, Large", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.TableWoodLarge)]
         TableWoodLarge = 374,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Wood, With Fish", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 57)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Wood, With Fish", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.TableWoodWithFish)]
         TableWoodWithFish = 375,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Stone, Small", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 58)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Stone, Small", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.TableStoneSmall)]
         TableStoneSmall = 376,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Altar, Hand", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 59)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Altar, Hand", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.AltarHand)]
         AltarHand = 377,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Window", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 1, 2, ComponentType.Metal, 1, 2, ComponentType.None, 0, 0, 1, 60)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Window", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 1, 2, ComponentType.Metal, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Window)]
         Window = 378,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Cushions", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 1, 2, ComponentType.Fiberplast, 1, 2, ComponentType.None, 0, 0, 1, 61)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Cushions", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 1, 2, ComponentType.Fiberplast, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Cushions)]
         Cushions = 379,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Candle", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 62)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Candle", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Candle)]
         Candle = 380,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Mind Defense +2", true, 31, " rune_mdef2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         MindDefensePlus2 = 381,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Bear Skin Rug", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 64)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Bear Skin Rug", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BearSkinRug)]
         BearSkinRug = 382,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Chandelier", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 65)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Chandelier", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Chandelier)]
         Chandelier = 383,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Mind Defense +3", true, 46, " rune_mdef3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         MindDefensePlus3 = 384,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Urn", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 67)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Urn", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Urn)]
         Urn = 385,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Altar, Stone", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 68)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Altar, Stone", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.AltarStone)]
         AltarStone = 386,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Cot", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, 69)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Cot", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Cot)]
         Cot = 387,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Wood", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 70)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Wood", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.TableWood)]
         TableWood = 388,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Electrical Defense +1", true, 16, " rune_edef1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.BlueCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         ElectricalDefensePlus1 = 389,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Throw Rug", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 72)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Throw Rug", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ThrowRug)]
         ThrowRug = 390,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Stone, Large", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 73)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Stone, Large", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.TableStoneLarge)]
         TableStoneLarge = 391,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Stone, Yellow", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, 74)]
-        BedStoneYellow = 392,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Large", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, 75)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Stone, Yellow", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedStoneYellow)]
+        BedStone, Yellow = 392,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Large", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedLarge)]
         BedLarge = 393,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Vase, Rounded", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 76)]
-        VaseRounded = 394,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 77)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Vase, Rounded", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.VaseRounded)]
+        Vase, Rounded = 394,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Carpet)]
         Carpet = 395,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Wood, Yellow", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, 78)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Wood, Yellow", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedWoodYellow)]
         BedWoodYellow = 396,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Overgrown Pillar", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 79)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Overgrown Pillar", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.OvergrownPillar)]
         OvergrownPillar = 397,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Tome", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 80)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Tome", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Tome)]
         Tome = 398,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Bird Cage", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 81)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Bird Cage", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BirdCage)]
         BirdCage = 399,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Wood, Dark", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 82)]
-        PillarWoodDark = 400,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bunk Bed", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, 83)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Wood, Dark", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarWoodDark)]
+        PillarWood, Dark = 400,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bunk Bed", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BunkBed)]
         BunkBed = 401,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Vase, Tall", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 84)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Vase, Tall", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.VaseTall)]
         VaseTall = 402,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed Roll", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 85)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed Roll", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BedRoll)]
         BedRoll = 403,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Ottoman", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 86)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Ottoman", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Ottoman)]
         Ottoman = 404,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Electrical Defense +2", true, 31, " rune_edef2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         ElectricalDefensePlus2 = 405,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Rounded", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 88)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Rounded", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarRounded)]
         PillarRounded = 406,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Painting 2", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 89)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Painting 2", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Painting2)]
         Painting2 = 407,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Candelabra", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 90)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Candelabra", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Candelabra)]
         Candelabra = 408,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Potted Plant", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 91)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Potted Plant", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PottedPlant)]
         PottedPlant = 409,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Painting 1", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 92)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Painting 1", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Painting1)]
         Painting1 = 410,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Red", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 93)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Red", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.CarpetFancy)]
         CarpetRed = 411,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Electrical Defense +3", true, 46, " rune_edef3", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.BlueCluster, 4, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         ElectricalDefensePlus3 = 412,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Illithid Table", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 95)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Illithid Table", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.IllithidTable)]
         IllithidTable = 413,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Red, Small", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 96)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Red, Small", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.CarpetFancySmaller)]
         CarpetRedSmall = 414,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Drow Altar", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 97)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureAltars, "Drow Altar", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.DrowAltar)]
         DrowAltar = 415,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Dartboard", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 98)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Dartboard", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Dartboard)]
         Dartboard = 416,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Map", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 99)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Map", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Fiberplast, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Map)]
         Map = 417,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Floor-anchored shackles", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 100)]
-        FloorMinusanchoredshackles = 418,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Round Wooden Table", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 101)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Floor-anchored shackles", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Flooranchoredshackles)]
+        Flooranchoredshackles = 418,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Round Wooden Table", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.RoundWoodenTable)]
         RoundWoodenTable = 419,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Drow Bar", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 102)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Drow Bar", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.DrowBar)]
         DrowBar = 420,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Shrine of Umberlee", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 103)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Shrine of Umberlee", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ShrineofUmberlee)]
         ShrineofUmberlee = 421,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Rune Pillar", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 104)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Rune Pillar", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.RunePillar)]
         RunePillar = 422,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Dart I", true, 5, " dart_1", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 2, BaseStructure.Invalid)]
         DartI = 423,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Mirror", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 1, 2, ComponentType.Metal, 1, 2, ComponentType.None, 0, 0, 1, 106)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Mirror", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 1, 2, ComponentType.Metal, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Mirror)]
         Mirror = 424,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Footstool", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 107)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Footstool", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Footstool)]
         Footstool = 425,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Drow Table", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 108)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Drow Table", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.DrowTable)]
         DrowTable = 426,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Molecular Reassembly Terminal", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.PowerCluster, 5, 5, ComponentType.ConstructionParts, 1, 1, ComponentType.None, 0, 0, 0, 11)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Molecular Reassembly Terminal", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.PowerCluster, 5, 5, ComponentType.ConstructionParts, 1, 1, ComponentType.None, 0, 0, 0, BaseStructure.MolecularReassemblyTerminal)]
         MolecularReassemblyTerminal = 427,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Dart II", true, 10, " dart_2", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 3, BaseStructure.Invalid)]
         DartII = 428,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Stone, Dwarven", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 111)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Stone, Dwarven", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchStoneDwarven)]
         BenchStoneDwarven = 429,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Illithid Chair", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 112)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Illithid Chair", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.IllithidChair)]
         IllithidChair = 430,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 113)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchWood)]
         BenchWood = 431,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood, Medium", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 114)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood, Medium", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairWoodMedium)]
         ChairWoodMedium = 432,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Large", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 115)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Large", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchLarge)]
         BenchLarge = 433,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Drow Chair", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 116)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Drow Chair", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.DrowChair)]
         DrowChair = 434,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Large", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 117)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Large", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchWoodLarge)]
         BenchWoodLarge = 435,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Small", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 118)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Small", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchWoodSmall)]
         BenchWoodSmall = 436,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 119)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairWood)]
         ChairWood = 437,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood, Small", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 120)]
-        ChairWoodSmall = 438,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Throne, Wood", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 121)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood, Small", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairWoodSmall)]
+        ChairWoodSmall, Small = 438,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Throne, Wood", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ThroneWood)]
         ThroneWood = 439,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Stone", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 122)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Stone", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairStone)]
         ChairStone = 440,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Small 2", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 123)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Small 2", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchWoodSmall2)]
         BenchWoodSmall2 = 441,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Shell", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 124)]
-        ChairShell = 442,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Couch, Wood, Yellow", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 125)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Shell", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairShell)]
+        Chair, Shell = 442,
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Couch, Wood, Yellow", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.CouchWoodYellow)]
         CouchWoodYellow = 443,
-        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Barrel", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 126)]
+        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Barrel", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Barrel)]
         Barrel = 444,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Dart III", true, 15, " dart_3", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 4, BaseStructure.Invalid)]
         DartIII = 445,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Dart IV", true, 20, " dart_4", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 5, BaseStructure.Invalid)]
         DartIV = 446,
-        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Crate", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 4, 8, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 129)]
+        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Crate", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 4, 8, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Crate)]
         Crate = 447,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Basic Shuriken", true, 3, " shuriken_b", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         BasicShuriken = 448,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Shuriken I", true, 6, " shuriken_1", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 2, BaseStructure.Invalid)]
         ShurikenI = 449,
-        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Book Shelf", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 132)]
+        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Book Shelf", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BookShelf)]
         BookShelf = 450,
-        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Chest", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 5, 10, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 133)]
+        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Chest", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 5, 10, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Chest)]
         Chest = 451,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Shuriken II", true, 11, " shuriken_2", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 3, BaseStructure.Invalid)]
         ShurikenII = 452,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Shuriken III", true, 16, " shuriken_3", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 4, BaseStructure.Invalid)]
         ShurikenIII = 453,
-        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Desk", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 136)]
+        [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Desk", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Desk)]
         Desk = 454,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Shuriken IV", true, 21, " shuriken_4", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 5, BaseStructure.Invalid)]
         ShurikenIV = 455,
@@ -922,23 +924,23 @@ namespace SWLOR.Game.Server.Enumeration
         ThrowingWeaponRepairKitIII = 458,
         [CraftBlueprint(CraftBlueprintCategory.RepairKits, "Throwing Weapon Repair Kit IV", true, 7, " th_rep_4", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.WeaponBlueprints, 7, ComponentType.Organic, 2, 4, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, 3, BaseStructure.Invalid)]
         ThrowingWeaponRepairKitIV = 459,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Refinery", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 146)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Refinery", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.Refinery)]
         Refinery = 464,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Armorsmith Workbench", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 147)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Armorsmith Workbench", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.ArmorsmithWorkbench)]
         ArmorsmithWorkbench = 465,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Weaponsmith Bench", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 148)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Weaponsmith Bench", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.WeaponsmithBench)]
         WeaponsmithBench = 466,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Cookpot", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 149)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Cookpot", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.Cookpot)]
         Cookpot = 467,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Engineering Bench", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 150)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Engineering Bench", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.EngineeringBench)]
         EngineeringBench = 468,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Mysterious Obelisk", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, 152)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Mysterious Obelisk", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.MysteriousObelisk)]
         MysteriousObelisk = 470,
-        [CraftBlueprint(CraftBlueprintCategory.Buildings, "Small Building", true, 5, " building", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.SmallStructureFrame, 1, 2, ComponentType.ConstructionParts, 4, 8, ComponentType.PowerRelay, 1, 2, 3, 153)]
+        [CraftBlueprint(CraftBlueprintCategory.Buildings, "Small Building", true, 5, " building", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.SmallStructureFrame, 1, 2, ComponentType.ConstructionParts, 4, 8, ComponentType.PowerRelay, 1, 2, 3, BaseStructure.SmallBuilding)]
         SmallBuilding = 471,
-        [CraftBlueprint(CraftBlueprintCategory.Buildings, "Medium Building", true, 15, " building", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.PowerRelay, 1, 3, 3, 154)]
+        [CraftBlueprint(CraftBlueprintCategory.Buildings, "Medium Building", true, 15, " building", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.PowerRelay, 1, 3, 3, BaseStructure.MediumBuilding)]
         MediumBuilding = 472,
-        [CraftBlueprint(CraftBlueprintCategory.Buildings, "Large Building", true, 20, " building", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 8, 16, ComponentType.PowerRelay, 1, 4, 3, 155)]
+        [CraftBlueprint(CraftBlueprintCategory.Buildings, "Large Building", true, 20, " building", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 8, 16, ComponentType.PowerRelay, 1, 4, 3, BaseStructure.LargeBuilding)]
         LargeBuilding = 473,
         [CraftBlueprint(CraftBlueprintCategory.Harvesters, "Basic Resource Harvester", true, 0, " harvest_r_b", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.Electronics, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         BasicResourceHarvester = 474,
@@ -970,25 +972,25 @@ namespace SWLOR.Game.Server.Enumeration
         FuelCell25 = 487,
         [CraftBlueprint(CraftBlueprintCategory.Fuel, "Fuel Cell", true, 42, " fuel_cell", 35, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.PowerCrystal, 5, 5, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         FuelCell35 = 488,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Basic Stronidium Silo", true, 0, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 0, 156)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Basic Stronidium Silo", true, 0, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 0, BaseStructure.BasicStronidiumSilo)]
         BasicStronidiumSilo = 489,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo I", true, 5, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 1, 157)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo I", true, 5, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 1, BaseStructure.StronidiumSiloI)]
         StronidiumSiloI = 490,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo II", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 2, 158)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo II", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 2, BaseStructure.StronidiumSiloII)]
         StronidiumSiloII = 491,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo III", true, 15, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, 159)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo III", true, 15, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, BaseStructure.StronidiumSiloIII)]
         StronidiumSiloIII = 492,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo IV", true, 20, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 4, 160)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Stronidium Silo IV", true, 20, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 4, BaseStructure.StronidiumSiloIV)]
         StronidiumSiloIV = 493,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Basic Fuel Silo", true, 0, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 0, 161)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Basic Fuel Silo", true, 0, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 0, BaseStructure.BasicFuelSilo)]
         BasicFuelSilo = 494,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo I", true, 5, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 1, 162)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo I", true, 5, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 1, BaseStructure.FuelSiloI)]
         FuelSiloI = 495,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo II", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 2, 163)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo II", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 2, BaseStructure.FuelSiloII)]
         FuelSiloII = 496,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo III", true, 15, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, 164)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo III", true, 15, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, BaseStructure.FuelSiloIII)]
         FuelSiloIII = 497,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo IV", true, 20, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 4, 165)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Fuel Silo IV", true, 20, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 4, BaseStructure.FuelSiloIV)]
         FuelSiloIV = 498,
         [CraftBlueprint(CraftBlueprintCategory.Medical, "Healing Kit I", true, 2, " healing_kit", 1, Skill.Medicine, CraftDeviceType.MedicineBench, PerkType.None, 0, ComponentType.Fiberplast, 2, 4, ComponentType.Herb, 2, 4, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         HealingKitI = 499,
@@ -1188,31 +1190,31 @@ namespace SWLOR.Game.Server.Enumeration
         ShieldRepairKitIII = 596,
         [CraftBlueprint(CraftBlueprintCategory.RepairKits, "Shield Repair Kit IV", true, 38, " sh_rep_4", 1, Skill.Armorsmith, CraftDeviceType.ArmorsmithBench, PerkType.ArmorBlueprints, 7, ComponentType.Organic, 2, 4, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, 3, BaseStructure.Invalid)]
         ShieldRepairKitIV = 597,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Basic Resource Silo", true, 0, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 0, 166)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Basic Resource Silo", true, 0, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 0, BaseStructure.BasicResourceSilo)]
         BasicResourceSilo = 598,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo I", true, 5, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 1, 167)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo I", true, 5, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 1, BaseStructure.ResourceSiloI)]
         ResourceSiloI = 599,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo II", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 2, 168)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo II", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 2, BaseStructure.ResourceSiloII)]
         ResourceSiloII = 600,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo III", true, 15, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, 169)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo III", true, 15, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 3, BaseStructure.ResourceSiloIII)]
         ResourceSiloIII = 601,
-        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo IV", true, 20, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 4, 170)]
+        [CraftBlueprint(CraftBlueprintCategory.Silos, "Resource Silo IV", true, 20, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.MediumStructureFrame, 1, 2, ComponentType.ConstructionParts, 2, 4, ComponentType.None, 0, 0, 4, BaseStructure.ResourceSiloIV)]
         ResourceSiloIV = 602,
-        [CraftBlueprint(CraftBlueprintCategory.Drills, "Basic Resource Drill", true, 0, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 0, 171)]
+        [CraftBlueprint(CraftBlueprintCategory.Drills, "Basic Resource Drill", true, 0, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 0, BaseStructure.BasicResourceDrill)]
         BasicResourceDrill = 603,
-        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill I", true, 5, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 1, 172)]
+        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill I", true, 5, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 1, BaseStructure.ResourceDrillI)]
         ResourceDrillI = 604,
-        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill II", true, 10, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 2, 173)]
+        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill II", true, 10, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 2, BaseStructure.ResourceDrillII)]
         ResourceDrillII = 605,
-        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill III", true, 15, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 3, 174)]
+        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill III", true, 15, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 3, BaseStructure.ResourceDrillIII)]
         ResourceDrillIII = 606,
-        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill IV", true, 20, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 4, 175)]
+        [CraftBlueprint(CraftBlueprintCategory.Drills, "Resource Drill IV", true, 20, " drill", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.None, 0, 0, 4, BaseStructure.ResourceDrillIV)]
         ResourceDrillIV = 607,
         [CraftBlueprint(CraftBlueprintCategory.Harvesters, "Basic Mineral Scanner", true, 5, " scanner_m_b", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.None, 0, ComponentType.Electronics, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         BasicMineralScanner = 608,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Fabrication Terminal", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 176)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Fabrication Terminal", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.FabricationTerminal)]
         FabricationTerminal = 609,
-        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Medical Terminal", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, 177)]
+        [CraftBlueprint(CraftBlueprintCategory.CraftingDevices, "Medical Terminal", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 2, ComponentType.Organic, 2, 2, ComponentType.None, 0, 0, 0, BaseStructure.MedicalTerminal)]
         MedicalTerminal = 610,
         [CraftBlueprint(CraftBlueprintCategory.Components, "Emitter", true, 1, " emitter", 1, Skill.Lightsaber, CraftDeviceType.EngineeringBench, PerkType.LightsaberBlueprints, 1, ComponentType.Electronics, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 3, BaseStructure.Invalid)]
         Emitter = 611,
@@ -1276,7 +1278,7 @@ namespace SWLOR.Game.Server.Enumeration
         TrainingFoilStaffIIIYellow = 640,
         [CraftBlueprint(CraftBlueprintCategory.Saberstaffs, "Training Foil Staff IV (Yellow)", true, 23, " saberstaff_y_4", 1, Skill.Lightsaber, CraftDeviceType.EngineeringBench, PerkType.LightsaberBlueprints, 9, ComponentType.Emitter, 2, 4, ComponentType.SaberHilt, 1, 2, ComponentType.YellowCluster, 2, 3, 6, BaseStructure.Invalid)]
         TrainingFoilStaffIVYellow = 641,
-        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Wookiee Rug", true, 10, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.Leather, 1, 1, ComponentType.Fiberplast, 2, 2, ComponentType.None, 0, 0, 1, 178)]
+        [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Wookiee Rug", true, 10, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.Leather, 1, 1, ComponentType.Fiberplast, 2, 2, ComponentType.None, 0, 0, 1, BaseStructure.WookieeRug)]
         WookieeRug = 642,
         [CraftBlueprint(CraftBlueprintCategory.ForceArmor, "Basic Force Helmet", true, 1, " helmet_fb", 1, Skill.Armorsmith, CraftDeviceType.ArmorsmithBench, PerkType.ArmorBlueprints, 0, ComponentType.ForceArmorCore, 1, 2, ComponentType.ForceArmorSegment, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         BasicForceHelmet = 643,
@@ -1314,11 +1316,11 @@ namespace SWLOR.Game.Server.Enumeration
         HullPlating = 660,
         [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Light Starship Blaster", true, 0, " ship_blaster_1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.RifleBarrel, 2, 6, ComponentType.PowerCluster, 4, 8, ComponentType.None, 0, 0, 4, BaseStructure.Invalid)]
         LightStarshipBlaster = 661,
-        [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Starship Dock", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.PowerRelay, 1, 2, 4, 179)]
+        [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Starship Dock", true, 10, " silo", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.LargeStructureFrame, 1, 2, ComponentType.ConstructionParts, 6, 12, ComponentType.PowerRelay, 1, 2, 4, BaseStructure.StarshipDock)]
         StarshipDock = 662,
-        [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Starship 1 (Light Transport 1)", true, 0, " starship", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.Hyperdrive, 1, 1, ComponentType.HullPlating, 4, 6, ComponentType.StarshipWeapon, 1, 1, 4, 180)]
+        [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Starship 1 (Light Transport 1)", true, 0, " starship", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.Hyperdrive, 1, 1, ComponentType.HullPlating, 4, 6, ComponentType.StarshipWeapon, 1, 1, 4, BaseStructure.StarshipLightFreighter1)]
         Starship1LightTransport1 = 663,
-        [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Starship 2 (Light Escort 1)", true, 0, " starship", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.Hyperdrive, 1, 1, ComponentType.HullPlating, 2, 6, ComponentType.StarshipWeapon, 4, 5, 4, 181)]
+        [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Starship 2 (Light Escort 1)", true, 0, " starship", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 7, ComponentType.Hyperdrive, 1, 1, ComponentType.HullPlating, 2, 6, ComponentType.StarshipWeapon, 4, 5, 4, BaseStructure.StarshipLightEscort1)]
         Starship2LightEscort1 = 664,
         [CraftBlueprint(CraftBlueprintCategory.RepairKits, "Starship Repair Kit", true, 30, " ss_rep", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 5, ComponentType.Metal, 3, 6, ComponentType.ComputingModule, 1, 4, ComponentType.PowerCluster, 1, 3, 0, BaseStructure.Invalid)]
         StarshipRepairKit = 665,
@@ -1354,7 +1356,7 @@ namespace SWLOR.Game.Server.Enumeration
         ScanningArraySmall = 680,
         [CraftBlueprint(CraftBlueprintCategory.StarshipProduction, "Scanning Array (Medium)", true, 40, " ssscan2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 7, ComponentType.Electronics, 5, 8, ComponentType.ComputingModule, 4, 4, ComponentType.None, 0, 0, 4, BaseStructure.Invalid)]
         ScanningArrayMedium = 681,
-        [CraftBlueprint(CraftBlueprintCategory.SpecialFurniture, "Jukebox", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.ConstructionParts, 2, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, 5)]
+        [CraftBlueprint(CraftBlueprintCategory.SpecialFurniture, "Jukebox", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 3, ComponentType.ConstructionParts, 2, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Jukebox)]
         Jukebox = 682,
         [CraftBlueprint(CraftBlueprintCategory.Throwing, "Basic Throwing Axe", true, 2, " axe_b", 1, Skill.Weaponsmith, CraftDeviceType.WeaponsmithBench, PerkType.None, 0, ComponentType.SmallBlade, 1, 2, ComponentType.SmallHandle, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.Invalid)]
         BasicThrowingAxe = 683,

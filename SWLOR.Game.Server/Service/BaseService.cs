@@ -124,6 +124,11 @@ namespace SWLOR.Game.Server.Service
             return _buildingStyles[buildingStyle];
         }
 
+        public static List<BuildingStyle> GetAllBuildingStyles()
+        {
+            return _buildingStyles.Keys.ToList();
+        }
+
         private static void OnModuleLoad()
         {
             LoadBaseStructureTypes();

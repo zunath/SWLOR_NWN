@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Item.Contracts;
 
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Item
             var data = BaseService.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;
             data.TargetArea = area;
-            data.BaseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
+            data.BaseStructureID = (BaseStructure)item.GetLocalInt("BASE_STRUCTURE_ID");
             data.StructureItem = item;
 
             // Structure is being placed inside an apartment.
@@ -82,7 +83,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            int structureID = item.GetLocalInt("BASE_STRUCTURE_ID");
+            var structureID = (BaseStructure)item.GetLocalInt("BASE_STRUCTURE_ID");
 
             // Intercept here to handle control tower upgrades.
             string upgrade = BaseService.UpgradeControlTower(user, item, target);

@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (data.BuildingType == BuildingType.Starship)
             {
                 var buildingStructure = DataService.PCBaseStructure.GetByID((Guid)data.ParentStructureID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(buildingStructure.InteriorStyleID));
+                var buildingStyle = BaseService.GetBuildingStyle(buildingStructure.InteriorStyleID);
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(buildingStructure.ID).ToList();
 
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
-                var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
+                var buildingStyle = BaseService.GetBuildingStyle(pcBase.BuildingStyleID);
                 var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID).ToList();
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
@@ -148,10 +148,10 @@ namespace SWLOR.Game.Server.Conversation
 
             if (isPlacingBuilding)
             {
-                int exteriorStyle = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
-                int interiorStyle = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
-                var exterior = DataService.BuildingStyle.GetByID(exteriorStyle);
-                var interior = DataService.BuildingStyle.GetByID(interiorStyle);
+                var exteriorStyle = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
+                var interiorStyle = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
+                var exterior = BaseService.GetBuildingStyle(exteriorStyle);
+                var interior = BaseService.GetBuildingStyle(interiorStyle);
 
                 header += ColorTokenService.Green("Exterior Style: ") + exterior.Name + "\n";
                 header += ColorTokenService.Green("Interior Style: ") + interior.Name + "\n";
@@ -235,8 +235,8 @@ namespace SWLOR.Game.Server.Conversation
             if (string.IsNullOrWhiteSpace(resref) &&
                 baseStructure.BaseStructureType == BaseStructureType.Building)
             {
-                int exteriorID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
-                var style = DataService.BuildingStyle.GetByID(exteriorID);
+                var exteriorID = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
+                var style = BaseService.GetBuildingStyle(exteriorID);
 
                 resref = style.Resref;
             }
@@ -389,10 +389,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var position = _.GetPositionFromLocation(data.TargetLocation);
-            int? interiorStyleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
-            int? exteriorStyleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
-            interiorStyleID = interiorStyleID <= 0 ? null : interiorStyleID;
-            exteriorStyleID = exteriorStyleID <= 0 ? null : exteriorStyleID;
+            BuildingStyle interiorStyleID = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
+            BuildingStyle exteriorStyleID = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
 
             var structure = new PCBaseStructure
             {
@@ -430,11 +428,11 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
 
             // Header
-            int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
+            var styleID = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
             if (buildingType == BuildingType.Interior)
-                styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
+                styleID = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
 
-            var currentStyle = DataService.BuildingStyle.GetByID(styleID);
+            var currentStyle = BaseService.GetBuildingStyle(styleID);
             string header = ColorTokenService.Green("Building Style: ") + currentStyle.Name + "\n\n";
             header += "Change the style by selecting from the list below.";
 
@@ -447,12 +445,18 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("StylePage", "Preview Interior", true, new Tuple<int, BuildingType>(-2, BuildingType.Interior));
             }
 
-            var styles = DataService.BuildingStyle.GetAll().Where(x => x.BuildingTypeID == (int)buildingType && 
-                                                               x.BaseStructureID == data.BaseStructureID && x.IsActive).ToList();
+            var styles = BaseService.GetAllBuildingStyles()
+                .Where(x =>
+                {
+                    var buildingStyle = BaseService.GetBuildingStyle(x);
+                    return buildingStyle.BuildingTypeID == buildingType &&
+                           buildingStyle.BaseStructureID == data.BaseStructureID && buildingStyle.IsActive;
+                }).ToList();
             foreach (var style in styles)
             {
-                var args = new Tuple<int, BuildingType>(style.ID, buildingType);
-                AddResponseToPage("StylePage", style.Name, true, args);
+                var buildingStyle = BaseService.GetBuildingStyle(style);
+                var args = new Tuple<BuildingStyle, BuildingType>(style, buildingType);
+                AddResponseToPage("StylePage", buildingStyle.Name, true, args);
             }
         }
 
@@ -487,8 +491,8 @@ namespace SWLOR.Game.Server.Conversation
         private void DoInteriorPreview()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
-            var style = DataService.BuildingStyle.GetByID(styleID);
+            var styleID = (BuildingStyle)data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
+            var style = BaseService.GetBuildingStyle(styleID);
             var area = AreaService.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalBoolean("IS_BUILDING_PREVIEW", true);
             NWPlayer player = GetPC();

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
 
                 .OnAccepted((player, questSource) =>
                 {
-                    KeyItemService.GivePlayerKeyItem(player, 7);
+                    KeyItemService.GivePlayerKeyItem(player, KeyItem.MandalorianFacilityKey);
                 });
         }
     }

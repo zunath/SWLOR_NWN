@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("KeyItemsListPage");
             foreach (PCKeyItem item in items)
             {
-                var keyItem = KeyItemService.GetKeyItemByID(item.KeyItemID);
+                var keyItem = KeyItemService.GetKeyItem(item.KeyItemID);
                 AddResponseToPage("KeyItemsListPage", keyItem.Name, true, item.KeyItemID);
             }
             ChangePage("KeyItemsListPage");
@@ -109,8 +109,8 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildKeyItemHeader(int responseID)
         {
             DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
-            int keyItemID = (int)response.CustomData;
-            KeyItem entity = KeyItemService.GetKeyItemByID(keyItemID);
+            var keyItemID = (KeyItem)response.CustomData;
+            var entity = KeyItemService.GetKeyItem(keyItemID);
 
             string header = ColorTokenService.Green("Key Item: ") + entity.Name + "\n\n";
             header += ColorTokenService.Green("Description: ") + entity.Description + "\n";

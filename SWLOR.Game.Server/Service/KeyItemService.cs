@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 
@@ -13,31 +14,48 @@ namespace SWLOR.Game.Server.Service
 {
     public static class KeyItemService
     {
+        private static Dictionary<KeyItem, KeyItemAttribute> _keyItems = new Dictionary<KeyItem, KeyItemAttribute>();
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleAcquireItem>(message => OnModuleItemAcquired());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        public static bool PlayerHasKeyItem(NWObject oPC, int keyItemID)
+        private static void OnModuleLoad()
+        {
+            var keyItems = Enum.GetValues(typeof(KeyItem)).Cast<KeyItem>();
+            foreach (var keyItem in keyItems)
+            {
+                _keyItems[keyItem] = keyItem.GetAttribute<KeyItem, KeyItemAttribute>();
+            }
+        }
+
+        public static KeyItemAttribute GetKeyItem(KeyItem keyItem)
+        {
+            return _keyItems[keyItem];
+        }
+
+        public static bool PlayerHasKeyItem(NWObject oPC, KeyItem keyItemID)
         {
             var entity = DataService.PCKeyItem.GetByPlayerAndKeyItemIDOrDefault(oPC.GlobalID, keyItemID); 
             return entity != null;
         }
 
-        public static bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs)
+        public static bool PlayerHasAllKeyItems(NWObject oPC, params KeyItem[] keyItemIDs)
         {
             var result = DataService.PCKeyItem.GetAllByPlayerIDAndKeyItemIDs(oPC.GlobalID, keyItemIDs);
             return result.Count() == keyItemIDs.Length;
         }
 
-        public static bool PlayerHasAnyKeyItem(NWObject oPC, params int[] keyItemIDs)
+        public static bool PlayerHasAnyKeyItem(NWObject oPC, params KeyItem[] keyItemIDs)
         {
             var pcKeyItems = DataService.PCKeyItem.GetAllByPlayerID(oPC.GlobalID);
             return pcKeyItems.Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
         }
 
 
-        public static void GivePlayerKeyItem(NWPlayer oPC, int keyItemID)
+        public static void GivePlayerKeyItem(NWPlayer oPC, KeyItem keyItemID)
         {
             if (!PlayerHasKeyItem(oPC, keyItemID))
             {
@@ -48,17 +66,16 @@ namespace SWLOR.Game.Server.Service
                     AcquiredDate = DateTime.UtcNow
                 };
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
-                
-                KeyItem keyItem = DataService.KeyItem.GetByID(keyItemID);
+
+                var keyItem = GetKeyItem(keyItemID); 
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
             }
         }
 
-        public static void RemovePlayerKeyItem(NWPlayer oPC, int keyItemID)
+        public static void RemovePlayerKeyItem(NWPlayer oPC, KeyItem keyItemID)
         {
             if (PlayerHasKeyItem(oPC, keyItemID))
             {
-
                 PCKeyItem entity = DataService.PCKeyItem.GetByPlayerAndKeyItemID(oPC.GlobalID, keyItemID);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Delete);
             }
@@ -68,14 +85,9 @@ namespace SWLOR.Game.Server.Service
         {
             return DataService.PCKeyItem.GetAllByPlayerID(player.GlobalID).Where(x =>
             {
-                var keyItem = DataService.KeyItem.GetByID(x.KeyItemID);
-                return keyItem.KeyItemCategoryID == categoryID;
+                var keyItem = GetKeyItem(x.KeyItemID);
+                return keyItem.Category == categoryID;
             }).ToList();
-        }
-
-        public static KeyItem GetKeyItemByID(int keyItemID)
-        {
-            return DataService.KeyItem.GetByID(keyItemID);
         }
 
         private static void OnModuleItemAcquired()
@@ -85,9 +97,9 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
 
             NWItem oItem = (_.GetModuleItemAcquired());
-            int keyItemID = oItem.GetLocalInt("KEY_ITEM_ID");
+            var keyItemID = (KeyItem)oItem.GetLocalInt("KEY_ITEM_ID");
 
-            if (keyItemID <= 0) return;
+            if (keyItemID != KeyItem.Invalid) return;
 
             GivePlayerKeyItem(oPC, keyItemID);
             oItem.Destroy();

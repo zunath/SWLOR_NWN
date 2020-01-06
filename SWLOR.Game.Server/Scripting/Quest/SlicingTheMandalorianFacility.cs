@@ -40,12 +40,12 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 
                 .OnCompleted((player, questSource) =>
                 {
-                    KeyItemService.RemovePlayerKeyItem(player, 12);
-                    KeyItemService.RemovePlayerKeyItem(player, 13);
-                    KeyItemService.RemovePlayerKeyItem(player, 14);
-                    KeyItemService.RemovePlayerKeyItem(player, 15);
-                    KeyItemService.RemovePlayerKeyItem(player, 16);
-                    KeyItemService.RemovePlayerKeyItem(player, 17);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.DataDisc1);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.DataDisc2);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.DataDisc3);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.DataDisc4);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.DataDisc5);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.DataDisc6);
                 });
 
         }

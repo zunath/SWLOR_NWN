@@ -368,7 +368,7 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest AddObjectiveCollectKeyItem(int state, int keyItemID)
+        public IQuest AddObjectiveCollectKeyItem(int state, KeyItem keyItemID)
         {
             AddObjective(state, new CollectKeyItemObjective(keyItemID));
             return this;
@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest AddRewardKeyItem(int keyItemID, bool isSelectable = true)
+        public IQuest AddRewardKeyItem(KeyItem keyItemID, bool isSelectable = true)
         {
             AddReward(new QuestKeyItemReward(keyItemID, isSelectable));
             return this;
@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.Quest
             return this;
         }
 
-        public IQuest AddPrerequisiteKeyItem(int keyItemID)
+        public IQuest AddPrerequisiteKeyItem(KeyItem keyItemID)
         {
             AddPrerequisite(new KeyItemPrerequisite(keyItemID));
             return this;

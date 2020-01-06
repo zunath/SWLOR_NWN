@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 
                 .OnAccepted((player, questGiver) =>
                 {
-                    KeyItemService.GivePlayerKeyItem(player, 6);
+                    KeyItemService.GivePlayerKeyItem(player, KeyItem.CZ220ExperimentRoomKey);
                 });
         }
     }

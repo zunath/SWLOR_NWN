@@ -16,12 +16,12 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 
                 .OnAccepted((player, o) =>
                 {
-                    KeyItemService.GivePlayerKeyItem(player, 18);
+                    KeyItemService.GivePlayerKeyItem(player, KeyItem.PackageForDenamReyholm);
                 })
                 
                 .OnCompleted((player, o) =>
                 {
-                    KeyItemService.RemovePlayerKeyItem(player, 18);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.PackageForDenamReyholm);
                 });
         }
     }

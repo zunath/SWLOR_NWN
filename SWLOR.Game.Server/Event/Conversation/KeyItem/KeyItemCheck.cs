@@ -16,16 +16,16 @@ namespace SWLOR.Game.Server.Event.Conversation.KeyItem
                 NWObject talkingTo = NWGameObject.OBJECT_SELF;
 
                 int count = 1;
-                List<int> requiredKeyItemIDs = new List<int>();
+                List<Enumeration.KeyItem> requiredKeyItemIDs = new List<Enumeration.KeyItem>();
 
-                int keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
+                var keyItemID = (Enumeration.KeyItem)talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
 
                 while (keyItemID > 0)
                 {
                     requiredKeyItemIDs.Add(keyItemID);
 
                     count++;
-                    keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
+                    keyItemID = (Enumeration.KeyItem)talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
                 }
 
                 // Type 1 = ALL

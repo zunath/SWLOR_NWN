@@ -37,19 +37,19 @@ namespace SWLOR.Game.Server.Quest.Contracts
 
         IQuest AddObjectiveKillTarget(int state, NPCGroup group, int amount);
         IQuest AddObjectiveCollectItem(int state, string resref, int quantity, bool mustBeCraftedByPlayer);
-        IQuest AddObjectiveCollectKeyItem(int state, int keyItemID);
+        IQuest AddObjectiveCollectKeyItem(int state, KeyItem keyItemID);
         IQuest AddObjectiveTalkToNPC(int state);
         IQuest AddObjectiveEnterTrigger(int state);
         IQuest AddObjectiveUseObject(int state);
 
         IQuest AddRewardGold(int amount, bool isSelectable = false);
         IQuest AddRewardItem(string resref, int quantity, bool isSelectable = true);
-        IQuest AddRewardKeyItem(int keyItemID, bool isSelectable = true);
+        IQuest AddRewardKeyItem(KeyItem keyItemID, bool isSelectable = true);
         IQuest AddRewardFame(FameRegion regionID, int amount, bool isSelectable = false);
         IQuest AddRewardGuildPoints(GuildType guild, int amount, bool isSelectable = false);
 
         IQuest AddPrerequisiteFame(FameRegion regionID, int amount);
-        IQuest AddPrerequisiteKeyItem(int keyItemID);
+        IQuest AddPrerequisiteKeyItem(KeyItem keyItemID);
         IQuest AddPrerequisiteQuest(int questID);
     }
 }

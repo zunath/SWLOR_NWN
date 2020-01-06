@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
@@ -22,9 +23,9 @@ namespace SWLOR.Game.Server.Scripting.Placeable
             if (!player.IsPlayer) return;
 
             NWPlaceable placeable = NWGameObject.OBJECT_SELF;
-            int keyItemID = placeable.GetLocalInt("KEY_ITEM_ID");
+            var keyItemID = (KeyItem)placeable.GetLocalInt("KEY_ITEM_ID");
             
-            if (keyItemID <= 0) return;
+            if (keyItemID == KeyItem.Invalid) return;
 
             if (KeyItemService.PlayerHasKeyItem(player, keyItemID))
             {

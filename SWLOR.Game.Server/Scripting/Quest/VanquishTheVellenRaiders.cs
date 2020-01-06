@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 
                 .OnAccepted((player, o) =>
                 {
-                    KeyItemService.GivePlayerKeyItem(player, 20);
+                    KeyItemService.GivePlayerKeyItem(player, KeyItem.CoxxionBaseKey);
                 });
         }
     }

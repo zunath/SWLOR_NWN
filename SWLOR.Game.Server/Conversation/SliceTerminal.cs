@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -40,9 +41,9 @@ namespace SWLOR.Game.Server.Conversation
         private void DoSlice()
         {
             NWPlaceable self = NWGameObject.OBJECT_SELF;
-            int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
+            var keyItemID = (KeyItem)self.GetLocalInt("KEY_ITEM_ID");
 
-            if (keyItemID <= 0)
+            if (keyItemID == KeyItem.Invalid)
             {
                 GetPC().SendMessage("ERROR: Improperly configured key item. ID is not set. Notify an admin.");
                 return;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, int keyItemID)
+        public PCKeyItem GetByPlayerAndKeyItemIDOrDefault(Guid playerID, KeyItem keyItemID)
         {
             if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Caching
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString()).SingleOrDefault(x => x.KeyItemID == keyItemID);
         }
 
-        public PCKeyItem GetByPlayerAndKeyItemID(Guid playerID, int keyItemID)
+        public PCKeyItem GetByPlayerAndKeyItemID(Guid playerID, KeyItem keyItemID)
         {
             if (!ExistsByListIndex(ByPlayerIDIndex, playerID.ToString()))
                 return default;
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Caching
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString());
         }
 
-        public IEnumerable<PCKeyItem> GetAllByPlayerIDAndKeyItemIDs(Guid playerID, IEnumerable<int> keyItemIDs)
+        public IEnumerable<PCKeyItem> GetAllByPlayerIDAndKeyItemIDs(Guid playerID, IEnumerable<KeyItem> keyItemIDs)
         {
             return GetFromListIndex(ByPlayerIDIndex, playerID.ToString())
                 .Where(x => keyItemIDs.Contains(x.KeyItemID));

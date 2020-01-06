@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -25,16 +26,16 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWObject door = NWGameObject.OBJECT_SELF;
             NWPlayer player = GetPC();
-            List<int> keyItemIDs = new List<int>();
+            List<KeyItem> keyItemIDs = new List<KeyItem>();
 
             int count = 1;
-            int keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
-            while (keyItemID > 0)
+            var keyItemID = (KeyItem)door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
+            while (keyItemID != KeyItem.Invalid)
             {
                 keyItemIDs.Add(keyItemID);
 
                 count++;
-                keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
+                keyItemID = (KeyItem)door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
             }
             
             bool hasKeyItems = KeyItemService.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());

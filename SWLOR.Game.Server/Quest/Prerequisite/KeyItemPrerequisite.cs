@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -6,9 +7,9 @@ namespace SWLOR.Game.Server.Quest.Prerequisite
 {
     public class KeyItemPrerequisite: IQuestPrerequisite
     {
-        private readonly int _keyItemID;
+        private readonly KeyItem _keyItemID;
 
-        public KeyItemPrerequisite(int keyItemID)
+        public KeyItemPrerequisite(KeyItem keyItemID)
         {
             _keyItemID = keyItemID;
         }

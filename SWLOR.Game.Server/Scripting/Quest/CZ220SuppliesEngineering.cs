@@ -14,16 +14,16 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(50)
-                .AddRewardKeyItem(3)
+                .AddRewardKeyItem(KeyItem.CraftingTerminalDroidOperatorWorkReceipt)
                 .AddRewardFame(FameRegion.CZ220, 5)
 
                 .OnAccepted((player, questGiver) =>
                 {
-                    KeyItemService.GivePlayerKeyItem(player, 4);
+                    KeyItemService.GivePlayerKeyItem(player, KeyItem.CraftingTerminalDroidOperatorWorkOrder);
                 })
                 .OnCompleted((player, questGiver) =>
                 {
-                    KeyItemService.RemovePlayerKeyItem(player, 4);
+                    KeyItemService.RemovePlayerKeyItem(player, KeyItem.CraftingTerminalDroidOperatorWorkOrder);
                 });
         }
     }

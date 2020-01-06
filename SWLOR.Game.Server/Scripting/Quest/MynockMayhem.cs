@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveTalkToNPC(2)
 
                 .AddRewardGold(100)
-                .AddRewardKeyItem(2)
+                .AddRewardKeyItem(KeyItem.HalronLinthWorkReceipt)
                 .AddRewardFame(FameRegion.CZ220, 5);
         }
     }

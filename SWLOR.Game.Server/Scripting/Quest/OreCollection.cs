@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Scripting.Quest
                 .AddObjectiveCollectItem(1, "raw_veldite", 10, false)
 
                 .AddRewardGold(50)
-                .AddRewardKeyItem(1)
+                .AddRewardKeyItem(KeyItem.AvixTathamWorkReceipt)
                 .AddRewardFame(FameRegion.CZ220, 5)
 
                 .OnAccepted((player, questGiver) => { CreateItemOnObject("harvest_r_old", player); });

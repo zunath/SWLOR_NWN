@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Service
             // Run the skill decay rules.
             // If the method returns false, that means all skills are locked.
             // So we can't give the player any XP.
-            if (!ApplySkillDecay(oPC, skillID, pcSkill, xp))
+            if (!ApplySkillDecay(oPC, skillID, xp))
             {
                 return;
             }
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Service
             ForceEquipFistGlove(oPC);
         }
 
-        private static bool ApplySkillDecay(NWPlayer oPC, Skill skill, PCSkill levelingSkill, int xp)
+        private static bool ApplySkillDecay(NWPlayer oPC, Skill skill, int xp)
         {
             int totalSkillRanks = GetPCTotalSkillCount(oPC);
             if (totalSkillRanks < SkillCap) return true;
@@ -777,7 +777,7 @@ namespace SWLOR.Game.Server.Service
                     Rank = decaySkill.Value.Rank,
                     XP = decaySkill.Value.XP
                 };
-                player.Skills[decaySkill.Key] = decaySkill.Value;
+                player.Skills[decaySkill.Key] = dbDecaySkill;
                 DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 MessageHub.Instance.Publish(new OnSkillDecayed(oPC, decaySkill.Key, oldRank, decaySkill.Value.Rank));
             }

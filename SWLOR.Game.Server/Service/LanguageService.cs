@@ -247,20 +247,19 @@ namespace SWLOR.Game.Server.Service
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
-
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
-            foreach (var pcSkill in dbPlayer.Skills)
+            foreach (var language in languages)
             {
-                var skill = SkillService.GetSkill(pcSkill.Key);
+                var skill = SkillService.GetSkill(language);
+                var pcSkill = dbPlayer.Skills[language];
                 int maxRank = skill.MaxRank;
                 int maxRankXP = SkillService.SkillXPRequirements[maxRank];
 
-                pcSkill.Value.Rank = maxRank;
-                pcSkill.Value.XP = maxRankXP - 1;
-
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                pcSkill.Rank = maxRank;
+                pcSkill.XP = maxRankXP - 1;
             }
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
         }
 

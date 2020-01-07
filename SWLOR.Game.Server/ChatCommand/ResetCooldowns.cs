@@ -21,15 +21,9 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            var now = DateTime.UtcNow;
-            var cooldowns = DataService.PCCooldown.GetAllByPlayerID(target.GlobalID)
-                .Where(x => x.DateUnlocked > now);
-
-            foreach (var cooldown in cooldowns)
-            {
-                cooldown.DateUnlocked = DateTime.UtcNow;
-                DataService.SubmitDataChange(cooldown, DatabaseActionType.Update);
-            }
+            var player = DataService.Player.GetByID(target.GlobalID);
+            player.Cooldowns.Clear();
+            DataService.SubmitDataChange(player, DatabaseActionType.Update);
 
             NWPlayer targetPlayer = target.Object;
             user.SendMessage("You have reset all of " + target.Name + "'s cooldowns.");

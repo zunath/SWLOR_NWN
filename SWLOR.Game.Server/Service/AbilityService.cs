@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Service
             if(perk.CooldownGroup != PerkCooldownGroup.None)
             {
                 DateTime now = DateTime.UtcNow;
-                DateTime unlockDateTime = GetAbilityCooldownUnlocked(activator, (int)perk.CooldownGroup);
+                DateTime unlockDateTime = GetAbilityCooldownUnlocked(activator, perk.CooldownGroup);
 
                 // Check if we've passed the unlock date. Exit early if we have not.
                 if (unlockDateTime > now)
@@ -298,25 +298,17 @@ namespace SWLOR.Game.Server.Service
         /// <param name="activator">The creature whose cooldown we're checking.</param>
         /// <param name="cooldownCategoryID">The cooldown category we're checking for.</param>
         /// <returns></returns>
-        private static DateTime GetAbilityCooldownUnlocked(NWCreature activator, int cooldownCategoryID)
+        private static DateTime GetAbilityCooldownUnlocked(NWCreature activator, PerkCooldownGroup cooldownCategoryID)
         {
             // Players: Retrieve info from cache/DB, if it doesn't exist create a new record and insert it. Return unlock date.
             if (activator.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryIDOrDefault(activator.GlobalID, cooldownCategoryID);
-                if (pcCooldown == null)
-                {
-                    pcCooldown = new PCCooldown
-                    {
-                        CooldownCategoryID = Convert.ToInt32(cooldownCategoryID),
-                        DateUnlocked = DateTime.UtcNow.AddSeconds(-1),
-                        PlayerID = activator.GlobalID
-                    };
+                var player = DataService.Player.GetByID(activator.GlobalID);
+                var pcCooldown = player.Cooldowns.ContainsKey(cooldownCategoryID) ?
+                    player.Cooldowns[cooldownCategoryID] : 
+                    DateTime.UtcNow.AddSeconds(-1);
 
-                    DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
-                }
-
-                return pcCooldown.DateUnlocked;
+                return pcCooldown;
             }
             // Creatures: Retrieve info from local variable, convert to DateTime if possible. Return parsed unlock date.
             else
@@ -646,9 +638,9 @@ namespace SWLOR.Game.Server.Service
 
             if (creature.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryID(creature.GlobalID, (int)cooldown);
-                pcCooldown.DateUnlocked = unlockDate;
-                DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
+                var player = DataService.Player.GetByID(creature.GlobalID);
+                player.Cooldowns[cooldown] = unlockDate;
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
             }
             else
             {

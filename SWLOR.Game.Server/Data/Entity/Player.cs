@@ -2,7 +2,9 @@
 
 using SWLOR.Game.Server.Data.Contracts;
 using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Perk;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -12,6 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
         {
             ID = Guid.NewGuid();
             RespawnAreaResref = "";
+            Cooldowns = new Dictionary<PerkCooldownGroup, DateTime>();
         }
 
         [Key]
@@ -64,5 +67,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public SpecializationType SpecializationID { get; set; }
         public int? ActiveConcentrationPerkID { get; set; }
         public int ActiveConcentrationTier { get; set; }
+
+        public Dictionary<PerkCooldownGroup, DateTime> Cooldowns { get; set; }
     }
 }

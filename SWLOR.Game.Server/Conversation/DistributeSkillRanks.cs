@@ -105,8 +105,9 @@ namespace SWLOR.Game.Server.Conversation
         private bool CanDistribute(int amount)
         {
             var model = GetDialogCustomData<Model>();
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
             var skill = SkillService.GetSkill(model.SkillID);
-            var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(GetPC().GlobalID, model.SkillID);
+            var pcSkill = player.Skills[model.SkillID];
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
 
             return pool.Levels >= amount && pcSkill.Rank + amount < MaxRankForDistribution && pcSkill.Rank + amount <= skill.MaxRank;
@@ -115,8 +116,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillPage()
         {
             var model = GetDialogCustomData<Model>();
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
             var skill = SkillService.GetSkill(model.SkillID);
-            var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(GetPC().GlobalID, model.SkillID);
+            var pcSkill = player.Skills[model.SkillID];
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
             
             // Build the page header
@@ -196,8 +198,9 @@ namespace SWLOR.Game.Server.Conversation
                 // Let's do the distribution. Normally, you would want to run the SkillService methods but in this scenario
                 // all of that's already been applied. You don't want to reapply the SP gains because they'll get more than they should.
                 // Just set the ranks on the DB record and recalc stats.
-                var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(GetPC().GlobalID, model.SkillID);
-                var skill = SkillService.GetSkill(pcSkill.SkillID);
+                var player = DataService.Player.GetByID(GetPC().GlobalID);
+                var pcSkill = player.Skills[model.SkillID];
+                var skill = SkillService.GetSkill(model.SkillID);
 
                 // Prevent the player from adding too many ranks.
                 if (pcSkill.Rank + amount > skill.MaxRank)
@@ -208,7 +211,7 @@ namespace SWLOR.Game.Server.Conversation
 
                 pcSkill.Rank += amount;
                 
-                DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 PlayerStatService.ApplyStatChanges(GetPC(), null);
 
                 // Reduce the pool levels. Delete the record if it drops to zero.

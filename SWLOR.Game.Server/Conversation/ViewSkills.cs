@@ -83,17 +83,19 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadSkillResponses()
         {
-            Model vm = GetDialogCustomData<Model>();
-            List<PCSkill> skills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
+            var vm = GetDialogCustomData<Model>();
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
+            var skills = SkillService.GetAllSkillsInCategory(vm.SelectedCategoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (PCSkill pcSkill in skills)
+            foreach (var skillID in skills)
             {
-                var skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(skillID);
+                var pcSkill = player.Skills[skillID];
 
                 if(skill.IsActive)
                 {
-                    AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, pcSkill.SkillID);
+                    AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skillID);
                 }
             }
         }
@@ -101,10 +103,11 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
             var skill = SkillService.GetSkill(vm.SelectedSkillID);
-            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            int req = SkillService.SkillXPRequirements[pcSkill.Rank];
-            string header = CreateSkillDetailsHeader(pcSkill, req);
+            var pcSkill = player.Skills[vm.SelectedSkillID];
+            var req = SkillService.SkillXPRequirements[pcSkill.Rank];
+            var header = CreateSkillDetailsHeader(vm.SelectedSkillID, pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
             if(!skill.ContributesToSkillCap)
@@ -113,10 +116,11 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private string CreateSkillDetailsHeader(PCSkill pcSkill, int req)
+        private string CreateSkillDetailsHeader(Skill skillID, PCSkill pcSkill, int req)
         {
-            Player player = DataService.Player.GetByID(pcSkill.PlayerID);
-            var skill = SkillService.GetSkill(pcSkill.SkillID);
+            var playerID = GetPC().GlobalID;
+            Player player = DataService.Player.GetByID(playerID);
+            var skill = SkillService.GetSkill(skillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
             else if (pcSkill.Rank <= 7) title = "Neophyte";

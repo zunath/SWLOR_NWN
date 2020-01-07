@@ -223,8 +223,8 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         if (req.Value > 0)
                         {
-                            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), req.Key);
-                            var skill = SkillService.GetSkill(pcSkill.SkillID);
+                            PCSkill pcSkill = player.Skills[req.Key];
+                            var skill = SkillService.GetSkill(req.Key);
 
                             string detailLine = skill.Name + " Rank " + req.Value;
 

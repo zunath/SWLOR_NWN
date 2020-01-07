@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.ChatCommand;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -80,14 +81,15 @@ namespace SWLOR.Game.Server.Conversation
         {
             var response = GetResponseByID("CategoryPage", responseID);
             var categoryID = (SkillCategory)response.CustomData;
-            
-            List<PCSkill> pcSkills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
+
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
+            var skills = SkillService.GetAllSkillsInCategory(categoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (PCSkill pcSkill in pcSkills)
+            foreach (var skillID in skills)
             {
-                var skill = SkillService.GetSkill(pcSkill.SkillID);
-                AddResponseToPage("SkillListPage", skill.Name, true, pcSkill.SkillID);
+                var skill = SkillService.GetSkill(skillID);
+                AddResponseToPage("SkillListPage", skill.Name, true, skillID);
             }
 
             ChangePage("SkillListPage");

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
             ID = Guid.NewGuid();
             RespawnAreaResref = "";
             Cooldowns = new Dictionary<PerkCooldownGroup, DateTime>();
+            Skills = new Dictionary<Skill, PCSkill>();
         }
 
         [Key]
@@ -69,5 +70,13 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ActiveConcentrationTier { get; set; }
 
         public Dictionary<PerkCooldownGroup, DateTime> Cooldowns { get; set; }
+        public Dictionary<Skill, PCSkill> Skills { get; set; }
+    }
+
+    public class PCSkill
+    {
+        public int XP { get; set; }
+        public int Rank { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

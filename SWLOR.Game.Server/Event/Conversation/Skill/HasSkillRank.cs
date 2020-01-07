@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Skill
 
                 int count = 1;
                 string varName = "SKILL_" + index + "_REQ_";
-                int skillID = talkTo.GetLocalInt(varName + count);
+                var skillID = (Enumeration.Skill)talkTo.GetLocalInt(varName + count);
                 bool displayNode = true;
 
                 while (skillID > 0)
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Skill
                     }
 
                     count++;
-                    skillID = talkTo.GetLocalInt(varName + count);
+                    skillID = (Enumeration.Skill)talkTo.GetLocalInt(varName + count);
                 }
 
                 return displayNode;

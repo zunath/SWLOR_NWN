@@ -34,12 +34,10 @@ namespace SWLOR.Game.Server.Service
                     ColorTokenService.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     ColorTokenService.Green("Skill Levels: ") + "\n\n");
 
-            List<PCSkill> pcSkills = SkillService.GetAllPCSkills(target.Object);
-
-            foreach (PCSkill pcSkill in pcSkills)
+            foreach (var pcSkill in playerEntity.Skills)
             {
-                var skill = SkillService.GetSkill(pcSkill.SkillID);
-                description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
+                var skill = SkillService.GetSkill(pcSkill.Key);
+                description.Append(skill.Name).Append(" rank ").Append(pcSkill.Value.Rank).AppendLine();
             }
 
             description.Append("\n\n").Append(ColorTokenService.Green("Perks: ")).Append("\n\n");

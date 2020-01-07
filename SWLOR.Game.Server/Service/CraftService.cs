@@ -53,8 +53,9 @@ namespace SWLOR.Game.Server.Service
 
         private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
+            var player = DataService.Player.GetByID(playerID);
             var pcPerks = DataService.PCPerk.GetAllByPlayerID(playerID).ToList();
-            var pcSkills = DataService.PCSkill.GetAllByPlayerID(playerID).ToList();
+            var pcSkills = player.Skills;
 
             // This likely needs to be improved with additional indexes in the CraftBlueprint cache.
             // Will revisit this at some point in the future but I don't want to risk breaking existing functionality.
@@ -70,8 +71,8 @@ namespace SWLOR.Game.Server.Service
                     found = false;
 
                 // Exclude blueprints which the player doesn't meet the skill requirements for
-                var pcSkill = pcSkills.Single(s => s.SkillID == x.Value.Skill);
-                if (x.Value.BaseLevel > pcSkill.Rank + 5)
+                var pcSkill = pcSkills.Single(s => s.Key == x.Value.Skill);
+                if (x.Value.BaseLevel > pcSkill.Value.Rank + 5)
                     found = false;
 
                 return found;

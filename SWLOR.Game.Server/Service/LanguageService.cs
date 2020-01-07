@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void InitializePlayerLanguages(NWPlayer player)
         {
-            RacialType race = (RacialType)player.RacialType;
-            ClassType background = (ClassType)player.Class1;
+            RacialType race = player.RacialType;
+            ClassType background = player.Class1;
             var languages = new List<Skill>(new[] { Skill.Basic });
 
             switch (race)
@@ -248,18 +248,18 @@ namespace SWLOR.Game.Server.Service
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
 
-            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languages).ToList();
-
-            foreach (var pcSkill in pcSkills)
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            
+            foreach (var pcSkill in dbPlayer.Skills)
             {
-                var skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.Key);
                 int maxRank = skill.MaxRank;
                 int maxRankXP = SkillService.SkillXPRequirements[maxRank];
 
-                pcSkill.Rank = maxRank;
-                pcSkill.XP = maxRankXP - 1;
+                pcSkill.Value.Rank = maxRank;
+                pcSkill.Value.XP = maxRankXP - 1;
 
-                DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
 
         }

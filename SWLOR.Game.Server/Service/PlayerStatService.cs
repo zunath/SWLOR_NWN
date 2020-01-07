@@ -84,9 +84,8 @@ namespace SWLOR.Game.Server.Service
                  ignoreItem.BaseItemType == BaseItemType.Bullet)) return;
 
             Player pcEntity = DataService.Player.GetByID(player.GlobalID);
-            List<PCSkill> skills = DataService.PCSkill
-                .GetAllByPlayerID(player.GlobalID)
-                .Where(x => x.Rank > 0).ToList();
+            var skills = pcEntity.Skills
+                .Where(x => x.Value.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
 
             float strBonus = 0.0f;
@@ -96,36 +95,36 @@ namespace SWLOR.Game.Server.Service
             float wisBonus = 0.0f;
             float chaBonus = 0.0f;
 
-            foreach (PCSkill pcSkill in skills)
+            foreach (var pcSkill in skills)
             {
-                var skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.Key);
                 CustomAttribute primary = (CustomAttribute)skill.Primary;
                 CustomAttribute secondary = (CustomAttribute)skill.Secondary;
                 CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
 
                 // Primary Bonuses
-                if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Rank;
+                if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Value.Rank;
+                else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Value.Rank;
+                else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Value.Rank;
+                else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Value.Rank;
+                else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Value.Rank;
+                else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Value.Rank;
 
                 // Secondary Bonuses
-                if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Rank;
+                if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Value.Rank;
+                else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Value.Rank;
+                else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Value.Rank;
+                else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Value.Rank;
+                else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Value.Rank;
+                else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Value.Rank;
 
                 // Tertiary Bonuses
-                if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Rank;
+                if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Value.Rank;
+                else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Value.Rank;
+                else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Value.Rank;
+                else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Value.Rank;
+                else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Value.Rank;
+                else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Value.Rank;
             }
 
             // Check caps.
@@ -315,13 +314,14 @@ namespace SWLOR.Game.Server.Service
             if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM || !player.IsInitializedAsPlayer) return;
 
             // Calculating effective stats can be expensive, so we cache it on the item.
-            Skill skill; 
-            
+            Skill skill;
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+
             if(item.BaseItemType == BaseItemType.Amulet || item.BaseItemType == BaseItemType.Ring)
             {
-                var forceArmor = SkillService.GetPCSkill(player, Skill.ForceArmor);
-                var lightArmor = SkillService.GetPCSkill(player, Skill.LightArmor);
-                var heavyArmor = SkillService.GetPCSkill(player, Skill.HeavyArmor);
+                var forceArmor = dbPlayer.Skills[Skill.ForceArmor];
+                var lightArmor = dbPlayer.Skills[Skill.LightArmor];
+                var heavyArmor = dbPlayer.Skills[Skill.HeavyArmor];
                 var highest = forceArmor.Rank;
                 skill = Skill.ForceArmor;
 
@@ -339,8 +339,8 @@ namespace SWLOR.Game.Server.Service
             {
                 skill = ItemService.GetSkillTypeForItem(item);
             }
-                
-            var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, skill).Rank;
+
+            var rank = dbPlayer.Skills[skill].Rank;
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalculateEffectiveStats"))
             {
                 // Only scale cooldown recovery if it's a bonus. Penalties remain regardless of skill level difference.
@@ -411,10 +411,11 @@ namespace SWLOR.Game.Server.Service
 
         public static EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
         {
-            int heavyRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.HeavyArmor).Rank;
-            int lightRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.LightArmor).Rank;
-            int forceRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.ForceArmor).Rank;
-            int martialRank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, Skill.MartialArts).Rank;
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            int heavyRank = dbPlayer.Skills[Skill.HeavyArmor].Rank;
+            int lightRank = dbPlayer.Skills[Skill.LightArmor].Rank;
+            int forceRank = dbPlayer.Skills[Skill.ForceArmor].Rank;
+            int martialRank = dbPlayer.Skills[Skill.MartialArts].Rank;
 
             EffectiveItemStats stats = new EffectiveItemStats();
             stats.EnmityRate = 1.0f;
@@ -433,7 +434,7 @@ namespace SWLOR.Game.Server.Service
                 processed.Add(item);
 
                 Skill skill = ItemService.GetSkillTypeForItem(item);
-                var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, skill).Rank;
+                var rank = dbPlayer.Skills[skill].Rank;
                 stats.CooldownRecovery += item.GetLocalInt("STAT_EFFECTIVE_LEVEL_COOLDOWN_RECOVERY");
                 stats.EnmityRate += item.GetLocalFloat("STAT_EFFECTIVE_LEVEL_ENMITY_RATE");
                 stats.Luck += item.GetLocalInt("STAT_EFFECTIVE_LEVEL_LUCK_BONUS");
@@ -604,7 +605,8 @@ namespace SWLOR.Game.Server.Service
                 itemSkill == Skill.ForceArmor ||
                 itemSkill == Skill.Shields) return 0;
 
-            PCSkill skill = DataService.PCSkill.GetByPlayerIDAndSkillID(oPC.GlobalID, itemSkill);
+            var player = DataService.Player.GetByID(oPC.GlobalID);
+            PCSkill skill = player.Skills[itemSkill];
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;

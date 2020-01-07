@@ -325,8 +325,8 @@ namespace SWLOR.Game.Server.Service
 
         public static List<IPerk> GetPerksAvailableToPC(NWPlayer player)
         {
-            var playerID = player.GlobalID;
-            var pcSkills = DataService.PCSkill.GetAllByPlayerID(playerID).ToList();
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var pcSkills = dbPlayer.Skills;
 
             return _perkHandlers.Values.Where(x =>
             {
@@ -340,9 +340,9 @@ namespace SWLOR.Game.Server.Service
                 // Check the player's skill level against the perk requirements.
                 foreach (var skillReq in skillRequirements)
                 {
-                    var pcSkill = pcSkills.Single(s => s.SkillID == skillReq.Key);
+                    var pcSkill = pcSkills.Single(s => s.Key == skillReq.Key);
 
-                    if (pcSkill.Rank < skillReq.Value)
+                    if (pcSkill.Value.Rank < skillReq.Value)
                     {
                         return false;
                     }
@@ -415,7 +415,7 @@ namespace SWLOR.Game.Server.Service
             // Cycle through the skill requirements
             foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(dbPlayer.ID, req.Key);
+                PCSkill pcSkill = dbPlayer.Skills[req.Key];
 
                 // Player has not completed this required quest. Exit early and return false.
                 if (pcSkill.Rank < req.Value) return false;
@@ -582,7 +582,8 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
             {
-                var pcSkills = DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
+                var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+                var pcSkills = dbPlayer.Skills;
                 // Get the PC's perk information and all of the perk levels at or below their current level.
                 var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkType);
                 if (pcPerk == null) return 0;
@@ -606,8 +607,8 @@ namespace SWLOR.Game.Server.Service
                         // Check the skill requirements.
                         foreach (var req in skillRequirements)
                         {
-                            var pcSkill = pcSkills.Single(x => x.SkillID == req.Key);
-                            if (pcSkill.Rank < req.Value)
+                            var pcSkill = pcSkills.Single(x => x.Key == req.Key);
+                            if (pcSkill.Value.Rank < req.Value)
                             {
                                 effectiveLevel--;
                                 break;

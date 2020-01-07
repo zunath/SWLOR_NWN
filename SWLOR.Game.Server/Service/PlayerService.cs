@@ -125,7 +125,6 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 Player entity = CreateDBPCEntity(player);
-                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
 
                 var skills = SkillService.GetAllSkills();
                 foreach (var skill in skills)
@@ -133,15 +132,14 @@ namespace SWLOR.Game.Server.Service
                     var pcSkill = new PCSkill
                     {
                         IsLocked = false,
-                        SkillID = skill,
-                        PlayerID = entity.ID,
                         Rank = 0,
                         XP = 0
                     };
-                    
-                    DataService.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
+
+                    entity.Skills[skill] = pcSkill;
                 }
 
+                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
                 RaceService.ApplyDefaultAppearance(player);
                 NWNXCreature.SetAlignmentLawChaos(player, 50);
                 NWNXCreature.SetAlignmentGoodEvil(player, 50);

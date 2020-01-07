@@ -114,10 +114,9 @@ namespace SWLOR.Game.Server.Conversation
             Player playerEntity = DataService.Player.GetByID(player.GlobalID);
 
             // Get all player skills and then sum them up by the rank.
-            int totalSkillCount = DataService.PCSkill
-                .GetAllByPlayerID(player.GlobalID)
-                .Where(x => SkillService.GetSkill(x.SkillID).ContributesToSkillCap)
-                .Sum(s => s.Rank);
+            int totalSkillCount = playerEntity.Skills
+                .Where(x => SkillService.GetSkill(x.Key).ContributesToSkillCap)
+                .Sum(s => s.Value.Rank);
 
             string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
             header += ColorTokenService.Green("Association: ") + playerEntity.AssociationID.GetDescriptionAttribute() + "\n\n";

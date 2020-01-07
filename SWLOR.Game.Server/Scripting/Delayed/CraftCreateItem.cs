@@ -65,7 +65,8 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
             var blueprint = CraftService.GetBlueprintByID(model.Blueprint);
             var baseStructure = BaseService.GetBaseStructure(blueprint.BaseStructureID);
-            PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.Skill);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var pcSkill = dbPlayer.Skills[blueprint.Skill];
 
             int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, blueprint.Skill);
             int itemLevel = model.AdjustedLevel;

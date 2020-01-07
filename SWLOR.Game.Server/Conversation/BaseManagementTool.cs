@@ -712,12 +712,6 @@ namespace SWLOR.Game.Server.Conversation
                     DataService.SubmitDataChange(primaryOwner, DatabaseActionType.Update);
                 }
 
-                // Remove any access permissions.
-                foreach (var buildingPermission in DataService.PCBaseStructurePermission.GetAllByPCBaseStructureID(structure.ID))
-                {
-                    DataService.SubmitDataChange(buildingPermission, DatabaseActionType.Delete);
-                }
-
             }
             else if (structureType == BaseStructureType.StarshipProduction && data.ManipulatingStructure.Structure.GetLocalInt("DOCKED_STARSHIP") == 1)
             {

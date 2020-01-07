@@ -939,14 +939,6 @@ namespace SWLOR.Game.Server.Service
                     DataService.SubmitDataChange(item, DatabaseActionType.Delete);
                 }
 
-                // Clear structure permissions
-                var structurePermissions = DataService.PCBaseStructurePermission.GetAllByPCBaseStructureID(pcBaseStructure.ID).ToList();
-                for (int p = structurePermissions.Count - 1; p >= 0; p--)
-                {
-                    var permission = structurePermissions.ElementAt(p);
-                    DataService.SubmitDataChange(permission, DatabaseActionType.Delete);
-                }
-
                 if (impoundItems)
                 {
                     // Build the structure's item in-world and then impound it. Destroy the copy after we're done.

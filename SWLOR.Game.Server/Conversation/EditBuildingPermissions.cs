@@ -117,7 +117,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            var permission = DataService.PCBaseStructurePermission.GetPlayerPrivatePermissionOrDefault(player.GlobalID, data.StructureID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(data.StructureID);
+            var permission = pcBaseStructure.PlayerPermissions.ContainsKey(player.GlobalID) ? 
+                pcBaseStructure.PlayerPermissions[player.GlobalID] : 
+                null;
 
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -215,21 +218,16 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(Guid playerID, StructurePermission permission, bool isPublicPermission)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(data.StructureID);
             var dbPermission = isPublicPermission ?
-                DataService.PCBaseStructurePermission.GetPublicPermissionOrDefault(data.StructureID) :
-                DataService.PCBaseStructurePermission.GetPlayerPrivatePermissionOrDefault(playerID, data.StructureID);
-
-            var action = DatabaseActionType.Update;
+                pcBaseStructure.PublicStructurePermission :
+                (pcBaseStructure.PlayerPermissions.ContainsKey(playerID) ? 
+                    pcBaseStructure.PlayerPermissions[playerID] : 
+                    null);
 
             if (dbPermission == null)
             {
-                dbPermission = new PCBaseStructurePermission()
-                {
-                    PCBaseStructureID = data.StructureID,
-                    PlayerID = playerID,
-                    IsPublicPermission = isPublicPermission
-                };
-                action = DatabaseActionType.Insert;
+                dbPermission = new PCBaseStructurePermission();
             }
 
             switch (permission)
@@ -271,14 +269,24 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            DataService.SubmitDataChange(dbPermission, action);
+            if(isPublicPermission)
+            {
+                pcBaseStructure.PublicStructurePermission = dbPermission;
+            }
+            else
+            {
+                pcBaseStructure.PlayerPermissions[playerID] = dbPermission;
+            }
+
+            DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Update);
         }
 
         private void BuildPublicPermissionsPage()
         {
             ClearPageResponses("PublicPermissionsPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            var permission = DataService.PCBaseStructurePermission.GetPublicPermissionOrDefault(data.StructureID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(data.StructureID);
+            var permission = pcBaseStructure.PublicStructurePermission;
 
             // Intentionally excluded permissions:
             // CanAdjustPermissions, CanCancelLease, CanPlaceEditStructures, CanAccessStructureInventory, CanAdjustPermissions,

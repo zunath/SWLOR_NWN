@@ -59,7 +59,6 @@ namespace SWLOR.Game.Server.Conversation
                                              .ToList();
 
             // Get starships owned by other players and the current player currently has access to.
-            var permissions = DataService.PCBaseStructurePermission.GetAllByPlayerID(player.GlobalID);
             var permissionedShips = DataService.PCBase.GetAll().Where(x =>
             {
                 if (x.ShipLocation != starportID.ToLower() ||
@@ -67,7 +66,9 @@ namespace SWLOR.Game.Server.Conversation
                     x.PlayerID == player.GlobalID) return false;
 
                 PCBaseStructure ship = DataService.PCBaseStructure.GetStarshipExteriorByPCBaseID(x.ID);
-                var permission = permissions.SingleOrDefault(p => p.PCBaseStructureID == ship.ID);
+                var permission = ship.PlayerPermissions.ContainsKey(player.GlobalID) ?
+                    ship.PlayerPermissions[player.GlobalID] :
+                    null;
                 return permission != null && permission.CanEnterBuilding;
             })
                 .ToList();

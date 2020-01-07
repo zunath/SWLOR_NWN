@@ -14,10 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
             CustomName = "";
 
             PlayerBasePermissions = new Dictionary<Guid, PCBasePermission>();
-            PublicBasePermission = new PCBasePermission
-            {
-                IsPublicPermission = true
-            };
+            PublicBasePermission = new PCBasePermission();
         }
 
         [Key]
@@ -57,7 +54,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanEditPrimaryResidence { get; set; }
         public bool CanRemovePrimaryResidence { get; set; }
         public bool CanChangeStructureMode { get; set; }
-        public bool IsPublicPermission { get; set; }
         public bool CanAdjustPublicPermissions { get; set; }
         public bool CanDockStarship { get; set; }
         public bool CanFlyStarship { get; set; }

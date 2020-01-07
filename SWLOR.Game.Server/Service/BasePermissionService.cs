@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Public structure permissions are the next thing we check.
-            var publicStructurePermission = DataService.PCBaseStructurePermission.GetPublicPermissionOrDefault(dbStructure.ID);
+            var publicStructurePermission = dbStructure.PublicStructurePermission;
 
             if (publicStructurePermission != null)
             {
@@ -136,10 +136,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Didn't find a base permission. Check the structure permissions.
-            var structurePermission = DataService.PCBaseStructurePermission.GetAll()
-                .SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && 
-                                      x.PlayerID == player.GlobalID &&
-                                      !x.IsPublicPermission);
+            var structurePermission = dbStructure.PlayerPermissions.ContainsKey(player.GlobalID) ?
+                dbStructure.PlayerPermissions[player.GlobalID] :
+                null;
+
             if (structurePermission == null) return false;
 
             if (permission == StructurePermission.CanAccessStructureInventory && structurePermission.CanAccessStructureInventory) return true;
@@ -230,17 +230,10 @@ namespace SWLOR.Game.Server.Service
 
         public static void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
         {
-            var dbPermission = DataService.PCBaseStructurePermission.GetPlayerPrivatePermissionOrDefault(player.GlobalID, pcBaseStructureID);
-            var action = DatabaseActionType.Update;
-
-            if (dbPermission == null)
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
+            if (!pcBaseStructure.PlayerPermissions.ContainsKey(player.GlobalID))
             {
-                dbPermission = new PCBaseStructurePermission
-                {
-                    PCBaseStructureID = pcBaseStructureID,
-                    PlayerID = player.GlobalID
-                };
-                action = DatabaseActionType.Insert;
+                pcBaseStructure.PlayerPermissions[player.GlobalID] = new PCBaseStructurePermission();
             }
 
             foreach (var permission in permissions)
@@ -248,44 +241,44 @@ namespace SWLOR.Game.Server.Service
                 switch (permission)
                 {
                     case StructurePermission.CanPlaceEditStructures:
-                        dbPermission.CanPlaceEditStructures = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanPlaceEditStructures = true;
                         break;
                     case StructurePermission.CanAccessStructureInventory:
-                        dbPermission.CanAccessStructureInventory = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanAccessStructureInventory = true;
                         break;
                     case StructurePermission.CanEnterBuilding:
-                        dbPermission.CanEnterBuilding = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanEnterBuilding = true;
                         break;
                     case StructurePermission.CanRetrieveStructures:
-                        dbPermission.CanRetrieveStructures = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanRetrieveStructures = true;
                         break;
                     case StructurePermission.CanAdjustPermissions:
-                        dbPermission.CanAdjustPermissions = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanAdjustPermissions = true;
                         break;
                     case StructurePermission.CanRenameStructures:
-                        dbPermission.CanRenameStructures = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanRenameStructures = true;
                         break;
                     case StructurePermission.CanEditPrimaryResidence:
-                        dbPermission.CanEditPrimaryResidence = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanEditPrimaryResidence = true;
                         break;
                     case StructurePermission.CanRemovePrimaryResidence:
-                        dbPermission.CanRemovePrimaryResidence = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanRemovePrimaryResidence = true;
                         break;
                     case StructurePermission.CanChangeStructureMode:
-                        dbPermission.CanChangeStructureMode = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanChangeStructureMode = true;
                         break;
                     case StructurePermission.CanAdjustPublicPermissions:
-                        dbPermission.CanAdjustPublicPermissions = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanAdjustPublicPermissions = true;
                         break;
                     case StructurePermission.CanFlyStarship:
-                        dbPermission.CanFlyStarship = true;
+                        pcBaseStructure.PlayerPermissions[player.GlobalID].CanFlyStarship = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
 
-            DataService.SubmitDataChange(dbPermission, action);
+            DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Update);
         }        
     }
 }

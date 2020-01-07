@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.Components, "Power Core", true, 0, " power_core", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.PowerCrystal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         PowerCore = 321,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Obelisk, Large", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ObeliskLarge)]
-        Obelisk, Large = 322,
+        ObeliskLarge = 322,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Electrical Potency +2", true, 30, " rune_ele2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         ElectricalPotencyPlus2 = 323,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Obelisk, Small", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ObeliskSmall)]
@@ -669,13 +669,13 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Gong", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Gong)]
         Gong = 331,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Monster", true, 7, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueMonster)]
-        Statue, Monster = 332,
+        StatueMonster = 332,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Dark Defense +1", true, 16, " rune_ddef1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.BlueCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DarkDefensePlus1 = 333,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Dark Defense +2", true, 31, " rune_ddef2", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 5, ComponentType.BlueCluster, 3, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         DarkDefensePlus2 = 334,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Brazier, Stone", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BrazierStone)]
-        Brazier, Stone = 335,
+        BrazierStone = 335,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Guardian", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueGuardian)]
         StatueGuardian = 336,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureDoors, "Doorway, Metal", true, 6, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.DoorwayMetal)]
@@ -721,7 +721,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureLighting, "Torch Bracket", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.TorchBracket)]
         TorchBracket = 357,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Wood", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarWood)]
-        Pillar, Wood = 358,
+        PillarWood = 358,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Statue, Cyric", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.StatueCyric)]
         StatueCyric = 359,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Sea Idol", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.SeaIdol)]
@@ -745,7 +745,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Net", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Net)]
         Net = 369,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Extra Large", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedExtraLarge)]
-        Bed, ExtraLarge = 370,
+        BedExtraLarge = 370,
         [CraftBlueprint(CraftBlueprintCategory.BlueMods, "Mind Defense +1", true, 16, " rune_mdef1", 1, Skill.Engineering, CraftDeviceType.EngineeringBench, PerkType.EngineeringBlueprints, 1, ComponentType.BlueCluster, 1, 2, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.Invalid)]
         MindDefensePlus1 = 371,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet, Round, Blue", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Leather, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.CarpetRoundBlue)]
@@ -789,11 +789,11 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureTables, "Table, Stone, Large", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 0, BaseStructure.TableStoneLarge)]
         TableStoneLarge = 391,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Stone, Yellow", true, 5, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedStoneYellow)]
-        BedStone, Yellow = 392,
+        BedStoneYellow = 392,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Large", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedLarge)]
         BedLarge = 393,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Vase, Rounded", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.VaseRounded)]
-        Vase, Rounded = 394,
+        VaseRounded = 394,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureFlooring, "Carpet", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Leather, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Carpet)]
         Carpet = 395,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bed, Wood, Yellow", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 1, 2, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BedWoodYellow)]
@@ -805,7 +805,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Bird Cage", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BirdCage)]
         BirdCage = 399,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureStatues, "Pillar, Wood, Dark", true, 3, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.PillarWoodDark)]
-        PillarWood, Dark = 400,
+        PillarWoodDark = 400,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureBeds, "Bunk Bed", true, 4, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Organic, 2, 4, ComponentType.Leather, 1, 2, ComponentType.None, 0, 0, 1, BaseStructure.BunkBed)]
         BunkBed = 401,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureMisc, "Vase, Tall", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.None, 0, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.VaseTall)]
@@ -881,7 +881,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairWood)]
         ChairWood = 437,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Wood, Small", true, 0, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairWoodSmall)]
-        ChairWoodSmall, Small = 438,
+        ChairWoodSmall = 438,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Throne, Wood", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ThroneWood)]
         ThroneWood = 439,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Stone", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairStone)]
@@ -889,7 +889,7 @@ namespace SWLOR.Game.Server.Enumeration
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Bench, Wood, Small 2", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.BenchWoodSmall2)]
         BenchWoodSmall2 = 441,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Chair, Shell", true, 2, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Metal, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.ChairShell)]
-        Chair, Shell = 442,
+        ChairShell = 442,
         [CraftBlueprint(CraftBlueprintCategory.FurnitureSeating, "Couch, Wood, Yellow", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 2, 4, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.CouchWoodYellow)]
         CouchWoodYellow = 443,
         [CraftBlueprint(CraftBlueprintCategory.ItemStorage, "Barrel", true, 1, " furniture", 1, Skill.Fabrication, CraftDeviceType.FabricationTerminal, PerkType.FabricationBlueprints, 1, ComponentType.Organic, 3, 6, ComponentType.None, 0, 0, ComponentType.None, 0, 0, 1, BaseStructure.Barrel)]

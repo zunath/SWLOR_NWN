@@ -57,6 +57,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void GivePlayerKeyItem(NWPlayer oPC, KeyItem keyItemID)
         {
+            if (keyItemID == KeyItem.Invalid) return;
+
             if (!PlayerHasKeyItem(oPC, keyItemID))
             {
                 PCKeyItem entity = new PCKeyItem
@@ -74,6 +76,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void RemovePlayerKeyItem(NWPlayer oPC, KeyItem keyItemID)
         {
+            if (keyItemID == KeyItem.Invalid) return;
+
             if (PlayerHasKeyItem(oPC, keyItemID))
             {
                 PCKeyItem entity = DataService.PCKeyItem.GetByPlayerAndKeyItemID(oPC.GlobalID, keyItemID);
@@ -99,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             NWItem oItem = (_.GetModuleItemAcquired());
             var keyItemID = (KeyItem)oItem.GetLocalInt("KEY_ITEM_ID");
 
-            if (keyItemID != KeyItem.Invalid) return;
+            if (keyItemID == KeyItem.Invalid) return;
 
             GivePlayerKeyItem(oPC, keyItemID);
             oItem.Destroy();

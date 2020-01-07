@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Extension
             var attributes = (TAttribute[]) fieldInfo.GetCustomAttributes(typeof(TAttribute), false);
 
             if (attributes.Length > 0) return attributes[0];
-            else throw new Exception($"Could not find attribute '{typeof(TAttribute)}' on enumeration type {typeof(TEnum)}");
+            else throw new Exception($"Could not find attribute '{typeof(TAttribute)}' on enumeration type {typeof(TEnum)}. Value = {source}");
         }
     }
 }

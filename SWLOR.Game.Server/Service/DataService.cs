@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Service
         public static DownloadCache Download { get; } = new DownloadCache();
         public static GameTopicCache GameTopic { get; } = new GameTopicCache();
         public static GuildTaskCache GuildTask { get; } = new GuildTaskCache();
-        public static JukeboxSongCache JukeboxSong { get; } = new JukeboxSongCache();
         public static MessageCache Message { get; } = new MessageCache();
         public static PCBaseCache PCBase { get; } = new PCBaseCache();
         public static PCBaseStructureCache PCBaseStructure { get; } = new PCBaseStructureCache();

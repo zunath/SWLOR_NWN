@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
             public List<Song> Songs { get; set; } = new List<Song>();
         }
 
-        private static Dictionary<int, Song> _songs = new Dictionary<int, Song>();
+        private static readonly Dictionary<int, Song> _songs = new Dictionary<int, Song>();
         static Jukebox()
         {
             LoadSongs();
@@ -70,7 +70,13 @@ namespace SWLOR.Game.Server.Conversation
                 string resource = _.Get2DAString(File, "Resource", row);
                 string displayName = _.Get2DAString(File, "DisplayName", row);
 
-                string name = description == "****" ? displayName : _.GetStringByStrRef(Convert.ToInt32(description));
+                // Skip record if a name cannot be determined.
+                if (string.IsNullOrWhiteSpace(description) && 
+                    string.IsNullOrWhiteSpace(displayName)) continue;
+
+                string name = string.IsNullOrWhiteSpace(description) ? 
+                    displayName : 
+                    _.GetStringByStrRef(Convert.ToInt32(description));
 
                 model.Songs.Add(new Song(row, name, resource));
             }

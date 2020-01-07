@@ -67,7 +67,8 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("CategoryPage");
 
             // If player has skill levels to distribute, display the option to distribute them.
-            var showDistribution = DataService.PCSkillPool.GetByPlayerIDWithLevelsUndistributed(GetPC().GlobalID).Any();
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
+            var showDistribution = player.SkillPools.Any(x => x.Value > 0);
             AddResponseToPage("CategoryPage", ColorTokenService.Green("Distribute Skill Ranks"), showDistribution);
             
             foreach (SkillCategory category in categories)

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Data.Entity
             RespawnAreaResref = "";
             Cooldowns = new Dictionary<PerkCooldownGroup, DateTime>();
             Skills = new Dictionary<Skill, PCSkill>();
+            SkillPools = new Dictionary<SkillCategory, int>();
         }
 
         [Key]
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         public Dictionary<PerkCooldownGroup, DateTime> Cooldowns { get; set; }
         public Dictionary<Skill, PCSkill> Skills { get; set; }
+        public Dictionary<SkillCategory, int> SkillPools { get; set; }
     }
 
     public class PCSkill

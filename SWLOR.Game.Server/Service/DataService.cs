@@ -52,7 +52,6 @@ namespace SWLOR.Game.Server.Service
         public static PCQuestKillTargetProgressCache PCQuestKillTargetProgress { get; } = new PCQuestKillTargetProgressCache();
         public static PCQuestStatusCache PCQuestStatus { get; } = new PCQuestStatusCache();
         public static PCRegionalFameCache PCRegionalFame { get; } = new PCRegionalFameCache();
-        public static PCSkillPoolCache PCSkillPool { get; } = new PCSkillPoolCache();
         public static PlayerCache Player { get; } = new PlayerCache();
         public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
 

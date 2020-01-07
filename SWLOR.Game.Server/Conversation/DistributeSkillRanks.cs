@@ -48,11 +48,11 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             ClearPageResponses("MainPage");
-            var pools = DataService.PCSkillPool.GetByPlayerIDWithLevelsUndistributed(GetPC().GlobalID);
-
-            foreach (var pool in pools)
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
+            
+            foreach (var pool in player.SkillPools)
             {
-                var category = pool.SkillCategoryID;
+                var category = pool.Key;
                 var attr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
                 AddResponseToPage("MainPage", attr.Name, true, category);
             }
@@ -73,12 +73,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var category = model.SkillCategoryID;
-            var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
+            var pool = player.SkillPools[model.SkillCategoryID];
             var skillTypes = SkillService.GetAllSkillsInCategory(model.SkillCategoryID);
             var categoryAttr = category.GetAttribute<SkillCategory, SkillCategoryAttribute>();
 
             string header = ColorTokenService.Green("Category: ") + categoryAttr.Name + "\n";
-            header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
+            header += ColorTokenService.Green("Ranks to Distribute: ") + pool + "\n\n";
             header += "You may distribute ranks to any of the following skills. Note that you may only increase a rank to a maximum level of 40. You will not gain any new experience towards any of the following skills until *ALL* ranks have been distributed.";
 
             SetPageHeader("SkillListPage", header);
@@ -108,9 +109,9 @@ namespace SWLOR.Game.Server.Conversation
             var player = DataService.Player.GetByID(GetPC().GlobalID);
             var skill = SkillService.GetSkill(model.SkillID);
             var pcSkill = player.Skills[model.SkillID];
-            var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
+            var pool = player.SkillPools[model.SkillCategoryID];
 
-            return pool.Levels >= amount && pcSkill.Rank + amount < MaxRankForDistribution && pcSkill.Rank + amount <= skill.MaxRank;
+            return pool >= amount && pcSkill.Rank + amount < MaxRankForDistribution && pcSkill.Rank + amount <= skill.MaxRank;
         }
 
         private void LoadSkillPage()
@@ -119,12 +120,12 @@ namespace SWLOR.Game.Server.Conversation
             var player = DataService.Player.GetByID(GetPC().GlobalID);
             var skill = SkillService.GetSkill(model.SkillID);
             var pcSkill = player.Skills[model.SkillID];
-            var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
+            var pool = player.SkillPools[model.SkillCategoryID];
             
             // Build the page header
             var header = ColorTokenService.Green("Skill: ") + skill.Name + "\n";
             header += ColorTokenService.Green("Current Rank: ") + pcSkill.Rank + "\n";
-            header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
+            header += ColorTokenService.Green("Ranks to Distribute: ") + pool + "\n\n";
 
             if (pcSkill.Rank >= MaxRankForDistribution || pcSkill.Rank >= skill.MaxRank)
             {
@@ -215,18 +216,14 @@ namespace SWLOR.Game.Server.Conversation
                 PlayerStatService.ApplyStatChanges(GetPC(), null);
 
                 // Reduce the pool levels. Delete the record if it drops to zero.
-                var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
-                pool.Levels -= amount;
+                var pool = player.SkillPools[model.SkillCategoryID];
+                pool -= amount;
 
-                if (pool.Levels <= 0)
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                if (pool <= 0)
                 {
-                    DataService.SubmitDataChange(pool, DatabaseActionType.Delete);
                     EndConversation();
                     return;
-                }
-                else
-                {
-                    DataService.SubmitDataChange(pool, DatabaseActionType.Update);
                 }
 
                 model.DistributionType = 0;

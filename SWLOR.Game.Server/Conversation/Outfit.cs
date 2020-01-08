@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -184,17 +185,17 @@ namespace SWLOR.Game.Server.Conversation
         {
         }
 
-        private PCOutfit GetPlayerOutfits(NWPlayer oPC)
+        private Dictionary<int, string> GetPlayerOutfits(NWPlayer oPC)
         {
-            return DataService.PCOutfit.GetByIDOrDefault(oPC.GlobalID);
+            return DataService.Player.GetByID(oPC.GlobalID).SavedOutfits;
         }
-        private PCHelmet GetPlayerHelmets(NWPlayer oPC)
+        private Dictionary<int, string> GetPlayerHelmets(NWPlayer oPC)
         {
-            return DataService.PCHelmet.GetByIDOrDefault(oPC.GlobalID);
+            return DataService.Player.GetByID(oPC.GlobalID).SavedHelmets;
         }
-        private PCWeapon GetPlayerWeapons(NWPlayer oPC)
+        private Dictionary<int, string> GetPlayerWeapons(NWPlayer oPC)
         {
-            return DataService.PCWeapon.GetByIDOrDefault(oPC.GlobalID);
+            return DataService.Player.GetByID(oPC.GlobalID).SavedWeapons;
         }
         private bool CanModifyClothes()
         {
@@ -239,25 +240,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
             NWItem oClothes = (_.GetItemInSlot(InventorySlot.Chest, oPC.Object));
-
+            
             if (!CanModifyClothes())
             {
                 oPC.FloatingText("You cannot save your currently equipped clothes.");
                 return;
             }
             
-            PCOutfit entity = GetPlayerOutfits(oPC);
-            var action = DatabaseActionType.Update;
-
-            if (entity == null)
-            {
-                entity = new PCOutfit
-                {
-                    PlayerID = oPC.GlobalID
-                };
-                action = DatabaseActionType.Insert;
-            }
-
             if (!oClothes.IsValid)
             {
                 oPC.FloatingText(ColorTokenService.Red("You do not have clothes equipped"));
@@ -265,24 +254,16 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             string clothesData = SerializationService.Serialize(oClothes);
-            if (responseID == 1) entity.Outfit1 = clothesData;
-            else if (responseID == 2) entity.Outfit2 = clothesData;
-            else if (responseID == 3) entity.Outfit3 = clothesData;
-            else if (responseID == 4) entity.Outfit4 = clothesData;
-            else if (responseID == 5) entity.Outfit5 = clothesData;
-            else if (responseID == 6) entity.Outfit6 = clothesData;
-            else if (responseID == 7) entity.Outfit7 = clothesData;
-            else if (responseID == 8) entity.Outfit8 = clothesData;
-            else if (responseID == 9) entity.Outfit9 = clothesData;
-            else if (responseID == 10) entity.Outfit10 = clothesData;
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            dbPlayer.SavedOutfits[responseID] = clothesData;
 
-            DataService.SubmitDataChange(entity, action);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             ShowSaveOutfitOptions();
         }
         private void HandleSaveHelmet(int responseID)
         {
             NWPlayer oPC = GetPC();
-            NWItem oClothes = (_.GetItemInSlot(InventorySlot.Head, oPC.Object));
+            NWItem helmet = (_.GetItemInSlot(InventorySlot.Head, oPC.Object));
 
             if (!CanModifyHelmet())
             {
@@ -290,37 +271,17 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            PCHelmet entity = GetPlayerHelmets(oPC);
-            var action = DatabaseActionType.Update;
-
-            if (entity == null)
-            {
-                entity = new PCHelmet
-                {
-                    PlayerID = oPC.GlobalID
-                };
-                action = DatabaseActionType.Insert;
-            }
-
-            if (!oClothes.IsValid)
+            if (!helmet.IsValid)
             {
                 oPC.FloatingText(ColorTokenService.Red("You do not have a helmet equipped"));
                 return;
             }
 
-            string clothesData = SerializationService.Serialize(oClothes);
-            if (responseID == 1) entity.Helmet1 = clothesData;
-            else if (responseID == 2) entity.Helmet2 = clothesData;
-            else if (responseID == 3) entity.Helmet3 = clothesData;
-            else if (responseID == 4) entity.Helmet4 = clothesData;
-            else if (responseID == 5) entity.Helmet5 = clothesData;
-            else if (responseID == 6) entity.Helmet6 = clothesData;
-            else if (responseID == 7) entity.Helmet7 = clothesData;
-            else if (responseID == 8) entity.Helmet8 = clothesData;
-            else if (responseID == 9) entity.Helmet9 = clothesData;
-            else if (responseID == 10) entity.Helmet10 = clothesData;
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            string helmetData = SerializationService.Serialize(helmet);
+            dbPlayer.SavedHelmets[responseID] = helmetData;
 
-            DataService.SubmitDataChange(entity, action);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             ShowSaveHelmetOptions();
         }
         private void HandleSaveWeapon(int responseID)
@@ -330,41 +291,21 @@ namespace SWLOR.Game.Server.Conversation
 
             if (!CanModifyWeapon())
             {
-                oPC.FloatingText("You cannot save your currently equipped Weapon.");
+                oPC.FloatingText("You cannot save your currently equipped weapon.");
                 return;
-            }
-
-            PCWeapon entity = GetPlayerWeapons(oPC);
-            var action = DatabaseActionType.Update;
-
-            if (entity == null)
-            {
-                entity = new PCWeapon
-                {
-                    PlayerID = oPC.GlobalID
-                };
-                action = DatabaseActionType.Insert;
             }
 
             if (!oClothes.IsValid)
             {
-                oPC.FloatingText(ColorTokenService.Red("You do not have a Weapon equipped"));
+                oPC.FloatingText(ColorTokenService.Red("You do not have a weapon equipped"));
                 return;
             }
 
-            string clothesData = SerializationService.Serialize(oClothes);
-            if (responseID == 1) entity.Weapon1 = clothesData;
-            else if (responseID == 2) entity.Weapon2 = clothesData;
-            else if (responseID == 3) entity.Weapon3 = clothesData;
-            else if (responseID == 4) entity.Weapon4 = clothesData;
-            else if (responseID == 5) entity.Weapon5 = clothesData;
-            else if (responseID == 6) entity.Weapon6 = clothesData;
-            else if (responseID == 7) entity.Weapon7 = clothesData;
-            else if (responseID == 8) entity.Weapon8 = clothesData;
-            else if (responseID == 9) entity.Weapon9 = clothesData;
-            else if (responseID == 10) entity.Weapon10 = clothesData;
-
-            DataService.SubmitDataChange(entity, action);
+            string weaponData = SerializationService.Serialize(oClothes);
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            dbPlayer.SavedWeapons[responseID] = weaponData;
+            
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             ShowSaveWeaponOptions();
         }
         private void HandleLoadOutfit(int responseID)
@@ -378,25 +319,15 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             int outfitID = (int)response.CustomData;
-            PCOutfit entity = GetPlayerOutfits(GetPC());
-            if (entity == null) return;
+            var outfits = dbPlayer.SavedOutfits;
+            if (!outfits.ContainsKey(outfitID)) return;
 
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.Chest;
-            NWItem storedClothes = null;
+            NWItem storedClothes = SerializationService.DeserializeItem(outfits[outfitID], oTempStorage);
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
-
-            if (outfitID == 1) storedClothes = SerializationService.DeserializeItem(entity.Outfit1, oTempStorage);
-            else if (outfitID == 2) storedClothes = SerializationService.DeserializeItem(entity.Outfit2, oTempStorage);
-            else if (outfitID == 3) storedClothes = SerializationService.DeserializeItem(entity.Outfit3, oTempStorage);
-            else if (outfitID == 4) storedClothes = SerializationService.DeserializeItem(entity.Outfit4, oTempStorage);
-            else if (outfitID == 5) storedClothes = SerializationService.DeserializeItem(entity.Outfit5, oTempStorage);
-            else if (outfitID == 6) storedClothes = SerializationService.DeserializeItem(entity.Outfit6, oTempStorage);
-            else if (outfitID == 7) storedClothes = SerializationService.DeserializeItem(entity.Outfit7, oTempStorage);
-            else if (outfitID == 8) storedClothes = SerializationService.DeserializeItem(entity.Outfit8, oTempStorage);
-            else if (outfitID == 9) storedClothes = SerializationService.DeserializeItem(entity.Outfit9, oTempStorage);
-            else if (outfitID == 10) storedClothes = SerializationService.DeserializeItem(entity.Outfit10, oTempStorage);
 
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 
@@ -487,25 +418,15 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            int outfitID = (int)response.CustomData;
-            PCHelmet entity = GetPlayerHelmets(GetPC());
-            if (entity == null) return;
+            int helmetID = (int)response.CustomData;
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            var helmets = dbPlayer.SavedHelmets;
+            if (!helmets.ContainsKey(helmetID)) return;
 
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.Head;
-            NWItem storedClothes = null;
+            NWItem storedClothes = SerializationService.DeserializeItem(helmets[helmetID], oTempStorage);
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
-
-            if (outfitID == 1) storedClothes = SerializationService.DeserializeItem(entity.Helmet1, oTempStorage);
-            else if (outfitID == 2) storedClothes = SerializationService.DeserializeItem(entity.Helmet2, oTempStorage);
-            else if (outfitID == 3) storedClothes = SerializationService.DeserializeItem(entity.Helmet3, oTempStorage);
-            else if (outfitID == 4) storedClothes = SerializationService.DeserializeItem(entity.Helmet4, oTempStorage);
-            else if (outfitID == 5) storedClothes = SerializationService.DeserializeItem(entity.Helmet5, oTempStorage);
-            else if (outfitID == 6) storedClothes = SerializationService.DeserializeItem(entity.Helmet6, oTempStorage);
-            else if (outfitID == 7) storedClothes = SerializationService.DeserializeItem(entity.Helmet7, oTempStorage);
-            else if (outfitID == 8) storedClothes = SerializationService.DeserializeItem(entity.Helmet8, oTempStorage);
-            else if (outfitID == 9) storedClothes = SerializationService.DeserializeItem(entity.Helmet9, oTempStorage);
-            else if (outfitID == 10) storedClothes = SerializationService.DeserializeItem(entity.Helmet10, oTempStorage);
 
             if (storedClothes == null) throw new Exception("Unable to locate stored helmet.");
 
@@ -541,25 +462,15 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             int outfitID = (int)response.CustomData;
-            PCWeapon entity = GetPlayerWeapons(GetPC());
-            if (entity == null) return;
+            var weapons = dbPlayer.SavedWeapons;
+            if (!weapons.ContainsKey(outfitID)) return;
 
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.RightHand;
-            NWItem storedClothes = null;
+            NWItem storedClothes = SerializationService.DeserializeItem(weapons[outfitID], oTempStorage);
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
-
-            if (outfitID == 1) storedClothes = SerializationService.DeserializeItem(entity.Weapon1, oTempStorage);
-            else if (outfitID == 2) storedClothes = SerializationService.DeserializeItem(entity.Weapon2, oTempStorage);
-            else if (outfitID == 3) storedClothes = SerializationService.DeserializeItem(entity.Weapon3, oTempStorage);
-            else if (outfitID == 4) storedClothes = SerializationService.DeserializeItem(entity.Weapon4, oTempStorage);
-            else if (outfitID == 5) storedClothes = SerializationService.DeserializeItem(entity.Weapon5, oTempStorage);
-            else if (outfitID == 6) storedClothes = SerializationService.DeserializeItem(entity.Weapon6, oTempStorage);
-            else if (outfitID == 7) storedClothes = SerializationService.DeserializeItem(entity.Weapon7, oTempStorage);
-            else if (outfitID == 8) storedClothes = SerializationService.DeserializeItem(entity.Weapon8, oTempStorage);
-            else if (outfitID == 9) storedClothes = SerializationService.DeserializeItem(entity.Weapon9, oTempStorage);
-            else if (outfitID == 10) storedClothes = SerializationService.DeserializeItem(entity.Weapon10, oTempStorage);
 
             if (storedClothes == null) throw new Exception("Unable to locate stored Weapon.");
 
@@ -605,111 +516,55 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowSaveOutfitOptions()
         {
-            PCOutfit entity = GetPlayerOutfits(GetPC()) ?? new PCOutfit();
-
             ClearPageResponses("SaveOutfitPage");
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
 
-            string responseText = entity.Outfit1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
-            AddResponseToPage("SaveOutfitPage", responseText);
-
-            responseText = entity.Outfit10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
-            AddResponseToPage("SaveOutfitPage", responseText);
+            for (int x = 1; x <= 10; x++)
+            {
+                if (dbPlayer.SavedOutfits.ContainsKey(x))
+                {
+                    AddResponseToPage("SaveOutfitPage", ColorTokenService.Green($"Save in Slot {x}"));
+                }
+                else
+                {
+                    AddResponseToPage("SaveOutfitPage", ColorTokenService.Red($"Save in Slot {x}"));
+                }
+            }
         }
         private void ShowSaveHelmetOptions()
         {
-            PCHelmet entity = GetPlayerHelmets(GetPC()) ?? new PCHelmet();
-
             ClearPageResponses("SaveHelmetPage");
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
 
-            string responseText = entity.Helmet1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
-            AddResponseToPage("SaveHelmetPage", responseText);
-
-            responseText = entity.Helmet10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
-            AddResponseToPage("SaveHelmetPage", responseText);
+            for (int x = 1; x <= 10; x++)
+            {
+                if (dbPlayer.SavedHelmets.ContainsKey(x))
+                {
+                    AddResponseToPage("SaveHelmetPage", ColorTokenService.Green($"Save in Slot {x}"));
+                }
+                else
+                {
+                    AddResponseToPage("SaveHelmetPage", ColorTokenService.Red($"Save in Slot {x}"));
+                }
+            }
         }
         private void ShowSaveWeaponOptions()
         {
-            PCWeapon entity = GetPlayerWeapons(GetPC()) ?? new PCWeapon();
-
             ClearPageResponses("SaveWeaponPage");
 
-            string responseText = entity.Weapon1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
-            AddResponseToPage("SaveWeaponPage", responseText);
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
 
-            responseText = entity.Weapon2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
-            AddResponseToPage("SaveWeaponPage", responseText);
-
-            responseText = entity.Weapon10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
-            AddResponseToPage("SaveWeaponPage", responseText);
+            for (int x = 1; x <= 10; x++)
+            {
+                if (dbPlayer.SavedWeapons.ContainsKey(x))
+                {
+                    AddResponseToPage("SaveWeaponPage", ColorTokenService.Green($"Save in Slot {x}"));
+                }
+                else
+                {
+                    AddResponseToPage("SaveWeaponPage", ColorTokenService.Red($"Save in Slot {x}"));
+                }
+            }
         }
         private void ShowLoadOptions()
         {
@@ -720,81 +575,42 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowLoadOutfitOptions()
         {
-            PCOutfit entity = GetPlayerOutfits(GetPC()) ?? new PCOutfit();
             ClearPageResponses("LoadOutfitPage");
 
-            if (entity.Outfit1 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 1", true, 1);
-            if (entity.Outfit2 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 2", true, 2);
-            if (entity.Outfit3 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 3", true, 3);
-            if (entity.Outfit4 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 4", true, 4);
-            if (entity.Outfit5 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 5", true, 5);
-            if (entity.Outfit6 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 6", true, 6);
-            if (entity.Outfit7 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 7", true, 7);
-            if (entity.Outfit8 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 8", true, 8);
-            if (entity.Outfit9 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 9", true, 9);
-            if (entity.Outfit10 != null)
-                AddResponseToPage("LoadOutfitPage", "Load from Slot 10", true, 10);
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
+            for(int x = 1; x <= 10; x++)
+            {
+                if(dbPlayer.SavedOutfits.ContainsKey(x))
+                {
+                    AddResponseToPage("LoadOutfitPage", $"Load from Slot {x}", true, x);
+                }
+            }
         }
         private void ShowLoadHelmetOptions()
         {
-            PCHelmet entity = GetPlayerHelmets(GetPC()) ?? new PCHelmet();
             ClearPageResponses("LoadHelmetPage");
 
-            if (entity.Helmet1 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 1", true, 1);
-            if (entity.Helmet2 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 2", true, 2);
-            if (entity.Helmet3 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 3", true, 3);
-            if (entity.Helmet4 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 4", true, 4);
-            if (entity.Helmet5 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 5", true, 5);
-            if (entity.Helmet6 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 6", true, 6);
-            if (entity.Helmet7 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 7", true, 7);
-            if (entity.Helmet8 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 8", true, 8);
-            if (entity.Helmet9 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 9", true, 9);
-            if (entity.Helmet10 != null)
-                AddResponseToPage("LoadHelmetPage", "Load from Slot 10", true, 10);
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
+            for (int x = 1; x <= 10; x++)
+            {
+                if (dbPlayer.SavedHelmets.ContainsKey(x))
+                {
+                    AddResponseToPage("LoadHelmetPage", $"Load from Slot {x}", true, x);
+                }
+            }
         }
         private void ShowLoadWeaponOptions()
         {
-            PCWeapon entity = GetPlayerWeapons(GetPC()) ?? new PCWeapon();
             ClearPageResponses("LoadWeaponPage");
 
-            if (entity.Weapon1 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 1", true, 1);
-            if (entity.Weapon2 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 2", true, 2);
-            if (entity.Weapon3 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 3", true, 3);
-            if (entity.Weapon4 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 4", true, 4);
-            if (entity.Weapon5 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 5", true, 5);
-            if (entity.Weapon6 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 6", true, 6);
-            if (entity.Weapon7 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 7", true, 7);
-            if (entity.Weapon8 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 8", true, 8);
-            if (entity.Weapon9 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 9", true, 9);
-            if (entity.Weapon10 != null)
-                AddResponseToPage("LoadWeaponPage", "Load from Slot 10", true, 10);
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
+            for (int x = 1; x <= 10; x++)
+            {
+                if (dbPlayer.SavedWeapons.ContainsKey(x))
+                {
+                    AddResponseToPage("LoadWeaponPage", $"Load from Slot {x}", true, x);
+                }
+            }
         }
         public override void EndDialog()
         {

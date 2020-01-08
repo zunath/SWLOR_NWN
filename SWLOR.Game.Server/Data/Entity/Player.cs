@@ -17,6 +17,10 @@ namespace SWLOR.Game.Server.Data.Entity
             Cooldowns = new Dictionary<PerkCooldownGroup, DateTime>();
             Skills = new Dictionary<Skill, PCSkill>();
             SkillPools = new Dictionary<SkillCategory, int>();
+
+            SavedHelmets = new Dictionary<int, string>();
+            SavedOutfits = new Dictionary<int, string>();
+            SavedWeapons = new Dictionary<int, string>();
         }
 
         [Key]
@@ -73,6 +77,9 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<PerkCooldownGroup, DateTime> Cooldowns { get; set; }
         public Dictionary<Skill, PCSkill> Skills { get; set; }
         public Dictionary<SkillCategory, int> SkillPools { get; set; }
+        public Dictionary<int, string> SavedOutfits { get; set; }
+        public Dictionary<int, string> SavedWeapons { get; set; }
+        public Dictionary<int, string> SavedHelmets { get; set; }
     }
 
     public class PCSkill

@@ -32,10 +32,11 @@ namespace SWLOR.Game.Server.Scripting.Placeable.OverflowStorage
                 container.AssignCommand(() => _.ActionGiveItem(oItem.Object, oPC.Object));
                 return;
             }
-            
-            Guid overflowItemID = new Guid(oItem.GetLocalString("TEMP_OVERFLOW_ITEM_ID"));
-            PCOverflowItem overflowItem = DataService.PCOverflowItem.GetByID(overflowItemID);
-            DataService.SubmitDataChange(overflowItem, DatabaseActionType.Delete);
+
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            var overflowItemID = new Guid(oItem.GetLocalString("TEMP_OVERFLOW_ITEM_ID"));
+            dbPlayer.OverflowItems.Remove(overflowItemID);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 
             if (!container.InventoryItems.Any())

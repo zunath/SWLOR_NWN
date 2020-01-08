@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Service
         public static PCImpoundedItemCache PCImpoundedItem { get; } = new PCImpoundedItemCache();
         public static PCMarketListingCache PCMarketListing { get; } = new PCMarketListingCache();
         public static PCObjectVisibilityCache PCObjectVisibility { get; } = new PCObjectVisibilityCache();
-        public static PCOverflowItemCache PCOverflowItem { get; } = new PCOverflowItemCache();
         public static PCQuestItemProgressCache PCQuestItemProgress { get; } = new PCQuestItemProgressCache();
         public static PCQuestKillTargetProgressCache PCQuestKillTargetProgress { get; } = new PCQuestKillTargetProgressCache();
         public static PCQuestStatusCache PCQuestStatus { get; } = new PCQuestStatusCache();

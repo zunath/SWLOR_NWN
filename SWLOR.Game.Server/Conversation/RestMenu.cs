@@ -38,7 +38,8 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid playerID = GetPC().GlobalID;
-            long overflowCount = DataService.PCOverflowItem.GetAllByPlayerID(playerID).Count();
+            var dbPlayer = DataService.Player.GetByID(playerID);
+            long overflowCount = dbPlayer.OverflowItems.Count;
 
             if (overflowCount <= 0)
             {

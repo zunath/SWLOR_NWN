@@ -20,11 +20,11 @@ namespace SWLOR.Game.Server.Scripting.Placeable.OverflowStorage
         {
             NWPlaceable container = (NWGameObject.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
-            var items = DataService.PCOverflowItem.GetAllByPlayerID(oPC.GlobalID);
-            foreach (PCOverflowItem item in items)
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            foreach (var item in dbPlayer.OverflowItems)
             {
-                NWItem oItem = SerializationService.DeserializeItem(item.ItemObject, container);
-                oItem.SetLocalString("TEMP_OVERFLOW_ITEM_ID", item.ID.ToString());
+                NWItem oItem = SerializationService.DeserializeItem(item.Value, container);
+                oItem.SetLocalString("TEMP_OVERFLOW_ITEM_ID", item.Key.ToString());
             }
 
             container.IsUseable = false;

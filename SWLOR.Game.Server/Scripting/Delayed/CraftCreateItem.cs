@@ -155,20 +155,14 @@ namespace SWLOR.Game.Server.Scripting.Delayed
             int baseXP = 750 + successAmount * RandomService.Random(1, 50);
             float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            bool exists = DataService.PCCraftedBlueprint.ExistsByPlayerIDAndCraftedBlueprintID(player.GlobalID, model.Blueprint);
+            bool exists = dbPlayer.CraftedBlueprints.Contains(model.Blueprint);
             if(!exists)
             {
                 xp = xp * 1.50f;
                 player.SendMessage("You receive an XP bonus for crafting this item for the first time.");
 
-                var pcCraftedBlueprint = new PCCraftedBlueprint
-                {
-                    CraftBlueprintID = model.Blueprint,
-                    DateFirstCrafted = DateTime.UtcNow,
-                    PlayerID = player.GlobalID
-                };
-
-                DataService.SubmitDataChange(pcCraftedBlueprint, DatabaseActionType.Insert);
+                dbPlayer.CraftedBlueprints.Add(model.Blueprint);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
 
             SkillService.GiveSkillXP(player, blueprint.Skill, (int)xp);

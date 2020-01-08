@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Data.Entity
             SavedWeapons = new Dictionary<int, string>();
 
             RegionalFame = new Dictionary<FameRegion, int>();
+            CraftedBlueprints = new HashSet<CraftBlueprint>();
         }
 
         [Key]
@@ -83,6 +84,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<int, string> SavedWeapons { get; set; }
         public Dictionary<int, string> SavedHelmets { get; set; }
         public Dictionary<FameRegion, int> RegionalFame { get; set; }
+        public HashSet<CraftBlueprint> CraftedBlueprints { get; set; }
     }
 
     public class PCSkill

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
             RegionalFame = new Dictionary<FameRegion, int>();
             CraftedBlueprints = new HashSet<CraftBlueprint>();
+            GuildPoints = new Dictionary<GuildType, PCGuildPoint>();
         }
 
         [Key]
@@ -85,6 +86,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<int, string> SavedHelmets { get; set; }
         public Dictionary<FameRegion, int> RegionalFame { get; set; }
         public HashSet<CraftBlueprint> CraftedBlueprints { get; set; }
+        public Dictionary<GuildType, PCGuildPoint> GuildPoints { get; set; }
     }
 
     public class PCSkill
@@ -92,5 +94,10 @@ namespace SWLOR.Game.Server.Data.Entity
         public int XP { get; set; }
         public int Rank { get; set; }
         public bool IsLocked { get; set; }
+    }
+    public class PCGuildPoint
+    {
+        public int Rank { get; set; }
+        public int Points { get; set; }
     }
 }

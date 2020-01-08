@@ -31,26 +31,18 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = GetEnteringObject();
             if (!player.IsPlayer) return;
 
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             // If player is missing any entries for guild points, add them now.
             var guilds = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
             foreach (var guild in guilds)
             {
-                var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildIDOrDefault(player.GlobalID, guild);
-
-                // No GP entry found. Add one now.
-                if (pcGP == null)
+                if (!dbPlayer.GuildPoints.ContainsKey(guild))
                 {
-                    pcGP = new PCGuildPoint
-                    {
-                        GuildID = guild,
-                        PlayerID = player.GlobalID,
-                        Points = 0,
-                        Rank = 0
-                    };
-
-                    DataService.SubmitDataChange(pcGP, DatabaseActionType.Insert);
+                    dbPlayer.GuildPoints[guild] = new PCGuildPoint();
                 }
             }
+
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
         private static Dictionary<int, int> _rankProgression;
@@ -98,8 +90,9 @@ namespace SWLOR.Game.Server.Service
             if (baseAmount > 1000)
                 baseAmount = 1000;
 
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var guildDetails = guild.GetAttribute<GuildType, GuildTypeAttribute>();
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild);
+            var pcGP = dbPlayer.GuildPoints[guild];
             pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
@@ -127,7 +120,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Submit changes to the DB/cache.
-            DataService.SubmitDataChange(pcGP, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
             // If the player ranked up, publish an event saying so.
             if (didRankUp)
@@ -158,7 +151,8 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateGPReward(NWPlayer player, GuildType guild, int baseAmount)
         {
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var pcGP = dbPlayer.GuildPoints[guild];
             float rankBonus = 0.25f * pcGP.Rank;
 
             // Grant a bonus based on the player's guild relations perk rank.

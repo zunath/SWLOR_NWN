@@ -106,8 +106,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
+            var pcGP = dbPlayer.GuildPoints[model.Guild];
             int requiredPoints = GuildService.RankProgression[pcGP.Rank];
 
             string header = ColorTokenService.Green("Guild: ") + model.GuildDetails.Name + "\n";
@@ -157,8 +158,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadGuildStorePage()
         {
             var player = GetPC();
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
+            var pcGP = dbPlayer.GuildPoints[model.Guild];
 
             // If player's rank is too low, send them to the page explaining that.
             if (pcGP.Rank <= 0)
@@ -180,8 +182,9 @@ namespace SWLOR.Game.Server.Conversation
         private void GuildStoreResponses(int responseID)
         {
             var player = GetPC();
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var model = GetDialogCustomData<Model>();
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
+            var pcGP = dbPlayer.GuildPoints[model.Guild];
 
             // Check the player's rank and ensure they can access this store.
             if (pcGP.Rank < responseID)
@@ -218,6 +221,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadTaskListPage()
         {
             var player = GetPC();
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var model = GetDialogCustomData<Model>();
             string header = "These are our currently available tasks. Please check back periodically because our needs are always changing.";
             SetPageHeader("TaskListPage", header);
@@ -225,7 +229,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("TaskListPage");
 
             var lastUpdate = DataService.ServerConfiguration.Get().LastGuildTaskUpdate;
-            var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, model.Guild);
+            var pcGP = dbPlayer.GuildPoints[model.Guild];
 
             // It's possible for players to have tasks which are no longer offered. 
             // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.

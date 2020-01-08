@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Service
 
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
-            Player playerEntity = DataService.Player.GetByID(target.GlobalID);
-            NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
+            var dbPlayer = DataService.Player.GetByID(target.GlobalID);
+            NWArea area = NWModule.Get().Areas.Single(x => x.Resref == dbPlayer.RespawnAreaResref);
             string respawnAreaName = area.Name;
 
             StringBuilder description =
@@ -30,11 +30,11 @@ namespace SWLOR.Game.Server.Service
                     ColorTokenService.Green("ID: ") + target.GlobalID + "\n" +
                     ColorTokenService.Green("Character Name: ") + target.Name + "\n" +
                     ColorTokenService.Green("Respawn Area: ") + respawnAreaName + "\n" +
-                    ColorTokenService.Green("Skill Points: ") + playerEntity.TotalSPAcquired + " (Unallocated: " + playerEntity.UnallocatedSP + ")" + "\n" +
-                    ColorTokenService.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
+                    ColorTokenService.Green("Skill Points: ") + dbPlayer.TotalSPAcquired + " (Unallocated: " + dbPlayer.UnallocatedSP + ")" + "\n" +
+                    ColorTokenService.Green("FP: ") + dbPlayer.CurrentFP + " / " + dbPlayer.MaxFP + "\n" +
                     ColorTokenService.Green("Skill Levels: ") + "\n\n");
 
-            foreach (var pcSkill in playerEntity.Skills)
+            foreach (var pcSkill in dbPlayer.Skills)
             {
                 var skill = SkillService.GetSkill(pcSkill.Key);
                 description.Append(skill.Name).Append(" rank ").Append(pcSkill.Value.Rank).AppendLine();
@@ -42,12 +42,10 @@ namespace SWLOR.Game.Server.Service
 
             description.Append("\n\n").Append(ColorTokenService.Green("Perks: ")).Append("\n\n");
 
-            var pcPerks = DataService.PCPerk.GetAllByPlayerID(target.GlobalID);
-            
-            foreach (PCPerk pcPerk in pcPerks)
+            foreach (var pcPerk in dbPlayer.Perks)
             {
-                var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
-                description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
+                var perk = PerkService.GetPerkHandler(pcPerk.Key);
+                description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.Value).AppendLine();
             }
             
             description.Append("\n\n").Append(ColorTokenService.Green("Description: \n\n")).Append(backupDescription).AppendLine();

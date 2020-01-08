@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Data.Entity
             AcquiredKeyItems = new HashSet<KeyItem>();
             MapPins = new Dictionary<string, List<PCMapPin>>();
             MapProgression = new Dictionary<string, string>();
+            Perks = new Dictionary<PerkType, int>();
         }
 
         [Key]
@@ -93,6 +94,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public HashSet<KeyItem> AcquiredKeyItems { get; set; }
         public Dictionary<string, List<PCMapPin>> MapPins { get; set; }
         public Dictionary<string, string> MapProgression { get; set; }
+        public Dictionary<PerkType, int> Perks { get; set; }
     }
 
     public class PCSkill

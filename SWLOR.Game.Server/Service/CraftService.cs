@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
         private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
             var player = DataService.Player.GetByID(playerID);
-            var pcPerks = DataService.PCPerk.GetAllByPlayerID(playerID).ToList();
+            var pcPerks = player.Perks;
             var pcSkills = player.Skills;
 
             // This likely needs to be improved with additional indexes in the CraftBlueprint cache.
@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Service
                 bool found = true;
 
                 // Exclude blueprints which the player doesn't meet the required perk level for.
-                var pcPerk = pcPerks.SingleOrDefault(p => p.PerkID == x.Value.Perk);
-                int perkLevel = pcPerk?.PerkLevel ?? 0;
+                var pcPerk = pcPerks.SingleOrDefault(p => p.Key == x.Value.Perk);
+                int perkLevel = pcPerk.Value;
                 if (perkLevel < x.Value.RequiredPerkLevel)
                     found = false;
 

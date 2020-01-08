@@ -72,13 +72,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildViewMyPerks()
         {
-            List<PCPerk> perks = DataService.PCPerk.GetAllByPlayerID(GetPC().GlobalID).ToList();
-
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
             string header = ColorTokenService.Green("Perks purchased:") + "\n\n";
-            foreach (PCPerk pcPerk in perks)
+            foreach (var pcPerk in player.Perks)
             {
-                var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
-                header += perk.Name + " (Lvl. " + pcPerk.PerkLevel + ") \n";
+                var perk = PerkService.GetPerkHandler(pcPerk.Key);
+                header += perk.Name + " (Lvl. " + pcPerk.Value + ") \n";
             }
 
             SetPageHeader("ViewMyPerksPage", header);
@@ -120,11 +119,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             var perk = PerkService.GetPerkHandler(vm.SelectedPerkID);
-            PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, perk.PerkType);
-            Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
+            var player = DataService.Player.GetByID(GetPC().GlobalID);
             var perkLevels = perk.PerkLevels;
 
-            int rank = pcPerk?.PerkLevel ?? 0;
+            var rank = player.Perks.ContainsKey(vm.SelectedPerkID) ?
+                player.Perks[vm.SelectedPerkID] : 
+                0;
+
             int maxRank = perkLevels.Count();
             string currentBonus = "N/A";
             string currentFPCost = string.Empty;

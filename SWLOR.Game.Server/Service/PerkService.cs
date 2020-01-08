@@ -14,6 +14,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PerkCategoryType, PerkCategory> _perkCategories;
         private static readonly Dictionary<Skill, HashSet<PerkType>> _perkRequirementsBySkill;
         private static readonly Dictionary<int, HashSet<PerkType>> _perkRequirementsByQuest;
+        private static readonly Dictionary<PerkExecutionType, List<PerkType>> _perksByExecutionType;
 
         static PerkService()
         {
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Service
             _perkCategories = new Dictionary<PerkCategoryType, PerkCategory>();
             _perkRequirementsBySkill = new Dictionary<Skill, HashSet<PerkType>>();
             _perkRequirementsByQuest = new Dictionary<int, HashSet<PerkType>>();
+            _perksByExecutionType = new Dictionary<PerkExecutionType, List<PerkType>>();
         }
 
         public static void SubscribeEvents()
@@ -58,14 +61,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Console.WriteLine("PerkService -> OnModuleLoad RegisterPerkHandlers");
             RegisterPerkHandlers();
-            Console.WriteLine("PerkService -> OnModuleLoad RegisterPerkCategories");
             RegisterPerkCategories();
-
-            Console.WriteLine("PerkService -> OnModuleLoad OrganizePerkRequirements");
             OrganizePerkRequirements();
-            Console.WriteLine("PerkService -> OnModuleLoad Complete");
         }
 
         private static void RegisterPerkHandlers()
@@ -81,6 +79,12 @@ namespace SWLOR.Game.Server.Service
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 _perkHandlers.Add(instance.PerkType, instance);
+
+                // Add to the execution types index.
+                if(!_perksByExecutionType.ContainsKey(instance.ExecutionType))
+                    _perksByExecutionType[instance.ExecutionType] = new List<PerkType>();
+
+                _perksByExecutionType[instance.ExecutionType].Add(instance.PerkType);
             }
         }
 
@@ -99,7 +103,6 @@ namespace SWLOR.Game.Server.Service
                 _perkCategories[value] = category;
             }
         }
-
         private static void OrganizePerkRequirements()
         {
             // Calculating effective perk levels can be expensive. To aid with the performance,
@@ -177,24 +180,17 @@ namespace SWLOR.Game.Server.Service
             return _perkCategories[categoryType];
         }
 
-        private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
+        private static IEnumerable<PerkType> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
         {
-            var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID);
-            return pcPerks.Where(x =>
+            var perks = _perksByExecutionType[executionType];
+
+            foreach (var perk in perks)
             {
-                // Filter on equipment-based execution type.
-                var perk = GetPerkHandler(x.PerkID);
-                bool matchesExecutionType = perk.ExecutionType == executionType;
-                if (!matchesExecutionType) return false;
-
-                // Filter out any perks the PC doesn't meet the requirements for.
-                int effectivePerkLevel = GetPCEffectivePerkLevel(oPC, perk.PerkType);
-                if (effectivePerkLevel <= 0) return false;
-
-                // Meets all requirements.
-                return true;
-            }).ToList();
-
+                if (GetPCEffectivePerkLevel(oPC, perk) > 0)
+                {
+                    yield return perk;
+                }
+            }
         }
 
         private static void CachePerkIDsRequiringSkill(NWPlayer player, Skill skill)
@@ -243,9 +239,9 @@ namespace SWLOR.Game.Server.Service
             if (oPC.GetLocalBoolean("LOGGED_IN_ONCE") == false) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
-            foreach (PCPerk pcPerk in executionPerks)
+            foreach (var pcPerk in executionPerks)
             {
-                var handler = GetPerkHandler(pcPerk.PerkID);
+                var handler = GetPerkHandler(pcPerk);
                 handler.OnItemEquipped(oPC, oItem);
             }
 
@@ -260,9 +256,9 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
-            foreach (PCPerk pcPerk in executionPerks)
+            foreach (var pcPerk in executionPerks)
             {
-                var handler = GetPerkHandler(pcPerk.PerkID);
+                var handler = GetPerkHandler(pcPerk);
                 handler.OnItemUnequipped(oPC, oItem);
             }
         }
@@ -286,40 +282,32 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             var type = oItem.BaseItemType;
-            var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID).Where(x =>
+
+            if (type != BaseItemType.SmallShield && type != BaseItemType.LargeShield && type != BaseItemType.TowerShield) return;
+
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            var executionPerks = _perksByExecutionType[PerkExecutionType.ShieldOnHit];
+                
+            foreach (var executionPerk in executionPerks)
             {
-                if (oPC.GlobalID != x.PlayerID) return false;
+                // Player doesn't have the perk or its effective level is zero.
+                if (!dbPlayer.Perks.ContainsKey(executionPerk) ||
+                    GetPCEffectivePerkLevel(oPC, executionPerk) <= 0) continue;
 
-                // Only pull back perks which have a Shield On Hit execution type.
-                var perk = GetPerkHandler(x.PerkID);
-                if (perk.ExecutionType != PerkExecutionType.ShieldOnHit)
-                    return false;
+                var perk = GetPerkHandler(executionPerk);
+                var pcPerkLevel = dbPlayer.Perks[executionPerk];
+                var perkFeat = perk.PerkFeats.ContainsKey(pcPerkLevel) ? perk.PerkFeats[pcPerkLevel].First() : null;
+                int spellTier = perkFeat?.Tier ?? 0;
 
-                // If player's effective level is zero, it's not in effect.
-                int effectiveLevel = GetPCEffectivePerkLevel(oPC, perk.PerkType);
-                if (effectiveLevel <= 0) return false;
-
-                return true;
-            });
-
-            if (type == BaseItemType.SmallShield || type == BaseItemType.LargeShield || type == BaseItemType.TowerShield)
-            {
-                foreach (PCPerk pcPerk in pcPerks)
-                {
-                    var perk = GetPerkHandler(pcPerk.PerkID);
-                    if (perk.ExecutionType == (int)PerkExecutionType.None) continue;
-                    var perkFeat = perk.PerkFeats.ContainsKey(pcPerk.PerkLevel) ? perk.PerkFeats[pcPerk.PerkLevel].First() : null;
-                    int spellTier = perkFeat?.Tier ?? 0;
-
-                    var handler = GetPerkHandler(pcPerk.PerkID);
-                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, spellTier);
-                }
+                var handler = GetPerkHandler(pcPerkLevel);
+                handler.OnImpact(oPC, oItem, pcPerkLevel, spellTier);
             }
         }
 
         public static int GetPCTotalPerkCount(Guid playerID)
         {
-            return DataService.PCPerk.GetAllByPlayerID(playerID).Count();
+            var dbPlayer = DataService.Player.GetByID(playerID);
+            return dbPlayer.Perks.Count;
         }
 
 
@@ -368,11 +356,6 @@ namespace SWLOR.Game.Server.Service
             return GetPerkHandler(perkType);
         }
 
-        public static PCPerk GetPCPerkByID(Guid playerID, PerkType perkID)
-        {
-            return DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(playerID, perkID);
-        }
-
         /// <summary>
         /// Checks whether a player can upgrade a perk to the next level.
         /// </summary>
@@ -385,14 +368,12 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var perk = GetPerkHandler(perkID);
             var perkLevels = perk.PerkLevels;
-            var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkID);
+            var pcPerkLevel = dbPlayer.Perks.ContainsKey(perkID) ?
+                dbPlayer.Perks[perkID] :
+                0;
             
             // Identify the max number of ranks for this perk.
-            int rank = 0;
-            if (pcPerk != null)
-            {
-                rank = pcPerk.PerkLevel;
-            }
+            int rank = pcPerkLevel;
             int maxRank = perkLevels.Count;
 
             // If there's no more levels in this perk, exit early and return false.
@@ -452,40 +433,26 @@ namespace SWLOR.Game.Server.Service
         {
             var perk = GetPerkHandler(perkID);
             var perkLevels = perk.PerkLevels;
-            var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(oPC.GlobalID, perkID);
-            var player = DataService.Player.GetByID(oPC.GlobalID);
-
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {
-                DatabaseActionType action = DatabaseActionType.Update;
-                if (pcPerk == null)
-                {
-                    pcPerk = new PCPerk();
-                    DateTime dt = DateTime.UtcNow;
-                    pcPerk.AcquiredDate = dt;
-                    pcPerk.PerkID = perk.PerkType;
-                    pcPerk.PlayerID = oPC.GlobalID;
-                    pcPerk.PerkLevel = 0;
+                var player = DataService.Player.GetByID(oPC.GlobalID);
+                var pcPerkLevel = player.Perks[perkID];
 
-                    action = DatabaseActionType.Insert;
-                }
-
-                PerkLevel nextPerkLevel = perkLevels.ContainsKey(pcPerk.PerkLevel + 1) ? 
-                    perkLevels[pcPerk.PerkLevel + 1] : 
+                PerkLevel nextPerkLevel = perkLevels.ContainsKey(pcPerkLevel + 1) ? 
+                    perkLevels[pcPerkLevel + 1] : 
                     null;
                 
                 if (nextPerkLevel == null) return;
-                pcPerk.PerkLevel++;
-                DataService.SubmitDataChange(pcPerk, action);
+                pcPerkLevel++;
 
                 if (!freeUpgrade)
                 {
                     player.UnallocatedSP -= nextPerkLevel.Price;
-                    DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 }
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
 
                 // Look for a perk feat to grant.
-                var perkFeatToGrant = perk.PerkFeats.ContainsKey(pcPerk.PerkLevel) ? perk.PerkFeats[pcPerk.PerkLevel].First() : null;
+                var perkFeatToGrant = perk.PerkFeats.ContainsKey(pcPerkLevel) ? perk.PerkFeats[pcPerkLevel].First() : null;
 
                 // Add the feat(s) to the player if it doesn't exist yet.
                 if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.Feat, oPC.Object) == false)
@@ -519,12 +486,12 @@ namespace SWLOR.Game.Server.Service
                         NWNXPlayer.SetQuickBarSlot(oPC, 10, qbs);
                 }
 
-                oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
+                oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerkLevel + ")"));
 
                 MessageHub.Instance.Publish(new OnPerkUpgraded(oPC, (PerkType)perkID));
 
                 var handler = GetPerkHandler(perkID);
-                handler.OnPurchased(oPC, pcPerk.PerkLevel);
+                handler.OnPurchased(oPC, pcPerkLevel);
             }
             else
             {
@@ -585,12 +552,14 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DataService.Player.GetByID(player.GlobalID);
                 var pcSkills = dbPlayer.Skills;
                 // Get the PC's perk information and all of the perk levels at or below their current level.
-                var pcPerk = DataService.PCPerk.GetByPlayerAndPerkIDOrDefault(player.GlobalID, perkType);
-                if (pcPerk == null) return 0;
+                var pcPerkLevel = dbPlayer.Perks.ContainsKey(perkType) ?
+                    dbPlayer.Perks[perkType] :
+                    0;
+                if (pcPerkLevel <= 0) return 0;
 
                 // Get all of the perk levels in range, starting with the highest level.
-                var perk = GetPerkHandler(pcPerk.PerkID);
-                var perkLevelsInRange = perk.PerkLevels.Where(x => x.Key <= pcPerk.PerkLevel)
+                var perk = GetPerkHandler(perkType);
+                var perkLevelsInRange = perk.PerkLevels.Where(x => x.Key <= pcPerkLevel)
                     .OrderByDescending(o => o.Key);
 
                 using (new Profiler("PerkService::CalculateEffectivePerkLevel::PerkLevelIteration"))
@@ -602,7 +571,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         var skillRequirements = perkLevel.Value.SkillRequirements;
                         var questRequirements = perkLevel.Value.QuestRequirements;
-                        int effectiveLevel = pcPerk.PerkLevel;
+                        int effectiveLevel = pcPerkLevel;
 
                         // Check the skill requirements.
                         foreach (var req in skillRequirements)
@@ -616,7 +585,7 @@ namespace SWLOR.Game.Server.Service
                         }
 
                         // Was the effective level reduced during the skill check? No need to check quests.
-                        if (effectiveLevel != pcPerk.PerkLevel) continue;
+                        if (effectiveLevel != pcPerkLevel) continue;
 
                         // Check the quest requirements.
                         foreach (var req in questRequirements)
@@ -630,7 +599,7 @@ namespace SWLOR.Game.Server.Service
                         }
 
                         // Was the effective level reduced during the quest check? Move to the next lowest perk level.
-                        if (effectiveLevel != pcPerk.PerkLevel) continue;
+                        if (effectiveLevel != pcPerkLevel) continue;
 
                         // Otherwise the player meets all requirements. This is their effective perk level.
                         return effectiveLevel;

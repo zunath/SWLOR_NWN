@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private class Model
         {
-            public Guid PCPerkID { get; set; }
+            public PerkType Perk { get; set; }
             public bool IsConfirming { get; set; }
             public NWItem TomeItem { get; set; }
         }
@@ -88,17 +88,17 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                var pcPerks = DataService.PCPerk.GetAllByPlayerID(player.GlobalID)
+                var pcPerks = dbPlayer.Perks
                     .OrderBy(o =>
                     {
-                        var perk = PerkService.GetPerkHandler(o.PerkID);
+                        var perk = PerkService.GetPerkHandler(o.Key);
                         return perk.Name;
                     }).ToList();
 
                 foreach (var pcPerk in pcPerks)
                 {
-                    var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
-                    AddResponseToPage("MainPage", perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")", true, pcPerk.ID);
+                    var perk = PerkService.GetPerkHandler(pcPerk.Key);
+                    AddResponseToPage("MainPage", perk.Name + " (Lvl. " + pcPerk.Value + ")", true, pcPerk.Key);
                 }
             }
             SetPageHeader("MainPage", header);
@@ -107,19 +107,20 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadConfirmPage()
         {
             var model = GetDialogCustomData<Model>();
-            var pcPerk = DataService.PCPerk.GetByID(model.PCPerkID);
-            var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
+            var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
+            var pcPerkLevel = dbPlayer.Perks[model.Perk];
+            var perk = PerkService.GetPerkHandler(model.Perk);
             var minimumLevel = 1;
 
             if (IsGrantedByBackground(perk.PerkType))
                 minimumLevel = 2;
 
             int refundAmount = perk.PerkLevels.Where(x => 
-                x.Key <= pcPerk.PerkLevel &&
+                x.Key <= pcPerkLevel &&
                 x.Key >= minimumLevel).Sum(x => x.Value.Price);
 
             string header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
-            header += ColorTokenService.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
+            header += ColorTokenService.Green("Level: ") + pcPerkLevel + "\n\n";
 
             header += "You will receive " + ColorTokenService.Green(refundAmount.ToString()) + " SP if you refund this perk. Are you sure you want to refund it?";
 
@@ -131,9 +132,9 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponse(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            Guid pcPerkID = (Guid)response.CustomData;
+            var perkType = (PerkType)response.CustomData;
             var model = GetDialogCustomData<Model>();
-            model.PCPerkID = pcPerkID;
+            model.Perk = perkType;
             LoadConfirmPage();
             ChangePage("ConfirmPage");
         }
@@ -184,17 +185,17 @@ namespace SWLOR.Game.Server.Conversation
 
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
-            var pcPerk = DataService.PCPerk.GetByID(model.PCPerkID);
-            var perk = PerkService.GetPerkHandler(pcPerk.PerkID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var pcPerkLevel = dbPlayer.Perks[model.Perk];
+            var perk = PerkService.GetPerkHandler(pcPerkLevel);
             var minimumLevel = 1;
 
             if (IsGrantedByBackground(perk.PerkType))
                 minimumLevel = 2;
 
             var refundAmount = perk.PerkLevels
-                .Where(x => x.Key <= pcPerk.PerkLevel && 
+                .Where(x => x.Key <= pcPerkLevel && 
                             x.Key >= minimumLevel).Sum(x => x.Value.Price);
-            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
             RemovePerkFeat(perk);
@@ -203,19 +204,18 @@ namespace SWLOR.Game.Server.Conversation
 
             dbPlayer.UnallocatedSP += refundAmount;
 
-            Audit.Write(AuditGroup.PerkRefund, $"REFUND - {player.GlobalID} - Acquired Date {pcPerk.AcquiredDate} - Refunded Date {DateTime.UtcNow} - Level {pcPerk.PerkLevel} - PerkID {pcPerk.PerkID}");
-            DataService.SubmitDataChange(pcPerk, DatabaseActionType.Delete);
+            Audit.Write(AuditGroup.PerkRefund, $"REFUND - {player.GlobalID} - Refunded Date {DateTime.UtcNow} - Level {pcPerkLevel} - PerkID {model.Perk}");
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
             // If perk refunded was one granted by a background bonus, we need to reapply it.
-            ReapplyBackgroundBonus((PerkType)pcPerk.PerkID);
+            ReapplyBackgroundBonus(model.Perk);
 
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 
             var handler = PerkService.GetPerkHandler(perk.PerkType);
             handler.OnRemoved(player);
-            MessageHub.Instance.Publish(new OnPerkRefunded(player, (PerkType)pcPerk.PerkID));
+            MessageHub.Instance.Publish(new OnPerkRefunded(player, model.Perk));
         }
 
         private bool IsGrantedByBackground(PerkType perkType)

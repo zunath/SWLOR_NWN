@@ -240,8 +240,10 @@ namespace SWLOR.Game.Server.Service
             {
                 NWPlayer player = damager.Object;
                 NWCreature target = NWGameObject.OBJECT_SELF;
-                var pcPerk = PerkService.GetPCPerkByID(damager.GlobalID, PerkType.SneakAttack);
-                int perkRank = pcPerk?.PerkLevel ?? 0;
+                var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+                var perkRank = dbPlayer.Perks.ContainsKey(PerkType.SneakAttack) ?
+                    dbPlayer.Perks[PerkType.SneakAttack] : 
+                    0;
                 int perkBonus = 1;
 
                 // Rank 4 increases damage bonus by 2x (total: 3x)
@@ -444,18 +446,6 @@ namespace SWLOR.Game.Server.Service
             float defenderTotal = defenderSkill + defenderAbility + defenderAffinity + defenderCR;
             float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
 
-            //Console.WriteLine("attackerCR = " + attackerCR);
-            //Console.WriteLine("defenderCR = " + defenderCR);
-            //Console.WriteLine("attackerSkill = " + attackerSkill);
-            //Console.WriteLine("attackerAbility = " + attackerAbility);
-            //Console.WriteLine("attackerAffinity = " + attackerAffinity);
-            //Console.WriteLine("defenderSkill = " + defenderSkill);
-            //Console.WriteLine("defenderAbility = " + defenderAbility);
-            //Console.WriteLine("defenderAffinity = " + defenderAffinity);
-            //Console.WriteLine("attackerTotal = " + attackerTotal);
-            //Console.WriteLine("defenderTotal = " + defenderTotal);
-            //Console.WriteLine("divisor = " + divisor);
-
             result.DC = (int) (defenderTotal / divisor * 100);
             result.Roll = RandomService.D100(1);
 
@@ -474,16 +464,14 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return 0;
 
-            var perkIDs = DataService.PCPerk.GetAllByPlayerID(player.GlobalID)
-                .Select(s => new {s.PerkID, s.PerkLevel});
-
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             int balance = 0;
-            foreach (var perkID in perkIDs)
+            foreach (var perkID in dbPlayer.Perks)
             {
-                var perk = PerkService.GetPerkHandler(perkID.PerkID);
+                var perk = PerkService.GetPerkHandler(perkID.Key);
                 if (perk.ForceBalanceType == ForceBalanceType.Universal) continue;
                 var perkLevels = perk.PerkLevels
-                    .Where(x => x.Key <= perkID.PerkLevel);
+                    .Where(x => x.Key <= perkID.Value);
 
                 foreach (var perkLevel in perkLevels)
                 {

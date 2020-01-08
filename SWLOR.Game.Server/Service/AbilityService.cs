@@ -829,16 +829,19 @@ namespace SWLOR.Game.Server.Service
             int activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
-            PCPerk entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
-            var spellTier = PerkService.GetCreaturePerkLevel(oPC, entity.PerkID);
-            var perk = PerkService.GetPerkHandler(entity.PerkID);
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            var perkLevel = dbPlayer.Perks.ContainsKey(activeWeaponSkillID) ?
+                dbPlayer.Perks[activeWeaponSkillID] : 
+                0;
+            var spellTier = PerkService.GetCreaturePerkLevel(oPC, activeWeaponSkillID);
+            var perk = PerkService.GetPerkHandler(activeWeaponSkillID);
             var perkFeat = perk.PerkFeats[spellTier].First();
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
             string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.Tier);
             if (string.IsNullOrWhiteSpace(canCast))
             {
-                handler.OnImpact(oPC, oTarget, entity.PerkLevel, perkFeat.Tier);
+                handler.OnImpact(oPC, oTarget, perkLevel, perkFeat.Tier);
 
                 if (oTarget.IsNPC)
                 {

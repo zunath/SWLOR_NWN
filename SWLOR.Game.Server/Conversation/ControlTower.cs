@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(structure.ID);
+            int currentResources = structure.Items.Count;
             int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBaseID);
             int maxFuel = BaseService.CalculateMaxFuel(pcBaseID);
             int maxResources = BaseService.CalculateResourceCapacity(pcBaseID);
@@ -208,7 +208,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(structureID);
+            var structureItems = pcBaseStructure.Items;
             Location location = oPC.Location;
             bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
@@ -218,7 +219,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var item in structureItems)
             {
-                SerializationService.DeserializeItem(item.ItemObject, bay);
+                SerializationService.DeserializeItem(item.Value.ItemObject, bay);
             }
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));

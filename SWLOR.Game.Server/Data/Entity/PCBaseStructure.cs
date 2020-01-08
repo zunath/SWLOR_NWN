@@ -12,8 +12,9 @@ namespace SWLOR.Game.Server.Data.Entity
         {
             ID = Guid.NewGuid();
             CustomName = "";
-            PlayerPermissions = new Dictionary<Guid, PCBaseStructurePermission>();
             PublicStructurePermission = new PCBaseStructurePermission();
+            PlayerPermissions = new Dictionary<Guid, PCBaseStructurePermission>();
+            Items = new Dictionary<Guid, PCBaseStructureItem>();
         }
 
         [Key]
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         public PCBaseStructurePermission PublicStructurePermission { get; set; }
         public Dictionary<Guid, PCBaseStructurePermission> PlayerPermissions { get; set; }
+        public Dictionary<Guid, PCBaseStructureItem> Items { get; set; }
     }
 
     public class PCBaseStructurePermission
@@ -50,5 +52,12 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanChangeStructureMode { get; set; }
         public bool CanAdjustPublicPermissions { get; set; }
         public bool CanFlyStarship { get; set; }
+    }
+    public class PCBaseStructureItem
+    {
+        public string ItemName { get; set; }
+        public string ItemTag { get; set; }
+        public string ItemResref { get; set; }
+        public string ItemObject { get; set; }
     }
 }

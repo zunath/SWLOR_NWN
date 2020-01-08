@@ -889,7 +889,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var pcBaseStructure = structures.ElementAt(x);
                 var baseStructure = GetBaseStructure(pcBaseStructure.BaseStructureID);
-                var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(pcBaseStructure.ID).ToList();
+                var items = pcBaseStructure.Items;
                 NWPlaceable rubbleContainer = null;
 
                 if (!impoundItems)
@@ -930,14 +930,14 @@ namespace SWLOR.Game.Server.Service
 
                     if (impoundItems)
                     {
-                        ImpoundService.Impound(item);
+                        ImpoundService.Impound(pcBaseStructure.ID, item.Value);
                     }
                     else
                     {
-                        SerializationService.DeserializeItem(item.ItemObject, rubbleContainer);
+                        SerializationService.DeserializeItem(item.Value.ItemObject, rubbleContainer);
                     }
-                    DataService.SubmitDataChange(item, DatabaseActionType.Delete);
                 }
+                pcBaseStructure.Items.Clear();
 
                 if (impoundItems)
                 {

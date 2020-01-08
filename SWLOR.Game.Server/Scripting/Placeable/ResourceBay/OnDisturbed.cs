@@ -43,10 +43,8 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ResourceBay
             }
             else if (disturbType == InventoryDisturbType.Removed)
             {
-                var removeItem = DataService.PCBaseStructureItem.GetByPCBaseStructureIDAndItemGlobalIDOrDefault(controlTower.ID, item.GlobalID.ToString());
-                if (removeItem == null) return;
-
-                DataService.SubmitDataChange(removeItem, DatabaseActionType.Delete);
+                structure.Items.Remove(item.GlobalID);
+                DataService.SubmitDataChange(structure, DatabaseActionType.Update);
             }
         }
     }

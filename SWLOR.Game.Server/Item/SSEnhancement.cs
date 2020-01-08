@@ -33,15 +33,14 @@ namespace SWLOR.Game.Server.Item
             
             var dbItem = new PCBaseStructureItem
             {
-                PCBaseStructureID = pcbs.ID,
-                ItemGlobalID = item.GlobalID.ToString(),
                 ItemName = item.Name,
                 ItemResref = item.Resref,
                 ItemTag = item.Tag,
                 ItemObject = SerializationService.Serialize(item)
             };
+            pcbs.Items[structureGuid] = dbItem;
 
-            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(pcbs, DatabaseActionType.Insert);
             player.SendMessage(item.Name + " was successfully added to your ship.  Access the cargo bay via the ship's computer to remove it.");
             item.Destroy();
         }
@@ -86,7 +85,7 @@ namespace SWLOR.Game.Server.Item
             PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             var structure = BaseService.GetBaseStructure(pcbs.BaseStructureID);
 
-            int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(pcbs.ID) + 1;
+            int count = pcbs.Items.Count + 1;
             if (count > (structure.ResourceStorage + pcbs.StructureBonus))
             {
                 return "Your cargo bay is full!  You cannot add any enhancements.";

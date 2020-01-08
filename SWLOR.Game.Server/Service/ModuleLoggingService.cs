@@ -226,17 +226,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnStoreStructureItem(NWPlayer player, PCBaseStructureItem entity)
         {
-            PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
-
-            var details = $"STORE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - PC Base Structure ID #{entity.PCBaseStructureID} - {player.Name} - Item ID {entity.ItemGlobalID} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref} - Custom Name {pcBaseStructure.CustomName}";
+            var details = $"STORE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - {player.Name} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref}";
             Audit.Write(AuditGroup.StructureStorage, details);
         }
 
         private static void OnRemoveStructureItem(NWPlayer player, PCBaseStructureItem entity)
         {
-            PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
-
-            var details = $"REMOVE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - PC Base Structure ID #{entity.PCBaseStructureID} - {player.Name} - Item ID {entity.ItemGlobalID} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref} - Custom Name {pcBaseStructure.CustomName}";
+            var details = $"REMOVE ITEM - {GetPCPublicCDKey(player)} - {GetPCPlayerName(player)} - {player.Name} - Item Tag {entity.ItemTag} - Item Resref {entity.ItemResref}";
             Audit.Write(AuditGroup.StructureStorage, details);
         }
 

@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.Scripting.Placeable.StructureStorage
             Guid structureID = new Guid(chest.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
 
-            var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID);
+            var items = structure.Items;
             foreach (var item in items)
             {
-                SerializationService.DeserializeItem(item.ItemObject, chest);
+                SerializationService.DeserializeItem(item.Value.ItemObject, chest);
             }
 
             chest.IsUseable = false;

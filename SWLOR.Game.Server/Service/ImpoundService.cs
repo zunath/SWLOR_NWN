@@ -39,9 +39,9 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"{impoundedItems.Count} impounded items have been pruned.");
         }
 
-        public static void Impound(PCBaseStructureItem pcBaseStructureItem)
+        public static void Impound(Guid pcBaseStructureID, PCBaseStructureItem pcBaseStructureItem)
         {
-            var pcBaseStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureItem.PCBaseStructureID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
             var pcBase = DataService.PCBase.GetByID(pcBaseStructure.PCBaseID);
 
             var impoundItem = new PCImpoundedItem

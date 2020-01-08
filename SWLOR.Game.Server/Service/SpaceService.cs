@@ -434,7 +434,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
+            var structureItems = structure.Items;
             
             NWLocation location = (player != null ? player.Location : (NWLocation) Location(starship, Vector(1, 1), 0));
             bay = CreateObject(ObjectType.Placeable, "resource_bay", location);
@@ -444,7 +445,7 @@ namespace SWLOR.Game.Server.Service
             
             foreach (var item in structureItems)
             {
-                SerializationService.DeserializeItem(item.ItemObject, bay);
+                SerializationService.DeserializeItem(item.Value.ItemObject, bay);
             }
 
             return bay;
@@ -1184,7 +1185,7 @@ namespace SWLOR.Game.Server.Service
                             player.SendMessage("You found some salvage!");
 
                             var structure = BaseService.GetBaseStructure(shipStructure.BaseStructureID);
-                            int count = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(shipStructure.ID).Count() + 1;
+                            int count = shipStructure.Items.Count + 1;
                             if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
                             {
                                 player.SendMessage("Your cargo bay is full!  You weren't able to collect the salvage.");
@@ -1211,15 +1212,14 @@ namespace SWLOR.Game.Server.Service
 
                             var dbItem = new PCBaseStructureItem
                             {
-                                PCBaseStructureID = shipStructure.ID,
-                                ItemGlobalID = item.GlobalID.ToString(),
                                 ItemName = item.Name,
                                 ItemResref = item.Resref,
                                 ItemTag = item.Tag,
                                 ItemObject = SerializationService.Serialize(item)
                             };
+                            shipStructure.Items[item.GlobalID] = dbItem;
 
-                            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
+                            DataService.SubmitDataChange(shipStructure, DatabaseActionType.Insert);
                             player.SendMessage(item.Name + " was successfully brought into your cargo bay.");
                             item.Destroy();
                         }

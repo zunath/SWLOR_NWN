@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
 
             // Check whether there's space in this tower.
             int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
-            int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(tower.ID) + 1;
+            int count = tower.Items.Count;
             if (count > capacity) return;
 
             var baseStructure = BaseService.GetBaseStructure(pcStructure.BaseStructureID);
@@ -130,16 +130,14 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
 
             var dbItem = new PCBaseStructureItem
             {
-                PCBaseStructureID = controlTower.ID,
-                ItemGlobalID = item.GlobalID.ToString(),
                 ItemName = item.Name,
                 ItemResref = item.Resref,
                 ItemTag = item.Tag,
                 ItemObject = SerializationService.Serialize(item)
             };
+            pcStructure.Items[item.GlobalID] = dbItem;
 
             DataService.SubmitDataChange(pcStructure, DatabaseActionType.Update);
-            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
             item.Destroy();
         }
     }

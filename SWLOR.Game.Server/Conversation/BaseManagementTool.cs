@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Conversation
             bool hasUnclaimed = false;
             Guid playerID = GetPC().GlobalID;
             int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-            Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+            BuildingType buildingType = buildingTypeID <= 0 ? BuildingType.Exterior : (BuildingType)buildingTypeID;
             data.BuildingType = buildingType;
             bool canEditBasePermissions = false;
             bool canEditBuildingPermissions = false;
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ColorTokenService.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
 
             // Are we in a starship?
-            if (buildingType == Enumeration.BuildingType.Starship)
+            if (buildingType == BuildingType.Starship)
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Conversation
                 header += "Land in this area cannot be claimed. However, you can still manage any leases you own from the list below.";
             }
             // Building type is an interior of a building
-            else if (buildingType == Enumeration.BuildingType.Interior)
+            else if (buildingType == BuildingType.Interior)
             {
                 Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             // Building type is an apartment
             // Apartments may only ever be in the "Residence" mode.
-            else if (buildingType == Enumeration.BuildingType.Apartment)
+            else if (buildingType == BuildingType.Apartment)
             {
                 Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Conversation
                 data.PCBaseID = pcBaseID;
             }
             // Building type is an exterior building
-            else if (buildingType == Enumeration.BuildingType.Exterior)
+            else if (buildingType == BuildingType.Exterior)
             {
 
                 var pcBase = DataService.PCBase.GetByAreaResrefAndSectorOrDefault(data.TargetArea.Resref, sector);
@@ -329,11 +329,11 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Description Change
                     var data = BaseService.GetPlayerTempData(GetPC());
                     int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-                    Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+                    BuildingType buildingType = buildingTypeID <= 0 ? BuildingType.Exterior : (BuildingType)buildingTypeID;
                     data.BuildingType = buildingType;
                     NWPlayer sender = _.GetPCSpeaker();
 
-                    if (buildingType == Enumeration.BuildingType.Apartment)
+                    if (buildingType == BuildingType.Apartment)
                     {
                         // Update the base name. 
                         Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.Conversation
                         DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                         sender.SendMessage("Name is now set to " + pcBase.CustomName);
                     }
-                    else if (buildingType == Enumeration.BuildingType.Interior)
+                    else if (buildingType == BuildingType.Interior)
                     {
                         // Update the structure name.
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Conversation
                         DataService.SubmitDataChange(structure, DatabaseActionType.Update);
                         sender.SendMessage("Name is now set to " + structure.CustomName);
                     }
-                    else if (buildingType == Enumeration.BuildingType.Starship)
+                    else if (buildingType == BuildingType.Starship)
                     {
                         // Note - starships need to record the name in both the base and the structure entries.
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
@@ -642,7 +642,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (pcBase.PCBaseTypeID != (int) Enumeration.PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
+            if (pcBase.PCBaseTypeID != (int) PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
             {
                 GetPC().FloatingText("You cannot retrieve any structures because the control tower has less than 100% shields.");
                 return;
@@ -650,12 +650,12 @@ namespace SWLOR.Game.Server.Conversation
 
             bool canRetrieveStructures;
 
-            if (data.BuildingType == Enumeration.BuildingType.Exterior ||
-                data.BuildingType == Enumeration.BuildingType.Apartment)
+            if (data.BuildingType == BuildingType.Exterior ||
+                data.BuildingType == BuildingType.Apartment)
             {
                 canRetrieveStructures = BasePermissionService.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanRetrieveStructures);
             }
-            else if (data.BuildingType == Enumeration.BuildingType.Interior || data.BuildingType == Enumeration.BuildingType.Starship)
+            else if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
                 var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canRetrieveStructures = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures);
@@ -682,13 +682,13 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 // Impound resources retrieved by drills.
-                var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID);
-                foreach(var item in items)
+                foreach(var item in structure.Items.ToList())
                 {
-                    ImpoundService.Impound(item);
-                    DataService.SubmitDataChange(item, DatabaseActionType.Delete);
+                    ImpoundService.Impound(structure.ID, item.Value);
+                    structure.Items.Remove(item.Key);
                     impoundedCount++;
                 }
+                DataService.SubmitDataChange(structure, DatabaseActionType.Update);
             }
             else if (structureType == BaseStructureType.Building)
             {
@@ -759,7 +759,7 @@ namespace SWLOR.Game.Server.Conversation
                     return;
                 }
 
-                var items = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(controlTower.ID).ToList();
+                var items = controlTower.Items;
 
                 while (items.Count > maxResources)
                 {
@@ -768,17 +768,21 @@ namespace SWLOR.Game.Server.Conversation
                     var impoundItem = new PCImpoundedItem
                     {
                         PlayerID = pcBase.PlayerID,
-                        ItemResref = item.ItemResref,
-                        ItemObject = item.ItemObject,
+                        ItemResref = item.Value.ItemResref,
+                        ItemObject = item.Value.ItemObject,
                         DateImpounded = DateTime.UtcNow,
-                        ItemName = item.ItemName,
-                        ItemTag = item.ItemTag
+                        ItemName = item.Value.ItemName,
+                        ItemTag = item.Value.ItemTag
                     };
 
+
                     DataService.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
-                    GetPC().SendMessage(item.ItemName + " has been impounded by the planetary government because your base ran out of space to store resources. The owner of the base will need to retrieve it.");
-                    DataService.SubmitDataChange(item, DatabaseActionType.Delete);
+                    GetPC().SendMessage(item.Value.ItemName + " has been impounded by the planetary government because your base ran out of space to store resources. The owner of the base will need to retrieve it.");
+
+                    controlTower.Items.Remove(item.Key);
                 }
+
+                DataService.SubmitDataChange(controlTower, DatabaseActionType.Update);
             }
 
             // Update the cache
@@ -859,12 +863,12 @@ namespace SWLOR.Game.Server.Conversation
             bool canPlaceEditStructures;
             var structure = data.ManipulatingStructure.Structure;
 
-            if (data.BuildingType == Enumeration.BuildingType.Exterior ||
-                data.BuildingType == Enumeration.BuildingType.Apartment)
+            if (data.BuildingType == BuildingType.Exterior ||
+                data.BuildingType == BuildingType.Apartment)
             {
                 canPlaceEditStructures = BasePermissionService.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanPlaceEditStructures);
             }
-            else if (data.BuildingType == Enumeration.BuildingType.Interior)
+            else if (data.BuildingType == BuildingType.Interior)
             {
                 var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canPlaceEditStructures = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);
@@ -933,7 +937,7 @@ namespace SWLOR.Game.Server.Conversation
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
             Vector playerposition = _.GetPositionFromLocation(GetPC().Location); 
 
-            if (data.BuildingType == Enumeration.BuildingType.Interior)
+            if (data.BuildingType == BuildingType.Interior)
             {
                 var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canPlaceEditStructures = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);

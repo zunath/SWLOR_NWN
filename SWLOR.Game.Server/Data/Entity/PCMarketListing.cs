@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid SellerPlayerID { get; set; }
         public string Note { get; set; }
         public int Price { get; set; }
-        public int MarketRegionID { get; set; }
+        public MarketRegion MarketRegionID { get; set; }
         public MarketCategory MarketCategoryID { get; set; }
         public DateTime DatePosted { get; set; }
         public DateTime DateExpires { get; set; }

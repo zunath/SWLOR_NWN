@@ -46,17 +46,18 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
-            
-            var visibilities = DataService.PCObjectVisibility.GetAllByPlayerID(player.GlobalID).ToList();
+
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var visibilities = dbPlayer.ObjectVisibilities;
 
             // Apply visibilities for player
             foreach (var visibility in visibilities)
             {
-                if (!AppCache.VisibilityObjects.ContainsKey(visibility.VisibilityObjectID)) continue;
+                if (!AppCache.VisibilityObjects.ContainsKey(visibility.Key)) continue;
 
-                var obj = AppCache.VisibilityObjects[visibility.VisibilityObjectID];
+                var obj = AppCache.VisibilityObjects[visibility.Key];
 
-                if (visibility.IsVisible)
+                if (visibility.Value)
                     NWNXVisibility.SetVisibilityOverride(player, obj, VisibilityType.Visible);
                 else
                     NWNXVisibility.SetVisibilityOverride(player, obj, VisibilityType.Hidden);
@@ -66,8 +67,11 @@ namespace SWLOR.Game.Server.Service
             foreach (var visibilityObject in AppCache.VisibilityObjects)
             {
                 string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
-                var matchingVisibility = visibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID.ToString() == visibilityObjectID);
-                if (visibilityObject.Value.GetLocalBoolean("VISIBILITY_HIDDEN_DEFAULT") == true && matchingVisibility == null)
+                var matchingVisibility = dbPlayer.ObjectVisibilities.ContainsKey(visibilityObjectID) ?
+                    (bool?)dbPlayer.ObjectVisibilities[visibilityObjectID] :
+                    null;
+
+                if (visibilityObject.Value.GetLocalBoolean("VISIBILITY_HIDDEN_DEFAULT") && matchingVisibility == null)
                 {
                     NWNXVisibility.SetVisibilityOverride(player, visibilityObject.Value, VisibilityType.Hidden);
                 }
@@ -89,22 +93,21 @@ namespace SWLOR.Game.Server.Service
                 AppCache.VisibilityObjects[visibilityObjectID] = target;
             }
             
-            var players = NWModule.Get().Players.ToList();
-            var concatPlayerIDs = players.Select(x => x.GlobalID);
-            var pcVisibilities = DataService.PCObjectVisibility.GetAllByPlayerIDsAndVisibilityObjectID(concatPlayerIDs, visibilityObjectID).ToList();
-
-            foreach (var player in players)
+            foreach (var player in NWModule.Get().Players)
             {
-                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+                var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+                var visibility = dbPlayer.ObjectVisibilities.ContainsKey(visibilityObjectID) ? 
+                    (bool?)dbPlayer.ObjectVisibilities[visibilityObjectID] : 
+                    null;
 
                 if (visibility == null)
                 {
-                    if(target.GetLocalBoolean("VISIBILITY_HIDDEN_DEFAULT") == true)
+                    if(target.GetLocalBoolean("VISIBILITY_HIDDEN_DEFAULT"))
                         NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Hidden);
                     continue;
                 }
 
-                if(visibility.IsVisible)
+                if(visibility == true)
                     NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Visible);
                 else
                     NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Hidden);
@@ -126,23 +129,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var visibility = DataService.PCObjectVisibility.GetByPlayerIDAndVisibilityObjectIDOrDefault(player.GlobalID, visibilityObjectID);
-            DatabaseActionType action = DatabaseActionType.Update;
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            
+            dbPlayer.ObjectVisibilities[visibilityObjectID] = isVisible;
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
-            if (visibility == null)
-            {
-                visibility = new PCObjectVisibility
-                {
-                    PlayerID = player.GlobalID,
-                    VisibilityObjectID = visibilityObjectID
-                };
-                action = DatabaseActionType.Insert;
-            }
-
-            visibility.IsVisible = isVisible;
-            DataService.SubmitDataChange(visibility, action);
-
-            if (visibility.IsVisible)
+            if (isVisible)
                 NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Visible);
             else
                 NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Hidden);

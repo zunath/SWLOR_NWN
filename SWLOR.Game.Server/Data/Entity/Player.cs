@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Data.Entity
             MapProgression = new Dictionary<string, string>();
             Perks = new Dictionary<PerkType, int>();
             OverflowItems = new Dictionary<Guid, string>();
+            ObjectVisibilities = new Dictionary<string, bool>();
         }
 
         [Key]
@@ -97,6 +98,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<string, string> MapProgression { get; set; }
         public Dictionary<PerkType, int> Perks { get; set; }
         public Dictionary<Guid, string> OverflowItems { get; set; }
+        public Dictionary<string, bool> ObjectVisibilities { get; set; }
     }
 
     public class PCSkill

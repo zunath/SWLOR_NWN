@@ -65,37 +65,22 @@ namespace SWLOR.Game.Server.Service
 
         private static void SaveMapProgression(NWArea area, NWPlayer player)
         {
-            var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, area.Resref);
-            DatabaseActionType action = DatabaseActionType.Update;
-
-            if (map == null)
-            {
-                map = new PCMapProgression
-                {
-                    PlayerID = player.GlobalID,
-                    AreaResref = area.Resref,
-                    Progression = string.Empty
-                };
-
-                action = DatabaseActionType.Insert;
-            }
-
-            map.Progression = NWNXPlayer.GetAreaExplorationState(player, area);
-            DataService.SubmitDataChange(map, action);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            dbPlayer.MapProgression[area.Resref] = NWNXPlayer.GetAreaExplorationState(player, area);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
         private static void LoadMapProgression(NWArea area, NWPlayer player)
         {
-            var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, area.Resref);
-
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             // No progression set - do a save which will create the record.
-            if (map == null)
+            if (!dbPlayer.MapProgression.ContainsKey(area.Resref))
             {
                 SaveMapProgression(area, player);
                 return;
             }
             
-            NWNXPlayer.SetAreaExplorationState(player, area, map.Progression);
+            NWNXPlayer.SetAreaExplorationState(player, area, dbPlayer.MapProgression[area.Resref]);
         }
 
 

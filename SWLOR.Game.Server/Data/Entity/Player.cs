@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Data.Entity
             GuildPoints = new Dictionary<GuildType, PCGuildPoint>();
             AcquiredKeyItems = new HashSet<KeyItem>();
             MapPins = new Dictionary<string, List<PCMapPin>>();
+            MapProgression = new Dictionary<string, string>();
         }
 
         [Key]
@@ -91,6 +92,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<GuildType, PCGuildPoint> GuildPoints { get; set; }
         public HashSet<KeyItem> AcquiredKeyItems { get; set; }
         public Dictionary<string, List<PCMapPin>> MapPins { get; set; }
+        public Dictionary<string, string> MapProgression { get; set; }
     }
 
     public class PCSkill

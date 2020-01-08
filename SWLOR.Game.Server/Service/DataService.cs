@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Service
         public static PCBaseStructureItemCache PCBaseStructureItem { get; } = new PCBaseStructureItemCache();
         public static PCCustomEffectCache PCCustomEffect { get; } = new PCCustomEffectCache();
         public static PCImpoundedItemCache PCImpoundedItem { get; } = new PCImpoundedItemCache();
-        public static PCKeyItemCache PCKeyItem { get; } = new PCKeyItemCache();
         public static PCMapPinCache PCMapPin { get; } = new PCMapPinCache();
         public static PCMapProgressionCache PCMapProgression { get; } = new PCMapProgressionCache();
         public static PCMarketListingCache PCMarketListing { get; } = new PCMarketListingCache();

@@ -78,13 +78,13 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadKeyItemsOptions(KeyItemCategoryType categoryID)
         {
-            List<PCKeyItem> items = KeyItemService.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
+            var items = KeyItemService.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
 
             ClearPageResponses("KeyItemsListPage");
-            foreach (PCKeyItem item in items)
+            foreach (var item in items)
             {
-                var keyItem = KeyItemService.GetKeyItem(item.KeyItemID);
-                AddResponseToPage("KeyItemsListPage", keyItem.Name, true, item.KeyItemID);
+                var keyItem = KeyItemService.GetKeyItem(item);
+                AddResponseToPage("KeyItemsListPage", keyItem.Name, true, item);
             }
             ChangePage("KeyItemsListPage");
         }

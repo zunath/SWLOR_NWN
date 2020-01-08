@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Data.Entity
             CraftedBlueprints = new HashSet<CraftBlueprint>();
             GuildPoints = new Dictionary<GuildType, PCGuildPoint>();
             AcquiredKeyItems = new HashSet<KeyItem>();
+            MapPins = new Dictionary<string, List<PCMapPin>>();
         }
 
         [Key]
@@ -89,6 +90,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public HashSet<CraftBlueprint> CraftedBlueprints { get; set; }
         public Dictionary<GuildType, PCGuildPoint> GuildPoints { get; set; }
         public HashSet<KeyItem> AcquiredKeyItems { get; set; }
+        public Dictionary<string, List<PCMapPin>> MapPins { get; set; }
     }
 
     public class PCSkill
@@ -101,5 +103,12 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public int Rank { get; set; }
         public int Points { get; set; }
+    }
+
+    public class PCMapPin
+    {
+        public double PositionX { get; set; }
+        public double PositionY { get; set; }
+        public string NoteText { get; set; }
     }
 }

@@ -25,12 +25,14 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             if (oPC.GetLocalInt("MAP_PINS_LOADED") == 1) return;
 
-            List<PCMapPin> pins = DataService.PCMapPin.GetAllByPlayerID(oPC.GlobalID).ToList();
-
-            foreach (PCMapPin pin in pins)
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            foreach (var pins in dbPlayer.MapPins)
             {
-                NWArea area = (_.GetObjectByTag(pin.AreaTag));
-                SetMapPin(oPC, pin.NoteText, (float)pin.PositionX, (float)pin.PositionY, area);
+                foreach (var pin in pins.Value)
+                {
+                    NWArea area = (_.GetObjectByTag(pins.Key));
+                    SetMapPin(oPC, pin.NoteText, (float)pin.PositionX, (float)pin.PositionY, area);
+                }
             }
             
             oPC.SetLocalInt("MAP_PINS_LOADED", 1);
@@ -42,12 +44,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            var mapPins = DataService.PCMapPin.GetAllByPlayerID(oPC.GlobalID).ToList();
-            for(int x = mapPins.Count-1; x >= 0; x--)
-            {
-                var pin = mapPins.ElementAt(x);
-                DataService.SubmitDataChange(pin, DatabaseActionType.Delete);
-            }
+            var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
+            dbPlayer.MapPins.Clear();
             
             for (int x = 0; x < GetNumberOfMapPins(oPC); x++)
             {
@@ -57,14 +55,13 @@ namespace SWLOR.Game.Server.Service
 
                 PCMapPin entity = new PCMapPin
                 {
-                    AreaTag = mapPin.Area.Tag,
                     NoteText = mapPin.Text,
-                    PlayerID = oPC.GlobalID,
                     PositionX = mapPin.PositionX,
                     PositionY = mapPin.PositionY
                 };
+                dbPlayer.MapPins[mapPin.Tag].Add(entity);
 
-                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
         }
 

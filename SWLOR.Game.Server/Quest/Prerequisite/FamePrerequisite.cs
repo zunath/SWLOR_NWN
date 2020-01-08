@@ -18,10 +18,12 @@ namespace SWLOR.Game.Server.Quest.Prerequisite
 
         public bool MeetsPrerequisite(NWPlayer player)
         {
-            var fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, _fameRegionID);
-            int fameAmount = fame?.Amount ?? 0;
-
-            return fameAmount >= _amount;
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var fame = dbPlayer.RegionalFame.ContainsKey(_fameRegionID) ?
+                dbPlayer.RegionalFame[_fameRegionID] :
+                0;
+            
+            return fame >= _amount;
         }
     }
 }

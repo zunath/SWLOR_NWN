@@ -29,23 +29,14 @@ namespace SWLOR.Game.Server.Quest.Reward
         {
             if (_amount <= 0 || _fameRegionID == FameRegion.Invalid) return;
 
-            PCRegionalFame fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, _fameRegionID);
-            DatabaseActionType action = DatabaseActionType.Update;
-
-            if (fame == null)
-            {
-                fame = new PCRegionalFame
-                {
-                    PlayerID = player.GlobalID,
-                    FameRegionID = _fameRegionID,
-                    Amount = 0
-                };
-
-                action = DatabaseActionType.Insert;
-            }
-
-            fame.Amount += _amount;
-            DataService.SubmitDataChange(fame, action);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var fame = dbPlayer.RegionalFame.ContainsKey(_fameRegionID) ?
+                dbPlayer.RegionalFame[_fameRegionID] :
+                0;
+            
+            fame += _amount;
+            dbPlayer.RegionalFame[_fameRegionID] = fame;
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
     }
 }

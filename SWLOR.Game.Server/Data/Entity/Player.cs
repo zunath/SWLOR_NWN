@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Data.Entity
             SavedHelmets = new Dictionary<int, string>();
             SavedOutfits = new Dictionary<int, string>();
             SavedWeapons = new Dictionary<int, string>();
+
+            RegionalFame = new Dictionary<FameRegion, int>();
         }
 
         [Key]
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<int, string> SavedOutfits { get; set; }
         public Dictionary<int, string> SavedWeapons { get; set; }
         public Dictionary<int, string> SavedHelmets { get; set; }
+        public Dictionary<FameRegion, int> RegionalFame { get; set; }
     }
 
     public class PCSkill

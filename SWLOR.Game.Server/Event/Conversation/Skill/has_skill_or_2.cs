@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class has_skill_or_2
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return HasSkillRank.Check(2, "OR") ? 1 : 0;
         }

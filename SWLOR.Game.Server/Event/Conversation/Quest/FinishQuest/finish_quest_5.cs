@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class finish_quest_5
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return QuestComplete.Check(5, 0) ? 1 : 0;
         }

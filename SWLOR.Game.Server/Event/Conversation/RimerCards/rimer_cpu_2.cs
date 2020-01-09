@@ -11,7 +11,7 @@ namespace NWN.Scripts
     internal static class rimer_cpu_2
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             using (new Profiler(nameof(rimer_cpu_2)))
             {

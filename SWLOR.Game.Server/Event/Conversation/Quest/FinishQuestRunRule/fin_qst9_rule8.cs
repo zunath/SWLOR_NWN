@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class fin_qst9_rule8
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return QuestComplete.Check(9, 8) ? 1 : 0;
         }

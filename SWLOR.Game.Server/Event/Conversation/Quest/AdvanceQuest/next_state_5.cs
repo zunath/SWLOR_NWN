@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class next_state_5
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return QuestAdvance.Check(5) ? 1 : 0;
         }

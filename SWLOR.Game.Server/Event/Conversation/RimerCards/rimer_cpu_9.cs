@@ -8,7 +8,7 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal static class rimer_cpu_9
+    internal class rimer_cpu_9
 #pragma warning restore IDE1006 // Naming Styles
     {
         public int Main()

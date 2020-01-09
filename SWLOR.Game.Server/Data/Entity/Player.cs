@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Perk;
+using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
             SavedHelmets = new Dictionary<int, string>();
             SavedOutfits = new Dictionary<int, string>();
-            SavedWeapons = new Dictionary<int, string>();
+            SavedWeapons = new Dictionary<BaseItemType, Dictionary<int, string>>();
 
             RegionalFame = new Dictionary<FameRegion, int>();
             CraftedBlueprints = new HashSet<CraftBlueprint>();
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public Dictionary<Skill, PCSkill> Skills { get; set; }
         public Dictionary<SkillCategory, int> SkillPools { get; set; }
         public Dictionary<int, string> SavedOutfits { get; set; }
-        public Dictionary<int, string> SavedWeapons { get; set; }
+        public Dictionary<BaseItemType, Dictionary<int, string>> SavedWeapons { get; set; }
         public Dictionary<int, string> SavedHelmets { get; set; }
         public Dictionary<FameRegion, int> RegionalFame { get; set; }
         public HashSet<CraftBlueprint> CraftedBlueprints { get; set; }

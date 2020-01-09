@@ -216,8 +216,7 @@ namespace SWLOR.Game.Server.Conversation
                 PlayerStatService.ApplyStatChanges(GetPC(), null);
 
                 // Reduce the pool levels. Delete the record if it drops to zero.
-                var pool = player.SkillPools[model.SkillCategoryID];
-                pool -= amount;
+                var pool = player.SkillPools[model.SkillCategoryID] -= amount;
 
                 DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 if (pool <= 0)

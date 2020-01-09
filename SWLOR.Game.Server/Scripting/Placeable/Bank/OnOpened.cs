@@ -26,25 +26,11 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Bank
 
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
             NWArea area = terminal.Area;
-            int bankID = terminal.GetLocalInt("BANK_ID");
-            if (bankID <= 0)
+            var bankID = (Enumeration.Bank)terminal.GetLocalInt("BANK_ID");
+            if (bankID == Enumeration.Bank.Invalid)
             {
                 Console.WriteLine("WARNING: Bank ID is not set on bank in area: " + area.Name);
                 return;
-            }
-
-            Data.Entity.Bank entity = DataService.Bank.GetByID(bankID);
-
-            if (entity == null)
-            {
-                entity = new Data.Entity.Bank
-                {
-                    AreaName = area.Name,
-                    AreaResref = area.Resref,
-                    AreaTag = area.Tag,
-                    ID = bankID
-                };
-                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
 
             var bankItems = DataService.BankItem.GetAllByPlayerIDAndBankID(player.GlobalID, bankID);

@@ -2,6 +2,7 @@
 using System;
 
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         [Key]
         public Guid ID { get; set; }
-        public int BankID { get; set; }
+        public Bank BankID { get; set; }
         public Guid PlayerID { get; set; }
         public string ItemID { get; set; }
         public string ItemName { get; set; }

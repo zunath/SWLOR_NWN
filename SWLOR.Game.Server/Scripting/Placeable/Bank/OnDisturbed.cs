@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Bank
         public void Main()
         {
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
-            int bankID = terminal.GetLocalInt("BANK_ID");
-            if (bankID <= 0) return;
+            var bankID = (Enumeration.Bank)terminal.GetLocalInt("BANK_ID");
+            if (bankID == Enumeration.Bank.Invalid) return;
 
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();

@@ -62,10 +62,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="terminal">The market terminal placeable</param>
         /// <returns>The ID which links up to the MarketRegion database table.</returns>
-        public static int GetMarketRegionID(NWPlaceable terminal)
+        public static MarketRegion GetMarketRegionID(NWPlaceable terminal)
         {
-            int marketRegionID = terminal.GetLocalInt("GTN_REGION_ID");
-            if (marketRegionID <= 0)
+            var marketRegionID = (MarketRegion)terminal.GetLocalInt("GTN_REGION_ID");
+            if (marketRegionID == MarketRegion.Invalid)
                 throw new Exception("GTN Region ID not specified on target terminal object: " + terminal.Name);
 
             return marketRegionID;

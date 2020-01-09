@@ -13,7 +13,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    public class Outfit: ConversationBase
+    public class Outfit : ConversationBase
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("SaveOutfitPage", saveOutfitPage);
             dialog.AddPage("SaveHelmetPage", saveHelmetPage);
             dialog.AddPage("SaveWeaponPage", saveWeaponPage);
-            dialog.AddPage("LoadPage", loadPage);            
+            dialog.AddPage("LoadPage", loadPage);
             dialog.AddPage("LoadOutfitPage", loadOutfitPage);
             dialog.AddPage("LoadHelmetPage", loadHelmetPage);
             dialog.AddPage("LoadWeaponPage", loadWeaponPage);
@@ -79,20 +79,20 @@ namespace SWLOR.Game.Server.Conversation
             switch (pageName)
             {
                 case "MainPage":
-                {
-                    switch (responseID)
                     {
-                        case 1: // Save Page
+                        switch (responseID)
+                        {
+                            case 1: // Save Page
                                 ShowSaveOptions();
                                 ChangePage("SavePage");
-                            break;
-                        case 2: // Load Page
+                                break;
+                            case 2: // Load Page
                                 ShowLoadOptions();
                                 ChangePage("LoadPage");
-                            break;
+                                break;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case "SavePage":
                     {
                         switch (responseID)
@@ -125,54 +125,54 @@ namespace SWLOR.Game.Server.Conversation
                                 ChangePage("LoadHelmetPage");
                                 break;
                             case 3: // Load Weapon
-                                ShowLoadWeaponOptions();
+                                ShowLoadWeaponOptions(player);
                                 ChangePage("LoadWeaponPage");
                                 break;
                         }
                         break;
                     }
-                    // default base?
-                    /*
-                case "LoadPage":
+                // default base?
+                /*
+            case "LoadPage":
+                {
+                    switch (responseID)
                     {
-                        switch (responseID)
-                        {
-                            case 1: // Save Outfit
-                                ShowSaveOutfitOptions();
-                                ChangePage("SaveOutfitPage");
-                                break;
-                            case 2: // Load Outfit
-                                ShowLoadOutfitOptions();
-                                ChangePage("LoadOutfitPage");
-                                break;
-                        }
-                        break;
-                    }*/
+                        case 1: // Save Outfit
+                            ShowSaveOutfitOptions();
+                            ChangePage("SaveOutfitPage");
+                            break;
+                        case 2: // Load Outfit
+                            ShowLoadOutfitOptions();
+                            ChangePage("LoadOutfitPage");
+                            break;
+                    }
+                    break;
+                }*/
                 case "SaveOutfitPage":
-                {
-                    HandleSaveOutfit(responseID);
-                    break;
-                }
+                    {
+                        HandleSaveOutfit(responseID);
+                        break;
+                    }
                 case "SaveHelmetPage":
-                {
-                    HandleSaveHelmet(responseID);
-                    break;
-                }
+                    {
+                        HandleSaveHelmet(responseID);
+                        break;
+                    }
                 case "SaveWeaponPage":
                     {
                         HandleSaveWeapon(responseID);
                         break;
                     }
                 case "LoadOutfitPage":
-                {
-                    HandleLoadOutfit(responseID);
-                    break;
-                }
+                    {
+                        HandleLoadOutfit(responseID);
+                        break;
+                    }
                 case "LoadHelmetPage":
-                {
-                    HandleLoadHelmet(responseID);
-                    break;
-                }
+                    {
+                        HandleLoadHelmet(responseID);
+                        break;
+                    }
                 case "LoadWeaponPage":
                     {
                         HandleLoadWeapon(responseID);
@@ -240,13 +240,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
             NWItem oClothes = (_.GetItemInSlot(InventorySlot.Chest, oPC.Object));
-            
+
             if (!CanModifyClothes())
             {
                 oPC.FloatingText("You cannot save your currently equipped clothes.");
                 return;
             }
-            
+
             if (!oClothes.IsValid)
             {
                 oPC.FloatingText(ColorTokenService.Red("You do not have clothes equipped"));
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Conversation
             string weaponData = SerializationService.Serialize(oClothes);
             var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             dbPlayer.SavedWeapons[responseID] = weaponData;
-            
+
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             ShowSaveWeaponOptions();
         }
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Conversation
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 
             NWGameObject oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, true);
-            oCopy = _.CopyItemAndModify(oCopy, ItemApprType.ArmorModel,  ItemApprArmorModel.LeftBicep, _.GetItemAppearance(storedClothes.Object, ItemApprType.ArmorModel, ItemApprArmorModel.LeftBicep), true);
+            oCopy = _.CopyItemAndModify(oCopy, ItemApprType.ArmorModel, ItemApprArmorModel.LeftBicep, _.GetItemAppearance(storedClothes.Object, ItemApprType.ArmorModel, ItemApprArmorModel.LeftBicep), true);
             oCopy = _.CopyItemAndModify(oCopy, ItemApprType.ArmorColor, ItemApprArmorModel.LeftBicep, _.GetItemAppearance(storedClothes.Object, ItemApprType.ArmorColor, ItemApprArmorModel.LeftBicep), true);
 
             oCopy = _.CopyItemAndModify(oCopy, ItemApprType.ArmorModel, ItemApprArmorModel.Belt, _.GetItemAppearance(storedClothes.Object, ItemApprType.ArmorModel, ItemApprArmorModel.Belt), true);
@@ -505,10 +505,10 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
 
-            ShowLoadWeaponOptions();
+            ShowLoadWeaponOptions(oPC);
         }
         private void ShowSaveOptions()
-        {            
+        {
             ClearPageResponses("SavePage");
             AddResponseToPage("SavePage", "Save Outfit");
             AddResponseToPage("SavePage", "Save Helmet");
@@ -553,16 +553,27 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("SaveWeaponPage");
 
             var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
+            NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
 
             for (int x = 1; x <= 10; x++)
             {
                 if (dbPlayer.SavedWeapons.ContainsKey(x))
                 {
-                    AddResponseToPage("SaveWeaponPage", ColorTokenService.Green($"Save in Slot {x}"));
+                    NWItem storedClothes = SerializationService.DeserializeItem(dbPlayer.SavedWeapons[x], oTempStorage);
+                    storedClothes.SetLocalString("TEMP_OUTFIT_UUID", GetPC().GlobalID.ToString());
+                    AddResponseToPage("SaveWeaponPage", ColorTokenService.Green($"Save in Slot {x}" + " (Type: " + storedClothes.BaseItemType.ToString() + ")"));
                 }
                 else
                 {
                     AddResponseToPage("SaveWeaponPage", ColorTokenService.Red($"Save in Slot {x}"));
+                }
+
+                foreach (NWItem item in oTempStorage.InventoryItems)
+                {
+                    if (item.GetLocalString("TEMP_OUTFIT_UUID") == GetPC().GlobalID.ToString())
+                    {
+                        item.Destroy();
+                    }
                 }
             }
         }
@@ -578,9 +589,9 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("LoadOutfitPage");
 
             var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
-            for(int x = 1; x <= 10; x++)
+            for (int x = 1; x <= 10; x++)
             {
-                if(dbPlayer.SavedOutfits.ContainsKey(x))
+                if (dbPlayer.SavedOutfits.ContainsKey(x))
                 {
                     AddResponseToPage("LoadOutfitPage", $"Load from Slot {x}", true, x);
                 }
@@ -599,16 +610,30 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
         }
-        private void ShowLoadWeaponOptions()
+        private void ShowLoadWeaponOptions(NWPlayer player)
         {
             ClearPageResponses("LoadWeaponPage");
+            NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
 
             var dbPlayer = DataService.Player.GetByID(GetPC().GlobalID);
             for (int x = 1; x <= 10; x++)
             {
                 if (dbPlayer.SavedWeapons.ContainsKey(x))
                 {
-                    AddResponseToPage("LoadWeaponPage", $"Load from Slot {x}", true, x);
+                    NWItem storedClothes = SerializationService.DeserializeItem(dbPlayer.SavedWeapons[x], oTempStorage);
+                    storedClothes.SetLocalString("TEMP_OUTFIT_UUID", player.GlobalID.ToString());
+                    if (storedClothes.BaseItemType == player.RightHand.BaseItemType)
+                    {
+                        AddResponseToPage("LoadWeaponPage", $"Load from Slot {x}" + " (Type: " + storedClothes.BaseItemType.ToString() + ")", true, x);
+                    }
+                }
+            }
+
+            foreach (NWItem item in oTempStorage.InventoryItems)
+            {
+                if (item.GetLocalString("TEMP_OUTFIT_UUID") == player.GlobalID.ToString())
+                {
+                    item.Destroy();
                 }
             }
         }

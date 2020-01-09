@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("BrowseByCategoryPage", header);
 
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
-            int marketRegionID = MarketService.GetMarketRegionID(terminal);
+            var marketRegionID = MarketService.GetMarketRegionID(terminal);
             var validCategories = DataService.PCMarketListing
                 .GetAllByMarketRegionID(marketRegionID)
                 .Where(x => x.DateExpires > DateTime.UtcNow &&
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("BrowseBySellerPage", header);
 
             NWPlaceable terminal = NWGameObject.OBJECT_SELF;
-            int marketRegionID = MarketService.GetMarketRegionID(terminal);
+            var marketRegionID = MarketService.GetMarketRegionID(terminal);
             IEnumerable<PCMarketListing> listings = DataService.PCMarketListing
                 .GetAllByMarketRegionID(marketRegionID)
                 .Where(x => x.DateExpires > DateTime.UtcNow &&
@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = MarketService.GetPlayerMarketData(GetPC());
             IEnumerable<PCMarketListing> listings;
             DateTime now = DateTime.UtcNow;
-            int marketRegionID = MarketService.GetMarketRegionID(NWGameObject.OBJECT_SELF);
+            var marketRegionID = MarketService.GetMarketRegionID(NWGameObject.OBJECT_SELF);
             
             // Pull items by category
             if (model.BrowseMode == MarketBrowseMode.ByCategory)

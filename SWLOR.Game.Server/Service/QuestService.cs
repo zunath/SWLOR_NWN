@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service
     public static class QuestService
     {
         private static readonly Dictionary<int, IQuest> _quests = new Dictionary<int, IQuest>();
+        private static readonly Dictionary<NPCGroup, HashSet<int>> _killTargetsByQuest = new Dictionary<NPCGroup, HashSet<int>>();
         private const string TempStoragePlaceableTag = "QUEST_BARREL";
 
         public static void SubscribeEvents()
@@ -44,6 +45,27 @@ namespace SWLOR.Game.Server.Service
             }
 
             _quests[quest.QuestID] = quest;
+
+            // Find all objectives for this quest. For all of the "Kill Target" objectives, we need to store
+            // the NPCGroupID for quicker look up later.
+            var allObjectives = quest.GetStates().SelectMany(s => s.GetObjectives());
+            foreach (var objective in allObjectives)
+            {
+                if (objective.GetType() == typeof(KillTargetObjective))
+                {
+                    var killTarget = (KillTargetObjective) objective;
+                    if(!_killTargetsByQuest.ContainsKey(killTarget.Group))
+                    {
+                        _killTargetsByQuest[killTarget.Group] = new HashSet<int>();
+                    }
+
+                    if (!_killTargetsByQuest[killTarget.Group].Contains(quest.QuestID))
+                    {
+                        _killTargetsByQuest[killTarget.Group].Add(quest.QuestID);
+                    }
+                }
+            }
+
             Console.WriteLine("Registered quest: " + quest.Name + " ( " + quest.QuestID + " )");
         }
 
@@ -137,26 +159,29 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var playerID = oPC.GlobalID;
-                var killTargets = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndNPCGroupID(playerID, npcGroupID).ToList();
+                var questsWithKillTarget = _killTargetsByQuest.ContainsKey(npcGroupID) ?
+                    _killTargetsByQuest[npcGroupID] :
+                    new HashSet<int>();
 
-                foreach (var kt in killTargets)
+                foreach (var questID in questsWithKillTarget)
                 {
-                    var questStatus = DataService.PCQuestStatus.GetByID(kt.PCQuestStatusID);
-                    var quest = GetQuestByID(questStatus.QuestID);
+                    var pcQuest = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(playerID, questID);
+                    if (pcQuest == null) continue;
+                    if (!pcQuest.KillTargets.ContainsKey(npcGroupID) ||
+                        pcQuest.KillTargets[npcGroupID] <= 0) continue;
 
-                    kt.RemainingToKill--;
+                    var quest = GetQuestByID(questID);
+                    pcQuest.KillTargets[npcGroupID]--;
                     string targetGroupName = npcGroupID.GetDescriptionAttribute();
-                    string updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
-                    DatabaseActionType action = DatabaseActionType.Update;
+                    string updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + pcQuest.KillTargets[npcGroupID];
 
-                    if (kt.RemainingToKill <= 0)
+                    if (pcQuest.KillTargets[npcGroupID] <= 0)
                     {
                         updateMessage += " " + ColorTokenService.Green(" {COMPLETE}");
                         playersToAdvance.Add(new KeyValuePair<NWPlayer, int>(oPC, quest.QuestID));
-                        action = DatabaseActionType.Delete;
                     }
 
-                    DataService.SubmitDataChange(kt, action);
+                    DataService.SubmitDataChange(pcQuest, DatabaseActionType.Update);
 
                     var pc = oPC;
                     DelayCommand(1.0f, () =>
@@ -164,7 +189,6 @@ namespace SWLOR.Game.Server.Service
                         pc.SendMessage(updateMessage);
                     });
                 }
-
                 oPC = GetNextFactionMember(oKiller);
             }
 

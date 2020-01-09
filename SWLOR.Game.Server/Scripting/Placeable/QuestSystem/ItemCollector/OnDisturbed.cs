@@ -37,8 +37,9 @@ namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem.ItemCollector
             {
                 int questID = container.GetLocalInt("QUEST_ID");
                 PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-                PCQuestItemProgress progress = DataService.PCQuestItemProgress.GetByPCQuestStatusIDAndResrefOrDefault(status.ID, item.Resref);
-                DatabaseActionType action = DatabaseActionType.Update;
+                PCQuestItemProgress progress = status.Items.ContainsKey(item.Resref) ?
+                    status.Items[item.Resref] :
+                    null;
 
                 if (progress == null)
                 {
@@ -53,17 +54,10 @@ namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem.ItemCollector
                 else
                 {
                     progress.Remaining--;
-
-                    if (progress.Remaining <= 0)
-                    {
-                        var progressCopy = progress;
-                        progress = DataService.PCQuestItemProgress.GetByID(progressCopy.ID);
-                        action = DatabaseActionType.Delete;
-                    }
-                    DataService.SubmitDataChange(progress, action);
+                    DataService.SubmitDataChange(status, DatabaseActionType.Update);
 
                     // Recalc the remaining items needed.
-                    int remainingCount = DataService.PCQuestItemProgress.GetCountByPCQuestStatusID(status.ID);
+                    int remainingCount = status.Items.Sum(x => x.Value.Remaining);
                     if (remainingCount <= 0)
                     {
                         var quest = QuestService.GetQuestByID(questID);
@@ -74,8 +68,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem.ItemCollector
                 }
                 item.Destroy();
 
-                var questItemProgresses = DataService.PCQuestItemProgress.GetAllByPCQuestStatusID(status.ID);
-                if (!questItemProgresses.Any())
+                if (status.Items.Sum(x => x.Value.Remaining) <= 0)
                 {
                     string conversation = _.GetLocalString(owner, "CONVERSATION");
 

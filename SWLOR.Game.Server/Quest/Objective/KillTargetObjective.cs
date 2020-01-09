@@ -9,39 +9,31 @@ namespace SWLOR.Game.Server.Quest.Objective
 {
     public class KillTargetObjective: IQuestObjective
     {
-        private readonly NPCGroup _group;
+        public NPCGroup Group { get; }
         private readonly int _amount;
 
         public KillTargetObjective(NPCGroup group, int amount)
         {
-            _group = group;
+            Group = group;
             _amount = amount;
         }
 
         public void Initialize(NWPlayer player, int questID)
         {
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-            PCQuestKillTargetProgress pcKT = new PCQuestKillTargetProgress
-            {
-                RemainingToKill = _amount,
-                NPCGroupID = _group,
-                PCQuestStatusID = status.ID,
-                PlayerID = player.GlobalID
-            };
-            DataService.SubmitDataChange(pcKT, DatabaseActionType.Insert);
+            status.KillTargets[Group] = _amount;
+            
+            DataService.SubmitDataChange(status, DatabaseActionType.Insert);
 
         }
 
         public bool IsComplete(NWPlayer player, int questID)
         {
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-            var itemProgress = DataService.PCQuestKillTargetProgress.GetAllByPlayerIDAndNPCGroupID(player.GlobalID, _group);
+            var killsRemaining = status.KillTargets[Group];
 
-            foreach (var progress in itemProgress)
-            {
-                if (progress.RemainingToKill > 0)
-                    return false;
-            }
+            if (killsRemaining > 0)
+                return false;
 
             return true;
         }

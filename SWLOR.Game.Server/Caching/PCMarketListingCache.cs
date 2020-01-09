@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Caching
             return ByID(id);
         }
 
-        public IEnumerable<PCMarketListing> GetAllByMarketRegionID(int marketRegionID)
+        public IEnumerable<PCMarketListing> GetAllByMarketRegionID(MarketRegion marketRegionID)
         {
             if(!ExistsByListIndex(ByMarketRegionIDIndex, marketRegionID.ToString()))
                 return new List<PCMarketListing>();

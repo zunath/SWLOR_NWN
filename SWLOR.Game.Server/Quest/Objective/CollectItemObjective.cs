@@ -22,24 +22,19 @@ namespace SWLOR.Game.Server.Quest.Objective
         public void Initialize(NWPlayer player, int questID)
         {
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-            PCQuestItemProgress itemProgress = new PCQuestItemProgress
-            {
-                Resref = _resref,
-                PlayerID = status.PlayerID,
-                PCQuestStatusID = status.ID,
-                Remaining = _quantity,
-                MustBeCraftedByPlayer = _mustBeCraftedByPlayer
-            };
-            DataService.SubmitDataChange(itemProgress, DatabaseActionType.Insert);
+            PCQuestItemProgress itemProgress = new PCQuestItemProgress(_quantity, _mustBeCraftedByPlayer);
+            status.Items[_resref] = itemProgress;
+
+            DataService.SubmitDataChange(status, DatabaseActionType.Insert);
         }
 
         public bool IsComplete(NWPlayer player, int questID)
         {
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-            var itemProgress = DataService.PCQuestItemProgress.GetAllByPCQuestStatusID(status.ID);
+            var itemProgress = status.Items;
             foreach (var progress in itemProgress)
             {
-                if (progress.Remaining > 0)
+                if (progress.Value.Remaining > 0)
                     return false;
             }
 

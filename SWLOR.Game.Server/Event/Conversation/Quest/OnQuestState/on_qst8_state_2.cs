@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class on_qst8_state_2
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return QuestCheckState.Check(8, 2) ? 1 : 0;
         }

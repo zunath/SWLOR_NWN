@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class collect_item_10
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return QuestCollectItem.Check(10) ? 1 : 0;
         }

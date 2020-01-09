@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class can_accept_5
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return QuestCanAccept.Check(5) ? 1 : 0;
         }

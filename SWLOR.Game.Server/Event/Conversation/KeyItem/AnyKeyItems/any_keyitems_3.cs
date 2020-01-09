@@ -9,7 +9,7 @@ namespace NWN.Scripts
     internal class any_keyitems_3
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static int Main()
+        public int Main()
         {
             return KeyItemCheck.Check(3, 2) ? 1 : 0;
         }

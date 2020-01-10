@@ -309,6 +309,7 @@ namespace SWLOR.Game.Server.Service
                 pcSkill.XP = req - 1;
             }
 
+            HashSet<Skill> skillsGained = new HashSet<Skill>();
             while (pcSkill.XP >= req)
             {
                 pcSkill.XP = pcSkill.XP - req;
@@ -338,11 +339,15 @@ namespace SWLOR.Game.Server.Service
                     pcSkill.XP = req - 1;
                 }
 
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
-                MessageHub.Instance.Publish(new OnSkillGained(oPC, skillID));
+                player.Skills[skillID] = pcSkill;
 
-                pcSkill = player.Skills[skillID];
-                player = DataService.Player.GetByID(oPC.GlobalID);
+                if (!skillsGained.Contains(skillID))
+                    skillsGained.Add(skillID);
+            }
+
+            foreach (var skillGained in skillsGained)
+            {
+                MessageHub.Instance.Publish(new OnSkillGained(oPC, skillGained));
             }
 
             DataService.SubmitDataChange(player, DatabaseActionType.Update);

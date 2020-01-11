@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.QuestSystem.ItemCollector
                 else
                 {
                     progress.Remaining--;
-                    DataService.SubmitDataChange(status, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(status, DatabaseActionType.Set);
 
                     // Recalc the remaining items needed.
                     int remainingCount = status.Items.Sum(x => x.Value.Remaining);

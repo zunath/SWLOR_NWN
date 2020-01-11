@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.Service
                 MessageHub.Instance.Publish(new OnSkillGained(oPC, skillGained));
             }
 
-            DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            DataService.SubmitDataChange(player, DatabaseActionType.Set);
 
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != pcSkill.Rank)
@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = DataService.Player.GetByID(playerID);
             player.Skills[skillID].IsLocked = !player.Skills[skillID].IsLocked;
-            DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            DataService.SubmitDataChange(player, DatabaseActionType.Set);
         }
 
         private static void OnCreatureDeath()
@@ -576,7 +576,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
 
                 ForceEquipFistGlove(oPC);
             }
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.Service
                     XP = decaySkill.Value.XP
                 };
                 player.Skills[decaySkill.Key] = dbDecaySkill;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
                 MessageHub.Instance.Publish(new OnSkillDecayed(oPC, decaySkill.Key, oldRank, decaySkill.Value.Rank));
             }
 

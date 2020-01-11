@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Conversation
                         Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                         var pcBase = DataService.PCBase.GetByID(pcBaseID);
                         pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
-                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
                         sender.SendMessage("Name is now set to " + pcBase.CustomName);
                     }
                     else if (buildingType == BuildingType.Interior)
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Conversation
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                         var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
-                        DataService.SubmitDataChange(structure, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(structure, DatabaseActionType.Set);
                         sender.SendMessage("Name is now set to " + structure.CustomName);
                     }
                     else if (buildingType == BuildingType.Starship)
@@ -357,11 +357,11 @@ namespace SWLOR.Game.Server.Conversation
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                         var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
-                        DataService.SubmitDataChange(structure, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(structure, DatabaseActionType.Set);
 
                         var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
                         pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
-                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
 
                         sender.SendMessage("Name is now set to " + structure.CustomName);
                     }
@@ -688,7 +688,7 @@ namespace SWLOR.Game.Server.Conversation
                     structure.Items.Remove(item.Key);
                     impoundedCount++;
                 }
-                DataService.SubmitDataChange(structure, DatabaseActionType.Update);
+                DataService.SubmitDataChange(structure, DatabaseActionType.Set);
             }
             else if (structureType == BaseStructureType.Building)
             {
@@ -709,7 +709,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (primaryOwner != null)
                 {
                     primaryOwner.PrimaryResidencePCBaseStructureID = null;
-                    DataService.SubmitDataChange(primaryOwner, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(primaryOwner, DatabaseActionType.Set);
                 }
 
             }
@@ -776,13 +776,13 @@ namespace SWLOR.Game.Server.Conversation
                     };
 
 
-                    DataService.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(impoundItem, DatabaseActionType.Set);
                     GetPC().SendMessage(item.Value.ItemName + " has been impounded by the planetary government because your base ran out of space to store resources. The owner of the base will need to retrieve it.");
 
                     controlTower.Items.Remove(item.Key);
                 }
 
-                DataService.SubmitDataChange(controlTower, DatabaseActionType.Update);
+                DataService.SubmitDataChange(controlTower, DatabaseActionType.Set);
             }
 
             // Update the cache
@@ -926,7 +926,7 @@ namespace SWLOR.Game.Server.Conversation
                 areaStructures[doorIndex].Structure = data.ManipulatingStructure.ChildStructure;
             }
 
-            DataService.SubmitDataChange(dbStructure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbStructure, DatabaseActionType.Set);
         }
 
         private void DoMoveZ(float degrees, bool isSet)
@@ -978,7 +978,7 @@ namespace SWLOR.Game.Server.Conversation
             var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
             dbStructure.LocationZ = position.Z;
             
-            DataService.SubmitDataChange(dbStructure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbStructure, DatabaseActionType.Set);
         }
 
         public override void EndDialog()

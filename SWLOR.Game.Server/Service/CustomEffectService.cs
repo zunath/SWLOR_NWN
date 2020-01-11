@@ -164,11 +164,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            DatabaseActionType action = DatabaseActionType.Update;
+            DatabaseActionType action = DatabaseActionType.Set;
             if (pcEffect == null)
             {
                 pcEffect = new PCCustomEffect { PlayerID = target.GlobalID };
-                action = DatabaseActionType.Insert;
+                action = DatabaseActionType.Set;
             }
 
             if (pcEffect.EffectiveLevel > effectiveLevel)
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
             pcEffect.Data = data;
-            DataService.SubmitDataChange(pcEffect, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcEffect, DatabaseActionType.Set);
 
             // Was already queued for removal, but got cast again. Take it out of the list to be removed.
             if (AppCache.PCEffectsForRemoval.Contains(pcEffect.ID))
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Service
                 EffectiveLevel = effectiveLevel,
                 StancePerkID = (int)perkType
             };
-            DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Set);
             ICustomEffectHandler handler = GetCustomEffectHandler(customEffect);
             if (string.IsNullOrWhiteSpace(data))
                 data = handler.Apply(creature, creature, effectiveLevel);
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
             pcStanceEffect.Data = data;
-            DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Set);
 
             // Was already queued for removal, but got cast again. Take it out of the list to be removed.
             if (AppCache.PCEffectsForRemoval.Contains(pcStanceEffect.ID))
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     else
                     {
-                        DataService.SubmitDataChange(effect, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(effect, DatabaseActionType.Set);
                     }
                 }
             }

@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.ChatCommand
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             int leaseRate = int.Parse(args[0]);
             dbPlayer.LeaseRate = leaseRate;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
 
             user.SendMessage(player.Name + ": Lease rate set to " + dbPlayer.LeaseRate + "%");
 

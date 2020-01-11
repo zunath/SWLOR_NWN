@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             pc.RespawnLocationZ = player.Position.Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
-            DataService.SubmitDataChange(pc, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pc, DatabaseActionType.Set);
             _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, false);
         }
 

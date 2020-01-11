@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Conversation
                             // Failed our skill check.  Deduct fuel but don't do anything else.
                             GetPC().FloatingText("The ship shudders a bit, but your awkwardness on the throttle shows, and it doesn't make it off the dock.  Try again.");
                             pcBase.Fuel -= 1;
-                            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                            DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
                             return;
                         }
 
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Conversation
                         pcBase.Fuel -= 1;
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);
                         pcBase.ShipLocation = SpaceService.GetPlanetFromLocation(pcBase.ShipLocation) + " - Orbit";
-                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
 
                         SpaceService.CreateShipInSpace(player.Area);
 
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Failed our skill check.  Deduct fuel but don't do anything else.
                         GetPC().FloatingText("Jump failed!  You forgot to whatsit the thingummyjig.");
                         pcBase.Fuel -= 50;
-                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
                         EndConversation();
                         return;
                     }
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Conversation
                     EndConversation();
                     pcBase.Fuel -= 50;
                     pcBase.ShipLocation = response.Text + " - Orbit";
-                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
 
                     // Put the ship in its new orbit.
                     SpaceService.CreateShipInSpace(player.Area);
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         GetPC().FloatingText("You overshoot the landing spot, burning extra fuel getting your ship into position.");
                         pcBase.Fuel -= 1;
-                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
                     }
                 }
 
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Land.
                         pcBase.ShipLocation = starport.StarportID.ToString();
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(1);
-                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
 
                         // Notify PC.
                         player.SendMessage("You have paid your first day's berthing fees. Use the Base Management System to extend your lease if you plan to stay longer, or your ship will be impounded.");
@@ -388,11 +388,11 @@ namespace SWLOR.Game.Server.Conversation
                     structure.LocationZ = loc.Z;
                     structure.LocationOrientation = _.GetFacingFromLocation(loc);
 
-                    DataService.SubmitDataChange(structure, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(structure, DatabaseActionType.Set);
 
                     // And update the base to mark the parent dock as the location.
                     pcBase.ShipLocation = dock.ID.ToString();
-                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
 
                     // Now use the Base Service to spawn the ship exterior.
                     BaseService.SpawnStructure(plc.Area, structure.ID);

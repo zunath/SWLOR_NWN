@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Quest.Objective
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
             status.KillTargets[Group] = _amount;
             
-            DataService.SubmitDataChange(status, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(status, DatabaseActionType.Set);
 
         }
 

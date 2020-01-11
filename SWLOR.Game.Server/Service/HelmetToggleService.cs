@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
             pc.DisplayHelmet = !pc.DisplayHelmet;
-            DataService.SubmitDataChange(pc, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pc, DatabaseActionType.Set);
             
             _.FloatingTextStringOnCreature(
                 pc.DisplayHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.", 

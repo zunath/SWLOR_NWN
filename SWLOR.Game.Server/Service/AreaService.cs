@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var area in areas)
             {
                 var dbArea = dbAreas.SingleOrDefault(x => x.Resref == area.Resref);
-                var action = DatabaseActionType.Update;
+                var action = DatabaseActionType.Set;
 
                 if (dbArea == null)
                 {
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service
                         ID = Guid.NewGuid(),
                         Resref = area.Resref
                     };
-                    action = DatabaseActionType.Insert;
+                    action = DatabaseActionType.Set;
                 }
 
                 var width = _.GetAreaSize(AreaProperty.Width, area.Object);

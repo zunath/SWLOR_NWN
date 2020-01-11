@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             var player = DataService.Player.GetByID(target.GlobalID);
             player.Cooldowns.Clear();
-            DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            DataService.SubmitDataChange(player, DatabaseActionType.Set);
 
             NWPlayer targetPlayer = target.Object;
             user.SendMessage("You have reset all of " + target.Name + "'s cooldowns.");

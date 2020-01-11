@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Service
                 pcEntity.CurrentFP = pcEntity.MaxFP;
             }
 
-            DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcEntity, DatabaseActionType.Set);
 
             // Attempt a refresh of the character sheet UI in a second.
             DelayCommand(1.0f, () =>

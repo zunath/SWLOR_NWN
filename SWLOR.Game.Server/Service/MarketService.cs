@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             // Player is offline. Put the gold into their "Till" and give it to them the next time they log on.
             Player dbPlayer = DataService.Player.GetByID(playerID);
             dbPlayer.GoldTill += amount;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Service
                 player.FloatingText("You sold goods on the GTN Market while you were offline. " + dbPlayer.GoldTill + " credits have been transferred to your account.");
                 _.GiveGoldToCreature(player, dbPlayer.GoldTill);
                 dbPlayer.GoldTill = 0;
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
             }
         }
 

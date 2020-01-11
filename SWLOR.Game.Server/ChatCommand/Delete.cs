@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.ChatCommand
             {
                 Player dbPlayer = DataService.Player.GetByID(user.GlobalID);
                 dbPlayer.IsDeleted = true;
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
 
                 _.BootPC(user, "Your character has been deleted.");
                 NWNXAdmin.DeletePlayerCharacter(user, true);

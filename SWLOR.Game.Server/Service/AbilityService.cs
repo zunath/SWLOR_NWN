@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Service
                 var player = DataService.Player.GetByID(creature.GlobalID);
                 player.ActiveConcentrationPerkID = perkID;
                 player.ActiveConcentrationTier = spellTier;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
             }
             else
             {
@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Service
 
                 player.ActiveConcentrationPerkID = null;
                 player.ActiveConcentrationTier = 0;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
             }
             else
             {
@@ -640,7 +640,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var player = DataService.Player.GetByID(creature.GlobalID);
                 player.Cooldowns[cooldown] = unlockDate;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
             }
             else
             {
@@ -736,7 +736,7 @@ namespace SWLOR.Game.Server.Service
                 if (amount > player.MaxFP) amount = player.MaxFP;
 
                 player.CurrentFP = amount;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
             }
             else
             {
@@ -779,7 +779,7 @@ namespace SWLOR.Game.Server.Service
                 player.MaxFP = amount;
                 if (player.CurrentFP > player.MaxFP)
                     player.CurrentFP = player.MaxFP;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
             }
             else
             {
@@ -804,7 +804,7 @@ namespace SWLOR.Game.Server.Service
         {
             Player entity = DataService.Player.GetByID(oPC.GlobalID);
             RestorePlayerFP(oPC, amount, entity);
-            DataService.SubmitDataChange(entity, DatabaseActionType.Update);
+            DataService.SubmitDataChange(entity, DatabaseActionType.Set);
         }
 
         private static void OnHitCastSpell()

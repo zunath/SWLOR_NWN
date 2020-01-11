@@ -174,12 +174,12 @@ namespace SWLOR.Game.Server.Conversation
             if (primaryResident != null)
             {
                 primaryResident.PrimaryResidencePCBaseStructureID = null;
-                DataService.SubmitDataChange(primaryResident, DatabaseActionType.Update);
+                DataService.SubmitDataChange(primaryResident, DatabaseActionType.Set);
             }
             
             // Change mode
             structure.StructureModeID = model.Mode;
-            DataService.SubmitDataChange(structure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(structure, DatabaseActionType.Set);
 
             player.FloatingText("Building mode updated! " + impoundedItems + " item(s) were impounded.");
             EndConversation();

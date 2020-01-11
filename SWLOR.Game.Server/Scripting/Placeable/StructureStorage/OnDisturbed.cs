@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.StructureStorage
                         ItemObject = SerializationService.Serialize(item)
                     };
                     structure.Items[item.GlobalID] = itemEntity;
-                    DataService.SubmitDataChange(structure, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(structure, DatabaseActionType.Set);
                     MessageHub.Instance.Publish(new OnStoreStructureItem(oPC, itemEntity));
                 }
             }

@@ -453,7 +453,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 player.Perks[perkID] = pcPerkLevel;
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
 
                 // Look for a perk feat to grant.
                 var perkFeatToGrant = perk.PerkFeats.ContainsKey(pcPerkLevel) ? perk.PerkFeats[pcPerkLevel].First() : null;

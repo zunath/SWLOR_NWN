@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.VersionNumber < 7)
             {
                 dbPlayer.SkillPools[SkillCategory.Languages] = 40;
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
                 dbPlayer.VersionNumber = 7;
             }
 
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 8;
             }
 
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
         }
         
         private static void ProcessVersion6ItemChanges(NWPlayer player)

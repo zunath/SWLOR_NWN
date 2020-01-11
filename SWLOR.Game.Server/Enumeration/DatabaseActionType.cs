@@ -2,8 +2,7 @@
 {
     public enum DatabaseActionType
     {
-        Insert = 1,
-        Update = 2,
+        Set = 2,
         Delete = 3
     }
 }

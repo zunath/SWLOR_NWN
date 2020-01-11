@@ -212,13 +212,13 @@ namespace SWLOR.Game.Server.Conversation
 
                 pcSkill.Rank += amount;
                 
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
                 PlayerStatService.ApplyStatChanges(GetPC(), null);
 
                 // Reduce the pool levels. Delete the record if it drops to zero.
                 var pool = player.SkillPools[model.SkillCategoryID] -= amount;
 
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+                DataService.SubmitDataChange(player, DatabaseActionType.Set);
                 if (pool <= 0)
                 {
                     EndConversation();

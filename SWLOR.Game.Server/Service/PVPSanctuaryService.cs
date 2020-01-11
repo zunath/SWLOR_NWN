@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
             pc.IsSanctuaryOverrideEnabled = overrideStatus;
-            DataService.SubmitDataChange(pc, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pc, DatabaseActionType.Set);
         }
 
         public static bool IsPVPAttackAllowed(NWPlayer attacker, NWPlayer target)

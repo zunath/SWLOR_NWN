@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service
                 ItemTag = pcBaseStructureItem.ItemTag,
                 PlayerID = pcBase.PlayerID
             };
-            DataService.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(impoundItem, DatabaseActionType.Set);
         }
 
         public static void Impound(Guid playerID, NWItem item)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
                 ItemResref = item.Resref,
                 ItemName = item.Name
             };
-            DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Set);
         }
     }
 }

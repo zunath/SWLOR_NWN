@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
         }
 
 

@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Conversation
                         model.IsConfirming = false;
                         SetResponseText("PostDetailsPage", 1, "Remove Post");
                         message.DateRemoved = DateTime.UtcNow;
-                        DataService.SubmitDataChange(message, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(message, DatabaseActionType.Set);
                         ClearNavigationStack();
                         LoadMainPage();
                         ChangePage("MainPage", false);
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Conversation
                             DateExpires = now.AddDays(30),
                             DateRemoved = null
                         };
-                        DataService.SubmitDataChange(post, DatabaseActionType.Insert);
+                        DataService.SubmitDataChange(post, DatabaseActionType.Set);
                         _.TakeGoldFromCreature(price, player, true);
 
                         player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");

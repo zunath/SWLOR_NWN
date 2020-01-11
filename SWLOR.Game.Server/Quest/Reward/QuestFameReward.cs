@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Quest.Reward
             
             fame += _amount;
             dbPlayer.RegionalFame[_fameRegionID] = fame;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
         }
     }
 }

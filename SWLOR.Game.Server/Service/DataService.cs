@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         {
             if(data == null) throw new ArgumentNullException(nameof(data));
 
-            if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
+            if (actionType == DatabaseActionType.Set || actionType == DatabaseActionType.Set)
             {
                 SetIntoCache(data);
             }

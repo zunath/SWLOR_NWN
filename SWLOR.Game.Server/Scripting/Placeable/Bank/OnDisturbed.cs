@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Bank
                         DateStored = DateTime.UtcNow
                     };
 
-                    DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(itemEntity, DatabaseActionType.Set);
                     MessageHub.Instance.Publish(new OnStoreBankItem(player, itemEntity));
                 }
             }

@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
             string cdKey = args[1].ToUpper();
 
             var record = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
-            var method = DatabaseActionType.Update;
+            var method = DatabaseActionType.Set;
 
             if(record == null)
             {
-                method = DatabaseActionType.Insert;
+                method = DatabaseActionType.Set;
                 int id = DataService.AuthorizedDM.GetAll().Max(x => x.ID) + 1;
                 record = new AuthorizedDM
                 {

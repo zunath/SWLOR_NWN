@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
                         playersToAdvance.Add(new KeyValuePair<NWPlayer, int>(oPC, quest.QuestID));
                     }
 
-                    DataService.SubmitDataChange(pcQuest, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcQuest, DatabaseActionType.Set);
 
                     var pc = oPC;
                     DelayCommand(1.0f, () =>

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             pcbs.Durability += repair;
-            DataService.SubmitDataChange(pcbs, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcbs, DatabaseActionType.Set);
 
             player.SendMessage("Ship repaired for " + repair + " points. (Hull points: " + pcbs.Durability + "/" + structure.Durability + ")");
         }

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         {
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             dbPlayer.MapProgression[area.Resref] = NWNXPlayer.GetAreaExplorationState(player, area);
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
         }
 
         private static void LoadMapProgression(NWArea area, NWPlayer player)

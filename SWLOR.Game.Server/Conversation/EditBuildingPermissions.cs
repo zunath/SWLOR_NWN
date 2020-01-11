@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Conversation
                 pcBaseStructure.PlayerPermissions[playerID] = dbPermission;
             }
 
-            DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Set);
         }
 
         private void BuildPublicPermissionsPage()

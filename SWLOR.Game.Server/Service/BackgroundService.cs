@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             {
                 case ClassType.Freelancer:
                     dbPlayer.UnallocatedSP = dbPlayer.UnallocatedSP + 3;
-                    DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
                     break;
                 case ClassType.Smuggler:
                     item1Resref = "blaster_s";

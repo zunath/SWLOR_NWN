@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), target);
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(hpRecover), target);
                 dbPlayer.CurrentFP = fpRecover;
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
 
                 int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);

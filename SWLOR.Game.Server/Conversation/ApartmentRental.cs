@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Conversation
             };
             pcApartment.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
 
-            DataService.SubmitDataChange(pcApartment, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(pcApartment, DatabaseActionType.Set);
             
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Conversation
                 data.IsConfirming = false;
                 SetResponseText("DetailsPage", responseID, optionText);
                 pcApartment.DateRentDue = pcApartment.DateRentDue.AddDays(days);
-                DataService.SubmitDataChange(pcApartment, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcApartment, DatabaseActionType.Set);
                 LoadDetailsPage();
             }
             else

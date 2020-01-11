@@ -11,7 +11,7 @@ namespace NWN.Scripts
     internal class open_store
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static void Main()
+        public void Main()
         {
             using (new Profiler(nameof(open_store)))
             {

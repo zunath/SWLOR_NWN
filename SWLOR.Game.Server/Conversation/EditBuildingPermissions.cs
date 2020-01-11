@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Change Structure Mode", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Adjust PUBLIC Permissions", true, player);
             // Add new non-conditional responses here to avoid confusing the response handling logic.
-            if (isStarship) AddResponseToPage("PlayerDetailsPage", "Toggle: Can Fly Starship", true, player);
+            if (isStarship) AddResponseToPage("PlayerDetailsPage", "Toggle: Can Fly Starship (includes Fuel and Stronidium access)", true, player);
         }
 
         private void PlayerDetailsResponses(int responseID)

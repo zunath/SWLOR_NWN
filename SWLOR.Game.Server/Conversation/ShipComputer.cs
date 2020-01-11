@@ -53,13 +53,13 @@ namespace SWLOR.Game.Server.Conversation
                 options.Add("Take Off");
             }
 
-            if (!bSpace && BasePermissionService.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!bSpace && BasePermissionService.HasStructurePermission(player, structure.PCBaseID, StructurePermission.CanFlyStarship))
             {
                 options.Add("Access Fuel Bay");
                 options.Add("Access Stronidium Bay");
             }
 
-            if (BasePermissionService.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
+            if (BasePermissionService.HasStructurePermission(player, structure.PCBaseID, StructurePermission.CanFlyStarship))
             {
                 if (!bSpace) options.Add("Access Resource Bay");
                 options.Add("Export Starcharts");

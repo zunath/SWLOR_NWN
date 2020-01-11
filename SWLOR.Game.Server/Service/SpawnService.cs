@@ -51,11 +51,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Console.WriteLine("SpawnService -> OnModuleLoad");
             RegisterSpawnRules();
             RegisterSpawns();
             InitializeSpawns();
-            Console.WriteLine("SpawnService -> OnModuleLoad Complete");
         }
 
         private static void RegisterSpawnRules()
@@ -82,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var attr = spawnType.GetAttribute<Spawn, SpawnAttribute>();
 
-                var spawnObjects = spawnType.GetType().GetCustomAttributes<SpawnObjectAttribute>();
+                var spawnObjects = spawnType.GetAttributes<Spawn, SpawnObjectAttribute>();
                 foreach (var spawnObject in spawnObjects)
                 {
                     attr.SpawnObjects.Add(spawnObject);

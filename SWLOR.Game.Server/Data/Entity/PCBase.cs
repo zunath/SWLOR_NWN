@@ -1,11 +1,13 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class PCBase: IEntity
     {
         public PCBase()
@@ -18,25 +20,44 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [Key]
+        [JsonProperty]
         public Guid ID { get; set; }
+        [JsonProperty]
         public Guid PlayerID { get; set; }
+        [JsonProperty]
         public string AreaResref { get; set; }
+        [JsonProperty]
         public string Sector { get; set; }
+        [JsonProperty]
         public DateTime DateInitialPurchase { get; set; }
+        [JsonProperty]
         public DateTime DateRentDue { get; set; }
+        [JsonProperty]
         public int ShieldHP { get; set; }
+        [JsonProperty]
         public bool IsInReinforcedMode { get; set; }
+        [JsonProperty]
         public int Fuel { get; set; }
+        [JsonProperty]
         public int ReinforcedFuel { get; set; }
+        [JsonProperty]
         public DateTime DateFuelEnds { get; set; }
+        [JsonProperty]
         public int PCBaseTypeID { get; set; }
+        [JsonProperty]
         public ApartmentType? ApartmentBuildingID { get; set; }
+        [JsonProperty]
         public string CustomName { get; set; }
+        [JsonProperty]
         public BuildingStyle BuildingStyleID { get; set; }
+        [JsonProperty]
         public string ShipLocation { get; set; }
+        [JsonProperty]
         public int? Starcharts { get; set; }
 
+        [JsonProperty]
         public PCBasePermission PublicBasePermission { get; set; }
+        [JsonProperty]
         public Dictionary<Guid, PCBasePermission> PlayerBasePermissions { get; set; }
     }
 

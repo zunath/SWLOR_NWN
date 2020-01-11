@@ -1,11 +1,13 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class PCBaseStructure: IEntity
     {
         public PCBaseStructure()
@@ -18,24 +20,42 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [Key]
+        [JsonProperty]
         public Guid ID { get; set; }
+        [JsonProperty]
         public Guid PCBaseID { get; set; }
+        [JsonProperty]
         public BaseStructure BaseStructureID { get; set; }
+        [JsonProperty]
         public double LocationX { get; set; }
+        [JsonProperty]
         public double LocationY { get; set; }
+        [JsonProperty]
         public double LocationZ { get; set; }
+        [JsonProperty]
         public double LocationOrientation { get; set; }
+        [JsonProperty]
         public double Durability { get; set; }
+        [JsonProperty]
         public BuildingStyle InteriorStyleID { get; set; }
+        [JsonProperty]
         public BuildingStyle ExteriorStyleID { get; set; }
+        [JsonProperty]
         public Guid? ParentPCBaseStructureID { get; set; }
+        [JsonProperty]
         public string CustomName { get; set; }
+        [JsonProperty]
         public int StructureBonus { get; set; }
+        [JsonProperty]
         public DateTime? DateNextActivity { get; set; }
+        [JsonProperty]
         public StructureModeType StructureModeID { get; set; }
 
+        [JsonProperty]
         public PCBaseStructurePermission PublicStructurePermission { get; set; }
+        [JsonProperty]
         public Dictionary<Guid, PCBaseStructurePermission> PlayerPermissions { get; set; }
+        [JsonProperty]
         public Dictionary<Guid, PCBaseStructureItem> Items { get; set; }
     }
 

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -32,9 +33,20 @@ namespace SWLOR.Game.Server.Service
 
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
-            
-            // Scripting Events
-            MessageHub.Instance.Subscribe<OnQuestLoaded>(message => LoadQuest(message.Quest.Quest));
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
+        {
+            var quests = typeof(AbstractQuest)
+                .Assembly.GetTypes()
+                .Where(x => x.IsSubclassOf(typeof(AbstractQuest)) && !x.IsAbstract)
+                .Select(s => (AbstractQuest) Activator.CreateInstance(s));
+
+            foreach (var quest in quests)
+            {
+                LoadQuest(quest.Quest);
+            }
         }
 
         private static void LoadQuest(IQuest quest)
@@ -65,8 +77,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-
-            Console.WriteLine("Registered quest: " + quest.Name + " ( " + quest.QuestID + " )");
         }
 
         /// <summary>

@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             item.DateRetrieved = DateTime.UtcNow;
-            DataService.SubmitDataChange(item, DatabaseActionType.Set);
+            DataService.Set(item);
             SerializationService.DeserializeItem(item.ItemObject, player);
             _.TakeGoldFromCreature(50, player, true);
 

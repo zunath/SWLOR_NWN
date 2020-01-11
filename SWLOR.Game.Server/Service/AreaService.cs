@@ -44,7 +44,6 @@ namespace SWLOR.Game.Server.Service
             foreach (var area in areas)
             {
                 var dbArea = dbAreas.SingleOrDefault(x => x.Resref == area.Resref);
-                var action = DatabaseActionType.Set;
 
                 if (dbArea == null)
                 {
@@ -53,7 +52,6 @@ namespace SWLOR.Game.Server.Service
                         ID = Guid.NewGuid(),
                         Resref = area.Resref
                     };
-                    action = DatabaseActionType.Set;
                 }
 
                 var width = _.GetAreaSize(AreaProperty.Width, area.Object);
@@ -92,7 +90,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
-                DataService.SubmitDataChange(dbArea, action);
+                DataService.Set(dbArea);
                 
                 BakeArea(area);
             }

@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Conversation
             var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             dbPlayer.SavedOutfits[responseID] = clothesData;
 
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
             ShowSaveOutfitOptions();
         }
         private void HandleSaveHelmet(int responseID)
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Conversation
             string helmetData = SerializationService.Serialize(helmet);
             dbPlayer.SavedHelmets[responseID] = helmetData;
 
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
             ShowSaveHelmetOptions();
         }
         private void HandleSaveWeapon(int responseID)
@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Conversation
 
             dbPlayer.SavedWeapons[oPC.RightHand.BaseItemType][responseID] = weaponData;
 
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
             ShowSaveWeaponOptions();
         }
         private void HandleLoadOutfit(int responseID)

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
             // Player was allowed to gain this RP point.
             var dbPlayer = DataService.Player.GetByID(sender.GlobalID);
             dbPlayer.RoleplayPoints++;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
         }
 
         private static void OnModuleHeartbeat()
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Service
 
                 dbPlayer.RoleplayXP += xp;
                 dbPlayer.RoleplayPoints = 0;
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+                DataService.Set(dbPlayer);
 
                 player.SendMessage("You gained " + xp + " roleplay XP.");
             }

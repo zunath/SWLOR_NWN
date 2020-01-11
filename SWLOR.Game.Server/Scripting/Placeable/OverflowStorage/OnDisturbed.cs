@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.OverflowStorage
             var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             var overflowItemID = new Guid(oItem.GetLocalString("TEMP_OVERFLOW_ITEM_ID"));
             dbPlayer.OverflowItems.Remove(overflowItemID);
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 
             if (!container.InventoryItems.Any())

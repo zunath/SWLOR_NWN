@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
             if (pcStructure.DateNextActivity == null)
             {
                 pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
-                DataService.SubmitDataChange(pcStructure, DatabaseActionType.Set);
+                DataService.Set(pcStructure);
             }
 
             if (!(now >= pcStructure.DateNextActivity)) return;
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
             };
             pcStructure.Items[item.GlobalID] = dbItem;
 
-            DataService.SubmitDataChange(pcStructure, DatabaseActionType.Set);
+            DataService.Set(pcStructure);
             item.Destroy();
         }
     }

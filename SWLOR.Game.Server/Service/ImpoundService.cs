@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"{impoundedItems.Count} impounded items are older than {appSettings.ImpoundPruneDays} days. Pruning them now.");
             foreach (var item in impoundedItems)
             {
-                DataService.SubmitDataChange(item, DatabaseActionType.Delete);
+                DataService.Delete(item);
             }
             Console.WriteLine($"{impoundedItems.Count} impounded items have been pruned.");
         }
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service
                 ItemTag = pcBaseStructureItem.ItemTag,
                 PlayerID = pcBase.PlayerID
             };
-            DataService.SubmitDataChange(impoundItem, DatabaseActionType.Set);
+            DataService.Set(impoundItem);
         }
 
         public static void Impound(Guid playerID, NWItem item)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
                 ItemResref = item.Resref,
                 ItemName = item.Name
             };
-            DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Set);
+            DataService.Set(structureImpoundedItem);
         }
     }
 }

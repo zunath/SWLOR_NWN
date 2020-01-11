@@ -39,36 +39,24 @@ namespace SWLOR.Game.Server.Service
         private static void SetIntoCache<T>(T entity)
             where T: class, IEntity
         {
-            MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
         }
 
-        private static void RemoveFromCache<T>(T entity)
+        public static void Set<T>(T data)
+            where T : class, IEntity
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
+            MessageHub.Instance.Publish(new OnCacheObjectSet<T>(data));
+        }
+
+        public static void Delete<T>(T data)
             where T: class, IEntity
         {
-            MessageHub.Instance.Publish(new OnCacheObjectDeleted<T>(entity));
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
+            MessageHub.Instance.Publish(new OnCacheObjectDeleted<T>(data));
         }
 
-        /// <summary>
-        /// Sends a request to change data into the queue. Processing is asynchronous
-        /// and you cannot reliably retrieve the data directly from the database immediately afterwards.
-        /// However, data in the cache will be up to date as soon as a value is changed.
-        /// </summary>
-        /// <param name="data">The data to submit for processing</param>
-        /// <param name="actionType">The type (Insert, Update, Delete, etc.) of change to make.</param>
-        public static void SubmitDataChange<T>(T data, DatabaseActionType actionType)
-            where T: class, IEntity
-        {
-            if(data == null) throw new ArgumentNullException(nameof(data));
-
-            if (actionType == DatabaseActionType.Set || actionType == DatabaseActionType.Set)
-            {
-                SetIntoCache(data);
-            }
-            else if (actionType == DatabaseActionType.Delete)
-            {
-                RemoveFromCache(data);
-            }
-        }
 
         public static void RunMigration()
         {

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.ChatCommand
             int type = int.Parse(args[0]);
             Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
             dbPlayer.SpecializationID = (SpecializationType) type;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
             _.SendMessageToPC(target, "A DM has set your Force Specialization type to " + type);
         }
 

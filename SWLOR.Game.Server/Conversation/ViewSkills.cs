@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Conversation
 
                             dbPlayer = DataService.Player.GetByID(player.GlobalID);
                             dbPlayer.RoleplayXP -= vm.RPXPDistributing;
-                            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+                            DataService.Set(dbPlayer);
                             vm.IsConfirming = false;
                             vm.RPXPDistributing = 0;
                         }

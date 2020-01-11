@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Scripting.Delayed
                 player.SendMessage("You receive an XP bonus for crafting this item for the first time.");
 
                 dbPlayer.CraftedBlueprints.Add(model.Blueprint);
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+                DataService.Set(dbPlayer);
             }
 
             SkillService.GiveSkillXP(player, blueprint.Skill, (int)xp);

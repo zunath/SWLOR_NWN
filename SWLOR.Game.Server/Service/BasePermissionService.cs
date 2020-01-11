@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             pcBase.PlayerBasePermissions[player] = dbPermission;
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
+            DataService.Set(pcBase);
         }
 
         public static void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Set);
+            DataService.Set(pcBaseStructure);
         }        
     }
 }

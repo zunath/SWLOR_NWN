@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Item
             };
             pcbs.Items[structureGuid] = dbItem;
 
-            DataService.SubmitDataChange(pcbs, DatabaseActionType.Set);
+            DataService.Set(pcbs);
             player.SendMessage(item.Name + " was successfully added to your ship.  Access the cargo bay via the ship's computer to remove it.");
             item.Destroy();
         }

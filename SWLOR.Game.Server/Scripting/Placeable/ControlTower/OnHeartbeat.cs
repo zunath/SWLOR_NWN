@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ControlTower
             if (pcBase.ShieldHP > maxShieldHP)
                 pcBase.ShieldHP = maxShieldHP;
 
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
+            DataService.Set(pcBase);
         }
     }
 }

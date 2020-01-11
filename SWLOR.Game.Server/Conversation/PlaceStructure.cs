@@ -408,14 +408,14 @@ namespace SWLOR.Game.Server.Conversation
                 StructureBonus = data.StructureItem.StructureBonus, 
                 StructureModeID = baseStructure.DefaultStructureMode
             };
-            DataService.SubmitDataChange(structure, DatabaseActionType.Set);
+            DataService.Set(structure);
             
             // Placing a control tower. Set base shields to 100%
             if (baseStructure.BaseStructureType == BaseStructureType.ControlTower)
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 pcBase.ShieldHP = BaseService.CalculateMaxShieldHP(structure);
-                DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
+                DataService.Set(pcBase);
             }
             
             BaseService.SpawnStructure(data.TargetArea, structure.ID);

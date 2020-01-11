@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ResourceBay
             else if (disturbType == InventoryDisturbType.Removed)
             {
                 structure.Items.Remove(item.GlobalID);
-                DataService.SubmitDataChange(structure, DatabaseActionType.Set);
+                DataService.Set(structure);
             }
         }
     }

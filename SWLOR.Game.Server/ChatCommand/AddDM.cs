@@ -16,11 +16,9 @@ namespace SWLOR.Game.Server.ChatCommand
             string cdKey = args[1].ToUpper();
 
             var record = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
-            var method = DatabaseActionType.Set;
-
+            
             if(record == null)
             {
-                method = DatabaseActionType.Set;
                 int id = DataService.AuthorizedDM.GetAll().Max(x => x.ID) + 1;
                 record = new AuthorizedDM
                 {
@@ -33,7 +31,7 @@ namespace SWLOR.Game.Server.ChatCommand
             record.DMRole = 1;
             record.IsActive = true;
 
-            DataService.SubmitDataChange(record, method);
+            DataService.Set(record);
 
             user.SendMessage("DM '" + name + "' has been added successfully.");
         }

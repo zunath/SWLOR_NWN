@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.ChatCommand
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             int xpBonus = int.Parse(args[0]);
             dbPlayer.XPBonus = xpBonus;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
 
             user.SendMessage(player.Name + ": XP Bonus set to " + dbPlayer.XPBonus);
             player.FloatingText("You have received a permanent +" + xpBonus + "% XP increase from a DM!");

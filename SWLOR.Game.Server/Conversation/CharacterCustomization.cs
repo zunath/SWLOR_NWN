@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Conversation
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             dbPlayer.AssociationID = association;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+            DataService.Set(dbPlayer);
         }
 
         private void ChangeSkinColorResponses(int responseID)

@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.Service
             PCBase starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
             starkillerBase.ShipLocation = location;
             area.SetLocalString("SHIP_LOCATION", location);
-            DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Set);
+            DataService.Set(starkillerBase);
         }
 
         public static string GetShipLocation(NWArea area)
@@ -576,7 +576,7 @@ namespace SWLOR.Game.Server.Service
             {
                 destinations = PlanetToDestination(planet);
                 pcBase.Starcharts = destinations;
-                DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
+                DataService.Set(pcBase);
                 return new[] { DestinationToPlanet((int)destinations) };
             }
 
@@ -867,7 +867,7 @@ namespace SWLOR.Game.Server.Service
             entity.LocationOrientation = (copy.Facing);
             entity.LocationInstanceID = new Guid(copy.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
-            DataService.SubmitDataChange(entity, DatabaseActionType.Set);
+            DataService.Set(entity);
 
             // Apply ghost effects so we can stand on each other's heads, and create the ship again.
             Effect eGhost = EffectCutsceneGhost();
@@ -1170,7 +1170,7 @@ namespace SWLOR.Game.Server.Service
                                 player.FloatingText("Hull points: " + targetHP + "/" + player.GetLocalInt("MAX_HP"));
 
                                 shipStructure.Durability = targetHP;
-                                DataService.SubmitDataChange(shipStructure, DatabaseActionType.Set);
+                                DataService.Set(shipStructure);
 
                             }
 
@@ -1219,7 +1219,7 @@ namespace SWLOR.Game.Server.Service
                             };
                             shipStructure.Items[item.GlobalID] = dbItem;
 
-                            DataService.SubmitDataChange(shipStructure, DatabaseActionType.Set);
+                            DataService.Set(shipStructure);
                             player.SendMessage(item.Name + " was successfully brought into your cargo bay.");
                             item.Destroy();
                         }
@@ -1416,7 +1416,7 @@ namespace SWLOR.Game.Server.Service
                 if (stronLoss > 0)
                 {
                     pcBase.ReinforcedFuel = attackStron;
-                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
+                    DataService.Set(pcBase);
                 }
             }
 
@@ -1451,7 +1451,7 @@ namespace SWLOR.Game.Server.Service
                 if (stronLoss > 0)
                 {
                     pcBase.ReinforcedFuel = defendStron;
-                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Set);
+                    DataService.Set(pcBase);
                 }
 
                 if (damage > 0)
@@ -1467,7 +1467,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     else
                     {
-                        DataService.SubmitDataChange(structure, DatabaseActionType.Set);
+                        DataService.Set(structure);
                     }
                 }
             }

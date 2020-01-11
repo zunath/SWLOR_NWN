@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.StructureStorage
                         ItemObject = SerializationService.Serialize(item)
                     };
                     structure.Items[item.GlobalID] = itemEntity;
-                    DataService.SubmitDataChange(structure, DatabaseActionType.Set);
+                    DataService.Set(structure);
                     MessageHub.Instance.Publish(new OnStoreStructureItem(oPC, itemEntity));
                 }
             }
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.StructureStorage
                 {
                     var dbItem = structure.Items[item.GlobalID];
                     structure.Items.Remove(item.GlobalID);
-                    DataService.SubmitDataChange(structure, DatabaseActionType.Delete);
+                    DataService.Delete(structure);
                     MessageHub.Instance.Publish(new OnRemoveStructureItem(oPC, dbItem));
                 }
             }

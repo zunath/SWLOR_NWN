@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
                 dbPlayer.AcquiredKeyItems.Add(keyItemID);
 
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+                DataService.Set(dbPlayer);
 
                 var keyItem = GetKeyItem(keyItemID); 
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
                 dbPlayer.AcquiredKeyItems.Remove(keyItemID);
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+                DataService.Set(dbPlayer);
             }
         }
 

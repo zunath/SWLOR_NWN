@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.ChatCommand
             player.DisplayHolonet = !player.DisplayHolonet;
             user.SetLocalInt("DISPLAY_HOLONET", player.DisplayHolonet ? 1 : 0);
 
-            DataService.SubmitDataChange(player, DatabaseActionType.Set);
+            DataService.Set(player);
 
             if (player.DisplayHolonet)
             {

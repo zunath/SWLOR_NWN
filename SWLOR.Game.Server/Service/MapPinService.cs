@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
                 };
                 dbPlayer.MapPins[mapPin.Tag].Add(entity);
 
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Set);
+                DataService.Set(dbPlayer);
             }
         }
 

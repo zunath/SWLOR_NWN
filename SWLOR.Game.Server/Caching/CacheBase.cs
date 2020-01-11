@@ -67,8 +67,12 @@ namespace SWLOR.Game.Server.Caching
 
             // Update the index data.
             var index = GetIndexDetails();
-            index.IDs.Add(id);
-            SetIndexDetails(index);
+
+            if (!index.IDs.Contains(id))
+            {
+                index.IDs.Add(id);
+                SetIndexDetails(index);
+            }
 
             // Publish event notifying that a new object has been set into the cache.
             OnCacheObjectSet(entity);
@@ -139,7 +143,7 @@ namespace SWLOR.Game.Server.Caching
         /// </summary>
         /// <param name="entity">The entity whose ID we want to retrieve.</param>
         /// <returns></returns>
-        private static object GetEntityKey(IEntity entity)
+        private static string GetEntityKey(IEntity entity)
         {
             // Locate a Key attribute on this type.
             var properties = entity.GetType().GetProperties();
@@ -160,7 +164,8 @@ namespace SWLOR.Game.Server.Caching
                 throw new NullReferenceException("Unable to find a Key attribute on the entity provided (" + entity.GetType() + "). Make sure you add the Key attribute to the entity.");
             }
 
-            return propertyWithKey.GetValue(entity);
+            string key = propertyWithKey.GetValue(entity).ToString();
+            return key;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Extension
         /// <typeparam name="TEnum">The type of enumeration</typeparam>
         /// <typeparam name="TAttribute">The attribute type to retrieve.</typeparam>
         /// <param name="source">The enumeration value</param>
-        /// <returns>The first instance of an attribute found on the enumeration</returns>
+        /// <returns>The first instance of an attribute found on the enumeration value</returns>
         public static TAttribute GetAttribute<TEnum, TAttribute>(this TEnum source)
             where TEnum : Enum
             where TAttribute : Attribute
@@ -40,6 +41,25 @@ namespace SWLOR.Game.Server.Extension
 
             if (attributes.Length > 0) return attributes[0];
             else throw new Exception($"Could not find attribute '{typeof(TAttribute)}' on enumeration type {typeof(TEnum)}. Value = {source}");
+        }
+
+        /// <summary>
+        /// Retrieves a list of attributes of a specified type from an enumeration value.
+        /// </summary>
+        /// <typeparam name="TEnum">The type of enumeration</typeparam>
+        /// <typeparam name="TAttribute">The enumeration value</typeparam>
+        /// <param name="source">All of the instances of an attribute found on the enumeration value</param>
+        /// <returns></returns>
+        public static IEnumerable<TAttribute> GetAttributes<TEnum, TAttribute>(this TEnum source)
+            where TEnum: Enum
+            where TAttribute: Attribute
+        {
+            var fieldInfo = source.GetType().GetField(source.ToString());
+            var attributes = (TAttribute[])fieldInfo.GetCustomAttributes(typeof(TAttribute), false);
+
+            return attributes.Length > 0 ? 
+                attributes : 
+                new List<TAttribute>().ToArray();
         }
     }
 }

@@ -34,8 +34,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var lt in lootTables)
             {
                 var ltAttr = lt.GetAttribute<LootTable, LootTableAttribute>();
-
-                var lootItemAttrs = lt.GetType().GetCustomAttributes<LootTableItemAttribute>();
+                var lootItemAttrs = lt.GetAttributes<LootTable, LootTableItemAttribute>();
 
                 foreach (var lti in lootItemAttrs)
                 {
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Service
 
         public static ItemVO PickRandomItemFromLootTable(LootTable lootTableID)
         {
-            if (lootTableID <= 0) return null;
+            if (lootTableID == LootTable.Invalid) return null;
             var lootTableItems = _allLootTables[lootTableID].LootTableItems;
 
             if (lootTableItems.Count <= 0) return null;

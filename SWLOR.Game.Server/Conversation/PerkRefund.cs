@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Conversation
             dbPlayer.UnallocatedSP += refundAmount;
 
             Audit.Write(AuditGroup.PerkRefund, $"REFUND - {player.GlobalID} - Refunded Date {DateTime.UtcNow} - Level {pcPerkLevel} - PerkID {model.Perk}");
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.Set(dbPlayer);
 
             // If perk refunded was one granted by a background bonus, we need to reapply it.
             ReapplyBackgroundBonus(model.Perk);

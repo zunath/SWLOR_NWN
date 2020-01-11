@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             record.IsActive = false;
-            DataService.SubmitDataChange(record, DatabaseActionType.Update);
+            DataService.Set(record);
 
             foreach(var dm in AppCache.ConnectedDMs)
             {

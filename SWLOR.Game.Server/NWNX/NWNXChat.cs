@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.NWNX
         // Returns true if successful, false otherwise.
         public static int SendMessage(int channel, string message, NWGameObject sender, NWGameObject target)
         {
-            string sFunc = "SEND_MESSAGE";
+            string sFunc = "SendMessage";
 
             NWNX_PushArgumentObject(NWNX_Chat, sFunc, target);
             NWNX_PushArgumentObject(NWNX_Chat, sFunc, sender);

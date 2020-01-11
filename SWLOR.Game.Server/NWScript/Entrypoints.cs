@@ -78,7 +78,6 @@ namespace NWN
                 if (method != null)
                 {
                     _scripts[name] = type;
-                    Console.WriteLine("Registered script: " + name);
                 }
             }
         }

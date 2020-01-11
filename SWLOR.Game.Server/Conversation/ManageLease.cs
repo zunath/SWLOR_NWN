@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Conversation
                 data.IsConfirming = false;
                 SetResponseText("BaseDetailsPage", responseID, optionText);
                 pcBase.DateRentDue = pcBase.DateRentDue.AddDays(days);
-                DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                DataService.Set(pcBase);
                 LoadBaseDetailsPage();
             }
             else

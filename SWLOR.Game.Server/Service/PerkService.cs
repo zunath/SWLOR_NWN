@@ -436,7 +436,9 @@ namespace SWLOR.Game.Server.Service
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {
                 var player = DataService.Player.GetByID(oPC.GlobalID);
-                var pcPerkLevel = player.Perks[perkID];
+                var pcPerkLevel = player.Perks.ContainsKey(perkID) ? 
+                    player.Perks[perkID] : 
+                    0;
 
                 PerkLevel nextPerkLevel = perkLevels.ContainsKey(pcPerkLevel + 1) ? 
                     perkLevels[pcPerkLevel + 1] : 
@@ -449,7 +451,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     player.UnallocatedSP -= nextPerkLevel.Price;
                 }
-                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+
+                player.Perks[perkID] = pcPerkLevel;
+                DataService.Set(player);
 
                 // Look for a perk feat to grant.
                 var perkFeatToGrant = perk.PerkFeats.ContainsKey(pcPerkLevel) ? perk.PerkFeats[pcPerkLevel].First() : null;

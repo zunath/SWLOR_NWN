@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Service
 
             var details = nowString + ": " + name + " (" + account + "/" + cdKey + ") connected to the server.";
             Audit.Write(AuditGroup.Connection, details);
+            Console.WriteLine(details);
         }
 
         private static void OnModuleLeave()
@@ -63,6 +64,7 @@ namespace SWLOR.Game.Server.Service
 
             var details = nowString + ": " + name + " (" + account + "/" + cdKey + ") left the server.";
             Audit.Write(AuditGroup.Connection, details);
+            Console.WriteLine(details);
         }
 
 

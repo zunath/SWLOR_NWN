@@ -473,7 +473,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Mark the listing as sold.
                         listing.DateSold = DateTime.UtcNow;
                         listing.BuyerPlayerID = buyer.GlobalID;
-                        DataService.SubmitDataChange(listing, DatabaseActionType.Update);
+                        DataService.Set(listing);
                         
                         model.IsConfirming = false;
                         SetResponseText("ItemDetailsPage", 2, "Buy Item");
@@ -758,7 +758,7 @@ namespace SWLOR.Game.Server.Conversation
                 ItemStackSize = model.ItemStackSize
             };
 
-            DataService.SubmitDataChange(listing, DatabaseActionType.Insert);
+            DataService.Set(listing);
             player.FloatingText("Item listed for sale!");
             ClearNavigationStack();
             ClearModelData();
@@ -885,7 +885,7 @@ namespace SWLOR.Game.Server.Conversation
                         
                         SerializationService.DeserializeItem(listing.ItemObject, player);
                         listing.DateRemoved = DateTime.UtcNow;
-                        DataService.SubmitDataChange(listing, DatabaseActionType.Update);
+                        DataService.Set(listing);
 
                         ClearModelData();
                         LoadManageMarketListingsPage();

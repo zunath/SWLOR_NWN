@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.Set(dbPlayer);
         }
 
         private static Dictionary<int, int> _rankProgression;
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Submit changes to the DB/cache.
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.Set(dbPlayer);
 
             // If the player ranked up, publish an event saying so.
             if (didRankUp)
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var task in DataService.GuildTask.GetAllByCurrentlyOffered())
             {
                 task.IsCurrentlyOffered = false;
-                DataService.SubmitDataChange(task, DatabaseActionType.Update);
+                DataService.Set(task);
             }
 
             int maxRank = RankProgression.Keys.Max();
@@ -228,14 +228,14 @@ namespace SWLOR.Game.Server.Service
                     foreach (var task in tasks)
                     {
                         task.IsCurrentlyOffered = true;
-                        DataService.SubmitDataChange(task, DatabaseActionType.Update);
+                        DataService.Set(task);
                     }
                 }
             }
 
             // Update the server config and mark the timestamp.
             config.LastGuildTaskUpdate = now;
-            DataService.SubmitDataChange(config, DatabaseActionType.Update);
+            DataService.Set(config);
 
 
         }

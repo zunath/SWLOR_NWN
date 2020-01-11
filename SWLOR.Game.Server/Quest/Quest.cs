@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Quest
             status.PlayerID = player.GlobalID;
 
             // Insert or update player's quest status.
-            DataService.SubmitDataChange(status, foundExisting ? DatabaseActionType.Update : DatabaseActionType.Insert);
+            DataService.Set(status);
 
             var state = GetState(1);
             foreach (var objective in state.GetObjectives())
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Quest
                 player.SendMessage("Objective for quest '" + Name + "' complete! Check your journal for information on the next objective.");
                 
                 // Submit all of these changes to the cache/DB.
-                DataService.SubmitDataChange(questStatus, DatabaseActionType.Update);
+                DataService.Set(questStatus);
 
                 // Create any extended data entries for the next state of the quest.
                 foreach (var objective in nextState.GetObjectives())
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Quest
                 selectedReward.GiveReward(player);
             }
 
-            DataService.SubmitDataChange(pcState, DatabaseActionType.Update);
+            DataService.Set(pcState);
             _onComplete?.Invoke(player, questSource);
             
             player.SendMessage("Quest '" + Name + "' complete!");

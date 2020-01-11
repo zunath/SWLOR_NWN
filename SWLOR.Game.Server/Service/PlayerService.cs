@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service
                     entity.Skills[skill] = pcSkill;
                 }
 
-                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
+                DataService.Set(entity);
                 RaceService.ApplyDefaultAppearance(player);
                 NWNXCreature.SetAlignmentLawChaos(player, 50);
                 NWNXCreature.SetAlignmentGoodEvil(player, 50);
@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Service
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
-            DataService.SubmitDataChange(entity, DatabaseActionType.Update);
+            DataService.Set(entity);
         }
 
         public static void SaveLocation(NWPlayer player)
@@ -417,7 +417,7 @@ namespace SWLOR.Game.Server.Service
                     entity.RespawnLocationZ = waypoint.Position.Z;
                 }
 
-                DataService.SubmitDataChange(entity, DatabaseActionType.Update);
+                DataService.Set(entity);
             }
             else if (area.IsInstance)
             {
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Service
                     entity.LocationOrientation = (player.Facing);
                     entity.LocationInstanceID = new Guid(instanceID);
 
-                    DataService.SubmitDataChange(entity, DatabaseActionType.Update);
+                    DataService.Set(entity);
                 }
             }
         }
@@ -481,7 +481,7 @@ namespace SWLOR.Game.Server.Service
                 HandleRegenerationTick(player, entity);
                 HandleFPRegenerationTick(player, entity);
 
-                DataService.SubmitDataChange(entity, DatabaseActionType.Update);
+                DataService.Set(entity);
             }
 
             SaveCharacters();

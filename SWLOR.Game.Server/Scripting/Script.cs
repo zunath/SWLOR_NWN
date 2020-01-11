@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Scripting
     {
 
         private static readonly ConcurrentDictionary<string, IScript> _scripts = new ConcurrentDictionary<string, IScript>();
-        private static readonly ConcurrentDictionary<int, AbstractQuest> _quests = new ConcurrentDictionary<int, AbstractQuest>();
 
         public static void SubscribeEvents()
         {
@@ -37,7 +36,6 @@ namespace SWLOR.Game.Server.Scripting
             Parallel.ForEach(types, t =>
             {
                 var scriptNamespace = t.Namespace + "." + t.Name;
-                Console.WriteLine("Registering script: " + scriptNamespace);
                 _scripts[scriptNamespace] = (IScript)Activator.CreateInstance(t);
                 _scripts[scriptNamespace].SubscribeEvents();
             });

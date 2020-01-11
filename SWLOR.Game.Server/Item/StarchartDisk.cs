@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Item
             PCBase starkillerBase = DataService.PCBase.GetByID(starship.PCBaseID);
 
             starkillerBase.Starcharts |= starcharts;
-            DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
+            DataService.Set(starkillerBase);
 
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(Vfx.Vfx_Imp_Confusion_S), target);
             _.FloatingTextStringOnCreature("Starcharts loaded!", player);

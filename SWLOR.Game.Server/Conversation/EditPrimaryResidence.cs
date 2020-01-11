@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Conversation
                 currentResident.PrimaryResidencePCBaseID = null;
                 currentResident.PrimaryResidencePCBaseStructureID = null;
                 NotifyPlayer(currentResident.ID);
-                DataService.SubmitDataChange(currentResident, DatabaseActionType.Update);
+                DataService.Set(currentResident);
             }
 
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Conversation
                 newResident.PrimaryResidencePCBaseID = data.PCBaseID;
             }
 
-            DataService.SubmitDataChange(newResident, DatabaseActionType.Update);
+            DataService.Set(newResident);
             BuildMainPageHeader();
             BuildMainPageResponses();
             ClearNavigationStack();
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 currentResident.PrimaryResidencePCBaseStructureID = null;
                 currentResident.PrimaryResidencePCBaseID = null;
-                DataService.SubmitDataChange(currentResident, DatabaseActionType.Update);
+                DataService.Set(currentResident);
 
                 NotifyPlayer(currentResident.ID);
             }

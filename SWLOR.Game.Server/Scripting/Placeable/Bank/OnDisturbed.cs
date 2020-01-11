@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Bank
                         DateStored = DateTime.UtcNow
                     };
 
-                    DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
+                    DataService.Set(itemEntity);
                     MessageHub.Instance.Publish(new OnStoreBankItem(player, itemEntity));
                 }
             }
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Bank
                 else
                 {
                     var record = DataService.BankItem.GetByItemID(item.GlobalID.ToString());
-                    DataService.SubmitDataChange(record, DatabaseActionType.Delete);
+                    DataService.Delete(record);
                     MessageHub.Instance.Publish(new OnRemoveBankItem(player, record));
                 }
             }

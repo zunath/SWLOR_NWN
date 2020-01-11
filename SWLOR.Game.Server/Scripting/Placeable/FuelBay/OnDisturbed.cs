@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
             }
 
             // Submit a DB data change for the fuel or stronidium amount adjustment.
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.Set(pcBase);
 
             var tower = BaseService.GetBaseControlTower(structure.PCBaseID);
 

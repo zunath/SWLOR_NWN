@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Service
                 case AreaSector.Southeast: dbArea.SoutheastOwner = player.GlobalID; break;
             }
 
-            DataService.SubmitDataChange(dbArea, DatabaseActionType.Update);
+            DataService.Set(dbArea);
 
             PCBase pcBase = new PCBase
             {
@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             };
             pcBase.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
 
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.Set(pcBase);
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
             BasePermissionService.GrantBasePermissions(player, pcBase.ID, allPermissions);
@@ -738,7 +738,7 @@ namespace SWLOR.Game.Server.Service
                                 ShipLocation = dockPCBaseStructureID
                             };
                             starkillerBase.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
-                            DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Insert);
+                            DataService.Set(starkillerBase);
 
                             // Grant all base permissions to owner.
                             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
@@ -762,7 +762,7 @@ namespace SWLOR.Game.Server.Service
                                 StructureBonus = structureItem.StructureBonus,
                                 StructureModeID = baseStructure.DefaultStructureMode
                             };
-                            DataService.SubmitDataChange(starshipStructure, DatabaseActionType.Insert);
+                            DataService.Set(starshipStructure);
 
                             SpawnStructure(area, starshipStructure.ID);
 
@@ -844,7 +844,7 @@ namespace SWLOR.Game.Server.Service
             if (basePrimaryResident != null)
             {
                 basePrimaryResident.PrimaryResidencePCBaseID = null;
-                DataService.SubmitDataChange(basePrimaryResident, DatabaseActionType.Update);
+                DataService.Set(basePrimaryResident);
             }
             // Get all structures whose PCBaseID matches this one (I.E children of this base)
             // Then filter out the ones with a primary resident
@@ -857,7 +857,7 @@ namespace SWLOR.Game.Server.Service
                 if (primaryResident != null)
                 {
                     primaryResident.PrimaryResidencePCBaseStructureID = null;
-                    DataService.SubmitDataChange(primaryResident, DatabaseActionType.Update);
+                    DataService.Set(primaryResident);
                 }
             }
 
@@ -958,11 +958,11 @@ namespace SWLOR.Game.Server.Service
                 }
 
 
-                DataService.SubmitDataChange(pcBaseStructure, DatabaseActionType.Delete);
+                DataService.Delete(pcBaseStructure);
             }
 
             // Delete the PCBase.
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Delete);
+            DataService.Delete(pcBase);
 
             Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
             if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
@@ -970,7 +970,7 @@ namespace SWLOR.Game.Server.Service
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
             else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
 
-            DataService.SubmitDataChange(dbArea, DatabaseActionType.Update);
+            DataService.Set(dbArea);
 
 
             // Boot players from instances and remove all structures from the area's cache.
@@ -1495,7 +1495,7 @@ namespace SWLOR.Game.Server.Service
             towerStructure.BaseStructureID = newTowerStructureID;
             towerStructure.StructureBonus = item.StructureBonus;
 
-            DataService.SubmitDataChange(towerStructure, DatabaseActionType.Update);
+            DataService.Set(towerStructure);
 
             //--------------------------------------------------------------------------
             // Actually create/destroy the NWN objects.

@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             
             dbPlayer.ObjectVisibilities[visibilityObjectID] = isVisible;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.Set(dbPlayer);
 
             if (isVisible)
                 NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Visible);

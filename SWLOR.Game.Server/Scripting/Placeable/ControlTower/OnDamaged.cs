@@ -94,8 +94,8 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ControlTower
                 }
             }
 
-            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
-            DataService.SubmitDataChange(structure, DatabaseActionType.Update);
+            DataService.Set(pcBase);
+            DataService.Set(structure);
         }
     }
 }

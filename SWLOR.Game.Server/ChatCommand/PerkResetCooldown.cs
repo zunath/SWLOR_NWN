@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.Set(dbPlayer);
             NWPlayer targetPlayer = target.Object;
             user.SendMessage("You have reset" + target.Name + "'s refund cooldown.");
             targetPlayer.SendMessage("A DM has reset your perk refund cooldown");

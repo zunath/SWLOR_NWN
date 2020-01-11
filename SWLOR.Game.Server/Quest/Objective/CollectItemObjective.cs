@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Quest.Objective
             PCQuestItemProgress itemProgress = new PCQuestItemProgress(_quantity, _mustBeCraftedByPlayer);
             status.Items[_resref] = itemProgress;
 
-            DataService.SubmitDataChange(status, DatabaseActionType.Insert);
+            DataService.Set(status);
         }
 
         public bool IsComplete(NWPlayer player, int questID)

@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Service
                 pcSkill.Rank = maxRank;
                 pcSkill.XP = maxRankXP - 1;
             }
-            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.Set(dbPlayer);
 
         }
 

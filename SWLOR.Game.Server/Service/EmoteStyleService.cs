@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = obj.Object;
                 Player pc = DataService.Player.GetByID(player.GlobalID);
                 pc.IsUsingNovelEmoteStyle = style == EmoteStyle.Novel;
-                DataService.SubmitDataChange(pc, DatabaseActionType.Update);
+                DataService.Set(pc);
             }
         }
     }

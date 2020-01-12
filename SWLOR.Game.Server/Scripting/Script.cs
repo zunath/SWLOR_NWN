@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripting
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(x =>
+            MessageHub.Instance.Subscribe<OnServerCacheData>(x =>
             {
                 RegisterScripts();
                 RegisterQuests();

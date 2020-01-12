@@ -4,6 +4,16 @@ using System.Linq;
 using System.Reflection;
 using NWN.Scripts;
 using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Conversation;
+using SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest;
+using SWLOR.Game.Server.Event.Conversation.Quest.AdvanceQuest;
+using SWLOR.Game.Server.Event.Conversation.Quest.CanAcceptQuest;
+using SWLOR.Game.Server.Event.Conversation.Quest.CollectQuestItem;
+using SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest;
+using SWLOR.Game.Server.Event.Conversation.Quest.HasQuest;
+using SWLOR.Game.Server.Event.Conversation.Quest.OnQuestState;
+using SWLOR.Game.Server.Event.Conversation.Quest.QuestIsDone;
+using SWLOR.Game.Server.Event.Conversation.RimerCards;
 using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.DM;
 using SWLOR.Game.Server.Event.Feat;
@@ -25,6 +35,7 @@ using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWScript._;
+using OpenStore = SWLOR.Game.Server.Event.Conversation.OpenStore;
 
 namespace SWLOR.Game.Server
 {
@@ -711,6 +722,8 @@ namespace SWLOR.Game.Server
                 }
                 return SCRIPT_HANDLED;
             };
+
+            RegisterConversationEvents();
         }
 
         private static void RegisterServiceSubscribeEvents()
@@ -729,6 +742,73 @@ namespace SWLOR.Game.Server
                 if (method != null)
                 {
                     method.Invoke(null, null);
+                }
+            }
+        }
+
+        private void RegisterConversationEvents()
+        {
+            _registry["credit_check"] = CheckCredits.Main;
+            _registry["open_store"] = () =>
+            {
+                OpenStore.Main();
+                return SCRIPT_HANDLED;
+            };
+            _registry["tel_aban_station"] = () =>
+            {
+                TeleportToAbandonedStation.Main();
+                return SCRIPT_HANDLED;
+            };
+            _registry["warp_to_wp"] = () =>
+            {
+                WarpToWaypoint.Main();
+                return SCRIPT_HANDLED;
+            };
+
+            // Skills
+            for(int x = 1; x <= 9; x++)
+            {
+                var nodeID = x;
+                _registry[$"has_skill_or_{nodeID}"] = () => HasSkillRank.Check(nodeID, "OR") ? 1 : 0;
+            }
+
+            // Rimer Cards
+            _registry["rimer_cpu_1"] = RimerCardsCPU1.Main;
+            _registry["rimer_cpu_2"] = RimerCardsCPU2.Main;
+            _registry["rimer_cpu_3"] = RimerCardsCPU3.Main;
+            _registry["rimer_cpu_4"] = RimerCardsCPU4.Main;
+            _registry["rimer_cpu_5"] = RimerCardsCPU5.Main;
+            _registry["rimer_cpu_6"] = RimerCardsCPU6.Main;
+            _registry["rimer_cpu_7"] = RimerCardsCPU7.Main;
+            _registry["rimer_cpu_8"] = RimerCardsCPU8.Main;
+            _registry["rimer_cpu_9"] = RimerCardsCPU9.Main;
+
+            // Key Items
+            for (int x = 1; x <= 10; x++)
+            {
+                var nodeID = x;
+                _registry[$"has_keyitems_{x}"] = () => KeyItemCheck.Check(nodeID, 1) ? 1 : 0;
+                _registry[$"any_keyitems_{x}"] = () => KeyItemCheck.Check(nodeID, 2) ? 1 : 0;
+            }
+
+            // Quests
+            for(int x = 1; x <= 10; x++)
+            {
+                var nodeID = x;
+                _registry[$"accept_quest_{x}"] = () => QuestAccept.Check(nodeID) ? 1 : 0;
+                _registry[$"next_state_{x}"] = () => QuestAdvance.Check(nodeID) ? 1 : 0;
+                _registry[$"can_accept_{x}"] = () => QuestCanAccept.Check(nodeID) ? 1 : 0;
+                _registry[$"collect_item_{x}"] = () => QuestCollectItem.Check(nodeID) ? 1 : 0;
+                _registry[$"finish_quest_{x}"] = () => QuestComplete.Check(nodeID, 0) ? 1 : 0;
+                _registry[$"has_quest_{x}"] = () => QuestCheck.Check(nodeID) ? 1 : 0;
+                _registry[$"quest_done_{x}"] = () => QuestIsDone.Check(nodeID) ? 1 : 0;
+
+                // States & Rules
+                for(int y = 1; y <= 9; y++)
+                {
+                    var stateID = y;
+                    _registry[$"on_qst{x}_state_{y}"] = () => QuestCheckState.Check(nodeID, stateID) ? 1 : 0;
+                    _registry[$"fin_qst{x}_rule{y}"] = () => QuestComplete.Check(nodeID, stateID) ? 1 : 0;
                 }
             }
         }

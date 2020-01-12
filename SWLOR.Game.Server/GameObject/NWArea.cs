@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using NWN;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.GameObject
 {

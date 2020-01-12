@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Scripting.Delayed

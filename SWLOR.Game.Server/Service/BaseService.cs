@@ -15,8 +15,10 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -129,12 +131,16 @@ namespace SWLOR.Game.Server.Service
             return _buildingStyles.Keys.ToList();
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             LoadBaseStructureTypes();
             LoadBaseStructures();
             LoadBuildingStyles();
             RegisterDoorRules();
+        }
+
+        private static void OnModuleLoad()
+        {
             foreach (var area in NWModule.Get().Areas)
             {
                 if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))

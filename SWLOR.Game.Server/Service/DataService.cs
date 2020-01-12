@@ -36,11 +36,6 @@ namespace SWLOR.Game.Server.Service
         public static PlayerCache Player { get; } = new PlayerCache();
         public static ServerConfigurationCache ServerConfiguration { get; } = new ServerConfigurationCache();
 
-        private static void SetIntoCache<T>(T entity)
-            where T: class, IEntity
-        {
-        }
-
         public static void Set<T>(T data)
             where T : class, IEntity
         {

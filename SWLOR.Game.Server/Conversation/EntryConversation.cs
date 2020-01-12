@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Conversation
 {

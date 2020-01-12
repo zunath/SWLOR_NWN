@@ -7,9 +7,10 @@ using SWLOR.Game.Server.Item.Contracts;
 
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Item
 {

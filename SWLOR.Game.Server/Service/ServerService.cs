@@ -1,84 +1,71 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using NWN.Scripts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.Scripting.Contracts;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using Console = System.Console;
 
-// ReSharper disable once CheckNamespace
-namespace NWN.Scripts
+namespace SWLOR.Game.Server.Service
 {
-#pragma warning disable IDE1006 // Naming Styles
-    public class mod_on_load
-#pragma warning restore IDE1006 // Naming Styles
+    public static class ServerService
     {
-        // ReSharper disable once UnusedMember.Local
-        public void Main()
+        public static void SubscribeEvents()
         {
-            string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
-            Console.WriteLine(nowString + ": Module OnLoad executing...");
-
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                MessageHub.Instance.Publish(new OnServerStopped());
-            };
-
-            DataService.RunMigration();
-
-            using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))
-            {
-                NWNXChat.RegisterChatScript("mod_on_nwnxchat");
-                SetModuleEventScripts();
-                SetAreaEventScripts();
-                SetWeaponSettings();
-
-            }
-            // Bioware default
-            _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
-
-            using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
-            {
-                RegisterServiceSubscribeEvents();
-            }
-
-            MessageHub.Instance.Publish(new OnModuleLoad());
-
-            nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
-            Console.WriteLine(nowString + ": Module OnLoad finished!");
+            MessageHub.Instance.Subscribe<OnServerInitalization>(@event => InitializeServer());
+            MessageHub.Instance.Subscribe<OnServerCacheData>(@event => CacheServerData());
         }
 
-
-        private static void RegisterServiceSubscribeEvents()
+        private static void InitializeServer()
         {
-            // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
-            var typesInNamespace = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(x => x.Namespace != null && 
-                            x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
-                            !typeof(IScript).IsAssignableFrom(x) && // Exclude scripts
-                            x.IsClass) // Classes only.
-                .ToArray();
-            foreach (var type in typesInNamespace)
-            {
-                var method = type.GetMethod("SubscribeEvents");
-                if (method != null)
-                {
-                    method.Invoke(null, null);
-                }
-            }
+            DataService.RunMigration();
+            NWNXChat.RegisterChatScript("mod_on_nwnxchat");
+            SetModuleEventScripts();
+            SetAreaEventScripts();
+            SetWeaponSettings();
+
+                // Bioware default
+            _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Runs all CacheData methods found on other services.
+        /// The order in which these run is important because a handful of them have dependencies on the others.
+        /// </summary>
+        private static void CacheServerData()
+        {
+            Console.WriteLine("Caching server data...");
+            SkillService.CacheData();
+            PerkService.CacheData();
+            AbilityService.CacheData();
+            AIService.CacheData();
+            BaseService.CacheData();
+            ChatCommandService.CacheData();
+            CraftService.CacheData();
+            CustomEffectService.CacheData();
+            DialogService.CacheData();
+            ItemService.CacheData();
+            KeyItemService.CacheData();
+            LootService.CacheData();
+            ModService.CacheData();
+            QuestService.CacheData();
+            SpaceService.CacheData();
+            SpawnService.CacheData();
+            Console.WriteLine("Server data cached!");
         }
 
         private static void SetAreaEventScripts()
         {
             NWGameObject area = _.GetFirstArea();
-            while (_.GetIsObjectValid(area) == true)
+            while (_.GetIsObjectValid(area))
             {
                 _.SetEventScript(area, EventScriptArea.OnEnter, "area_on_enter");
                 _.SetEventScript(area, EventScriptArea.OnExit, "area_on_exit");
@@ -175,7 +162,6 @@ namespace NWN.Scripts
 
             NWNXWeapon.SetWeaponUnarmed(BaseItemType.QuarterStaff);
         }
-
 
     }
 }

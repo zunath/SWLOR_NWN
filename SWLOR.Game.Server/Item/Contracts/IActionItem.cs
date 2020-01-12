@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
 using NWN;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 

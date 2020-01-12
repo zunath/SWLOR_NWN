@@ -10,8 +10,10 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
@@ -28,14 +30,11 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
-            Console.WriteLine("ModService -> OnModuleLoad");
             RegisterModHandlers();
-            Console.WriteLine("ModService -> OnModuleLoad Complete");
         }
 
         private static void RegisterModHandlers()

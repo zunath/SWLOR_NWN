@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Quest;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Scripting.Quest
 {

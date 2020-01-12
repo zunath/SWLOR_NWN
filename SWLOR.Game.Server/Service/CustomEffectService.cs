@@ -16,7 +16,7 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Processor;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessCustomEffects());
         }
 
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             handler?.Apply(player, player, pcEffect.EffectiveLevel);
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             RegisterCustomEffects();
             RegisterCustomEffectHandlers();

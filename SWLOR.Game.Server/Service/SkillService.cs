@@ -14,10 +14,11 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
@@ -52,7 +53,6 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
 
             // Module Events
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Loads all skills into a dictionary at boot time, for later use by other systems.
         /// </summary>
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             // Initialize the list of categories.
             var categories = Enum.GetValues(typeof(SkillCategory)).Cast<SkillCategory>();

@@ -10,7 +10,8 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 

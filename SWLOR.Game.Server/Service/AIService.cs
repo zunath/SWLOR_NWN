@@ -11,6 +11,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -55,13 +56,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Console.WriteLine("AIService -> OnModuleLoad");
-            RegisterAIBehaviours();
             RegisterAreaAICreatures();
-            Console.WriteLine("AIService -> OnModuleLoad Complete");
         }
 
-        private static void RegisterAIBehaviours()
+        public static void CacheData()
         {
             // Use reflection to get all of AI behaviour implementations.
             var classes = AppDomain.CurrentDomain.GetAssemblies()

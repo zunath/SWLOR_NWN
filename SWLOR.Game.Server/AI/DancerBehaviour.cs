@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.AI
 {

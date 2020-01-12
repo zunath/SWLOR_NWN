@@ -8,10 +8,12 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,10 +30,9 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleRest>(message => OnModuleRest());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => LoadModule());
         }
 
-        private static void LoadModule()
+        public static void CacheData()
         {
             RegisterConversations();
         }

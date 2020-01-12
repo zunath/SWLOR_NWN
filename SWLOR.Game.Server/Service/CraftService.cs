@@ -11,8 +11,10 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Service
@@ -25,7 +27,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
             {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var craftBlueprints = Enum.GetValues(typeof(CraftBlueprint)).Cast<CraftBlueprint>();
             foreach (var bp in craftBlueprints)

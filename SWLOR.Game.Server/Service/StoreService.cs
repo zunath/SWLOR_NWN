@@ -8,7 +8,9 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Store;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -32,7 +34,6 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Console.WriteLine("StoreService -> OnModuleLoad");
             // Loop through all areas.
             foreach (var area in NWModule.Get().Areas)
             {
@@ -49,7 +50,6 @@ namespace SWLOR.Game.Server.Service
                     _stores.Add(store);
                 }
             }
-            Console.WriteLine("StoreService -> OnModuleLoad Complete");
         }
 
         private static void OnModuleAcquireItem()

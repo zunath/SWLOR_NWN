@@ -15,8 +15,10 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 using PerkType = SWLOR.Game.Server.Enumeration.PerkType;
@@ -56,10 +58,9 @@ namespace SWLOR.Game.Server.Service
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             RegisterPerkHandlers();
             RegisterPerkCategories();

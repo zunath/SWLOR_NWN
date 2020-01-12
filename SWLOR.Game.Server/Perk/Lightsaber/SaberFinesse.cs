@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber

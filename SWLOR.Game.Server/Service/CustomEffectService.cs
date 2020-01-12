@@ -16,7 +16,7 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Processor;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {

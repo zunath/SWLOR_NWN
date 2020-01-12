@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {

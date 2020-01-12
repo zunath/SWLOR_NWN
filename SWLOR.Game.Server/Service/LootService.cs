@@ -10,10 +10,11 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {

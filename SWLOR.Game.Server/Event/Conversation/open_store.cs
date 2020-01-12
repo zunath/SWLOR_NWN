@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server;
 
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
 
@@ -15,26 +16,26 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(open_store)))
             {
-                NWPlayer player = _.GetPCSpeaker();
+                NWPlayer player = SWLOR.Game.Server.NWScript._.GetPCSpeaker();
                 NWObject self = NWGameObject.OBJECT_SELF;
                 string storeTag = self.GetLocalString("STORE_TAG");
                 NWObject store;
 
                 if (string.IsNullOrWhiteSpace(storeTag))
                 {
-                    store = _.GetNearestObject(ObjectType.Store, self);
+                    store = SWLOR.Game.Server.NWScript._.GetNearestObject(ObjectType.Store, self);
                 }
                 else
                 {
-                    store = _.GetObjectByTag(storeTag);
+                    store = SWLOR.Game.Server.NWScript._.GetObjectByTag(storeTag);
                 }
 
                 if (!store.IsValid)
                 {
-                    _.SpeakString("ERROR: Unable to locate store.");
+                    SWLOR.Game.Server.NWScript._.SpeakString("ERROR: Unable to locate store.");
                 }
 
-                _.OpenStore(store, player);
+                SWLOR.Game.Server.NWScript._.OpenStore(store, player);
             }
         }
     }

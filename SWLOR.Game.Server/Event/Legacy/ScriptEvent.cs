@@ -2,6 +2,7 @@
 using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.ValueObject;
 

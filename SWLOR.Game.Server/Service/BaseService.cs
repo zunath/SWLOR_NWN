@@ -15,8 +15,10 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 

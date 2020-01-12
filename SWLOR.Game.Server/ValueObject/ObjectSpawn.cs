@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.ValueObject

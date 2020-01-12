@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using _ = SWLOR.Game.Server.NWScript._;
 
 
 namespace SWLOR.Game.Server.Service

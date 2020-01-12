@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWScript;
 
-namespace NWN
+namespace SWLOR.Game.Server.NWScript
 {
     partial class Internal
     {
         public const uint OBJECT_INVALID = 0x7F000000;
         public static NWGameObject OBJECT_SELF { get; private set; } = OBJECT_INVALID;
         public static event EventHandler<MainLoopEventArgs> OnMainLoopEvent;
-
+        private static readonly ScriptDispatcher _scriptDispatcher = new ScriptDispatcher();
 
         public static void OnMainLoop(ulong frame)
         {
             try
             {
-                NWN.Entrypoints.OnMainLoop(frame);
                 OnMainLoopEvent?.Invoke(null, new MainLoopEventArgs(frame));
             }
             catch (Exception e)
@@ -29,7 +27,7 @@ namespace NWN
             public NWGameObject OwnerObject;
             public string ScriptName;
         }
-        private static Stack<ScriptContext> ScriptContexts = new Stack<ScriptContext>();
+        private static readonly Stack<ScriptContext> ScriptContexts = new Stack<ScriptContext>();
         public static int OnRunScript(string script, uint oidSelf)
         {
             int ret = 0;
@@ -37,7 +35,7 @@ namespace NWN
             ScriptContexts.Push(new ScriptContext { OwnerObject = oidSelf, ScriptName = script });
             try
             {
-                ret = NWN.Entrypoints.OnRunScript(script, oidSelf);
+                ret = _scriptDispatcher.RunScript(script);
             }
             catch (Exception e)
             {
@@ -54,7 +52,7 @@ namespace NWN
             public ActionDelegate Run;
         }
         private static ulong NextEventId = 0;
-        private static Dictionary<ulong, Closure> Closures = new Dictionary<ulong, Closure>();
+        private static readonly Dictionary<ulong, Closure> Closures = new Dictionary<ulong, Closure>();
 
         public static void OnClosure(ulong eid, uint oidSelf)
         {

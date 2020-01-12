@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 

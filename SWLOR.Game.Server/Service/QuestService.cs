@@ -11,12 +11,13 @@ using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Scripting;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {

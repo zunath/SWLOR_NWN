@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 
 namespace SWLOR.Game.Server.Service

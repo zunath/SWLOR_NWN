@@ -5,11 +5,13 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Conversation
 {

@@ -9,7 +9,8 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Conversation
 {

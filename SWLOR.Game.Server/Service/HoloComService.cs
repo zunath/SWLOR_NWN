@@ -1,13 +1,15 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 using NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
+using _ = SWLOR.Game.Server.NWScript._;
 
 /**
  * PazaakService

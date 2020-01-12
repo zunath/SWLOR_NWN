@@ -1,7 +1,7 @@
 ﻿using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
-namespace NWN
+namespace SWLOR.Game.Server.NWScript
 {
     public partial class _
     {
@@ -205,7 +205,7 @@ namespace NWN
         ///  * No return value, but if an error occurs the log file will contain
         ///    "MoveToPoint failed."
         /// </summary>
-        public static void ActionMoveToLocation(NWN.Location lDestination, bool bRun = false)
+        public static void ActionMoveToLocation(global::SWLOR.Game.Server.NWScript.Location lDestination, bool bRun = false)
         {
             Internal.NativeFunctions.StackPushInteger(bRun ? 1 : 0);
             Internal.NativeFunctions.StackPushLocation(lDestination.Handle);
@@ -291,7 +291,7 @@ namespace NWN
         ///  Get the position of oTarget
         ///  * Return value on error: vector (0.0f, 0.0f, 0.0f)
         /// </summary>
-        public static NWN.Vector GetPosition(NWGameObject oTarget)
+        public static global::SWLOR.Game.Server.NWScript.Vector GetPosition(NWGameObject oTarget)
         {
             Internal.NativeFunctions.StackPushObject(oTarget != null ? oTarget.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(27);
@@ -719,7 +719,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nDamageToHeal);
             Internal.NativeFunctions.CallBuiltIn(78);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -735,7 +735,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger(nDamageAmount);
             Internal.NativeFunctions.CallBuiltIn(79);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -747,7 +747,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nModifyBy);
             Internal.NativeFunctions.StackPushInteger((int)nAbilityToIncrease);
             Internal.NativeFunctions.CallBuiltIn(80);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -763,7 +763,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nAmount);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(81);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -772,7 +772,7 @@ namespace NWN
         public static Effect EffectResurrection()
         {
             Internal.NativeFunctions.CallBuiltIn(82);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -793,7 +793,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nVisualEffectId);
             Internal.NativeFunctions.StackPushStringUTF8(sCreatureResref);
             Internal.NativeFunctions.CallBuiltIn(83);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -814,7 +814,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(85);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -824,14 +824,14 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(86);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
         ///  Remove eEffect from oCreature.
         ///  * No return value
         /// </summary>
-        public static void RemoveEffect(NWGameObject oCreature, NWN.Effect eEffect)
+        public static void RemoveEffect(NWGameObject oCreature, global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
@@ -842,7 +842,7 @@ namespace NWN
         ///  * Returns true if eEffect is a valid effect. The effect must have been applied to
         ///  * an object or else it will return false
         /// </summary>
-        public static bool GetIsEffectValid(NWN.Effect eEffect)
+        public static bool GetIsEffectValid(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(88);
@@ -853,7 +853,7 @@ namespace NWN
         ///  Get the duration type (DURATION_TYPE_*) of eEffect.
         ///  * Return value if eEffect is not valid: -1
         /// </summary>
-        public static DurationType GetEffectDurationType(NWN.Effect eEffect)
+        public static DurationType GetEffectDurationType(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(89);
@@ -864,7 +864,7 @@ namespace NWN
         ///  Get the subtype (SUBTYPE_*) of eEffect.
         ///  * Return value on error: 0
         /// </summary>
-        public static SubType GetEffectSubType(NWN.Effect eEffect)
+        public static SubType GetEffectSubType(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(90);
@@ -875,7 +875,7 @@ namespace NWN
         ///  Get the object that created eEffect.
         ///  * Returns OBJECT_INVALID if eEffect is not a valid effect.
         /// </summary>
-        public static NWGameObject GetEffectCreator(NWN.Effect eEffect)
+        public static NWGameObject GetEffectCreator(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(91);
@@ -911,9 +911,9 @@ namespace NWN
         ///  distance between two points.
         ///  * Return value on error: 0.0f
         /// </summary>
-        public static float VectorMagnitude(NWN.Vector? vVector)
+        public static float VectorMagnitude(global::SWLOR.Game.Server.NWScript.Vector? vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.CallBuiltIn(104);
             return Internal.NativeFunctions.StackPopFloat();
         }
@@ -1031,11 +1031,11 @@ namespace NWN
         ///  (Effects default to magical if the subtype is not set)
         ///  Magical effects are removed by resting, and by dispel magic
         /// </summary>
-        public static Effect MagicalEffect(NWN.Effect eEffect)
+        public static Effect MagicalEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(112);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1043,11 +1043,11 @@ namespace NWN
         ///  (Effects default to magical if the subtype is not set)
         ///  Permanent supernatural effects are not removed by resting
         /// </summary>
-        public static Effect SupernaturalEffect(NWN.Effect eEffect)
+        public static Effect SupernaturalEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(113);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1055,11 +1055,11 @@ namespace NWN
         ///  (Effects default to magical if the subtype is not set)
         ///  Extraordinary effects are removed by resting, but not by dispel magic
         /// </summary>
-        public static Effect ExtraordinaryEffect(NWN.Effect eEffect)
+        public static Effect ExtraordinaryEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(114);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1075,7 +1075,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nModifyType);
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.CallBuiltIn(115);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1108,7 +1108,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger((int)nSave);
             Internal.NativeFunctions.CallBuiltIn(117);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1121,7 +1121,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nModifierType);
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.CallBuiltIn(118);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1137,7 +1137,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nDamagePower);
             Internal.NativeFunctions.StackPushInteger(nAmount);
             Internal.NativeFunctions.CallBuiltIn(119);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1152,7 +1152,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.CallBuiltIn(120);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1263,9 +1263,9 @@ namespace NWN
         ///    origin of the effect(normally the spell-caster's position).
         ///  Return value on error: OBJECT_INVALID
         /// </summary>
-        public static NWGameObject GetFirstObjectInShape(Shape nShape, float fSize, NWN.Location lTarget, bool bLineOfSight = false, ObjectType nObjectFilter = ObjectType.Creature, NWN.Vector? vOrigin = null)
+        public static NWGameObject GetFirstObjectInShape(Shape nShape, float fSize, global::SWLOR.Game.Server.NWScript.Location lTarget, bool bLineOfSight = false, ObjectType nObjectFilter = ObjectType.Creature, global::SWLOR.Game.Server.NWScript.Vector? vOrigin = null)
         {
-            Internal.NativeFunctions.StackPushVector(vOrigin.HasValue ? vOrigin.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vOrigin.HasValue ? vOrigin.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.StackPushInteger((int)nObjectFilter);
             Internal.NativeFunctions.StackPushInteger(bLineOfSight ? 1 : 0);
             Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
@@ -1301,9 +1301,9 @@ namespace NWN
         ///    of the effect (normally the spell-caster's position).
         ///  Return value on error: OBJECT_INVALID
         /// </summary>
-        public static NWGameObject GetNextObjectInShape(Shape nShape, float fSize, NWN.Location lTarget, bool bLineOfSight = false, ObjectType nObjectFilter = ObjectType.Creature, NWN.Vector? vOrigin = null)
+        public static NWGameObject GetNextObjectInShape(Shape nShape, float fSize, global::SWLOR.Game.Server.NWScript.Location lTarget, bool bLineOfSight = false, ObjectType nObjectFilter = ObjectType.Creature, global::SWLOR.Game.Server.NWScript.Vector? vOrigin = null)
         {
-            Internal.NativeFunctions.StackPushVector(vOrigin.HasValue ? vOrigin.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vOrigin.HasValue ? vOrigin.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.StackPushInteger((int)nObjectFilter);
             Internal.NativeFunctions.StackPushInteger(bLineOfSight ? 1 : 0);
             Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
@@ -1321,7 +1321,7 @@ namespace NWN
         public static Effect EffectEntangle()
         {
             Internal.NativeFunctions.CallBuiltIn(130);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1339,7 +1339,7 @@ namespace NWN
         ///     EventUserDefined()  - This creates on OnUserDefined event. The script for handling this event
         ///                           can be set in the Scripts Tab of the Properties menu for the object/area/module.
         /// </summary>
-        public static void SignalEvent(NWGameObject oObject, NWN.Event evToRun)
+        public static void SignalEvent(NWGameObject oObject, global::SWLOR.Game.Server.NWScript.Event evToRun)
         {
             Internal.NativeFunctions.StackPushEvent(evToRun.Handle);
             Internal.NativeFunctions.StackPushObject(oObject != null ? oObject.Self : NWGameObject.OBJECT_INVALID);
@@ -1361,11 +1361,11 @@ namespace NWN
         ///     GetUserDefinedEventNumber() to retrieve the value of nUserDefinedEventNumber
         ///     that was used when the event was signaled.
         /// </summary>
-        public static NWN.Event EventUserDefined(int nUserDefinedEventNumber)
+        public static global::SWLOR.Game.Server.NWScript.Event EventUserDefined(int nUserDefinedEventNumber)
         {
             Internal.NativeFunctions.StackPushInteger(nUserDefinedEventNumber);
             Internal.NativeFunctions.CallBuiltIn(132);
-            return new NWN.Event(Internal.NativeFunctions.StackPopEvent());
+            return new global::SWLOR.Game.Server.NWScript.Event(Internal.NativeFunctions.StackPopEvent());
         }
 
         /// <summary>
@@ -1379,7 +1379,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nDisplayFeedback ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger(nSpectacularDeath ? 1 : 0);
             Internal.NativeFunctions.CallBuiltIn(133);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1391,7 +1391,7 @@ namespace NWN
         public static Effect EffectKnockdown()
         {
             Internal.NativeFunctions.CallBuiltIn(134);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1421,9 +1421,9 @@ namespace NWN
         /// <summary>
         ///  Normalize vVector
         /// </summary>
-        public static NWN.Vector VectorNormalize(NWN.Vector? vVector)
+        public static global::SWLOR.Game.Server.NWScript.Vector VectorNormalize(global::SWLOR.Game.Server.NWScript.Vector? vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.CallBuiltIn(137);
             return Internal.NativeFunctions.StackPopVector();
         }
@@ -1446,7 +1446,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nDexMod);
             Internal.NativeFunctions.StackPushInteger(nStrMod);
             Internal.NativeFunctions.CallBuiltIn(138);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1479,7 +1479,7 @@ namespace NWN
         /// <summary>
         ///  Create a vector with the specified values for x, y and z
         /// </summary>
-        public static NWN.Vector Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        public static global::SWLOR.Game.Server.NWScript.Vector Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(z);
             Internal.NativeFunctions.StackPushFloat(y);
@@ -1491,16 +1491,16 @@ namespace NWN
         /// <summary>
         ///  Cause the caller to face vTarget
         /// </summary>
-        public static void SetFacingPoint(NWN.Vector? vTarget)
+        public static void SetFacingPoint(global::SWLOR.Game.Server.NWScript.Vector? vTarget)
         {
-            Internal.NativeFunctions.StackPushVector(vTarget.HasValue ? vTarget.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vTarget.HasValue ? vTarget.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.CallBuiltIn(143);
         }
 
         /// <summary>
         ///  Convert fAngle to a vector
         /// </summary>
-        public static NWN.Vector AngleToVector(float fAngle)
+        public static global::SWLOR.Game.Server.NWScript.Vector AngleToVector(float fAngle)
         {
             Internal.NativeFunctions.StackPushFloat(fAngle);
             Internal.NativeFunctions.CallBuiltIn(144);
@@ -1510,9 +1510,9 @@ namespace NWN
         /// <summary>
         ///  Convert vVector to an angle
         /// </summary>
-        public static float VectorToAngle(NWN.Vector? vVector)
+        public static float VectorToAngle(global::SWLOR.Game.Server.NWScript.Vector? vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.CallBuiltIn(145);
             return Internal.NativeFunctions.StackPopFloat();
         }
@@ -1549,7 +1549,7 @@ namespace NWN
         public static Effect EffectParalyze()
         {
             Internal.NativeFunctions.CallBuiltIn(148);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1565,7 +1565,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nImmunityToSpell);
             Internal.NativeFunctions.CallBuiltIn(149);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1574,7 +1574,7 @@ namespace NWN
         public static Effect EffectDeaf()
         {
             Internal.NativeFunctions.CallBuiltIn(150);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1592,7 +1592,7 @@ namespace NWN
         /// <summary>
         ///  Set oObject's local location variable sVarname to lValue
         /// </summary>
-        public static void SetLocalLocation(NWGameObject oObject, string sVarName, NWN.Location lValue)
+        public static void SetLocalLocation(NWGameObject oObject, string sVarName, global::SWLOR.Game.Server.NWScript.Location lValue)
         {
             Internal.NativeFunctions.StackPushLocation(lValue.Handle);
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
@@ -1603,12 +1603,12 @@ namespace NWN
         /// <summary>
         ///  Get oObject's local location variable sVarname
         /// </summary>
-        public static NWN.Location GetLocalLocation(NWGameObject oObject, string sVarName)
+        public static global::SWLOR.Game.Server.NWScript.Location GetLocalLocation(NWGameObject oObject, string sVarName)
         {
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushObject(oObject != null ? oObject.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(153);
-            return new NWN.Location(Internal.NativeFunctions.StackPopLocation());
+            return new global::SWLOR.Game.Server.NWScript.Location(Internal.NativeFunctions.StackPopLocation());
         }
 
         /// <summary>
@@ -1617,7 +1617,7 @@ namespace NWN
         public static Effect EffectSleep()
         {
             Internal.NativeFunctions.CallBuiltIn(154);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1641,7 +1641,7 @@ namespace NWN
         public static Effect EffectCharmed()
         {
             Internal.NativeFunctions.CallBuiltIn(156);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1650,7 +1650,7 @@ namespace NWN
         public static Effect EffectConfused()
         {
             Internal.NativeFunctions.CallBuiltIn(157);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1659,7 +1659,7 @@ namespace NWN
         public static Effect EffectFrightened()
         {
             Internal.NativeFunctions.CallBuiltIn(158);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1668,7 +1668,7 @@ namespace NWN
         public static Effect EffectDominated()
         {
             Internal.NativeFunctions.CallBuiltIn(159);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1677,7 +1677,7 @@ namespace NWN
         public static Effect EffectDazed()
         {
             Internal.NativeFunctions.CallBuiltIn(160);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1686,7 +1686,7 @@ namespace NWN
         public static Effect EffectStunned()
         {
             Internal.NativeFunctions.CallBuiltIn(161);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1719,7 +1719,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushFloat(fIntervalSeconds);
             Internal.NativeFunctions.StackPushInteger(nAmount);
             Internal.NativeFunctions.CallBuiltIn(164);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1734,7 +1734,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nPercentChange);
             Internal.NativeFunctions.CallBuiltIn(165);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1793,7 +1793,7 @@ namespace NWN
         ///  Get the effect type (EFFECT_TYPE_*) of eEffect.
         ///  * Return value if eEffect is invalid: EFFECT_INVALIDEFFECT
         /// </summary>
-        public static EffectType GetEffectType(NWN.Effect eEffect)
+        public static EffectType GetEffectType(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(170);
@@ -1811,7 +1811,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushStringUTF8(sOnEnterScript);
             Internal.NativeFunctions.StackPushInteger((int)nAreaEffectId);
             Internal.NativeFunctions.CallBuiltIn(171);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -1901,7 +1901,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nMissEffect ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nVisualEffectId);
             Internal.NativeFunctions.CallBuiltIn(180);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2140,12 +2140,12 @@ namespace NWN
         ///  determining if an effect will be removed or not and as such should never be
         ///  packaged *only* with other visual effects in a link.
         /// </summary>
-        public static Effect EffectLinkEffects(NWN.Effect eChildEffect, NWN.Effect eParentEffect)
+        public static Effect EffectLinkEffects(global::SWLOR.Game.Server.NWScript.Effect eChildEffect, global::SWLOR.Game.Server.NWScript.Effect eParentEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eParentEffect.Handle);
             Internal.NativeFunctions.StackPushEffect(eChildEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(199);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2275,7 +2275,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushObject(oEffector != null ? oEffector.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushInteger((int)nBeamVisualEffect);
             Internal.NativeFunctions.CallBuiltIn(207);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2351,24 +2351,24 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.CallBuiltIn(212);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
         ///  Get the location of oObject.
         /// </summary>
-        public static NWN.Location GetLocation(NWGameObject oObject)
+        public static global::SWLOR.Game.Server.NWScript.Location GetLocation(NWGameObject oObject)
         {
             Internal.NativeFunctions.StackPushObject(oObject != null ? oObject.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(213);
-            return new NWN.Location(Internal.NativeFunctions.StackPopLocation());
+            return new global::SWLOR.Game.Server.NWScript.Location(Internal.NativeFunctions.StackPopLocation());
         }
 
         /// <summary>
         ///  The subject will jump to lLocation instantly (even between areas).
         ///  If lLocation is invalid, nothing will happen.
         /// </summary>
-        public static void ActionJumpToLocation(NWN.Location lLocation)
+        public static void ActionJumpToLocation(global::SWLOR.Game.Server.NWScript.Location lLocation)
         {
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
             Internal.NativeFunctions.CallBuiltIn(214);
@@ -2377,19 +2377,19 @@ namespace NWN
         /// <summary>
         ///  Create a location.
         /// </summary>
-        public static NWN.Location Location(NWGameObject oArea, NWN.Vector? vPosition, float fOrientation)
+        public static global::SWLOR.Game.Server.NWScript.Location Location(NWGameObject oArea, global::SWLOR.Game.Server.NWScript.Vector? vPosition, float fOrientation)
         {
             Internal.NativeFunctions.StackPushFloat(fOrientation);
-            Internal.NativeFunctions.StackPushVector(vPosition.HasValue ? vPosition.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vPosition.HasValue ? vPosition.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.StackPushObject(oArea != null ? oArea.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(215);
-            return new NWN.Location(Internal.NativeFunctions.StackPopLocation());
+            return new global::SWLOR.Game.Server.NWScript.Location(Internal.NativeFunctions.StackPopLocation());
         }
 
         /// <summary>
         ///  Apply eEffect at lLocation.
         /// </summary>
-        public static void ApplyEffectAtLocation(DurationType nDurationType, NWN.Effect eEffect, NWN.Location lLocation, float fDuration = 0.0f)
+        public static void ApplyEffectAtLocation(DurationType nDurationType, global::SWLOR.Game.Server.NWScript.Effect eEffect, global::SWLOR.Game.Server.NWScript.Location lLocation, float fDuration = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDuration);
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
@@ -2421,7 +2421,7 @@ namespace NWN
         /// <summary>
         ///  Apply eEffect to oTarget.
         /// </summary>
-        public static void ApplyEffectToObject(DurationType nDurationType, NWN.Effect eEffect, NWGameObject oTarget, float fDuration = 0.0f)
+        public static void ApplyEffectToObject(DurationType nDurationType, global::SWLOR.Game.Server.NWScript.Effect eEffect, NWGameObject oTarget, float fDuration = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDuration);
             Internal.NativeFunctions.StackPushObject(oTarget != null ? oTarget.Self : NWGameObject.OBJECT_INVALID);
@@ -2446,16 +2446,16 @@ namespace NWN
         /// <summary>
         ///  Get the location of the caller's last spell target.
         /// </summary>
-        public static NWN.Location GetSpellTargetLocation()
+        public static global::SWLOR.Game.Server.NWScript.Location GetSpellTargetLocation()
         {
             Internal.NativeFunctions.CallBuiltIn(222);
-            return new NWN.Location(Internal.NativeFunctions.StackPopLocation());
+            return new global::SWLOR.Game.Server.NWScript.Location(Internal.NativeFunctions.StackPopLocation());
         }
 
         /// <summary>
         ///  Get the position vector from lLocation.
         /// </summary>
-        public static NWN.Vector GetPositionFromLocation(NWN.Location lLocation)
+        public static global::SWLOR.Game.Server.NWScript.Vector GetPositionFromLocation(global::SWLOR.Game.Server.NWScript.Location lLocation)
         {
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
             Internal.NativeFunctions.CallBuiltIn(223);
@@ -2465,7 +2465,7 @@ namespace NWN
         /// <summary>
         ///  Get the area's object ID from lLocation.
         /// </summary>
-        public static NWGameObject GetAreaFromLocation(NWN.Location lLocation)
+        public static NWGameObject GetAreaFromLocation(global::SWLOR.Game.Server.NWScript.Location lLocation)
         {
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
             Internal.NativeFunctions.CallBuiltIn(224);
@@ -2475,7 +2475,7 @@ namespace NWN
         /// <summary>
         ///  Get the orientation value from lLocation.
         /// </summary>
-        public static float GetFacingFromLocation(NWN.Location lLocation)
+        public static float GetFacingFromLocation(global::SWLOR.Game.Server.NWScript.Location lLocation)
         {
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
             Internal.NativeFunctions.CallBuiltIn(225);
@@ -2510,7 +2510,7 @@ namespace NWN
         ///    further specify the type of creature that we are looking for.
         ///  * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static NWGameObject GetNearestCreatureToLocation(int nFirstCriteriaType, int nFirstCriteriaValue, NWN.Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1, int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
+        public static NWGameObject GetNearestCreatureToLocation(int nFirstCriteriaType, int nFirstCriteriaValue, global::SWLOR.Game.Server.NWScript.Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1, int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
             Internal.NativeFunctions.StackPushInteger(nThirdCriteriaValue);
             Internal.NativeFunctions.StackPushInteger(nThirdCriteriaType);
@@ -2547,7 +2547,7 @@ namespace NWN
         ///  - nNth
         ///  * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static NWGameObject GetNearestObjectToLocation(ObjectType nObjectType, NWN.Location lLocation, int nNth = 1)
+        public static NWGameObject GetNearestObjectToLocation(ObjectType nObjectType, global::SWLOR.Game.Server.NWScript.Location lLocation, int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
@@ -2581,7 +2581,7 @@ namespace NWN
         ///    the end-user to simulate
         ///    a high-level magic user having lots of advance warning of impending trouble.
         /// </summary>
-        public static void ActionCastSpellAtLocation(Spell nSpell, NWN.Location lTargetLocation, MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false, ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
+        public static void ActionCastSpellAtLocation(Spell nSpell, global::SWLOR.Game.Server.NWScript.Location lTargetLocation, MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false, ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
             Internal.NativeFunctions.StackPushInteger(bInstantSpell ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
@@ -2696,13 +2696,13 @@ namespace NWN
         ///      GetLastSpell() to get the type of spell cast (nSpell)
         ///      GetLastSpellHarmful() to determine if the spell cast at the object was harmful.
         /// </summary>
-        public static NWN.Event EventSpellCastAt(NWGameObject oCaster, Spell nSpell, bool bHarmful = true)
+        public static global::SWLOR.Game.Server.NWScript.Event EventSpellCastAt(NWGameObject oCaster, Spell nSpell, bool bHarmful = true)
         {
             Internal.NativeFunctions.StackPushInteger(bHarmful ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.StackPushObject(oCaster != null ? oCaster.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(244);
-            return new NWN.Event(Internal.NativeFunctions.StackPopEvent());
+            return new global::SWLOR.Game.Server.NWScript.Event(Internal.NativeFunctions.StackPopEvent());
         }
 
         /// <summary>
@@ -2764,7 +2764,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nPoisonType);
             Internal.NativeFunctions.CallBuiltIn(250);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2775,7 +2775,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nDiseaseType);
             Internal.NativeFunctions.CallBuiltIn(251);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2784,7 +2784,7 @@ namespace NWN
         public static Effect EffectSilence()
         {
             Internal.NativeFunctions.CallBuiltIn(252);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2990,7 +2990,7 @@ namespace NWN
         public static Effect EffectHaste()
         {
             Internal.NativeFunctions.CallBuiltIn(270);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -2999,7 +2999,7 @@ namespace NWN
         public static Effect EffectSlow()
         {
             Internal.NativeFunctions.CallBuiltIn(271);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3020,7 +3020,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nImmunityType);
             Internal.NativeFunctions.CallBuiltIn(273);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3049,7 +3049,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nPercentImmunity);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(275);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3254,10 +3254,10 @@ namespace NWN
         ///  To specify the OnConversation script that should run, view the Creature Properties on
         ///  the creature and click on the Scripts Tab. Then specify a script for the OnConversation event.
         /// </summary>
-        public static NWN.Event EventConversation()
+        public static global::SWLOR.Game.Server.NWScript.Event EventConversation()
         {
             Internal.NativeFunctions.CallBuiltIn(295);
-            return new NWN.Event(Internal.NativeFunctions.StackPopEvent());
+            return new global::SWLOR.Game.Server.NWScript.Event(Internal.NativeFunctions.StackPopEvent());
         }
 
         /// <summary>
@@ -3285,7 +3285,7 @@ namespace NWN
         /// <summary>
         ///  Get the distance between lLocationA and lLocationB.
         /// </summary>
-        public static float GetDistanceBetweenLocations(NWN.Location lLocationA, NWN.Location lLocationB)
+        public static float GetDistanceBetweenLocations(global::SWLOR.Game.Server.NWScript.Location lLocationA, global::SWLOR.Game.Server.NWScript.Location lLocationB)
         {
             Internal.NativeFunctions.StackPushLocation(lLocationB.Handle);
             Internal.NativeFunctions.StackPushLocation(lLocationA.Handle);
@@ -3331,33 +3331,33 @@ namespace NWN
         ///  Create a Spell Talent.
         ///  - nSpell: SPELL_*
         /// </summary>
-        public static NWN.Talent TalentSpell(Spell nSpell)
+        public static global::SWLOR.Game.Server.NWScript.Talent TalentSpell(Spell nSpell)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(301);
-            return new NWN.Talent(Internal.NativeFunctions.StackPopTalent());
+            return new global::SWLOR.Game.Server.NWScript.Talent(Internal.NativeFunctions.StackPopTalent());
         }
 
         /// <summary>
         ///  Create a Feat Talent.
         ///  - nFeat: FEAT_*
         /// </summary>
-        public static NWN.Talent TalentFeat(Feat nFeat)
+        public static global::SWLOR.Game.Server.NWScript.Talent TalentFeat(Feat nFeat)
         {
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
             Internal.NativeFunctions.CallBuiltIn(302);
-            return new NWN.Talent(Internal.NativeFunctions.StackPopTalent());
+            return new global::SWLOR.Game.Server.NWScript.Talent(Internal.NativeFunctions.StackPopTalent());
         }
 
         /// <summary>
         ///  Create a Skill Talent.
         ///  - nSkill: SKILL_*
         /// </summary>
-        public static NWN.Talent TalentSkill(NWNSkill nSkill)
+        public static global::SWLOR.Game.Server.NWScript.Talent TalentSkill(NWNSkill nSkill)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(303);
-            return new NWN.Talent(Internal.NativeFunctions.StackPopTalent());
+            return new global::SWLOR.Game.Server.NWScript.Talent(Internal.NativeFunctions.StackPopTalent());
         }
 
         /// <summary>
@@ -3380,7 +3380,7 @@ namespace NWN
         ///  Get the spell (SPELL_*) that applied eSpellEffect.
         ///  * Returns -1 if eSpellEffect was applied outside a spell script.
         /// </summary>
-        public static Spell GetEffectSpellId(NWN.Effect eSpellEffect)
+        public static Spell GetEffectSpellId(global::SWLOR.Game.Server.NWScript.Effect eSpellEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eSpellEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(305);
@@ -3390,7 +3390,7 @@ namespace NWN
         /// <summary>
         ///  Determine whether oCreature has tTalent.
         /// </summary>
-        public static bool GetCreatureHasTalent(NWN.Talent tTalent, NWGameObject oCreature = null)
+        public static bool GetCreatureHasTalent(global::SWLOR.Game.Server.NWScript.Talent tTalent, NWGameObject oCreature = null)
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
@@ -3403,12 +3403,12 @@ namespace NWN
         ///  - nCategory: TALENT_CATEGORY_*
         ///  - oCreature
         /// </summary>
-        public static NWN.Talent GetCreatureTalentRandom(TalentCategory nCategory, NWGameObject oCreature = null)
+        public static global::SWLOR.Game.Server.NWScript.Talent GetCreatureTalentRandom(TalentCategory nCategory, NWGameObject oCreature = null)
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushInteger((int)nCategory);
             Internal.NativeFunctions.CallBuiltIn(307);
-            return new NWN.Talent(Internal.NativeFunctions.StackPopTalent());
+            return new global::SWLOR.Game.Server.NWScript.Talent(Internal.NativeFunctions.StackPopTalent());
         }
 
         /// <summary>
@@ -3418,19 +3418,19 @@ namespace NWN
         ///  - nCRMax: Challenge Rating of the talent
         ///  - oCreature
         /// </summary>
-        public static NWN.Talent GetCreatureTalentBest(TalentCategory nCategory, int nCRMax, NWGameObject oCreature = null)
+        public static global::SWLOR.Game.Server.NWScript.Talent GetCreatureTalentBest(TalentCategory nCategory, int nCRMax, NWGameObject oCreature = null)
         {
             Internal.NativeFunctions.StackPushObject(oCreature != null ? oCreature.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushInteger(nCRMax);
             Internal.NativeFunctions.StackPushInteger((int)nCategory);
             Internal.NativeFunctions.CallBuiltIn(308);
-            return new NWN.Talent(Internal.NativeFunctions.StackPopTalent());
+            return new global::SWLOR.Game.Server.NWScript.Talent(Internal.NativeFunctions.StackPopTalent());
         }
 
         /// <summary>
         ///  Use tChosenTalent on oTarget.
         /// </summary>
-        public static void ActionUseTalentOnObject(NWN.Talent tChosenTalent, NWGameObject oTarget)
+        public static void ActionUseTalentOnObject(global::SWLOR.Game.Server.NWScript.Talent tChosenTalent, NWGameObject oTarget)
         {
             Internal.NativeFunctions.StackPushObject(oTarget != null ? oTarget.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushTalent(tChosenTalent.Handle);
@@ -3440,7 +3440,7 @@ namespace NWN
         /// <summary>
         ///  Use tChosenTalent at lTargetLocation.
         /// </summary>
-        public static void ActionUseTalentAtLocation(NWN.Talent tChosenTalent, NWN.Location lTargetLocation)
+        public static void ActionUseTalentAtLocation(global::SWLOR.Game.Server.NWScript.Talent tChosenTalent, global::SWLOR.Game.Server.NWScript.Location lTargetLocation)
         {
             Internal.NativeFunctions.StackPushLocation(lTargetLocation.Handle);
             Internal.NativeFunctions.StackPushTalent(tChosenTalent.Handle);
@@ -3471,7 +3471,7 @@ namespace NWN
         /// <summary>
         ///  Jump to lDestination.  The action is added to the TOP of the action queue.
         /// </summary>
-        public static void JumpToLocation(NWN.Location lDestination)
+        public static void JumpToLocation(global::SWLOR.Game.Server.NWScript.Location lDestination)
         {
             Internal.NativeFunctions.StackPushLocation(lDestination.Handle);
             Internal.NativeFunctions.CallBuiltIn(313);
@@ -3486,7 +3486,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nHitPoints);
             Internal.NativeFunctions.CallBuiltIn(314);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3909,7 +3909,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(351);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3952,13 +3952,13 @@ namespace NWN
         ///  - nLawChaos: ALIGNMENT_LAWFUL/ALIGNMENT_CHAOTIC/ALIGNMENT_ALL
         ///  - nGoodEvil: ALIGNMENT_GOOD/ALIGNMENT_EVIL/ALIGNMENT_ALL
         /// </summary>
-        public static Effect VersusAlignmentEffect(NWN.Effect eEffect, Alignment nLawChaos = Alignment.All, Alignment nGoodEvil = Alignment.All)
+        public static Effect VersusAlignmentEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect, Alignment nLawChaos = Alignment.All, Alignment nGoodEvil = Alignment.All)
         {
             Internal.NativeFunctions.StackPushInteger((int)nGoodEvil);
             Internal.NativeFunctions.StackPushInteger((int)nLawChaos);
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(355);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3966,22 +3966,22 @@ namespace NWN
         ///  - eEffect
         ///  - nRacialType: RACIAL_TYPE_*
         /// </summary>
-        public static Effect VersusRacialTypeEffect(NWN.Effect eEffect, RacialType nRacialType)
+        public static Effect VersusRacialTypeEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect, RacialType nRacialType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nRacialType);
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(356);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
         ///  Set eEffect to be versus traps.
         /// </summary>
-        public static Effect VersusTrapEffect(NWN.Effect eEffect)
+        public static Effect VersusTrapEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(357);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -3997,7 +3997,7 @@ namespace NWN
         /// <summary>
         ///  * Returns true if tTalent is valid.
         /// </summary>
-        public static bool GetIsTalentValid(NWN.Talent tTalent)
+        public static bool GetIsTalentValid(global::SWLOR.Game.Server.NWScript.Talent tTalent)
         {
             Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
             Internal.NativeFunctions.CallBuiltIn(359);
@@ -4007,7 +4007,7 @@ namespace NWN
         /// <summary>
         ///  Causes the action subject to move away from lMoveAwayFrom.
         /// </summary>
-        public static void ActionMoveAwayFromLocation(NWN.Location lMoveAwayFrom, bool bRun = false, float fMoveAwayRange = 40.0f)
+        public static void ActionMoveAwayFromLocation(global::SWLOR.Game.Server.NWScript.Location lMoveAwayFrom, bool bRun = false, float fMoveAwayRange = 40.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fMoveAwayRange);
             Internal.NativeFunctions.StackPushInteger(bRun ? 1 : 0);
@@ -4030,7 +4030,7 @@ namespace NWN
         /// <summary>
         ///  Get the type (TALENT_TYPE_*) of tTalent.
         /// </summary>
-        public static TalentType GetTypeFromTalent(NWN.Talent tTalent)
+        public static TalentType GetTypeFromTalent(global::SWLOR.Game.Server.NWScript.Talent tTalent)
         {
             Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
             Internal.NativeFunctions.CallBuiltIn(362);
@@ -4040,7 +4040,7 @@ namespace NWN
         /// <summary>
         ///  Get the ID of tTalent.  This could be a SPELL_*, FEAT_* or SKILL_*.
         /// </summary>
-        public static int GetIdFromTalent(NWN.Talent tTalent)
+        public static int GetIdFromTalent(global::SWLOR.Game.Server.NWScript.Talent tTalent)
         {
             Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
             Internal.NativeFunctions.CallBuiltIn(363);
@@ -4245,7 +4245,7 @@ namespace NWN
         public static Effect EffectTurned()
         {
             Internal.NativeFunctions.CallBuiltIn(379);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -4277,7 +4277,7 @@ namespace NWN
         /// <summary>
         ///  Force the action subject to move to lDestination.
         /// </summary>
-        public static void ActionForceMoveToLocation(NWN.Location lDestination, bool bRun = false, float fTimeout = 30.0f)
+        public static void ActionForceMoveToLocation(global::SWLOR.Game.Server.NWScript.Location lDestination, bool bRun = false, float fTimeout = 30.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fTimeout);
             Internal.NativeFunctions.StackPushInteger(bRun ? 1 : 0);
@@ -4338,7 +4338,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushFloat(fHitPointChangePerRound);
             Internal.NativeFunctions.CallBuiltIn(387);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -4636,10 +4636,10 @@ namespace NWN
         /// <summary>
         ///  Get the starting location of the module.
         /// </summary>
-        public static NWN.Location GetStartingLocation()
+        public static global::SWLOR.Game.Server.NWScript.Location GetStartingLocation()
         {
             Internal.NativeFunctions.CallBuiltIn(411);
-            return new NWN.Location(Internal.NativeFunctions.StackPopLocation());
+            return new global::SWLOR.Game.Server.NWScript.Location(Internal.NativeFunctions.StackPopLocation());
         }
 
         /// <summary>
@@ -4687,9 +4687,9 @@ namespace NWN
         /// <summary>
         ///  Set the position of oSound.
         /// </summary>
-        public static void SoundObjectSetPosition(NWGameObject oSound, NWN.Vector? vPosition)
+        public static void SoundObjectSetPosition(NWGameObject oSound, global::SWLOR.Game.Server.NWScript.Vector? vPosition)
         {
-            Internal.NativeFunctions.StackPushVector(vPosition.HasValue ? vPosition.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vPosition.HasValue ? vPosition.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.StackPushObject(oSound != null ? oSound.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(416);
         }
@@ -4764,13 +4764,13 @@ namespace NWN
         /// <summary>
         ///  Activate oItem.
         /// </summary>
-        public static NWN.Event EventActivateItem(NWGameObject oItem, NWN.Location lTarget, NWGameObject oTarget = null)
+        public static global::SWLOR.Game.Server.NWScript.Event EventActivateItem(NWGameObject oItem, global::SWLOR.Game.Server.NWScript.Location lTarget, NWGameObject oTarget = null)
         {
             Internal.NativeFunctions.StackPushObject(oTarget != null ? oTarget.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
             Internal.NativeFunctions.StackPushObject(oItem != null ? oItem.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(424);
-            return new NWN.Event(Internal.NativeFunctions.StackPopEvent());
+            return new global::SWLOR.Game.Server.NWScript.Event(Internal.NativeFunctions.StackPopEvent());
         }
 
         /// <summary>
@@ -4940,10 +4940,10 @@ namespace NWN
         ///  Use this in an OnItemActivated module script to get the location of the item's
         ///  target.
         /// </summary>
-        public static NWN.Location GetItemActivatedTargetLocation()
+        public static global::SWLOR.Game.Server.NWScript.Location GetItemActivatedTargetLocation()
         {
             Internal.NativeFunctions.CallBuiltIn(441);
-            return new NWN.Location(Internal.NativeFunctions.StackPopLocation());
+            return new global::SWLOR.Game.Server.NWScript.Location(Internal.NativeFunctions.StackPopLocation());
         }
 
         /// <summary>
@@ -5000,7 +5000,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nModifyBy);
             Internal.NativeFunctions.StackPushInteger((int)nAbility);
             Internal.NativeFunctions.CallBuiltIn(446);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5013,7 +5013,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nModifierType);
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(447);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5026,7 +5026,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(448);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5039,7 +5039,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nPercentImmunity);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(449);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5055,7 +5055,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nModifyType);
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.CallBuiltIn(450);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5070,7 +5070,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nPercentChange);
             Internal.NativeFunctions.CallBuiltIn(451);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5089,7 +5089,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger(nSave);
             Internal.NativeFunctions.CallBuiltIn(452);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5101,7 +5101,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(453);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5111,7 +5111,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.CallBuiltIn(454);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5144,7 +5144,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nInvisibilityType);
             Internal.NativeFunctions.CallBuiltIn(457);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5159,7 +5159,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nMissType);
             Internal.NativeFunctions.StackPushInteger(nPercentage);
             Internal.NativeFunctions.CallBuiltIn(458);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5168,7 +5168,7 @@ namespace NWN
         public static Effect EffectDarkness()
         {
             Internal.NativeFunctions.CallBuiltIn(459);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5181,7 +5181,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nCasterLevel);
             Internal.NativeFunctions.CallBuiltIn(460);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5190,7 +5190,7 @@ namespace NWN
         public static Effect EffectUltravision()
         {
             Internal.NativeFunctions.CallBuiltIn(461);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5203,7 +5203,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(bHPBonus ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger(nNumLevels);
             Internal.NativeFunctions.CallBuiltIn(462);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5214,7 +5214,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nLocked ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger(nPolymorphSelection);
             Internal.NativeFunctions.CallBuiltIn(463);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5226,7 +5226,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nDifficultyClass);
             Internal.NativeFunctions.CallBuiltIn(464);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5235,7 +5235,7 @@ namespace NWN
         public static Effect EffectTrueSeeing()
         {
             Internal.NativeFunctions.CallBuiltIn(465);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5244,7 +5244,7 @@ namespace NWN
         public static Effect EffectSeeInvisible()
         {
             Internal.NativeFunctions.CallBuiltIn(466);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5253,7 +5253,7 @@ namespace NWN
         public static Effect EffectTimeStop()
         {
             Internal.NativeFunctions.CallBuiltIn(467);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5262,7 +5262,7 @@ namespace NWN
         public static Effect EffectBlindness()
         {
             Internal.NativeFunctions.CallBuiltIn(468);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5330,7 +5330,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger(nTotalSpellLevelsAbsorbed);
             Internal.NativeFunctions.StackPushInteger(nMaxSpellLevelAbsorbed);
             Internal.NativeFunctions.CallBuiltIn(472);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5343,7 +5343,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nCasterLevel);
             Internal.NativeFunctions.CallBuiltIn(473);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5404,7 +5404,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nMissChanceType);
             Internal.NativeFunctions.StackPushInteger(nPercentage);
             Internal.NativeFunctions.CallBuiltIn(477);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5435,12 +5435,12 @@ namespace NWN
         ///  - nAnimation determines which appear and disappear animations to use. Most creatures
         ///  only have animation 1, although a few have 2 (like beholders)
         /// </summary>
-        public static Effect EffectDisappearAppear(NWN.Location lLocation, int nAnimation = 1)
+        public static Effect EffectDisappearAppear(global::SWLOR.Game.Server.NWScript.Location lLocation, int nAnimation = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nAnimation);
             Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
             Internal.NativeFunctions.CallBuiltIn(480);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5453,7 +5453,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nAnimation);
             Internal.NativeFunctions.CallBuiltIn(481);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5465,7 +5465,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nAnimation);
             Internal.NativeFunctions.CallBuiltIn(482);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5497,7 +5497,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nAttacks);
             Internal.NativeFunctions.CallBuiltIn(485);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5526,7 +5526,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nRandomAmount);
             Internal.NativeFunctions.StackPushInteger(nDamageAmount);
             Internal.NativeFunctions.CallBuiltIn(487);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5708,7 +5708,7 @@ namespace NWN
         ///  - lTarget
         ///  - nProjectilePathType: PROJECTILE_PATH_TYPE_*
         /// </summary>
-        public static void ActionCastFakeSpellAtLocation(Spell nSpell, NWN.Location lTarget, ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
+        public static void ActionCastFakeSpellAtLocation(Spell nSpell, global::SWLOR.Game.Server.NWScript.Location lTarget, ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
             Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
@@ -5816,7 +5816,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushStringUTF8(sCreatureTemplate1);
             Internal.NativeFunctions.StackPushInteger(nLooping ? 1 : 0);
             Internal.NativeFunctions.CallBuiltIn(510);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -5853,7 +5853,7 @@ namespace NWN
         ///  - nMainLight1Color: TILE_MAIN_LIGHT_COLOR_*
         ///  - nMainLight2Color: TILE_MAIN_LIGHT_COLOR_*
         /// </summary>
-        public static void SetTileMainLightColor(NWN.Location lTileLocation, TileMainLightColor nMainLight1Color, TileMainLightColor nMainLight2Color)
+        public static void SetTileMainLightColor(global::SWLOR.Game.Server.NWScript.Location lTileLocation, TileMainLightColor nMainLight1Color, TileMainLightColor nMainLight2Color)
         {
             Internal.NativeFunctions.StackPushInteger((int)nMainLight2Color);
             Internal.NativeFunctions.StackPushInteger((int)nMainLight1Color);
@@ -5868,7 +5868,7 @@ namespace NWN
         ///  - nSourceLight1Color: TILE_SOURCE_LIGHT_COLOR_*
         ///  - nSourceLight2Color: TILE_SOURCE_LIGHT_COLOR_*
         /// </summary>
-        public static void SetTileSourceLightColor(NWN.Location lTileLocation, TileSourceLightColor nSourceLight1Color, TileSourceLightColor nSourceLight2Color)
+        public static void SetTileSourceLightColor(global::SWLOR.Game.Server.NWScript.Location lTileLocation, TileSourceLightColor nSourceLight1Color, TileSourceLightColor nSourceLight2Color)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSourceLight2Color);
             Internal.NativeFunctions.StackPushInteger((int)nSourceLight1Color);
@@ -5892,7 +5892,7 @@ namespace NWN
         ///  lTile.
         ///  - lTile: the vector part of this is the tile grid (x,y) coordinate of the tile.
         /// </summary>
-        public static TileMainLightColor GetTileMainLight1Color(NWN.Location lTile)
+        public static TileMainLightColor GetTileMainLight1Color(global::SWLOR.Game.Server.NWScript.Location lTile)
         {
             Internal.NativeFunctions.StackPushLocation(lTile.Handle);
             Internal.NativeFunctions.CallBuiltIn(517);
@@ -5905,7 +5905,7 @@ namespace NWN
         ///  - lTile: the vector part of this is the tile grid (x,y) coordinate of the
         ///    tile.
         /// </summary>
-        public static TileMainLightColor GetTileMainLight2Color(NWN.Location lTile)
+        public static TileMainLightColor GetTileMainLight2Color(global::SWLOR.Game.Server.NWScript.Location lTile)
         {
             Internal.NativeFunctions.StackPushLocation(lTile.Handle);
             Internal.NativeFunctions.CallBuiltIn(518);
@@ -5918,7 +5918,7 @@ namespace NWN
         ///  - lTile: the vector part of this is the tile grid (x,y) coordinate of the
         ///    tile.
         /// </summary>
-        public static TileSourceLightColor GetTileSourceLight1Color(NWN.Location lTile)
+        public static TileSourceLightColor GetTileSourceLight1Color(global::SWLOR.Game.Server.NWScript.Location lTile)
         {
             Internal.NativeFunctions.StackPushLocation(lTile.Handle);
             Internal.NativeFunctions.CallBuiltIn(519);
@@ -5931,7 +5931,7 @@ namespace NWN
         ///  - lTile: the vector part of this is the tile grid (x,y) coordinate of the
         ///    tile.
         /// </summary>
-        public static TileSourceLightColor GetTileSourceLight2Color(NWN.Location lTile)
+        public static TileSourceLightColor GetTileSourceLight2Color(global::SWLOR.Game.Server.NWScript.Location lTile)
         {
             Internal.NativeFunctions.StackPushLocation(lTile.Handle);
             Internal.NativeFunctions.CallBuiltIn(520);
@@ -6312,7 +6312,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nHitDice);
             Internal.NativeFunctions.CallBuiltIn(552);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -6324,7 +6324,7 @@ namespace NWN
         {
             Internal.NativeFunctions.StackPushInteger(nHitDice);
             Internal.NativeFunctions.CallBuiltIn(553);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -6660,7 +6660,7 @@ namespace NWN
         public static Effect EffectPetrify()
         {
             Internal.NativeFunctions.CallBuiltIn(583);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -6670,7 +6670,7 @@ namespace NWN
         public static Effect EffectCutsceneParalyze()
         {
             Internal.NativeFunctions.CallBuiltIn(585);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -6711,7 +6711,7 @@ namespace NWN
         ///  If the object is a creature, they will be created at the location.
         ///  If a new tag is specified, it will be assigned to the new object.
         /// </summary>
-        public static NWGameObject CopyObject(NWGameObject oSource, NWN.Location locLocation, NWGameObject oOwner = null, string sNewTag = "")
+        public static NWGameObject CopyObject(NWGameObject oSource, global::SWLOR.Game.Server.NWScript.Location locLocation, NWGameObject oOwner = null, string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushObject(oOwner != null ? oOwner.Self : NWGameObject.OBJECT_INVALID);
@@ -6728,7 +6728,7 @@ namespace NWN
         public static Effect EffectCutsceneDominated()
         {
             Internal.NativeFunctions.CallBuiltIn(604);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -6788,7 +6788,7 @@ namespace NWN
         ///  adds an item property to the specified item
         ///  Only temporary and permanent duration types are allowed.
         /// </summary>
-        public static void AddItemProperty(DurationType nDurationType, NWN.ItemProperty ipProperty, NWGameObject oItem, float fDuration = 0.0f)
+        public static void AddItemProperty(DurationType nDurationType, global::SWLOR.Game.Server.NWScript.ItemProperty ipProperty, NWGameObject oItem, float fDuration = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDuration);
             Internal.NativeFunctions.StackPushObject(oItem != null ? oItem.Self : NWGameObject.OBJECT_INVALID);
@@ -6800,7 +6800,7 @@ namespace NWN
         /// <summary>
         ///  removes an item property from the specified item
         /// </summary>
-        public static void RemoveItemProperty(NWGameObject oItem, NWN.ItemProperty ipProperty)
+        public static void RemoveItemProperty(NWGameObject oItem, global::SWLOR.Game.Server.NWScript.ItemProperty ipProperty)
         {
             Internal.NativeFunctions.StackPushItemProperty(ipProperty.Handle);
             Internal.NativeFunctions.StackPushObject(oItem != null ? oItem.Self : NWGameObject.OBJECT_INVALID);
@@ -6810,7 +6810,7 @@ namespace NWN
         /// <summary>
         ///  if the item property is valid this will return true
         /// </summary>
-        public static bool GetIsItemPropertyValid(NWN.ItemProperty ipProperty)
+        public static bool GetIsItemPropertyValid(global::SWLOR.Game.Server.NWScript.ItemProperty ipProperty)
         {
             Internal.NativeFunctions.StackPushItemProperty(ipProperty.Handle);
             Internal.NativeFunctions.CallBuiltIn(611);
@@ -6820,28 +6820,28 @@ namespace NWN
         /// <summary>
         ///  Gets the first item property on an item
         /// </summary>
-        public static NWN.ItemProperty GetFirstItemProperty(NWGameObject oItem)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty GetFirstItemProperty(NWGameObject oItem)
         {
             Internal.NativeFunctions.StackPushObject(oItem != null ? oItem.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(612);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Will keep retrieving the next and the next item property on an Item,
         ///  will return an invalid item property when the list is empty.
         /// </summary>
-        public static NWN.ItemProperty GetNextItemProperty(NWGameObject oItem)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty GetNextItemProperty(NWGameObject oItem)
         {
             Internal.NativeFunctions.StackPushObject(oItem != null ? oItem.Self : NWGameObject.OBJECT_INVALID);
             Internal.NativeFunctions.CallBuiltIn(613);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  will return the item property type (ie. holy avenger)
         /// </summary>
-        public static ItemPropertyType GetItemPropertyType(NWN.ItemProperty ip)
+        public static ItemPropertyType GetItemPropertyType(global::SWLOR.Game.Server.NWScript.ItemProperty ip)
         {
             Internal.NativeFunctions.StackPushItemProperty(ip.Handle);
             Internal.NativeFunctions.CallBuiltIn(614);
@@ -6851,7 +6851,7 @@ namespace NWN
         /// <summary>
         ///  will return the duration type of the item property
         /// </summary>
-        public static DurationType GetItemPropertyDurationType(NWN.ItemProperty ip)
+        public static DurationType GetItemPropertyDurationType(global::SWLOR.Game.Server.NWScript.ItemProperty ip)
         {
             Internal.NativeFunctions.StackPushItemProperty(ip.Handle);
             Internal.NativeFunctions.CallBuiltIn(615);
@@ -6863,12 +6863,12 @@ namespace NWN
         ///  ability constant(IP_CONST_ABILITY_*) and the bonus.  The bonus should
         ///  be a positive integer between 1 and 12.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAbilityBonus(IPConst nAbility, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAbilityBonus(IPConst nAbility, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAbility);
             Internal.NativeFunctions.CallBuiltIn(616);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6876,11 +6876,11 @@ namespace NWN
         ///  The bonus should be a positive integer between 1 and 20. The modifier
         ///  type depends on the item it is being applied to.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyACBonus(int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyACBonus(int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.CallBuiltIn(617);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6890,12 +6890,12 @@ namespace NWN
         ///  The AC bonus should be an integer between 1 and 20.  The modifier
         ///  type depends on the item it is being applied to.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyACBonusVsAlign(IPConst nAlignGroup, int nACBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyACBonusVsAlign(IPConst nAlignGroup, int nACBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nACBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
             Internal.NativeFunctions.CallBuiltIn(618);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6906,12 +6906,12 @@ namespace NWN
         ///  NOTE: Only the first 3 damage types may be used here, the 3 basic
         ///        physical types.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyACBonusVsDmgType(IPConst nDamageType, int nACBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyACBonusVsDmgType(IPConst nDamageType, int nACBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nACBonus);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(619);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6920,12 +6920,12 @@ namespace NWN
         ///  bonus should be an integer between 1 and 20.  The modifier type depends
         ///  on the item it is being applied to.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyACBonusVsRace(IPConst nRace, int nACBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyACBonusVsRace(IPConst nRace, int nACBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nACBonus);
             Internal.NativeFunctions.StackPushInteger((int)nRace);
             Internal.NativeFunctions.CallBuiltIn(620);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6934,12 +6934,12 @@ namespace NWN
         ///  bonus.  The AC bonus should be an integer between 1 and 20.  The
         ///  modifier type depends on the item it is being applied to.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyACBonusVsSAlign(IPConst nAlign, int nACBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyACBonusVsSAlign(IPConst nAlign, int nACBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nACBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAlign);
             Internal.NativeFunctions.CallBuiltIn(621);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6947,11 +6947,11 @@ namespace NWN
         ///  enhancement bonus.  The Enhancement bonus should be an integer between
         ///  1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nEnhancementBonus);
             Internal.NativeFunctions.CallBuiltIn(622);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6960,12 +6960,12 @@ namespace NWN
         ///  and the enhancement bonus.  The Enhancement bonus should be an integer
         ///  between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyEnhancementBonusVsAlign(IPConst nAlignGroup, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyEnhancementBonusVsAlign(IPConst nAlignGroup, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
             Internal.NativeFunctions.CallBuiltIn(623);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6974,12 +6974,12 @@ namespace NWN
         ///  enhancement bonus.  The enhancement bonus should be an integer between
         ///  1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyEnhancementBonusVsRace(IPConst nRace, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyEnhancementBonusVsRace(IPConst nRace, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nRace);
             Internal.NativeFunctions.CallBuiltIn(624);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -6988,12 +6988,12 @@ namespace NWN
         ///  enhancement bonus.  The enhancement bonus should be an integer between
         ///  1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyEnhancementBonusVsSAlign(IPConst nAlign, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyEnhancementBonusVsSAlign(IPConst nAlign, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAlign);
             Internal.NativeFunctions.CallBuiltIn(625);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7001,33 +7001,33 @@ namespace NWN
         ///  enhancement penalty.  The enhancement penalty should be a POSITIVE
         ///  integer between 1 and 5 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(626);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property weight reduction.  You need to specify the weight
         ///  reduction constant(IP_CONST_REDUCEDWEIGHT_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyWeightReduction(int nReduction)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyWeightReduction(int nReduction)
         {
             Internal.NativeFunctions.StackPushInteger(nReduction);
             Internal.NativeFunctions.CallBuiltIn(627);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property Bonus Feat.  You need to specify the the feat
         ///  constant(IP_CONST_FEAT_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyBonusFeat(IPConst nFeat)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyBonusFeat(IPConst nFeat)
         {
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
             Internal.NativeFunctions.CallBuiltIn(628);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7036,12 +7036,12 @@ namespace NWN
         ///  spell casting class) and the level of the bonus spell.  The level of the
         ///  bonus spell should be an integer between 0 and 9.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyBonusLevelSpell(IPConst nClass, int nSpellLevel)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyBonusLevelSpell(IPConst nClass, int nSpellLevel)
         {
             Internal.NativeFunctions.StackPushInteger(nSpellLevel);
             Internal.NativeFunctions.StackPushInteger((int)nClass);
             Internal.NativeFunctions.CallBuiltIn(629);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7433,12 +7433,12 @@ namespace NWN
         ///           Special_Alcohol_Wine
         /// 
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyCastSpell(IPConst nSpell, int nNumUses)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyCastSpell(IPConst nSpell, int nNumUses)
         {
             Internal.NativeFunctions.StackPushInteger(nNumUses);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(630);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7447,12 +7447,12 @@ namespace NWN
         ///  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageBonus(IPConst nDamageType, int nDamage)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageBonus(IPConst nDamageType, int nDamage)
         {
             Internal.NativeFunctions.StackPushInteger(nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(631);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7462,13 +7462,13 @@ namespace NWN
         ///  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageBonusVsAlign(IPConst nAlignGroup, IPConst nDamageType, int nDamage)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageBonusVsAlign(IPConst nAlignGroup, IPConst nDamageType, int nDamage)
         {
             Internal.NativeFunctions.StackPushInteger(nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
             Internal.NativeFunctions.CallBuiltIn(632);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7478,13 +7478,13 @@ namespace NWN
         ///  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageBonusVsRace(IPConst nRace, IPConst nDamageType, int nDamage)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageBonusVsRace(IPConst nRace, IPConst nDamageType, int nDamage)
         {
             Internal.NativeFunctions.StackPushInteger(nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger((int)nRace);
             Internal.NativeFunctions.CallBuiltIn(633);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7494,13 +7494,13 @@ namespace NWN
         ///  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageBonusVsSAlign(IPConst nAlign, IPConst nDamageType, int nDamage)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageBonusVsSAlign(IPConst nAlign, IPConst nDamageType, int nDamage)
         {
             Internal.NativeFunctions.StackPushInteger(nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger((int)nAlign);
             Internal.NativeFunctions.CallBuiltIn(634);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7510,23 +7510,23 @@ namespace NWN
         ///  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageImmunity(IPConst nDamageType, IPConst nImmuneBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageImmunity(IPConst nDamageType, IPConst nImmuneBonus)
         {
             Internal.NativeFunctions.StackPushInteger((int)nImmuneBonus);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(635);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property damage penalty.  You must specify the damage penalty.
         ///  The damage penalty should be a POSITIVE integer between 1 and 5 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamagePenalty(int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(636);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7535,12 +7535,12 @@ namespace NWN
         ///  and the amount of HP of damage constant(IP_CONST_DAMAGESOAK_*) will be soaked
         ///  up if your weapon is not of high enough enhancement.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageReduction(IPConst nEnhancement, int nHPSoak)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageReduction(IPConst nEnhancement, int nHPSoak)
         {
             Internal.NativeFunctions.StackPushInteger(nHPSoak);
             Internal.NativeFunctions.StackPushInteger((int)nEnhancement);
             Internal.NativeFunctions.CallBuiltIn(637);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7548,12 +7548,12 @@ namespace NWN
         ///  constant(IP_CONST_DAMAGETYPE_*) and the amount of HP of damage constant
         ///  (IP_CONST_DAMAGERESIST_*) that will be resisted against each round.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageResistance(IPConst nDamageType, int nHPResist)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageResistance(IPConst nDamageType, int nHPResist)
         {
             Internal.NativeFunctions.StackPushInteger(nHPResist);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(638);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7561,21 +7561,21 @@ namespace NWN
         ///  constant(IP_CONST_DAMAGETYPE_*) that you want the user to be extra vulnerable to
         ///  and the percentage vulnerability constant(IP_CONST_DAMAGEVULNERABILITY_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDamageVulnerability(IPConst nDamageType, IPConst nVulnerability)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDamageVulnerability(IPConst nDamageType, IPConst nVulnerability)
         {
             Internal.NativeFunctions.StackPushInteger((int)nVulnerability);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(639);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Return Item property Darkvision.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDarkvision()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDarkvision()
         {
             Internal.NativeFunctions.CallBuiltIn(640);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7583,12 +7583,12 @@ namespace NWN
         ///  constant(IP_CONST_ABILITY_*) and the modifier constant.  The modifier must be
         ///  a POSITIVE integer between 1 and 10 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDecreaseAbility(IPConst nAbility, int nModifier)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDecreaseAbility(IPConst nAbility, int nModifier)
         {
             Internal.NativeFunctions.StackPushInteger(nModifier);
             Internal.NativeFunctions.StackPushInteger((int)nAbility);
             Internal.NativeFunctions.CallBuiltIn(641);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7596,12 +7596,12 @@ namespace NWN
         ///  modifier type constant(IP_CONST_ACMODIFIERTYPE_*) and the armor class penalty.
         ///  The penalty must be a POSITIVE integer between 1 and 5 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDecreaseAC(IPConst nModifierType, int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDecreaseAC(IPConst nModifierType, int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.StackPushInteger((int)nModifierType);
             Internal.NativeFunctions.CallBuiltIn(642);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7609,12 +7609,12 @@ namespace NWN
         ///  skill to be decreased(SKILL_*) and the amount of the penalty.  The penalty
         ///  must be a POSITIVE integer between 1 and 10 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyDecreaseSkill(NWNSkill nSkill, int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyDecreaseSkill(NWNSkill nSkill, int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(643);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7622,11 +7622,11 @@ namespace NWN
         ///  containers that reduce the weight of the objects inside them.  You must
         ///  specify the container weight reduction type constant(IP_CONST_CONTAINERWEIGHTRED_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyContainerReducedWeight(IPConst nContainerType)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyContainerReducedWeight(IPConst nContainerType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nContainerType);
             Internal.NativeFunctions.CallBuiltIn(644);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7636,11 +7636,11 @@ namespace NWN
         ///        here.
         ///  NOTE: It is also only applicable to melee weapons.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyExtraMeleeDamageType(IPConst nDamageType)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyExtraMeleeDamageType(IPConst nDamageType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(645);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7650,60 +7650,60 @@ namespace NWN
         ///        here.
         ///  NOTE: It is also only applicable to ranged weapons.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyExtraRangeDamageType(IPConst nDamageType)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyExtraRangeDamageType(IPConst nDamageType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(646);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property haste.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyHaste()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyHaste()
         {
             Internal.NativeFunctions.CallBuiltIn(647);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property Holy Avenger.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyHolyAvenger()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyHolyAvenger()
         {
             Internal.NativeFunctions.CallBuiltIn(648);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property immunity to miscellaneous effects.  You must specify the
         ///  effect to which the user is immune, it is a constant(IP_CONST_IMMUNITYMISC_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyImmunityMisc(IPConst nImmunityType)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyImmunityMisc(IPConst nImmunityType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nImmunityType);
             Internal.NativeFunctions.CallBuiltIn(649);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property improved evasion.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyImprovedEvasion()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyImprovedEvasion()
         {
             Internal.NativeFunctions.CallBuiltIn(650);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property bonus spell resistance.  You must specify the bonus spell
         ///  resistance constant(IP_CONST_SPELLRESISTANCEBONUS_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyBonusSpellResistance(IPConst nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyBonusSpellResistance(IPConst nBonus)
         {
             Internal.NativeFunctions.StackPushInteger((int)nBonus);
             Internal.NativeFunctions.CallBuiltIn(651);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7712,12 +7712,12 @@ namespace NWN
         ///  applied to and the bonus that is be applied.  The bonus must be an integer
         ///  between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyBonusSavingThrowVsX(IPConst nBonusType, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyBonusSavingThrowVsX(IPConst nBonusType, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nBonusType);
             Internal.NativeFunctions.CallBuiltIn(652);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7726,22 +7726,22 @@ namespace NWN
         ///  to which the user gets the bonus and the bonus that he/she will get.  The
         ///  bonus must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyBonusSavingThrow(IPConst nBaseSaveType, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyBonusSavingThrow(IPConst nBaseSaveType, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nBaseSaveType);
             Internal.NativeFunctions.CallBuiltIn(653);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property keen.  This means a critical threat range of 19-20 on a
         ///  weapon will be increased to 17-20 etc.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyKeen()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyKeen()
         {
             Internal.NativeFunctions.CallBuiltIn(654);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7749,12 +7749,12 @@ namespace NWN
         ///  light(IP_CONST_LIGHTBRIGHTNESS_*) and the color constant of the light
         ///  (IP_CONST_LIGHTCOLOR_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyLight(IPConst nBrightness, IPConst nColor)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyLight(IPConst nBrightness, IPConst nColor)
         {
             Internal.NativeFunctions.StackPushInteger((int)nColor);
             Internal.NativeFunctions.StackPushInteger((int)nBrightness);
             Internal.NativeFunctions.CallBuiltIn(655);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7762,21 +7762,21 @@ namespace NWN
         ///  specify the maximum modifier for strength that is allowed on a ranged weapon.
         ///  The modifier must be a positive integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
         {
             Internal.NativeFunctions.StackPushInteger(nModifier);
             Internal.NativeFunctions.CallBuiltIn(656);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property no damage.  This means the weapon will do no damage in
         ///  combat.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyNoDamage()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyNoDamage()
         {
             Internal.NativeFunctions.CallBuiltIn(657);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7820,13 +7820,13 @@ namespace NWN
         ///       STUN              :nSpecial is the duration/percentage of effecting victim.
         ///                          constant(IP_CONST_ONHIT_DURATION_*)
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyOnHitProps(IPConst nProperty, int nSaveDC, int nSpecial = 0)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyOnHitProps(IPConst nProperty, int nSaveDC, int nSpecial = 0)
         {
             Internal.NativeFunctions.StackPushInteger(nSpecial);
             Internal.NativeFunctions.StackPushInteger(nSaveDC);
             Internal.NativeFunctions.StackPushInteger((int)nProperty);
             Internal.NativeFunctions.CallBuiltIn(658);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7835,12 +7835,12 @@ namespace NWN
         ///  penalty to be applied.  The penalty must be a POSITIVE integer between 1 and 20
         ///  (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyReducedSavingThrowVsX(IPConst nBaseSaveType, int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyReducedSavingThrowVsX(IPConst nBaseSaveType, int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.StackPushInteger((int)nBaseSaveType);
             Internal.NativeFunctions.CallBuiltIn(659);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7849,23 +7849,23 @@ namespace NWN
         ///  to be applied.  The constant for the base type starts with (IP_CONST_SAVEBASETYPE_*).
         ///  The penalty must be a POSITIVE integer between 1 and 20 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyReducedSavingThrow(IPConst nBonusType, int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyReducedSavingThrow(IPConst nBonusType, int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.StackPushInteger((int)nBonusType);
             Internal.NativeFunctions.CallBuiltIn(660);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property regeneration.  You must specify the regeneration amount.
         ///  The amount must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyRegeneration(int nRegenAmount)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyRegeneration(int nRegenAmount)
         {
             Internal.NativeFunctions.StackPushInteger(nRegenAmount);
             Internal.NativeFunctions.CallBuiltIn(661);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7873,56 +7873,56 @@ namespace NWN
         ///  will get a bonus(SKILL_*) and the amount of the bonus.  The bonus amount must
         ///  be an integer between 1 and 50.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertySkillBonus(NWNSkill nSkill, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertySkillBonus(NWNSkill nSkill, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(662);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property spell immunity vs. specific spell.  You must specify the
         ///  spell to which the user will be immune(IP_CONST_IMMUNITYSPELL_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertySpellImmunitySpecific(IPConst nSpell)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertySpellImmunitySpecific(IPConst nSpell)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(663);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property spell immunity vs. spell school.  You must specify the
         ///  school to which the user will be immune(IP_CONST_SPELLSCHOOL_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertySpellImmunitySchool(IPConst nSchool)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertySpellImmunitySchool(IPConst nSchool)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSchool);
             Internal.NativeFunctions.CallBuiltIn(664);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property Thieves tools.  You must specify the modifier you wish
         ///  the tools to have.  The modifier must be an integer between 1 and 12.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyThievesTools(int nModifier)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyThievesTools(int nModifier)
         {
             Internal.NativeFunctions.StackPushInteger(nModifier);
             Internal.NativeFunctions.CallBuiltIn(665);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property Attack bonus.  You must specify an attack bonus.  The bonus
         ///  must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAttackBonus(int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAttackBonus(int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.CallBuiltIn(666);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7930,12 +7930,12 @@ namespace NWN
         ///  alignment group constant(IP_CONST_ALIGNMENTGROUP_*) and the attack bonus.  The
         ///  bonus must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAttackBonusVsAlign(IPConst nAlignGroup, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAttackBonusVsAlign(IPConst nAlignGroup, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
             Internal.NativeFunctions.CallBuiltIn(667);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7943,12 +7943,12 @@ namespace NWN
         ///  racial group constant(IP_CONST_RACIALTYPE_*) and the attack bonus.  The bonus
         ///  must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAttackBonusVsRace(IPConst nRace, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAttackBonusVsRace(IPConst nRace, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nRace);
             Internal.NativeFunctions.CallBuiltIn(668);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7956,23 +7956,23 @@ namespace NWN
         ///  the alignment you want the bonus to work against(IP_CONST_ALIGNMENT_*) and the
         ///  attack bonus.  The bonus must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAttackBonusVsSAlign(IPConst nAlignment, int nBonus)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAttackBonusVsSAlign(IPConst nAlignment, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nAlignment);
             Internal.NativeFunctions.CallBuiltIn(669);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property attack penalty.  You must specify the attack penalty.
         ///  The penalty must be a POSITIVE integer between 1 and 5 (ie. 1 = -1).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAttackPenalty(int nPenalty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAttackPenalty(int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(670);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -7982,87 +7982,87 @@ namespace NWN
         ///  bonus).  For this parmeter you use the constants beginning with:
         ///       (IP_CONST_UNLIMITEDAMMO_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyUnlimitedAmmo(IPConst nAmmoDamage = IPConst.UnlimitedAmmo_Basic)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyUnlimitedAmmo(IPConst nAmmoDamage = IPConst.UnlimitedAmmo_Basic)
         {
             Internal.NativeFunctions.StackPushInteger((int)nAmmoDamage);
             Internal.NativeFunctions.CallBuiltIn(671);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property limit use by alignment group.  You must specify the
         ///  alignment group(s) that you want to be able to use this item(IP_CONST_ALIGNMENTGROUP_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyLimitUseByAlign(IPConst nAlignGroup)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyLimitUseByAlign(IPConst nAlignGroup)
         {
             Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
             Internal.NativeFunctions.CallBuiltIn(672);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property limit use by class.  You must specify the class(es) who
         ///  are able to use this item(IP_CONST_CLASS_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyLimitUseByClass(IPConst nClass)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyLimitUseByClass(IPConst nClass)
         {
             Internal.NativeFunctions.StackPushInteger((int)nClass);
             Internal.NativeFunctions.CallBuiltIn(673);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property limit use by race.  You must specify the race(s) who are
         ///  allowed to use this item(IP_CONST_RACIALTYPE_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyLimitUseByRace(IPConst nRace)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyLimitUseByRace(IPConst nRace)
         {
             Internal.NativeFunctions.StackPushInteger((int)nRace);
             Internal.NativeFunctions.CallBuiltIn(674);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property limit use by specific alignment.  You must specify the
         ///  alignment(s) of those allowed to use the item(IP_CONST_ALIGNMENT_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyLimitUseBySAlign(IPConst nAlignment)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyLimitUseBySAlign(IPConst nAlignment)
         {
             Internal.NativeFunctions.StackPushInteger((int)nAlignment);
             Internal.NativeFunctions.CallBuiltIn(675);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property vampiric regeneration.  You must specify the amount of
         ///  regeneration.  The regen amount must be an integer between 1 and 20.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
         {
             Internal.NativeFunctions.StackPushInteger(nRegenAmount);
             Internal.NativeFunctions.CallBuiltIn(677);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property Trap.  You must specify the trap level constant
         ///  (IP_CONST_TRAPSTRENGTH_*) and the trap type constant(IP_CONST_TRAPTYPE_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyTrap(IPConst nTrapLevel, IPConst nTrapType)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyTrap(IPConst nTrapLevel, IPConst nTrapType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nTrapType);
             Internal.NativeFunctions.StackPushInteger((int)nTrapLevel);
             Internal.NativeFunctions.CallBuiltIn(678);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property true seeing.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyTrueSeeing()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyTrueSeeing()
         {
             Internal.NativeFunctions.CallBuiltIn(679);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -8086,43 +8086,43 @@ namespace NWN
         ///  NOTE: These can only be applied to monster NATURAL weapons (ie. bite, claw,
         ///        gore, and slam).  IT WILL NOT WORK ON NORMAL WEAPONS.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyOnMonsterHitProperties(IPConst nProperty, int nSpecial = 0)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyOnMonsterHitProperties(IPConst nProperty, int nSpecial = 0)
         {
             Internal.NativeFunctions.StackPushInteger(nSpecial);
             Internal.NativeFunctions.StackPushInteger((int)nProperty);
             Internal.NativeFunctions.CallBuiltIn(680);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property turn resistance.  You must specify the resistance bonus.
         ///  The bonus must be an integer between 1 and 50.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyTurnResistance(int nModifier)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyTurnResistance(int nModifier)
         {
             Internal.NativeFunctions.StackPushInteger(nModifier);
             Internal.NativeFunctions.CallBuiltIn(681);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property Massive Critical.  You must specify the extra damage
         ///  constant(IP_CONST_DAMAGEBONUS_*) of the criticals.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyMassiveCritical(int nDamage)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyMassiveCritical(int nDamage)
         {
             Internal.NativeFunctions.StackPushInteger(nDamage);
             Internal.NativeFunctions.CallBuiltIn(682);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property free action.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyFreeAction()
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyFreeAction()
         {
             Internal.NativeFunctions.CallBuiltIn(683);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -8131,11 +8131,11 @@ namespace NWN
         ///  NOTE: These can only be applied to monster NATURAL weapons (ie. bite, claw,
         ///        gore, and slam).  IT WILL NOT WORK ON NORMAL WEAPONS.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyMonsterDamage(int nDamage)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyMonsterDamage(int nDamage)
         {
             Internal.NativeFunctions.StackPushInteger(nDamage);
             Internal.NativeFunctions.CallBuiltIn(684);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -8144,11 +8144,11 @@ namespace NWN
         ///  between 1 and 9.  By putting in a 3 it will mean the user is immune to all
         ///  3rd level and lower spells.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
         {
             Internal.NativeFunctions.StackPushInteger(nLevel);
             Internal.NativeFunctions.CallBuiltIn(685);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -8156,33 +8156,33 @@ namespace NWN
         ///  automatically use the zombie walk.  This will apply the special walk animation
         ///  to the user.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertySpecialWalk(int nWalkType = 0)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertySpecialWalk(int nWalkType = 0)
         {
             Internal.NativeFunctions.StackPushInteger(nWalkType);
             Internal.NativeFunctions.CallBuiltIn(686);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property healers kit.  You must specify the level of the kit.
         ///  The modifier must be an integer between 1 and 12.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyHealersKit(int nModifier)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyHealersKit(int nModifier)
         {
             Internal.NativeFunctions.StackPushInteger(nModifier);
             Internal.NativeFunctions.CallBuiltIn(687);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns Item property weight increase.  You must specify the weight increase
         ///  constant(IP_CONST_WEIGHTINCREASE_*).
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyWeightIncrease(IPConst nWeight)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyWeightIncrease(IPConst nWeight)
         {
             Internal.NativeFunctions.StackPushInteger((int)nWeight);
             Internal.NativeFunctions.CallBuiltIn(688);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -8211,7 +8211,7 @@ namespace NWN
             Internal.NativeFunctions.StackPushInteger((int)nSpellSchool);
             Internal.NativeFunctions.StackPushInteger(nPercent);
             Internal.NativeFunctions.CallBuiltIn(690);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -8473,7 +8473,7 @@ namespace NWN
         public static Effect EffectEthereal()
         {
             Internal.NativeFunctions.CallBuiltIn(711);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -8738,18 +8738,18 @@ namespace NWN
         ///  when a successful strike is made, or (when applied to armor) is struck by an opponent.
         ///  - nSpell uses the IP_CONST_ONHIT_CASTSPELL_* constants
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyOnHitCastSpell(IPConst nSpell, int nLevel)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyOnHitCastSpell(IPConst nSpell, int nLevel)
         {
             Internal.NativeFunctions.StackPushInteger(nLevel);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(733);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns the SubType number of the item property. See the 2DA files for value definitions.
         /// </summary>
-        public static int GetItemPropertySubType(NWN.ItemProperty iProperty)
+        public static int GetItemPropertySubType(global::SWLOR.Game.Server.NWScript.ItemProperty iProperty)
         {
             Internal.NativeFunctions.StackPushItemProperty(iProperty.Handle);
             Internal.NativeFunctions.CallBuiltIn(734);
@@ -8802,11 +8802,11 @@ namespace NWN
         ///  Creates a visual effect (ITEM_VISUAL_*) that may be applied to
         ///  melee weapons only.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyVisualEffect(ItemVisual nEffect)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyVisualEffect(ItemVisual nEffect)
         {
             Internal.NativeFunctions.StackPushInteger((int)nEffect);
             Internal.NativeFunctions.CallBuiltIn(739);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -8964,10 +8964,10 @@ namespace NWN
         ///  PLEASE NOTE: This is an expensive function and may
         ///               degrade performance if used frequently.
         /// </summary>
-        public static bool LineOfSightVector(NWN.Vector? vSource, NWN.Vector? vTarget)
+        public static bool LineOfSightVector(global::SWLOR.Game.Server.NWScript.Vector? vSource, global::SWLOR.Game.Server.NWScript.Vector? vTarget)
         {
-            Internal.NativeFunctions.StackPushVector(vTarget.HasValue ? vTarget.Value : new NWN.Vector());
-            Internal.NativeFunctions.StackPushVector(vSource.HasValue ? vSource.Value : new NWN.Vector());
+            Internal.NativeFunctions.StackPushVector(vTarget.HasValue ? vTarget.Value : new global::SWLOR.Game.Server.NWScript.Vector());
+            Internal.NativeFunctions.StackPushVector(vSource.HasValue ? vSource.Value : new global::SWLOR.Game.Server.NWScript.Vector());
             Internal.NativeFunctions.CallBuiltIn(753);
             return Internal.NativeFunctions.StackPopInteger() == 1;
         }
@@ -9015,18 +9015,18 @@ namespace NWN
         public static Effect EffectCutsceneGhost()
         {
             Internal.NativeFunctions.CallBuiltIn(757);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
         ///  Creates an item property that offsets the effect on arcane spell failure
         ///  that a particular item has. Parameters come from the ITEM_PROP_ASF_* group.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyArcaneSpellFailure(int nModLevel)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyArcaneSpellFailure(int nModLevel)
         {
             Internal.NativeFunctions.StackPushInteger(nModLevel);
             Internal.NativeFunctions.CallBuiltIn(758);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -9122,7 +9122,7 @@ namespace NWN
         public static Effect EffectCutsceneImmobilize()
         {
             Internal.NativeFunctions.CallBuiltIn(767);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -9141,7 +9141,7 @@ namespace NWN
         /// <summary>
         ///  Returns the Cost Table number of the item property. See the 2DA files for value definitions.
         /// </summary>
-        public static int GetItemPropertyCostTable(NWN.ItemProperty iProp)
+        public static int GetItemPropertyCostTable(global::SWLOR.Game.Server.NWScript.ItemProperty iProp)
         {
             Internal.NativeFunctions.StackPushItemProperty(iProp.Handle);
             Internal.NativeFunctions.CallBuiltIn(769);
@@ -9152,7 +9152,7 @@ namespace NWN
         ///  Returns the Cost Table value (index of the cost table) of the item property.
         ///  See the 2DA files for value definitions.
         /// </summary>
-        public static int GetItemPropertyCostTableValue(NWN.ItemProperty iProp)
+        public static int GetItemPropertyCostTableValue(global::SWLOR.Game.Server.NWScript.ItemProperty iProp)
         {
             Internal.NativeFunctions.StackPushItemProperty(iProp.Handle);
             Internal.NativeFunctions.CallBuiltIn(770);
@@ -9162,7 +9162,7 @@ namespace NWN
         /// <summary>
         ///  Returns the Param1 number of the item property. See the 2DA files for value definitions.
         /// </summary>
-        public static int GetItemPropertyParam1(NWN.ItemProperty iProp)
+        public static int GetItemPropertyParam1(global::SWLOR.Game.Server.NWScript.ItemProperty iProp)
         {
             Internal.NativeFunctions.StackPushItemProperty(iProp.Handle);
             Internal.NativeFunctions.CallBuiltIn(771);
@@ -9172,7 +9172,7 @@ namespace NWN
         /// <summary>
         ///  Returns the Param1 value of the item property. See the 2DA files for value definitions.
         /// </summary>
-        public static int GetItemPropertyParam1Value(NWN.ItemProperty iProp)
+        public static int GetItemPropertyParam1Value(global::SWLOR.Game.Server.NWScript.ItemProperty iProp)
         {
             Internal.NativeFunctions.StackPushItemProperty(iProp.Handle);
             Internal.NativeFunctions.CallBuiltIn(772);
@@ -9764,7 +9764,7 @@ namespace NWN
         ///                            type specified will fire instead (as specified in the
         ///                            traps.2da).
         /// </summary>
-        public static NWGameObject CreateTrapAtLocation(TrapBaseType nTrapType, NWN.Location lLocation, float fSize = 2.0f, string sTag = "", StandardFaction nFaction = StandardFaction.Hostile, string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
+        public static NWGameObject CreateTrapAtLocation(TrapBaseType nTrapType, global::SWLOR.Game.Server.NWScript.Location lLocation, float fSize = 2.0f, string sTag = "", StandardFaction nFaction = StandardFaction.Hostile, string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sOnTrapTriggeredScript);
             Internal.NativeFunctions.StackPushStringUTF8(sOnDisarmScript);
@@ -10312,11 +10312,11 @@ namespace NWN
         ///  - nMasterialType: The Material Type should be a positive integer between 0 and 77 (see iprp_matcost.2da).
         ///  Note: The Material Type property will only affect the cost of the item if you modify the cost in the iprp_matcost.2da.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyMaterial(int nMaterialType)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyMaterial(int nMaterialType)
         {
             Internal.NativeFunctions.StackPushInteger(nMaterialType);
             Internal.NativeFunctions.CallBuiltIn(845);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -10325,11 +10325,11 @@ namespace NWN
         ///               IP_CONST_QUALITY_*
         ///  Note: The quality property will only affect the cost of the item if you modify the cost in the iprp_qualcost.2da.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyQuality(IPConst nQuality)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyQuality(IPConst nQuality)
         {
             Internal.NativeFunctions.StackPushInteger((int)nQuality);
             Internal.NativeFunctions.CallBuiltIn(846);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -10338,11 +10338,11 @@ namespace NWN
         ///               IP_CONST_ADDITIONAL_*
         ///  Note: The additional property only affects the cost of the item if you modify the cost in the iprp_addcost.2da.
         /// </summary>
-        public static NWN.ItemProperty ItemPropertyAdditional(IPConst nAdditionalProperty)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty ItemPropertyAdditional(IPConst nAdditionalProperty)
         {
             Internal.NativeFunctions.StackPushInteger((int)nAdditionalProperty);
             Internal.NativeFunctions.CallBuiltIn(847);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
@@ -10364,7 +10364,7 @@ namespace NWN
         ///  Returns the string tag set for the provided effect.
         ///  - If no tag has been set, returns an empty string.
         /// </summary>
-        public static string GetEffectTag(NWN.Effect eEffect)
+        public static string GetEffectTag(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(849);
@@ -10375,12 +10375,12 @@ namespace NWN
         ///  Tags the effect with the provided string.
         ///  - Any other tags in the link will be overwritten.
         /// </summary>
-        public static Effect TagEffect(NWN.Effect eEffect, string sNewTag)
+        public static Effect TagEffect(global::SWLOR.Game.Server.NWScript.Effect eEffect, string sNewTag)
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(850);
-            return new NWN.Effect(Internal.NativeFunctions.StackPopEffect());
+            return new global::SWLOR.Game.Server.NWScript.Effect(Internal.NativeFunctions.StackPopEffect());
         }
 
         /// <summary>
@@ -10388,7 +10388,7 @@ namespace NWN
         ///  - If not created by a creature, returns 0.
         ///  - If created by a spell-like ability, returns 0.
         /// </summary>
-        public static int GetEffectCasterLevel(NWN.Effect eEffect)
+        public static int GetEffectCasterLevel(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(851);
@@ -10399,7 +10399,7 @@ namespace NWN
         ///  Returns the total duration of the effect in seconds.
         ///  - Returns 0 if the duration type of the effect is not DurationType.Temporary.
         /// </summary>
-        public static int GetEffectDuration(NWN.Effect eEffect)
+        public static int GetEffectDuration(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(852);
@@ -10410,7 +10410,7 @@ namespace NWN
         ///  Returns the remaining duration of the effect in seconds.
         ///  - Returns 0 if the duration type of the effect is not DurationType.Temporary.
         /// </summary>
-        public static int GetEffectDurationRemaining(NWN.Effect eEffect)
+        public static int GetEffectDurationRemaining(global::SWLOR.Game.Server.NWScript.Effect eEffect)
         {
             Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
             Internal.NativeFunctions.CallBuiltIn(853);
@@ -10421,7 +10421,7 @@ namespace NWN
         ///  Returns the string tag set for the provided item property.
         ///  - If no tag has been set, returns an empty string.
         /// </summary>
-        public static string GetItemPropertyTag(NWN.ItemProperty nProperty)
+        public static string GetItemPropertyTag(global::SWLOR.Game.Server.NWScript.ItemProperty nProperty)
         {
             Internal.NativeFunctions.StackPushItemProperty(nProperty.Handle);
             Internal.NativeFunctions.CallBuiltIn(854);
@@ -10432,19 +10432,19 @@ namespace NWN
         ///  Tags the item property with the provided string.
         ///  - Any tags currently set on the item property will be overwritten.
         /// </summary>
-        public static NWN.ItemProperty TagItemProperty(NWN.ItemProperty nProperty, string sNewTag)
+        public static global::SWLOR.Game.Server.NWScript.ItemProperty TagItemProperty(global::SWLOR.Game.Server.NWScript.ItemProperty nProperty, string sNewTag)
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushItemProperty(nProperty.Handle);
             Internal.NativeFunctions.CallBuiltIn(855);
-            return new NWN.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
+            return new global::SWLOR.Game.Server.NWScript.ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
 
         /// <summary>
         ///  Returns the total duration of the item property in seconds.
         ///  - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
-        public static int GetItemPropertyDuration(NWN.ItemProperty nProperty)
+        public static int GetItemPropertyDuration(global::SWLOR.Game.Server.NWScript.ItemProperty nProperty)
         {
             Internal.NativeFunctions.StackPushItemProperty(nProperty.Handle);
             Internal.NativeFunctions.CallBuiltIn(856);
@@ -10455,7 +10455,7 @@ namespace NWN
         ///  Returns the remaining duration of the item property in seconds.
         ///  - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
-        public static int GetItemPropertyDurationRemaining(NWN.ItemProperty nProperty)
+        public static int GetItemPropertyDurationRemaining(global::SWLOR.Game.Server.NWScript.ItemProperty nProperty)
         {
             Internal.NativeFunctions.StackPushItemProperty(nProperty.Handle);
             Internal.NativeFunctions.CallBuiltIn(857);
@@ -10662,7 +10662,7 @@ namespace NWN
         ///  equivalent to the walkmesh type).
         ///  Returns 0 if the location is invalid or has no surface type.
         /// </summary>
-        public static int GetSurfaceMaterial(NWN.Location at)
+        public static int GetSurfaceMaterial(global::SWLOR.Game.Server.NWScript.Location at)
         {
             Internal.NativeFunctions.StackPushLocation(at.Handle);
             Internal.NativeFunctions.CallBuiltIn(870);
@@ -10673,7 +10673,7 @@ namespace NWN
         ///  Returns the z-offset at which the walkmesh is at the given location.
         ///  Returns -6.0 for invalid locations.
         /// </summary>
-        public static float GetGroundHeight(NWN.Location at)
+        public static float GetGroundHeight(global::SWLOR.Game.Server.NWScript.Location at)
         {
             Internal.NativeFunctions.StackPushLocation(at.Handle);
             Internal.NativeFunctions.CallBuiltIn(871);

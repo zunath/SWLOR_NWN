@@ -7,9 +7,11 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using System;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.AI
 {

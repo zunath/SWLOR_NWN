@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Perk.ForceSense

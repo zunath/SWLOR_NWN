@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
 namespace SWLOR.Game.Server.NWNX

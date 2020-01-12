@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {

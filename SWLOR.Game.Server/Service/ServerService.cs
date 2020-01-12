@@ -1,79 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using NWN.Scripts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.Scripting.Contracts;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
-// ReSharper disable once CheckNamespace
-namespace NWN.Scripts
+namespace SWLOR.Game.Server.Service
 {
-#pragma warning disable IDE1006 // Naming Styles
-    public class mod_on_load
-#pragma warning restore IDE1006 // Naming Styles
+    public static class ServerService
     {
-        // ReSharper disable once UnusedMember.Local
-        public void Main()
+        public static void SubscribeEvents()
         {
-            string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
-            Console.WriteLine(nowString + ": Module OnLoad executing...");
+            MessageHub.Instance.Subscribe<OnServerInitalization>(@event => InitializeServer());
+        }
 
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                MessageHub.Instance.Publish(new OnServerStopped());
-            };
-
+        private static void InitializeServer()
+        {
             DataService.RunMigration();
+            NWNXChat.RegisterChatScript("mod_on_nwnxchat");
+            SetModuleEventScripts();
+            SetAreaEventScripts();
+            SetWeaponSettings();
 
-            using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))
-            {
-                NWNXChat.RegisterChatScript("mod_on_nwnxchat");
-                SetModuleEventScripts();
-                SetAreaEventScripts();
-                SetWeaponSettings();
-
-            }
-            // Bioware default
+                // Bioware default
             _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
-
-            using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
-            {
-                RegisterServiceSubscribeEvents();
-            }
-
-            MessageHub.Instance.Publish(new OnModuleLoad());
-
-            nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
-            Console.WriteLine(nowString + ": Module OnLoad finished!");
         }
 
-
-        private static void RegisterServiceSubscribeEvents()
-        {
-            // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
-            var typesInNamespace = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(x => x.Namespace != null && 
-                            x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
-                            !typeof(IScript).IsAssignableFrom(x) && // Exclude scripts
-                            x.IsClass) // Classes only.
-                .ToArray();
-            foreach (var type in typesInNamespace)
-            {
-                var method = type.GetMethod("SubscribeEvents");
-                if (method != null)
-                {
-                    method.Invoke(null, null);
-                }
-            }
-        }
 
         private static void SetAreaEventScripts()
         {
@@ -175,7 +135,6 @@ namespace NWN.Scripts
 
             NWNXWeapon.SetWeaponUnarmed(BaseItemType.QuarterStaff);
         }
-
 
     }
 }

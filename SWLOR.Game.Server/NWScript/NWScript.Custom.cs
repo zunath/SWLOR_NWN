@@ -1,9 +1,9 @@
 ﻿using System;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 
-// ReSharper disable once CheckNamespace
-namespace NWN
+namespace SWLOR.Game.Server.NWScript
 {
     public partial class _
     {
@@ -597,7 +597,7 @@ namespace NWN
         ///  - bUseAppearAnimation
         ///  - sNewTag - if this string is not empty, it will replace the default tag from the template
         /// </summary>
-        public static NWGameObject CreateObject(ObjectType nObjectType, string sTemplate, NWN.Location lLocation, bool bUseAppearAnimation = false, string sNewTag = "")
+        public static NWGameObject CreateObject(ObjectType nObjectType, string sTemplate, Location lLocation, bool bUseAppearAnimation = false, string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushInteger(bUseAppearAnimation ? 1 : 0);

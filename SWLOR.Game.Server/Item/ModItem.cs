@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
 namespace SWLOR.Game.Server.Item

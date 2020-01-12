@@ -3,9 +3,11 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
+using _ = SWLOR.Game.Server.NWScript._;
 using LocalVariableType = SWLOR.Game.Server.Enumeration.LocalVariableType;
 
 namespace SWLOR.Game.Server.Scripting.Placeable.Scrapper

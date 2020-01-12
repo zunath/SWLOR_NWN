@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Logging;
 using SWLOR.Game.Server.Messaging;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 
 namespace SWLOR.Game.Server.Service

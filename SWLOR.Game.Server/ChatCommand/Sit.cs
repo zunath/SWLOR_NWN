@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {

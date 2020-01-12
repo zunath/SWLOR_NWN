@@ -1,6 +1,7 @@
 ﻿
 using SWLOR.Game.Server.Event.Conversation.RimerCards;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 

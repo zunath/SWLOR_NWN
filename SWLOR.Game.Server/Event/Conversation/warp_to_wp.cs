@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server;
 
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -14,13 +15,13 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(warp_to_wp)))
             {
-                NWPlayer player = _.GetPCSpeaker();
+                NWPlayer player = SWLOR.Game.Server.NWScript._.GetPCSpeaker();
                 NWObject talkingTo = NWGameObject.OBJECT_SELF;
 
                 string waypointTag = talkingTo.GetLocalString("DESTINATION");
-                NWObject waypoint = _.GetWaypointByTag(waypointTag);
+                NWObject waypoint = SWLOR.Game.Server.NWScript._.GetWaypointByTag(waypointTag);
 
-                player.AssignCommand(() => { _.ActionJumpToLocation(waypoint.Location); });
+                player.AssignCommand(() => { SWLOR.Game.Server.NWScript._.ActionJumpToLocation(waypoint.Location); });
             }
         }
     }

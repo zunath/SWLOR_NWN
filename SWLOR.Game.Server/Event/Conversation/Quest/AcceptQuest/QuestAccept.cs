@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest
 {

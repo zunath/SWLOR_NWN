@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Tools.LanguageGenerat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Tools.Module.Packer", "SWLOR.Tools.Module.Packer\SWLOR.Tools.Module.Packer.csproj", "{15322687-1012-4FFA-94E5-AE3E67CEA355}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Web", "SWLOR.Web\SWLOR.Web.csproj", "{8238F3F9-FBA2-4A4B-9A40-6FCC2E77EC00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{15322687-1012-4FFA-94E5-AE3E67CEA355}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15322687-1012-4FFA-94E5-AE3E67CEA355}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15322687-1012-4FFA-94E5-AE3E67CEA355}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8238F3F9-FBA2-4A4B-9A40-6FCC2E77EC00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8238F3F9-FBA2-4A4B-9A40-6FCC2E77EC00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8238F3F9-FBA2-4A4B-9A40-6FCC2E77EC00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8238F3F9-FBA2-4A4B-9A40-6FCC2E77EC00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

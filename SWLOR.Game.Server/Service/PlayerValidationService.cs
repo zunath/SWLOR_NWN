@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
             return error;
         }
 
-        private static readonly string[] ReservedWords =
+        public static readonly string[] ReservedWords =
         {
             "darth", "malak", "revan", "jedi", "sith", "yoda", "luke", "skywalker", "starkiller", "vader", "han", "solo", "boba", "bobba", "fett",
             "admiral", "ackbar", "c-3p0", "c3p0", "c-3po", "r2d2", "r2-d2", "qui-gon", "jinn", "greedo", "hutt", "the", "jabba", "mace", "windu", 

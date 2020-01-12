@@ -58,10 +58,9 @@ namespace SWLOR.Game.Server.Service
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             RegisterPerkHandlers();
             RegisterPerkCategories();

@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
             {
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var craftBlueprints = Enum.GetValues(typeof(CraftBlueprint)).Cast<CraftBlueprint>();
             foreach (var bp in craftBlueprints)

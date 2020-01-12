@@ -21,10 +21,9 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleAcquireItem>(message => OnModuleItemAcquired());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var keyItems = Enum.GetValues(typeof(KeyItem)).Cast<KeyItem>();
             foreach (var keyItem in keyItems)

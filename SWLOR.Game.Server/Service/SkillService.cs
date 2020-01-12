@@ -53,7 +53,6 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
 
             // Module Events
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
@@ -62,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Loads all skills into a dictionary at boot time, for later use by other systems.
         /// </summary>
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             // Initialize the list of categories.
             var categories = Enum.GetValues(typeof(SkillCategory)).Cast<SkillCategory>();

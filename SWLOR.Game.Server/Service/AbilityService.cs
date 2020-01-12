@@ -43,7 +43,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var handlers = PerkService.GetAllHandlers();
 
@@ -991,6 +990,8 @@ namespace SWLOR.Game.Server.Service
             foreach (var perk in perks)
             {
                 int level = self.GetLocalInt("PERK_LEVEL_" + (int)perk.PerkType);
+
+                if (!perk.PerkFeats.ContainsKey(level)) continue;
                 var perkFeat = perk.PerkFeats[level].First();
                 if (level >= perkFeat.Tier) continue;
 

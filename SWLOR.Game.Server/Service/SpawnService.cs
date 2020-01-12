@@ -22,14 +22,9 @@ namespace SWLOR.Game.Server.Service
 {
     public static class SpawnService
     {
-        private static readonly Dictionary<string, ISpawnRule> _spawnRules;
+        private static readonly Dictionary<string, ISpawnRule> _spawnRules = new Dictionary<string, ISpawnRule>();
         private static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; } = new Dictionary<NWArea, AreaSpawn>();
         private static Dictionary<Spawn, SpawnAttribute> _spawns { get; } = new Dictionary<Spawn, SpawnAttribute>();
-
-        static SpawnService()
-        {
-            _spawnRules = new Dictionary<string, ISpawnRule>();
-        }
 
         public static void SubscribeEvents()
         {
@@ -50,10 +45,14 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             RegisterSpawnRules();
             RegisterSpawns();
+        }
+
+        private static void OnModuleLoad()
+        {
             InitializeSpawns();
         }
 

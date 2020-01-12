@@ -131,12 +131,16 @@ namespace SWLOR.Game.Server.Service
             return _buildingStyles.Keys.ToList();
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             LoadBaseStructureTypes();
             LoadBaseStructures();
             LoadBuildingStyles();
             RegisterDoorRules();
+        }
+
+        private static void OnModuleLoad()
+        {
             foreach (var area in NWModule.Get().Areas)
             {
                 if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))

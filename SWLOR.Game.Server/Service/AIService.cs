@@ -56,13 +56,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Console.WriteLine("AIService -> OnModuleLoad");
-            RegisterAIBehaviours();
             RegisterAreaAICreatures();
-            Console.WriteLine("AIService -> OnModuleLoad Complete");
         }
 
-        private static void RegisterAIBehaviours()
+        public static void CacheData()
         {
             // Use reflection to get all of AI behaviour implementations.
             var classes = AppDomain.CurrentDomain.GetAssemblies()

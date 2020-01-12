@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            RacialType race = (RacialType) player.RacialType;
+            RacialType race = player.RacialType;
 
             if (race == RacialType.Wookiee)
             {
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyDefaultAppearance(NWPlayer player)
         {
-            RacialType race = (RacialType)player.RacialType;
+            RacialType race = player.RacialType;
             int maleHead;
             int femaleHead;
             int skinColor;

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using Console = System.Console;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnServerInitalization>(@event => InitializeServer());
+            MessageHub.Instance.Subscribe<OnServerCacheData>(@event => CacheServerData());
         }
 
         private static void InitializeServer()
@@ -34,11 +36,36 @@ namespace SWLOR.Game.Server.Service
             _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
         }
 
+        /// <summary>
+        /// Runs all CacheData methods found on other services.
+        /// The order in which these run is important because a handful of them have dependencies on the others.
+        /// </summary>
+        private static void CacheServerData()
+        {
+            Console.WriteLine("Caching server data...");
+            SkillService.CacheData();
+            PerkService.CacheData();
+            AbilityService.CacheData();
+            AIService.CacheData();
+            BaseService.CacheData();
+            ChatCommandService.CacheData();
+            CraftService.CacheData();
+            CustomEffectService.CacheData();
+            DialogService.CacheData();
+            ItemService.CacheData();
+            KeyItemService.CacheData();
+            LootService.CacheData();
+            ModService.CacheData();
+            QuestService.CacheData();
+            SpaceService.CacheData();
+            SpawnService.CacheData();
+            Console.WriteLine("Server data cached!");
+        }
 
         private static void SetAreaEventScripts()
         {
             NWGameObject area = _.GetFirstArea();
-            while (_.GetIsObjectValid(area) == true)
+            while (_.GetIsObjectValid(area))
             {
                 _.SetEventScript(area, EventScriptArea.OnEnter, "area_on_enter");
                 _.SetEventScript(area, EventScriptArea.OnExit, "area_on_exit");

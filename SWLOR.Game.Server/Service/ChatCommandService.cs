@@ -21,18 +21,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ChatCommandService
     {
-        private static readonly Dictionary<string, IChatCommand> _chatCommands;
-
-        static ChatCommandService()
-        {
-            _chatCommands = new Dictionary<string, IChatCommand>();
-        }
+        private static readonly Dictionary<string, IChatCommand> _chatCommands = new Dictionary<string, IChatCommand>();
 
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
         public static bool CanHandleChat(NWObject sender, string message)
@@ -42,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             return validTarget && validMessage;
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             RegisterChatCommandHandlers();
         }

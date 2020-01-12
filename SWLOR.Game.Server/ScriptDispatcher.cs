@@ -569,6 +569,7 @@ namespace SWLOR.Game.Server
                 };
 
                 MessageHub.Instance.Publish(new OnServerInitalization());
+                MessageHub.Instance.Publish(new OnServerCacheData());
 
                 string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
                 Console.WriteLine(nowString + ": Module OnLoad executing...");

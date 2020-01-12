@@ -34,10 +34,9 @@ namespace SWLOR.Game.Server.Service
 
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var quests = typeof(AbstractQuest)
                 .Assembly.GetTypes()

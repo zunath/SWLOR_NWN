@@ -24,11 +24,10 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad> (Message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var lootTables = Enum.GetValues(typeof(LootTable)).Cast<LootTable>();
 

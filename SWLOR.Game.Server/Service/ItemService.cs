@@ -39,18 +39,15 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnItemUsed>(message => OnItemUsed());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
-            Console.WriteLine("ItemService -> OnModuleLoad");
             RegisterActionItemHandlers();
-            Console.WriteLine("ItemService -> OnModuleLoad Complete");
         }
 
         private static void RegisterActionItemHandlers()

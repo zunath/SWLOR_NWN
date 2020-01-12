@@ -30,10 +30,9 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleRest>(message => OnModuleRest());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => LoadModule());
         }
 
-        private static void LoadModule()
+        public static void CacheData()
         {
             RegisterConversations();
         }

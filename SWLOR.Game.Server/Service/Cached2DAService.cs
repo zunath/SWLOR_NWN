@@ -4,6 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWNX;
 using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
@@ -27,10 +28,7 @@ namespace SWLOR.Game.Server.Service
 
             const string File = "iprp_immuncost";
 
-            // There's no way at the time of writing to identify the difference between end of file
-            // and an empty value. For this reason we have to hard code the row number. If someone's got
-            // a better solution, please implement it.
-            const int NumberOfRows = 150;
+            int NumberOfRows = NWNXUtil.Get2DARowCount(File);
             for (int x = 0; x <= NumberOfRows; x++)
             {
                 string value = _.Get2DAString(File, "Value", x);

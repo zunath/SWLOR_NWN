@@ -30,14 +30,11 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
-            Console.WriteLine("ModService -> OnModuleLoad");
             RegisterModHandlers();
-            Console.WriteLine("ModService -> OnModuleLoad Complete");
         }
 
         private static void RegisterModHandlers()

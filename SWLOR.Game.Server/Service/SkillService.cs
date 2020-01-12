@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillCategory, List<Skill>> _skillsByCategory = new Dictionary<SkillCategory, List<Skill>>();
         private static readonly HashSet<SkillCategory> _categoriesWithSkillContributing = new HashSet<SkillCategory>();
 
-        private static readonly Dictionary<Skill, SkillTypeAttribute> _allSkills = new Dictionary<Skill, SkillTypeAttribute>();
+        private static readonly Dictionary<Skill, SkillAttribute> _allSkills = new Dictionary<Skill, SkillAttribute>();
         private static readonly HashSet<Skill> _activeSkills = new HashSet<Skill>();
-        private static readonly Dictionary<Skill, SkillTypeAttribute> _skillsContributingToCap = new Dictionary<Skill, SkillTypeAttribute>();
+        private static readonly Dictionary<Skill, SkillAttribute> _skillsContributingToCap = new Dictionary<Skill, SkillAttribute>();
 
         public static void SubscribeEvents()
         {
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
             var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>();
             foreach(var skill in skills)
             {
-                var attr = skill.GetAttribute<Skill, SkillTypeAttribute>();
+                var attr = skill.GetAttribute<Skill, SkillAttribute>();
                 _allSkills[skill] = attr;
 
                 if (attr.IsActive)
@@ -367,7 +367,12 @@ namespace SWLOR.Game.Server.Service
             return dbPlayer.Skills[skill].Rank;
         }
 
-        public static SkillTypeAttribute GetSkill(Skill skill)
+        public static SkillCategoryAttribute GetCategory(SkillCategory category)
+        {
+            return _allCategories[category];
+        }
+
+        public static SkillAttribute GetSkill(Skill skill)
         {
             return _allSkills[skill];
         }

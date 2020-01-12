@@ -240,7 +240,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWPlaceable door = null;
-            if (exteriorStyle != null && (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship))
+            if (pcStructure.ExteriorStyleID != BuildingStyle.Invalid && 
+                (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship) &&
+                !string.IsNullOrWhiteSpace(exteriorStyle.DoorRule))
             {
                 door = SpawnBuildingDoor(exteriorStyle.DoorRule, plc);
                 areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, door, false, null));

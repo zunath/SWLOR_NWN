@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Caching
                 return default;
 
             return GetFromListIndex(ByPCBaseIDIndex, pcBaseID.ToString())
-                .SingleOrDefault(x => x.InteriorStyleID != null);
+                .SingleOrDefault(x => x.InteriorStyleID != BuildingStyle.Invalid);
         }
 
         public PCBaseStructure GetStarshipExteriorByPCBaseID(Guid pcBaseID)

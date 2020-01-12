@@ -397,9 +397,11 @@ namespace SWLOR.Game.Server
             // Generic scripts
             for(int x = 1; x <= 9; x++)
             {
-                _registry[$"script{x}"] = () =>
+                // Copy the variable to avoid modified closure errors.
+                var scriptID = x;
+                _registry[$"script_{scriptID}"] = () =>
                 {
-                    ScriptEvent.Run($"SCRIPT_{x}");
+                    ScriptEvent.Run($"SCRIPT_{scriptID}");
                     return SCRIPT_HANDLED;
                 };
             }

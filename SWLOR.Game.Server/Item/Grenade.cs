@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Item
             }
         }
 
-        public static void grenadeAoe(NWObject oTarget, string grenadeType)
+        public static void GrenadeAoe(NWObject oTarget, string grenadeType)
         {
             NWCreature user = GetAreaOfEffectCreator(NWGameObject.OBJECT_SELF);
             int perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);

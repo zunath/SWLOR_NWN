@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server
 
                 string description;
 
-                if (GetIsPC(examinedObject.Object) == true)
+                if (GetIsPC(examinedObject.Object))
                 {
                     // https://github.com/zunath/SWLOR_NWN/issues/853
                     // safest probably to get the modified (non-original) description only for players
@@ -638,6 +638,74 @@ namespace SWLOR.Game.Server
             _registry["on_open_store"] = () =>
             {
                 MessageHub.Instance.Publish(new OnOpenStore());
+                return SCRIPT_HANDLED;
+            };
+
+            // Grenades
+
+            // Would really prefer these to be located closer to the specific feature rather than in the dispatcher, but that's a refactor for another day.
+            _registry["grenade_bbomb_en"] = () =>
+            {
+                Item.Grenade.GrenadeAoe(GetEnteringObject(), "BACTABOMB");
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_bbomb_hb"] = () =>
+            {
+                NWObject oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
+                while (GetIsObjectValid(oTarget))
+                {
+                    Item.Grenade.GrenadeAoe(oTarget, "BACTABOMB");
+                    //Get the next target in the AOE
+                    oTarget = GetNextInPersistentObject(NWGameObject.OBJECT_SELF);
+                }
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_gas_en"] = () =>
+            {
+                Item.Grenade.GrenadeAoe(GetEnteringObject(), "GAS");
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_gas_hb"] = () =>
+            {
+                NWObject oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
+                while (GetIsObjectValid(oTarget))
+                {
+                    Item.Grenade.GrenadeAoe(oTarget, "GAS");
+                    //Get the next target in the AOE
+                    oTarget = GetNextInPersistentObject(NWGameObject.OBJECT_SELF);
+                }
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_incen_en"] = () =>
+            {
+                Item.Grenade.GrenadeAoe(GetEnteringObject(), "INCENDIARY");
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_incen_hb"] = () =>
+            {
+                NWObject oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
+                while (GetIsObjectValid(oTarget))
+                {
+                    Item.Grenade.GrenadeAoe(oTarget, "INCENDIARY");
+                    //Get the next target in the AOE
+                    oTarget = GetNextInPersistentObject(NWGameObject.OBJECT_SELF);
+                }
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_smoke_en"] = () =>
+            {
+                Item.Grenade.GrenadeAoe(GetEnteringObject(), "SMOKE");
+                return SCRIPT_HANDLED;
+            };
+            _registry["grenade_smoke_hb"] = () =>
+            {
+                NWObject oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
+                while (GetIsObjectValid(oTarget))
+                {
+                    Item.Grenade.GrenadeAoe(oTarget, "SMOKE");
+                    //Get the next target in the AOE
+                    oTarget = GetNextInPersistentObject(NWGameObject.OBJECT_SELF);
+                }
                 return SCRIPT_HANDLED;
             };
         }

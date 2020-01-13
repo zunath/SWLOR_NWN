@@ -644,7 +644,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (pcBase.PCBaseTypeID != (int) PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
+            if (pcBase.PCBaseTypeID != PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
             {
                 GetPC().FloatingText("You cannot retrieve any structures because the control tower has less than 100% shields.");
                 return;
@@ -682,6 +682,10 @@ namespace SWLOR.Game.Server.Conversation
                     GetPC().FloatingText("You must remove all structures in this sector before picking up the control tower.");
                     return;
                 }
+
+                // Remove control tower ID from PCBase record.
+                pcBase.ControlTowerStructureID = null;
+                DataService.Set(pcBase);
 
                 // Impound resources retrieved by drills.
                 foreach(var item in structure.Items.ToList())

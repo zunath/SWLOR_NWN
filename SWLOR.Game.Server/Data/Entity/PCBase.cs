@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Data.Entity
         [JsonProperty]
         public DateTime DateFuelEnds { get; set; }
         [JsonProperty]
-        public int PCBaseTypeID { get; set; }
+        public PCBaseType PCBaseTypeID { get; set; }
         [JsonProperty]
         public ApartmentType? ApartmentBuildingID { get; set; }
         [JsonProperty]
@@ -54,6 +54,8 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ShipLocation { get; set; }
         [JsonProperty]
         public int? Starcharts { get; set; }
+        [JsonProperty]
+        public Guid? ControlTowerStructureID { get; set; }
 
         [JsonProperty]
         public PCBasePermission PublicBasePermission { get; set; }

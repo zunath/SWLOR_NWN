@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.DoorRule
             orientation = orientation + orientationAdjustment;
             if (orientation > 360.0) orientation = orientation - 360.0f;
 
-            float mod = (float)(Math.Sqrt(sqrtAdjustment) * Math.Sin(orientation));
+            float mod = _.sqrt(sqrtAdjustment) * _.sin(orientation);
             position.X = position.X + mod;
 
-            mod = (float)(Math.Sqrt(sqrtAdjustment) * Math.Cos(orientation));
+            mod = _.sqrt(sqrtAdjustment) * _.cos(orientation);
             position.Y = position.Y - mod;
             Location doorLocation = _.Location(area.Object, position, _.GetFacingFromLocation(location));
 

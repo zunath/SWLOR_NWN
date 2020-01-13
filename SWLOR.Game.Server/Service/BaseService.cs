@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Service
                 DateRentDue = DateTime.UtcNow.AddDays(7),
                 DateFuelEnds = DateTime.UtcNow,
                 Sector = sector,
-                PCBaseTypeID = (int)Enumeration.PCBaseType.RegularBase,
+                PCBaseTypeID = PCBaseType.RegularBase,
                 CustomName = string.Empty
             };
             pcBase.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
@@ -462,15 +462,10 @@ namespace SWLOR.Game.Server.Service
 
         public static PCBaseStructure GetBaseControlTower(Guid pcBaseID)
         {
-            // Note - if this is a starship base, then the "control tower" is the starship object. 
-            var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID);
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            if (pcBase.ControlTowerStructureID == null) return null;
 
-            return structures.SingleOrDefault(x =>
-            {
-                var baseStructure = GetBaseStructure(x.BaseStructureID);
-                return (baseStructure.BaseStructureType == BaseStructureType.ControlTower || 
-                        baseStructure.BaseStructureType == BaseStructureType.Starship);
-            });
+            return DataService.PCBaseStructure.GetByID((Guid)pcBase.ControlTowerStructureID);
         }
 
         public static double GetPowerInUse(Guid pcBaseID)
@@ -738,7 +733,7 @@ namespace SWLOR.Game.Server.Service
                                 DateInitialPurchase = DateTime.UtcNow,
                                 DateFuelEnds = DateTime.UtcNow,
                                 DateRentDue = DateTime.UtcNow.AddDays(999),
-                                PCBaseTypeID = (int)Enumeration.PCBaseType.Starship,
+                                PCBaseTypeID = PCBaseType.Starship,
                                 Sector = "SS",
                                 BuildingStyleID = style.Key,
                                 AreaResref = style.Value.Resref,
@@ -770,6 +765,12 @@ namespace SWLOR.Game.Server.Service
                                 StructureBonus = structureItem.StructureBonus,
                                 StructureModeID = baseStructure.DefaultStructureMode
                             };
+
+                            // Need to link the "control tower" structure to the PCBase.
+                            // The control tower in this scenario is just the PC's ship itself.
+                            starkillerBase.ControlTowerStructureID = starshipStructure.ID;
+
+                            DataService.Set(starkillerBase);
                             DataService.Set(starshipStructure);
 
                             SpawnStructure(area, starshipStructure.ID);
@@ -802,7 +803,7 @@ namespace SWLOR.Game.Server.Service
             DurabilityService.SetDurability(item, (float)pcBaseStructure.Durability);
             item.StructureBonus = pcBaseStructure.StructureBonus;
 
-            if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)
+            if (pcBaseStructure.InteriorStyleID != BuildingStyle.Invalid && pcBaseStructure.ExteriorStyleID != BuildingStyle.Invalid)
             {
                 item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
                 item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
@@ -1010,9 +1011,11 @@ namespace SWLOR.Game.Server.Service
                 if (baseStructure.BaseStructureType == BaseStructureType.Building)
                 {
                     var defaultInterior = _buildingStyles.Single(x => x.Value.IsDefault &&
-                                                                      x.Value.BaseStructureID == structure);
+                                                                      x.Value.BaseStructureID == structure && 
+                                                                      x.Value.BuildingTypeID == BuildingType.Interior);
                     var defaultExterior = _buildingStyles.Single(x => x.Value.IsDefault &&
-                                                                      x.Value.BaseStructureID == structure);
+                                                                      x.Value.BaseStructureID == structure &&
+                                                                      x.Value.BuildingTypeID == BuildingType.Exterior);
 
                     item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)defaultInterior.Key);
                     item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)defaultExterior.Key);
@@ -1115,7 +1118,7 @@ namespace SWLOR.Game.Server.Service
                 if (baseStructure != null)
                 {
                     PCBase pcBase = DataService.PCBase.GetByIDOrDefault(baseStructure.PCBaseID);
-                    if (pcBase != null && pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
+                    if (pcBase != null && pcBase.PCBaseTypeID == PCBaseType.Starship)
                     {
                         // This is a starship.  Exit should be based on location, not based on the door variable.
                         if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
@@ -1566,7 +1569,7 @@ namespace SWLOR.Game.Server.Service
                 style = structure.InteriorStyleID;
                 name = structure.CustomName;
 
-                bool starship = pcBase.PCBaseTypeID == 3;
+                bool starship = pcBase.PCBaseTypeID == PCBaseType.Starship;
                 type = starship ? (int)BuildingType.Starship : (int)BuildingType.Interior;
 
                 if (string.IsNullOrWhiteSpace(name))

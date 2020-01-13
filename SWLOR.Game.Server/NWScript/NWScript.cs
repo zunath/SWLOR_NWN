@@ -712,6 +712,113 @@ namespace SWLOR.Game.Server.NWScript
         }
 
         /// <summary>
+        ///  Maths operation: cosine of fValue
+        /// </summary>
+        public static float cos(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(68);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: sine of fValue
+        /// </summary>
+        public static float sin(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(69);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: tan of fValue
+        /// </summary>
+        public static float tan(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(70);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: arccosine of fValue
+        ///  * Returns zero if fValue > 1 or fValue < -1
+        /// </summary>
+        public static float acos(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(71);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: arcsine of fValue
+        ///  * Returns zero if fValue >1 or fValue < -1
+        /// </summary>
+        public static float asin(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(72);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: arctan of fValue
+        /// </summary>
+        public static float atan(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(73);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: log of fValue
+        ///  * Returns zero if fValue <= zero
+        /// </summary>
+        public static float log(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(74);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: fValue is raised to the power of fExponent
+        ///  * Returns zero if fValue ==0 and fExponent <0
+        /// </summary>
+        public static float pow(float fValue, float fExponent)
+        {
+            Internal.NativeFunctions.StackPushFloat(fExponent);
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(75);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: square root of fValue
+        ///  * Returns zero if fValue <0
+        /// </summary>
+        public static float sqrt(float fValue)
+        {
+            Internal.NativeFunctions.StackPushFloat(fValue);
+            Internal.NativeFunctions.CallBuiltIn(76);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        ///  Maths operation: integer absolute value of nValue
+        ///  * Return value on error: 0
+        /// </summary>
+        public static int abs(int nValue)
+        {
+            Internal.NativeFunctions.StackPushInteger(nValue);
+            Internal.NativeFunctions.CallBuiltIn(77);
+            return Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
         ///  Create a Heal effect. This should be applied as an instantaneous effect.
         ///  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nDamageToHeal < 0.
         /// </summary>

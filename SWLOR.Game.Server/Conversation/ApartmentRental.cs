@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 PlayerID = player.GlobalID,
                 BuildingStyleID = data.BuildingStyleID,
-                PCBaseTypeID = (int)PCBaseType.Apartment,
+                PCBaseTypeID = PCBaseType.Apartment,
                 ApartmentBuildingID = data.ApartmentType,
                 CustomName = string.Empty,
                 DateInitialPurchase = DateTime.UtcNow,

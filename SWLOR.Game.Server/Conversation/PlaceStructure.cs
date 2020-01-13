@@ -417,6 +417,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 pcBase.ShieldHP = BaseService.CalculateMaxShieldHP(structure);
+                pcBase.ControlTowerStructureID = structure.ID;
                 DataService.Set(pcBase);
             }
             
@@ -457,7 +458,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var style in styles)
             {
                 var buildingStyle = BaseService.GetBuildingStyle(style);
-                var args = new Tuple<BuildingStyle, BuildingType>(style, buildingType);
+                var args = new Tuple<int, BuildingType>((int)style, buildingType);
                 AddResponseToPage("StylePage", buildingStyle.Name, true, args);
             }
         }

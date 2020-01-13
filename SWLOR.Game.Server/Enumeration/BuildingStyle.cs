@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Enumeration
         Invalid = 0,
         [BuildingStyle("Small Style 1 - Interior", "house_int_1", BaseStructure.SmallBuilding, true, "", true, BuildingType.Interior, 0, 0, 0)]
         SmallStyle1Interior = 1,
-        [BuildingStyle("Old House - Exterior", "old_house", BaseStructure.SmallBuilding, false, "OldHouseRule", true, BuildingType.Exterior, 0, 0, 0)]
+        [BuildingStyle("Old House - Exterior", "old_house", BaseStructure.SmallBuilding, false, "OldHouseRule", false, BuildingType.Exterior, 0, 0, 0)]
         OldHouseExterior = 2,
         [BuildingStyle("Medium Style 1 - Interior", "house_int_2", BaseStructure.MediumBuilding, true, "", true, BuildingType.Interior, 0, 0, 0)]
         MediumStyle1Interior = 3,

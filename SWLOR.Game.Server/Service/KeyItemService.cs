@@ -104,7 +104,14 @@ namespace SWLOR.Game.Server.Service
 
         public static IEnumerable<KeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, KeyItemCategoryType categoryID)
         {
-            return _keyItemsByCategory[categoryID];
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+
+            foreach (var keyItem in dbPlayer.AcquiredKeyItems)
+            {
+                var keyItemDetails = _keyItems[keyItem];
+                if (keyItemDetails.Category == categoryID)
+                    yield return keyItem;
+            }
         }
 
         private static void OnModuleItemAcquired()

@@ -468,36 +468,10 @@ namespace SWLOR.Game.Server.Service
             return DataService.PCBaseStructure.GetByID((Guid)pcBase.ControlTowerStructureID);
         }
 
-        public static double GetPowerInUse(Guid pcBaseID)
+        public static PCBaseCalculatedStats GetCalculatedBaseStats(Guid pcBaseID)
         {
-            return DataService.PCBaseStructure.GetPowerInUseByPCBaseID(pcBaseID);
-        }
-
-        public static double GetCPUInUse(Guid pcBaseID)
-        {
-            return DataService.PCBaseStructure.GetCPUInUseByPCBaseID(pcBaseID);
-        }
-
-        public static double GetMaxBaseCPU(Guid pcBaseID)
-        {
-            var tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null) return 0.0d;
-
-            var structure = GetBaseStructure(tower.BaseStructureID);
-
-            return structure.CPU + (tower.StructureBonus * 2);
-        }
-
-        public static double GetMaxBasePower(Guid pcBaseID)
-        {
-            var tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null) return 0.0d;
-
-            var structure = GetBaseStructure(tower.BaseStructureID);
-
-            return structure.Power + (tower.StructureBonus * 3);
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            return pcBase.CalculatedStats;
         }
 
         public static string GetSectorOfLocation(NWLocation targetLocation)
@@ -778,6 +752,7 @@ namespace SWLOR.Game.Server.Service
                             // Delete the item from the PC's inventory.
                             structureItem.Destroy();
 
+                            CalculatePCBaseStats(starkillerBase.ID);
                             return "Starship successfully docked.";
                         }
                     }
@@ -1325,110 +1300,64 @@ namespace SWLOR.Game.Server.Service
             sender.SendMessage("New container name received. Please press the 'Next' button in the conversation window.");
         }
 
-        public static int CalculateMaxShieldHP(PCBaseStructure controlTower)
+        public static PCBaseCalculatedStats CalculatePCBaseStats(Guid pcBaseID)
         {
-            if (controlTower == null) return 0;
+            var pcBaseStats = new PCBaseCalculatedStats();
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var controlTower = GetBaseControlTower(pcBaseID);
+            
+            // We can't recalculate stats if the base doesn't have a control tower. Bail early.
+            if (controlTower == null) return pcBaseStats;
 
-            return (int)(controlTower.Durability * 300);
-        }
+            var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID);
 
-        public static int CalculateMaxFuel(Guid pcBaseID)
-        {
-            const BaseStructureType siloType = BaseStructureType.FuelSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
+            pcBaseStats.MaxShieldHP = (int) (controlTower.Durability * 300);
 
-            if (tower == null)
+            var reinforcedSiloBonus = 0.0d;
+            var fuelSiloBonus = 0.0d;
+            var resourceSiloBonus = 0.0d;
+            foreach (var structure in structures)
             {
-                Console.WriteLine("Could not find tower in BaseService -> CalculateMaxFuel. PCBaseID = " + pcBaseID);
-                return 0;
+                var baseStructure = GetBaseStructure(structure.BaseStructureID);
+
+                // Calculate Power/CPU for all structures except control towers
+                if (baseStructure.BaseStructureType != BaseStructureType.ControlTower)
+                {
+                    pcBaseStats.PowerInUse += baseStructure.Power;
+                    pcBaseStats.CPUInUse += baseStructure.CPU;
+                }
+
+                // Calculate max reinforced fuel if structure is a Stronidium Silo
+                if (baseStructure.BaseStructureType == BaseStructureType.StronidiumSilo)
+                {
+                    reinforcedSiloBonus += (baseStructure.Storage + structure.StructureBonus) * 0.01d;
+                }
+
+                // Calculate max fuel if structure is a fuel silo.
+                if (baseStructure.BaseStructureType == BaseStructureType.FuelSilo)
+                {
+                    fuelSiloBonus += (baseStructure.Storage + structure.StructureBonus) * 0.01d;
+                }
+
+                // Calculate max resource capacity if structure is a resource silo
+                if (baseStructure.BaseStructureType == BaseStructureType.ResourceSilo)
+                {
+                    resourceSiloBonus += (baseStructure.Storage + structure.StructureBonus) * 0.01d;
+                }
             }
 
-            var towerStructure = GetBaseStructure(tower.BaseStructureID);
+            var controlTowerBaseStructure = GetBaseStructure(controlTower.BaseStructureID);
+            pcBaseStats.MaxReinforcedFuel = (int)(controlTowerBaseStructure.ReinforcedStorage + controlTowerBaseStructure.ReinforcedStorage * reinforcedSiloBonus);
+            pcBaseStats.MaxFuel = (int)(controlTowerBaseStructure.Storage + controlTowerBaseStructure.Storage * fuelSiloBonus);
+            pcBaseStats.ResourceCapacity = (int)(controlTowerBaseStructure.ResourceStorage + controlTowerBaseStructure.ResourceStorage * resourceSiloBonus);
+            pcBaseStats.MaxCPU = controlTowerBaseStructure.CPU + (controlTower.StructureBonus * 2);
+            pcBaseStats.MaxPower = controlTowerBaseStructure.Power + (controlTower.StructureBonus * 3);
 
-            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
-                                  .Where(x =>
-                                  {
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-                                      return x.PCBaseID == pcBaseID && baseStructure.BaseStructureType == siloType;
-                                  })
-                                  .DefaultIfEmpty()
-                                  .Sum(x =>
-                                  {
-                                      if (x == null) return 0;
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-                                      return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
+            // Update the base's stats.
+            pcBase.CalculatedStats = pcBaseStats;
+            DataService.Set(pcBase);
 
-            var fuelMax = towerStructure.Storage;
-
-            return (int)(fuelMax + fuelMax * siloBonus);
-        }
-
-        public static int CalculateMaxReinforcedFuel(Guid pcBaseID)
-        {
-            const BaseStructureType siloType = BaseStructureType.StronidiumSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null)
-            {
-                Console.WriteLine("Could not find tower in BaseService -> CalculateMaxReinforcedFuel. PCBaseID = " + pcBaseID);
-                return 0;
-            }
-
-            var towerBaseStructure = GetBaseStructure(tower.BaseStructureID);
-            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
-                                  .Where(x =>
-                                  {
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-                                      return x.PCBaseID == pcBaseID &&
-                                             baseStructure.BaseStructureType == siloType;
-                                  })
-                                  .DefaultIfEmpty()
-                                  .Sum(x =>
-                                  {
-                                      if (x == null) return 0;
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-
-                                      return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
-
-            var fuelMax = towerBaseStructure.ReinforcedStorage;
-
-            return (int)(fuelMax + fuelMax * siloBonus);
-        }
-
-        public static int CalculateResourceCapacity(Guid pcBaseID)
-        {
-            const BaseStructureType siloType = BaseStructureType.ResourceSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null)
-            {
-                Console.WriteLine("Could not find tower in BaseService -> CalculateResourceCapacity. PCBaseID = " + pcBaseID);
-                return 0;
-            }
-
-            var towerBaseStructure = GetBaseStructure(tower.BaseStructureID);
-            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
-                                  .Where(x =>
-                                  {
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-
-                                      return x.PCBaseID == pcBaseID &&
-                                             baseStructure.BaseStructureType == siloType;
-                                  })
-                                  .DefaultIfEmpty()
-                                  .Sum(x =>
-                                  {
-                                      if (x == null) return 0;
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-
-                                      return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
-
-            var resourceMax = towerBaseStructure.ResourceStorage;
-
-            return (int)(resourceMax + resourceMax * siloBonus);
+            return pcBase.CalculatedStats;
         }
 
         public static string UpgradeControlTower(NWCreature user, NWItem item, NWObject target)
@@ -1488,8 +1417,9 @@ namespace SWLOR.Game.Server.Service
             // Check that the current CPU and power usage of the base is not more than
             // the new tower can handle.
             //--------------------------------------------------------------------------
-            double powerInUse = GetPowerInUse(towerStructure.PCBaseID);
-            double cpuInUse = GetCPUInUse(towerStructure.PCBaseID);
+            var stats = GetCalculatedBaseStats(towerStructure.PCBaseID);
+            double powerInUse = stats.PowerInUse;
+            double cpuInUse = stats.CPUInUse;
 
             double towerPower = newTower.Power + (item.StructureBonus * 3);
             double towerCPU = newTower.CPU + (item.StructureBonus * 2);

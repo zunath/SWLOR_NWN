@@ -27,8 +27,9 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ControlTower
             NWPlaceable tower = NWGameObject.OBJECT_SELF;
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
-            int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+
+            int maxShieldHP = pcBase.CalculatedStats.MaxShieldHP;
 
             // Regular fuel usage
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)

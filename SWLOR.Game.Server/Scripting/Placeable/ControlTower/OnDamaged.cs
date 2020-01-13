@@ -33,8 +33,8 @@ namespace SWLOR.Game.Server.Scripting.Placeable.ControlTower
             int damage = _.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
-            int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            int maxShieldHP = pcBase.CalculatedStats.MaxShieldHP;
             var playerIDs = pcBase.PlayerBasePermissions.Keys;
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
             DateTime timer = DateTime.UtcNow.AddSeconds(30);

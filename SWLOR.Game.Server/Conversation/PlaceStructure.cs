@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
+            var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
             var structure = BaseService.GetBaseStructure(data.BaseStructureID);
             var tower = BaseService.GetBaseControlTower(data.PCBaseID);
             var towerBaseStructure = tower == null ? null : BaseService.GetBaseStructure(tower.BaseStructureID);
@@ -68,8 +69,8 @@ namespace SWLOR.Game.Server.Conversation
             bool isPlacingBuilding = structure.BaseStructureType == BaseStructureType.Building;
             bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalBoolean("STRUCTURE_BUILDING_INITIALIZED") == false;
 
-            double powerInUse = BaseService.GetPowerInUse(data.PCBaseID);
-            double cpuInUse = BaseService.GetCPUInUse(data.PCBaseID);
+            double powerInUse = pcBase.CalculatedStats.PowerInUse;
+            double cpuInUse = pcBase.CalculatedStats.CPUInUse;
 
             double towerPower = tower != null ? towerBaseStructure.Power + (tower.StructureBonus * 3) : 0.0f;
             double towerCPU = tower != null ? towerBaseStructure.CPU + (tower.StructureBonus * 2) : 0.0f;
@@ -123,7 +124,6 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 var buildingStyle = BaseService.GetBuildingStyle(pcBase.BuildingStyleID);
                 var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID).ToList();
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
@@ -416,13 +416,15 @@ namespace SWLOR.Game.Server.Conversation
             if (baseStructure.BaseStructureType == BaseStructureType.ControlTower)
             {
                 var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
-                pcBase.ShieldHP = BaseService.CalculateMaxShieldHP(structure);
+                pcBase.ShieldHP = pcBase.CalculatedStats.MaxShieldHP;
                 pcBase.ControlTowerStructureID = structure.ID;
                 DataService.Set(pcBase);
             }
             
             BaseService.SpawnStructure(data.TargetArea, structure.ID);
             data.StructureItem.Destroy();
+
+            BaseService.CalculatePCBaseStats(data.PCBaseID);
             EndConversation();
         }
 

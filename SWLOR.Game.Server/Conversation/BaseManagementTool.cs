@@ -630,13 +630,15 @@ namespace SWLOR.Game.Server.Conversation
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
             var baseStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var stats = pcBase.CalculatedStats;
+
             BaseStructureType structureType = baseStructure.BaseStructureType;
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var pcStructureID = structure.ID;
             int impoundedCount = 0;
 
             var controlTower = BaseService.GetBaseControlTower(pcBase.ID);
-            int maxShields = BaseService.CalculateMaxShieldHP(controlTower);
+            int maxShields = stats.MaxShieldHP;
 
             if (structureType == BaseStructureType.Starship)
             {
@@ -729,11 +731,17 @@ namespace SWLOR.Game.Server.Conversation
             DataService.Delete(structure);
             data.ManipulatingStructure.Structure.Destroy();
 
+            // Recalculate stats for the base now that the structure is gone.
+            BaseService.CalculatePCBaseStats(pcBase.ID);
+
+            // The following checks must use the newly calculated stats, so retrieve the updated record from the cache.
+            pcBase = DataService.PCBase.GetByID(pcBase.ID);
+            stats = pcBase.CalculatedStats;
             // Impound any fuel that's over the limit.
             if (structureType == BaseStructureType.StronidiumSilo || structureType == BaseStructureType.FuelSilo)
             {
-                int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
-                int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
+                int maxFuel = stats.MaxFuel;
+                int maxReinforcedFuel = stats.MaxReinforcedFuel;
 
                 if (pcBase.Fuel > maxFuel)
                 {
@@ -757,7 +765,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.ResourceSilo)
             {
-                int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
+                int maxResources = stats.ResourceCapacity;
 
                 if (controlTower == null)
                 {

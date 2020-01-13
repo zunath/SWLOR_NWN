@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
             }
 
             // Check whether there's space in this tower.
-            int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
-            int count = tower.Items.Count;
+            int capacity = pcBase.CalculatedStats.ResourceCapacity;
+            int count = tower.Items.Count + 1;
             if (count > capacity) return;
 
             var baseStructure = BaseService.GetBaseStructure(pcStructure.BaseStructureID);
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.Drill
                 case "SW": lootTableID = dbArea.SouthwestLootTableID ?? LootTable.Invalid; break;
             }
 
-            if (lootTableID <= 0)
+            if (lootTableID == LootTable.Invalid)
             {
                 Console.WriteLine("WARNING: Loot table ID not defined for area " + dbArea.Name + ". Drills cannot retrieve items.");
                 return;

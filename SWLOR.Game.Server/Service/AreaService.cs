@@ -51,7 +51,6 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea = new Area
                     {
-                        ID = Guid.NewGuid(),
                         Resref = area.Resref
                     };
                 }
@@ -132,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         AreaWalkmesh mesh = new AreaWalkmesh()
                         {
-                            AreaID = dbArea.ID,
+                            AreaResref = dbArea.Resref,
                             LocationX = x * AreaBakeStep,
                             LocationY = y * AreaBakeStep,
                             LocationZ = _.GetGroundHeight(checkLocation)

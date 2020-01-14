@@ -235,12 +235,12 @@ namespace SWLOR.Game.Server.Conversation
 
             var currentlyOfferedTasks = GuildService.GetCurrentlyOfferedQuestsByGuild(model.Guild).ToList();
             var currentlyOfferedIDs = currentlyOfferedTasks.Select(x => x.QuestID).ToHashSet();
-            var allTasks = GuildService.GetAllQuestsByGuild(model.Guild);
             // It's possible for players to have tasks which are no longer offered. 
             // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.
             var expiredTasks = DataService.PCQuestStatus
                 .GetAllByPlayerID(player.GlobalID)
                 .Where(x => x.CompletionDate == null &&
+                            QuestService.GetQuestByID(x.QuestID).Guild == model.Guild &&
                             !currentlyOfferedIDs.Contains(x.QuestID))
                 .Select(s => s.QuestID);
 

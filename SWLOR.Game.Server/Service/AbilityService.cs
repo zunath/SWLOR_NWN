@@ -131,7 +131,12 @@ namespace SWLOR.Game.Server.Service
 
             // Get the creature's perk level.
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.PerkType);
-            var perkFeat = perk.PerkFeats[creaturePerkLevel].First();
+            var perkFeat = perk.PerkFeats
+                .Where(x => x.Key <= creaturePerkLevel)
+                .OrderByDescending(o => o.Key)
+                .First()
+                .Value
+                .First();
 
             // If player is disabling an existing stance, remove that effect.
             if (perk.ExecutionType == PerkExecutionType.Stance)

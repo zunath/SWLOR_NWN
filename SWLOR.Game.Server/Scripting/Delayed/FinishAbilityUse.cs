@@ -87,7 +87,12 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
                 // Adjust creature's current FP, if necessary.
                 // Adjust FP only if spell cost > 0
-                PerkFeat perkFeat = perk.PerkFeats[spellTier].First();
+                var perkFeat = perk.PerkFeats
+                    .Where(x => x.Key <= spellTier)
+                    .OrderByDescending(o => o.Key)
+                    .First()
+                    .Value
+                    .First();
                 int fpCost = perk.FPCost(activator, perkFeat.BaseFPCost, spellTier);
 
                 if (fpCost > 0)

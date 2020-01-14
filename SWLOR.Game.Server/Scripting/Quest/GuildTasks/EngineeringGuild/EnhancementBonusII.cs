@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(467, "Engineering Guild Task: 1x Enhancement Bonus II", "eng_tsk_467")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 3)
+
 
                 .AddObjectiveCollectItem(1, "rune_eb2", 1, true)
 

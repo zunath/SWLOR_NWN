@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(567, "Hunter's Guild Task: 10x CZ-220 Mynock", "hun_tsk_567")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 0)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.CZ220Mynocks, 10)
                 .AddObjectiveTalkToNPC(2)

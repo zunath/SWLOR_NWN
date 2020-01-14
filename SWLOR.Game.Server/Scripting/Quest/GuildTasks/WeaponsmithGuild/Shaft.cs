@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.WeaponsmithGuild
         {
             CreateQuest(245, "Weaponsmith Guild Task: 1x Shaft", "wpn_tsk_245")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.WeaponsmithGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "shaft", 1, true)
 

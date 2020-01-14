@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(451, "Engineering Guild Task: 1x Auxiliary Targeter (Basic)", "eng_tsk_451")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 3)
+
 
                 .AddObjectiveCollectItem(1, "ssrang1", 1, true)
 

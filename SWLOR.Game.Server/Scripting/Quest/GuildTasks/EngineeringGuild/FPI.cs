@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(392, "Engineering Guild Task: 1x FP I", "eng_tsk_392")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "rune_mana1", 1, true)
 

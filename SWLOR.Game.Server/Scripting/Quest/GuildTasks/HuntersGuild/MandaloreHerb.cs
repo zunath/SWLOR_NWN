@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(591, "Hunter's Guild Task: 6x Mandalore Herb", "hun_tsk_591")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "herb_m", 6, false)
 

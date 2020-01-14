@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(553, "Engineering Guild Task: 1x Sneak Attack III", "eng_tsk_553")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 4)
+
 
                 .AddObjectiveCollectItem(1, "rune_snkatk3", 1, true)
 

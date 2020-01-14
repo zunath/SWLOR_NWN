@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.ArmorsmithGuild
         {
             CreateQuest(187, "Armorsmith Guild Task: 1x Light Choker III", "arm_tsk_187")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.ArmorsmithGuild, 3)
+
 
                 .AddObjectiveCollectItem(1, "lt_choker_3", 1, true)
 

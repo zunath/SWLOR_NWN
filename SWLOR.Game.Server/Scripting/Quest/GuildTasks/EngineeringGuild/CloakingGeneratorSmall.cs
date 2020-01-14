@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(458, "Engineering Guild Task: 1x Cloaking Generator (Small)", "eng_tsk_458")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 3)
+
 
                 .AddObjectiveCollectItem(1, "ssstlth1", 1, true)
 

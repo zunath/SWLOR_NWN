@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(379, "Engineering Guild Task: 1x Charisma I", "eng_tsk_379")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "rune_cha1", 1, true)
 

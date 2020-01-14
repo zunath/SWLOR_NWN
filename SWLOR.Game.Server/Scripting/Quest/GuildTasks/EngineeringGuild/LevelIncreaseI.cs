@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(428, "Engineering Guild Task: 1x Level Increase I", "eng_tsk_428")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "rune_lvlup1", 1, true)
 

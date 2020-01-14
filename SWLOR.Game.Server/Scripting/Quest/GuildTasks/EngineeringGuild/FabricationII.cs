@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(468, "Engineering Guild Task: 1x Fabrication II", "eng_tsk_468")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 3)
+
 
                 .AddObjectiveCollectItem(1, "rune_fab2", 1, true)
 

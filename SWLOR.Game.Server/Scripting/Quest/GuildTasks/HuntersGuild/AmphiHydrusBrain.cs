@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(608, "Hunter's Guild Task: 6x Amphi-Hydrus Brain", "hun_tsk_608")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "amphi_brain", 6, false)
 

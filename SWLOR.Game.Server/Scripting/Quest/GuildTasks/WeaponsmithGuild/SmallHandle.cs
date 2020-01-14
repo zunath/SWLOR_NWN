@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.WeaponsmithGuild
         {
             CreateQuest(247, "Weaponsmith Guild Task: 1x Small Handle", "wpn_tsk_247")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.WeaponsmithGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "small_handle", 1, true)
 

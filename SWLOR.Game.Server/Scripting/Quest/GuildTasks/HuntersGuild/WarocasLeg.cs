@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(582, "Hunter's Guild Task: 6x Warocas Leg", "hun_tsk_582")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "waro_leg", 6, false)
 

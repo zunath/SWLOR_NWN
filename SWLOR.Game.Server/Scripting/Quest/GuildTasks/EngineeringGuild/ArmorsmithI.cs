@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(365, "Engineering Guild Task: 1x Armorsmith I", "eng_tsk_365")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "rune_armsmth1", 1, true)
 

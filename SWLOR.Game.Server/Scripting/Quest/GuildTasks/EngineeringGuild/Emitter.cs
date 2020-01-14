@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(388, "Engineering Guild Task: 1x Emitter", "eng_tsk_388")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "emitter", 1, true)
 

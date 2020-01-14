@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(586, "Hunter's Guild Task: 10x Mandalorian Ranger", "hun_tsk_586")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 1)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.MandalorianRangers, 10)
                 .AddObjectiveTalkToNPC(2)

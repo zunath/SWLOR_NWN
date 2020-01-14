@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(411, "Engineering Guild Task: 1x Cooldown Reduction II", "eng_tsk_411")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "rune_cstspd2", 1, true)
 

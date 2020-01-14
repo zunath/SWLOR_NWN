@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(588, "Hunter's Guild Task: 10x Valley Cairnmog", "hun_tsk_588")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 1)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.ValleyCairnmogs, 10)
                 .AddObjectiveTalkToNPC(2)

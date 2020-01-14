@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(545, "Engineering Guild Task: 1x Resource Harvester IV", "eng_tsk_545")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 4)
+
 
                 .AddObjectiveCollectItem(1, "harvest_r_4", 1, true)
 

@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(421, "Engineering Guild Task: 1x Durability I", "eng_tsk_421")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "rune_dur1", 1, true)
 

@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(551, "Engineering Guild Task: 1x Saberstaff Repair Kit IV", "eng_tsk_551")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 4)
+
 
                 .AddObjectiveCollectItem(1, "ss_rep_4", 1, true)
 

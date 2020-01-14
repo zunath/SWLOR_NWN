@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.ArmorsmithGuild
         {
             CreateQuest(193, "Armorsmith Guild Task: 1x Additional Fuel Tank (Medium)", "arm_tsk_193")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.ArmorsmithGuild, 4)
+
 
                 .AddObjectiveCollectItem(1, "ssfuel2", 1, true)
 

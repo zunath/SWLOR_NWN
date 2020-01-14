@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(359, "Engineering Guild Task: 1x Ranged Weapon Core", "eng_tsk_359")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "r_weapon_core", 1, true)
 

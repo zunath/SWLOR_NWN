@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(438, "Engineering Guild Task: 1x Reduced Enmity I", "eng_tsk_438")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "rune_enmdown1", 1, true)
 

@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(563, "Engineering Guild Task: 1x Training Foil Staff IV (Green)", "eng_tsk_563")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 99)
+
 
                 .AddObjectiveCollectItem(1, "saberstaff_g_4", 1, true)
 

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
@@ -77,6 +78,8 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+
+            MessageHub.Instance.Publish(new OnQuestRegistered(quest));
         }
 
         /// <summary>

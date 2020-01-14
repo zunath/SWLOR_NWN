@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.WeaponsmithGuild
         {
             CreateQuest(230, "Weaponsmith Guild Task: 1x Basic Heavy Vibroblade GS", "wpn_tsk_230")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.WeaponsmithGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "greatsword_b", 1, true)
 

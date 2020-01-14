@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.ArmorsmithGuild
         {
             CreateQuest(111, "Armorsmith Guild Task: 1x Basic Power Glove", "arm_tsk_111")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.ArmorsmithGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "powerglove_b", 1, true)
 

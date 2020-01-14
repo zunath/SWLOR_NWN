@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.ArmorsmithGuild
         {
             CreateQuest(168, "Armorsmith Guild Task: 1x Tower Shield II", "arm_tsk_168")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.ArmorsmithGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "tower_shield_2", 1, true)
 

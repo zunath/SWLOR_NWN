@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.ArmorsmithGuild
         {
             CreateQuest(108, "Armorsmith Guild Task: 1x Basic Leather Tunic", "arm_tsk_108")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.ArmorsmithGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "leather_tunic_b", 1, true)
 

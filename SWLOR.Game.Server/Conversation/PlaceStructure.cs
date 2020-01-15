@@ -411,7 +411,8 @@ namespace SWLOR.Game.Server.Conversation
                 StructureModeID = baseStructure.DefaultStructureMode
             };
             DataService.Set(structure);
-            
+
+            BaseService.CalculatePCBaseStats(data.PCBaseID);
             // Placing a control tower. Set base shields to 100%
             if (baseStructure.BaseStructureType == BaseStructureType.ControlTower)
             {
@@ -424,7 +425,6 @@ namespace SWLOR.Game.Server.Conversation
             BaseService.SpawnStructure(data.TargetArea, structure.ID);
             data.StructureItem.Destroy();
 
-            BaseService.CalculatePCBaseStats(data.PCBaseID);
             EndConversation();
         }
 

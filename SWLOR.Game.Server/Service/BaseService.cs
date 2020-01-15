@@ -1694,9 +1694,10 @@ namespace SWLOR.Game.Server.Service
                     ItemTag = item.Tag,
                     ItemObject = SerializationService.Serialize(item)
                 };
-                pcStructure.Items[item.GlobalID] = dbItem;
+                tower.Items[item.GlobalID] = dbItem;
 
                 DataService.Set(pcStructure);
+                DataService.Set(tower);
                 item.Destroy();
             }
         }

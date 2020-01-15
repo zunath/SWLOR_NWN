@@ -12,8 +12,10 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -49,7 +51,6 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea = new Area
                     {
-                        ID = Guid.NewGuid(),
                         Resref = area.Resref
                     };
                 }
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         AreaWalkmesh mesh = new AreaWalkmesh()
                         {
-                            AreaID = dbArea.ID,
+                            AreaResref = dbArea.Resref,
                             LocationX = x * AreaBakeStep,
                             LocationY = y * AreaBakeStep,
                             LocationZ = _.GetGroundHeight(checkLocation)

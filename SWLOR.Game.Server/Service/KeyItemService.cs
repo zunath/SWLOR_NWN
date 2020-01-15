@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using _ = SWLOR.Game.Server.NWScript._;
 
 
 namespace SWLOR.Game.Server.Service
@@ -20,10 +21,9 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleAcquireItem>(message => OnModuleItemAcquired());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var keyItems = Enum.GetValues(typeof(KeyItem)).Cast<KeyItem>();
             foreach (var keyItem in keyItems)
@@ -104,7 +104,14 @@ namespace SWLOR.Game.Server.Service
 
         public static IEnumerable<KeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, KeyItemCategoryType categoryID)
         {
-            return _keyItemsByCategory[categoryID];
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+
+            foreach (var keyItem in dbPlayer.AcquiredKeyItems)
+            {
+                var keyItemDetails = _keyItems[keyItem];
+                if (keyItemDetails.Category == categoryID)
+                    yield return keyItem;
+            }
         }
 
         private static void OnModuleItemAcquired()

@@ -1,6 +1,6 @@
 ﻿using System;
 using NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;

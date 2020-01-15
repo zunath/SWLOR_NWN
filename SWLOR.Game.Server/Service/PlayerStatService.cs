@@ -11,8 +11,9 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using SWLOR.Game.Server.ValueObject;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 

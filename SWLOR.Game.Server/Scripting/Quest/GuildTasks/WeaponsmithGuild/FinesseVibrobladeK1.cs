@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.WeaponsmithGuild
         {
             CreateQuest(254, "Weaponsmith Guild Task: 1x Finesse Vibroblade K1", "wpn_tsk_254")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.WeaponsmithGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "kukri_1", 1, true)
 

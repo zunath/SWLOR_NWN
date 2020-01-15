@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(598, "Hunter's Guild Task: 6x Mandalorian Vibroblade Parts", "hun_tsk_598")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "m_vibro_parts", 6, false)
 

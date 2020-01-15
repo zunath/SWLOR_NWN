@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {

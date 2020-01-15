@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(592, "Hunter's Guild Task: 6x Mandalorian Dog Tags", "hun_tsk_592")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "man_tags", 6, false)
 

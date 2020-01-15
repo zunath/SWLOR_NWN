@@ -29,9 +29,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Console.WriteLine("OPSService -> OnModuleLoad");
             Internal.OnMainLoopEvent += Events_MainLoopTick;
-            Console.WriteLine("OPSService -> OnModuleLoad Complete");
         }
         
         private static void Events_MainLoopTick(object sender, MainLoopEventArgs e)

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Scripting.Delayed
@@ -86,7 +87,12 @@ namespace SWLOR.Game.Server.Scripting.Delayed
 
                 // Adjust creature's current FP, if necessary.
                 // Adjust FP only if spell cost > 0
-                PerkFeat perkFeat = perk.PerkFeats[spellTier].First();
+                var perkFeat = perk.PerkFeats
+                    .Where(x => x.Key <= spellTier)
+                    .OrderByDescending(o => o.Key)
+                    .First()
+                    .Value
+                    .First();
                 int fpCost = perk.FPCost(activator, perkFeat.BaseFPCost, spellTier);
 
                 if (fpCost > 0)

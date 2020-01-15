@@ -2,9 +2,11 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
@@ -72,7 +74,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
             // Handle Stronidium fuel process
             if (stronidiumOnly)
             {
-                maxFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
+                maxFuel = pcBase.CalculatedStats.MaxReinforcedFuel;
 
                 // For starships only: Add the ship's cargo bonus to the max stronidium amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
@@ -106,7 +108,7 @@ namespace SWLOR.Game.Server.Scripting.Placeable.FuelBay
             // Handle Fuel Cell process
             else
             {
-                maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
+                maxFuel = pcBase.CalculatedStats.MaxFuel;
 
                 // For starships only: Add the ship's cargo bonus to the max fuel amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)

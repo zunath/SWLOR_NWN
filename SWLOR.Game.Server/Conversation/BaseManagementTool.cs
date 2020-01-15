@@ -8,7 +8,9 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Service;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Conversation
@@ -628,13 +630,15 @@ namespace SWLOR.Game.Server.Conversation
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
             var baseStructure = BaseService.GetBaseStructure(structure.BaseStructureID);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var stats = pcBase.CalculatedStats;
+
             BaseStructureType structureType = baseStructure.BaseStructureType;
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var pcStructureID = structure.ID;
             int impoundedCount = 0;
 
             var controlTower = BaseService.GetBaseControlTower(pcBase.ID);
-            int maxShields = BaseService.CalculateMaxShieldHP(controlTower);
+            int maxShields = stats.MaxShieldHP;
 
             if (structureType == BaseStructureType.Starship)
             {
@@ -642,7 +646,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (pcBase.PCBaseTypeID != (int) PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
+            if (pcBase.PCBaseTypeID != PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
             {
                 GetPC().FloatingText("You cannot retrieve any structures because the control tower has less than 100% shields.");
                 return;
@@ -680,6 +684,10 @@ namespace SWLOR.Game.Server.Conversation
                     GetPC().FloatingText("You must remove all structures in this sector before picking up the control tower.");
                     return;
                 }
+
+                // Remove control tower ID from PCBase record.
+                pcBase.ControlTowerStructureID = null;
+                DataService.Set(pcBase);
 
                 // Impound resources retrieved by drills.
                 foreach(var item in structure.Items.ToList())
@@ -723,11 +731,17 @@ namespace SWLOR.Game.Server.Conversation
             DataService.Delete(structure);
             data.ManipulatingStructure.Structure.Destroy();
 
+            // Recalculate stats for the base now that the structure is gone.
+            BaseService.CalculatePCBaseStats(pcBase.ID);
+
+            // The following checks must use the newly calculated stats, so retrieve the updated record from the cache.
+            pcBase = DataService.PCBase.GetByID(pcBase.ID);
+            stats = pcBase.CalculatedStats;
             // Impound any fuel that's over the limit.
             if (structureType == BaseStructureType.StronidiumSilo || structureType == BaseStructureType.FuelSilo)
             {
-                int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
-                int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
+                int maxFuel = stats.MaxFuel;
+                int maxReinforcedFuel = stats.MaxReinforcedFuel;
 
                 if (pcBase.Fuel > maxFuel)
                 {
@@ -751,7 +765,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.ResourceSilo)
             {
-                int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
+                int maxResources = stats.ResourceCapacity;
 
                 if (controlTower == null)
                 {

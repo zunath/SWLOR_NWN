@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(569, "Hunter's Guild Task: 1x CZ-220 Colicoid Experiment", "hun_tsk_569")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 0)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.CZ220ColicoidExperiment, 1)
                 .AddObjectiveTalkToNPC(2)

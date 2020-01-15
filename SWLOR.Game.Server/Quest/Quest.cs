@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Quest.Prerequisite;
 using SWLOR.Game.Server.Quest.Reward;
 using SWLOR.Game.Server.Service;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Quest
 {
@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Quest
         public string JournalTag { get; }
         private bool _repeatable;
         public bool AllowRewardSelection { get; private set; }
+        public GuildType Guild { get; private set; }
+        public int RequiredGuildRank { get; private set; }
 
         private Action<NWPlayer, NWObject> _onAccept;
         private Action<NWPlayer, NWObject, int> _onAdvance;
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Quest
             QuestID = questID;
             Name = name;
             JournalTag = journalTag;
+            Guild = GuildType.Unknown;
         }
         
         public IQuestState AddState()
@@ -320,6 +323,18 @@ namespace SWLOR.Game.Server.Quest
         public IQuest IsRepeatable()
         {
             _repeatable = true;
+            return this;
+        }
+
+        public IQuest IsGuildTask(GuildType guild, int requiredRank)
+        {
+            if (Guild != GuildType.Unknown)
+            {
+                throw new Exception("Guild type has already been defined for this quest. A quest may only have one guild type.");
+            }
+
+            Guild = guild;
+            RequiredGuildRank = requiredRank;
             return this;
         }
 

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Item.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 

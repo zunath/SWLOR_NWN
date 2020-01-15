@@ -27,9 +27,9 @@ namespace SWLOR.Game.Server.Caching
         {
         }
 
-        public Area GetByID(Guid id)
+        public Area GetByID(string resref)
         {
-            return ByID(id);
+            return ByID(resref);
         }
 
         public Area GetByResref(string resref)

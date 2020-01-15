@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(573, "Hunter's Guild Task: 8x Wildwoods Gimpassa", "hun_tsk_573")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 0)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.WildwoodsGimpassas, 8)
                 .AddObjectiveTalkToNPC(2)

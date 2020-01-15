@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(599, "Hunter's Guild Task: 6x Damaged Blue Crystal", "hun_tsk_599")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 2)
+
 
                 .AddObjectiveCollectItem(1, "p_crystal_blue", 6, false)
 

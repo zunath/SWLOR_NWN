@@ -8,19 +8,69 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Reward;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class GuildService
     {
+        private static readonly Dictionary<GuildType, Dictionary<int, List<int>>> _questsByGuildTypeAndRank = new Dictionary<GuildType, Dictionary<int, List<int>>>();
+        private static readonly Dictionary<GuildType, HashSet<int>> _currentlyOfferedQuests = new Dictionary<GuildType, HashSet<int>>();
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(a => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnModuleLoad>(a => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleHeartbeat>(a => OnModuleHeartbeat());
             MessageHub.Instance.Subscribe<OnQuestCompleted>(a => OnQuestCompleted(a.Player, a.QuestID));
+            MessageHub.Instance.Subscribe<OnQuestRegistered>(a => RegisterQuest(a.Quest));
+        }
+
+        /// <summary>
+        /// Registers a quest into cache for quicker retrieval later.
+        /// </summary>
+        /// <param name="quest">The quest to register.</param>
+        private static void RegisterQuest(IQuest quest)
+        {
+            if (quest.Guild == GuildType.Unknown) return;
+
+            // If the quest is assigned as a guild task, add it to the cache.
+            if (!_questsByGuildTypeAndRank.ContainsKey(quest.Guild))
+                _questsByGuildTypeAndRank[quest.Guild] = new Dictionary<int, List<int>>();
+
+            if(!_questsByGuildTypeAndRank[quest.Guild].ContainsKey(quest.RequiredGuildRank))
+                _questsByGuildTypeAndRank[quest.Guild][quest.RequiredGuildRank] = new List<int>();
+
+            _questsByGuildTypeAndRank[quest.Guild][quest.RequiredGuildRank].Add(quest.QuestID);
+        }
+
+        /// <summary>
+        /// Retrieves the quests currently offered for a specific guild.
+        /// </summary>
+        /// <param name="guild">The guild whose quests we're searching for.</param>
+        /// <returns>An enumerable of quest objects</returns>
+        public static IEnumerable<IQuest> GetCurrentlyOfferedQuestsByGuild(GuildType guild)
+        {
+            foreach (var quest in _currentlyOfferedQuests[guild])
+            {
+                yield return QuestService.GetQuestByID(quest);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all of the quests associated with a specific guild.
+        /// </summary>
+        /// <param name="guild">The guilde whose quests we're searching for.</param>
+        /// <returns>An enumerable of quest objects</returns>
+        public static IEnumerable<IQuest> GetAllQuestsByGuild(GuildType guild)
+        {
+            var quests = _questsByGuildTypeAndRank[guild].SelectMany(s => s.Value);
+            foreach (var quest in quests)
+            {
+                yield return QuestService.GetQuestByID(quest);
+            }
         }
 
         /// <summary>
@@ -169,7 +219,7 @@ namespace SWLOR.Game.Server.Service
             int ticks = module.GetLocalInt("GUILD_REFRESH_TICKS") + 1;
             if (ticks >= 300)
             {
-                RefreshGuildTasks();
+                RefreshGuildTasks(false);
                 ticks = 0;
             }
 
@@ -181,23 +231,19 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnModuleLoad()
         {
-            RefreshGuildTasks();
+            RefreshGuildTasks(true);
         }
 
-        private static void RefreshGuildTasks()
+        private static void RefreshGuildTasks(bool force)
         {
             var config = DataService.ServerConfiguration.Get();
             var now = DateTime.UtcNow;
 
             // 24 hours haven't passed since the last cycle. Bail out now.
-            if (now < config.LastGuildTaskUpdate.AddHours(24)) return;
+            if (!force && now < config.LastGuildTaskUpdate.AddHours(24)) return;
 
-            // Start by marking the existing tasks as not currently offered.
-            foreach (var task in DataService.GuildTask.GetAllByCurrentlyOffered())
-            {
-                task.IsCurrentlyOffered = false;
-                DataService.Set(task);
-            }
+            // Start by clearing existing offered tasks.
+            _currentlyOfferedQuests.Clear();
 
             int maxRank = RankProgression.Keys.Max();
 
@@ -208,13 +254,28 @@ namespace SWLOR.Game.Server.Service
             var guilds = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
             foreach (var guild in guilds)
             {
+                if (guild == GuildType.Unknown) continue;
+
+                if(!_questsByGuildTypeAndRank.ContainsKey(guild))
+                    _questsByGuildTypeAndRank[guild] = new Dictionary<int, List<int>>();
+
                 for (int rank = 0; rank < maxRank; rank++)
                 {
-                    var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild).ToList();
-                    IEnumerable<GuildTask> tasks;
+                    if(!_questsByGuildTypeAndRank[guild].ContainsKey(rank))
+                        _questsByGuildTypeAndRank[guild][rank] = new List<int>();
+
+                    var potentialTaskIDs = _questsByGuildTypeAndRank[guild][rank];
+                    var potentialTasks = new List<IQuest>();
+                    foreach (var taskID in potentialTaskIDs)
+                    {
+                        var quest = QuestService.GetQuestByID(taskID);
+                        potentialTasks.Add(quest);
+                    }
+
+                    IEnumerable<IQuest> tasks;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
-                    if (potentialTasks.Count <= 10)
+                    if (potentialTaskIDs.Count <= 10)
                     {
                         tasks = potentialTasks;
                     }
@@ -227,8 +288,10 @@ namespace SWLOR.Game.Server.Service
                     // We've got our set of tasks. Mark them as currently offered and submit the data change.
                     foreach (var task in tasks)
                     {
-                        task.IsCurrentlyOffered = true;
-                        DataService.Set(task);
+                        if(!_currentlyOfferedQuests.ContainsKey(guild))
+                            _currentlyOfferedQuests[guild] = new HashSet<int>();
+
+                        _currentlyOfferedQuests[guild].Add(task.QuestID);
                     }
                 }
             }

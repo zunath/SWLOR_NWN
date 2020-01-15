@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(349, "Engineering Guild Task: 1x Basic Blaster Pistol", "eng_tsk_349")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "blaster_b", 1, true)
 

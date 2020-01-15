@@ -16,8 +16,9 @@ using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using AddItemPropertyPolicy = SWLOR.Game.Server.Enumeration.AddItemPropertyPolicy;
 using BaseItemType = SWLOR.Game.Server.NWScript.Enumerations.BaseItemType;
 
@@ -38,18 +39,15 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnItemUsed>(message => OnItemUsed());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
-            Console.WriteLine("ItemService -> OnModuleLoad");
             RegisterActionItemHandlers();
-            Console.WriteLine("ItemService -> OnModuleLoad Complete");
         }
 
         private static void RegisterActionItemHandlers()
@@ -768,69 +766,69 @@ namespace SWLOR.Game.Server.Service
             BaseItemType.Dart
         };
 
-        private static readonly Dictionary<BaseItemType, Enumeration.Skill> _skillTypeMappings = new Dictionary<BaseItemType, Enumeration.Skill>()
+        private static readonly Dictionary<BaseItemType, Skill> _skillTypeMappings = new Dictionary<BaseItemType, Skill>()
         {
             // One-Handed Skills
-            {BaseItemType.BastardSword, Enumeration.Skill.OneHanded},
-            {BaseItemType.BattleAxe, Enumeration.Skill.OneHanded},
-            {BaseItemType.Club, Enumeration.Skill.OneHanded},
-            {BaseItemType.Dagger, Enumeration.Skill.OneHanded},
-            {BaseItemType.HandAxe, Enumeration.Skill.OneHanded},
-            {BaseItemType.Kama, Enumeration.Skill.OneHanded},
-            {BaseItemType.Katana, Enumeration.Skill.OneHanded},
-            {BaseItemType.Kukri, Enumeration.Skill.OneHanded},
-            {BaseItemType.LightFlail, Enumeration.Skill.OneHanded},
-            {BaseItemType.LightHammer, Enumeration.Skill.OneHanded},
-            {BaseItemType.LightMace, Enumeration.Skill.OneHanded},
-            {BaseItemType.LongSword, Enumeration.Skill.OneHanded},
-            {BaseItemType.Morningstar, Enumeration.Skill.OneHanded},
-            {BaseItemType.Rapier, Enumeration.Skill.OneHanded},
-            {BaseItemType.Scimitar, Enumeration.Skill.OneHanded},
-            {BaseItemType.ShortSword, Enumeration.Skill.OneHanded},
-            {BaseItemType.Sickle, Enumeration.Skill.OneHanded},
-            {BaseItemType.Whip, Enumeration.Skill.OneHanded},
+            {BaseItemType.BastardSword, Skill.OneHanded},
+            {BaseItemType.BattleAxe, Skill.OneHanded},
+            {BaseItemType.Club, Skill.OneHanded},
+            {BaseItemType.Dagger, Skill.OneHanded},
+            {BaseItemType.HandAxe, Skill.OneHanded},
+            {BaseItemType.Kama, Skill.OneHanded},
+            {BaseItemType.Katana, Skill.OneHanded},
+            {BaseItemType.Kukri, Skill.OneHanded},
+            {BaseItemType.LightFlail, Skill.OneHanded},
+            {BaseItemType.LightHammer, Skill.OneHanded},
+            {BaseItemType.LightMace, Skill.OneHanded},
+            {BaseItemType.LongSword, Skill.OneHanded},
+            {BaseItemType.Morningstar, Skill.OneHanded},
+            {BaseItemType.Rapier, Skill.OneHanded},
+            {BaseItemType.Scimitar, Skill.OneHanded},
+            {BaseItemType.ShortSword, Skill.OneHanded},
+            {BaseItemType.Sickle, Skill.OneHanded},
+            {BaseItemType.Whip, Skill.OneHanded},
             // Two-Handed Skills
-            {BaseItemType.DireMace, Enumeration.Skill.TwoHanded}     ,
-            {BaseItemType.DwarvenWaraxe, Enumeration.Skill.TwoHanded},
-            {BaseItemType.GreatAxe, Enumeration.Skill.TwoHanded}     ,
-            {BaseItemType.GreatSword, Enumeration.Skill.TwoHanded}   ,
-            {BaseItemType.Halberd, Enumeration.Skill.TwoHanded}      ,
-            {BaseItemType.HeavyFlail, Enumeration.Skill.TwoHanded}   ,
-            {BaseItemType.Scythe, Enumeration.Skill.TwoHanded}       ,
-            {BaseItemType.Trident, Enumeration.Skill.TwoHanded}      ,
-            {BaseItemType.Warhammer, Enumeration.Skill.TwoHanded}    ,
-            {BaseItemType.ShortSpear, Enumeration.Skill.TwoHanded}   ,
+            {BaseItemType.DireMace, Skill.TwoHanded}     ,
+            {BaseItemType.DwarvenWaraxe, Skill.TwoHanded},
+            {BaseItemType.GreatAxe, Skill.TwoHanded}     ,
+            {BaseItemType.GreatSword, Skill.TwoHanded}   ,
+            {BaseItemType.Halberd, Skill.TwoHanded}      ,
+            {BaseItemType.HeavyFlail, Skill.TwoHanded}   ,
+            {BaseItemType.Scythe, Skill.TwoHanded}       ,
+            {BaseItemType.Trident, Skill.TwoHanded}      ,
+            {BaseItemType.Warhammer, Skill.TwoHanded}    ,
+            {BaseItemType.ShortSpear, Skill.TwoHanded}   ,
             // Twin Blades Skills
-            {BaseItemType.TwoBladedSword, Enumeration.Skill.TwinBlades },
-            {BaseItemType.DoubleAxe, Enumeration.Skill.TwinBlades },
+            {BaseItemType.TwoBladedSword, Skill.TwinBlades },
+            {BaseItemType.DoubleAxe, Skill.TwinBlades },
             // Martial Arts Skills
-            {BaseItemType.Bracer, Enumeration.Skill.MartialArts},
-            {BaseItemType.Gloves, Enumeration.Skill.MartialArts},
-            {BaseItemType.QuarterStaff, Enumeration.Skill.MartialArts},
-            {BaseItemType.HeavyCrossBow, Enumeration.Skill.Blasters},
-            {BaseItemType.LightCrossBow, Enumeration.Skill.Blasters},
+            {BaseItemType.Bracer, Skill.MartialArts},
+            {BaseItemType.Gloves, Skill.MartialArts},
+            {BaseItemType.QuarterStaff, Skill.MartialArts},
+            {BaseItemType.HeavyCrossBow, Skill.Blasters},
+            {BaseItemType.LightCrossBow, Skill.Blasters},
             // Firearms Skills
-            {BaseItemType.LongBow, Enumeration.Skill.Blasters},
-            {BaseItemType.ShortBow, Enumeration.Skill.Blasters},
-            {BaseItemType.Arrow, Enumeration.Skill.Blasters},
-            {BaseItemType.Bolt, Enumeration.Skill.Blasters},
+            {BaseItemType.LongBow, Skill.Blasters},
+            {BaseItemType.ShortBow, Skill.Blasters},
+            {BaseItemType.Arrow, Skill.Blasters},
+            {BaseItemType.Bolt, Skill.Blasters},
             // Throwing Skills
-            {BaseItemType.Grenade, Enumeration.Skill.Throwing},
-            {BaseItemType.Shuriken, Enumeration.Skill.Throwing},
-            {BaseItemType.Sling, Enumeration.Skill.Throwing},
-            {BaseItemType.ThrowingAxe, Enumeration.Skill.Throwing},
-            {BaseItemType.Bullet, Enumeration.Skill.Throwing},
-            {BaseItemType.Dart, Enumeration.Skill.Throwing},
+            {BaseItemType.Grenade, Skill.Throwing},
+            {BaseItemType.Shuriken, Skill.Throwing},
+            {BaseItemType.Sling, Skill.Throwing},
+            {BaseItemType.ThrowingAxe, Skill.Throwing},
+            {BaseItemType.Bullet, Skill.Throwing},
+            {BaseItemType.Dart, Skill.Throwing},
             // Shield Skills
-            {BaseItemType.SmallShield, Enumeration.Skill.Shields },
-            {BaseItemType.LargeShield, Enumeration.Skill.Shields },
-            {BaseItemType.TowerShield, Enumeration.Skill.Shields },
+            {BaseItemType.SmallShield, Skill.Shields },
+            {BaseItemType.LargeShield, Skill.Shields },
+            {BaseItemType.TowerShield, Skill.Shields },
             // Lightsabers
-            {BaseItemType.Lightsaber, Enumeration.Skill.Lightsaber},
-            {BaseItemType.Saberstaff, Enumeration.Skill.Lightsaber}
+            {BaseItemType.Lightsaber, Skill.Lightsaber},
+            {BaseItemType.Saberstaff, Skill.Lightsaber}
         };
 
-        public static Enumeration.Skill GetSkillTypeForItem(NWItem item)
+        public static Skill GetSkillTypeForItem(NWItem item)
         {
             using (new Profiler("ItemService::GetSkillTypeForItem"))
             {
@@ -841,19 +839,19 @@ namespace SWLOR.Game.Server.Service
 
                 // Armor has to specifically be set on the item in order to count.
                 // Look for an item type property first.
-                if (item.CustomItemType == CustomItemType.LightArmor) return Enumeration.Skill.LightArmor;
-                else if (item.CustomItemType == CustomItemType.HeavyArmor) return Enumeration.Skill.HeavyArmor;
-                else if (item.CustomItemType == CustomItemType.ForceArmor) return Enumeration.Skill.ForceArmor;
+                if (item.CustomItemType == CustomItemType.LightArmor) return Skill.LightArmor;
+                else if (item.CustomItemType == CustomItemType.HeavyArmor) return Skill.HeavyArmor;
+                else if (item.CustomItemType == CustomItemType.ForceArmor) return Skill.ForceArmor;
 
                 // Training lightsabers are katana weapons with special local variables.
                 if (item.GetLocalBoolean("LIGHTSABER") == true)
                 {
-                    return Enumeration.Skill.Lightsaber;
+                    return Skill.Lightsaber;
                 }
 
                 if (!_skillTypeMappings.TryGetValue(type, out var result))
                 {
-                    return Enumeration.Skill.Unknown;
+                    return Skill.Unknown;
                 }
                 return result;
             }

@@ -10,10 +10,11 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,11 +24,10 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad> (Message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var lootTables = Enum.GetValues(typeof(LootTable)).Cast<LootTable>();
 

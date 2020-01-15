@@ -6,12 +6,14 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using System.Collections.Generic;
 using System.Collections;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -101,9 +103,9 @@ namespace SWLOR.Game.Server.Conversation
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
             int currentResources = structure.Items.Count;
-            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipStronidiumBonus);
-            int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipFuelBonus);
-            int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
+            int maxReinforcedFuel = pcBase.CalculatedStats.MaxReinforcedFuel + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipStronidiumBonus);
+            int maxFuel = pcBase.CalculatedStats.MaxFuel + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipFuelBonus);
+            int maxResources = pcBase.CalculatedStats.ResourceCapacity;
 
             string locationDescription;
 

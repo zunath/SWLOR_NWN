@@ -15,8 +15,10 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => ProcessDrills());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
@@ -129,12 +132,16 @@ namespace SWLOR.Game.Server.Service
             return _buildingStyles.Keys.ToList();
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             LoadBaseStructureTypes();
             LoadBaseStructures();
             LoadBuildingStyles();
             RegisterDoorRules();
+        }
+
+        private static void OnModuleLoad()
+        {
             foreach (var area in NWModule.Get().Areas)
             {
                 if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
@@ -234,7 +241,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWPlaceable door = null;
-            if (exteriorStyle != null && (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship))
+            if (pcStructure.ExteriorStyleID != BuildingStyle.Invalid && 
+                (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship) &&
+                !string.IsNullOrWhiteSpace(exteriorStyle.DoorRule))
             {
                 door = SpawnBuildingDoor(exteriorStyle.DoorRule, plc);
                 areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, door, false, null));
@@ -405,7 +414,7 @@ namespace SWLOR.Game.Server.Service
                 DateRentDue = DateTime.UtcNow.AddDays(7),
                 DateFuelEnds = DateTime.UtcNow,
                 Sector = sector,
-                PCBaseTypeID = (int)Enumeration.PCBaseType.RegularBase,
+                PCBaseTypeID = PCBaseType.RegularBase,
                 CustomName = string.Empty
             };
             pcBase.PlayerBasePermissions[player.GlobalID] = new PCBasePermission();
@@ -454,47 +463,16 @@ namespace SWLOR.Game.Server.Service
 
         public static PCBaseStructure GetBaseControlTower(Guid pcBaseID)
         {
-            // Note - if this is a starship base, then the "control tower" is the starship object. 
-            var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID);
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            if (pcBase.ControlTowerStructureID == null) return null;
 
-            return structures.SingleOrDefault(x =>
-            {
-                var baseStructure = GetBaseStructure(x.BaseStructureID);
-                return (baseStructure.BaseStructureType == BaseStructureType.ControlTower || 
-                        baseStructure.BaseStructureType == BaseStructureType.Starship);
-            });
+            return DataService.PCBaseStructure.GetByID((Guid)pcBase.ControlTowerStructureID);
         }
 
-        public static double GetPowerInUse(Guid pcBaseID)
+        public static PCBaseCalculatedStats GetCalculatedBaseStats(Guid pcBaseID)
         {
-            return DataService.PCBaseStructure.GetPowerInUseByPCBaseID(pcBaseID);
-        }
-
-        public static double GetCPUInUse(Guid pcBaseID)
-        {
-            return DataService.PCBaseStructure.GetCPUInUseByPCBaseID(pcBaseID);
-        }
-
-        public static double GetMaxBaseCPU(Guid pcBaseID)
-        {
-            var tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null) return 0.0d;
-
-            var structure = GetBaseStructure(tower.BaseStructureID);
-
-            return structure.CPU + (tower.StructureBonus * 2);
-        }
-
-        public static double GetMaxBasePower(Guid pcBaseID)
-        {
-            var tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null) return 0.0d;
-
-            var structure = GetBaseStructure(tower.BaseStructureID);
-
-            return structure.Power + (tower.StructureBonus * 3);
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            return pcBase.CalculatedStats;
         }
 
         public static string GetSectorOfLocation(NWLocation targetLocation)
@@ -730,7 +708,7 @@ namespace SWLOR.Game.Server.Service
                                 DateInitialPurchase = DateTime.UtcNow,
                                 DateFuelEnds = DateTime.UtcNow,
                                 DateRentDue = DateTime.UtcNow.AddDays(999),
-                                PCBaseTypeID = (int)Enumeration.PCBaseType.Starship,
+                                PCBaseTypeID = PCBaseType.Starship,
                                 Sector = "SS",
                                 BuildingStyleID = style.Key,
                                 AreaResref = style.Value.Resref,
@@ -743,6 +721,9 @@ namespace SWLOR.Game.Server.Service
                             // Grant all base permissions to owner.
                             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
                             BasePermissionService.GrantBasePermissions(player, starkillerBase.ID, allPermissions);
+                            
+                            // Need to retrieve the latest copy of the data since the previous "Grant Base Permissions" call updated data.
+                            starkillerBase = DataService.PCBase.GetByID(starkillerBase.ID);
                             var position = _.GetPositionFromLocation(targetLocation);
                             var extStyle = _buildingStyles.Single(x => x.Value.BaseStructureID == baseStructureID && x.Value.BuildingTypeID == BuildingType.Exterior);
 
@@ -762,6 +743,12 @@ namespace SWLOR.Game.Server.Service
                                 StructureBonus = structureItem.StructureBonus,
                                 StructureModeID = baseStructure.DefaultStructureMode
                             };
+
+                            // Need to link the "control tower" structure to the PCBase.
+                            // The control tower in this scenario is just the PC's ship itself.
+                            starkillerBase.ControlTowerStructureID = starshipStructure.ID;
+
+                            DataService.Set(starkillerBase);
                             DataService.Set(starshipStructure);
 
                             SpawnStructure(area, starshipStructure.ID);
@@ -769,6 +756,7 @@ namespace SWLOR.Game.Server.Service
                             // Delete the item from the PC's inventory.
                             structureItem.Destroy();
 
+                            CalculatePCBaseStats(starkillerBase.ID);
                             return "Starship successfully docked.";
                         }
                     }
@@ -794,7 +782,7 @@ namespace SWLOR.Game.Server.Service
             DurabilityService.SetDurability(item, (float)pcBaseStructure.Durability);
             item.StructureBonus = pcBaseStructure.StructureBonus;
 
-            if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)
+            if (pcBaseStructure.InteriorStyleID != BuildingStyle.Invalid && pcBaseStructure.ExteriorStyleID != BuildingStyle.Invalid)
             {
                 item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
                 item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
@@ -1002,9 +990,11 @@ namespace SWLOR.Game.Server.Service
                 if (baseStructure.BaseStructureType == BaseStructureType.Building)
                 {
                     var defaultInterior = _buildingStyles.Single(x => x.Value.IsDefault &&
-                                                                      x.Value.BaseStructureID == structure);
+                                                                      x.Value.BaseStructureID == structure && 
+                                                                      x.Value.BuildingTypeID == BuildingType.Interior);
                     var defaultExterior = _buildingStyles.Single(x => x.Value.IsDefault &&
-                                                                      x.Value.BaseStructureID == structure);
+                                                                      x.Value.BaseStructureID == structure &&
+                                                                      x.Value.BuildingTypeID == BuildingType.Exterior);
 
                     item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)defaultInterior.Key);
                     item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)defaultExterior.Key);
@@ -1107,7 +1097,7 @@ namespace SWLOR.Game.Server.Service
                 if (baseStructure != null)
                 {
                     PCBase pcBase = DataService.PCBase.GetByIDOrDefault(baseStructure.PCBaseID);
-                    if (pcBase != null && pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
+                    if (pcBase != null && pcBase.PCBaseTypeID == PCBaseType.Starship)
                     {
                         // This is a starship.  Exit should be based on location, not based on the door variable.
                         if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
@@ -1314,110 +1304,64 @@ namespace SWLOR.Game.Server.Service
             sender.SendMessage("New container name received. Please press the 'Next' button in the conversation window.");
         }
 
-        public static int CalculateMaxShieldHP(PCBaseStructure controlTower)
+        public static PCBaseCalculatedStats CalculatePCBaseStats(Guid pcBaseID)
         {
-            if (controlTower == null) return 0;
+            var pcBaseStats = new PCBaseCalculatedStats();
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var controlTower = GetBaseControlTower(pcBaseID);
+            
+            // We can't recalculate stats if the base doesn't have a control tower. Bail early.
+            if (controlTower == null) return pcBaseStats;
 
-            return (int)(controlTower.Durability * 300);
-        }
+            var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID);
 
-        public static int CalculateMaxFuel(Guid pcBaseID)
-        {
-            const BaseStructureType siloType = BaseStructureType.FuelSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
+            pcBaseStats.MaxShieldHP = (int) (controlTower.Durability * 300);
 
-            if (tower == null)
+            var reinforcedSiloBonus = 0.0d;
+            var fuelSiloBonus = 0.0d;
+            var resourceSiloBonus = 0.0d;
+            foreach (var structure in structures)
             {
-                Console.WriteLine("Could not find tower in BaseService -> CalculateMaxFuel. PCBaseID = " + pcBaseID);
-                return 0;
+                var baseStructure = GetBaseStructure(structure.BaseStructureID);
+
+                // Calculate Power/CPU for all structures except control towers
+                if (baseStructure.BaseStructureType != BaseStructureType.ControlTower)
+                {
+                    pcBaseStats.PowerInUse += baseStructure.Power;
+                    pcBaseStats.CPUInUse += baseStructure.CPU;
+                }
+
+                // Calculate max reinforced fuel if structure is a Stronidium Silo
+                if (baseStructure.BaseStructureType == BaseStructureType.StronidiumSilo)
+                {
+                    reinforcedSiloBonus += (baseStructure.Storage + structure.StructureBonus) * 0.01d;
+                }
+
+                // Calculate max fuel if structure is a fuel silo.
+                if (baseStructure.BaseStructureType == BaseStructureType.FuelSilo)
+                {
+                    fuelSiloBonus += (baseStructure.Storage + structure.StructureBonus) * 0.01d;
+                }
+
+                // Calculate max resource capacity if structure is a resource silo
+                if (baseStructure.BaseStructureType == BaseStructureType.ResourceSilo)
+                {
+                    resourceSiloBonus += (baseStructure.Storage + structure.StructureBonus) * 0.01d;
+                }
             }
 
-            var towerStructure = GetBaseStructure(tower.BaseStructureID);
+            var controlTowerBaseStructure = GetBaseStructure(controlTower.BaseStructureID);
+            pcBaseStats.MaxReinforcedFuel = (int)(controlTowerBaseStructure.ReinforcedStorage + controlTowerBaseStructure.ReinforcedStorage * reinforcedSiloBonus);
+            pcBaseStats.MaxFuel = (int)(controlTowerBaseStructure.Storage + controlTowerBaseStructure.Storage * fuelSiloBonus);
+            pcBaseStats.ResourceCapacity = (int)(controlTowerBaseStructure.ResourceStorage + controlTowerBaseStructure.ResourceStorage * resourceSiloBonus);
+            pcBaseStats.MaxCPU = controlTowerBaseStructure.CPU + (controlTower.StructureBonus * 2);
+            pcBaseStats.MaxPower = controlTowerBaseStructure.Power + (controlTower.StructureBonus * 3);
 
-            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
-                                  .Where(x =>
-                                  {
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-                                      return x.PCBaseID == pcBaseID && baseStructure.BaseStructureType == siloType;
-                                  })
-                                  .DefaultIfEmpty()
-                                  .Sum(x =>
-                                  {
-                                      if (x == null) return 0;
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-                                      return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
+            // Update the base's stats.
+            pcBase.CalculatedStats = pcBaseStats;
+            DataService.Set(pcBase);
 
-            var fuelMax = towerStructure.Storage;
-
-            return (int)(fuelMax + fuelMax * siloBonus);
-        }
-
-        public static int CalculateMaxReinforcedFuel(Guid pcBaseID)
-        {
-            const BaseStructureType siloType = BaseStructureType.StronidiumSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null)
-            {
-                Console.WriteLine("Could not find tower in BaseService -> CalculateMaxReinforcedFuel. PCBaseID = " + pcBaseID);
-                return 0;
-            }
-
-            var towerBaseStructure = GetBaseStructure(tower.BaseStructureID);
-            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
-                                  .Where(x =>
-                                  {
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-                                      return x.PCBaseID == pcBaseID &&
-                                             baseStructure.BaseStructureType == siloType;
-                                  })
-                                  .DefaultIfEmpty()
-                                  .Sum(x =>
-                                  {
-                                      if (x == null) return 0;
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-
-                                      return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
-
-            var fuelMax = towerBaseStructure.ReinforcedStorage;
-
-            return (int)(fuelMax + fuelMax * siloBonus);
-        }
-
-        public static int CalculateResourceCapacity(Guid pcBaseID)
-        {
-            const BaseStructureType siloType = BaseStructureType.ResourceSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
-
-            if (tower == null)
-            {
-                Console.WriteLine("Could not find tower in BaseService -> CalculateResourceCapacity. PCBaseID = " + pcBaseID);
-                return 0;
-            }
-
-            var towerBaseStructure = GetBaseStructure(tower.BaseStructureID);
-            float siloBonus = DataService.PCBaseStructure.GetAllByPCBaseID(pcBaseID)
-                                  .Where(x =>
-                                  {
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-
-                                      return x.PCBaseID == pcBaseID &&
-                                             baseStructure.BaseStructureType == siloType;
-                                  })
-                                  .DefaultIfEmpty()
-                                  .Sum(x =>
-                                  {
-                                      if (x == null) return 0;
-                                      var baseStructure = GetBaseStructure(x.BaseStructureID);
-
-                                      return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.01f;
-
-            var resourceMax = towerBaseStructure.ResourceStorage;
-
-            return (int)(resourceMax + resourceMax * siloBonus);
+            return pcBase.CalculatedStats;
         }
 
         public static string UpgradeControlTower(NWCreature user, NWItem item, NWObject target)
@@ -1477,8 +1421,9 @@ namespace SWLOR.Game.Server.Service
             // Check that the current CPU and power usage of the base is not more than
             // the new tower can handle.
             //--------------------------------------------------------------------------
-            double powerInUse = GetPowerInUse(towerStructure.PCBaseID);
-            double cpuInUse = GetCPUInUse(towerStructure.PCBaseID);
+            var stats = GetCalculatedBaseStats(towerStructure.PCBaseID);
+            double powerInUse = stats.PowerInUse;
+            double cpuInUse = stats.CPUInUse;
 
             double towerPower = newTower.Power + (item.StructureBonus * 3);
             double towerCPU = newTower.CPU + (item.StructureBonus * 2);
@@ -1558,7 +1503,7 @@ namespace SWLOR.Game.Server.Service
                 style = structure.InteriorStyleID;
                 name = structure.CustomName;
 
-                bool starship = pcBase.PCBaseTypeID == 3;
+                bool starship = pcBase.PCBaseTypeID == PCBaseType.Starship;
                 type = starship ? (int)BuildingType.Starship : (int)BuildingType.Interior;
 
                 if (string.IsNullOrWhiteSpace(name))
@@ -1652,6 +1597,111 @@ namespace SWLOR.Game.Server.Service
                     (float)entity.LocationOrientation);
 
                 player.AssignCommand(() => _.ActionJumpToLocation(location));
+            }
+        }
+
+        /// <summary>
+        /// Handles processing drills on all bases.
+        /// These are done in batches to conserve on server resources.
+        /// This may cause a slight delay before players receive items from their drills.
+        /// In practice this shouldn't be much of an issue.
+        /// </summary>
+        private static void ProcessDrills()
+        {
+            var allDrills = DataService.PCBaseStructure.GetAllByBaseStructureTypeID(BaseStructureType.Drill);
+            const int BatchSize = 5;
+            var module = NWModule.Get();
+            var currentBatch = module.GetLocalInt("BASE_DRILL_PROCESSING_BATCH_NUMBER");
+            var drillsForProcessing = allDrills.Skip(currentBatch * BatchSize).Take(BatchSize).ToList();
+            currentBatch++;
+
+            if (drillsForProcessing.Count < BatchSize)
+            {
+                currentBatch = 0;
+            }
+
+            module.SetLocalInt("BASE_DRILL_PROCESSING_BATCH_NUMBER", currentBatch);
+
+            DateTime now = DateTime.UtcNow;
+            foreach (var pcStructure in drillsForProcessing)
+            {
+                var pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
+                var tower = GetBaseControlTower(pcStructure.PCBaseID);
+
+                // Check whether there's space in this tower.
+                int capacity = pcBase.CalculatedStats.ResourceCapacity;
+                int count = tower.Items.Count + 1;
+                if (count > capacity) continue;
+
+                var baseStructure = GetBaseStructure(pcStructure.BaseStructureID);
+
+                int minuteReduce = 2 * pcStructure.StructureBonus;
+                int increaseMinutes = 60 - minuteReduce;
+                int retrievalRating = baseStructure.RetrievalRating;
+
+                if (increaseMinutes <= 20) increaseMinutes = 20;
+                if (pcStructure.DateNextActivity == null)
+                {
+                    pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
+                    DataService.Set(pcStructure);
+                }
+
+                if (!(now >= pcStructure.DateNextActivity))
+                {
+                    continue;
+                }
+
+                // Time to spawn a new item and reset the timer.
+                var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+                string sector = pcBase.Sector;
+                var lootTableID = LootTable.Invalid;
+
+                switch (sector)
+                {
+                    case "NE": lootTableID = dbArea.NortheastLootTableID ?? LootTable.Invalid; break;
+                    case "NW": lootTableID = dbArea.NorthwestLootTableID ?? LootTable.Invalid; break;
+                    case "SE": lootTableID = dbArea.SoutheastLootTableID ?? LootTable.Invalid; break;
+                    case "SW": lootTableID = dbArea.SouthwestLootTableID ?? LootTable.Invalid; break;
+                }
+
+                if (lootTableID == LootTable.Invalid)
+                {
+                    Console.WriteLine("WARNING: Loot table ID not defined for area " + dbArea.Name + ". Drills cannot retrieve items.");
+                    continue;
+                }
+
+                pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
+
+                var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
+
+                var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
+                NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
+
+                // Guard against invalid resrefs and missing items.
+                if (!item.IsValid)
+                {
+                    Console.WriteLine("ERROR: Could not create base drill item with resref '" + itemDetails.Resref + "'. Is this item valid?");
+                    continue;
+                }
+
+                if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
+                {
+                    var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
+                    rule.Run(item, retrievalRating);
+                }
+
+                var dbItem = new PCBaseStructureItem
+                {
+                    ItemName = item.Name,
+                    ItemResref = item.Resref,
+                    ItemTag = item.Tag,
+                    ItemObject = SerializationService.Serialize(item)
+                };
+                tower.Items[item.GlobalID] = dbItem;
+
+                DataService.Set(pcStructure);
+                DataService.Set(tower);
+                item.Destroy();
             }
         }
     }

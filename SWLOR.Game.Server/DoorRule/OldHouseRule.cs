@@ -2,7 +2,9 @@
 using NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.DoorRule
 {
@@ -16,10 +18,10 @@ namespace SWLOR.Game.Server.DoorRule
             fOrient = fOrient + 126.31f;
             if (fOrient > 360.0) fOrient = fOrient - 360.0f;
 
-            float fMod = (float)(Math.Sqrt(13.0f) * Math.Sin(fOrient));
+            float fMod = _.sqrt(13.0f) * _.sin(fOrient);
             doorPosition.X = doorPosition.X + fMod;
 
-            fMod = (float)(Math.Sqrt(13.0f) * Math.Cos(fOrient));
+            fMod = _.sqrt(13.0f) * _.cos(fOrient);
             doorPosition.Y = doorPosition.Y - fMod;
             Location doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
 

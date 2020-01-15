@@ -10,13 +10,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Scripting;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -33,10 +35,9 @@ namespace SWLOR.Game.Server.Service
 
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var quests = typeof(AbstractQuest)
                 .Assembly.GetTypes()
@@ -77,6 +78,8 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+
+            MessageHub.Instance.Publish(new OnQuestRegistered(quest));
         }
 
         /// <summary>

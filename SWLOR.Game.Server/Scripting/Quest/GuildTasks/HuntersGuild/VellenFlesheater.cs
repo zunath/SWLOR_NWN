@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(610, "Hunter's Guild Task: 10x Vellen Flesheater", "hun_tsk_610")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 2)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.VellenFlesheater, 10)
                 .AddObjectiveTalkToNPC(2)

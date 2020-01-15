@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.WeaponsmithGuild
         {
             CreateQuest(261, "Weaponsmith Guild Task: 1x Martial Arts Weapon Repair Kit I", "wpn_tsk_261")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.WeaponsmithGuild, 1)
+
 
                 .AddObjectiveCollectItem(1, "ma_rep_1", 1, true)
 

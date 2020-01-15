@@ -5,10 +5,6 @@
     "value": [
       {
         "__struct_id": 0,
-        "DELETE_ME": {
-          "type": "cexostring",
-          "value": "Modern"
-        },
         "LIST": {
           "type": "list",
           "value": [
@@ -1287,6 +1283,10 @@
               }
             }
           ]
+        },
+        "NAME": {
+          "type": "cexostring",
+          "value": "Modern"
         }
       },
       {

@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Enumeration
         public StructureModeType DefaultStructureMode { get; set; }
 
         public BaseStructureAttribute(
-            BaseStructureType BaseStructureType,
+            BaseStructureType baseStructureType,
             string name,
             string placeableResref,
             string itemResref,
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Enumeration
             int fuelRating,
             StructureModeType defaultStructureMode)
         {
-            BaseStructureType = BaseStructureType;
+            BaseStructureType = baseStructureType;
             Name = name;
             PlaceableResref = placeableResref;
             ItemResref = itemResref;

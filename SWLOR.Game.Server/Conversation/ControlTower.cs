@@ -4,11 +4,13 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -34,18 +36,19 @@ namespace SWLOR.Game.Server.Conversation
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
             Guid pcBaseID = structure.PCBaseID;
             PCBase pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var stats = pcBase.CalculatedStats;
 
-            double currentCPU = BaseService.GetCPUInUse(pcBaseID);
-            double currentPower = BaseService.GetPowerInUse(pcBaseID);
-            double maxCPU = BaseService.GetMaxBaseCPU(pcBaseID);
-            double maxPower = BaseService.GetMaxBasePower(pcBaseID);
+            double currentCPU = stats.CPUInUse;
+            double currentPower = stats.PowerInUse;
+            double maxCPU = stats.MaxCPU;
+            double maxPower = stats.MaxPower;
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
             int currentResources = structure.Items.Count;
-            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBaseID);
-            int maxFuel = BaseService.CalculateMaxFuel(pcBaseID);
-            int maxResources = BaseService.CalculateResourceCapacity(pcBaseID);
+            int maxReinforcedFuel = stats.MaxReinforcedFuel;
+            int maxFuel = stats.MaxFuel;
+            int maxResources = stats.ResourceCapacity;
 
             string time;
             if (pcBase.DateFuelEnds > DateTime.UtcNow)

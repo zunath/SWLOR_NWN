@@ -15,9 +15,11 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.NWScript.Enumerations;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using Skill = SWLOR.Game.Server.Enumeration.Skill;
 
@@ -35,7 +37,6 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnPlayerHeartbeat>(message => OnCreatureHeartbeat());
 
             // Module Events
-            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<Planet, List<SpaceEncounterAttribute>> _spaceEncountersByPlanet = new Dictionary<Planet, List<SpaceEncounterAttribute>>();
         private static readonly Dictionary<string, Planet> _planetsByName = new Dictionary<string, Planet>();
 
-        private static void OnModuleLoad()
+        public static void CacheData()
         {
             var starports = Enum.GetValues(typeof(Starport)).Cast<Starport>();
             foreach (var starport in starports)

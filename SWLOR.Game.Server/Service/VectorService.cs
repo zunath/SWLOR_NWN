@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
 using static System.Math;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 
 /*

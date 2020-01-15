@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.WeaponsmithGuild
         {
             CreateQuest(342, "Weaponsmith Guild Task: 1x Twin Vibroblade Repair Kit IV", "wpn_tsk_342")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.WeaponsmithGuild, 4)
+
 
                 .AddObjectiveCollectItem(1, "tb_rep_4", 1, true)
 

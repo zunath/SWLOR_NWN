@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
             PlayerBasePermissions = new Dictionary<Guid, PCBasePermission>();
             PublicBasePermission = new PCBasePermission();
+            CalculatedStats = new PCBaseCalculatedStats();
         }
 
         [Key]
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Data.Entity
         [JsonProperty]
         public DateTime DateFuelEnds { get; set; }
         [JsonProperty]
-        public int PCBaseTypeID { get; set; }
+        public PCBaseType PCBaseTypeID { get; set; }
         [JsonProperty]
         public ApartmentType? ApartmentBuildingID { get; set; }
         [JsonProperty]
@@ -54,11 +55,15 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ShipLocation { get; set; }
         [JsonProperty]
         public int? Starcharts { get; set; }
-
+        [JsonProperty]
+        public Guid? ControlTowerStructureID { get; set; }
+        
         [JsonProperty]
         public PCBasePermission PublicBasePermission { get; set; }
         [JsonProperty]
         public Dictionary<Guid, PCBasePermission> PlayerBasePermissions { get; set; }
+        [JsonProperty]
+        public PCBaseCalculatedStats CalculatedStats { get; set; }
     }
 
     public class PCBasePermission
@@ -79,4 +84,18 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanDockStarship { get; set; }
         public bool CanFlyStarship { get; set; }
     }
+
+    public class PCBaseCalculatedStats
+    {
+        public double MaxCPU { get; set; }
+        public double MaxPower { get; set; }
+        public double PowerInUse { get; set; }
+        public double CPUInUse { get; set; }
+        public int MaxReinforcedFuel { get; set; }
+        public int ResourceCapacity { get; set; }
+        public int MaxFuel { get; set; }
+        public int MaxShieldHP { get; set; }
+        
+    }
+    
 }

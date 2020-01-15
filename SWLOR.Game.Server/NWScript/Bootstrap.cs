@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Diagnostics;
-namespace NWN
+
+namespace SWLOR.Game.Server.NWScript
 {
     partial class Internal
     {
@@ -261,7 +261,7 @@ namespace NWN
 
             try
             {
-                Entrypoints.OnStart();
+                _scriptDispatcher.RegisterScripts();
             }
             catch (Exception e)
             {

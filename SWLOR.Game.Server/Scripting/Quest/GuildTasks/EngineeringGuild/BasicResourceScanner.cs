@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.EngineeringGuild
         {
             CreateQuest(353, "Engineering Guild Task: 1x Basic Resource Scanner", "eng_tsk_353")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.EngineeringGuild, 0)
+
 
                 .AddObjectiveCollectItem(1, "scanner_r_b", 1, true)
 

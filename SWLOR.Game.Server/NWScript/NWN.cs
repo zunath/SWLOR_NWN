@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Diagnostics;
-namespace NWN
+
+namespace SWLOR.Game.Server.NWScript
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector

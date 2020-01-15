@@ -9,14 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
     [JsonObject(MemberSerialization.OptIn)]
     public class Area: IEntity
     {
-        public Area()
-        {
-            ID = Guid.NewGuid();
-        }
-
         [Key]
-        [JsonProperty]
-        public Guid ID { get; set; }
         [JsonProperty]
         public string Resref { get; set; }
         [JsonProperty]

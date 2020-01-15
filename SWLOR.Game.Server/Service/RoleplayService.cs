@@ -9,6 +9,8 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using _ = SWLOR.Game.Server.NWScript._;
+
 namespace SWLOR.Game.Server.Service
 {
     public static class RoleplayService

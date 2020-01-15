@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Quest.Contracts
         string Name { get; }
         string JournalTag { get; }
         bool AllowRewardSelection { get; }
+        GuildType Guild { get; }
+        int RequiredGuildRank { get; }
 
         IQuestState GetState(int state);
         IEnumerable<IQuestState> GetStates();
@@ -29,6 +31,7 @@ namespace SWLOR.Game.Server.Quest.Contracts
         IQuest OnCompleted(Action<NWPlayer, NWObject> action);
 
         IQuest IsRepeatable();
+        IQuest IsGuildTask(GuildType guild, int requiredRank);
         IQuest EnableRewardSelection();
 
         IQuest AddObjective(int state, IQuestObjective objective);

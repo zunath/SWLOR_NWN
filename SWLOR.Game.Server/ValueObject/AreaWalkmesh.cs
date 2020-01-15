@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.ValueObject
             ID = Guid.NewGuid();
         }
         public Guid ID { get; set; }
-        public Guid AreaID { get; set; }
+        public string AreaResref { get; set; }
         public double LocationX { get; set; }
         public double LocationY { get; set; }
         public double LocationZ { get; set; }

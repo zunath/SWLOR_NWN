@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Scripting.Quest.GuildTasks.HuntersGuild
         {
             CreateQuest(589, "Hunter's Guild Task: 10x Valley Raivor", "hun_tsk_589")
                 .IsRepeatable()
+				.IsGuildTask(GuildType.HuntersGuild, 1)
+
 
                 .AddObjectiveKillTarget(1, NPCGroup.ViscaraDeepMountainRaivors, 10)
                 .AddObjectiveTalkToNPC(2)

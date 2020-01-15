@@ -4,7 +4,8 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWScript.Enumerations;
-using static NWN._;
+using static SWLOR.Game.Server.NWScript._;
+using _ = SWLOR.Game.Server.NWScript._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            RacialType race = (RacialType) player.RacialType;
+            RacialType race = player.RacialType;
 
             if (race == RacialType.Wookiee)
             {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyDefaultAppearance(NWPlayer player)
         {
-            RacialType race = (RacialType)player.RacialType;
+            RacialType race = player.RacialType;
             int maleHead;
             int femaleHead;
             int skinColor;

@@ -131,6 +131,7 @@ namespace SWLOR.Tools.Hak.Builder
                 "swlor_itp",
                 // Note: swlor_mdl and swlor_mdl_p will be added to this list only if _isCompiling is false. Otherwise, they get compiled in a later step.
                 "swlor_mtr",
+                "swlor_music",
                 "swlor_plt",
                 "swlor_portraits",
                 "swlor_pwk",

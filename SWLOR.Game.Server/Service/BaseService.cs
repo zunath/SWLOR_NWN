@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => ProcessDrills());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
@@ -1593,6 +1594,110 @@ namespace SWLOR.Game.Server.Service
                     (float)entity.LocationOrientation);
 
                 player.AssignCommand(() => _.ActionJumpToLocation(location));
+            }
+        }
+
+        /// <summary>
+        /// Handles processing drills on all bases.
+        /// These are done in batches to conserve on server resources.
+        /// This may cause a slight delay before players receive items from their drills.
+        /// In practice this shouldn't be much of an issue.
+        /// </summary>
+        private static void ProcessDrills()
+        {
+            var allDrills = DataService.PCBaseStructure.GetAllByBaseStructureTypeID(BaseStructureType.Drill);
+            const int BatchSize = 5;
+            var module = NWModule.Get();
+            var currentBatch = module.GetLocalInt("BASE_DRILL_PROCESSING_BATCH_NUMBER");
+            var drillsForProcessing = allDrills.Skip(currentBatch * BatchSize).Take(BatchSize).ToList();
+            currentBatch++;
+
+            if (drillsForProcessing.Count < BatchSize)
+            {
+                currentBatch = 0;
+            }
+
+            module.SetLocalInt("BASE_DRILL_PROCESSING_BATCH_NUMBER", currentBatch);
+
+            DateTime now = DateTime.UtcNow;
+            foreach (var pcStructure in drillsForProcessing)
+            {
+                var pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
+                var tower = GetBaseControlTower(pcStructure.PCBaseID);
+
+                // Check whether there's space in this tower.
+                int capacity = pcBase.CalculatedStats.ResourceCapacity;
+                int count = tower.Items.Count + 1;
+                if (count > capacity) continue;
+
+                var baseStructure = GetBaseStructure(pcStructure.BaseStructureID);
+
+                int minuteReduce = 2 * pcStructure.StructureBonus;
+                int increaseMinutes = 60 - minuteReduce;
+                int retrievalRating = baseStructure.RetrievalRating;
+
+                if (increaseMinutes <= 20) increaseMinutes = 20;
+                if (pcStructure.DateNextActivity == null)
+                {
+                    pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
+                    DataService.Set(pcStructure);
+                }
+
+                if (!(now >= pcStructure.DateNextActivity))
+                {
+                    continue;
+                }
+
+                // Time to spawn a new item and reset the timer.
+                var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+                string sector = pcBase.Sector;
+                var lootTableID = LootTable.Invalid;
+
+                switch (sector)
+                {
+                    case "NE": lootTableID = dbArea.NortheastLootTableID ?? LootTable.Invalid; break;
+                    case "NW": lootTableID = dbArea.NorthwestLootTableID ?? LootTable.Invalid; break;
+                    case "SE": lootTableID = dbArea.SoutheastLootTableID ?? LootTable.Invalid; break;
+                    case "SW": lootTableID = dbArea.SouthwestLootTableID ?? LootTable.Invalid; break;
+                }
+
+                if (lootTableID == LootTable.Invalid)
+                {
+                    Console.WriteLine("WARNING: Loot table ID not defined for area " + dbArea.Name + ". Drills cannot retrieve items.");
+                    continue;
+                }
+
+                pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
+
+                var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
+
+                var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
+                NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
+
+                // Guard against invalid resrefs and missing items.
+                if (!item.IsValid)
+                {
+                    Console.WriteLine("ERROR: Could not create base drill item with resref '" + itemDetails.Resref + "'. Is this item valid?");
+                    continue;
+                }
+
+                if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
+                {
+                    var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
+                    rule.Run(item, retrievalRating);
+                }
+
+                var dbItem = new PCBaseStructureItem
+                {
+                    ItemName = item.Name,
+                    ItemResref = item.Resref,
+                    ItemTag = item.Tag,
+                    ItemObject = SerializationService.Serialize(item)
+                };
+                pcStructure.Items[item.GlobalID] = dbItem;
+
+                DataService.Set(pcStructure);
+                item.Destroy();
             }
         }
     }

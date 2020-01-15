@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Caching
 
         private const string ByPCBaseIDIndex = "ByPCBaseID";
         private const string ByParentPCBaseStructureIDIndex = "ByParentPCBaseStructureID";
+        private const string ByBaseStructureTypeIndex = "ByBaseStructureType";
 
         protected override void OnCacheObjectSet(PCBaseStructure entity)
         {
@@ -23,6 +25,9 @@ namespace SWLOR.Game.Server.Caching
             {
                 SetIntoListIndex(ByParentPCBaseStructureIDIndex, entity.ParentPCBaseStructureID.ToString(), entity);
             }
+
+            var baseStructure = BaseService.GetBaseStructure(entity.BaseStructureID);
+            SetIntoListIndex(ByBaseStructureTypeIndex, $"{baseStructure.BaseStructureType}", entity);
         }
 
         protected override void OnCacheObjectRemoved(PCBaseStructure entity)
@@ -32,6 +37,9 @@ namespace SWLOR.Game.Server.Caching
             {
                 RemoveFromListIndex(ByParentPCBaseStructureIDIndex, entity.ParentPCBaseStructureID.ToString(), entity);
             }
+
+            var baseStructure = BaseService.GetBaseStructure(entity.BaseStructureID);
+            RemoveFromListIndex(ByBaseStructureTypeIndex, $"{baseStructure.BaseStructureType}", entity);
         }
 
         protected override void OnSubscribeEvents()
@@ -82,6 +90,14 @@ namespace SWLOR.Game.Server.Caching
                 return new List<PCBaseStructure>();
 
             return GetFromListIndex(ByParentPCBaseStructureIDIndex, parentPCBaseStructureID.ToString());
+        }
+
+        public IEnumerable<PCBaseStructure> GetAllByBaseStructureTypeID(BaseStructureType type)
+        {
+            if(!ExistsByListIndex(ByBaseStructureTypeIndex, $"{type}"))
+                return new List<PCBaseStructure>();
+
+            return GetFromListIndex(ByBaseStructureTypeIndex, $"{type}");
         }
     }
 }

@@ -735,7 +735,7 @@ namespace SWLOR.Game.Server.Service
                 location = waypoint.Location;
             }
 
-            NWCreature shipCreature = CreateObject(ObjectType.Creature, "starship" + shipBase.BuildingStyleID, location, false, shipID);
+            NWCreature shipCreature = CreateObject(ObjectType.Creature, "starship" + (int) shipBase.BuildingStyleID, location, false, shipID);
 
             shipCreature.SetLocalObject("AREA", ship);
             ship.SetLocalObject("CREATURE", shipCreature);

@@ -721,6 +721,9 @@ namespace SWLOR.Game.Server.Service
                             // Grant all base permissions to owner.
                             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
                             BasePermissionService.GrantBasePermissions(player, starkillerBase.ID, allPermissions);
+                            
+                            // Need to retrieve the latest copy of the data since the previous "Grant Base Permissions" call updated data.
+                            starkillerBase = DataService.PCBase.GetByID(starkillerBase.ID);
                             var position = _.GetPositionFromLocation(targetLocation);
                             var extStyle = _buildingStyles.Single(x => x.Value.BaseStructureID == baseStructureID && x.Value.BuildingTypeID == BuildingType.Exterior);
 

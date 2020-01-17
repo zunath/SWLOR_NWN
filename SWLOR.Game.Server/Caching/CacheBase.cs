@@ -100,10 +100,10 @@ namespace SWLOR.Game.Server.Caching
         }
 
         /// <summary>
-        /// Retrieves an entity by an integer ID.
+        /// Retrieves an entity by an ID.
         /// </summary>
-        /// <param name="id">The integer ID of the entity.</param>
-        /// <returns>An entity with a matching integer ID.</returns>
+        /// <param name="id">The ID of the entity.</param>
+        /// <returns>An entity with a matching ID.</returns>
         protected T ByID(string id)
         {
             var key = $"{_setName}:{id}";

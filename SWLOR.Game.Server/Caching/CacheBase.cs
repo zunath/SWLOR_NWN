@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Caching
         }
 
         /// <summary>
-        /// Retrieves an entity by an ID.
+        /// Retrieves an entity by its ID.
         /// </summary>
         /// <param name="id">The ID of the entity.</param>
         /// <returns>An entity with a matching ID.</returns>

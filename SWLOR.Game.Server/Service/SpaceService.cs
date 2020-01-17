@@ -916,7 +916,7 @@ namespace SWLOR.Game.Server.Service
             player.AssignCommand(() => { ActionUnequipItem(player.RightHand); });
             ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), player);
             ApplyEffectToObject(DurationType.Permanent, EffectInvisibility(InvisibilityType.Normal), player);
-            ApplyEffectToObject(DurationType.Permanent, EffectMovementSpeedIncrease(200), player);
+            ApplyEffectToObject(DurationType.Permanent, EffectMovementSpeedIncrease(99), player);
 
             ship.SetLocalObject("GUNNER", player);
 

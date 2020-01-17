@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Message GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public IEnumerable<Message> GetAllByBoardID(Guid boardID)

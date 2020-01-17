@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
 
         public AuthorizedDM GetByID(int id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public AuthorizedDM GetByCDKeyAndActiveOrDefault(string cdKey)

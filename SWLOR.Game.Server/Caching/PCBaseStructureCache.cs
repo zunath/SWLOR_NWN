@@ -48,14 +48,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBaseStructure GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public PCBaseStructure GetByIDOrDefault(Guid id)
         {
             if (!Exists(id))
                 return default;
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public IEnumerable<PCBaseStructure> GetAllByPCBaseID(Guid pcBaseID)

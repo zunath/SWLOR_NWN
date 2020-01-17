@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Caching
 
         public Player GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public IEnumerable<Player> GetAllByIDs(IEnumerable<Guid> playerIDs)
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<Player>();
             foreach (var id in playerIDs)
             {
-                list.Add(ByID(id));
+                list.Add(ByID(id.ToString()));
             }
 
             return list;
@@ -110,8 +110,8 @@ namespace SWLOR.Game.Server.Caching
             }
             else
             {
-                var playerID = GetFromIndex(ByPrimaryResidencePCBaseIDIndex, pcBaseID.ToString());
-                return ByID(playerID);
+                var player = GetFromIndex(ByPrimaryResidencePCBaseIDIndex, pcBaseID.ToString());
+                return ByID(player.ID.ToString());
             }
         }
 
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Caching
             }
             else
             {
-                var playerID = GetFromIndex(ByPrimaryResidencePCBaseStructureIDIndex, pcStructureID.ToString());
-                return ByID(playerID);
+                var player = GetFromIndex(ByPrimaryResidencePCBaseStructureIDIndex, pcStructureID.ToString());
+                return ByID(player.ID.ToString());
             }
         }
 

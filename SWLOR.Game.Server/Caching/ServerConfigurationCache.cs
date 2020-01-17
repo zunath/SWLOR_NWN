@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Caching
 
         public ServerConfiguration Get()
         {
-            return ByID(1);
+            return ByID(1.ToString());
         }
     }
 }

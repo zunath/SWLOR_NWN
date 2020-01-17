@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMarketListing GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public PCMarketListing GetByIDOrDefault(Guid id)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Caching
             if (!Exists(id)) 
                 return default;
 
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public IEnumerable<PCMarketListing> GetAllByMarketRegionID(MarketRegion marketRegionID)

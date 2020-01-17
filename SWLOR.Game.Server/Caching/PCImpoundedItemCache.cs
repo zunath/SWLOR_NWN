@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCImpoundedItem GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public IEnumerable<PCImpoundedItem> GetAllByPlayerIDAndNotRetrieved(Guid playerID)

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCCustomEffect GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public PCCustomEffect GetByStancePerkOrDefault(Guid playerID, int stancePerkID)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Caching
             var list = new List<PCCustomEffect>();
             foreach (var pcCustomEffectID in pcCustomEffectIDs)
             {
-                list.Add( ByID(pcCustomEffectID));
+                list.Add( ByID(pcCustomEffectID.ToString()));
             }
 
             return list;

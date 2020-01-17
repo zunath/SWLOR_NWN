@@ -37,14 +37,14 @@ namespace SWLOR.Game.Server.Caching
 
         public PCBase GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public PCBase GetByIDOrDefault(Guid id)
         {
             if (!Exists(id))
                 return default;
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public IEnumerable<PCBase> GetApartmentsOwnedByPlayer(Guid playerID, ApartmentType apartmentBuildingID)

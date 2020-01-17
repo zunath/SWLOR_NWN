@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCQuestStatus GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public PCQuestStatus GetByPlayerAndQuestID(Guid playerID, int questID)

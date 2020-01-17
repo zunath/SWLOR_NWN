@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Caching
 
         public BankItem GetByID(Guid id)
         {
-            return ByID(id);
+            return ByID(id.ToString());
         }
 
         public BankItem GetByItemID(string itemID)

@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Caching
         /// </summary>
         /// <param name="id">The ID of the entity.</param>
         /// <returns>An entity with a matching ID.</returns>
-        protected T ByID(object id)
+        protected T ByID(string id)
         {
             var key = $"{_setName}:{id}";
             var json = NWNXRedis.Get(key);
@@ -251,8 +251,8 @@ namespace SWLOR.Game.Server.Caching
             var index = GetIndexDetails();
             var key = $"{indexName}:{indexValue}";
             var id = index.SecondaryIndexes[key];
-
-            return ByID(id);
+                        
+            return ByID(id.ToString());
         }
 
         /// <summary>

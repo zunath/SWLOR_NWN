@@ -917,6 +917,7 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), player);
             ApplyEffectToObject(DurationType.Permanent, EffectInvisibility(InvisibilityType.Normal), player);
             ApplyEffectToObject(DurationType.Permanent, EffectMovementSpeedIncrease(99), player);
+            ApplyEffectToObject(DurationType.Permanent, EffectHaste(), player);
 
             ship.SetLocalObject("GUNNER", player);
 
@@ -950,6 +951,7 @@ namespace SWLOR.Game.Server.Service
             {
                 player.RemoveEffect(EffectType.CutsceneGhost);
                 player.RemoveEffect(EffectType.Invisibility);
+                player.RemoveEffect(EffectType.Haste);
             });
 
             copy.Area.DeleteLocalObject("GUNNER");

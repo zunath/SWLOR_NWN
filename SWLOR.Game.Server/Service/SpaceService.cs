@@ -1162,7 +1162,7 @@ namespace SWLOR.Game.Server.Service
                             if (targetHP <= 0)
                             {
                                 // Boom!
-                                ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(Vfx.Fnf_Implosion), player.Location, 2.0f);
+                                ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(Vfx.Fnf_Fireball), player.Location, 2.0f);
                                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
                             }
                             else
@@ -1345,7 +1345,7 @@ namespace SWLOR.Game.Server.Service
                 if (targetHP <= 0)
                 {
                     // Boom!
-                    ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(Vfx.Fnf_Implosion), target.Location, 2.0f);
+                    ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(Vfx.Fnf_Fireball), target.Location, 2.0f);
                     ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
                 }
                 else

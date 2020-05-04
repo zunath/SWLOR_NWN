@@ -3,14 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using CSScriptLibrary;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Module;
+using CSScriptLib;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Scripting.Contracts;
-using SWLOR.Game.Server.Service;
 using Exception = System.Exception;
 
 namespace SWLOR.Game.Server.Scripting
@@ -103,14 +99,14 @@ namespace SWLOR.Game.Server.Scripting
                 // Quest scripts
                 if (IsQuestScript(file))
                 {
-                    var quest = CSScript.MonoEvaluator.LoadFile<AbstractQuest>(file);
+                    var quest = CSScript.RoslynEvaluator.LoadFile<AbstractQuest>(file);
                     _questCache[file] = quest;
                     MessageHub.Instance.Publish(new OnQuestLoaded(quest));
                 }
                 // Regular scripts
                 else
                 {
-                    var script = CSScript.MonoEvaluator.LoadFile<IScript>(file);
+                    var script = CSScript.RoslynEvaluator.LoadFile<IScript>(file);
                     _scriptCache[file] = script;
                     string @namespace = script.GetType().FullName;
                     _namespacePointers[@namespace] = file;

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if (!ByFeatID.ContainsKey(featID))
             {
-                return default;
+                return default(PerkFeat);
             }
 
             return (PerkFeat)ByFeatID[featID].Clone();

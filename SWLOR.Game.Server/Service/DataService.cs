@@ -7,6 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using Microsoft.Data.SqlClient;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Event.SWLOR;

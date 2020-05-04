@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Caching
         public PCBaseStructure GetByIDOrDefault(Guid id)
         {
             if (!ByID.ContainsKey(id))
-                return default;
+                return default(PCBaseStructure);
             return (PCBaseStructure)ByID[id].Clone();
         }
 

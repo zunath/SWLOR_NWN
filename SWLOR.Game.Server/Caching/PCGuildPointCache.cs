@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Caching
         public PCGuildPoint GetByIDOrDefault(Guid id)
         {
             if (!ByID.ContainsKey(id))
-                return default;
+                return default(PCGuildPoint);
             return (PCGuildPoint)ByID[id].Clone();
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SWLOR.Tools.LanguageGenerator
 {
-    public class LanguageGenerator
+    public class Program
     {
         static void Main(string[] args)
         {

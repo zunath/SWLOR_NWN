@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if (!ByPrimaryResidencePCBaseID.ContainsKey(pcBaseID))
             {
-                return default;
+                return default(Player);
             }
             else
             {
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if (!ByPrimaryResidencePCBaseStructureID.ContainsKey(pcStructureID))
             {
-                return default;
+                return default(Player);
             }
             else
             {

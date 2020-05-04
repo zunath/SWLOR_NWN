@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Caching
         public PCCustomEffect GetByStancePerkOrDefault(Guid playerID, int stancePerkID)
         {
             if (!ByPlayer.ContainsKey(playerID))
-                return default;
+                return default(PCCustomEffect);
 
             return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID == stancePerkID)?.Clone();
         }
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Caching
         public PCCustomEffect GetByPlayerStanceOrDefault(Guid playerID)
         {
             if (!ByPlayer.ContainsKey(playerID))
-                return default;
+                return default(PCCustomEffect);
 
             return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.StancePerkID != null)?.Clone();
         }
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Caching
         public PCCustomEffect GetByPlayerIDAndCustomEffectIDOrDefault(Guid playerID, int customEffectID)
         {
             if (!ByPlayer.ContainsKey(playerID))
-                return default;
+                return default(PCCustomEffect);
 
             return (PCCustomEffect)ByPlayer[playerID].Values.SingleOrDefault(x => x.PlayerID == playerID && x.CustomEffectID == customEffectID)?.Clone();
         }

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if (ByID.ContainsKey(id))
                 return (CooldownCategory)ByID[id].Clone();
-            else return default;
+            else return default(CooldownCategory);
         }
 
     }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Data.SqlClient;
 using System.Threading;
+using Microsoft.Data.SqlClient;
 
 namespace SWLOR.Game.Server.Threading
 {

@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Caching
             }
             else
             {
-                return default;
+                return default(TEntity);
             }
         }
     }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dapper;
+using Microsoft.Data.SqlClient;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 

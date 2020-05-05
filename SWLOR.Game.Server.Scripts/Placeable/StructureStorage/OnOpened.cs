@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
 
         public void Main()
         {
-            NWPlaceable chest = (NWGameObject.OBJECT_SELF);
+            NWPlaceable chest = (_.OBJECT_SELF);
             Guid structureID = new Guid(chest.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
 

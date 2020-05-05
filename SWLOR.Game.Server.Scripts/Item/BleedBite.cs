@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Scripts.Item
 
             if (RandomService.D100(1) > 5) return;
 
-            CustomEffectService.ApplyCustomEffect(NWGameObject.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
+            CustomEffectService.ApplyCustomEffect(_.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
         }
     }
 }

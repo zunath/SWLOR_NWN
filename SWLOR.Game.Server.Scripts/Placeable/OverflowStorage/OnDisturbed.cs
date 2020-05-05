@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
 
         public void Main()
         {
-            NWPlaceable container = (NWGameObject.OBJECT_SELF);
+            NWPlaceable container = (_.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem oItem = (_.GetInventoryDisturbItem());
             int type = _.GetInventoryDisturbType();

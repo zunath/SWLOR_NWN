@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Creature
 
         private void OnCreatureDeath(OnCreatureDeath @event)
         {
-            NWCreature creature = NWGameObject.OBJECT_SELF;
+            NWCreature creature = _.OBJECT_SELF;
             if (creature.Resref != "zomb_rancor") return;
 
             NWArea area = creature.Area;

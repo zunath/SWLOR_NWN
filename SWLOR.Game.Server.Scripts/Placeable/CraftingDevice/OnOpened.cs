@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         public void Main()
         {
-            NWPlaceable device = (NWGameObject.OBJECT_SELF);
+            NWPlaceable device = (_.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
             var model = CraftService.GetPlayerCraftingData(oPC);
             

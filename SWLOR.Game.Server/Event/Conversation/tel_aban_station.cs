@@ -19,7 +19,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(tel_aban_station)))
             {
                 NWPlayer player = GetPCSpeaker();
-                NWObject talkingTo = NWGameObject.OBJECT_SELF;
+                NWObject talkingTo = _.OBJECT_SELF;
 
                 var mainLevel = GetOrCreateMainLevel(player);
                 NWObject landingWP = GetNearestObjectByTag("ABAN_STATION_LANDING", GetFirstObjectInArea(mainLevel));

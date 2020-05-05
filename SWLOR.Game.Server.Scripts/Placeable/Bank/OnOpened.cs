@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
             NWPlayer player = _.GetLastOpenedBy();
             if (!player.IsPlayer) return;
 
-            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
+            NWPlaceable terminal = _.OBJECT_SELF;
             NWArea area = terminal.Area;
             int bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0)

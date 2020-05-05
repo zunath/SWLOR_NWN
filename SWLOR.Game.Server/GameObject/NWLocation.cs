@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.NWScript;
 
 namespace SWLOR.Game.Server.GameObject
 {

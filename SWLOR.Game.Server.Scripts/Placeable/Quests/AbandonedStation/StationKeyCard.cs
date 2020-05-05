@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 
         public void Main()
         {
-            NWPlaceable keyCard = NWGameObject.OBJECT_SELF;
+            NWPlaceable keyCard = _.OBJECT_SELF;
             NWArea area = keyCard.Area;
             NWPlayer player = _.GetLastUsedBy();
             int remaining = area.GetLocalInt("KEY_CARDS_REMAINING") - 1;

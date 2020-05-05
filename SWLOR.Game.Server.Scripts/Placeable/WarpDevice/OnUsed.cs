@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
                 return;
             }
 
-            NWPlaceable self = NWGameObject.OBJECT_SELF;
+            NWPlaceable self = _.OBJECT_SELF;
             string destination = self.GetLocalString("DESTINATION");
             int visualEffectID = self.GetLocalInt("VISUAL_EFFECT");
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");

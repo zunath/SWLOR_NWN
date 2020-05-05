@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.PazaakTable
         public void Main()
         {
             NWPlayer player = _.GetLastUsedBy();
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
 
             DialogService.StartConversation(player, device, "PazaakTable");
         }

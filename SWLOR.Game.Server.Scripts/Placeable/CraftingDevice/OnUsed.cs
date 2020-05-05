@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
         public void Main()
         {
             NWPlayer player = (_.GetLastUsedBy());
-            NWPlaceable device = (NWGameObject.OBJECT_SELF);
+            NWPlaceable device = (_.OBJECT_SELF);
 
             // If a structure ID is defined, we need to make sure the building is set to Workshop mode.
             string structureID = device.GetLocalString("PC_BASE_STRUCTURE_ID");

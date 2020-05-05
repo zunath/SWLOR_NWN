@@ -3,13 +3,14 @@ using SWLOR.Game.Server.Enumeration;
 
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.NWScript;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWItem : NWObject
     {
-        public NWItem(NWGameObject o)
+        public NWItem(uint o)
             : base(o)
         {
         }
@@ -653,11 +654,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWItem o)
+        public static implicit operator uint(NWItem o)
         {
             return o.Object;
         }
-        public static implicit operator NWItem(NWGameObject o)
+        public static implicit operator NWItem(uint o)
         {
             return new NWItem(o);
         }

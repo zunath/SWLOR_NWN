@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
 
         public void Main()
         {
-            NWPlaceable objSelf = (NWGameObject.OBJECT_SELF);
+            NWPlaceable objSelf = (_.OBJECT_SELF);
             NWObject parent = (objSelf.GetLocalObject("STRUCTURE_TEMP_PARENT"));
             parent.DeleteLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED");
             objSelf.DestroyAllInventoryItems();

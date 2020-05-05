@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.QuestIsDone
             {
                 int index = (int) args[0];
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = NWGameObject.OBJECT_SELF;
+                NWObject talkingTo = _.OBJECT_SELF;
                 int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 

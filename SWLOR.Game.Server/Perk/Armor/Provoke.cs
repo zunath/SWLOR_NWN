@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             NWCreature npc = (target.Object);
-            Effect vfx = _.EffectVisualEffect(_.VFX_IMP_CHARM);
+            var vfx = _.EffectVisualEffect(_.VFX_IMP_CHARM);
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, vfx, target.Object);
             
             creature.AssignCommand(() =>

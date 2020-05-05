@@ -77,11 +77,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {
-                mainHand = (new NWGameObject());
+                mainHand = (new uint());
             }
             else if (unequippingItem != null && Equals(unequippingItem, offHand))
             {
-                offHand = (new NWGameObject());
+                offHand = (new uint());
             }
 
             // Main is Martial and off is invalid 

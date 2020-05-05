@@ -12,11 +12,11 @@ namespace NWN.Scripts
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             using (new Profiler(nameof(mod_on_entstlth)))
             {
-                NWObject stealther = NWGameObject.OBJECT_SELF;
+                NWObject stealther = _.OBJECT_SELF;
                 _.SetActionMode(stealther, _.ACTION_MODE_STEALTH, _.FALSE);
                 _.FloatingTextStringOnCreature("NWN stealth mode is disabled on this server.", stealther, _.FALSE);
             }

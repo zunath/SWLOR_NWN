@@ -11,11 +11,11 @@ namespace NWN.Scripts
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
-            if (NWGameObject.OBJECT_SELF == null) return;
+            if (_.OBJECT_SELF == null) return;
 
-            NWItem item = NWGameObject.OBJECT_SELF;
+            NWItem item = _.OBJECT_SELF;
             if (!item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.

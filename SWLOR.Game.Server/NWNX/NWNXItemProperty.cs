@@ -1,60 +1,59 @@
 ﻿using NWN;
 using System;
+using SWLOR.Game.Server.NWScript;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXItemProperty
     {
-        private const string NWNX_ItemProperty = "NWNX_ItemProperty";
+        private const string PLUGIN_NAME = "NWNX_ItemProperty";
 
+        // Convert native itemproperty type to unpacked structure
         public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
-            const string FunctionName = "UnpackIP";
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnpackIP");
 
-            NWNX_PushArgumentItemProperty(NWNX_ItemProperty, FunctionName, ip);
-            NWNX_CallFunction(NWNX_ItemProperty, FunctionName);
+            Internal.NativeFunctions.nwnxPushItemProperty(ip.Handle);
+            Internal.NativeFunctions.nwnxCallFunction();
 
-            var n = new ItemPropertyUnpacked
+            return new ItemPropertyUnpacked
             {
-                ItemPropertyID = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Property = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                SubType = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                CostTable = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                CostTableValue = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Param1 = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Param1Value = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                UsesPerDay = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                ChanceToAppear = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                IsUseable = Convert.ToBoolean(NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName)),
-                SpellID = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Creator = NWNX_GetReturnValueObject(NWNX_ItemProperty, FunctionName),
-                Tag = NWNX_GetReturnValueString(NWNX_ItemProperty, FunctionName)
+                ItemPropertyID = Internal.NativeFunctions.nwnxPopInt(),
+                Property = Internal.NativeFunctions.nwnxPopInt(),
+                SubType = Internal.NativeFunctions.nwnxPopInt(),
+                CostTable = Internal.NativeFunctions.nwnxPopInt(),
+                CostTableValue = Internal.NativeFunctions.nwnxPopInt(),
+                Param1 = Internal.NativeFunctions.nwnxPopInt(),
+                Param1Value = Internal.NativeFunctions.nwnxPopInt(),
+                UsesPerDay = Internal.NativeFunctions.nwnxPopInt(),
+                ChanceToAppear = Internal.NativeFunctions.nwnxPopInt(),
+                IsUseable = Convert.ToBoolean(Internal.NativeFunctions.nwnxPopInt()),
+                SpellID = Internal.NativeFunctions.nwnxPopInt(),
+                Creator = Internal.NativeFunctions.nwnxPopObject(),
+                Tag = Internal.NativeFunctions.nwnxPopString()
             };
-
-            return n;
         }
 
-        public static ItemProperty PackIP(ItemPropertyUnpacked n)
+        // Convert unpacked itemproperty structure to native type.
+        public static ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
         {
-            const string sFunc = "PackIP";
-
-            NWNX_PushArgumentString(NWNX_ItemProperty, sFunc, n.Tag);
-            NWNX_PushArgumentObject(NWNX_ItemProperty, sFunc, n.Creator);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.SpellID);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.IsUseable ? 1 : 0);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.ChanceToAppear);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.UsesPerDay);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Param1Value);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Param1);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.CostTableValue);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.CostTable);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.SubType);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Property);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.ItemPropertyID);
-
-            NWNX_CallFunction(NWNX_ItemProperty, sFunc);
-            return NWNX_GetReturnValueItemProperty(NWNX_ItemProperty, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PackIP");
+            Internal.NativeFunctions.nwnxPushString(itemProperty.Tag);
+            Internal.NativeFunctions.nwnxPushObject(itemProperty.Creator ?? Internal.OBJECT_INVALID);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.SpellID);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.IsUseable ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.ChanceToAppear);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.UsesPerDay);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.Param1Value);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.Param1);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.CostTableValue);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.CostTable);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.SubType);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.Property);
+            Internal.NativeFunctions.nwnxPushInt(itemProperty.ItemPropertyID);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return new ItemProperty(Internal.NativeFunctions.nwnxPopItemProperty());
         }
 
     }

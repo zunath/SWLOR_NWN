@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
 
         public void Main()
         {
-            NWPlaceable chest = NWGameObject.OBJECT_SELF;
+            NWPlaceable chest = _.OBJECT_SELF;
             NWPlayer player = _.GetLastOpenedBy();
 
             player.SendMessage("Retrieve any resources from this container. When finished, use the control tower or walk away.");

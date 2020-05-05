@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Conversation
             header += "Please select a category.";
             SetPageHeader("BrowseByCategoryPage", header);
 
-            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
+            NWPlaceable terminal = _.OBJECT_SELF;
             int marketRegionID = MarketService.GetMarketRegionID(terminal);
             IEnumerable<PCMarketListing> listings = DataService.PCMarketListing
                 .GetAllByMarketRegionID(marketRegionID)
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Conversation
             header += "Please select a seller.";
             SetPageHeader("BrowseBySellerPage", header);
 
-            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
+            NWPlaceable terminal = _.OBJECT_SELF;
             int marketRegionID = MarketService.GetMarketRegionID(terminal);
             IEnumerable<PCMarketListing> listings = DataService.PCMarketListing
                 .GetAllByMarketRegionID(marketRegionID)
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = MarketService.GetPlayerMarketData(GetPC());
             IEnumerable<PCMarketListing> listings;
             DateTime now = DateTime.UtcNow;
-            int marketRegionID = MarketService.GetMarketRegionID(NWGameObject.OBJECT_SELF);
+            int marketRegionID = MarketService.GetMarketRegionID(_.OBJECT_SELF);
             
             // Pull items by category
             if (model.BrowseMode == MarketBrowseMode.ByCategory)
@@ -718,7 +718,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ListItem()
         {
             var player = GetPC();
-            var terminal = NWGameObject.OBJECT_SELF;
+            var terminal = _.OBJECT_SELF;
             var model = MarketService.GetPlayerMarketData(player);
             var marketRegionID = MarketService.GetMarketRegionID(terminal);
             var feeRate = MarketService.CalculateFeePercentage(model.LengthDays);
@@ -767,7 +767,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MarketListingsPage", header);
 
             var player = GetPC();
-            var regionID = MarketService.GetMarketRegionID(NWGameObject.OBJECT_SELF);
+            var regionID = MarketService.GetMarketRegionID(_.OBJECT_SELF);
             var listings = DataService.PCMarketListing.GetAllBySellerPlayerID(player.GlobalID)
                 .Where(x => x.DateSold == null &&
                     x.DateRemoved == null &&

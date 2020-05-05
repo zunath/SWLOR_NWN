@@ -13,6 +13,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using static NWN._;
@@ -389,7 +390,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureDeath()
         {
-            NWCreature creature = NWGameObject.OBJECT_SELF;
+            NWCreature creature = _.OBJECT_SELF;
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(creature.GlobalID);
             List<PlayerSkillRegistration> playerRegs = reg.GetAllRegistrations();
             var registration = reg.Registrations.OrderByDescending(o => o.Value.HighestRank).FirstOrDefault();
@@ -780,7 +781,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWPlayer oPC = NWGameObject.OBJECT_SELF;
+            NWPlayer oPC = _.OBJECT_SELF;
             if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oSpellOrigin = (GetSpellCastItem());
             NWCreature oTarget = (GetSpellTargetObject());

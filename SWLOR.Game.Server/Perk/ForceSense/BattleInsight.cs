@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSense

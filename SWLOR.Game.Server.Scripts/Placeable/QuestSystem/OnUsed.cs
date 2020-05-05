@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem
 
         public void Main()
         {
-            QuestService.OnQuestPlaceableUsed(NWGameObject.OBJECT_SELF);
+            QuestService.OnQuestPlaceableUsed(_.OBJECT_SELF);
         }
     }
 }

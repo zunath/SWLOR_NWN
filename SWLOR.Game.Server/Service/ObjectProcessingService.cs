@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Events.MainLoopTick += Events_MainLoopTick;
+            Entrypoints.MainLoopTick += (sender, frame) => Events_MainLoopTick(frame);
         }
         
         private static void Events_MainLoopTick(ulong frame)

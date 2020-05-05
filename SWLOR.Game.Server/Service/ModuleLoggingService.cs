@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = NWGameObject.OBJECT_SELF;
+            NWPlayer sender = _.OBJECT_SELF;
             if (!sender.IsPlayer && !sender.IsDM) return;
             string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Service
         {
             string details = ProcessEventAndBuildDetails(actionTypeID);
 
-            NWObject dm = NWGameObject.OBJECT_SELF;
+            NWObject dm = _.OBJECT_SELF;
 
             var record = new DMAction
             {

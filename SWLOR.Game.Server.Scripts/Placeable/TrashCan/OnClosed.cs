@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.TrashCan
 
         public void Main()
         {
-            NWPlaceable self = (NWGameObject.OBJECT_SELF);
+            NWPlaceable self = (_.OBJECT_SELF);
             foreach (NWItem item in self.InventoryItems)
             {
                 item.Destroy();

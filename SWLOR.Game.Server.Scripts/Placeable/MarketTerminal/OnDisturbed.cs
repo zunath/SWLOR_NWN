@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
         {
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             var model = MarketService.GetPlayerMarketData(player);
 
             // Serializing containers can be tricky so for the time being we'll leave them disabled.
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
         {
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             var model = MarketService.GetPlayerMarketData(player);
 
             // Done previewing an item. Return to menu.

@@ -25,13 +25,13 @@ namespace SWLOR.Game.Server.AI
         public override void OnPerception(NWCreature self)
         {
             base.OnPerception(self);
-            SpaceService.OnPerception(NWGameObject.OBJECT_SELF, _.GetLastPerceived());
+            SpaceService.OnPerception(_.OBJECT_SELF, _.GetLastPerceived());
         }
 
         public override void OnHeartbeat(NWCreature self)
         {
             base.OnHeartbeat(self);
-            SpaceService.OnHeartbeat(NWGameObject.OBJECT_SELF);
+            SpaceService.OnHeartbeat(_.OBJECT_SELF);
         }
     }
 }

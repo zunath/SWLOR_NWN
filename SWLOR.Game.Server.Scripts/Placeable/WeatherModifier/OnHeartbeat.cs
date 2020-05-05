@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WeatherModifier
 
         public void Main()
         {
-            NWObject oSelf = NWGameObject.OBJECT_SELF;
+            NWObject oSelf = _.OBJECT_SELF;
             int nHeat = oSelf.GetLocalInt("WEATHER_HEAT");
             int nWind = oSelf.GetLocalInt("WEATHER_WIND");
             int nWet = oSelf.GetLocalInt("WEATHER_HUMIDITY");

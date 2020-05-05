@@ -20,7 +20,7 @@ namespace NWN.Scripts
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
@@ -45,7 +45,7 @@ namespace NWN.Scripts
 
             }
             // Bioware default
-            _.ExecuteScript("x2_mod_def_load", NWGameObject.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_load", _.OBJECT_SELF);
 
             using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
             {
@@ -82,7 +82,7 @@ namespace NWN.Scripts
 
         private static void SetAreaEventScripts()
         {
-            NWGameObject area = _.GetFirstArea();
+            uint area = _.GetFirstArea();
             while (_.GetIsObjectValid(area) == _.TRUE)
             {
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");

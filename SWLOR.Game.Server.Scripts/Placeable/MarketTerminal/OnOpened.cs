@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
 
         public void Main()
         {
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             NWPlayer player = _.GetLastOpenedBy();
             var model = MarketService.GetPlayerMarketData(player);
 

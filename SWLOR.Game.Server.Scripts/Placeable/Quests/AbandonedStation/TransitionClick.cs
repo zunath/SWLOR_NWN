@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
         public void Main()
         {
             NWPlayer player = GetClickingObject();
-            NWObject door = NWGameObject.OBJECT_SELF;
+            NWObject door = _.OBJECT_SELF;
             string destinationAreaTag = door.GetLocalString("DESTINATION_AREA_TAG");
             string destinationWaypointTag = door.GetLocalString("DESTINATION_WAYPOINT");
             NWArea area = door.Area.GetLocalObject(destinationAreaTag);

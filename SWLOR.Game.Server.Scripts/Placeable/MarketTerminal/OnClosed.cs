@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
             // Should only fire when a player walks away from the device.
             // Clean up temporary data.
             NWPlayer player = _.GetLastClosedBy();
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             var model = MarketService.GetPlayerMarketData(player);
             device.DestroyAllInventoryItems();
             device.IsLocked = false;

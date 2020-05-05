@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
         {
             int type = _.GetInventoryDisturbType();
             if (type != _.INVENTORY_DISTURB_TYPE_ADDED) return;
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
             var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentType);

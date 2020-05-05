@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
         public void Main()
         {
             NWPlayer player = _.GetLastDisturbed();
-            NWPlaceable bay = NWGameObject.OBJECT_SELF;
+            NWPlaceable bay = _.OBJECT_SELF;
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = _.GetInventoryDisturbItem();
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");

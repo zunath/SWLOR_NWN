@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
 
         public void Main()
         {
-            NWObject container = NWGameObject.OBJECT_SELF;
+            NWObject container = _.OBJECT_SELF;
             container.DestroyAllInventoryItems();
             container.Destroy();
         }

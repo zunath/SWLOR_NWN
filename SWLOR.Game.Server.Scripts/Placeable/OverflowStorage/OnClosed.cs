@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
 
         public void Main()
         {
-            NWPlaceable container = (NWGameObject.OBJECT_SELF);
+            NWPlaceable container = (_.OBJECT_SELF);
             container.DestroyAllInventoryItems();
             container.Destroy();
         }

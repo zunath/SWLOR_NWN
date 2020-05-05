@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NWScript;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnItemUsed()
         {
-            NWPlayer user = NWGameObject.OBJECT_SELF;
+            NWPlayer user = _.OBJECT_SELF;
             NWItem oItem = NWNXEvents.OnItemUsed_GetItem();
             NWObject target = NWNXEvents.OnItemUsed_GetTarget();
             Location targetLocation = NWNXEvents.OnItemUsed_GetTargetLocation();
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                     // We are okay - we have targeted an item in our inventory (we can't target someone
                     // else's inventory, so no need to actually check distance).
                 }
-                else if (target.Object == NWGameObject.OBJECT_SELF)
+                else if (target.Object == _.OBJECT_SELF)
                 {
                     // Also okay.
                 }
@@ -857,7 +858,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWObject target = NWGameObject.OBJECT_SELF;
+            NWObject target = _.OBJECT_SELF;
             if (!target.IsValid) return;
 
             NWObject oSpellOrigin = (GetSpellCastItem());

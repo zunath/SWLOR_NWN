@@ -16,10 +16,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Stores
 
         public void Main()
         {
-            NWPlaceable self = (NWGameObject.OBJECT_SELF);
+            NWPlaceable self = (_.OBJECT_SELF);
             NWObject oPC = (_.GetLastUsedBy());
             string storeTag = self.GetLocalString("STORE_TAG");
-            NWGameObject store = _.GetObjectByTag(storeTag);
+            uint store = _.GetObjectByTag(storeTag);
 
             _.OpenStore(store, oPC.Object);
         }

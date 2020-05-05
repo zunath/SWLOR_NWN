@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
         public void Main()
         {
             NWPlayer clicker = (_.GetPlaceableLastClickedBy());
-            NWPlaceable tower = (NWGameObject.OBJECT_SELF);
+            NWPlaceable tower = (_.OBJECT_SELF);
 
             clicker.ClearAllActions();
             if (!clicker.IsPlayer) return;

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Area
 
         public void Main()
         {
-            NWObject door = NWGameObject.OBJECT_SELF;
+            NWObject door = _.OBJECT_SELF;
 
             if (!door.Area.IsInstance) return;
 

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
         {
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
-            NWPlaceable container = (NWGameObject.OBJECT_SELF);
+            NWPlaceable container = (_.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);

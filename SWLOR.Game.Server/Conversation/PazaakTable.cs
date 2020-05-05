@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWObject table = NWGameObject.OBJECT_SELF;
+            NWObject table = _.OBJECT_SELF;
             NWPlayer pc = GetPC();
             game = PazaakService.GetCurrentGame(table);
 
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            NWObject table = NWGameObject.OBJECT_SELF;
+            NWObject table = _.OBJECT_SELF;
             NWPlayer pc = GetPC();
             game = PazaakService.GetCurrentGame(table);
 

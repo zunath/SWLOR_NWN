@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 
         public void Main()
         {
-            NWPlaceable overridePlaceable = NWGameObject.OBJECT_SELF;
+            NWPlaceable overridePlaceable = _.OBJECT_SELF;
             NWObject door = _.GetNearestObjectByTag("aban_director_exit", overridePlaceable);
             NWPlayer player = _.GetLastUsedBy();
             door.AssignCommand(() =>_.SetLocked(door, _.FALSE));

@@ -9,7 +9,7 @@ namespace NWN.Scripts
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             ScriptEvent.Run("SCRIPT_6");
         }

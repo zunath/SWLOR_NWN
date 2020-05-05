@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 
         public void Main()
         {
-            NWObject door = NWGameObject.OBJECT_SELF;
+            NWObject door = _.OBJECT_SELF;
             NWArea area = door.Area;
             NWPlayer player = GetClickingObject();
             if (!player.IsValid)

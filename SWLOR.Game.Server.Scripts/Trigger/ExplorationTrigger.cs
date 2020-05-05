@@ -21,16 +21,16 @@ namespace SWLOR.Game.Server.Scripts.Trigger
             NWCreature oPC = (_.GetEnteringObject());
             if (!oPC.IsPlayer) return;
 
-            string triggerID = _.GetLocalString(NWGameObject.OBJECT_SELF, "TRIGGER_ID");
+            string triggerID = _.GetLocalString(_.OBJECT_SELF, "TRIGGER_ID");
             if (string.IsNullOrWhiteSpace(triggerID))
             {
                 triggerID = Guid.NewGuid().ToString();
-                _.SetLocalString(NWGameObject.OBJECT_SELF, "TRIGGER_ID", triggerID);
+                _.SetLocalString(_.OBJECT_SELF, "TRIGGER_ID", triggerID);
             }
 
             if (_.GetLocalInt(oPC.Object, triggerID) == 1) return;
 
-            string message = _.GetLocalString(NWGameObject.OBJECT_SELF, "DISPLAY_TEXT");
+            string message = _.GetLocalString(_.OBJECT_SELF, "DISPLAY_TEXT");
             _.SendMessageToPC(oPC.Object, ColorTokenService.Cyan(message));
             _.SetLocalInt(oPC.Object, triggerID, 1);
 

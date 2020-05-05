@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
             NWPlayer pc = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
-            NWPlaceable forge = (NWGameObject.OBJECT_SELF);
+            NWPlaceable forge = (_.OBJECT_SELF);
 
             if (!CheckValidity(forge, pc, item)) return;
             StartSmelt(forge, pc, item);

@@ -1,8 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,13 +18,12 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="SWLOR.Game.Server.runtimeconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <PropertyGroup>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-
+  <Target Name="NWN" AfterTargets="Build">
+    <ItemGroup>
+      <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />
+      <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).pdb" />
+      <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).runtimeconfig.json" />
+      <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).deps.json" />
+    </ItemGroup>
+  </Target>
 </Project>

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
     {
         public void Main()
         {
-            NWPlaceable forge = (NWGameObject.OBJECT_SELF);
+            NWPlaceable forge = (_.OBJECT_SELF);
             int charges = forge.GetLocalInt("FORGE_CHARGES");
 
             if (charges > 0)

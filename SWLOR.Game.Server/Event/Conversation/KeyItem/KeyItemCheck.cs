@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Event.Conversation.KeyItem
             using (new Profiler(nameof(KeyItemCheck)))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = NWGameObject.OBJECT_SELF;
+                NWObject talkingTo = _.OBJECT_SELF;
 
                 int count = 1;
                 List<int> requiredKeyItemIDs = new List<int>();

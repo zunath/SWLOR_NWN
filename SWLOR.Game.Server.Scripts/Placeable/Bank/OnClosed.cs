@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 
         public void Main()
         {
-            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
+            NWPlaceable terminal = _.OBJECT_SELF;
             terminal.DestroyAllInventoryItems();
             terminal.IsLocked = false;
         }

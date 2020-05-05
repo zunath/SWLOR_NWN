@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
             if (player.CurrentHP > player.MaxHP)
             {
                 int amount = player.CurrentHP - player.MaxHP;
-                Effect damage = _.EffectDamage(amount);
+                var damage = _.EffectDamage(amount);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
             }
 

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
 
         public void Main()
         {
-            NWPlaceable container = NWGameObject.OBJECT_SELF;
+            NWPlaceable container = _.OBJECT_SELF;
             NWObject owner = container.GetLocalObject("QUEST_OWNER");
 
             NWPlayer player = _.GetLastDisturbed();

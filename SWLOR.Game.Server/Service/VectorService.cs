@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 
 /*

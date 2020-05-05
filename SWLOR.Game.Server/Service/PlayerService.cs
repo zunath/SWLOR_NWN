@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            Effect eGhostWalk = _.EffectCutsceneGhost();
+            var eGhostWalk = _.EffectCutsceneGhost();
             eGhostWalk = _.TagEffect(eGhostWalk, "GHOST_WALK");
             _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, eGhostWalk, oPC.Object);
 
@@ -461,7 +461,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = (NWGameObject.OBJECT_SELF);
+            NWPlayer pc = (_.OBJECT_SELF);
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.OpenRestMenu) return;

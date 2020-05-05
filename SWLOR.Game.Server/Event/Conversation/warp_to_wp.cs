@@ -15,7 +15,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(warp_to_wp)))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = NWGameObject.OBJECT_SELF;
+                NWObject talkingTo = _.OBJECT_SELF;
 
                 string waypointTag = talkingTo.GetLocalString("DESTINATION");
                 NWObject waypoint = _.GetWaypointByTag(waypointTag);

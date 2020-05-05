@@ -14,7 +14,7 @@ namespace NWN.Scripts
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             // The order of the following procedures matters.
             NWPlayer player = _.GetEnteringObject();
@@ -30,7 +30,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(mod_on_enter) + ":BiowareDefault"))
             {
                 player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
-                _.ExecuteScript("dmfi_onclienter ", NWGameObject.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
+                _.ExecuteScript("dmfi_onclienter ", _.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             }
 
             using (new Profiler(nameof(mod_on_enter) + ":PlayerValidation"))

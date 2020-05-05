@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = NWGameObject.OBJECT_SELF;
+            NWPlayer sender = _.OBJECT_SELF;
             string originalMessage = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = NWGameObject.OBJECT_SELF;
+            NWPlayer pc = _.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.ChatCommandTargeter) return;
@@ -178,12 +178,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (target == null)
             {
-                target = new NWGameObject();
+                target = new uint();
             }
 
             if (targetLocation == null)
             {
-                targetLocation = new Location();
+                targetLocation = sender.Location;
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();

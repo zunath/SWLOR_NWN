@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
             NWCreature creature = (_.GetLastDisturbed());
-            NWPlaceable container = (NWGameObject.OBJECT_SELF);
+            NWPlaceable container = (_.OBJECT_SELF);
 
             if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {

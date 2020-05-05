@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MarketTerminal
         public void Main()
         {
             NWPlayer player = _.GetLastUsedBy();
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
 
             if (player.IsBusy)
             {

@@ -15,7 +15,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(open_store)))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject self = NWGameObject.OBJECT_SELF;
+                NWObject self = _.OBJECT_SELF;
                 string storeTag = self.GetLocalString("STORE_TAG");
                 NWObject store;
 

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             NWObject user = _.GetLastUsedBy();
             user.AssignCommand(() =>
             {
-                _.ActionSit(NWGameObject.OBJECT_SELF);
+                _.ActionSit(_.OBJECT_SELF);
             });
         }
     }

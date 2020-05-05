@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                         // We are okay - we have targeted an item in our inventory (we can't target someone
                         // else's inventory, so no need to actually check distance).
                     }
-                    else if (data.Target.Object == NWGameObject.OBJECT_SELF)
+                    else if (data.Target.Object == _.OBJECT_SELF)
                     {
                         // Also okay.
                     }

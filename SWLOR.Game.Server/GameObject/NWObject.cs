@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -11,9 +12,9 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWObject
     {
-        public virtual NWGameObject Object { get; }
+        public virtual uint Object { get; }
         
-        public NWObject(NWGameObject nwnObject)
+        public NWObject(uint nwnObject)
         {
             Object = nwnObject;
         }
@@ -217,12 +218,12 @@ namespace SWLOR.Game.Server.GameObject
         }
 
 
-        public virtual NWGameObject GetLocalObject(string name)
+        public virtual uint GetLocalObject(string name)
         {
             return _.GetLocalObject(Object, name);
         }
 
-        public virtual void SetLocalObject(string name, NWGameObject value)
+        public virtual void SetLocalObject(string name, uint value)
         {
             _.SetLocalObject(Object, name, value);
         }
@@ -359,12 +360,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWObject o)
+        public static implicit operator uint(NWObject o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWObject(NWGameObject o)
+        public static implicit operator NWObject(uint o)
         {
             return new NWObject(o);
         }

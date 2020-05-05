@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public static NWLocation OnItemUsed_GetTargetLocation()
         {
-            NWObject user = NWGameObject.OBJECT_SELF;
+            NWObject user = _.OBJECT_SELF;
             var x = GetEventDataFloat("TARGET_POSITION_X");
             var y = GetEventDataFloat("TARGET_POSITION_Y");
             var z = GetEventDataFloat("TARGET_POSITION_Z");

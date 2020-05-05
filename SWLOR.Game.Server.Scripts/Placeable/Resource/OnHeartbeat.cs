@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.Scripting.Contracts;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Resource
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Resource
 
         public void Main()
         {
-            NWPlaceable objSelf = (NWGameObject.OBJECT_SELF);
+            NWPlaceable objSelf = (_.OBJECT_SELF);
 
             // No matter what, we want to remove the heartbeat script from this resource.
             _.SetEventScript(objSelf, _.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);

@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnHitCastSpell()
         {
-            NWPlayer oTarget = NWGameObject.OBJECT_SELF;
+            NWPlayer oTarget = _.OBJECT_SELF;
             if (!oTarget.IsValid) return;
             NWItem oSpellOrigin = (_.GetSpellCastItem());
 

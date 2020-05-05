@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
         public void Main()
         {
             NWPlayer player = (_.GetLastDisturbed());
-            NWPlaceable bay = (NWGameObject.OBJECT_SELF);
+            NWPlaceable bay = (_.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
             bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == _.TRUE;

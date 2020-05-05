@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
         public void Main()
         {
-            NWCreature attacker = (_.GetLastDamager(NWGameObject.OBJECT_SELF));
-            NWPlaceable tower = (NWGameObject.OBJECT_SELF);
+            NWCreature attacker = (_.GetLastDamager(_.OBJECT_SELF));
+            NWPlaceable tower = (_.OBJECT_SELF);
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Trigger
 
         public void Main()
         {
-            QuestService.OnQuestTriggerEntered(NWGameObject.OBJECT_SELF);
+            QuestService.OnQuestTriggerEntered(_.OBJECT_SELF);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
 
         public void Main()
         {
-            NWPlaceable drill = NWGameObject.OBJECT_SELF;
+            NWPlaceable drill = _.OBJECT_SELF;
             string structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(structureID))

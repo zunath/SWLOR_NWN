@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 
         public void Main()
         {
-            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
+            NWPlaceable terminal = _.OBJECT_SELF;
             int bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0) return;
 

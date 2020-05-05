@@ -14,7 +14,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(credit_check)))
             {
                 NWPlayer oPC = _.GetPCSpeaker();
-                NWObject oNPC = NWGameObject.OBJECT_SELF;
+                NWObject oNPC = _.OBJECT_SELF;
                 int nGold = _.GetGold(oPC);
                 int reqGold = _.GetLocalInt(oNPC, "gold");
                 if (nGold > reqGold)

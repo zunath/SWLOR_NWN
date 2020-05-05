@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Service
 
             NWObject damager = data.Damager;
             if (!damager.IsPlayer) return;
-            NWCreature target = NWGameObject.OBJECT_SELF;
+            NWCreature target = _.OBJECT_SELF;
 
             // Check that this was a normal attack, and not (say) a damage over time effect.
             if (target.GetLocalInt(AbilityService.LAST_ATTACK + damager.GlobalID) != AbilityService.ATTACK_PHYSICAL) return;

@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWPlayer oPC = NWGameObject.OBJECT_SELF;
+            NWPlayer oPC = _.OBJECT_SELF;
             if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;

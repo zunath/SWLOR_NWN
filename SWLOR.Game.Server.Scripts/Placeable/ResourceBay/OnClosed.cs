@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
 
         public void Main()
         {
-            NWPlaceable objSelf = (NWGameObject.OBJECT_SELF);
+            NWPlaceable objSelf = (_.OBJECT_SELF);
             NWObject parent = (objSelf.GetLocalObject("CONTROL_TOWER_PARENT"));
             parent.DeleteLocalObject("CONTROL_TOWER_RESOURCE_BAY");
             objSelf.DestroyAllInventoryItems();

@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
         {
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem oItem = (_.GetInventoryDisturbItem());
-            NWPlaceable device = (NWGameObject.OBJECT_SELF);
+            NWPlaceable device = (_.OBJECT_SELF);
             NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
             var model = CraftService.GetPlayerCraftingData(oPC);
             if (oPC.IsBusy)

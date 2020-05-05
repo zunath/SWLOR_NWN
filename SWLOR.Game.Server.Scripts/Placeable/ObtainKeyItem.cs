@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
 
             if (!player.IsPlayer) return;
 
-            NWPlaceable placeable = NWGameObject.OBJECT_SELF;
+            NWPlaceable placeable = _.OBJECT_SELF;
             int keyItemID = placeable.GetLocalInt("KEY_ITEM_ID");
             
             if (keyItemID <= 0) return;

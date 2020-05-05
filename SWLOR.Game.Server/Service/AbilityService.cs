@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -219,7 +220,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Activator is the creature who used the feat.
             // Target is who the activator selected to use this feat on.
-            NWCreature activator = NWGameObject.OBJECT_SELF;
+            NWCreature activator = _.OBJECT_SELF;
             NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
@@ -795,7 +796,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWPlayer oPC = NWGameObject.OBJECT_SELF;
+            NWPlayer oPC = _.OBJECT_SELF;
             if (!oPC.IsValid) return;
 
             NWObject oTarget = _.GetSpellTargetObject();

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -176,7 +177,7 @@ namespace SWLOR.Game.Server.Service
             if (!entranceWP.IsValid)
             {
                 owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
-                return new NWGameObject();
+                return new uint();
             }
 
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
@@ -197,7 +198,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaEnter()
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
+            NWArea area = _.OBJECT_SELF;
             int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
             if (playerCount > 0)
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
@@ -207,7 +208,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaExit()
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
+            NWArea area = _.OBJECT_SELF;
             int playerCount = NWNXArea.GetNumberOfPlayersInArea(area);
             if (playerCount > 0)
                 _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");

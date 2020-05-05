@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests
         public void Main()
         {
             const int QuestID = 30;
-            NWPlaceable crystal = NWGameObject.OBJECT_SELF;
+            NWPlaceable crystal = _.OBJECT_SELF;
             NWPlayer player = _.GetLastUsedBy();
 
             // Check player's current quest state. If they aren't on stage 2 of the quest only show a message.

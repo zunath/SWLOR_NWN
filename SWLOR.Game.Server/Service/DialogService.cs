@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Service
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                _.BeginConversation("dialog" + dialog.DialogNumber, new NWGameObject());
+                _.BeginConversation("dialog" + dialog.DialogNumber, new uint());
             }
             // Everything else
             else
@@ -333,22 +333,22 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = (_.GetLastUsedBy());
             if (!pc.IsValid) pc = (_.GetPCSpeaker());
 
-            string conversation = _.GetLocalString(NWGameObject.OBJECT_SELF, "CONVERSATION");
+            string conversation = _.GetLocalString(_.OBJECT_SELF, "CONVERSATION");
 
             using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
             {
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    int objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
+                    int objectType = _.GetObjectType(_.OBJECT_SELF);
                     if (objectType == _.OBJECT_TYPE_PLACEABLE)
                     {
-                        NWPlaceable talkTo = (NWGameObject.OBJECT_SELF);
+                        NWPlaceable talkTo = (_.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                     else
                     {
-                        NWCreature talkTo = (NWGameObject.OBJECT_SELF);
+                        NWCreature talkTo = (_.OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                 }

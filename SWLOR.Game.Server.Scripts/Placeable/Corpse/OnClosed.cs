@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
     {
         public void Main()
         {
-            NWPlaceable container = NWGameObject.OBJECT_SELF;
+            NWPlaceable container = _.OBJECT_SELF;
             NWItem firstItem = _.GetFirstItemInInventory(container);
             NWCreature corpseOwner = container.GetLocalObject("CORPSE_BODY");
 

@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer player = (NWGameObject.OBJECT_SELF);
+            NWPlayer player = (_.OBJECT_SELF);
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
             NWLocation targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
             NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
@@ -1261,7 +1262,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = NWGameObject.OBJECT_SELF;
+            NWPlayer sender = _.OBJECT_SELF;
             string text = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender))

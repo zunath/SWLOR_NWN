@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.NWNX
         public int ShowIcon { get; set; }
         public int CasterLevel { get; set; }
 
-        public Effect LinkLeft { get; set; }
+        public NWScript.Effect LinkLeft { get; set; }
         public int LinkLeftValid { get; set; }
-        public Effect LinkRight { get; set; }
+        public NWScript.Effect LinkRight { get; set; }
         public int LinkRightValid { get; set; }
 
         public int NumIntegers { get; set; }

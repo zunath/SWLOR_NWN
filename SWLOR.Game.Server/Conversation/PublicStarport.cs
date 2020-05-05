@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = NWGameObject.OBJECT_SELF;
+            NWPlaceable door = _.OBJECT_SELF;
             string starportID = door.GetLocalString("STARPORT_ID");
 
             if (string.IsNullOrWhiteSpace(starportID))

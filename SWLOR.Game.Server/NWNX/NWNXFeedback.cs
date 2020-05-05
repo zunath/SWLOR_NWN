@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.NWNX
         public static int GetFeedbackMessageHidden(int nMessage, NWPlayer oPC = null)
         {
             if (oPC == null)
-                oPC = new NWPlayer(NWGameObject.OBJECT_INVALID);
+                oPC = new NWPlayer(_.OBJECT_INVALID);
 
             string sFunc = "GetMessageHidden";
             int nMessageType = 0;
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.NWNX
         public static void SetFeedbackMessageHidden(int nMessage, int nState, NWPlayer oPC = null)
         {
             if (oPC == null)
-                oPC = new NWPlayer(NWGameObject.OBJECT_INVALID);
+                oPC = new NWPlayer(_.OBJECT_INVALID);
 
             string sFunc = "SetMessageHidden";
             int nMessageType = 0;
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.NWNX
         public static int GetCombatLogMessageHidden(int nMessage, NWPlayer oPC = null)
         {
             if (oPC == null)
-                oPC = new NWPlayer(NWGameObject.OBJECT_INVALID);
+                oPC = new NWPlayer(_.OBJECT_INVALID);
 
             string sFunc = "GetMessageHidden";
             int nMessageType = 1;
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.NWNX
         public static void SetCombatLogMessageHidden(int nMessage, int nState, NWPlayer oPC = null)
         {
             if (oPC == null)
-                oPC = new NWPlayer(NWGameObject.OBJECT_INVALID);
+                oPC = new NWPlayer(_.OBJECT_INVALID);
 
             string sFunc = "SetMessageHidden";
             int nMessageType = 1;
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.NWNX
         public static int GetJournalUpdatedMessageHidden(NWPlayer oPC = null)
         {
             if (oPC == null)
-                oPC = new NWPlayer(NWGameObject.OBJECT_INVALID);
+                oPC = new NWPlayer(_.OBJECT_INVALID);
 
             string sFunc = "GetMessageHidden";
             int nMessageType = 2;
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.NWNX
         public static void SetJournalUpdatedMessageHidden(int nState, NWPlayer oPC = null)
         {
             if (oPC == null)
-                oPC = new NWPlayer(NWGameObject.OBJECT_INVALID);
+                oPC = new NWPlayer(_.OBJECT_INVALID);
             string sFunc = "SetMessageHidden";
             int nMessageType = 2;
 

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Event.Legacy
     {
         public static void Run(string variableName)
         {
-            NWObject self = (NWGameObject.OBJECT_SELF);
+            NWObject self = (_.OBJECT_SELF);
             string script = self.GetLocalString(variableName);
 
             using (new Profiler("ScriptEvent." + script))

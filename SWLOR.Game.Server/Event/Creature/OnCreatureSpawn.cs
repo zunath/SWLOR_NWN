@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Event.Creature
 
         public OnCreatureSpawn()
         {
-            Self = NWGameObject.OBJECT_SELF;
+            Self = _.OBJECT_SELF;
         }
     }
 }

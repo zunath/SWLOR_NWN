@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.NWNX
         private const string PLUGIN_NAME = "NWNX_Effect";
 
         // Convert native effect type to unpacked structure
-        public static EffectUnpacked UnpackEffect(NWScript.Effect effect)
+        public static EffectUnpacked UnpackEffect(Effect effect)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeType");
             Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
@@ -42,9 +43,9 @@ namespace SWLOR.Game.Server.NWNX
                 nParam0 = Internal.NativeFunctions.nwnxPopInt(),
                 NumIntegers = Internal.NativeFunctions.nwnxPopInt(),
                 LinkRightValid = Internal.NativeFunctions.nwnxPopInt(),
-                LinkRight = new NWScript.Effect(Internal.NativeFunctions.nwnxPopEffect()),
+                LinkRight = new Effect(Internal.NativeFunctions.nwnxPopEffect()),
                 LinkLeftValid = Internal.NativeFunctions.nwnxPopInt(),
-                LinkLeft = new NWScript.Effect(Internal.NativeFunctions.nwnxPopEffect()),
+                LinkLeft = new Effect(Internal.NativeFunctions.nwnxPopEffect()),
                 CasterLevel = Internal.NativeFunctions.nwnxPopInt(),
                 ShowIcon = Internal.NativeFunctions.nwnxPopInt(),
                 Expose = Internal.NativeFunctions.nwnxPopInt(),
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Convert unpacked effect structure to native type
-        public static NWScript.Effect PackEffect(EffectUnpacked effect)
+        public static Effect PackEffect(EffectUnpacked effect)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PackEffect");
             Internal.NativeFunctions.nwnxPushInt(effect.EffectID);
@@ -104,20 +105,20 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxPushObject(effect.oParam3 ?? Internal.OBJECT_INVALID);
             Internal.NativeFunctions.nwnxPushString(effect.Tag!);
             Internal.NativeFunctions.nwnxCallFunction();
-            return new NWScript.Effect(Internal.NativeFunctions.nwnxPopEffect());
+            return new Effect(Internal.NativeFunctions.nwnxPopEffect());
         }
 
         // Set a script with optional data that runs when an effect expires
         // Only works for TEMPORARY and PERMANENT effects applied to an object
         // Note: OBJECT_SELF in the script is the object the effect is applied to
-        public static NWScript.Effect SetEffectExpiredScript(NWScript.Effect effect, string script, string data = "")
+        public static Effect SetEffectExpiredScript(Effect effect, string script, string data = "")
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEffectExpiredScript");
             Internal.NativeFunctions.nwnxPushString(data);
             Internal.NativeFunctions.nwnxPushString(script);
             Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
             Internal.NativeFunctions.nwnxCallFunction();
-            return new NWScript.Effect(Internal.NativeFunctions.nwnxPopEffect());
+            return new Effect(Internal.NativeFunctions.nwnxPopEffect());
         }
 
         // Get the data set with NWNX_Effect_SetEffectExpiredScript()

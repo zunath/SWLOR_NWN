@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.Service
 {

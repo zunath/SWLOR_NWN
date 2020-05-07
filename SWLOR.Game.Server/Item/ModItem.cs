@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Item

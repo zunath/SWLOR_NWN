@@ -17,7 +17,7 @@ using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service

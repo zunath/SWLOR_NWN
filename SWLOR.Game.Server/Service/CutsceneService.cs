@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -2375,7 +2375,7 @@ namespace SWLOR.Game.Server.Service
         {
             Vector vA = GetPosition(oA);
             Vector vB = GetPosition(oB);
-            Vector vDelta = Vector(vA.m_X - vB.m_X, vA.m_Y - vB.m_Y, vA.m_Z - vB.m_Z);
+            Vector vDelta = Vector(vA.X - vB.X, vA.Y - vB.Y, vA.Z - vB.Z);
             return vDelta;
         }
 
@@ -2389,7 +2389,7 @@ namespace SWLOR.Game.Server.Service
         public static float GetHorizontalDistanceBetween(NWObject oA, NWObject oB)
         {
             Vector vHorizontal = GetVectorAB(oA, oB);
-            float fDistance = sqrt(pow(vHorizontal.m_X, 2.0f) + pow(vHorizontal.m_Y, 2.0f));
+            float fDistance = sqrt(pow(vHorizontal.X, 2.0f) + pow(vHorizontal.Y, 2.0f));
             return fDistance;
         }
 

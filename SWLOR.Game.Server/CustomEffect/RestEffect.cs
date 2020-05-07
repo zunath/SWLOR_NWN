@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using static NWN._;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.IsBusy = true;
 
-            string data = $"{player.Position.m_X},{player.Position.m_Y},{player.Position.m_Z}";
+            string data = $"{player.Position.X},{player.Position.Y},{player.Position.Z}";
 
             return data;
         }
@@ -51,9 +51,9 @@ namespace SWLOR.Game.Server.CustomEffect
             // Check position
             Vector position = player.Position;
 
-            if ((Math.Abs(position.m_X - originalPosition.m_X) > 0.01f ||
-                 Math.Abs(position.m_Y - originalPosition.m_Y) > 0.01f ||
-                 Math.Abs(position.m_Z - originalPosition.m_Z) > 0.01f) ||
+            if ((Math.Abs(position.X - originalPosition.X) > 0.01f ||
+                 Math.Abs(position.Y - originalPosition.Y) > 0.01f ||
+                 Math.Abs(position.Z - originalPosition.Z) > 0.01f) ||
                 !CanRest(player) ||
                 !player.IsValid)
             {

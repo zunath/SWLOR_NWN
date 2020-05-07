@@ -13,8 +13,9 @@ using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWScript;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Service
             NWLocation targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
             NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
 
-            if (featID != (int)CustomFeatType.StructureManagementTool) return;
+            if (featID != (int)Feat.StructureManagementTool) return;
 
             var data = GetPlayerTempData(player);
             data.TargetArea = targetArea;
@@ -452,8 +453,8 @@ namespace SWLOR.Game.Server.Service
         public static string GetSectorOfLocation(NWLocation targetLocation)
         {
             NWArea area = targetLocation.Area;
-            int cellX = (int)(_.GetPositionFromLocation(targetLocation).m_X / 10);
-            int cellY = (int)(_.GetPositionFromLocation(targetLocation).m_Y / 10);
+            int cellX = (int)(_.GetPositionFromLocation(targetLocation).X / 10);
+            int cellY = (int)(_.GetPositionFromLocation(targetLocation).Y / 10);
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
 
             string sector = "INVALID";
@@ -710,9 +711,9 @@ namespace SWLOR.Game.Server.Service
                                 BaseStructureID = baseStructureID,
                                 Durability = DurabilityService.GetDurability(structureItem),
                                 LocationOrientation = _.GetFacingFromLocation(targetLocation),
-                                LocationX = position.m_X,
-                                LocationY = position.m_Y,
-                                LocationZ = position.m_Z,
+                                LocationX = position.X,
+                                LocationY = position.Y,
+                                LocationZ = position.Z,
                                 PCBaseID = starkillerBase.ID,
                                 InteriorStyleID = style.ID,
                                 ExteriorStyleID = extStyle.ID,

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Diagnostics;
-using SWLOR.Game.Server;
-using SWLOR.Game.Server.NWScript;
 
-namespace NWN
+namespace SWLOR.Game.Server.NWN
 {
     public partial class Internal
     {

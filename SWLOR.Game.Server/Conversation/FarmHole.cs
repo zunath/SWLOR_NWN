@@ -1,7 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            user.SendMessage($"Current Position: ({user.Position.m_X}, {user.Position.m_Y}, {user.Position.m_Z})");
+            user.SendMessage($"Current Position: ({user.Position.X}, {user.Position.Y}, {user.Position.Z})");
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

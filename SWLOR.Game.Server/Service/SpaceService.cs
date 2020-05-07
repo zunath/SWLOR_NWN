@@ -18,8 +18,8 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.NWScript;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
@@ -811,9 +811,9 @@ namespace SWLOR.Game.Server.Service
             // being on board the ship so we can send them back to the right place afterwards.
             Player entity = PlayerService.GetPlayerEntity(player.GlobalID);
             entity.LocationAreaResref = copy.Area.Resref;
-            entity.LocationX = copy.Position.m_X;
-            entity.LocationY = copy.Position.m_Y;
-            entity.LocationZ = copy.Position.m_Z;
+            entity.LocationX = copy.Position.X;
+            entity.LocationY = copy.Position.Y;
+            entity.LocationZ = copy.Position.Z;
             entity.LocationOrientation = (copy.Facing);
             entity.LocationInstanceID = new Guid(copy.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
@@ -1256,7 +1256,7 @@ namespace SWLOR.Game.Server.Service
             /*
              * TODO - improve the VFX here by using a custom spell and a miss vector.  Miss vectors on EffectBeam are... not very good.
             Vector vAttacker = _.GetPosition(attacker);
-            Vector vDiff = _.Vector(vTarget.m_X - vAttacker.m_X, vTarget.m_Y - vAttacker.m_Y, vAttacker.m_Z - vTarget.m_Z);            
+            Vector vDiff = _.Vector(vTarget.X - vAttacker.X, vTarget.Y - vAttacker.Y, vAttacker.Z - vTarget.Z);            
             float fAngle = _.VectorToAngle(vDiff) - _.GetFacing(attacker);
             float fTargetDistance = _.GetDistanceBetween(attacker, target);*/
 
@@ -1323,9 +1323,9 @@ namespace SWLOR.Game.Server.Service
                 /* See amove comment about making a custom spell that uses this.
                 Vector vTarget = _.GetPosition(target);
                 NWLocation missLoc = _.Location(target.Location.Area, 
-                                                _.Vector(vTarget.m_X + 1.0f - _.IntToFloat(_.Random(200))/100.0f,
-                                                         vTarget.m_Y + 1.0f - _.IntToFloat(_.Random(200)) / 100.0f,
-                                                         vTarget.m_Z),
+                                                _.Vector(vTarget.X + 1.0f - _.IntToFloat(_.Random(200))/100.0f,
+                                                         vTarget.Y + 1.0f - _.IntToFloat(_.Random(200)) / 100.0f,
+                                                         vTarget.Z),
                                                 target.Location.Orientation);
 
                 -- This doesn't work, EffectBeams can't be fired at locations.

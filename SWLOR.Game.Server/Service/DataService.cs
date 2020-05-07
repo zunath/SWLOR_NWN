@@ -4,8 +4,12 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using Dapper;
+using Dapper.Contrib.Extensions;
 using MySql.Data.MySqlClient;
 using SWLOR.Game.Server.Caching;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 
@@ -15,7 +19,7 @@ namespace SWLOR.Game.Server.Service
     {
         public static ConcurrentQueue<DatabaseAction> DataQueue { get; }
         public static string SWLORConnectionString { get; }
-        //public static SqlConnection Connection { get; private set; }
+        public static MySqlConnection Connection { get; private set; }
 
         public static ApartmentBuildingCache ApartmentBuilding { get; } = new ApartmentBuildingCache();
         public static AreaCache Area { get; } = new AreaCache();
@@ -112,10 +116,10 @@ namespace SWLOR.Game.Server.Service
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
 
-            var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
-            var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
-            var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
-            var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
+            var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS") ?? string.Empty;
+            var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME") ?? string.Empty;
+            var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD") ?? string.Empty;
+            var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE") ?? string.Empty;
 
             SWLORConnectionString = new MySqlConnectionStringBuilder()
             {
@@ -129,29 +133,27 @@ namespace SWLOR.Game.Server.Service
 
         public static void Initialize(bool initializeCache)
         {
+            Connection = new MySqlConnection(SWLORConnectionString);
 
-
-            //Connection = new SqlConnection(SWLORConnectionString);
-
-            //if (initializeCache)
-            //    InitializeCache();
+            if (initializeCache)
+                InitializeCache();
         }
 
-        //private static void LoadCache<T>()
-        //    where T: class, IEntity
-        //{
-        //    var sw = new Stopwatch();
-        //    sw.Start();
+        private static void LoadCache<T>()
+            where T : class, IEntity
+        {
+            var sw = new Stopwatch();
+            sw.Start();
 
-        //    var entities =  Connection.GetAll<T>();
-        //    foreach(var entity in entities)
-        //    {
-        //        MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
-        //    }
+            var entities = Connection.GetAll<T>();
+            foreach (var entity in entities)
+            {
+                MessageHub.Instance.Publish(new OnCacheObjectSet<T>(entity));
+            }
 
-        //    sw.Stop();
-        //    Console.WriteLine("Loaded Cache: " + typeof(T).Name + " (" + sw.ElapsedMilliseconds + "ms)");
-        //}
+            sw.Stop();
+            Console.WriteLine("Loaded Cache: " + typeof(T).Name + " (" + sw.ElapsedMilliseconds + "ms)");
+        }
 
         private static void SetIntoCache<T>(T entity)
             where T: class, IEntity
@@ -166,135 +168,135 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        ///// <summary>
-        ///// Retrieves all objects in frequently accessed data from the database and stores them into the cache.
-        ///// This should only be called one time at initial load.
-        ///// </summary>
-        //private static void InitializeCache()
-        //{
-        //    Console.WriteLine("Initializing the cache...");
-        //    LoadCache<Area>();
+        /// <summary>
+        /// Retrieves all objects in frequently accessed data from the database and stores them into the cache.
+        /// This should only be called one time at initial load.
+        /// </summary>
+        private static void InitializeCache()
+        {
+            Console.WriteLine("Initializing the cache...");
+            LoadCache<Area>();
 
-        //    LoadCache<ApartmentBuilding>();
-        //    LoadCache<Association>();
-        //    LoadCache<Data.Entity.Attribute>();
-        //    LoadCache<AuthorizedDM>();
-        //    LoadCache<Bank>();
-        //    LoadCache<BankItem>();
-        //    LoadCache<BaseItemType>();
-        //    LoadCache<BaseStructure>();
-        //    LoadCache<Data.Entity.BaseStructureType>();
-        //    LoadCache<BuildingStyle>();
-        //    LoadCache<Data.Entity.BuildingType>();
-        //    LoadCache<ChatChannel>();
-        //    LoadCache<ModuleEventType>();
-        //    LoadCache<Data.Entity.ComponentType>();
-        //    LoadCache<CooldownCategory>();
-        //    LoadCache<CraftBlueprint>();
-        //    LoadCache<CraftBlueprintCategory>();
-        //    LoadCache<CraftDevice>();
-        //    LoadCache<Data.Entity.CustomEffect>();
-        //    LoadCache<CustomEffectCategory>();
-        //    LoadCache<DMRole>();
-        //    LoadCache<EnmityAdjustmentRule>();
-        //    LoadCache<FameRegion>();
-        //    LoadCache<Guild>();
-        //    LoadCache<GuildTask>();
-        //    LoadCache<ItemType>();
-        //    LoadCache<JukeboxSong>();
-        //    LoadCache<KeyItem>();
-        //    LoadCache<KeyItemCategory>();
-        //    LoadCache<LootTable>();
-        //    LoadCache<LootTableItem>();
-        //    LoadCache<MarketCategory>();
-        //    LoadCache<Message>();
-        //    LoadCache<NPCGroup>();
-        //    LoadCache<PCBase>();
-        //    LoadCache<PCBasePermission>();
-        //    LoadCache<PCBaseStructure>();
-        //    LoadCache<PCBaseStructureItem>();
-        //    LoadCache<PCBaseStructurePermission>();
-        //    LoadCache<Data.Entity.PCBaseType>();
-        //    LoadPCMarketListingCache();
-        //    LoadCache<Starport>();
-        //    LoadCache<SpaceEncounter>();
+            LoadCache<ApartmentBuilding>();
+            LoadCache<Association>();
+            LoadCache<Data.Entity.Attribute>();
+            LoadCache<AuthorizedDM>();
+            LoadCache<Bank>();
+            LoadCache<BankItem>();
+            LoadCache<BaseItemType>();
+            LoadCache<BaseStructure>();
+            LoadCache<Data.Entity.BaseStructureType>();
+            LoadCache<BuildingStyle>();
+            LoadCache<Data.Entity.BuildingType>();
+            LoadCache<ChatChannel>();
+            LoadCache<ModuleEventType>();
+            LoadCache<Data.Entity.ComponentType>();
+            LoadCache<CooldownCategory>();
+            LoadCache<CraftBlueprint>();
+            LoadCache<CraftBlueprintCategory>();
+            LoadCache<CraftDevice>();
+            LoadCache<Data.Entity.CustomEffect>();
+            LoadCache<CustomEffectCategory>();
+            LoadCache<DMRole>();
+            LoadCache<EnmityAdjustmentRule>();
+            LoadCache<FameRegion>();
+            LoadCache<Guild>();
+            LoadCache<GuildTask>();
+            LoadCache<ItemType>();
+            LoadCache<JukeboxSong>();
+            LoadCache<KeyItem>();
+            LoadCache<KeyItemCategory>();
+            LoadCache<LootTable>();
+            LoadCache<LootTableItem>();
+            LoadCache<MarketCategory>();
+            LoadCache<Message>();
+            LoadCache<NPCGroup>();
+            LoadCache<PCBase>();
+            LoadCache<PCBasePermission>();
+            LoadCache<PCBaseStructure>();
+            LoadCache<PCBaseStructureItem>();
+            LoadCache<PCBaseStructurePermission>();
+            LoadCache<Data.Entity.PCBaseType>();
+            LoadPCMarketListingCache();
+            LoadCache<Starport>();
+            LoadCache<SpaceEncounter>();
 
-            
-        //    LoadCache<PCCooldown>();
-        //    LoadCache<PCCraftedBlueprint>();
-        //    LoadCache<PCCustomEffect>();
 
-        //    LoadPCImpoundedItemsCache();
-        //    LoadCache<PCGuildPoint>();
-        //    LoadCache<PCKeyItem>();
-        //    LoadCache<PCMapPin>();
-        //    LoadCache<PCMapProgression>();
-        //    LoadCache<PCObjectVisibility>();
-        //    LoadCache<PCOutfit>();
-        //    LoadCache<PCHelmet>();
-        //    LoadCache<PCWeapon>();
-        //    LoadCache<PCOverflowItem>();
-        //    LoadCache<PCPerk>();
-        //    LoadCache<PCQuestItemProgress>();
-        //    LoadCache<PCQuestKillTargetProgress>();
-        //    LoadCache<PCQuestStatus>();
-        //    LoadCache<PCRegionalFame>();
-        //    LoadCache<PCSkill>();
-        //    LoadCache<PCSkillPool>();
-        //    LoadCache<PCPerkRefund>();
+            LoadCache<PCCooldown>();
+            LoadCache<PCCraftedBlueprint>();
+            LoadCache<PCCustomEffect>();
 
-        //    LoadCache<Data.Entity.Perk>();
-        //    LoadCache<PerkFeat>();
-        //    LoadCache<PerkCategory>();
-        //    LoadCache<PerkLevel>();
-        //    LoadCache<PerkLevelQuestRequirement>();
-        //    LoadCache<PerkLevelSkillRequirement>();
-        //    LoadCache<Player>(); 
-        //    LoadCache<ServerConfiguration>();
-        //    LoadCache<Skill>();
-        //    LoadCache<SkillCategory>();
-        //    LoadCache<Spawn>();
-        //    LoadCache<SpawnObject>();
-        //    LoadCache<SpawnObjectType>();
-        //    LoadCache<StructureMode>();
-        //    Console.WriteLine("Cache initialized!");
-        //}
+            LoadPCImpoundedItemsCache();
+            LoadCache<PCGuildPoint>();
+            LoadCache<PCKeyItem>();
+            LoadCache<PCMapPin>();
+            LoadCache<PCMapProgression>();
+            LoadCache<PCObjectVisibility>();
+            LoadCache<PCOutfit>();
+            LoadCache<PCHelmet>();
+            LoadCache<PCWeapon>();
+            LoadCache<PCOverflowItem>();
+            LoadCache<PCPerk>();
+            LoadCache<PCQuestItemProgress>();
+            LoadCache<PCQuestKillTargetProgress>();
+            LoadCache<PCQuestStatus>();
+            LoadCache<PCRegionalFame>();
+            LoadCache<PCSkill>();
+            LoadCache<PCSkillPool>();
+            LoadCache<PCPerkRefund>();
 
-        ///// <summary>
-        ///// PC Market Listings should only be loaded into the cache if they:
-        ///// 1.) Haven't been sold already
-        ///// 2.) Haven't been removed by the seller.
-        ///// This method will retrieve these specific records and store them into the cache.
-        ///// Should be called in the InitializeCache() method one time.
-        ///// </summary>
-        //private static void LoadPCMarketListingCache()
-        //{
-        //    const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
+            LoadCache<Data.Entity.Perk>();
+            LoadCache<PerkFeat>();
+            LoadCache<PerkCategory>();
+            LoadCache<PerkLevel>();
+            LoadCache<PerkLevelQuestRequirement>();
+            LoadCache<PerkLevelSkillRequirement>();
+            LoadCache<Player>();
+            LoadCache<ServerConfiguration>();
+            LoadCache<Skill>();
+            LoadCache<SkillCategory>();
+            LoadCache<Spawn>();
+            LoadCache<SpawnObject>();
+            LoadCache<SpawnObjectType>();
+            LoadCache<StructureMode>();
+            Console.WriteLine("Cache initialized!");
+        }
 
-        //    var results = Connection.Query<PCMarketListing>(Sql);
-            
-        //    foreach (var result in results)
-        //    {
-        //        MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(result));
-        //    }
-        //}
+        /// <summary>
+        /// PC Market Listings should only be loaded into the cache if they:
+        /// 1.) Haven't been sold already
+        /// 2.) Haven't been removed by the seller.
+        /// This method will retrieve these specific records and store them into the cache.
+        /// Should be called in the InitializeCache() method one time.
+        /// </summary>
+        private static void LoadPCMarketListingCache()
+        {
+            const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
 
-        ///// <summary>
-        ///// PC Impounded Items should only be loaded into the cache if they:
-        ///// 1.) Haven't been retrieved.
-        ///// 2.) Haven't expired (30 days after the date they were impounded.)
-        ///// Should be called in the InitializeCache() method one time.
-        ///// </summary>
-        //private static void LoadPCImpoundedItemsCache()
-        //{
-        //    const string Sql = "SELECT * FROM dbo.PCImpoundedItem WHERE DateRetrieved IS NULL AND GETUTCDATE() < DATEADD(DAY, 30, CAST(DateImpounded AS DATE))";
+            var results = Connection.Query<PCMarketListing>(Sql);
 
-        //    var results = Connection.Query<PCImpoundedItem>(Sql);
-        //    foreach (var result in results)
-        //    {
-        //        MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(result));
-        //    }
-        //}
+            foreach (var result in results)
+            {
+                MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(result));
+            }
+        }
+
+        /// <summary>
+        /// PC Impounded Items should only be loaded into the cache if they:
+        /// 1.) Haven't been retrieved.
+        /// 2.) Haven't expired (30 days after the date they were impounded.)
+        /// Should be called in the InitializeCache() method one time.
+        /// </summary>
+        private static void LoadPCImpoundedItemsCache()
+        {
+            const string Sql = "SELECT * FROM dbo.PCImpoundedItem WHERE DateRetrieved IS NULL AND GETUTCDATE() < DATEADD(DAY, 30, CAST(DateImpounded AS DATE))";
+
+            var results = Connection.Query<PCImpoundedItem>(Sql);
+            foreach (var result in results)
+            {
+                MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(result));
+            }
+        }
 
         /// <summary>
         /// Sends a request to change data into the queue. Processing is asynchronous

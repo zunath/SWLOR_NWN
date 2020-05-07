@@ -27,7 +27,7 @@ namespace NWN.Scripts
 
             using (new Profiler(nameof(mod_on_load) + ":DatabaseMigrator"))
             {
-                //DatabaseMigrationRunner.Start();
+                DatabaseMigrationRunner.Start();
             }
 
             using (new Profiler(nameof(mod_on_load) + ":DBBackgroundThread"))

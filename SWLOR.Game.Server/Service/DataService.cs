@@ -1,12 +1,9 @@
 ﻿
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Concurrent;
-using System.Data.SqlClient;
-using System.Diagnostics;
 using MySql.Data.MySqlClient;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -17,7 +14,6 @@ namespace SWLOR.Game.Server.Service
     public static class DataService
     {
         public static ConcurrentQueue<DatabaseAction> DataQueue { get; }
-        public static string MasterConnectionString { get; }
         public static string SWLORConnectionString { get; }
         //public static SqlConnection Connection { get; private set; }
 
@@ -121,15 +117,6 @@ namespace SWLOR.Game.Server.Service
             var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
             var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
 
-
-            MasterConnectionString = new MySqlConnectionStringBuilder()
-            {
-                Server = ip,
-                Database = "MASTER",
-                UserID = user,
-                Password = password,
-                ConnectionTimeout = 60 // 30 seconds
-            }.ToString();
             SWLORConnectionString = new MySqlConnectionStringBuilder()
             {
                 Server = ip,
@@ -138,23 +125,6 @@ namespace SWLOR.Game.Server.Service
                 Password = password,
                 ConnectionTimeout = 60 // 30 seconds
             }.ToString();
-
-            Console.WriteLine("starting conn");
-            using (var conn = new MySqlConnection(SWLORConnectionString))
-            {
-                Console.WriteLine("opening conn");
-                conn.Open();
-
-                Console.WriteLine("select 1");
-                var command = new MySqlCommand("SELECT 1", conn);
-
-                Console.WriteLine("execute scalar");
-                var result = command.ExecuteScalar();
-
-                Console.WriteLine($"result = {result}");
-
-            }
-
         }
 
         public static void Initialize(bool initializeCache)

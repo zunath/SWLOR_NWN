@@ -14,7 +14,8 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -641,9 +642,9 @@ namespace SWLOR.Game.Server.Service
 
             Vector currentPosition = activator.Position;
 
-            if (currentPosition.m_X != position.m_X ||
-                currentPosition.m_Y != position.m_Y ||
-                currentPosition.m_Z != position.m_Z)
+            if (currentPosition.X != position.X ||
+                currentPosition.Y != position.Y ||
+                currentPosition.Z != position.Z)
             {
                 var effect = activator.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "ACTIVATION_VFX");
                 if (effect != null)
@@ -842,7 +843,7 @@ namespace SWLOR.Game.Server.Service
         public static void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
         {
             if (!player.IsPlayer) return;
-            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;  // Check if player has the perk
+            if (!_.GetHasFeat(Feat.PlasmaCell, player)) return;  // Check if player has the perk
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
                 player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; // Check if player has the right weapons
             if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;   // Check if Tranquilizer is on to avoid conflict
@@ -959,8 +960,8 @@ namespace SWLOR.Game.Server.Service
             int featCount = NWNXCreature.GetFeatCount(self);
             for (int x = 0; x <= featCount - 1; x++)
             {
-                int featID = NWNXCreature.GetFeatByIndex(self, x);
-                featIDs.Add(featID);
+                var featID = NWNXCreature.GetFeatByIndex(self, x);
+                featIDs.Add((int)featID);
             }
 
             bool hasPerkFeat = false;

@@ -2,8 +2,8 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWScript;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service

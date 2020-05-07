@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
@@ -69,9 +69,9 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "SetPosition";
 
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_X);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Y);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Z);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.X);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Y);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Z);
             NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);
 
@@ -264,9 +264,9 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "AddToArea";
 
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Z);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Y);
-            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_X);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Z);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.Y);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.X);
             NWNX_PushArgumentObject(NWNX_Object, sFunc, area);
             NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);

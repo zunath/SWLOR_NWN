@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 using static NWN._;
 
@@ -216,9 +216,9 @@ namespace SWLOR.Game.Server.NWNX
         public static void ShowVisualEffect(NWPlayer player, int effectId, Vector position)
         {
             string sFunc = "ShowVisualEffect";
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_X);
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_Y);
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_Z);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.X);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.Y);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.Z);
             NWNX_PushArgumentInt(NWNX_Player, sFunc, effectId);
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 

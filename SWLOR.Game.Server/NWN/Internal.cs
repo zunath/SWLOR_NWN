@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server;
-using SWLOR.Game.Server.NWScript;
 
-namespace NWN
+namespace SWLOR.Game.Server.NWN
 {
     partial class Internal
     {

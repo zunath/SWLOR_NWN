@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using System;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.AI
 {

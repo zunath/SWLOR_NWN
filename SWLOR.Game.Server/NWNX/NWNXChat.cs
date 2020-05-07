@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Data.Entity;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 
 
 namespace SWLOR.Game.Server.NWNX

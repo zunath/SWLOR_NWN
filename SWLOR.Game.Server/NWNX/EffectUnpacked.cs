@@ -1,6 +1,7 @@
 ﻿
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -20,9 +21,9 @@ namespace SWLOR.Game.Server.NWNX
         public int ShowIcon { get; set; }
         public int CasterLevel { get; set; }
 
-        public NWScript.Effect LinkLeft { get; set; }
+        public Effect LinkLeft { get; set; }
         public int LinkLeftValid { get; set; }
-        public NWScript.Effect LinkRight { get; set; }
+        public Effect LinkRight { get; set; }
         public int LinkRightValid { get; set; }
 
         public int NumIntegers { get; set; }

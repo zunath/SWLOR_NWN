@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 
@@ -22,8 +22,8 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             NWArea area = user.Area;
             Vector position = user.Position;
-            int cellX = (int)(position.m_X / 10);
-            int cellY = (int)(position.m_Y / 10);
+            int cellX = (int)(position.X / 10);
+            int cellY = (int)(position.Y / 10);
             string sector = "N/A"; 
 
             if(area.Width == 32 && area.Height == 32)

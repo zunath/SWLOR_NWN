@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 /*
@@ -836,8 +836,8 @@ namespace SWLOR.Game.Server.Service
                             Vector vPosition = _.GetPosition(_.GetEnteringObject());
 
                             // Vectors are in meters - 10 meters to a tile. 
-                            vPosition.m_X = _.IntToFloat(_.Random(nSizeX * 10));
-                            vPosition.m_Y = _.IntToFloat(_.Random(nSizeY * 10));
+                            vPosition.X = _.IntToFloat(_.Random(nSizeX * 10));
+                            vPosition.Y = _.IntToFloat(_.Random(nSizeY * 10));
 
                             float fFacing = _.IntToFloat(_.Random(360));
 

@@ -1,7 +1,7 @@
 ﻿
 using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -584,7 +585,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = _.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
-            if (featID != (int)CustomFeatType.RenameCraftedItem) return;
+            if (featID != (int)Feat.RenameCraftedItem) return;
             pc.ClearAllActions();
 
             bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;

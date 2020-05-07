@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Scripting.Contracts;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Resource

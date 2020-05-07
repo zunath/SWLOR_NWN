@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
 
@@ -40,12 +41,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnPurchased(NWCreature creature, int newLevel)
         {
-            NWNXCreature.AddFeat(creature, FEAT_POINT_BLANK_SHOT);
+            NWNXCreature.AddFeat(creature, Feat.PointBlankShot);
         }
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, FEAT_POINT_BLANK_SHOT);
+            NWNXCreature.RemoveFeat(creature, Feat.PointBlankShot);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)

@@ -2,7 +2,8 @@
 using System.Linq;
 
 using NWN;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
@@ -19,11 +20,11 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual float ChallengeRating => _.GetChallengeRating(Object);
 
-        public virtual int Class1 => _.GetClassByPosition(1, Object);
+        public virtual ClassType Class1 => _.GetClassByPosition(1, Object);
 
-        public virtual int Class2 => _.GetClassByPosition(2, Object);
+        public virtual ClassType Class2 => _.GetClassByPosition(2, Object);
 
-        public virtual int Class3 => _.GetClassByPosition(3, Object);
+        public virtual ClassType Class3 => _.GetClassByPosition(3, Object);
 
         public virtual bool IsCommandable
         {

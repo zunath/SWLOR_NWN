@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWScript;
+using SWLOR.Game.Server.NWN;
 using static NWN._;
 
 namespace SWLOR.Game.Server.DoorRule
@@ -20,10 +20,10 @@ namespace SWLOR.Game.Server.DoorRule
             if (orientation > 360.0) orientation = orientation - 360.0f;
 
             float mod = _.sqrt(sqrtAdjustment) * _.sin(orientation);
-            position.m_X = position.m_X + mod;
+            position.X = position.X + mod;
 
             mod = _.sqrt(sqrtAdjustment) * _.cos(orientation);
-            position.m_Y = position.m_Y - mod;
+            position.Y = position.Y - mod;
             Location doorLocation = _.Location(area.Object, position, _.GetFacingFromLocation(location));
 
             return _.CreateObject(OBJECT_TYPE_PLACEABLE, "building_ent1", doorLocation);

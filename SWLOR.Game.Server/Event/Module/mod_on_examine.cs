@@ -23,7 +23,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(mod_on_examine)))
             {
                 NWPlayer examiner = (_.OBJECT_SELF);
-                NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
+                NWObject examinedObject = NWNXObject.StringToObject(NWNXEvents.GetEventData("EXAMINEE_OBJECT_ID"));
                 if (ExaminationService.OnModuleExamine(examiner, examinedObject))
                 {
                     MessageHub.Instance.Publish(new OnModuleExamine());

@@ -67,16 +67,22 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer player = (_.OBJECT_SELF);
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
-            NWLocation targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
-            NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
+
+            var positionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
+            var positionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
+            var positionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
+            var area = (NWArea)NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA_OBJECT_ID"));
+            var vector = Vector(positionX, positionY, positionZ);
+
+            var targetLocation = Location(area, vector, 0.0f);
 
             if (featID != (int)Feat.StructureManagementTool) return;
 
             var data = GetPlayerTempData(player);
-            data.TargetArea = targetArea;
+            data.TargetArea = area;
             data.TargetLocation = targetLocation;
-            data.TargetObject = NWNXEvents.OnItemUsed_GetTarget();
+            data.TargetObject = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             player.ClearAllActions();
             DialogService.StartConversation(player, player, "BaseManagementTool");

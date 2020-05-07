@@ -206,28 +206,29 @@ namespace SWLOR.Game.Server.Service
             switch (eventID)
             {
                 case 1: // Spawn Creature
-                    string areaName = NWNXEvents.OnDMSpawnObject_GetArea().Name;
-                    NWCreature creature = NWNXEvents.OnDMSpawnObject_GetObject().Object;
-                    int objectTypeID = NWNXEvents.OnDMSpawnObject_GetObjectType();
-                    float x = NWNXEvents.OnDMSpawnObject_GetPositionX();
-                    float y = NWNXEvents.OnDMSpawnObject_GetPositionY();
-                    float z = NWNXEvents.OnDMSpawnObject_GetPositionZ();
+                    var area = NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA"));
+                    string areaName = _.GetName(area);
+                    NWCreature creature = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
+                    int objectTypeID = Convert.ToInt32(NWNXEvents.GetEventData("OBJECT_TYPE"));
+                    float x = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_X"));
+                    float y = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Y"));
+                    float z = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Z"));
                     creature.SetLocalInt("DM_SPAWNED", _.TRUE);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP
-                    amount = NWNXEvents.OnDMGiveXP_GetAmount();
-                    target = NWNXEvents.OnDMGiveXP_GetTarget();
+                    amount = Convert.ToInt32(NWNXEvents.GetEventData("AMOUNT"));
+                    target = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     details = amount + "," + target.Name;
                     break;
                 case 23: // Give Level
-                    amount = NWNXEvents.OnDMGiveLevels_GetAmount();
-                    target = NWNXEvents.OnDMGiveLevels_GetTarget();
+                    amount = Convert.ToInt32(NWNXEvents.GetEventData("AMOUNT"));
+                    target = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     details = amount + "," + target.Name;
                     break;
                 case 24: // Give Gold
-                    amount = NWNXEvents.OnDMGiveGold_GetAmount();
-                    target = NWNXEvents.OnDMGiveGold_GetTarget();
+                    amount = Convert.ToInt32(NWNXEvents.GetEventData("AMOUNT"));
+                    target = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     details = amount + "," + target.Name;
                     break;
             }

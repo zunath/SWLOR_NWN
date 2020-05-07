@@ -114,9 +114,13 @@ namespace SWLOR.Game.Server.Service
         private static void OnItemUsed()
         {
             NWPlayer user = _.OBJECT_SELF;
-            NWItem oItem = NWNXEvents.OnItemUsed_GetItem();
-            NWObject target = NWNXEvents.OnItemUsed_GetTarget();
-            Location targetLocation = NWNXEvents.OnItemUsed_GetTargetLocation();
+            NWItem oItem = NWNXObject.StringToObject(NWNXEvents.GetEventData("ITEM_OBJECT_ID"));
+            NWObject target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
+            var targetPosition = Vector(targetPositionX, targetPositionY, targetPositionZ);
+            Location targetLocation = Location(user.Area, targetPosition, 0.0f);
 
             string className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");

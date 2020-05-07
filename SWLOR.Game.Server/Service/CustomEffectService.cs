@@ -457,9 +457,9 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(effect.CasterNWNObjectID))
             {
                 var obj = NWNXObject.StringToObject(effect.CasterNWNObjectID);
-                if (obj.IsValid)
+                if (_.GetIsObjectValid(obj) == 1)
                 {
-                    caster = obj.Object;
+                    caster = obj;
                 }
             }
 

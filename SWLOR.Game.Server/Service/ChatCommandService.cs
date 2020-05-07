@@ -152,12 +152,18 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = _.OBJECT_SELF;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID")); 
 
             if (featID != (int)Feat.ChatCommandTargeter) return;
 
-            var target = NWNXEvents.OnFeatUsed_GetTarget();
-            var targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
+            var target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
+            var targetPosition = Vector(targetPositionX, targetPositionY, targetPositionZ);
+            var targetArea = NWNXObject.StringToObject( NWNXEvents.GetEventData("AREA_OBJECT_ID"));
+
+            var targetLocation = Location(targetArea, targetPosition, 0.0f);
             string command = pc.GetLocalString("CHAT_COMMAND");
             string args = pc.GetLocalString("CHAT_COMMAND_ARGS");
 

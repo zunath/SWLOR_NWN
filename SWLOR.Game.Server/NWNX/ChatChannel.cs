@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.NWNX
 {
-    public enum ChatChannelType
+    public enum ChatChannel
     {
         PlayerTalk = 1,
         PlayerShout = 2,

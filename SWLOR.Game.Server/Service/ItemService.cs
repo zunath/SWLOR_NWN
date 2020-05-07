@@ -878,7 +878,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer player = NWNXChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender();
 
             if (!CanHandleChat(player)) return;
             string message = NWNXChat.GetMessage();

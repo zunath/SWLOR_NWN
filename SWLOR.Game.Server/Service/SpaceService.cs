@@ -22,6 +22,7 @@ using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWScript;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
+using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -974,9 +975,9 @@ namespace SWLOR.Game.Server.Service
             if (!speaker.IsPlayer) return;
 
             // Ignore Tells, DM messages etc..
-            if (NWNXChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_TALK &&
-                NWNXChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_WHISPER &&
-                NWNXChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_PARTY)
+            if (NWNXChat.GetChannel() != ChatChannel.PlayerTalk &&
+                NWNXChat.GetChannel() != ChatChannel.PlayerWhisper &&
+                NWNXChat.GetChannel() != ChatChannel.PlayerParty)
             {
                 return;
             }

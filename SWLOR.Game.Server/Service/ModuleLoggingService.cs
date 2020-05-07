@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
+using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 using PCBaseType = SWLOR.Game.Server.Enumeration.PCBaseType;
 
 namespace SWLOR.Game.Server.Service
@@ -90,26 +91,26 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private static int ConvertNWNXChatChannelIDToDatabaseID(int nwnxChatChannelID)
+        private static int ConvertNWNXChatChannelIDToDatabaseID(ChatChannel nwnxChatChannelID)
         {
             switch (nwnxChatChannelID)
             {
-                case (int)ChatChannelType.PlayerTalk:
-                case (int)ChatChannelType.DMTalk:
+                case ChatChannel.PlayerTalk:
+                case ChatChannel.DMTalk:
                     return 3;
-                case (int)ChatChannelType.PlayerShout:
-                case (int)ChatChannelType.DMShout:
+                case ChatChannel.PlayerShout:
+                case ChatChannel.DMShout:
                     return 1;
-                case (int)ChatChannelType.PlayerWhisper:
-                case (int)ChatChannelType.DMWhisper:
+                case ChatChannel.PlayerWhisper:
+                case ChatChannel.DMWhisper:
                     return 2;
-                case (int)ChatChannelType.PlayerTell:
-                case (int)ChatChannelType.DMTell:
+                case ChatChannel.PlayerTell:
+                case ChatChannel.DMTell:
                     return 6;
-                case (int)ChatChannelType.ServerMessage:
+                case ChatChannel.ServerMessage:
                     return 7;
-                case (int)ChatChannelType.PlayerParty:
-                case (int)ChatChannelType.DMParty:
+                case ChatChannel.PlayerParty:
+                case ChatChannel.DMParty:
                     return 4;
                 default:
                     return 5;
@@ -123,10 +124,10 @@ namespace SWLOR.Game.Server.Service
             string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
 
-            int mode = NWNXChat.GetChannel();
+            var mode = NWNXChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = NWNXChat.GetTarget();
-            ChatChannel channelEntity = DataService.ChatChannel.GetByID(channel);
+            var channelEntity = DataService.ChatChannel.GetByID(channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);

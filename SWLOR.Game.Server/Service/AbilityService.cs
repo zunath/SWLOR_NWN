@@ -222,8 +222,8 @@ namespace SWLOR.Game.Server.Service
             // Activator is the creature who used the feat.
             // Target is who the activator selected to use this feat on.
             NWCreature activator = _.OBJECT_SELF;
-            NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            NWCreature target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
 
             // Ensure this perk feat can be activated.
             if (!CanUsePerkFeat(activator, target, featID)) return;

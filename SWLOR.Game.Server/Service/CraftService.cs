@@ -583,13 +583,13 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = _.OBJECT_SELF;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
 
             if (featID != (int)Feat.RenameCraftedItem) return;
             pc.ClearAllActions();
 
             bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
-            NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget().Object;
+            NWItem renameItem = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             if (isSetting)
             {

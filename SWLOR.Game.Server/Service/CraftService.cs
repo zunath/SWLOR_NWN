@@ -548,7 +548,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer pc = NWNXChat.GetSender().Object;
+            NWPlayer pc = NWNXChat.GetSender();
             string newName = NWNXChat.GetMessage();
 
             if (!CanHandleChat(pc))

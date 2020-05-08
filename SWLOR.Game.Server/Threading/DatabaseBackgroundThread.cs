@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Threading
     public class DatabaseBackgroundThread
     {
         private MySqlConnection _connection;
-
+        
         public void Start()
         {
             _connection = new MySqlConnection(DataService.SWLORConnectionString);
@@ -40,21 +40,21 @@ namespace SWLOR.Game.Server.Threading
                     {
                         foreach (var record in request.Data)
                         {
-                            //_connection.Insert(record.GetType(), record); // todo fix
+                            SqlMapperExtensions.Insert(_connection, record);
                         }
                     }
                     else if (request.Action == DatabaseActionType.Update)
                     {
                         foreach (var record in request.Data)
                         {
-                            //_connection.Update(record.GetType(), record); // todo fix
+                            SqlMapperExtensions.Update(_connection, record);
                         }
                     }
                     else if (request.Action == DatabaseActionType.Delete)
                     {
                         foreach (var record in request.Data)
                         {
-                            //_connection.Delete(record.GetType(), record); // todo fix
+                            SqlMapperExtensions.Delete(_connection, record);
                         }
                     }
 

@@ -563,7 +563,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Sets the creature size. Use CREATURE_SIZE_* constants
-        public static void SetSize(uint creature, NWN.Enum.Creature.Size size)
+        public static void SetSize(uint creature, NWN.Enum.Creature.CreatureSize size)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSize");
             Internal.NativeFunctions.nwnxPushInt((int)size);

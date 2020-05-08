@@ -18,6 +18,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -485,8 +486,8 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_TWOBLADEDSWORD,
             BASE_ITEM_WARHAMMER,
             BASE_ITEM_WHIP,
-            CustomBaseItemType.Saberstaff,
-            CustomBaseItemType.Lightsaber
+            (int)BaseItem.Saberstaff,
+            (int)BaseItem.Lightsaber
         };
 
         private static void OnModuleUnequipItem()
@@ -588,8 +589,8 @@ namespace SWLOR.Game.Server.Service
                     BASE_ITEM_TWOBLADEDSWORD,
                     BASE_ITEM_WARHAMMER,
                     BASE_ITEM_WHIP,
-                    CustomBaseItemType.Saberstaff,
-                    CustomBaseItemType.Lightsaber
+                    (int)BaseItem.Saberstaff,
+                    (int)BaseItem.Lightsaber
 
             };
 
@@ -733,7 +734,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_SHORTSWORD,
             BASE_ITEM_SICKLE,
             BASE_ITEM_WHIP,
-            CustomBaseItemType.Lightsaber,
+            (int)BaseItem.Lightsaber,
             BASE_ITEM_DIREMACE,
             BASE_ITEM_DWARVENWARAXE,
             BASE_ITEM_GREATAXE,
@@ -747,7 +748,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_WARHAMMER,
             BASE_ITEM_DOUBLEAXE,
             BASE_ITEM_TWOBLADEDSWORD,
-            CustomBaseItemType.Saberstaff,
+            (int)BaseItem.Saberstaff,
             BASE_ITEM_BRACER,
             BASE_ITEM_GLOVES
 
@@ -827,8 +828,8 @@ namespace SWLOR.Game.Server.Service
             {BASE_ITEM_LARGESHIELD, SkillType.Shields },
             {BASE_ITEM_TOWERSHIELD, SkillType.Shields },
             // Lightsabers
-            {CustomBaseItemType.Lightsaber, SkillType.Lightsaber},
-            {CustomBaseItemType.Saberstaff, SkillType.Lightsaber}
+            {(int)BaseItem.Lightsaber, SkillType.Lightsaber},
+            {(int)BaseItem.Saberstaff, SkillType.Lightsaber}
         };
 
         public static SkillType GetSkillTypeForItem(NWItem item)

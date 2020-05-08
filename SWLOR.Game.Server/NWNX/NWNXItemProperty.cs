@@ -55,6 +55,5 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
             return new ItemProperty(Internal.NativeFunctions.nwnxPopItemProperty());
         }
-
     }
 }

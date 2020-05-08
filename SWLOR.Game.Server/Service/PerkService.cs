@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     NWNXCreature.AddFeatByLevel(oPC, (Feat)perkFeatToGrant.FeatID, 1);
 
-                    var qbs = NWNXPlayerQuickBarSlot.UseFeat(perkFeatToGrant.FeatID);
+                    var qbs = NWNXPlayerQuickBarSlot.UseFeat((Feat)perkFeatToGrant.FeatID);
 
                     // Try to add the new feat to the player's hotbar.
                     if (NWNXPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)

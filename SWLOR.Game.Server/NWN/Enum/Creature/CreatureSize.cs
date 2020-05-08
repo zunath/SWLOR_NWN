@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN.Enum.Creature
 {
-    public enum Size
+    public enum CreatureSize
     {
         Invalid,
         Tiny,

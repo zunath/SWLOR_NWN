@@ -6,6 +6,9 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Scripting;
 using SWLOR.Game.Server.Scripting.Contracts;
@@ -165,20 +168,20 @@ namespace NWN.Scripts
 
         private static void SetWeaponSettings()
         {
-            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Lightsaber, _.FEAT_WEAPON_FOCUS_LONG_SWORD);
-            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Saberstaff, _.FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponFocusFeat(BaseItem.Lightsaber, Feat.EpicWeaponFocus_Longsword);
+            NWNXWeapon.SetWeaponFocusFeat(BaseItem.Saberstaff, Feat.WeaponFocus_TwoBladedSword);
 
-            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Lightsaber, _.FEAT_IMPROVED_CRITICAL_LONG_SWORD);
-            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Saberstaff, _.FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponImprovedCriticalFeat(BaseItem.Lightsaber, Feat.ImprovedCritical_LongSword);
+            NWNXWeapon.SetWeaponImprovedCriticalFeat(BaseItem.Saberstaff, Feat.ImprovedCritical_TwoBladedSword);
 
-            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, _.FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
-            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, _.FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponSpecializationFeat(BaseItem.Lightsaber, Feat.EpicWeaponSpecialization_Longsword);
+            NWNXWeapon.SetWeaponSpecializationFeat(BaseItem.Saberstaff, Feat.EpicWeaponSpecialization_Twobladedsword);
 
-            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, _.CREATURE_SIZE_MEDIUM);
-            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, _.CREATURE_SIZE_MEDIUM);
-            NWNXWeapon.SetWeaponFinesseSize(_.BASE_ITEM_LONGSWORD, _.CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(BaseItem.Lightsaber, CreatureSize.Medium);
+            NWNXWeapon.SetWeaponFinesseSize(BaseItem.Saberstaff, CreatureSize.Medium);
+            NWNXWeapon.SetWeaponFinesseSize(BaseItem.Longsword, CreatureSize.Medium);
 
-            NWNXWeapon.SetWeaponUnarmed(_.BASE_ITEM_QUARTERSTAFF);
+            NWNXWeapon.SetWeaponUnarmed(BaseItem.QuarterStaff);
         }
 
 

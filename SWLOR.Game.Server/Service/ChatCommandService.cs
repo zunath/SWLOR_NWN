@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
                         var qbs = NWNXPlayer.GetQuickBarSlot(sender, 11);
                         if (qbs.ObjectType == QuickBarSlotType.Empty)
                         {
-                            NWNXPlayer.SetQuickBarSlot(sender, 11, NWNXPlayerQuickBarSlot.UseFeat((int)Feat.ChatCommandTargeter));
+                            NWNXPlayer.SetQuickBarSlot(sender, 11, NWNXPlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter));
                         }
                     }
                 }

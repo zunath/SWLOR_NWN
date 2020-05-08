@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
@@ -164,7 +165,7 @@ namespace SWLOR.Game.Server.GameObject
 
             int[] lightsabers =
             {
-                CustomBaseItemType.Lightsaber
+                (int)BaseItem.Lightsaber
             };
 
             int[] heavyVibroblades =
@@ -191,7 +192,7 @@ namespace SWLOR.Game.Server.GameObject
 
             int[] saberstaffs =
             {
-                CustomBaseItemType.Saberstaff
+                (int)BaseItem.Saberstaff
             };
 
             int[] martialArts =

@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Service
             if (!entranceWP.IsValid)
             {
                 owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
-                return new uint();
+                return _.OBJECT_INVALID;
             }
 
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);

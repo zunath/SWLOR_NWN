@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Perk]")]
+    [Table("Perk")]
     public class Perk: IEntity
     {
         public Perk()

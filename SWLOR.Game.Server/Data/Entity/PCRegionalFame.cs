@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCRegionalFame]")]
+    [Table("PCRegionalFame")]
     public class PCRegionalFame: IEntity
     {
         public PCRegionalFame()

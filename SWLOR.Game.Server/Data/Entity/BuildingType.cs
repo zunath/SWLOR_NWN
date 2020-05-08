@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[BuildingType]")]
+    [Table("BuildingType")]
     public class BuildingType: IEntity
     {
         [ExplicitKey]

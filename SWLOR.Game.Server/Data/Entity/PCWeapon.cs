@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCWeapon]")]
+    [Table("PCWeapon")]
     public class PCWeapon: IEntity
     {
         [ExplicitKey]

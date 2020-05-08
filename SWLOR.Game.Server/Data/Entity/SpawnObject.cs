@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[SpawnObject]")]
+    [Table("SpawnObject")]
     public class SpawnObject: IEntity
     {
         public SpawnObject()

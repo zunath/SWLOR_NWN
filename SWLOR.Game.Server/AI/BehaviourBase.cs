@@ -246,14 +246,14 @@ namespace SWLOR.Game.Server.AI
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingRanged(new uint());
+                    ActionEquipMostDamagingRanged();
                 });
             }
             else
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingMelee(new uint());
+                    ActionEquipMostDamagingMelee();
                 });
             }
         }

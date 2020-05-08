@@ -139,10 +139,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void StartConversation(NWPlayer player, NWObject talkTo, string @class)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
-            if (talkTo == null) throw new ArgumentNullException(nameof(talkTo));
-            if (talkTo.Object == null) throw new ArgumentNullException(nameof(talkTo.Object));
             if (string.IsNullOrWhiteSpace(@class)) throw new ArgumentException(nameof(@class), nameof(@class) + " cannot be null, empty, or whitespace.");
 
             LoadConversation(player, talkTo, @class, -1);
@@ -154,7 +150,7 @@ namespace SWLOR.Game.Server.Service
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                _.BeginConversation("dialog" + dialog.DialogNumber, new uint());
+                _.BeginConversation("dialog" + dialog.DialogNumber, talkTo);
             }
             // Everything else
             else

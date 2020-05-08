@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (target == null)
             {
-                target = new uint();
+                target = _.OBJECT_INVALID;
             }
 
             if (targetLocation == null)

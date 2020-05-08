@@ -96,9 +96,10 @@ namespace SWLOR.Game.Server.NWN.Enum.Item
         CraftMaterialSmall = 110,
         Whip = 111,
         CraftBase = 112,
+        Invalid = 255,
 
-        Gunblade = 113, // todo: setup
 
-        Invalid = 255
+        Saberstaff = 511,
+        Lightsaber = 512,
     }
 }

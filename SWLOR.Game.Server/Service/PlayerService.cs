@@ -450,10 +450,10 @@ namespace SWLOR.Game.Server.Service
                 
         private static void InitializeHotBar(NWPlayer player)
         {
-            var openRestMenu = NWNXPlayerQuickBarSlot.UseFeat((int)Feat.OpenRestMenu);
-            var structure = NWNXPlayerQuickBarSlot.UseFeat((int) Feat.StructureManagementTool);
-            var renameCraftedItem = NWNXPlayerQuickBarSlot.UseFeat((int)Feat.RenameCraftedItem);
-            var chatCommandTargeter = NWNXPlayerQuickBarSlot.UseFeat((int)Feat.ChatCommandTargeter);
+            var openRestMenu = NWNXPlayerQuickBarSlot.UseFeat(Feat.OpenRestMenu);
+            var structure = NWNXPlayerQuickBarSlot.UseFeat(Feat.StructureManagementTool);
+            var renameCraftedItem = NWNXPlayerQuickBarSlot.UseFeat(Feat.RenameCraftedItem);
+            var chatCommandTargeter = NWNXPlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter);
 
             NWNXPlayer.SetQuickBarSlot(player, 0, openRestMenu);
             NWNXPlayer.SetQuickBarSlot(player, 1, structure);

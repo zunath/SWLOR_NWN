@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageType.UseItemCantUse, TRUE);
-            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageType.CombatRunningOutOfAmmo, TRUE);
+            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, TRUE);
+            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, TRUE);
         }
     }
 }

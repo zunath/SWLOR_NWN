@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -269,8 +270,8 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case (BASE_ITEM_INVALID): feat = FEAT_WEAPON_FOCUS_UNARMED_STRIKE; break;
                 case (BASE_ITEM_WARHAMMER): feat = FEAT_WEAPON_FOCUS_WAR_HAMMER; break;
                 case (BASE_ITEM_WHIP): feat = FEAT_WEAPON_FOCUS_WHIP; break;
-                case (CustomBaseItemType.Lightsaber): feat = FEAT_WEAPON_FOCUS_LONG_SWORD; break;
-                case (CustomBaseItemType.Saberstaff): feat = FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD; break;
+                case ((int)BaseItem.Lightsaber): feat = FEAT_WEAPON_FOCUS_LONG_SWORD; break;
+                case ((int)BaseItem.Saberstaff): feat = FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD; break;
                 default: return;
             }
 
@@ -324,8 +325,8 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case (BASE_ITEM_INVALID): feat = FEAT_WEAPON_SPECIALIZATION_UNARMED_STRIKE; break;
                 case (BASE_ITEM_WARHAMMER): feat = FEAT_WEAPON_SPECIALIZATION_WAR_HAMMER; break;
                 case (BASE_ITEM_WHIP): feat = FEAT_WEAPON_SPECIALIZATION_WHIP; break;
-                case (CustomBaseItemType.Lightsaber): feat = FEAT_WEAPON_SPECIALIZATION_LONG_SWORD; break;
-                case (CustomBaseItemType.Saberstaff): feat = FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD; break;
+                case ((int)BaseItem.Lightsaber): feat = FEAT_WEAPON_SPECIALIZATION_LONG_SWORD; break;
+                case ((int)BaseItem.Saberstaff): feat = FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD; break;
                 default: return;
             }
 

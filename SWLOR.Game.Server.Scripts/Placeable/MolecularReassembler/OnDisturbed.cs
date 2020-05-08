@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.Scripting.Contracts;
 using SWLOR.Game.Server.Service;
 
@@ -116,8 +117,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
                 _.BASE_ITEM_TRIDENT,
                 _.BASE_ITEM_DWARVENWARAXE,
                 _.BASE_ITEM_WHIP,
-                CustomBaseItemType.Lightsaber,
-                CustomBaseItemType.Saberstaff
+                (int)BaseItem.Lightsaber,
+                (int)BaseItem.Saberstaff
             };
 
             return validTypes.Contains(type);

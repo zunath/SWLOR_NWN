@@ -3,6 +3,7 @@ using System.Reflection;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Scripting;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Legacy

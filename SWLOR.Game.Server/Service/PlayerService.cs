@@ -110,9 +110,12 @@ namespace SWLOR.Game.Server.Service
                 NWNXCreature.AddFeatByLevel(player, Feat.RenameCraftedItem, 1);
                 NWNXCreature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
 
-                foreach (var skill in Enum.GetValues(typeof(Skill)))
+                foreach (var skillType in Enum.GetValues(typeof(Skill)))
                 {
-                    NWNXCreature.SetSkillRank(player, (Skill)skill, 0);
+                    var skill = (Skill) skillType;
+                    if (skill == Skill.Invalid || skill == Skill.AllSkills) continue;
+
+                    NWNXCreature.SetSkillRank(player, skill, 0);
                 }
                 _.SetFortitudeSavingThrow(player, 0);
                 _.SetReflexSavingThrow(player, 0);

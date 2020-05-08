@@ -1,3 +1,4 @@
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Contracts;
 

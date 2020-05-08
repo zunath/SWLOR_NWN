@@ -75,7 +75,6 @@ namespace SWLOR.Game.Server
                 var method = type.GetMethod("Main");
                 if (method != null)
                 {
-                    Console.WriteLine($"type name = {type.Name}");
                     _scripts[type.Name] = method;
                 }
             }

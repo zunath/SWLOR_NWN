@@ -131,9 +131,6 @@ namespace SWLOR.Game.Server.Service
                 Password = password,
                 ConnectionTimeout = 60 // 30 seconds
             }.ToString();
-
-            Console.WriteLine($"Connection string: {SWLORConnectionString}");
-
         }
 
         public static void Initialize(bool initializeCache)

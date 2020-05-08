@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
-using SWLOR.Game.Server;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -10,8 +8,8 @@ using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Scripting;
-using SWLOR.Game.Server.Scripting.Contracts;
+using SWLOR.Game.Server.Scripts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.ValueObject;
 
@@ -66,8 +64,8 @@ namespace NWN.Scripts
         private static void RegisterServiceSubscribeEvents()
         {
             // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
-            var typesInNamespace = Assembly.GetExecutingAssembly()
-                .GetTypes()
+            var typesInNamespace = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
                 .Where(x => x.Namespace != null && 
                             x.Namespace.StartsWith("SWLOR.Game.Server") && // The entire SWLOR namespace
                             !typeof(IScript).IsAssignableFrom(x) && // Exclude scripts

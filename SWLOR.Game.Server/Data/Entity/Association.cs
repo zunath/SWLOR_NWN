@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Association]")]
+    [Table("Association")]
     public class Association: IEntity
     {
         [ExplicitKey]

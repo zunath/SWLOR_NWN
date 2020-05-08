@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCQuestItemProgress]")]
+    [Table("PCQuestItemProgress")]
     public class PCQuestItemProgress: IEntity
     {
         public PCQuestItemProgress()

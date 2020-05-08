@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[DatabaseVersion]")]
+    [Table("DatabaseVersion")]
     public class DatabaseVersion: IEntity
     {
         public DatabaseVersion()

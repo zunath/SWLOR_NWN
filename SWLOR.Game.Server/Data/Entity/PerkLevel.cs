@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PerkLevel]")]
+    [Table("PerkLevel")]
     public class PerkLevel: IEntity
     {
         public PerkLevel()

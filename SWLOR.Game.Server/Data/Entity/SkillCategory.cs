@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[SkillCategory]")]
+    [Table("SkillCategory")]
     public class SkillCategory: IEntity
     {
         public SkillCategory()

@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[MarketCategory]")]
+    [Table("MarketCategory")]
     public class MarketCategory: IEntity
     {
         [ExplicitKey]

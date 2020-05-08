@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[NPCGroup]")]
+    [Table("NPCGroup")]
     public class NPCGroup: IEntity
     {
         [ExplicitKey]

@@ -116,19 +116,24 @@ namespace SWLOR.Game.Server.Service
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
 
-            var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS") ?? string.Empty;
-            var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME") ?? string.Empty;
-            var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD") ?? string.Empty;
-            var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE") ?? string.Empty;
+            var ip = Environment.GetEnvironmentVariable("MYSQL_SERVER_IP_ADDRESS") ?? string.Empty;
+            var user = Environment.GetEnvironmentVariable("MYSQL_SERVER_USERNAME") ?? string.Empty;
+            var password = Environment.GetEnvironmentVariable("MYSQL_SERVER_PASSWORD") ?? string.Empty;
+            var database = Environment.GetEnvironmentVariable("MYSQL_SERVER_DATABASE") ?? string.Empty;
+            uint.TryParse(Environment.GetEnvironmentVariable("MYSQL_SERVER_PORT"), out var port);
 
             SWLORConnectionString = new MySqlConnectionStringBuilder()
             {
                 Server = ip,
+                Port = port,
                 Database = database,
                 UserID = user,
                 Password = password,
                 ConnectionTimeout = 60 // 30 seconds
             }.ToString();
+
+            Console.WriteLine($"Connection string: {SWLORConnectionString}");
+
         }
 
         public static void Initialize(bool initializeCache)

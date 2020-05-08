@@ -7,6 +7,7 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using MySql.Data.MySqlClient;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Data
@@ -49,24 +50,6 @@ namespace SWLOR.Game.Server.Data
 
                 using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
                 {
-                    connection.Open();
-                    try
-                    {
-                        string dbName = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE") ?? string.Empty;
-                        string sql = $@"CREATE DATABASE [{dbName}]";
-
-                        connection.Execute(sql);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("ERROR: Unable to create database. Please check your permissions.");
-                        LoggingService.LogError(ex);
-                        return;
-                    }
-                }
-
-                using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
-                {
                     Console.WriteLine("Creating tables, procedures, views, etc...");
                     string sql = ReadResourceFile(FolderName + ".Initialization.sql");
                     ExecuteBatchNonQuery(sql, connection);
@@ -88,7 +71,9 @@ namespace SWLOR.Game.Server.Data
                 connection.Open();
                 using (var command = new MySqlCommand($"SHOW TABLES LIKE 'ServerConfiguration'", connection) { CommandTimeout = 0 })
                 {
-                    result = (command.ExecuteScalar() != DBNull.Value);
+                    var exists = command.ExecuteScalar();
+
+                    result = (exists != null);
                 }
             }
 
@@ -130,7 +115,7 @@ namespace SWLOR.Game.Server.Data
             DatabaseVersion currentVersion;
             using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
-                string sql = "select top 1 ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC";
+                string sql = "select ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC LIMIT 1;";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
             }
 
@@ -256,30 +241,14 @@ namespace SWLOR.Game.Server.Data
             }
         }
 
-        // Code I pulled from StackOverflow: https://stackoverflow.com/questions/40814/execute-a-large-sql-script-with-go-commands
-        // Can't execute the entire script at once. You have to split out the "GO"s
         private static void ExecuteBatchNonQuery(string sql, MySqlConnection conn)
         {
-            var sqlBatch = string.Empty;
-            var cmd = new MySqlCommand(string.Empty, conn);
+            var cmd = new MySqlCommand(sql, conn);
             conn.Open();
-            sql += "\nGO";   // make sure last batch is executed.
             try
             {
-                foreach (string line in sql.Split(new string[2] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (line.ToUpperInvariant().Trim() == "GO")
-                    {
-                        cmd.CommandText = sqlBatch;
-                        cmd.CommandTimeout = 0;
-                        cmd.ExecuteNonQuery();
-                        sqlBatch = string.Empty;
-                    }
-                    else
-                    {
-                        sqlBatch += line + "\n";
-                    }
-                }
+                cmd.CommandTimeout = 0;
+                cmd.ExecuteNonQuery();
             }
             finally
             {

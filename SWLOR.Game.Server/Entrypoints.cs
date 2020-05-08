@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Dapper;
+using SWLOR.Game.Server.Data;
 
 namespace SWLOR.Game.Server
 {
@@ -48,6 +50,19 @@ namespace SWLOR.Game.Server
         // called here.
         //
         public static void OnStart()
+        {
+            ConfigureDatabase();
+            LoadScripts();
+        }
+
+        private static void ConfigureDatabase()
+        {
+            SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
+            SqlMapper.RemoveTypeMap(typeof(Guid));
+            SqlMapper.RemoveTypeMap(typeof(Guid?));
+        }
+
+        private static void LoadScripts()
         {
             const string Namespace = "NWN.Scripts";
 

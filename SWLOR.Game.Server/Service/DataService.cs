@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadPCMarketListingCache()
         {
-            const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
+            const string Sql = "SELECT * FROM PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
 
             var results = Connection.Query<PCMarketListing>(Sql);
 
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadPCImpoundedItemsCache()
         {
-            const string Sql = "SELECT * FROM dbo.PCImpoundedItem WHERE DateRetrieved IS NULL AND GETUTCDATE() < DATEADD(DAY, 30, CAST(DateImpounded AS DATE))";
+            const string Sql = "SELECT * FROM PCImpoundedItem WHERE DateRetrieved IS NULL AND UTC_DATE() < DATE_ADD(CAST(DateImpounded AS DATE), INTERVAL 30 DAY)";
 
             var results = Connection.Query<PCImpoundedItem>(Sql);
             foreach (var result in results)

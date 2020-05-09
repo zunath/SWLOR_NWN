@@ -6,11 +6,11 @@ using SWLOR.Game.Server.Service;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class dialog_appears_h
+    public class dialog_appears_h
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static int Main()
+        public static int Main()
         {
             return DialogService.OnAppearsWhen(1, 0) ? 1 : 0;
         }

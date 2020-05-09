@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class dialog_action_n
+    public class dialog_action_n
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local

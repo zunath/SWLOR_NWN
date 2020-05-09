@@ -6,7 +6,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class DestroyPlayerGuide: ConversationBase
+    public class DestroyPlayerGuide: ConversationBase
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {

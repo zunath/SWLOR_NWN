@@ -6,7 +6,7 @@ using static NWN._;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class quest_done_7
+    public class quest_done_7
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static int Main()

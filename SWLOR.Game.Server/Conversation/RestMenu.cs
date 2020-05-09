@@ -11,7 +11,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class RestMenu : ConversationBase
+    public class RestMenu : ConversationBase
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {

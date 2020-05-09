@@ -6,7 +6,7 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class credit_check
+    public class credit_check
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static int Main()

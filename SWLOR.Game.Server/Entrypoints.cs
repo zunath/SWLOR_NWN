@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server
         public const int SCRIPT_HANDLED = 0;
         public const int SCRIPT_NOT_HANDLED = -1;
 
-        private static readonly Dictionary<string, MethodInfo> _scripts = new Dictionary<string, MethodInfo>();
+        private delegate bool ConditionalScriptDelegate();
+        private static readonly Dictionary<string, Action> _scripts = new Dictionary<string, Action>();
+        private static readonly Dictionary<string, ConditionalScriptDelegate> _conditionalScripts = new Dictionary<string, ConditionalScriptDelegate>();
         public static event EventHandler<ulong> MainLoopTick;
 
         //
@@ -34,10 +36,13 @@ namespace SWLOR.Game.Server
         //
         public static int OnRunScript(string script, uint oidSelf)
         {
-            if (_scripts.ContainsKey(script))
+            if (_conditionalScripts.ContainsKey(script))
             {
-                _scripts[script].Invoke(null,null);
-
+                return _conditionalScripts[script].Invoke() ? 1 : 0;
+            }
+            else if (_scripts.ContainsKey(script))
+            {
+                _scripts[script].Invoke();
                 return SCRIPT_HANDLED;
             }
 
@@ -75,7 +80,18 @@ namespace SWLOR.Game.Server
                 var method = type.GetMethod("Main");
                 if (method != null)
                 {
-                    _scripts[type.Name] = method;
+                    if (method.ReturnType == typeof(int))
+                    {
+                        _conditionalScripts[type.Name] = () =>
+                        {
+                            var result = (int)method.Invoke(null, null);
+                            return result == 1;
+                        };
+                    }
+                    else
+                    {
+                        _scripts[type.Name] = () => method.Invoke(null, null);
+                    }
                 }
             }
         }

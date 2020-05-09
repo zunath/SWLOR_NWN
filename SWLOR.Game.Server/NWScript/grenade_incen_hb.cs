@@ -7,7 +7,7 @@ using SWLOR.Game.Server.GameObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class grenade_incen_hb
+    public class grenade_incen_hb
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local

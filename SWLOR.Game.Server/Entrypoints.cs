@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server
 {
@@ -38,12 +39,28 @@ namespace SWLOR.Game.Server
         {
             if (_conditionalScripts.ContainsKey(script))
             {
-                return _conditionalScripts[script].Invoke() ? 1 : 0;
+                try
+                {
+                    return _conditionalScripts[script].Invoke() ? 1 : 0;
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.LogError(ex, script);
+                    return SCRIPT_HANDLED;
+                }
             }
             else if (_scripts.ContainsKey(script))
             {
-                _scripts[script].Invoke();
-                return SCRIPT_HANDLED;
+                try
+                {
+                    _scripts[script].Invoke();
+                    return SCRIPT_HANDLED;
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.LogError(ex, script);
+                    return SCRIPT_HANDLED;
+                }
             }
 
             return SCRIPT_NOT_HANDLED; 

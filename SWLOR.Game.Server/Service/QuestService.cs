@@ -32,27 +32,23 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             
             // Scripting Events
-            MessageHub.Instance.Subscribe<OnQuestLoaded>(message => LoadQuest(message.Quest.Quest));
-            MessageHub.Instance.Subscribe<OnQuestUnloaded>(message => UnloadQuest(message.Quest.Quest));
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => LoadQuests());
         }
 
-        private static void LoadQuest(IQuest quest)
+        private static void LoadQuests()
         {
-            if (_quests.ContainsKey(quest.QuestID))
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(AbstractQuest).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
             {
-                throw new Exception( "Quest with ID " + quest.QuestID + " has already been registered. IDs must be unique across all quests.");
+                var quest = (AbstractQuest)Activator.CreateInstance(type);
+                _quests[quest.Quest.QuestID] = quest.Quest;
+
+                Console.WriteLine("Registered quest: " + quest.Quest.Name + " ( " + quest.Quest.QuestID + " )");
             }
 
-            _quests[quest.QuestID] = quest;
-            Console.WriteLine("Registered quest: " + quest.Name + " ( " + quest.QuestID + " )");
-        }
-
-        private static void UnloadQuest(IQuest quest)
-        {
-            if (!_quests.ContainsKey(quest.QuestID)) return;
-
-            _quests.Remove(quest.QuestID);
-            Console.WriteLine("Unregistered quest: " + quest.Name + " ( " + quest.QuestID + " )");
         }
 
         /// <summary>

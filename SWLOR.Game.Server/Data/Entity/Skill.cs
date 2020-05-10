@@ -1,8 +1,9 @@
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Skill]")]
+    [Table("Skill")]
     public class Skill: IEntity
     {
         public Skill()

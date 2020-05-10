@@ -13,6 +13,8 @@ using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
@@ -64,17 +66,23 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer player = (NWGameObject.OBJECT_SELF);
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
-            NWLocation targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
-            NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
+            NWPlayer player = (_.OBJECT_SELF);
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
 
-            if (featID != (int)CustomFeatType.StructureManagementTool) return;
+            var positionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
+            var positionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
+            var positionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
+            var area = (NWArea)NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA_OBJECT_ID"));
+            var vector = Vector(positionX, positionY, positionZ);
+
+            var targetLocation = Location(area, vector, 0.0f);
+
+            if (featID != (int)Feat.StructureManagementTool) return;
 
             var data = GetPlayerTempData(player);
-            data.TargetArea = targetArea;
+            data.TargetArea = area;
             data.TargetLocation = targetLocation;
-            data.TargetObject = NWNXEvents.OnItemUsed_GetTarget();
+            data.TargetObject = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             player.ClearAllActions();
             DialogService.StartConversation(player, player, "BaseManagementTool");
@@ -451,8 +459,8 @@ namespace SWLOR.Game.Server.Service
         public static string GetSectorOfLocation(NWLocation targetLocation)
         {
             NWArea area = targetLocation.Area;
-            int cellX = (int)(_.GetPositionFromLocation(targetLocation).m_X / 10);
-            int cellY = (int)(_.GetPositionFromLocation(targetLocation).m_Y / 10);
+            int cellX = (int)(_.GetPositionFromLocation(targetLocation).X / 10);
+            int cellY = (int)(_.GetPositionFromLocation(targetLocation).Y / 10);
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
 
             string sector = "INVALID";
@@ -709,9 +717,9 @@ namespace SWLOR.Game.Server.Service
                                 BaseStructureID = baseStructureID,
                                 Durability = DurabilityService.GetDurability(structureItem),
                                 LocationOrientation = _.GetFacingFromLocation(targetLocation),
-                                LocationX = position.m_X,
-                                LocationY = position.m_Y,
-                                LocationZ = position.m_Z,
+                                LocationX = position.X,
+                                LocationY = position.Y,
+                                LocationZ = position.Z,
                                 PCBaseID = starkillerBase.ID,
                                 InteriorStyleID = style.ID,
                                 ExteriorStyleID = extStyle.ID,
@@ -1261,7 +1269,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = NWGameObject.OBJECT_SELF;
+            NWPlayer sender = _.OBJECT_SELF;
             string text = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender))

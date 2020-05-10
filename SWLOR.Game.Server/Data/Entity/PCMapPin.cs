@@ -1,11 +1,12 @@
 
 
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCMapPin]")]
+    [Table("PCMapPin")]
     public class PCMapPin: IEntity
     {
         public PCMapPin()

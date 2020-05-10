@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Caching
 {
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if (!ByFeatID.ContainsKey(featID))
             {
-                return default;
+                return default(PerkFeat);
             }
 
             return (PerkFeat)ByFeatID[featID].Clone();

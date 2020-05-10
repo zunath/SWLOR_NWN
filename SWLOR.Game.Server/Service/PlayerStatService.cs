@@ -10,9 +10,11 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using SWLOR.Game.Server.ValueObject;
+using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -151,12 +153,12 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > 55) chaBonus = 55;
 
             // Apply attributes
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Strength, (int)strBonus + pcEntity.STRBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Dexterity, (int)dexBonus + pcEntity.DEXBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Constitution, (int)conBonus + pcEntity.CONBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Intelligence, (int)intBonus + pcEntity.INTBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Wisdom, (int)wisBonus + pcEntity.WISBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Charisma, (int)chaBonus + pcEntity.CHABase);
 
             // Apply AC
             int ac = EffectiveArmorClass(player, ignoreItem, itemBonuses);
@@ -191,7 +193,7 @@ namespace SWLOR.Game.Server.Service
             if (player.CurrentHP > player.MaxHP)
             {
                 int amount = player.CurrentHP - player.MaxHP;
-                Effect damage = _.EffectDamage(amount);
+                var damage = _.EffectDamage(amount);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Caching.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
@@ -193,7 +194,7 @@ namespace SWLOR.Game.Server.Caching
             }
             else
             {
-                return default;
+                return default(TEntity);
             }
         }
     }

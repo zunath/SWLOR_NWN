@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
             int variableCount = NWNXObject.GetLocalVariableCount(oSource);
             for (int variableIndex = 0; variableIndex < variableCount - 1; variableIndex++)
             {
-                LocalVariable stCurVar = NWNXObject.GetLocalVariable(oSource, variableIndex);
+                NWNXObject.LocalVariable stCurVar = NWNXObject.GetLocalVariable(oSource, variableIndex);
 
                 switch (stCurVar.Type)
                 {

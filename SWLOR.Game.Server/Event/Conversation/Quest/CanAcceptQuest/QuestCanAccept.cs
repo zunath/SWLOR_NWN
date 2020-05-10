@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.CanAcceptQuest
             {
                 int index = (int)args[0];
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkTo = NWGameObject.OBJECT_SELF;
+                NWObject talkTo = _.OBJECT_SELF;
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 

@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Caching
         public PCBasePermission GetPlayerPrivatePermissionOrDefault(Guid playerID, Guid pcBaseID)
         {
             if (!ByPlayerID.ContainsKey(playerID))
-                return default;
+                return default(PCBasePermission);
 
             var permissions = ByPlayerID[playerID].Values;
             return (PCBasePermission)permissions.SingleOrDefault(x => !x.IsPublicPermission && x.PCBaseID == pcBaseID)?.Clone();

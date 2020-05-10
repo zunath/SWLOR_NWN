@@ -1,193 +1,152 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXDamage
     {
-        private const string NWNX_Damage = "NWNX_Damage";
+        private const string PLUGIN_NAME = "NWNX_Damage";
 
-        /// <summary>
-        /// Set Damage Event Script
-        /// If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
-        /// If oOwner is valid, it will set it only for that creature.
-        /// </summary>
-        /// <param name="script"></param>
-        /// <param name="oOwner"></param>
-        public static void SetDamageEventScript(string script, NWObject oOwner = null)
+        // Set Damage Event Script
+        // If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
+        // If oOwner is valid, it will set it only for that creature.
+        public static void SetDamageEventScript(string script, uint? oOwner = null)
         {
-            if (oOwner == null) oOwner = new NWObject(NWGameObject.OBJECT_INVALID);
-
-            string sFunc = "SetEventScript";
-
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, script);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, "DAMAGE");
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            if (oOwner == null) oOwner = _.OBJECT_INVALID;
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEventScript");
+            Internal.NativeFunctions.nwnxPushObject((uint)oOwner);
+            Internal.NativeFunctions.nwnxPushString(script);
+            Internal.NativeFunctions.nwnxPushString("DAMAGE");
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get Damage Event Data (to use only on Damage Event Script)
-        /// </summary>
-        /// <returns></returns>
+        // Get Damage Event Data (to use only on Damage Event Script)
         public static DamageEventData GetDamageEventData()
         {
-            string sFunc = "GetDamageEventData";
-            DamageEventData data = new DamageEventData();
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
-
-            data.Damager = NWNX_GetReturnValueObject(NWNX_Damage, sFunc);
-            data.Bludgeoning = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Pierce = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Slash = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Magical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Acid = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Cold = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Divine = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Electrical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Fire = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Negative = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Positive = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Sonic = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Base = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-
+            var data = new DamageEventData();
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDamageEventData");
+            Internal.NativeFunctions.nwnxCallFunction();
+            data.Damager = Internal.NativeFunctions.nwnxPopObject();
+            data.Bludgeoning = Internal.NativeFunctions.nwnxPopInt();
+            data.Pierce = Internal.NativeFunctions.nwnxPopInt();
+            data.Slash = Internal.NativeFunctions.nwnxPopInt();
+            data.Magical = Internal.NativeFunctions.nwnxPopInt();
+            data.Acid = Internal.NativeFunctions.nwnxPopInt();
+            data.Cold = Internal.NativeFunctions.nwnxPopInt();
+            data.Divine = Internal.NativeFunctions.nwnxPopInt();
+            data.Electrical = Internal.NativeFunctions.nwnxPopInt();
+            data.Fire = Internal.NativeFunctions.nwnxPopInt();
+            data.Negative = Internal.NativeFunctions.nwnxPopInt();
+            data.Positive = Internal.NativeFunctions.nwnxPopInt();
+            data.Sonic = Internal.NativeFunctions.nwnxPopInt();
+            data.Base = Internal.NativeFunctions.nwnxPopInt();
             return data;
         }
 
-        /// <summary>
-        /// Set Damage Event Data (to use only on Damage Event Script)
-        /// </summary>
-        /// <param name="data"></param>
+        // Set Damage Event Data (to use only on Damage Event Script)
         public static void SetDamageEventData(DamageEventData data)
         {
-            string sFunc = "SetDamageEventData";
-
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Base);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDamageEventData");
+            Internal.NativeFunctions.nwnxPushInt(data.Base);
+            Internal.NativeFunctions.nwnxPushInt(data.Sonic);
+            Internal.NativeFunctions.nwnxPushInt(data.Positive);
+            Internal.NativeFunctions.nwnxPushInt(data.Negative);
+            Internal.NativeFunctions.nwnxPushInt(data.Fire);
+            Internal.NativeFunctions.nwnxPushInt(data.Electrical);
+            Internal.NativeFunctions.nwnxPushInt(data.Divine);
+            Internal.NativeFunctions.nwnxPushInt(data.Cold);
+            Internal.NativeFunctions.nwnxPushInt(data.Acid);
+            Internal.NativeFunctions.nwnxPushInt(data.Magical);
+            Internal.NativeFunctions.nwnxPushInt(data.Slash);
+            Internal.NativeFunctions.nwnxPushInt(data.Pierce);
+            Internal.NativeFunctions.nwnxPushInt(data.Bludgeoning);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Set Attack Event Script
-        /// If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
-        /// If oOwner is valid, it will set it only for that creature.
-        /// </summary>
-        /// <param name="sScript"></param>
-        /// <param name="oOwner"></param>
-        public static void SetAttackEventScript(string sScript, NWObject oOwner = null)
+        // Set Attack Event Script
+        // If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
+        // If oOwner is valid, it will set it only for that creature.
+        public static void SetAttackEventScript(string script, uint? oOwner = null)
         {
-            if (oOwner == null) oOwner = new NWGameObject();
-
-            string sFunc = "SetEventScript";
-
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, sScript);
-            NWNX_PushArgumentString(NWNX_Damage, sFunc, "ATTACK");
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            if (oOwner == null) oOwner = _.OBJECT_INVALID;
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEventScript");
+            Internal.NativeFunctions.nwnxPushObject((uint)oOwner);
+            Internal.NativeFunctions.nwnxPushString(script);
+            Internal.NativeFunctions.nwnxPushString("ATTACK");
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get Attack Event Data (to use only on Attack Event Script)
-        /// </summary>
-        /// <returns></returns>
+        // Get Attack Event Data (to use only on Attack Event Script)
         public static AttackEventData GetAttackEventData()
         {
-            string sFunc = "GetAttackEventData";
-            AttackEventData data = new AttackEventData();
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
-
-            data.Target = NWNX_GetReturnValueObject(NWNX_Damage, sFunc);
-            data.Bludgeoning = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Pierce = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Slash = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Magical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Acid = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Cold = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Divine = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Electrical = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Fire = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Negative = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Positive = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Sonic = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.Base = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.AttackNumber = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.AttackResult = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.AttackType = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-            data.SneakAttack = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
-
+            var data = new AttackEventData();
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAttackEventData");
+            Internal.NativeFunctions.nwnxCallFunction();
+            data.Target = Internal.NativeFunctions.nwnxPopObject();
+            data.Bludgeoning = Internal.NativeFunctions.nwnxPopInt();
+            data.Pierce = Internal.NativeFunctions.nwnxPopInt();
+            data.Slash = Internal.NativeFunctions.nwnxPopInt();
+            data.Magical = Internal.NativeFunctions.nwnxPopInt();
+            data.Acid = Internal.NativeFunctions.nwnxPopInt();
+            data.Cold = Internal.NativeFunctions.nwnxPopInt();
+            data.Divine = Internal.NativeFunctions.nwnxPopInt();
+            data.Electrical = Internal.NativeFunctions.nwnxPopInt();
+            data.Fire = Internal.NativeFunctions.nwnxPopInt();
+            data.Negative = Internal.NativeFunctions.nwnxPopInt();
+            data.Positive = Internal.NativeFunctions.nwnxPopInt();
+            data.Sonic = Internal.NativeFunctions.nwnxPopInt();
+            data.Base = Internal.NativeFunctions.nwnxPopInt();
+            data.AttackNumber = Internal.NativeFunctions.nwnxPopInt();
+            data.AttackResult = Internal.NativeFunctions.nwnxPopInt();
+            data.AttackType = Internal.NativeFunctions.nwnxPopInt();
+            data.SneakAttack = Internal.NativeFunctions.nwnxPopInt();
             return data;
         }
 
-        /// <summary>
-        /// Set Attack Event Data (to use only on Attack Event Script)
-        /// </summary>
-        /// <param name="data"></param>
+        // Set Attack Event Data (to use only on Attack Event Script)
         public static void SetAttackEventData(AttackEventData data)
         {
-            string sFunc = "SetAttackEventData";
-
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Base);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAttackEventData");
+            Internal.NativeFunctions.nwnxPushInt(data.Base);
+            Internal.NativeFunctions.nwnxPushInt(data.Sonic);
+            Internal.NativeFunctions.nwnxPushInt(data.Positive);
+            Internal.NativeFunctions.nwnxPushInt(data.Negative);
+            Internal.NativeFunctions.nwnxPushInt(data.Fire);
+            Internal.NativeFunctions.nwnxPushInt(data.Electrical);
+            Internal.NativeFunctions.nwnxPushInt(data.Divine);
+            Internal.NativeFunctions.nwnxPushInt(data.Cold);
+            Internal.NativeFunctions.nwnxPushInt(data.Acid);
+            Internal.NativeFunctions.nwnxPushInt(data.Magical);
+            Internal.NativeFunctions.nwnxPushInt(data.Slash);
+            Internal.NativeFunctions.nwnxPushInt(data.Pierce);
+            Internal.NativeFunctions.nwnxPushInt(data.Bludgeoning);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Deal damage to target - permits multiple damage types and checks enhancement bonus for overcoming DR
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="oTarget"></param>
-        /// <param name="oSource"></param>
-        public static void DealDamage(DamageData data, NWObject oTarget, NWObject oSource)
+        // Deal damage to target - permits multiple damage types and checks enhancement bonus for overcoming DR
+        public static void DealDamage(DamageEventData data, uint oTarget, uint oSource, bool iRanged = false)
         {
-            string sFunc = "DealDamage";
-
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Power);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Sonic);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Positive);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Negative);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Fire);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Electrical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Divine);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Cold);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Acid);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Magical);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Slash);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Pierce);
-            NWNX_PushArgumentInt(NWNX_Damage, sFunc, data.Bludgeoning);
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oTarget);
-            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oSource);
-
-            NWNX_CallFunction(NWNX_Damage, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAttackEventData");
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DealDamage");
+            Internal.NativeFunctions.nwnxPushInt(iRanged ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(data.Base);
+            Internal.NativeFunctions.nwnxPushInt(data.Sonic);
+            Internal.NativeFunctions.nwnxPushInt(data.Positive);
+            Internal.NativeFunctions.nwnxPushInt(data.Negative);
+            Internal.NativeFunctions.nwnxPushInt(data.Fire);
+            Internal.NativeFunctions.nwnxPushInt(data.Electrical);
+            Internal.NativeFunctions.nwnxPushInt(data.Divine);
+            Internal.NativeFunctions.nwnxPushInt(data.Cold);
+            Internal.NativeFunctions.nwnxPushInt(data.Acid);
+            Internal.NativeFunctions.nwnxPushInt(data.Magical);
+            Internal.NativeFunctions.nwnxPushInt(data.Slash);
+            Internal.NativeFunctions.nwnxPushInt(data.Pierce);
+            Internal.NativeFunctions.nwnxPushInt(data.Bludgeoning);
+            Internal.NativeFunctions.nwnxPushObject(oTarget);
+            Internal.NativeFunctions.nwnxPushObject(oSource);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
-
-}
+    }
 }

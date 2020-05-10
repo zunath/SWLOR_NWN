@@ -1,8 +1,9 @@
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PerkCategory]")]
+    [Table("PerkCategory")]
     public class PerkCategory: IEntity
     {
         public PerkCategory()

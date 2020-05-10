@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Messaging;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class crea_on_roundend
+    public class crea_on_roundend
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static void Main()

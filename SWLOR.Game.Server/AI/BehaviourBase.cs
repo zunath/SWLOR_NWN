@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using System;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -245,14 +246,14 @@ namespace SWLOR.Game.Server.AI
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingRanged(new NWGameObject());
+                    ActionEquipMostDamagingRanged();
                 });
             }
             else
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingMelee(new NWGameObject());
+                    ActionEquipMostDamagingMelee();
                 });
             }
         }

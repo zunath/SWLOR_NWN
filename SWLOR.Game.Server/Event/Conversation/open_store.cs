@@ -7,7 +7,7 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class open_store
+    public class open_store
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static void Main()
@@ -15,7 +15,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(open_store)))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject self = NWGameObject.OBJECT_SELF;
+                NWObject self = _.OBJECT_SELF;
                 string storeTag = self.GetLocalString("STORE_TAG");
                 NWObject store;
 

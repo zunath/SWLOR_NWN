@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = NWGameObject.OBJECT_SELF;
+            NWPlaceable door = _.OBJECT_SELF;
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (apartmentBuildingID <= 0)
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void EnterApartment(Guid pcBaseID)
         {
-            NWPlaceable door = NWGameObject.OBJECT_SELF;
+            NWPlaceable door = _.OBJECT_SELF;
             NWPlayer oPC = GetPC();
 
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");

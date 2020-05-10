@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -93,8 +94,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="iParty">sets whether to clear the associates of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
         public static void ClearAssociates(float fDelay, NWCreature oPC, int iAssociates = 63, int iMethod = 0, NWObject oDestination = null, string sDestination = "", int iParty = 0)
         {
-            if (oDestination == null) oDestination = new NWGameObject();
-            
+            if (oDestination == null) oDestination = _.OBJECT_INVALID;
+
             NWCreature oParty;
             string sName = GetLocalString(GetModule(), "cutscene");
 
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="iParty">sets whether to return the associates of only oPC (0), all the players in oPC's party (1) or all the players on the server (2)</param>
         public static void ReturnAssociates(float fDelay, NWCreature oPC, int iAssociates = 63, int iMethod = 0, NWObject oDestination = null, string sDestination = "", int iParty = 0)
         {
-            if (oDestination == null) oDestination = new NWGameObject();
+            if (oDestination == null) oDestination = _.OBJECT_INVALID;
             NWCreature oParty;
             string sName = GetLocalString(GetModule(), "cutscene");
 
@@ -243,7 +244,7 @@ namespace SWLOR.Game.Server.Service
         public static void TagSetSpeed(float fDelay, string sActor, float fTime, float fDistance, bool run)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoSetSpeed(sName, new NWGameObject(), sActor, fTime, fDistance, run));
+            DelayCommand(fDelay, () => DoSetSpeed(sName, NWScript.OBJECT_INVALID, sActor, fTime, fDistance, run));
 
         }
 
@@ -293,8 +294,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionMove(float fDelay, string sActor, NWObject oDestination, bool run = false, float fRange = 0.0f, float fTime = 0.0f, string sDestination = "", bool bTowards = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoMove(sName, new NWGameObject(), sActor, oDestination, run, fRange, fTime, sDestination, bTowards));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoMove(sName, _.OBJECT_INVALID, sActor, oDestination, run, fRange, fTime, sDestination, bTowards));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
         /// <summary>
@@ -335,8 +336,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionJump(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoJump(sName, new NWGameObject(), sActor, oTarget, sTarget, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoJump(sName, _.OBJECT_INVALID, sActor, oTarget, sTarget, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
         
         /// <summary>
@@ -349,8 +350,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagJump(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoJump(sName, new NWGameObject(), sActor, oTarget, sTarget));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoJump(sName, _.OBJECT_INVALID, sActor, oTarget, sTarget));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
         
         /// <summary>
@@ -394,8 +395,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionAnimate(float fDelay, string sActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoAnimate(sName, new NWGameObject(), sActor, iAnim, fDuration, fSpeed, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoAnimate(sName, _.OBJECT_INVALID, sActor, iAnim, fDuration, fSpeed, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
         
         /// <summary>
@@ -409,8 +410,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagAnimate(float fDelay, string sActor, int iAnim, float fDuration = 0.0f, float fSpeed = 1.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoAnimate(sName, new NWGameObject(), sActor, iAnim, fDuration, fSpeed));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoAnimate(sName, _.OBJECT_INVALID, sActor, iAnim, fDuration, fSpeed));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
         /// <summary>
@@ -504,7 +505,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DoClearAssociates(string sName, NWCreature oPC, int iAssociates = 63, int iMethod = 0, NWObject oDestination = null, string sDestination = "")
         {
-            if (oDestination == null) oDestination = new NWGameObject();
+            if (oDestination == null) oDestination = _.OBJECT_INVALID;
 
             if (GetLocalInt(GetModule(), sName) == TRUE)
             { return; }
@@ -1114,8 +1115,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoSpeak(sName, new NWGameObject(), sActor, sLine, iAnimation, fDuration, fSpeed, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoSpeak(sName, _.OBJECT_INVALID, sActor, sLine, iAnimation, fDuration, fSpeed, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1131,8 +1132,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagSpeak(float fDelay, string sActor, string sLine, int iAnimation = AnimationNone, float fDuration = 0.0f, float fSpeed = 1.0f)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoSpeak(sName, new NWGameObject(), sActor, sLine, iAnimation, fDuration, fSpeed));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoSpeak(sName, _.OBJECT_INVALID, sActor, sLine, iAnimation, fDuration, fSpeed));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
         
         private static void DoConversation(string sName, NWCreature oActor, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
@@ -1179,8 +1180,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionConversation(float fDelay, string sActor, NWObject oTarget, string sConv = "", string sTarget = "", bool bGreet = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoConversation(sName, new NWGameObject(), sActor, oTarget, sConv, sTarget, bGreet));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoConversation(sName, _.OBJECT_INVALID, sActor, oTarget, sConv, sTarget, bGreet));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1224,8 +1225,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoFace(sName, new NWGameObject(), sActor, oTarget, iFace, fFace, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoFace(sName, _.OBJECT_INVALID, sActor, oTarget, iFace, fFace, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1240,8 +1241,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagFace(float fDelay, string sActor, float fFace, int iFace, NWObject oTarget)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoFace(sName, new NWGameObject(), sActor, oTarget, iFace, fFace, false));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoFace(sName, _.OBJECT_INVALID, sActor, oTarget, iFace, fFace, false));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1307,8 +1308,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionEquip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoEquip(sName, new NWGameObject(), sActor, iSlot, oItem, sItem));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoEquip(sName, _.OBJECT_INVALID, sActor, iSlot, oItem, sItem));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1357,8 +1358,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionUnequip(float fDelay, string sActor, int iSlot, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoUnequip(sName, new NWGameObject(), sActor, iSlot, oItem, sItem));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoUnequip(sName, _.OBJECT_INVALID, sActor, iSlot, oItem, sItem));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1404,8 +1405,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionAttack(float fDelay, string sActor, NWObject oTarget, string sTarget = "", bool bPassive = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoAttack(sName, new NWGameObject(), sActor, oTarget, bPassive, sTarget));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoAttack(sName, _.OBJECT_INVALID, sActor, oTarget, bPassive, sTarget));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
         /// <summary>
@@ -1480,8 +1481,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionSpellCast(float fDelay, string sActor, NWObject oTarget, int iSpell, bool bFake = false, int iPath = PROJECTILE_PATH_TYPE_DEFAULT, string sTarget = "", bool bCheat = true, bool bInstant = false, int iLevel = 0, int iMeta = METAMAGIC_NONE)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoSpellCast(sName, new NWGameObject(), sActor, oTarget, iSpell, bFake, iPath, sTarget, bCheat, bInstant, iLevel, iMeta));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoSpellCast(sName, _.OBJECT_INVALID, sActor, oTarget, iSpell, bFake, iPath, sTarget, bCheat, bInstant, iLevel, iMeta));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1514,7 +1515,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyEffect(float fDelay, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoEffect(sName, new NWGameObject(), "", oTarget, sTarget, eFect, iDuration, fDuration));
+            DelayCommand(fDelay, () => DoEffect(sName, _.OBJECT_INVALID, "", oTarget, sTarget, eFect, iDuration, fDuration));
         }
 
 
@@ -1574,8 +1575,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionEffect(float fDelay, string sActor, NWObject oTarget, Effect eFect, int iDuration = Permanent, float fDuration = 0.0f, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoEffect(sName, new NWGameObject(), sActor, oTarget, sTarget, eFect, iDuration, fDuration, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoEffect(sName, _.OBJECT_INVALID, sActor, oTarget, sTarget, eFect, iDuration, fDuration, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1690,8 +1691,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionCreate(float fDelay, string sActor, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoCreate(sName, new NWGameObject(), sActor, oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoCreate(sName, _.OBJECT_INVALID, sActor, oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1710,7 +1711,7 @@ namespace SWLOR.Game.Server.Service
         public static void Create(float fDelay, NWObject oTarget, int iType, string sRef, string sTag = "", int iAnim = FALSE, int iStack = 0, bool bCreateOn = false, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoCreate(sName, new NWGameObject(), "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn));
+            DelayCommand(fDelay, () => DoCreate(sName, _.OBJECT_INVALID, "", oTarget, sTarget, iType, sRef, sTag, iAnim, iStack, bCreateOn));
         }
 
 
@@ -1723,7 +1724,7 @@ namespace SWLOR.Game.Server.Service
             if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
 
             if (bCreateOn) { CopyObject(oSource, GetLocation(oTarget), oTarget, sTag); }
-            else { CopyObject(oSource, GetLocation(oTarget), new NWGameObject(), sTag); }
+            else { CopyObject(oSource, GetLocation(oTarget), _.OBJECT_INVALID, sTag); }
         }
 
 
@@ -1751,7 +1752,7 @@ namespace SWLOR.Game.Server.Service
             { return; }
 
             if (sTarget != "") { oTarget = GetObjectByTag(sTarget); }
-            NWObject oClone = CopyObject(oPC, GetLocation(oTarget), new NWGameObject(), sTag);
+            NWObject oClone = CopyObject(oPC, GetLocation(oTarget), _.OBJECT_INVALID, sTag);
 
             if (GetIsPC(oPC) == TRUE)
             {
@@ -1801,8 +1802,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionPickUp(float fDelay, string sActor, NWItem oItem, string sItem = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoPickUp(sName, new NWGameObject(), sActor, oItem, sItem));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoPickUp(sName, _.OBJECT_INVALID, sActor, oItem, sItem));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1844,8 +1845,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionSit(float fDelay, string sActor, NWObject oChair, string sChair = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoSit(sName, new NWGameObject(), sActor, oChair, sChair));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoSit(sName, _.OBJECT_INVALID, sActor, oChair, sChair));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -1901,7 +1902,7 @@ namespace SWLOR.Game.Server.Service
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoPlaySound(sName, oActor, sActor, sSound, false));
 
-            if (sActor != "") { RegisterActor(sName, new NWGameObject(), sActor); }
+            if (sActor != "") { RegisterActor(sName, _.OBJECT_INVALID, sActor); }
             else { RegisterActor(sName, oActor); }
         }
 
@@ -1918,7 +1919,7 @@ namespace SWLOR.Game.Server.Service
             string sName = GetLocalString(GetModule(), "cutscene");
             DelayCommand(fDelay, () => DoPlaySound(sName, oActor, sActor, sSound, true));
 
-            if (sActor != "") { RegisterActor(sName, new NWGameObject(), sActor); }
+            if (sActor != "") { RegisterActor(sName, _.OBJECT_INVALID, sActor); }
             else { RegisterActor(sName, oActor); }
         }
 
@@ -1932,7 +1933,7 @@ namespace SWLOR.Game.Server.Service
             if (bOn) { SoundObjectPlay(oSound); }
             else { SoundObjectStop(oSound); }
 
-            if (fDuration > 0.0) { DelayCommand(fDuration, () => DoSoundObject(sName, oSound, !bOn, 0.0f, 128, new NWGameObject())); }
+            if (fDuration > 0.0) { DelayCommand(fDuration, () => DoSoundObject(sName, oSound, !bOn, 0.0f, 128, _.OBJECT_INVALID)); }
             if (iVolume < 128) { SoundObjectSetVolume(oSound, iVolume); }
             if (GetIsObjectValid(oPosition) == TRUE) { SoundObjectSetPosition(oSound, GetPosition(oPosition)); }
         }
@@ -2101,8 +2102,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionClose(float fDelay, string sActor, NWObject oDoor, bool bLock = false)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoDoor(sName, new NWGameObject(), sActor, oDoor, bLock, false));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoDoor(sName, _.OBJECT_INVALID, sActor, oDoor, bLock, false));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -2116,8 +2117,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionOpen(float fDelay, string sActor, NWObject oDoor, bool bUnlock = true)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoDoor(sName, new NWGameObject(), sActor, oDoor, bUnlock, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoDoor(sName, _.OBJECT_INVALID, sActor, oDoor, bUnlock, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -2192,8 +2193,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionWait(float fDelay, string sActor, float fPause)
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoWait(sName, new NWGameObject(), sActor, fPause));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoWait(sName, _.OBJECT_INVALID, sActor, fPause));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -2347,8 +2348,8 @@ namespace SWLOR.Game.Server.Service
         public static void TagActionDestroy(float fDelay, string sActor, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoDestroy(sName, new NWGameObject(), sActor, oTarget, sTarget, true));
-            RegisterActor(sName, new NWGameObject(), sActor);
+            DelayCommand(fDelay, () => DoDestroy(sName, _.OBJECT_INVALID, sActor, oTarget, sTarget, true));
+            RegisterActor(sName, _.OBJECT_INVALID, sActor);
         }
 
 
@@ -2361,7 +2362,7 @@ namespace SWLOR.Game.Server.Service
         public static void Destroy(float fDelay, NWObject oTarget, string sTarget = "")
         {
             string sName = GetLocalString(GetModule(), "cutscene");
-            DelayCommand(fDelay, () => DoDestroy(sName, new NWGameObject(), "", oTarget, sTarget, false));
+            DelayCommand(fDelay, () => DoDestroy(sName, _.OBJECT_INVALID, "", oTarget, sTarget, false));
         }
         
         /// <summary>
@@ -2374,7 +2375,7 @@ namespace SWLOR.Game.Server.Service
         {
             Vector vA = GetPosition(oA);
             Vector vB = GetPosition(oB);
-            Vector vDelta = Vector(vA.m_X - vB.m_X, vA.m_Y - vB.m_Y, vA.m_Z - vB.m_Z);
+            Vector vDelta = Vector(vA.X - vB.X, vA.Y - vB.Y, vA.Z - vB.Z);
             return vDelta;
         }
 
@@ -2388,7 +2389,7 @@ namespace SWLOR.Game.Server.Service
         public static float GetHorizontalDistanceBetween(NWObject oA, NWObject oB)
         {
             Vector vHorizontal = GetVectorAB(oA, oB);
-            float fDistance = sqrt(pow(vHorizontal.m_X, 2.0f) + pow(vHorizontal.m_Y, 2.0f));
+            float fDistance = sqrt(pow(vHorizontal.X, 2.0f) + pow(vHorizontal.Y, 2.0f));
             return fDistance;
         }
 

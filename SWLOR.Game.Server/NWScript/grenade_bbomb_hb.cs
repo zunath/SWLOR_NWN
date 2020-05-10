@@ -6,19 +6,19 @@ using SWLOR.Game.Server.GameObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class grenade_bbomb_hb
+    public class grenade_bbomb_hb
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
             NWObject oTarget;
-            oTarget = GetFirstInPersistentObject(NWGameObject.OBJECT_SELF);
+            oTarget = GetFirstInPersistentObject(_.OBJECT_SELF);
             while (GetIsObjectValid(oTarget) == TRUE)
             {
                 SWLOR.Game.Server.Item.Grenade.grenadeAoe(oTarget, "BACTABOMB");
                 //Get the next target in the AOE
-                oTarget = GetNextInPersistentObject(NWGameObject.OBJECT_SELF);
+                oTarget = GetNextInPersistentObject(_.OBJECT_SELF);
             }
         }
     }

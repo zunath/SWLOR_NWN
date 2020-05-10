@@ -1,21 +1,20 @@
 ﻿
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System;
-using System.Data.SqlClient;
-using System.Threading;
+using Dapper.Contrib.Extensions;
+using MySql.Data.MySqlClient;
 
 namespace SWLOR.Game.Server.Threading
 {
     public class DatabaseBackgroundThread
     {
-        private SqlConnection _connection;
+        private MySqlConnection _connection;
         
         public void Start()
         {
-            _connection = new SqlConnection(DataService.SWLORConnectionString);
+            _connection = new MySqlConnection(DataService.SWLORConnectionString);
             _connection.Open();
         }
 
@@ -41,26 +40,26 @@ namespace SWLOR.Game.Server.Threading
                     {
                         foreach (var record in request.Data)
                         {
-                            _connection.Insert(record.GetType(), record);
+                            SqlMapperExtensions.Insert(_connection, record);
                         }
                     }
                     else if (request.Action == DatabaseActionType.Update)
                     {
                         foreach (var record in request.Data)
                         {
-                            _connection.Update(record.GetType(), record);
+                            SqlMapperExtensions.Update(_connection, record);
                         }
                     }
                     else if (request.Action == DatabaseActionType.Delete)
                     {
                         foreach (var record in request.Data)
                         {
-                            _connection.Delete(record.GetType(), record);
+                            SqlMapperExtensions.Delete(_connection, record);
                         }
                     }
 
                 }
-                catch (SqlException ex)
+                catch (MySqlException ex)
                 {
                     Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
                     Console.WriteLine("Data Type: " + request.DataType);

@@ -7,7 +7,7 @@ using System.Threading;
 namespace SWLOR.Game.Server.Messaging
 {
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
-    internal class Subscriptions
+    public class Subscriptions
     {
         private readonly List<Subscription> AllSubscriptions = new List<Subscription>();
         private int _subscriptionsChangeCounter;

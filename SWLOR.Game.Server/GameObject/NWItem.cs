@@ -3,13 +3,15 @@ using SWLOR.Game.Server.Enumeration;
 
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWItem : NWObject
     {
-        public NWItem(NWGameObject o)
+        public NWItem(uint o)
             : base(o)
         {
         }
@@ -163,7 +165,7 @@ namespace SWLOR.Game.Server.GameObject
 
             int[] lightsabers =
             {
-                CustomBaseItemType.Lightsaber
+                (int)BaseItem.Lightsaber
             };
 
             int[] heavyVibroblades =
@@ -190,7 +192,7 @@ namespace SWLOR.Game.Server.GameObject
 
             int[] saberstaffs =
             {
-                CustomBaseItemType.Saberstaff
+                (int)BaseItem.Saberstaff
             };
 
             int[] martialArts =
@@ -653,11 +655,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWItem o)
+        public static implicit operator uint(NWItem o)
         {
             return o.Object;
         }
-        public static implicit operator NWItem(NWGameObject o)
+        public static implicit operator NWItem(uint o)
         {
             return new NWItem(o);
         }

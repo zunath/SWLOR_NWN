@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
         {
             var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             string pcName = oPC.Name;
-            int classID = oPC.Class1;
+            var classID = oPC.Class1;
 
             string item1Resref = "";
             int item1Quantity = 1;

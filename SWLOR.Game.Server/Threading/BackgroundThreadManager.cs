@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Threading
             
             AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
         }
-        
+
         private static void ProcessDatabaseThread()
         {
             Console.WriteLine("DB thread starting");

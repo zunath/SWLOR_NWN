@@ -11,7 +11,7 @@ using static NWN._;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class tel_aban_station
+    public class tel_aban_station
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static void Main()
@@ -19,7 +19,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(tel_aban_station)))
             {
                 NWPlayer player = GetPCSpeaker();
-                NWObject talkingTo = NWGameObject.OBJECT_SELF;
+                NWObject talkingTo = _.OBJECT_SELF;
 
                 var mainLevel = GetOrCreateMainLevel(player);
                 NWObject landingWP = GetNearestObjectByTag("ABAN_STATION_LANDING", GetFirstObjectInArea(mainLevel));

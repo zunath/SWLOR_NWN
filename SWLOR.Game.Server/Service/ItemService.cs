@@ -17,6 +17,8 @@ using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -112,10 +114,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnItemUsed()
         {
-            NWPlayer user = NWGameObject.OBJECT_SELF;
-            NWItem oItem = NWNXEvents.OnItemUsed_GetItem();
-            NWObject target = NWNXEvents.OnItemUsed_GetTarget();
-            Location targetLocation = NWNXEvents.OnItemUsed_GetTargetLocation();
+            NWPlayer user = _.OBJECT_SELF;
+            NWItem oItem = NWNXObject.StringToObject(NWNXEvents.GetEventData("ITEM_OBJECT_ID"));
+            NWObject target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
+            var targetPosition = Vector(targetPositionX, targetPositionY, targetPositionZ);
+            Location targetLocation = Location(user.Area, targetPosition, 0.0f);
 
             string className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
@@ -161,7 +167,7 @@ namespace SWLOR.Game.Server.Service
                     // We are okay - we have targeted an item in our inventory (we can't target someone
                     // else's inventory, so no need to actually check distance).
                 }
-                else if (target.Object == NWGameObject.OBJECT_SELF)
+                else if (target.Object == _.OBJECT_SELF)
                 {
                     // Also okay.
                 }
@@ -480,8 +486,8 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_TWOBLADEDSWORD,
             BASE_ITEM_WARHAMMER,
             BASE_ITEM_WHIP,
-            CustomBaseItemType.Saberstaff,
-            CustomBaseItemType.Lightsaber
+            (int)BaseItem.Saberstaff,
+            (int)BaseItem.Lightsaber
         };
 
         private static void OnModuleUnequipItem()
@@ -583,8 +589,8 @@ namespace SWLOR.Game.Server.Service
                     BASE_ITEM_TWOBLADEDSWORD,
                     BASE_ITEM_WARHAMMER,
                     BASE_ITEM_WHIP,
-                    CustomBaseItemType.Saberstaff,
-                    CustomBaseItemType.Lightsaber
+                    (int)BaseItem.Saberstaff,
+                    (int)BaseItem.Lightsaber
 
             };
 
@@ -728,7 +734,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_SHORTSWORD,
             BASE_ITEM_SICKLE,
             BASE_ITEM_WHIP,
-            CustomBaseItemType.Lightsaber,
+            (int)BaseItem.Lightsaber,
             BASE_ITEM_DIREMACE,
             BASE_ITEM_DWARVENWARAXE,
             BASE_ITEM_GREATAXE,
@@ -742,7 +748,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_WARHAMMER,
             BASE_ITEM_DOUBLEAXE,
             BASE_ITEM_TWOBLADEDSWORD,
-            CustomBaseItemType.Saberstaff,
+            (int)BaseItem.Saberstaff,
             BASE_ITEM_BRACER,
             BASE_ITEM_GLOVES
 
@@ -822,8 +828,8 @@ namespace SWLOR.Game.Server.Service
             {BASE_ITEM_LARGESHIELD, SkillType.Shields },
             {BASE_ITEM_TOWERSHIELD, SkillType.Shields },
             // Lightsabers
-            {CustomBaseItemType.Lightsaber, SkillType.Lightsaber},
-            {CustomBaseItemType.Saberstaff, SkillType.Lightsaber}
+            {(int)BaseItem.Lightsaber, SkillType.Lightsaber},
+            {(int)BaseItem.Saberstaff, SkillType.Lightsaber}
         };
 
         public static SkillType GetSkillTypeForItem(NWItem item)
@@ -857,7 +863,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWObject target = NWGameObject.OBJECT_SELF;
+            NWObject target = _.OBJECT_SELF;
             if (!target.IsValid) return;
 
             NWObject oSpellOrigin = (GetSpellCastItem());
@@ -877,7 +883,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer player = NWNXChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender();
 
             if (!CanHandleChat(player)) return;
             string message = NWNXChat.GetMessage();

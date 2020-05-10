@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.Bioware
 {
@@ -65,12 +66,12 @@ namespace SWLOR.Game.Server.Bioware
         /// <returns></returns>
         public static Vector GetChangedPosition(Vector vOriginal, float fDistance, float fAngle)
         {
-            float changedZ = vOriginal.m_Z;
+            float changedZ = vOriginal.Z;
 
-            var changedX = vOriginal.m_X + GetChangeInX(fDistance, fAngle);
+            var changedX = vOriginal.X + GetChangeInX(fDistance, fAngle);
             if (changedX < 0.0)
                 changedX = -changedX;
-            var changedY = vOriginal.m_Y + GetChangeInY(fDistance, fAngle);
+            var changedY = vOriginal.Y + GetChangeInY(fDistance, fAngle);
             if (changedY < 0.0)
                 changedY = -changedY;
 
@@ -86,8 +87,8 @@ namespace SWLOR.Game.Server.Bioware
         /// <returns></returns>
         public static float GetRelativeFacing(NWObject o1, NWObject o2)
         {
-            float diffX = o2.Position.m_X - o1.Position.m_X;
-            float diffY = o2.Position.m_Y - o1.Position.m_Y;
+            float diffX = o2.Position.X - o1.Position.X;
+            float diffY = o2.Position.Y - o1.Position.Y;
             
             // X/Y so that we're taking angle relative to the Y axis (X is opposite, Y adjacent)
             float angle = _.atan(diffX / diffY);

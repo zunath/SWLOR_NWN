@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -88,9 +89,9 @@ namespace SWLOR.Game.Server.Service
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
-            pc.RespawnLocationX = player.Position.m_X;
-            pc.RespawnLocationY = player.Position.m_Y;
-            pc.RespawnLocationZ = player.Position.m_Z;
+            pc.RespawnLocationX = player.Position.X;
+            pc.RespawnLocationY = player.Position.Y;
+            pc.RespawnLocationZ = player.Position.Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);

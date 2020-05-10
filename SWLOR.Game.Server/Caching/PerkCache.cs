@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
         public Data.Entity.Perk GetByIDOrDefault(int id)
         {
             if (!ByID.ContainsKey(id))
-                return default;
+                return default(Data.Entity.Perk);
             return (Data.Entity.Perk)ByID[id].Clone();
         }
     }

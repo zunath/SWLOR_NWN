@@ -1,379 +1,313 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXArea
     {
+        private const string PLUGIN_NAME = "NWNX_Area";
 
-        const string NWNX_Area = "NWNX_Area";
-
-        /// <summary>
-        /// Gets the number of players in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static int GetNumberOfPlayersInArea(NWArea area)
+        // Gets the number of players in area
+        public static int GetNumberOfPlayersInArea(uint area)
         {
-            string sFunc = "GetNumberOfPlayersInArea";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNumberOfPlayersInArea");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Gets the creature that last entered area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static NWCreature GetLastEntered(NWArea area)
+        // Gets the creature that last entered area
+        public static uint GetLastEntered(uint area)
         {
-            string sFunc = "GetLastEntered";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueObject(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastEntered");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopObject();
         }
 
-        /// <summary>
-        /// Gets the creature that last left area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static NWObject GetLastLeft(NWArea area)
+        // Gets the creature that last left area
+        public static uint GetLastLeft(uint area)
         {
-            string sFunc = "GetLastLeft";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueObject(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastLeft");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopObject();
         }
 
-        /// <summary>
-        /// Get the PVP setting of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static AreaPVPSetting GetPVPSetting(NWArea area)
+        // Get the PVP setting of area
+        // Returns NWNX_AREA_PVP_SETTING_*
+        public static PvPSetting GetPVPSetting(uint area)
         {
-            string sFunc = "GetPVPSetting";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return (AreaPVPSetting)NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPVPSetting");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return (PvPSetting)Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the PVP setting of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="pvpSetting"></param>
-        public static void SetPVPSetting(NWArea area, AreaPVPSetting pvpSetting)
+        // Set the PVP setting of area
+        // pvpSetting = NWNX_AREA_PVP_SETTING_*
+        public static void SetPVPSetting(uint area, PvPSetting pvpSetting)
         {
-            string sFunc = "SetPVPSetting";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, (int)pvpSetting);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPVPSetting");
+            Internal.NativeFunctions.nwnxPushInt((int)pvpSetting);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the spot modifier of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static int GetAreaSpotModifier(NWArea area)
+        // Get the spot modifier of area
+        public static int GetAreaSpotModifier(uint area)
         {
-            string sFunc = "GetAreaSpotModifier";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaSpotModifier");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the spot modifier of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="spotModifier"></param>
-        public static void SetAreaSpotModifier(NWArea area, int spotModifier)
+        // Set the spot modifier of area
+        public static void SetAreaSpotModifier(uint area, int spotModifier)
         {
-            string sFunc = "SetAreaSpotModifier";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, spotModifier);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaSpotModifier");
+            Internal.NativeFunctions.nwnxPushInt(spotModifier);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the listen modifer of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static int GetAreaListenModifier(NWArea area)
+        // Get the listen modifer of area
+        public static int GetAreaListenModifier(uint area)
         {
-            string sFunc = "GetAreaListenModifier";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaListenModifier");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the listen modifer of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="listenModifier"></param>
-        public static void SetAreaListenModifier(NWArea area, int listenModifier)
+        // Set the listen modifier of area
+        public static void SetAreaListenModifier(uint area, int listenModifier)
         {
-            string sFunc = "SetAreaListenModifier";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, listenModifier);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaListenModifier");
+            Internal.NativeFunctions.nwnxPushInt(listenModifier);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Returns true if resting is not allowed in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static bool GetNoRestingAllowed(NWArea area)
+        // Returns TRUE if resting is not allowed in area
+        public static bool GetNoRestingAllowed(uint area)
         {
-            string sFunc = "GetNoRestingAllowed";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc) == _.TRUE;
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoRestingAllowed");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt() == 1;
         }
 
-        /// <summary>
-        /// Set whether resting is allowed in area
-        /// true: Resting not allowed
-        /// false: Resting allowed
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="bNoRestingAllowed"></param>
-        public static void SetNoRestingAllowed(NWArea area, bool bNoRestingAllowed)
+        // Set whether resting is allowed in area
+        // TRUE: Resting not allowed
+        // FALSE: Resting allowed
+        public static void SetNoRestingAllowed(uint area, bool bNoRestingAllowed)
         {
-            string sFunc = "SetNoRestingAllowed";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, bNoRestingAllowed ? _.TRUE : _.FALSE);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoRestingAllowed");
+            Internal.NativeFunctions.nwnxPushInt(bNoRestingAllowed ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the wind power in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static int GetWindPower(NWArea area)
+        // Get the wind power in area
+        public static int GetWindPower(uint area)
         {
-            string sFunc = "GetWindPower";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWindPower");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the wind power in area
-        /// windPower = 0-2
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="windPower"></param>
-        public static void SetWindPower(NWArea area, int windPower)
+        // Set the wind power in area
+        // windPower = 0-2
+        public static void SetWindPower(uint area, int windPower)
         {
-            string sFunc = "SetWindPower";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, windPower);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWindPower");
+            Internal.NativeFunctions.nwnxPushInt(windPower);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the weather chance of type in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static int GetWeatherChance(NWArea area, AreaWeatherChance type)
+        // Get the weather chance of type in area
+        // type = NWNX_AREA_WEATHER_CHANCE_*
+        public static int GetWeatherChance(uint area, WeatherEffectType type)
         {
-            string sFunc = "GetWeatherChance";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, (int)type);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWeatherChance");
+            Internal.NativeFunctions.nwnxPushInt((int)type);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the weather chance of type in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="type"></param>
-        /// <param name="chance"></param>
-        public static void SetWeatherChance(NWArea area, AreaWeatherChance type, int chance)
+        // Set the weather chance of type in area
+        // type = NWNX_AREA_WEATHER_CHANCE_*
+        // chance = 0-100
+        public static void SetWeatherChance(uint area, WeatherEffectType type, int chance)
         {
-            string sFunc = "SetWeatherChance";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, chance);
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, (int)type);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeatherChance");
+            Internal.NativeFunctions.nwnxPushInt(chance);
+            Internal.NativeFunctions.nwnxPushInt((int)type);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the fog clip distance in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static float GetFogClipDistance(NWArea area)
+        // Get the fog clip distance in area
+        public static float GetFogClipDistance(uint area)
         {
-            string sFunc = "GetFogClipDistance";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueFloat(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFogClipDistance");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopFloat();
         }
 
-        /// <summary>
-        /// Set the fog clip distance in area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="distance"></param>
-        public static void SetFogClipDistance(NWArea area, float distance)
+        // Set the fog clip distance in area
+        public static void SetFogClipDistance(uint area, float distance)
         {
-            string sFunc = "SetFogClipDistance";
-
-            NWNX_PushArgumentFloat(NWNX_Area, sFunc, distance);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFogClipDistance");
+            Internal.NativeFunctions.nwnxPushFloat(distance);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the shadow opacity of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static int GetShadowOpacity(NWArea area)
+
+        // Get the shadow opacity of area
+        public static int GetShadowOpacity(uint area)
         {
-            string sFunc = "GetShadowOpacity";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetShadowOpacity");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the shadow opacity of area
-        /// shadowOpacity = 0-100
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="shadowOpacity"></param>
-        public static void SetShadowOpacity(NWArea area, int shadowOpacity)
+        // Set the shadow opacity of area
+        // shadowOpacity = 0-100
+        public static void SetShadowOpacity(uint area, int shadowOpacity)
         {
-            string sFunc = "SetShadowOpacity";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, shadowOpacity);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetShadowOpacity");
+            Internal.NativeFunctions.nwnxPushInt(shadowOpacity);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Get the day/night cycle of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <returns></returns>
-        public static AreaDayNightCycle GetDayNightCycle(NWArea area)
+
+        // Get the day/night cycle of area
+        // Returns NWNX_AREA_DAYNIGHTCYCLE_*
+        public static DayNightCycle GetDayNightCycle(uint area)
         {
-            string sFunc = "GetDayNightCycle";
-
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
-
-            return (AreaDayNightCycle)NWNX_GetReturnValueInt(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDayNightCycle");
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return (DayNightCycle)Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Set the day/night cycle of area
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="type"></param>
-        public static void SetDayNightCycle(NWArea area, AreaDayNightCycle type)
+        // Set the day/night cycle of area
+        // type = NWNX_AREA_DAYNIGHTCYCLE_*
+        public static void SetDayNightCycle(uint area, DayNightCycle type)
         {
-            string sFunc = "SetDayNightCycle";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, (int)type);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDayNightCycle");
+            Internal.NativeFunctions.nwnxPushInt((int)type);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        /// <summary>
-        /// Set the Sun/Moon Ambient/Diffuse colors of area
-        /// type = NWNX_AREA_COLOR_TYPE_*
-        /// color = FOG_COLOR_*
-        ///
-        /// The color can also be represented as a hex RGB number if specific color shades are desired.
-        /// The format of a hex specified color would be 0xFFEEDD where
-        /// FF would represent the amount of red in the color
-        /// EE would represent the amount of green in the color
-        /// DD would represent the amount of blue in the color.
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="type"></param>
-        /// <param name="color"></param>
-        public static void SetSunMoonColors(NWArea area, AreaColorType type, int color)
+        // Get the Sun/Moon Ambient/Diffuse colors of area
+        // type = NWNX_AREA_COLOR_TYPE_*
+        //
+        // Returns FOG_COLOR_* or a custom value, -1 on error
+        public static int GetSunMoonColors(uint area, ColorType type)
         {
-            string sFunc = "SetSunMoonColors";
-
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, color);
-            NWNX_PushArgumentInt(NWNX_Area, sFunc, (int)type);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSunMoonColors");
+            Internal.NativeFunctions.nwnxPushInt((int)type);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        /// <summary>
-        /// Create and returns a transition (square shaped of specified size) at a location
-        /// Valid object types for the target are DOOR or WAYPOINT.
-        /// If a tag is specified the returning object will have that tag
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="target"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="size"></param>
-        /// <param name="tag"></param>
-        /// <returns></returns>
-        public static NWObject CreateTransition(NWArea area, NWObject target, float x, float y, float z, float size = 2.0f, string tag = "")
+        // Set the Sun/Moon Ambient/Diffuse colors of area
+        // type = NWNX_AREA_COLOR_TYPE_*
+        // color = FOG_COLOR_*
+        //
+        // The color can also be represented as a hex RGB number if specific color shades are desired.
+        // The format of a hex specified color would be 0xFFEEDD where
+        // FF would represent the amount of red in the color
+        // EE would represent the amount of green in the color
+        // DD would represent the amount of blue in the color.
+        public static void SetSunMoonColors(uint area, ColorType type, int color)
         {
-            string sFunc = "CreateTransition";
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSunMoonColors");
+            Internal.NativeFunctions.nwnxPushInt(color);
+            Internal.NativeFunctions.nwnxPushInt((int)type);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
 
-            NWNX_PushArgumentString(NWNX_Area, sFunc, tag);
-            NWNX_PushArgumentFloat(NWNX_Area, sFunc, size);
-            NWNX_PushArgumentFloat(NWNX_Area, sFunc, z);
-            NWNX_PushArgumentFloat(NWNX_Area, sFunc, y);
-            NWNX_PushArgumentFloat(NWNX_Area, sFunc, x);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, target);
-            NWNX_PushArgumentObject(NWNX_Area, sFunc, area);
-            NWNX_CallFunction(NWNX_Area, sFunc);
+        // Create and returns a transition (square shaped of specified size) at a location
+        // Valid object types for the target are DOOR or WAYPOINT.
+        // If a tag is specified the returning object will have that tag
+        public static uint CreateTransition(uint area, uint target, float x, float y, float z, float size = 2.0f,
+            string tag = "")
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateTransition");
+            Internal.NativeFunctions.nwnxPushString(tag);
+            Internal.NativeFunctions.nwnxPushFloat(size);
+            Internal.NativeFunctions.nwnxPushFloat(z);
+            Internal.NativeFunctions.nwnxPushFloat(y);
+            Internal.NativeFunctions.nwnxPushFloat(x);
+            Internal.NativeFunctions.nwnxPushObject(target);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopObject();
+        }
 
-            return NWNX_GetReturnValueObject(NWNX_Area, sFunc);
+        // Get the state of a tile animation loop
+        // nAnimLoop = 1-3
+        public static int GetTileAnimationLoop(uint area, float tileX, float tileY, int animLoop)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTileAnimationLoop");
+            Internal.NativeFunctions.nwnxPushInt(animLoop);
+            Internal.NativeFunctions.nwnxPushFloat(tileY);
+            Internal.NativeFunctions.nwnxPushFloat(tileX);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        // Set the state of a tile animation loop
+        // nAnimLoop = 1-3
+        //
+        // NOTE: Requires clients to re-enter the area for it to take effect
+        public static void SetTileAnimationLoop(uint area, float tileX, float tileY, int animLoop, bool enabled)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTileAnimationLoop");
+            Internal.NativeFunctions.nwnxPushInt(enabled ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(animLoop);
+            Internal.NativeFunctions.nwnxPushFloat(tileY);
+            Internal.NativeFunctions.nwnxPushFloat(tileX);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        // Create and return a generic trigger (square shaped of specified size) at a location.
+        // oArea The area object.
+        // fX, fY, fZ The position to create the trigger.
+        // sTag If specified, the returned trigger will have this tag.
+        // fSize The size of the square.
+        // NWNX_Object_SetTriggerGeometry() if you wish to draw the trigger as something other than a square.
+        public static uint CreateGenericTrigger(uint area, float x, float y, float z, string tag = "",
+            float size = 1.0f)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateGenericTrigger");
+            Internal.NativeFunctions.nwnxPushFloat(size);
+            Internal.NativeFunctions.nwnxPushString(tag);
+            Internal.NativeFunctions.nwnxPushFloat(z);
+            Internal.NativeFunctions.nwnxPushFloat(y);
+            Internal.NativeFunctions.nwnxPushFloat(x);
+            Internal.NativeFunctions.nwnxPushObject(area);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopObject();
         }
     }
 }

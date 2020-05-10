@@ -4,6 +4,7 @@ using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -338,7 +339,7 @@ namespace SWLOR.Game.Server.Item
 
         public static void grenadeAoe(NWObject oTarget, string grenadeType)
         {
-            NWCreature user = GetAreaOfEffectCreator(NWGameObject.OBJECT_SELF);
+            NWCreature user = GetAreaOfEffectCreator(_.OBJECT_SELF);
             int perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
             int duration = 1;
             Effect impactEffect = null;

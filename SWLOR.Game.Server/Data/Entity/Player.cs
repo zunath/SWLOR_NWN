@@ -2,11 +2,12 @@
 
 using SWLOR.Game.Server.Data.Contracts;
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Player]")]
+    [Table("Player")]
     public class Player : IEntity
     {
         public Player()

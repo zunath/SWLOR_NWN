@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Caching
         public CraftBlueprint GetByIDOrDefault(int id)
         {
             if (!ByID.ContainsKey(id))
-                return default;
+                return default(CraftBlueprint);
             return (CraftBlueprint)ByID[id].Clone();
         }
     }

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Item.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;

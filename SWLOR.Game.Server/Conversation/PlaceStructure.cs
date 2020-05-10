@@ -6,6 +6,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -264,7 +265,7 @@ namespace SWLOR.Game.Server.Conversation
             float facing = _.GetFacingFromLocation(data.TargetLocation);
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
             string header = ColorTokenService.Green("Current Direction: ") + facing + "\n\n";
-            header += ColorTokenService.Green("Current Height: ") + position.m_Z;
+            header += ColorTokenService.Green("Current Height: ") + position.Z;
 
             if (data.StructurePreview == null || !data.StructurePreview.IsValid)
             {
@@ -358,14 +359,14 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
             
-            if (position.m_Z > 10.0f || 
-                position.m_Z < -10.0f)
+            if (position.Z > 10.0f || 
+                position.Z < -10.0f)
             {
                 GetPC().SendMessage("This structure cannot be moved any further in this direction.");                
             }
             else
             {
-                position.m_Z += degrees;
+                position.Z += degrees;
             }
 
             Preview();
@@ -399,9 +400,9 @@ namespace SWLOR.Game.Server.Conversation
                 BaseStructureID = data.BaseStructureID, 
                 Durability = DurabilityService.GetDurability(data.StructureItem),
                 LocationOrientation = _.GetFacingFromLocation(data.TargetLocation),
-                LocationX = position.m_X,
-                LocationY = position.m_Y,
-                LocationZ = position.m_Z,
+                LocationX = position.X,
+                LocationY = position.Y,
+                LocationZ = position.Z,
                 PCBaseID = data.PCBaseID,
                 InteriorStyleID = interiorStyleID,
                 ExteriorStyleID = exteriorStyleID,

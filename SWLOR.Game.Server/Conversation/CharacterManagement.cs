@@ -7,7 +7,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class CharacterManagement: ConversationBase
+    public class CharacterManagement: ConversationBase
     {
         private class Model
         {

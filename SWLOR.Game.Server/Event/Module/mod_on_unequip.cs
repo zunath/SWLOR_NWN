@@ -8,13 +8,13 @@ using SWLOR.Game.Server.Messaging;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class mod_on_unequip
+    public class mod_on_unequip
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
-            NWObject equipper = NWGameObject.OBJECT_SELF;
+            NWObject equipper = _.OBJECT_SELF;
             // Bioware Default
             _.ExecuteScript("x2_mod_def_unequ", equipper);
 

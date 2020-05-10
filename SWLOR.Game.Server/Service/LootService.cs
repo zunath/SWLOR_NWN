@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessLoot()
         {
-            NWCreature creature = NWGameObject.OBJECT_SELF;
+            NWCreature creature = _.OBJECT_SELF;
             
             // Single loot table (without an index)
             int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
@@ -114,10 +115,10 @@ namespace SWLOR.Game.Server.Service
         {
             SetIsDestroyable(FALSE);
 
-            NWObject self = NWGameObject.OBJECT_SELF;
+            NWObject self = _.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
-            Vector lootPosition = Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
+            Vector lootPosition = Vector(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
             Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
             NWPlaceable container = CreateObject(OBJECT_TYPE_PLACEABLE, "corpse", spawnLocation);

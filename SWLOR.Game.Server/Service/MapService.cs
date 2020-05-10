@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("MapService.OnAreaEnter"))
             {
-                NWArea area = (NWGameObject.OBJECT_SELF);
+                NWArea area = (_.OBJECT_SELF);
                 NWPlayer player = _.GetEnteringObject();
 
                 if (!player.IsPlayer) return;
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
         {
             using(new Profiler("MapService.OnAreaExit"))
             {
-                NWArea area = NWGameObject.OBJECT_SELF;
+                NWArea area = _.OBJECT_SELF;
                 NWPlayer player = _.GetExitingObject();
                 if (!player.IsPlayer) return;
 
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaHeartbeat()
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
+            NWArea area = _.OBJECT_SELF;
             
             if (area.GetLocalInt("HIDE_MINIMAP") == _.TRUE)
             {

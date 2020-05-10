@@ -1,11 +1,12 @@
 
 
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCPerkRefund]")]
+    [Table("PCPerkRefund")]
     public class PCPerkRefund: IEntity
     {
         public PCPerkRefund()

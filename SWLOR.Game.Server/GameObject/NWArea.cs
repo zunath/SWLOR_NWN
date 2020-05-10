@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWArea : NWObject
     {
-        public NWArea(NWGameObject o) 
+        public NWArea(uint o) 
             : base(o)
         {
             
@@ -56,12 +56,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWArea o)
+        public static implicit operator uint(NWArea o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWArea(NWGameObject o)
+        public static implicit operator NWArea(uint o)
         {
             return new NWArea(o);
         }

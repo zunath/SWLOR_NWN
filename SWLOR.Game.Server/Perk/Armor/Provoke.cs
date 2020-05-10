@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             NWCreature npc = (target.Object);
-            Effect vfx = _.EffectVisualEffect(_.VFX_IMP_CHARM);
+            var vfx = _.EffectVisualEffect(_.VFX_IMP_CHARM);
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, vfx, target.Object);
             
             creature.AssignCommand(() =>
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, (int)CustomFeatType.Provoke);
+            NWNXCreature.RemoveFeat(creature, Feat.Provoke);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -99,11 +100,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {
-                NWNXCreature.RemoveFeat(creature, (int)CustomFeatType.Provoke);
+                NWNXCreature.RemoveFeat(creature, Feat.Provoke);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, (int)CustomFeatType.Provoke);
+            NWNXCreature.AddFeat(creature, Feat.Provoke);
         }
 
         public bool IsHostile()

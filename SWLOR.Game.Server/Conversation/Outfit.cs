@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 
-            NWGameObject oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
+            uint oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
             oCopy = _.CopyItemAndModify(oCopy, ITEM_APPR_TYPE_ARMOR_MODEL, ITEM_APPR_ARMOR_MODEL_LBICEP, _.GetItemAppearance(storedClothes.Object, ITEM_APPR_TYPE_ARMOR_MODEL, ITEM_APPR_ARMOR_MODEL_LBICEP), TRUE);
             oCopy = _.CopyItemAndModify(oCopy, ITEM_APPR_TYPE_ARMOR_COLOR, ITEM_APPR_ARMOR_MODEL_LBICEP, _.GetItemAppearance(storedClothes.Object, ITEM_APPR_TYPE_ARMOR_COLOR, ITEM_APPR_ARMOR_MODEL_LBICEP), TRUE);
 
@@ -508,7 +508,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored helmet.");
 
-            NWGameObject oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
+            uint oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
             oCopy = _.CopyItemAndModify(oCopy, ITEM_APPR_TYPE_SIMPLE_MODEL, ITEM_APPR_TYPE_SIMPLE_MODEL, _.GetItemAppearance(storedClothes.Object, ITEM_APPR_TYPE_SIMPLE_MODEL, ITEM_APPR_TYPE_SIMPLE_MODEL), TRUE);
 
             NWItem oFinal = (_.CopyItem(oCopy, oPC.Object, TRUE));
@@ -562,7 +562,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored Weapon.");
 
-            NWGameObject oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
+            uint oCopy = _.CopyItem(oClothes.Object, oTempStorage.Object, TRUE);
 
             int baseItemType = GetBaseItemType(oCopy);
 

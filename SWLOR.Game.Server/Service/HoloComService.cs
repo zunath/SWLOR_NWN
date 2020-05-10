@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
                 string message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
-                Effect effectImmobilized = EffectCutsceneImmobilize();
+                var effectImmobilized = EffectCutsceneImmobilize();
                 TagEffect(effectImmobilized, "HOLOCOM_CALL_IMMOBILIZE");
                 ApplyEffectToObject(DURATION_TYPE_PERMANENT, effectImmobilized, sender);
                 ApplyEffectToObject(DURATION_TYPE_PERMANENT, effectImmobilized, receiver);
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             }
             else // END CALL
             {
-                foreach (Effect effect in sender.Effects)
+                foreach (var effect in sender.Effects)
                 {
                     if (_.GetIsEffectValid(effect) == TRUE)
                     {
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                foreach (Effect effect in receiver.Effects)
+                foreach (var effect in receiver.Effects)
                 {
                     if (_.GetIsEffectValid(effect) == TRUE)
                     {

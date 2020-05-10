@@ -1,8 +1,9 @@
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[EnmityAdjustmentRule]")]
+    [Table("EnmityAdjustmentRule")]
     public class EnmityAdjustmentRule: IEntity
     {
         public EnmityAdjustmentRule()

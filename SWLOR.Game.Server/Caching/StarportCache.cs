@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if(!ByID.ContainsKey(id))
             {
-                return default;
+                return default(Starport);
             }
 
             return (Starport)ByID[id].Clone();
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Caching
         {
             if (!ByStarportID.ContainsKey(starportID))
             {
-                return default;
+                return default(Starport);
             }
 
             return ByStarportID[starportID].Values.SingleOrDefault();

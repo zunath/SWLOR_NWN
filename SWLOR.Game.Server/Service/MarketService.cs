@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnModuleNWNXChat()
         {
-            NWPlayer player = NWNXChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender();
             if (!CanHandleChat(player)) return;
 
             var model = GetPlayerMarketData(player);

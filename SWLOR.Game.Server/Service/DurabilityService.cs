@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             
             float durability = GetDurability(item);
             string sItemName = item.Name;
-            int apr = NWNXCreature.GetAttacksPerRound(player, 1);
+            int apr = NWNXCreature.GetAttacksPerRound(player, true);
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
             // Note that players only see two decimal places in-game on purpose.
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnHitCastSpell()
         {
-            NWPlayer oTarget = NWGameObject.OBJECT_SELF;
+            NWPlayer oTarget = _.OBJECT_SELF;
             if (!oTarget.IsValid) return;
             NWItem oSpellOrigin = (_.GetSpellCastItem());
 

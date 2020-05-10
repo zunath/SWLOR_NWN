@@ -2,13 +2,15 @@
 using System.Linq;
 
 using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using static NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWCreature : NWObject
     {
-        public NWCreature(NWGameObject o)
+        public NWCreature(uint o)
             : base(o)
         {
 
@@ -18,11 +20,11 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual float ChallengeRating => _.GetChallengeRating(Object);
 
-        public virtual int Class1 => _.GetClassByPosition(1, Object);
+        public virtual ClassType Class1 => _.GetClassByPosition(1, Object);
 
-        public virtual int Class2 => _.GetClassByPosition(2, Object);
+        public virtual ClassType Class2 => _.GetClassByPosition(2, Object);
 
-        public virtual int Class3 => _.GetClassByPosition(3, Object);
+        public virtual ClassType Class3 => _.GetClassByPosition(3, Object);
 
         public virtual bool IsCommandable
         {
@@ -193,11 +195,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWCreature o)
+        public static implicit operator uint(NWCreature o)
         {
             return o.Object;
         }
-        public static implicit operator NWCreature(NWGameObject o)
+        public static implicit operator NWCreature(uint o)
         {
             return new NWCreature(o);
         }

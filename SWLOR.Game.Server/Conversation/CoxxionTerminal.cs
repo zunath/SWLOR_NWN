@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             NWArea area = device.Area;
 
             int terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            NWPlaceable device = NWGameObject.OBJECT_SELF;
+            NWPlaceable device = _.OBJECT_SELF;
             NWArea area = device.Area;
             int terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
             string terminalColor = GetColorString(terminalColorID);

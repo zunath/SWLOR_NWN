@@ -11,19 +11,19 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class mod_on_examine
+    public class mod_on_examine
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             // Breaking the rules for the examine event because the result of the services is used in the following 
             // service call. We still signal an event for this, but in general all of the logic should go into this method.
 
             using (new Profiler(nameof(mod_on_examine)))
             {
-                NWPlayer examiner = (NWGameObject.OBJECT_SELF);
-                NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
+                NWPlayer examiner = (_.OBJECT_SELF);
+                NWObject examinedObject = NWNXObject.StringToObject(NWNXEvents.GetEventData("EXAMINEE_OBJECT_ID"));
                 if (ExaminationService.OnModuleExamine(examiner, examinedObject))
                 {
                     MessageHub.Instance.Publish(new OnModuleExamine());

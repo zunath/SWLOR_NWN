@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Item
@@ -305,8 +307,8 @@ namespace SWLOR.Game.Server.Item
             BASE_ITEM_LONGBOW,
             BASE_ITEM_SHORTBOW,
             BASE_ITEM_SLING,
-            CustomBaseItemType.Saberstaff,
-            CustomBaseItemType.Lightsaber
+            (int)BaseItem.Saberstaff,
+            (int)BaseItem.Lightsaber
 
         };
 

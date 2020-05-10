@@ -6,7 +6,7 @@ using static NWN._;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class can_accept_10
+    public class can_accept_10
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static int Main()

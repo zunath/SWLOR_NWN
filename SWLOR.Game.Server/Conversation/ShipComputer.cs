@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 using System.Collections.Generic;
 using System.Collections;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 

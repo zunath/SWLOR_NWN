@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.AI
             string sTag = "WP_" + GetTag(oCreature) + "_";
 
             int nNth = 1;
-            NWGameObject oWay;
+            uint oWay;
 
             if (bCrossAreas != 1)
             {
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.AI
         // If it has just become day/night, or if this is
         // the first time we're getting a waypoint, we go
         // to the nearest waypoint in our new set.
-        NWGameObject GetNextWalkWayPoint(NWCreature oCreature)
+        uint GetNextWalkWayPoint(NWCreature oCreature)
         {
             string sPrefix = "WP_";
 
@@ -195,9 +195,9 @@ namespace SWLOR.Game.Server.AI
             // Set our current point and return
             SetLocalInt(oCreature, "WP_CUR", nCurWay);
             if (nCurWay == -1)
-                return NWGameObject.OBJECT_INVALID;
+                return _.OBJECT_INVALID;
 
-            NWGameObject oRet = GetLocalObject(oCreature, sPrefix + IntToString(nCurWay));
+            uint oRet = GetLocalObject(oCreature, sPrefix + IntToString(nCurWay));
             return oRet;
         }
 
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.AI
             int nNearest = -1;
             float fDist = 1000000.0F;
 
-            NWGameObject oTmp;
+            uint oTmp;
             float fTmpDist;
             for (i = 1; i <= nNumPoints; i++)
             {
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.AI
         void WalkWayPoints(NWCreature oCreature, int nRun = FALSE, float fPause = 1.0F)
         {
             // * don't interrupt current circuit
-            NWGameObject oNearestEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
+            uint oNearestEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
             int bIsEnemyValid = GetIsObjectValid(oNearestEnemy);
 
             // * if I can see an enemy I should not be trying to walk waypoints
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.AI
                 }
             }
 
-            //int bIsFighting = GetIsFighting(NWGameObject.OBJECT_SELF);
+            //int bIsFighting = GetIsFighting(_.OBJECT_SELF);
             int bIsInConversation = IsInConversation(oCreature);
             int bMoving = GetCurrentAction(oCreature);
             int bWaiting = GetCurrentAction(oCreature);
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.AI
                 SetWalkCondition(NW_WALK_FLAG_INITIALIZED, oCreature);
             }
             // Move to the next waypoint
-            NWGameObject oWay = GetNextWalkWayPoint(oCreature);
+            uint oWay = GetNextWalkWayPoint(oCreature);
             if (GetIsObjectValid(oWay) == TRUE)
             {
                 SetWalkCondition(NW_WALK_FLAG_CONSTANT, oCreature);

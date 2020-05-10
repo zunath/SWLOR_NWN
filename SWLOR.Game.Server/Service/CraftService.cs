@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
             {
-                NWPlayer player = NWGameObject.OBJECT_SELF;
+                NWPlayer player = _.OBJECT_SELF;
                 DialogService.StartConversation(player, player, "ModifyItemAppearance");
             });
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
@@ -213,7 +214,7 @@ namespace SWLOR.Game.Server.Service
             {
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
             });
-            Effect immobilize = _.EffectCutsceneImmobilize();
+            var immobilize = _.EffectCutsceneImmobilize();
             immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, oPC.Object);
 
@@ -548,7 +549,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer pc = NWNXChat.GetSender().Object;
+            NWPlayer pc = NWNXChat.GetSender();
             string newName = NWNXChat.GetMessage();
 
             if (!CanHandleChat(pc))
@@ -581,14 +582,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = NWGameObject.OBJECT_SELF;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            NWPlayer pc = _.OBJECT_SELF;
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
 
-            if (featID != (int)CustomFeatType.RenameCraftedItem) return;
+            if (featID != (int)Feat.RenameCraftedItem) return;
             pc.ClearAllActions();
 
             bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
-            NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget().Object;
+            NWItem renameItem = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             if (isSetting)
             {
@@ -689,7 +690,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaEnter()
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
+            NWArea area = _.OBJECT_SELF;
             string bonuses = GetAreaAtmosphereBonusText(area);
 
             if (string.IsNullOrWhiteSpace(bonuses)) return;

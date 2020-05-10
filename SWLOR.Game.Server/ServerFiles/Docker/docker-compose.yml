@@ -1,42 +1,39 @@
-version: "3.7"
-
+version: '3.7'
 services:
-    mssql:
-        hostname: mssql
-        image: microsoft/mssql-server-linux:2017-latest
-        environment:
-            - SA_PASSWORD=StRoNgP@sSwOrD!
-            - ACCEPT_EULA=Y
-        ports: 
-            - "5434:1433"
-        networks:
-          swlor_network:
-            ipv4_address: 172.22.0.100
-        volumes:
-            - ./mssql:/var/opt/mssql
 
-    swlor-server:
-        hostname: nwnx-server
-        image: nwnxee/unified:latest-full
-        env_file: ${PWD-.}/swlor.env
-        stdin_open: true
-        tty: true
-        depends_on:
-            - mssql
-        volumes:
-            - ${PWD-.}/logs:/nwn/run/logs.0
-            - ${PWD-.}/:/nwn/home
-            - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
-            - ${PWD-.}/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-        ports:
-            - "5121:5121/udp"
-        networks:
-          swlor_network:
-            ipv4_address: 172.22.0.101
-            
+  db:
+    hostname: db
+    image: mariadb:10
+    environment:
+    - MYSQL_ROOT_PASSWORD=rootPass
+    - MYSQL_DATABASE=swlor
+    - MYSQL_USER=server
+    - MYSQL_PASSWORD=serverPassword   
+    restart: unless-stopped
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"     
+    networks:
+      - backend   
+
+  nwserver:
+    hostname: nwserver
+    env_file: ${PWD-.}/swlor.env
+    image: nwnxee/unified:fb08908
+    volumes:
+    - ${PWD-.}/:/nwn/home
+    - ${PWD-.}/logs:/nwn/run/logs.0
+    - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
+    restart: unless-stopped
+    depends_on:
+    - db
+    ports:
+    - '5121:5121/udp'
+    links:
+    - "db:database"
+    networks:
+    - backend
+
 networks:
-    swlor_network:
-        ipam:
-            driver: default
-            config:
-                - subnet: 172.22.0.0/16
+    backend:

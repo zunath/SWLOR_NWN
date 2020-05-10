@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_CIRCLE_KICK);
+            NWNXCreature.RemoveFeat(creature, Feat.CircleKick);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -75,11 +76,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {
-                mainHand = (new NWGameObject());
+                mainHand = _.OBJECT_INVALID;
             }
             else if (unequippingItem != null && Equals(unequippingItem, offHand))
             {
-                offHand = (new NWGameObject());
+                offHand = _.OBJECT_INVALID;
             }
 
             // Main is Martial and off is invalid 
@@ -98,11 +99,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (receivesFeat)
             {
-                NWNXCreature.AddFeat(creature, _.FEAT_CIRCLE_KICK);
+                NWNXCreature.AddFeat(creature, Feat.CircleKick);
             }
             else
             {
-                NWNXCreature.RemoveFeat(creature, _.FEAT_CIRCLE_KICK);
+                NWNXCreature.RemoveFeat(creature, Feat.CircleKick);
             }
         }
         public bool IsHostile()

@@ -7,7 +7,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class ChangeDescription: ConversationBase
+    public class ChangeDescription: ConversationBase
     {
 
         public override PlayerDialog SetUp(NWPlayer player)

@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using static SWLOR.Game.Server.NWN.NWScript;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -16,8 +18,8 @@ namespace SWLOR.Game.Server.NWNX
             QuickBarSlot qbs = new QuickBarSlot
             {
                 ObjectType = type,
-                Item = (new NWGameObject()),
-                SecondaryItem = (new NWGameObject()),
+                Item = OBJECT_INVALID,
+                SecondaryItem = OBJECT_INVALID,
                 MultiClass = 0,
                 Resref = "",
                 CommandLabel = "",
@@ -27,9 +29,9 @@ namespace SWLOR.Game.Server.NWNX
                 MetaType = 0,
                 DomainLevel = 0,
                 AssociateType = 0,
-                Associate = (new NWGameObject())
+                Associate = OBJECT_INVALID
             };
-            
+
             return qbs;
         }
 
@@ -39,7 +41,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oItem"></param>
         /// <param name="nPropertyID"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseItem(NWItem oItem, int nPropertyID)
+        public static QuickBarSlot UseItem(uint oItem, int nPropertyID)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
 
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oItem"></param>
         /// <param name="oSecondaryItem"></param>
         /// <returns></returns>
-        public static QuickBarSlot EquipItem(NWItem oItem, NWItem oSecondaryItem)
+        public static QuickBarSlot EquipItem(uint oItem, uint oSecondaryItem)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
 
@@ -104,11 +106,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="nFeat"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseFeat(int nFeat)
+        public static QuickBarSlot UseFeat(Feat nFeat)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Feat);
 
-            qbs.INTParam1 = nFeat;
+            qbs.INTParam1 = (int)nFeat;
 
             return qbs;
         }
@@ -231,5 +233,5 @@ namespace SWLOR.Game.Server.NWNX
 
             return qbs;
         }
-}
+    }
 }

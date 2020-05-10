@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWPlaceable : NWObject
     {
-        public NWPlaceable(NWGameObject nwnObject) 
+        public NWPlaceable(uint nwnObject) 
             : base(nwnObject)
         {
         }
@@ -48,12 +48,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWPlaceable o)
+        public static implicit operator uint(NWPlaceable o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWPlaceable(NWGameObject o)
+        public static implicit operator NWPlaceable(uint o)
         {
             return new NWPlaceable(o);
         }

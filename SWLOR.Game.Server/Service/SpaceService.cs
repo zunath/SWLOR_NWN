@@ -1143,35 +1143,38 @@ namespace SWLOR.Game.Server.Service
 
                             var itemDetails = LootService.PickRandomItemFromLootTable(encounter.LootTable);
 
-                            var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-                            NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
-
-                            // Guard against invalid resrefs and missing items.
-                            if (!item.IsValid)
+                            if(itemDetails != null)
                             {
-                                Console.WriteLine("ERROR: Could not create salvage item with resref '" + itemDetails.Resref + "'. Is this item valid?");
-                                return;
+                                var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
+                                NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
+
+                                // Guard against invalid resrefs and missing items.
+                                if (!item.IsValid)
+                                {
+                                    Console.WriteLine("ERROR: Could not create salvage item with resref '" + itemDetails.Resref + "'. Is this item valid?");
+                                    return;
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
+                                {
+                                    var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
+                                    rule.Run(item);
+                                }
+
+                                var dbItem = new PCBaseStructureItem
+                                {
+                                    PCBaseStructureID = shipStructure.ID,
+                                    ItemGlobalID = item.GlobalID.ToString(),
+                                    ItemName = item.Name,
+                                    ItemResref = item.Resref,
+                                    ItemTag = item.Tag,
+                                    ItemObject = SerializationService.Serialize(item)
+                                };
+
+                                DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
+                                player.SendMessage(item.Name + " was successfully brought into your cargo bay.");
+                                item.Destroy();
                             }
-
-                            if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
-                            {
-                                var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
-                                rule.Run(item);
-                            }
-
-                            var dbItem = new PCBaseStructureItem
-                            {
-                                PCBaseStructureID = shipStructure.ID,
-                                ItemGlobalID = item.GlobalID.ToString(),
-                                ItemName = item.Name,
-                                ItemResref = item.Resref,
-                                ItemTag = item.Tag,
-                                ItemObject = SerializationService.Serialize(item)
-                            };
-
-                            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
-                            player.SendMessage(item.Name + " was successfully brought into your cargo bay.");
-                            item.Destroy();
                         }
                         else
                         {

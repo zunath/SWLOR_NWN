@@ -45,7 +45,7 @@ void SetDyeName(object oDye, int nColor);
 //
 void SetDyeName(object oDye, int nColor)
 {
-    SetName(oDye, GetName(oDye, TRUE) + " " + IntToString(nColor) +
+    SetName(oDye, GetName(oDye, true) + " " + IntToString(nColor) +
             " (" + GetColorNames(nColor) + ")");
 }
 

@@ -27,7 +27,7 @@
 
 
     // Start cutscene, fade in
-    GestaltStartCutscene    (oPC,"mycutscene",TRUE,TRUE,TRUE,TRUE,2);
+    GestaltStartCutscene    (oPC,"mycutscene",true,true,true,true,2);
 
 
 
@@ -41,8 +41,8 @@
 
 
      object oFan24 = CopyObject(oPC,nLoc10,OBJECT_INVALID,"rivalClone"); //Clone creature in his location
-     effect nEff24 = EffectVisualEffect(560   ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff24,oFan24); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
+     effect nEff24 = EffectVisualEffect(560   ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff24,oFan24); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
      AssignCommand(oFan24,SetFacing(90.0));
     int nSlot;
     object oItem = GetFirstItemInInventory(oFan24);
@@ -51,24 +51,24 @@
         oItem = GetNextItemInInventory(oFan24);
     }
     // Destroy equipped items.
-    for ( nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot )
+    for ( nSlot = 0; nSlot < NWNConstants.NumberOfInventorySlots; ++nSlot )
         DestroyObject(GetItemInSlot(nSlot, oFan24));
 
     // Remove all gold.
-    TakeGoldFromCreature(GetGold(oFan24), oFan24, TRUE);
+    TakeGoldFromCreature(GetGold(oFan24), oFan24, true);
 
 
 
 
      CreateItemOnObject("Robe_Dark",oFan24, 1, "darkRobe");
      object darkRobe = GetItemPossessedBy(oFan24,"darkRobe");
-     AssignCommand(oFan24,ActionEquipItem(darkRobe,INVENTORY_SLOT_CHEST));
+     AssignCommand(oFan24,ActionEquipItem(darkRobe,InventorySlot.Chest));
 
 
 
      CreateItemOnObject("lightsaber_npc_r",oFan24, 1, "lightsaber_b3");
      object lightsaber2 = GetItemPossessedBy(oFan24,"lightsaber_b3");
-     AssignCommand(oFan24,ActionEquipItem(lightsaber2,INVENTORY_SLOT_RIGHTHAND));
+     AssignCommand(oFan24,ActionEquipItem(lightsaber2,InventorySlot.RightHand));
 
      //AssignCommand(oFan10,ActionMoveToObject(oPC, 1, 1.0));
     ChangeToStandardFaction(oFan24,0);
@@ -79,7 +79,7 @@
 
      CreateItemOnObject("lightsaber_b",oPC, 1, "lightsaber_b2");
      object lightsaber = GetItemPossessedBy(oPC,"lightsaber_b2");
-     AssignCommand(oPC,ActionEquipItem(lightsaber,INVENTORY_SLOT_RIGHTHAND));`
+     AssignCommand(oPC,ActionEquipItem(lightsaber,InventorySlot.RightHand));`
 
      MusicBackgroundChangeDay(oArea, 462);
      MusicBackgroundChangeNight(oArea, 462);

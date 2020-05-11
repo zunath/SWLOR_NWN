@@ -16,6 +16,6 @@ void main()
 {
     ExecuteScript("crea_on_userdef", OBJECT_SELF);
 
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_USER_DEFINED_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_USER_DEFINED_EVENT") == true) return;
 }

@@ -120,7 +120,7 @@ reports, whatever.  Send them to me at hahns_shin@hotmail.com.*/
 void FloatyText(string sText, object oPC, int iSettings)
 {
     if (!(iSettings & 0x40000000))
-        FloatingTextStringOnCreature(sText, oPC, FALSE);
+        FloatingTextStringOnCreature(sText, oPC, false);
 }
 
 float GetRestDuration(object oPC)
@@ -136,7 +136,7 @@ void DoRestVFX(object oPC, float fDuration, int nEffect) {
     } else {
         eEffect = EffectVisualEffect(nEffect);
     }
-    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eEffect), oPC, fDuration);
+    ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eEffect), oPC, fDuration);
 }
 
 
@@ -157,9 +157,9 @@ void ApplyRestVFX(object oPC, int iSettings)
     }
     if (!(iSettings & 0x20000000)) //VFX flag
     {
-        // AssignCommand(oRestVFX, ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eBlind), oPC, fDuration));
+        // AssignCommand(oRestVFX, ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eBlind), oPC, fDuration));
         AssignCommand(oRestVFX, DoRestVFX(oPC, fDuration, VFX_DUR_BLACKOUT));
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, eSnore, oPC);
+        ApplyEffectToObject(DurationType.Instant, eSnore, oPC);
     }
 }
 
@@ -185,7 +185,7 @@ int CalculateFinalHitPoints(object oPC, int iSettings)
     {
         case 0x01000000: return 0; break;
         case 0x02000000: return GetHitDice(oPC); break;
-        case 0x03000000: return GetAbilityScore(oPC, ABILITY_CONSTITUTION); break;
+        case 0x03000000: return GetAbilityScore(oPC, Ability.Constitution); break;
         case 0x04000000: return GetMaxHitPoints(oPC)/10; break;
         case 0x05000000: return GetMaxHitPoints(oPC)/4; break;
         case 0x06000000: return GetMaxHitPoints(oPC)/2; break;
@@ -207,7 +207,7 @@ void RemoveMagicalEffects(object oPC)
 }
 
 //This function simulates a rest without restoring spells
-void DoPseudoRest(object oPC, int iSettings, int iSpells = FALSE)
+void DoPseudoRest(object oPC, int iSettings, int iSpells = false)
 {
     effect eSnore = EffectVisualEffect(VFX_IMP_SLEEP);
     effect eBlind = EffectVisualEffect(VFX_DUR_BLACKOUT);
@@ -218,23 +218,23 @@ void DoPseudoRest(object oPC, int iSettings, int iSpells = FALSE)
     if (!iAnimation)
         iAnimation = ANIMATION_LOOPING_SIT_CROSS;
     AssignCommand(oPC, PlayAnimation(iAnimation, 1.0f, fDuration));
-    DelayCommand(0.1, SetCommandable(FALSE, oPC));
-    DelayCommand(fDuration, SetCommandable(TRUE, oPC));
-    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eStop), oPC, fDuration);
+    DelayCommand(0.1, SetCommandable(false, oPC));
+    DelayCommand(fDuration, SetCommandable(true, oPC));
+    ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eStop), oPC, fDuration);
     if (!(iSettings & 0x20000000) && iAnimation != ANIMATION_LOOPING_MEDITATE && iAnimation != ANIMATION_LOOPING_WORSHIP) //If the No VFX flag is not set, do VFX
     {
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, ExtraordinaryEffect(eBlind), oPC, fDuration);
-        ApplyEffectToObject(DURATION_TYPE_INSTANT, eSnore, oPC);
+        ApplyEffectToObject(DurationType.Temporary, ExtraordinaryEffect(eBlind), oPC, fDuration);
+        ApplyEffectToObject(DurationType.Instant, eSnore, oPC);
         while (fSeconds < fDuration)
         {
-            DelayCommand(fSeconds, ApplyEffectToObject(DURATION_TYPE_INSTANT, eSnore, oPC));
+            DelayCommand(fSeconds, ApplyEffectToObject(DurationType.Instant, eSnore, oPC));
             fSeconds += 6.0f;
         }
     }
     if (!iSpells)
     {
         effect eHeal = EffectHeal(CalculateFinalHitPoints(oPC, iSettings)); //Heal the PC
-        DelayCommand(fDuration + 0.1f, ApplyEffectToObject(DURATION_TYPE_INSTANT, eHeal, oPC));
+        DelayCommand(fDuration + 0.1f, ApplyEffectToObject(DurationType.Instant, eHeal, oPC));
         DelayCommand(fDuration + 0.1f, RemoveMagicalEffects(oPC)); //Remove all magical effects from PC
     }
     else
@@ -248,20 +248,20 @@ void DoPseudoRest(object oPC, int iSettings, int iSpells = FALSE)
 int GetIsWearingHeavyArmor(object oPC, int iSettings)
 {
     int iArmor = (iSettings & 0x00f00000);
-    object oArmor = GetItemInSlot(INVENTORY_SLOT_CHEST, oPC);
+    object oArmor = GetItemInSlot(InventorySlot.Chest, oPC);
     int iWeight = GetWeight(oArmor);
     switch(iArmor)
     {
         default:
-        case 0x00100000: if (iWeight > 20) return TRUE; break;
-        case 0x00200000: if (iWeight > 60) return TRUE; break;
-        case 0x00300000: if (iWeight > 110) return TRUE; break;
-        case 0x00400000: if (iWeight > 160) return TRUE; break;
-        case 0x00500000: if (iWeight > 310) return TRUE; break;
-        case 0x00600000: if (iWeight > 410) return TRUE; break;
-        case 0x00700000: if (iWeight > 460) return TRUE; break;
+        case 0x00100000: if (iWeight > 20) return true; break;
+        case 0x00200000: if (iWeight > 60) return true; break;
+        case 0x00300000: if (iWeight > 110) return true; break;
+        case 0x00400000: if (iWeight > 160) return true; break;
+        case 0x00500000: if (iWeight > 310) return true; break;
+        case 0x00600000: if (iWeight > 410) return true; break;
+        case 0x00700000: if (iWeight > 460) return true; break;
     }
-    return FALSE;
+    return false;
 }
 
 //This function determines if the PC is near a resting placeable
@@ -270,34 +270,34 @@ int GetIsNearRestingObject(object oPC, int iSettings)
     if (iSettings & 0x00020000) //Ignore Druid
     {
         if (GetLevelByClass(CLASS_TYPE_DRUID, oPC))
-            return TRUE;
+            return true;
     }
     if (iSettings & 0x00040000) //Ignore Ranger
     {
         if (GetLevelByClass(CLASS_TYPE_RANGER, oPC))
-            return TRUE;
+            return true;
     }
     if (iSettings & 0x00080000) //Ignore Barb
     {
         if (GetLevelByClass(CLASS_TYPE_BARBARIAN, oPC))
-            return TRUE;
+            return true;
     }
-    object oPlaceable = GetFirstObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), TRUE, OBJECT_TYPE_PLACEABLE);
+    object oPlaceable = GetFirstObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
     while (GetIsObjectValid(oPlaceable))
     {
         if (!(iSettings & 0x00001000) && GetTag(oPlaceable) == "dmfi_rest") //DMFI Placeables: by default, ON
-            return TRUE;
+            return true;
         if ((iSettings & 0x00002000) && GetStringLowerCase(GetName(oPlaceable)) == "campfire") //Campfires
-            return TRUE;
+            return true;
         if ((iSettings & 0x00004000) && (GetStringLowerCase(GetName(oPlaceable)) == "bed roll" || GetStringLowerCase(GetName(oPlaceable)) == "bedroll")) //Bed rolls
-            return TRUE;
+            return true;
         if ((iSettings & 0x00008000) && GetStringLowerCase(GetName(oPlaceable)) == "bed") //beds
-            return TRUE;
+            return true;
         if ((iSettings & 0x00010000) && GetStringLowerCase(GetName(oPlaceable)) == "tent") //tents
-            return TRUE;
-        oPlaceable = GetNextObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), TRUE, OBJECT_TYPE_PLACEABLE);
+            return true;
+        oPlaceable = GetNextObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
     }
-    return FALSE;
+    return false;
 }
 
 // Updated to allow 6 hour breaks and to pass in a percentage if rest is interrupted
@@ -326,18 +326,18 @@ void SetNextRestTime(object oPC, int iSettings, float fPercentage = 1.0)
 //This function determines whether or not you can rest.
 int DMFI_CanIRest(object oPC, int iSettings)
 {
-    if (GetIsDM(oPC)) return TRUE;
+    if (GetIsDM(oPC)) return true;
     if (iSettings & 0x00000002) //No Rest Override
     {
         if (iSettings & 0x00000080)
             FloatyText("This is a No Rest area", oPC, iSettings);
-        return FALSE;
+        return false;
     }
     if (!(iSettings & 0x00000001)) //Unlimited Rest Override
     {
         if (iSettings & 0x00000080)
             FloatyText("This is an Unlimited Rest area", oPC, iSettings);
-        return TRUE;
+        return true;
     }
     if ((iSettings & 0x00000004) && (iSettings & 0x00000001)) //Time restriction
     {
@@ -345,7 +345,7 @@ int DMFI_CanIRest(object oPC, int iSettings)
         if (iTime < GetLocalInt(oPC, "dmfi_r_nextrest"))
         {
             FloatyText("You cannot rest at this time. You may rest again in " + IntToString(GetLocalInt(oPC, "dmfi_r_nextrest") - iTime) + " hours.", oPC, iSettings);
-            return FALSE;
+            return false;
         }
     }
     if ((iSettings & 0x00000008) && (iSettings & 0x00000001)) //Placeable restriction
@@ -353,7 +353,7 @@ int DMFI_CanIRest(object oPC, int iSettings)
         if (!GetIsNearRestingObject(oPC, iSettings))
         {
             FloatyText("You are not near a rest placeable", oPC, iSettings);
-            return FALSE;
+            return false;
         }
     }
     if ((iSettings & 0x00000010) && (iSettings & 0x00000001)) //Armor restriction
@@ -361,10 +361,10 @@ int DMFI_CanIRest(object oPC, int iSettings)
         if (GetIsWearingHeavyArmor(oPC, iSettings))
         {
             FloatyText("Your current armor is too heavy to rest", oPC, iSettings);
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }
 
 void main()
@@ -392,7 +392,7 @@ void main()
         { //If the Rest Conversation variable is set, then activate the rest conversation here.
             AssignCommand(oPC, ClearAllActions());
             SetLocalString(oPC, "dmfi_univ_conv", "rest");
-            AssignCommand(oPC, ActionStartConversation(oPC, "dmfi_universal", TRUE));
+            AssignCommand(oPC, ActionStartConversation(oPC, "dmfi_universal", true));
             return;
         }
         if (GetLocalInt(oPC, "dmfi_norest")) //PC cannot rest
@@ -435,12 +435,12 @@ void main()
             float fPercentage = IntToFloat(nTimeRested) / IntToFloat(nFullTime);
             SetNextRestTime(oPC, iSettings, fPercentage);
             // SendMessageToPC(oPC, "Rest interrupted; resting for " + IntToString(nTimeRested) + " out of " + IntToString(nFullTime) + " seconds (" + FloatToString(fPercentage) + "%).");
-            SetLocalInt(oPC, "dmfi_r_init", FALSE);
+            SetLocalInt(oPC, "dmfi_r_init", false);
             if ((iSettings & 0x00000020) && GetCurrentHitPoints(oPC) > GetLocalInt(oPC, "dmfi_r_hitpoints") && iSettings & 0x00000001) //HP restriction
             {
                 effect eDam = EffectDamage(GetMaxHitPoints(oPC) - GetLocalInt(oPC, "dmfi_r_hitpoints"));
                 FloatyText("Your hitpoints have been reset",oPC, iSettings);
-                AssignCommand(oPC, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDam, oPC));
+                AssignCommand(oPC, ApplyEffectToObject(DurationType.Instant, eDam, oPC));
 
             }
         }
@@ -455,7 +455,7 @@ void main()
             {
                 effect eDam = EffectDamage(iDam);
                 FloatyText("You gain back limited HP from this rest",oPC, iSettings);
-                AssignCommand(oPC, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDam, oPC));
+                AssignCommand(oPC, ApplyEffectToObject(DurationType.Instant, eDam, oPC));
             }
         }
     }

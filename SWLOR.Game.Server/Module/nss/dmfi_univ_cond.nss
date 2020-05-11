@@ -143,7 +143,7 @@ void SetRestTokens(object oPC)
                 !(GetLevelByClass(CLASS_TYPE_RANGER, oPC) && (iSettings & 0x00040000)) ||
                 !(GetLevelByClass(CLASS_TYPE_BARBARIAN, oPC) && (iSettings & 0x00080000)))
             {
-                object oPlaceable = GetFirstObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), TRUE, OBJECT_TYPE_PLACEABLE);
+                object oPlaceable = GetFirstObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
                 int iBreak = 0;
                 while (GetIsObjectValid(oPlaceable) && !iBreak)
                 {
@@ -157,7 +157,7 @@ void SetRestTokens(object oPC)
                         iBreak = 1;
                     if ((iSettings & 0x00010000) && GetStringLowerCase(GetName(oPlaceable)) == "tent") //tents
                         iBreak = 1;
-                    oPlaceable = GetNextObjectInShape(SHAPE_SPHERE, 6.0f, GetLocation(oPC), TRUE, OBJECT_TYPE_PLACEABLE);
+                    oPlaceable = GetNextObjectInShape(Shape.Sphere, 6.0f, GetLocation(oPC), true, ObjectType.Placeable);
                 }
                 if (!iBreak)
                 {
@@ -168,7 +168,7 @@ void SetRestTokens(object oPC)
         if ((iSettings & 0x00000010) && iSettings & 0x00000001)//Armor
         {
             int iArmor = (iSettings & 0x00f00000);
-            object oArmor = GetItemInSlot(INVENTORY_SLOT_CHEST, oPC);
+            object oArmor = GetItemInSlot(InventorySlot.Chest, oPC);
             int iWeight = GetWeight(oArmor);
             switch(iArmor)
             {
@@ -189,7 +189,7 @@ void SetRestTokens(object oPC)
             {
                 case 0x01000000: sRest = sRest + "0 HP"; break;
                 case 0x02000000: sRest = sRest + IntToString(GetHitDice(oPC)) + " HP"; break;
-                case 0x03000000: sRest = sRest + IntToString(GetAbilityScore(oPC, ABILITY_CONSTITUTION)) + " HP"; break;
+                case 0x03000000: sRest = sRest + IntToString(GetAbilityScore(oPC, Ability.Constitution)) + " HP"; break;
                 case 0x04000000: sRest = sRest + IntToString(GetMaxHitPoints(oPC)/10) + " HP"; break;
                 case 0x05000000: sRest = sRest + IntToString(GetMaxHitPoints(oPC)/4) + " HP"; break;
                 case 0x06000000: sRest = sRest + IntToString(GetMaxHitPoints(oPC)/2) + " HP"; break;
@@ -216,23 +216,23 @@ int StartingConditional()
     SetLocalInt(oPC, "dmfi_univ_offset", iOffset);
 
     if (sOffset == "afflict" && iOffset==1)
-        return TRUE;
+        return true;
     else if (sOffset == "pc_emote" && iOffset==2)
-        return TRUE;
+        return true;
     else if (sOffset == "emote" && iOffset==2)
-        return TRUE;
+        return true;
     else if (sOffset == "encounter" && iOffset==3)
-        return TRUE;
+        return true;
     else if (sOffset == "fx" && iOffset==4)
-        return TRUE;
+        return true;
     else if (sOffset == "music" && iOffset==5)
-        return TRUE;
+        return true;
     else if (sOffset == "sound" && iOffset==6)
-        return TRUE;
+        return true;
     else if (sOffset == "xp" && iOffset==7)
-        return TRUE;
+        return true;
     else if (sOffset == "onering" && iOffset==8)
-        return TRUE;
+        return true;
     else if (sOffset == "pc_dicebag" && iOffset==9)
     {
         SetLocalInt(oPC, "dmfi_univ_offset", 8);
@@ -246,7 +246,7 @@ int StartingConditional()
         else if (GetLocalInt(oPC, "dmfi_dicebag")==3)
                 SetCustomToken(20681, "DM Only");
 
-        return TRUE;
+        return true;
     }
     else if (sOffset == "dicebag" && iOffset==10)
     {
@@ -264,7 +264,7 @@ int StartingConditional()
         string sName = GetName(GetLocalObject(oPC, "dmfi_univ_target"));
         SetCustomToken(20680, sName);
 
-        return TRUE;
+        return true;
     }
     else if (sOffset == "voice" &&
         GetIsObjectValid(GetLocalObject(oPC, "dmfi_univ_target")) &&
@@ -277,7 +277,7 @@ int StartingConditional()
         int hookparty = GetLocalInt(oPC, "dmfi_MyListenerPartyMode");
         if (hookparty == 0) SetCustomToken(20681, "*Single* / Party");
         else SetCustomToken(20681, "Single / *Party*");
-        return TRUE;
+        return true;
     }
     else if (sOffset == "voice" &&
         !GetIsObjectValid(GetLocalObject(oPC, "dmfi_univ_target")) &&
@@ -290,7 +290,7 @@ int StartingConditional()
         if (hookparty == 0) SetCustomToken(20681, "*Earshot* / Area / Module");
         else if (hookparty == 1) SetCustomToken(20681, "Earshot / *Area* / Module");
         else SetCustomToken(20681, "Earshot / Area / *Module*");
-        return TRUE;
+        return true;
     }
     else if (sOffset == "voice" &&
         GetIsObjectValid(GetLocalObject(oPC, "dmfi_univ_target")) &&
@@ -303,7 +303,7 @@ int StartingConditional()
         int hookbcast = GetLocalInt(oPC, "dmfi_MyListenerBcastMode");
         if (hookbcast == 0) SetCustomToken(20681, "*Self* / All DMs");
         else SetCustomToken(20681, "Self / *All DMs*");
-        return TRUE;
+        return true;
     }
     else if (sOffset == "faction" && iOffset==14)
     {
@@ -322,12 +322,12 @@ int StartingConditional()
         SetCustomToken(20784, FloatToString(GetLocalFloat(oPC, "dmfi_reputation")));
         sName = GetName(GetLocalObject(oPC, "dmfi_univ_target"));
         SetCustomToken(20680, sName);
-        return TRUE;
+        return true;
     }
     else if (sOffset == "dmw" && iOffset ==15)
     {
         SetCustomToken(20781, IntToString(GetLocalInt(oPC, "dmfi_alignshift")));
-        return TRUE;
+        return true;
     }
     else if (sOffset == "buff" && iOffset ==16)
     {
@@ -336,28 +336,28 @@ int StartingConditional()
         else
             SetCustomToken(20783, "Party");
         SetCustomToken(20782, GetLocalString(oPC, "dmfi_buff_level"));
-        return TRUE;
+        return true;
     }
     else if (sOffset == "rest" && iOffset == 17 && !GetIsDM(oPC) && GetLocalInt(oPC, "dmfi_norest")) //This is the case of a No-Rest situation
     {
         SetRestTokens(oPC);
-        return TRUE;
+        return true;
     }
     else if (sOffset == "rest" && iOffset == 18 && !GetIsDM(oPC) && !GetLocalInt(oPC, "dmfi_norest")) //This is the case of a Rest situation
     {
         SetRestTokens(oPC);
-        return TRUE;
+        return true;
     }
     else if (sOffset == "rest" && iOffset == 19 && GetIsDM(oPC)) //This is the case of a DM activating the rest menu
     {
         SetRestTokens(oPC);
-        return TRUE;
+        return true;
     }
     else if (sOffset == "naming" && iOffset==20)
     {
         string sName = GetName(GetLocalObject(oPC, "dmfi_univ_target"));
         SetCustomToken(20680, sName);
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }

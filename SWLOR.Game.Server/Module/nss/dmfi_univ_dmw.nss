@@ -8,29 +8,29 @@ location lMyLoc = GetLocalLocation(oMySpeaker, "dmfi_univ_location");
 
 int dmwand_isnearbydestroyable()
 {
-   object oMyTest = GetFirstObjectInShape(SHAPE_CUBE, 0.6, lMyLoc, FALSE, OBJECT_TYPE_ALL);
+   object oMyTest = GetFirstObjectInShape(SHAPE_CUBE, 0.6, lMyLoc, false, OBJECT_TYPE_ALL);
    int nTargetType = GetObjectType(oMyTest);
-   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == OBJECT_TYPE_PLACEABLE) || (nTargetType == OBJECT_TYPE_CREATURE)));
+   return (GetIsObjectValid(oMyTest) && (! GetIsPC(oMyTest)) && ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature)));
 }
 
 int dmwand_istargetcreateable()
 {
-   if(! GetIsObjectValid(oMyTarget)) { return FALSE; }
+   if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
-   return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == OBJECT_TYPE_PLACEABLE) || (nTargetType == OBJECT_TYPE_CREATURE));
+   return ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
 }
 
 int dmwand_istargetdestroyable()
 {
-   if(! GetIsObjectValid(oMyTarget)) { return FALSE; }
+   if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
    if(! GetIsPC(oMyTarget))
    {
-      return ((nTargetType == OBJECT_TYPE_ITEM) || (nTargetType == OBJECT_TYPE_PLACEABLE) || (nTargetType == OBJECT_TYPE_CREATURE));
+      return ((nTargetType == ObjectType.Item) || (nTargetType == ObjectType.Placeable) || (nTargetType == ObjectType.Creature));
    }
-   return FALSE;
+   return false;
 }
 
 int dmwand_istargetinvalid()
@@ -50,7 +50,7 @@ int dmwand_istargetnotme()
 
 int dmwand_istargetpcornpc()
 {
-   return (GetIsObjectValid(oMyTarget) && GetAbilityScore(oMyTarget, ABILITY_CONSTITUTION));
+   return (GetIsObjectValid(oMyTarget) && GetAbilityScore(oMyTarget, Ability.Constitution));
 }
 
 int dmwand_istargetnpc()
@@ -75,10 +75,10 @@ int dmwand_istargetpcornpcnme()
 
 int dmwand_istargetplaceable()
 {
-   if(! GetIsObjectValid(oMyTarget)) { return FALSE; }
+   if(! GetIsObjectValid(oMyTarget)) { return false; }
 
    int nTargetType = GetObjectType(oMyTarget);
-   return (nTargetType == OBJECT_TYPE_PLACEABLE);
+   return (nTargetType == ObjectType.Placeable);
 }
 
 int dmw_conv_Start(int nCurrent, int nChoice, string sParams = "")
@@ -182,7 +182,7 @@ int dmwand_BuildConversationDialog(int nCurrent, int nChoice, string sConversati
    {
       return dmw_conv_Start(nCurrent, nChoice, sParams);
    }
-   return FALSE;
+   return false;
 }
 
 void dmwand_BuildConversation(string sConversation, string sParams)
@@ -322,13 +322,13 @@ int StartingConditional()
 
    if(sMyString == "")
    {
-      return FALSE;
+      return false;
    }
    else if (GetLocalString(oPC, "dmfi_univ_conv") == "server")
    {
       SetCustomToken(DMW_START_CUSTOM_TOKEN + nMyNum, sMyString);
-      return TRUE;
+      return true;
    }
    else
-    return FALSE;
+    return false;
 }

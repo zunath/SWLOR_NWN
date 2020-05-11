@@ -67,18 +67,18 @@ int GetApprArmorColorFromSpellID(int nID)
 void FinishDyeScript(object oPC, object oTarget, int bEquipped, int nSlot)
 {
     // Move the armor back from the IP Container
-    object oNew = CopyItem(oTarget, oPC, TRUE);
+    object oNew = CopyItem(oTarget, oPC, true);
     DestroyObject(oTarget);
 
     //----------------------------------------------------------------------------
     // We need to remove all temporary item properties here
     //----------------------------------------------------------------------------
-    IPRemoveAllItemProperties(oNew,DURATION_TYPE_TEMPORARY);
+    IPRemoveAllItemProperties(oNew,DurationType.Temporary);
 
     // Reequip armor if it was equipped before
     if (bEquipped)
     {
-        AssignCommand(oPC,ClearAllActions(TRUE));
+        AssignCommand(oPC,ClearAllActions(true));
         AssignCommand(oPC,ActionEquipItem(oNew,nSlot));
     }
 }
@@ -100,7 +100,7 @@ void main()
         return;
     }
 
-    if ( GetObjectType(oTarget) != OBJECT_TYPE_ITEM  ||  oTarget ==  OBJECT_INVALID )
+    if ( GetObjectType(oTarget) != ObjectType.Item  ||  oTarget ==  OBJECT_INVALID )
     {
         FloatingTextStrRefOnCreature(83353,oPC);         //"Invalid Target, must select armor or helmet"
         return;
@@ -108,7 +108,7 @@ void main()
 
     int nBase = GetBaseItemType(oTarget);
     // GZ@2006/03/26: Added cloak support
-    if ( nBase != BASE_ITEM_ARMOR  &&  nBase != BASE_ITEM_HELMET  &&  nBase != BASE_ITEM_CLOAK )
+    if ( nBase != BaseItemType.Armor  &&  nBase != BaseItemType.Helmet  &&  nBase != BaseItemType.Cloak )
     {
         FloatingTextStrRefOnCreature(83353,oPC);    //"Invalid Target, must select armor or helmet"
         return;
@@ -124,20 +124,20 @@ void main()
     // save if the item was equipped before the process
     int bEquipped;
     int nSlot;
-    if ( nBase == BASE_ITEM_HELMET )
+    if ( nBase == BaseItemType.Helmet )
     {
-        nSlot = INVENTORY_SLOT_HEAD;
+        nSlot = InventorySlot.Head;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
     // GZ@2006/03/26: Added cloak support
-    else if (nBase == BASE_ITEM_CLOAK )
+    else if (nBase == BaseItemType.Cloak )
     {
-        nSlot = INVENTORY_SLOT_CLOAK;
+        nSlot = InventorySlot.Cloak;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
     else
     {
-        nSlot = INVENTORY_SLOT_CHEST;
+        nSlot = InventorySlot.Chest;
         bEquipped = (GetItemInSlot(nSlot,oPC) == oTarget);
     }
 
@@ -152,7 +152,7 @@ void main()
     {
         // Set the local variable to the target's color.
         SetLocalInt(oItem, "DYE_INDEX",
-            GetItemAppearance(oTarget, ITEM_APPR_TYPE_ARMOR_COLOR, nColorType));
+            GetItemAppearance(oTarget, ItemApprType.ArmorColor, nColorType));
         // Run the item-specific script.
         ExecuteScript(GetLocalString(oItem, "DYE_POSTSAMPLE_HANDLER"), oItem);
         // Done. Do not continue.
@@ -182,7 +182,7 @@ void main()
 
 
     // move the item into the IP work container
-    object oNew = CopyItem(oTarget, IPGetIPWorkContainer(), TRUE);
+    object oNew = CopyItem(oTarget, IPGetIPWorkContainer(), true);
 
     DestroyObject(oTarget);
 

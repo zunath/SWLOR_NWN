@@ -12,11 +12,11 @@ int StartingConditional()
 
    if(sMyString == "")
    {
-      return FALSE;
+      return false;
    }
    else
    {
       SetCustomToken(8000 + nMyNum, sMyString);
-      return TRUE;
+      return true;
    }
 }

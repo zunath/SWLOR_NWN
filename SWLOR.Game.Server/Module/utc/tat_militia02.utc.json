@@ -321,10 +321,6 @@
     "type": "byte",
     "value": 0
   },
-  "ItemList": {
-    "type": "list",
-    "value": []
-  },
   "LastName": {
     "type": "cexolocstring",
     "value": {

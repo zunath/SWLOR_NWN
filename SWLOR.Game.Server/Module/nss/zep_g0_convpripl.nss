@@ -22,5 +22,5 @@
 
 void main()
 {
-    ActionStartConversation(GetLastUsedBy(), "", TRUE, FALSE);
+    ActionStartConversation(GetLastUsedBy(), "", true, false);
 }

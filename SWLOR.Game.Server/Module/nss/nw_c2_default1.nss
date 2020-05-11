@@ -23,8 +23,8 @@ void main()
 {
     ExecuteScript("crea_on_hb", OBJECT_SELF);
 
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_HEARTBEAT_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_HEARTBEAT_EVENT") == true) return;
 
     // * if not runnning normal or better Ai then exit for performance reasons
     if (GetAILevel() == AI_LEVEL_VERY_LOW) return;
@@ -32,14 +32,14 @@ void main()
     // Buff ourselves up right away if we should
     if(GetSpawnInCondition(NW_FLAG_FAST_BUFF_ENEMY))
     {
-        // This will return TRUE if an enemy was within 40.0 m
+        // This will return true if an enemy was within 40.0 m
         // and we buffed ourselves up instantly to respond --
         // simulates a spellcaster with protections enabled
         // already.
         if(TalentAdvancedBuff(40.0))
         {
             // This is a one-shot deal
-            SetSpawnInCondition(NW_FLAG_FAST_BUFF_ENEMY, FALSE);
+            SetSpawnInCondition(NW_FLAG_FAST_BUFF_ENEMY, false);
 
             // This return means we skip sending the user-defined
             // heartbeat signal in this one case.
@@ -59,7 +59,7 @@ void main()
             effect eVis = EffectVisualEffect(VFX_IMP_SLEEP);
             if(d10() > 6)
             {
-                ApplyEffectToObject(DURATION_TYPE_INSTANT, eVis, OBJECT_SELF);
+                ApplyEffectToObject(DurationType.Instant, eVis, OBJECT_SELF);
             }
         }
     }

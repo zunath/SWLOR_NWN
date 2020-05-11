@@ -23,11 +23,11 @@ void main()
     {
         SetListenPattern(OBJECT_SELF, "**", LISTEN_PATTERN); //listen to all text
         SetLocalInt(OBJECT_SELF, "hls_Listening", 1); //listen to all text
-        SetListening(OBJECT_SELF, TRUE);      //be sure NPC is listening
+        SetListening(OBJECT_SELF, true);      //be sure NPC is listening
 
         //leave it here rather than add the one time loop to EVERY creature through a OS script change
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), OBJECT_SELF);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), OBJECT_SELF);
+        ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), OBJECT_SELF);
+        ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), OBJECT_SELF);
         SetLocalInt(OBJECT_SELF, "hls_invis",1);
     }
 
@@ -35,12 +35,12 @@ void main()
         {
         if (GetArea(oFollow)==GetArea(OBJECT_SELF))
             {
-            AssignCommand(OBJECT_SELF, ClearAllActions(TRUE));
+            AssignCommand(OBJECT_SELF, ClearAllActions(true));
             AssignCommand(OBJECT_SELF, ActionForceFollowObject(oFollow));
             }
             else
             {
-            AssignCommand(OBJECT_SELF, ClearAllActions(TRUE));
+            AssignCommand(OBJECT_SELF, ClearAllActions(true));
             AssignCommand(OBJECT_SELF, ActionJumpToObject(oFollow));
             AssignCommand(OBJECT_SELF, ActionForceFollowObject(oFollow));
             }
@@ -50,7 +50,7 @@ void main()
         return;
 
     // If in loiter mode, look for a PC and make the announcement when appropraite
-    object oPC = GetFirstObjectInShape(SHAPE_SPHERE, 10.0f, GetLocation(OBJECT_SELF), TRUE);
+    object oPC = GetFirstObjectInShape(Shape.Sphere, 10.0f, GetLocation(OBJECT_SELF), true);
     while(GetIsObjectValid(oPC))
     {
         if (GetIsPC(oPC) &&
@@ -60,6 +60,6 @@ void main()
                 SpeakString(GetLocalString(OBJECT_SELF, "dmfi_LoiterSay"));
                 DestroyObject(OBJECT_SELF);
             }
-        oPC = GetNextObjectInShape(SHAPE_SPHERE, 10.0f, GetLocation(OBJECT_SELF), TRUE);
+        oPC = GetNextObjectInShape(Shape.Sphere, 10.0f, GetLocation(OBJECT_SELF), true);
     }
 }

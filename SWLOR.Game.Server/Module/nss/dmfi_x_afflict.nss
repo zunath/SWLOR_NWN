@@ -31,12 +31,12 @@ object DMFI_NextTarget(object oTarget, object oUser)
 //DMFI Creates the "settings" creature
 void CreateSetting(object oUser)
 {
-    object oSetting = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_setting", GetLocation(oUser));
+    object oSetting = CreateObject(ObjectType.Creature, "dmfi_setting", GetLocation(oUser));
     DelayCommand(0.5f, AssignCommand(oSetting, ActionSpeakString(GetLocalString(oUser, "EffectSetting") + " is currently set at " + FloatToString(GetLocalFloat(oUser, GetLocalString(oUser, "EffectSetting"))))));
     SetLocalObject(oSetting, "MyMaster", oUser);
     SetListenPattern(oSetting, "**", LISTEN_PATTERN); //listen to all text
     SetLocalInt(oSetting, "hls_Listening", 1); //listen to all text
-    SetListening(oSetting, TRUE);          //be sure NPC is listening
+    SetListening(oSetting, true);          //be sure NPC is listening
 }
 
 //This function is for the DMFI Affliction Wand
@@ -111,13 +111,13 @@ void ReportImmunity(object oT, object oUser)
 
 void CheckForEffect(effect eA, object oT, object oUser)
 {
-    int Result = FALSE;
+    int Result = false;
     effect Check = GetFirstEffect(oT);
 
     while (GetIsEffectValid(Check))
     {
         if (Check == eA)
-            Result = TRUE;
+            Result = true;
 
         Check = GetNextEffect(oT);
     }
@@ -148,10 +148,10 @@ void main()
 
     nSaveAmount = FloatToInt(fSaveAmount);
 
-    if (!(GetObjectType(oTarget) == OBJECT_TYPE_CREATURE) ||
+    if (!(GetObjectType(oTarget) == ObjectType.Creature) ||
         GetIsDM(oTarget))
     {
-        FloatingTextStringOnCreature("You must target a valid creature!", oUser, FALSE);
+        FloatingTextStringOnCreature("You must target a valid creature!", oUser, false);
         return;
     }
     switch(iAfflict)
@@ -222,7 +222,7 @@ void main()
         case 69: eD = EffectDamage( GetCurrentHitPoints(oTarget)-1, DAMAGE_TYPE_MAGICAL, DAMAGE_POWER_NORMAL);
                  AssignCommand( oTarget, ClearAllActions());
                  AssignCommand( oTarget, ActionPlayAnimation( ANIMATION_LOOPING_DEAD_FRONT, 1.0, 99999.0));
-                 DelayCommand(0.5, SetCommandable( FALSE, oTarget)); break;
+                 DelayCommand(0.5, SetCommandable( false, oTarget)); break;
         case 71: eA = EffectCutsceneDominated();break;
         case 72: eA = EffectCutsceneGhost(); break;
         case 73: eA = EffectCutsceneImmobilize(); break;
@@ -276,7 +276,7 @@ void main()
                     RemoveEffect(oTarget, eEffect);
                     eEffect = GetNextEffect(oTarget);
                  } break;
-        case 89: SetCommandable(TRUE, oTarget);
+        case 89: SetCommandable(true, oTarget);
                  AssignCommand(oTarget, ClearAllActions()); break;
         case 80: eEffect = GetFirstEffect(oTarget);
                  while (GetIsEffectValid(eEffect))
@@ -333,19 +333,19 @@ void main()
     if ((GetEffectType(eD)!= EFFECT_TYPE_INVALIDEFFECT) ||
     (GetEffectType(eVis) != EFFECT_TYPE_INVALIDEFFECT))
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eD, oTarget);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eVis, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eD, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eVis, oTarget);
         return;
     }
     if (GetEffectType(eA)!= EFFECT_TYPE_INVALIDEFFECT)
     {
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eA, oTarget);
+        ApplyEffectToObject(DurationType.Permanent, eA, oTarget);
         DelayCommand(5.0, CheckForEffect(eA, oTarget, oUser));
         return;
     }
     if ((GetEffectType(eT)!= EFFECT_TYPE_INVALIDEFFECT) || (nBug ==1))
     {
-        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eT, oTarget, fDuration);
+        ApplyEffectToObject(DurationType.Temporary, eT, oTarget, fDuration);
 
         if ((GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_INCREASE) ||
         (GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_DECREASE))
@@ -357,20 +357,20 @@ void main()
     }
     if (nBug == -1)
     {
-        object oFollowMe = GetFirstFactionMember(oTarget, TRUE);
+        object oFollowMe = GetFirstFactionMember(oTarget, true);
 
         if (!GetIsObjectValid(oFollowMe))
-            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 1,CREATURE_TYPE_IS_ALIVE, TRUE);
+            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 1,CREATURE_TYPE_IS_ALIVE, true);
 
         if (GetIsDM(oFollowMe) || GetIsDMPossessed(oFollowMe))
-            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 2,CREATURE_TYPE_IS_ALIVE, TRUE);
+            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 2,CREATURE_TYPE_IS_ALIVE, true);
 
         if (!GetIsObjectValid(oFollowMe))
             oFollowMe = oUser;
 
-        AssignCommand(oFollowMe, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneDominated(), oTarget));
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), oTarget);
-        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
+        AssignCommand(oFollowMe, ApplyEffectToObject(DurationType.Permanent, EffectCutsceneDominated(), oTarget));
+        ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), oTarget);
+        ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
     }
 
     return;

@@ -279,7 +279,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -2.331648826599121
+                "value": -2.331648349761963
               },
               "X": {
                 "type": "float",
@@ -567,7 +567,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.4171332716941834
+          "value": -0.4171332120895386
         },
         "BodyBag": {
           "type": "byte",
@@ -1469,7 +1469,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141590356826782
+          "value": -3.141589879989624
         },
         "BodyBag": {
           "type": "byte",
@@ -3584,7 +3584,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.0980171337723732
+          "value": 0.0980173721909523
         },
         "YPosition": {
           "type": "float",
@@ -3742,7 +3742,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.04906750097870827
+          "value": -0.04906726256012917
         },
         "YPosition": {
           "type": "float",

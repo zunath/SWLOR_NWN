@@ -30,15 +30,15 @@
 void main()
 {
     ExecuteScript("crea_on_splcast", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_SPELL_CAST_AT_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_SPELL_CAST_AT_EVENT") == true) return;
 
     object oCaster = GetLastSpellCaster();
 
 
     if(GetLastSpellHarmful())
     {
-        SetCommandable(TRUE);
+        SetCommandable(true);
 
         if (!GetLocalInt(GetModule(),"X3_NO_MOUNTED_COMBAT_FEAT"))
         { // set variables on target for mounted combat
@@ -51,10 +51,10 @@ void main()
         // After all, we're all just trying to do our job here
         // if we singe some eyebrow hair, oh well.
         // ------------------------------------------------------------------
-        if (GetFactionEqual(oCaster, OBJECT_SELF) == TRUE)
+        if (GetFactionEqual(oCaster, OBJECT_SELF) == true)
         {
             ClearPersonalReputation(oCaster, OBJECT_SELF);
-            ClearAllActions(TRUE);
+            ClearAllActions(true);
             DelayCommand(1.2, ActionDoCommand(DetermineCombatRound(OBJECT_INVALID)));
             // Send the user-defined event as appropriate
             if(GetSpawnInCondition(NW_FLAG_SPELL_CAST_AT_EVENT))
@@ -64,12 +64,12 @@ void main()
             return;
         }
 
-        int bAttack = TRUE;
+        int bAttack = true;
         // ------------------------------------------------------------------
         // GZ, 2003-Oct-02
         // Try to do something smart if we are subject to an AoE Spell.
         // ------------------------------------------------------------------
-        if (MatchAreaOfEffectSpell(GetLastSpell()) == TRUE)
+        if (MatchAreaOfEffectSpell(GetLastSpell()) == true)
         {
             int nAI = (GetBestAOEBehavior(GetLastSpell())); // from x2_i0_spells
             switch (nAI)
@@ -79,18 +79,18 @@ void main()
                 case X2_SPELL_AOEBEHAVIOR_DISPEL_M:
                 case X2_SPELL_AOEBEHAVIOR_DISPEL_G:
                 case X2_SPELL_AOEBEHAVIOR_DISPEL_C:
-                        bAttack = FALSE;
+                        bAttack = false;
                         ActionCastSpellAtLocation(nAI, GetLocation(OBJECT_SELF));
-                        ActionDoCommand(SetCommandable(TRUE));
-                        SetCommandable(FALSE);
+                        ActionDoCommand(SetCommandable(true));
+                        SetCommandable(false);
                         break;
 
                 case X2_SPELL_AOEBEHAVIOR_FLEE:
                          ClearActions(CLEAR_NW_C2_DEFAULTB_GUSTWIND);
                          oCaster = GetLastSpellCaster();
-                         ActionForceMoveToObject(oCaster, TRUE, 2.0);
+                         ActionForceMoveToObject(oCaster, true, 2.0);
                          DelayCommand(1.2, ActionDoCommand(DetermineCombatRound(oCaster)));
-                         bAttack = FALSE;
+                         bAttack = false;
                          break;
 
                 case X2_SPELL_AOEBEHAVIOR_IGNORE:
@@ -99,9 +99,9 @@ void main()
 
                 case X2_SPELL_AOEBEHAVIOR_GUST:
                         ActionCastSpellAtLocation(SPELL_GUST_OF_WIND, GetLocation(OBJECT_SELF));
-                        ActionDoCommand(SetCommandable(TRUE));
-                        SetCommandable(FALSE);
-                         bAttack = FALSE;
+                        ActionDoCommand(SetCommandable(true));
+                        SetCommandable(false);
+                         bAttack = false;
                         break;
             }
 
@@ -124,7 +124,7 @@ void main()
         }
 
         // We were attacked, so yell for help
-        SetCommandable(TRUE);
+        SetCommandable(true);
         //Shout Attack my target, only works with the On Spawn In setup
         SpeakString("NW_ATTACK_MY_TARGET", TALKVOLUME_SILENT_TALK);
 
@@ -144,7 +144,7 @@ void main()
         // out the nearest enemy, no matter where they are on the level, which
         // is kinda dumb.
         object oEnemy =GetNearestEnemy();
-        if ((GetIsObjectValid(oEnemy) == TRUE) && (GetIsInCombat() == TRUE))
+        if ((GetIsObjectValid(oEnemy) == true) && (GetIsInCombat() == true))
         {
            // SpeakString("keep me in combat");
             DetermineCombatRound(oEnemy);

@@ -9,5 +9,5 @@ void main()
 {
 
 	// Remove some gold from the player
-	TakeGoldFromCreature(5, GetPCSpeaker(), FALSE);
+	TakeGoldFromCreature(5, GetPCSpeaker(), false);
 }

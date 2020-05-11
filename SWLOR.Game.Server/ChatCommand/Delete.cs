@@ -52,7 +52,11 @@ namespace SWLOR.Game.Server.ChatCommand
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
                 _.BootPC(user, "Your character has been deleted.");
-                NWNXAdmin.DeletePlayerCharacter(user, true);
+
+                _.DelayCommand(6.0f, () =>
+                {
+                    NWNXAdmin.DeletePlayerCharacter(user, true);
+                });
 
             }
         }

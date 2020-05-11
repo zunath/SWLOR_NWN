@@ -15,17 +15,17 @@
 void main()
 {
     ExecuteScript("crea_on_convo", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_CONVERSATION_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_CONVERSATION_EVENT") == true) return;
 
     // * if petrified, jump out
-    if (GetHasEffect(EFFECT_TYPE_PETRIFY, OBJECT_SELF) == TRUE)
+    if (GetHasEffect(EFFECT_TYPE_PETRIFY, OBJECT_SELF) == true)
     {
         return;
     }
 
     // * If dead, exit directly.
-    if (GetIsDead(OBJECT_SELF) == TRUE)
+    if (GetIsDead(OBJECT_SELF) == true)
     {
         return;
     }
@@ -67,7 +67,7 @@ void main()
         // * If only charmed then allow conversation
         // * so you can have a better chance of convincing
         // * people of lowering prices
-        if (GetHasEffect(EFFECT_TYPE_CHARMED) == TRUE)
+        if (GetHasEffect(EFFECT_TYPE_CHARMED) == true)
         {
             ClearActions(CLEAR_NW_C2_DEFAULT4_29);
             BeginConversation();

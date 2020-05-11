@@ -44,27 +44,27 @@
 
 
      object oFan = CopyObject(oPC,nLoc,OBJECT_INVALID,"oFan1"); //Clone creature in his location
-     effect nEff = EffectVisualEffect(529 ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff,oFan); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
+     effect nEff = EffectVisualEffect(529 ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff,oFan); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
      CreateItemOnObject("lightsaber_b",oFan, 1, "lightsaber_b2");
      object lightsaber = GetItemPossessedBy(oFan,"lightsaber_b2");
      CreateItemOnObject("HasteJedi2",oFan, 1, "HasteJedi2");
      object haste = GetItemPossessedBy(oFan,"HasteJedi2");
-    AssignCommand(oFan,ActionEquipItem(haste,INVENTORY_SLOT_NECK));
-    AssignCommand(oFan,ActionEquipItem(lightsaber,INVENTORY_SLOT_RIGHTHAND));
+    AssignCommand(oFan,ActionEquipItem(haste,InventorySlot.Neck));
+    AssignCommand(oFan,ActionEquipItem(lightsaber,InventorySlot.RightHand));
      AssignCommand(oFan,SetFacing(0.0));
      SetPlotFlag(oFan,1);
 
 
      object oFan9 = CopyObject(oPC,nLoc9,OBJECT_INVALID,"oFan2"); //Clone creature in his location
-     effect nEff9 = EffectVisualEffect(530 ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff9,oFan9);
+     effect nEff9 = EffectVisualEffect(530 ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff9,oFan9);
      CreateItemOnObject("lightsaber_npc_r",oFan9, 1, "lightsaber_b2");
      object lightsaber2 = GetItemPossessedBy(oFan9,"lightsaber_b2");
      CreateItemOnObject("HasteJedi2",oFan9, 1, "HasteJedi2");
      object haste2 = GetItemPossessedBy(oFan9,"HasteJedi2");
-     AssignCommand(oFan9,ActionEquipItem(haste2,INVENTORY_SLOT_NECK));
-     AssignCommand(oFan9,ActionEquipItem(lightsaber2,INVENTORY_SLOT_RIGHTHAND));
+     AssignCommand(oFan9,ActionEquipItem(haste2,InventorySlot.Neck));
+     AssignCommand(oFan9,ActionEquipItem(lightsaber2,InventorySlot.RightHand));
        AssignCommand(oFan9,SetFacing(180.0));
        SetPlotFlag(oFan9,1);
      AssignCommand(oFan9,ActionAttack(oFan, 0));
@@ -76,58 +76,58 @@
 
 
      object oFan2 = CopyObject(oPC,nLoc2,OBJECT_INVALID,"oFan3"); //Clone creature in his location
-     effect nEff2 = EffectVisualEffect(529 ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff2,oFan2);
+     effect nEff2 = EffectVisualEffect(529 ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff2,oFan2);
        AssignCommand(oFan2,ActionPlayAnimation(9,1.0,10000.0));
        AssignCommand(oFan2,SetFacing(0.0));
             SetPlotFlag(oFan2,1);
 
      object oFan3 = CopyObject(oPC,nLoc3,OBJECT_INVALID,"oFan4"); //Clone creature in his location
-     effect nEff3 = EffectVisualEffect(529 ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff3,oFan3);
+     effect nEff3 = EffectVisualEffect(529 ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff3,oFan3);
        AssignCommand(oFan3,ActionPlayAnimation(9,1.0,10000.0));
        AssignCommand(oFan3,SetFacing(0.0));
             SetPlotFlag(oFan3,1);
 
      object oFan4 = CopyObject(oPC,nLoc4,OBJECT_INVALID,"oFan5"); //Clone creature in his location
-     effect nEff4 = EffectVisualEffect(529 ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff4,oFan4);
+     effect nEff4 = EffectVisualEffect(529 ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff4,oFan4);
        AssignCommand(oFan4,ActionPlayAnimation(9,1.0,10000.0));
        AssignCommand(oFan4,SetFacing(0.0));
             SetPlotFlag(oFan4,1);
 
      // Bad guy spawn
      object oFan5 = CopyObject(oPC,nLoc5,OBJECT_INVALID,"oFan6"); //Clone creature in his location
-     effect nEff5 = EffectVisualEffect(530,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff5,oFan5); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
+     effect nEff5 = EffectVisualEffect(530,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff5,oFan5); //Apply effect in invisible object - this effect NOT VISIBLE, but the sounds and move in screen continue
      AssignCommand(oFan5,ActionPlayAnimation(18,1.0,10000.0));
      AssignCommand(oFan5,SetFacing(0.0));
           SetPlotFlag(oFan5,1);
 
 
      object oFan6 = CopyObject(oPC,nLoc6,OBJECT_INVALID,"oFan7"); //Clone creature in his location
-     effect nEff6 = EffectVisualEffect(530,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff6,oFan6);
+     effect nEff6 = EffectVisualEffect(530,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff6,oFan6);
        AssignCommand(oFan6,ActionPlayAnimation(9,1.0,10000.0));
        AssignCommand(oFan6,SetFacing(180.0));
        SetPlotFlag(oFan6,1);
 
      object oFan7 = CopyObject(oPC,nLoc7,OBJECT_INVALID,"oFan8"); //Clone creature in his location
-     effect nEff7 = EffectVisualEffect(530 ,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff7,oFan7);
+     effect nEff7 = EffectVisualEffect(530 ,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff7,oFan7);
        AssignCommand(oFan7,ActionPlayAnimation(4,1.0,10000.0));
        AssignCommand(oFan7,SetFacing(180.0));
        SetPlotFlag(oFan7,1);
 
      object oFan8 = CopyObject(oPC,nLoc8,OBJECT_INVALID,"oFan9"); //Clone creature in his location
-     effect nEff8 = EffectVisualEffect(530,FALSE); //Make a visual effect
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT,nEff8,oFan8);
+     effect nEff8 = EffectVisualEffect(530,false); //Make a visual effect
+     ApplyEffectToObject(DurationType.Permanent,nEff8,oFan8);
        AssignCommand(oFan8,ActionPlayAnimation(20,1.0,10000.0));
        AssignCommand(oFan8,SetFacing(180.0));
         SetPlotFlag(oFan8,1);
 
      effect eBeam = EffectBeam(73, oFan5, BODY_NODE_HAND);
-     ApplyEffectToObject(DURATION_TYPE_PERMANENT, eBeam, oFan8);
+     ApplyEffectToObject(DurationType.Permanent, eBeam, oFan8);
 
 
       SetPlotFlag(oFan9,1);
@@ -152,7 +152,7 @@
 
 
     // Start cutscene, fade in
-    GestaltStartCutscene    (oPC,"mycutscene",TRUE,TRUE,TRUE,TRUE,2);
+    GestaltStartCutscene    (oPC,"mycutscene",true,true,true,true,2);
     GestaltCameraFade       (0.0,  oPC,   FADE_IN,FADE_SPEED_MEDIUM);
 
 
@@ -175,11 +175,11 @@
 
 
     // Move the NPC towards the player and congratulate him
-    //GestaltActionMove       (5.0,  oFan,  oPC,FALSE,1.0,4.0);
+    //GestaltActionMove       (5.0,  oFan,  oPC,false,1.0,4.0);
 
     //GestaltActionSpeak      (9.0,  oFan,
                             //"That was quite a performance!",
-                            //ANIMATION_LOOPING_GET_MID,2.0);
+                            //Animation.Get_Mid,2.0);
 
 
     // Fade to black and remove the NPC

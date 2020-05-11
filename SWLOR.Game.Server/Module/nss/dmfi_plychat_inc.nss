@@ -61,13 +61,13 @@ void dmfi__init_chathook_data()
 //! \param sChatHandlerScript name of script to invoke on receiving input
 //! \param oScriptRunner object to execute the sChatHandlerScript on
 //! \param maskChannels mask of channels to listen on (defaults to all channels)
-//! \param bListenAll TRUE to listen to all PC speakers everywhere
-//! \param oSpeaker if bListenAll is FALSE, creature to listen to (others will be ignored)
+//! \param bListenAll true to listen to all PC speakers everywhere
+//! \param oSpeaker if bListenAll is false, creature to listen to (others will be ignored)
 //! \param bAutoRemove - automatically unhook this chathook after first use
 //! \return hook handle (needed to remove the hook later); 0 means failed to add the hook
 int DMFI_ChatHookAdd(string sChatHandlerScript, object oScriptRunner = OBJECT_SELF,
-        int maskChannels = -1, int bListenAll = TRUE, object oSpeaker = OBJECT_INVALID,
-        int bAutoRemove = FALSE)
+        int maskChannels = -1, int bListenAll = true, object oSpeaker = OBJECT_INVALID,
+        int bAutoRemove = false)
 {
     dmfi__init_chathook_data();
 
@@ -94,10 +94,10 @@ int DMFI_ChatHookAdd(string sChatHandlerScript, object oScriptRunner = OBJECT_SE
 ////////////////////////////////////////////////////////////////////////
 //! removes a callback function from the OnPlayerChat list.
 //! \param hdlHookIn handle of hook to remove (0 for clean up orphans)
-//! \return TRUE if requested hook found and removed
+//! \return true if requested hook found and removed
 int DMFI_ChatHookRemove(int hdlHookIn)
 {
-    int bRemoved = FALSE;
+    int bRemoved = false;
     int hdlHook;
     int iHook, iHook2;
     object oMod = GetModule();
@@ -120,7 +120,7 @@ int DMFI_ChatHookRemove(int hdlHookIn)
                 SetLocalArrayObject(oMod, DMFI_CHATHOOK_SPEAKER_ARRAYNAME, iHook2, GetLocalArrayObject(oMod, DMFI_CHATHOOK_SPEAKER_ARRAYNAME, iHook2+1));
                 SetLocalArrayInt(oMod, DMFI_CHATHOOK_AUTOREMOVE_ARRAYNAME, iHook2, GetLocalArrayInt(oMod, DMFI_CHATHOOK_AUTOREMOVE_ARRAYNAME, iHook2+1));
             }
-            bRemoved = TRUE;
+            bRemoved = true;
             nHooks--;
             if (nHooks < iHook) break;
         }

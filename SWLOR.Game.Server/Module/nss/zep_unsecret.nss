@@ -4,7 +4,7 @@ void main()
     string sSecretSwap = GetLocalString(OBJECT_SELF, "CEP_L_SECRETSWAP");
     //SendMessageToPC(GetFirstPC(), GetResRef(OBJECT_SELF));
     //SendMessageToPC(GetFirstPC(), sSecretSwap);
-    object oNew = CreateObject(OBJECT_TYPE_PLACEABLE, sSecretSwap, lLoc);
+    object oNew = CreateObject(ObjectType.Placeable, sSecretSwap, lLoc);
     SetLocalString(oNew, "CEP_L_SECRETSWAP", GetResRef(OBJECT_SELF));
     SetLocalString(oNew, "CEP_L_GATEBLOCK", GetLocalString(OBJECT_SELF, "CEP_L_GATEBLOCK"));
     //SendMessageToPC(GetFirstPC(), "New ResRef "+GetResRef(oNew));

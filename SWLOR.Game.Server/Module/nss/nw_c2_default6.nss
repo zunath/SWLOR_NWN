@@ -22,8 +22,8 @@
 void main()
 {
     ExecuteScript("crea_on_damaged", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DAMAGED_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DAMAGED_EVENT") == true) return;
 
 
     object oDamager = GetLastDamager();
@@ -37,7 +37,7 @@ void main()
             nHPBefore=GetLocalInt(OBJECT_SELF,"nX3_HP_BEFORE");
             if (!GetLocalInt(OBJECT_SELF,"bX3_ALREADY_MOUNTED_COMBAT"))
             { // haven't already had a chance to use this for the round
-                SetLocalInt(OBJECT_SELF,"bX3_ALREADY_MOUNTED_COMBAT",TRUE);
+                SetLocalInt(OBJECT_SELF,"bX3_ALREADY_MOUNTED_COMBAT",true);
                 int nAttackRoll=GetBaseAttackBonus(oDamager)+d20();
                 int nRideCheck=GetSkillRank(SKILL_RIDE,OBJECT_SELF)+d20();
                 if (nRideCheck>=nAttackRoll&&!GetIsDead(OBJECT_SELF))
@@ -47,7 +47,7 @@ void main()
                     if (GetCurrentHitPoints(OBJECT_SELF)<nHPBefore)
                     { // heal
                         effect eHeal=EffectHeal(nHPBefore-GetCurrentHitPoints(OBJECT_SELF));
-                        AssignCommand(GetModule(),ApplyEffectToObject(DURATION_TYPE_INSTANT,eHeal,oMe));
+                        AssignCommand(GetModule(),ApplyEffectToObject(DurationType.Instant,eHeal,oMe));
                     } // heal
                 } // averted attack
             } // haven't already had a chance to use this for the round
@@ -68,7 +68,7 @@ void main()
                 if(!GetObjectSeen(oDamager)
                    && GetArea(OBJECT_SELF) == GetArea(oDamager)) {
                     // We don't see our attacker, go find them
-                    ActionMoveToLocation(GetLocation(oDamager), TRUE);
+                    ActionMoveToLocation(GetLocation(oDamager), true);
                     ActionDoCommand(DetermineCombatRound());
                 } else {
                     DetermineCombatRound();

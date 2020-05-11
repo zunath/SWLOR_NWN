@@ -54,7 +54,7 @@ void main()
 
         // Start the conversation that will allow the dye's color to be set.
         AssignCommand(oPC, ClearAllActions());
-        AssignCommand(oPC, ActionStartConversation(oPC, "tk_omnidye", TRUE, FALSE));
+        AssignCommand(oPC, ActionStartConversation(oPC, "tk_omnidye", true, false));
     }
 }
 

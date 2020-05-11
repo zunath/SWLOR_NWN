@@ -13,6 +13,6 @@ void main()
     SetLocalInt(oDye, DYE_INDEX, -2);
 
     // Rename the dye to be informative.
-    SetName(oDye, GetName(oDye, TRUE) + ": matching mode");
+    SetName(oDye, GetName(oDye, true) + ": matching mode");
 }
 

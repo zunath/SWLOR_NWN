@@ -1143,15 +1143,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.8521785736084
+    "value": 18.0
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 6.176247596740723
+    "value": 6.0
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": -9.5367431640625e-007
+    "value": 0.0
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1225,6 +1225,13 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "swlor_mtr"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "swlor_music"
         }
       },
       {
@@ -1421,7 +1428,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.77"
+    "value": "1.80"
   },
   "Mod_MinPerHour": {
     "type": "byte",

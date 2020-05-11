@@ -36,7 +36,7 @@ void main()
 //Create New Placeable on Death
     string sDieReplace = GetLocalString(OBJECT_SELF, "CEP_L_DIEREPLACE");
     if (sDieReplace!="")
-{CreateObject(OBJECT_TYPE_PLACEABLE, sDieReplace,lSelfLoc);}
+{CreateObject(ObjectType.Placeable, sDieReplace,lSelfLoc);}
 }
 
 

@@ -21,8 +21,8 @@
 void main()
 {
     ExecuteScript("crea_on_roundend", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT") == TRUE) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT") == true) return;
 
 
     if (!GetLocalInt(GetModule(),"X3_NO_MOUNTED_COMBAT_FEAT"))
@@ -37,7 +37,7 @@ void main()
                 if (nRoll>4)
                 { // ac increase
                     nRoll=nRoll/5;
-                    ApplyEffectToObject(DURATION_TYPE_TEMPORARY,EffectACIncrease(nRoll),OBJECT_SELF,8.5);
+                    ApplyEffectToObject(DurationType.Temporary,EffectACIncrease(nRoll),OBJECT_SELF,8.5);
                 } // ac increase
             } // check for AC increase
         } // set variables on target for mounted combat

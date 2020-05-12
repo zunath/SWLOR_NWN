@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -140,12 +142,11 @@ namespace SWLOR.Game.Server.Service
             PlayerDialog dialog = AppCache.PlayerDialogs[player.GlobalID];
 
             // NPC conversations
-            
-            if (GetObjectType(talkTo.Object) == OBJECT_TYPE_CREATURE &&
+            if (NWScript.GetObjectType(talkTo) == ObjectType.Creature &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                BeginConversation("dialog" + dialog.DialogNumber, talkTo);
+                talkTo.AssignCommand(() => ActionStartConversation(player, "dialog" + dialog.DialogNumber, TRUE, FALSE));
             }
             // Everything else
             else

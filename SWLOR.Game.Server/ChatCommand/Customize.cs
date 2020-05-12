@@ -1,12 +1,13 @@
 ﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Customizes your character appearance. Only available for use in the entry area or DM customization area.", CommandPermissionType.Player)]
+    [CommandDetails("Customizes your character appearance. Only available for use in the entry area or DM customization area.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Customize: IChatCommand
     {
         /// <summary>
@@ -23,8 +24,11 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
-            string areaResref = user.Area.Resref;
+            // DMs can use this command anywhere.
+            if (NWScript.GetIsDM(user)) return string.Empty;
 
+            // Players can only do this in certain areas.
+            string areaResref = user.Area.Resref;
             if (areaResref != "ooc_area" && areaResref != "customize_char")
             {
                 return "Customization can only occur in the starting area or the DM customization area. You can't use this command any more.";

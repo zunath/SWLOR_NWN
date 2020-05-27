@@ -5,7 +5,7 @@ using Type = SWLOR.Game.Server.NWN.Enum.Creature.Type;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         public static uint OBJECT_SELF => Internal.OBJECT_SELF;
 
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.NWN
         ///   The action subject will move to lDestination.
         ///   - lDestination: The object will move to this location.  If the location is
         ///   invalid or a path cannot be found to it, the command does nothing.
-        ///   - bRun: If this is TRUE, the action subject will run rather than walk
+        ///   - bRun: If this is true, the action subject will run rather than walk
         ///   * No return value, but if an error occurs the log file will contain
         ///   "MoveToPoint failed."
         /// </summary>
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Cause the action subject to move to a certain distance from oMoveTo.
         ///   If there is no path to oMoveTo, this command will do nothing.
         ///   - oMoveTo: This is the object we wish the action subject to move to
-        ///   - bRun: If this is TRUE, the action subject will run rather than walk
+        ///   - bRun: If this is true, the action subject will run rather than walk
         ///   - fRange: This is the desired distance between the action subject and oMoveTo
         ///   * No return value, but if an error occurs the log file will contain
         ///   "ActionMoveToObject failed."
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - oFleeFrom: This is the object we wish the action subject to move away from.
         ///   If oFleeFrom is not in the same area as the action subject, nothing will
         ///   happen.
-        ///   - bRun: If this is TRUE, the action subject will run rather than walk
+        ///   - bRun: If this is true, the action subject will run rather than walk
         ///   - fMoveAwayRange: This is the distance we wish the action subject to put
         ///   between themselves and oFleeFrom
         ///   * No return value, but if an error occurs the log file will contain
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Attack oAttackee.
-        ///   - bPassive: If this is TRUE, attack is in passive mode.
+        ///   - bPassive: If this is true, attack is in passive mode.
         /// </summary>
         public static void ActionAttack(uint oAttackee, bool bPassive = false)
         {
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.NWN
         ///   -> CLASS_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_CLASS
         ///   -> SPELL_* if nFirstCriteriaType was CREATURE_TYPE_DOES_NOT_HAVE_SPELL_EFFECT
         ///   or CREATURE_TYPE_HAS_SPELL_EFFECT
-        ///   -> TRUE or FALSE if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
+        ///   -> true or false if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
         ///   -> PERCEPTION_* if nFirstCriteriaType was CREATURE_TYPE_PERCEPTION
         ///   -> PLAYER_CHAR_IS_PC or PLAYER_CHAR_NOT_PC if nFirstCriteriaType was
         ///   CREATURE_TYPE_PLAYER_CHAR
@@ -370,11 +370,11 @@ namespace SWLOR.Game.Server.NWN
         ///   - nSpell: SPELL_*
         ///   - oTarget: Target for the spell
         ///   - nMetamagic: METAMAGIC_*
-        ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
+        ///   - bCheat: If this is true, then the executor of the action doesn't have to be
         ///   able to cast the spell.
         ///   - nDomainLevel: TBD - SS
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        ///   - bInstantSpell: If this is TRUE, the spell is cast immediately. This allows
+        ///   - bInstantSpell: If this is true, the spell is cast immediately. This allows
         ///   the end-user to simulate a high-level magic-user having lots of advance
         ///   warning of impending trouble
         /// </summary>
@@ -402,15 +402,6 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(51);
             return Internal.NativeFunctions.StackPopInteger();
-        }
-
-        /// <summary>
-        /// Get oObject's local boolean variable sVarName
-        /// * Return value on error: false
-        /// </summary>
-        public static bool GetLocalBool(uint oObject, string sVarName)
-        {
-            return Convert.ToBoolean(GetLocalInt(oObject, sVarName));
         }
 
         /// <summary>
@@ -458,14 +449,6 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(55);
-        }
-
-        /// <summary>
-        /// Set oObject's local boolean variable sVarName to nValue
-        /// </summary>
-        public static void SetLocalBool(uint oObject, string sVarName, bool nValue)
-        {
-            SetLocalInt(oObject, sVarName, Convert.ToInt32(nValue));
         }
 
         /// <summary>
@@ -840,7 +823,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature is a dead NPC, dead PC or a dying PC.
+        ///   * Returns true if oCreature is a dead NPC, dead PC or a dying PC.
         /// </summary>
         public static bool GetIsDead(uint oCreature)
         {
@@ -852,7 +835,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Output vVector to the logfile.
         ///   - vVector
-        ///   - bPrepend: if this is TRUE, the message will be prefixed with "PRINTVECTOR:"
+        ///   - bPrepend: if this is true, the message will be prefixed with "PRINTVECTOR:"
         /// </summary>
         public static void PrintVector(Vector? vVector, bool bPrepend = false)
         {
@@ -998,9 +981,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Do a Spell Resistance check between oCaster and oTarget, returning TRUE if
+        ///   Do a Spell Resistance check between oCaster and oTarget, returning true if
         ///   the spell was resisted.
-        ///   * Return value if oCaster or oTarget is an invalid object: FALSE
+        ///   * Return value if oCaster or oTarget is an invalid object: false
         ///   * Return value if spell cast is not a player spell: - 1
         ///   * Return value if spell resisted: 1
         ///   * Return value if spell resisted via magic immunity: 2
@@ -1015,7 +998,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oObject is listening for something
+        ///   * Returns true if oObject is listening for something
         /// </summary>
         public static bool GetIsListening(uint oObject)
         {
@@ -1199,7 +1182,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature is a Player Controlled character.
+        ///   * Returns true if oCreature is a Player Controlled character.
         /// </summary>
         public static bool GetIsPC(uint oCreature)
         {
@@ -1285,10 +1268,10 @@ namespace SWLOR.Game.Server.NWN
         ///   - nSpell: SPELL_*
         ///   - lTargetLocation
         ///   - nMetaMagic: METAMAGIC_*
-        ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
+        ///   - bCheat: If this is true, then the executor of the action doesn't have to be
         ///   able to cast the spell.
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        ///   - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
+        ///   - bInstantSpell: If this is true, the spell is cast immediately; this allows
         ///   the end-user to simulate
         ///   a high-level magic user having lots of advance warning of impending trouble.
         /// </summary>
@@ -1364,7 +1347,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Note: This only creates the event. The event wont actually trigger until SignalEvent()
         ///   is called using this created SpellCastAt event as an argument.
         ///   For example:
-        ///   SignalEvent(oCreature, EventSpellCastAt(oCaster, SPELL_MAGIC_MISSILE, TRUE));
+        ///   SignalEvent(oCreature, EventSpellCastAt(oCaster, SPELL_MAGIC_MISSILE, true));
         ///   This function doesn't cast the spell specified, it only creates an event so that
         ///   when the event is signaled on an object, the object will use its OnSpellCastAt script
         ///   to react to the spell being cast.
@@ -1658,7 +1641,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nImmunityType: IMMUNITY_TYPE_*
         ///   - oVersus: if this is specified, then we also check for the race and
         ///   alignment of oVersus
-        ///   * Returns TRUE if oCreature has immunity of type nImmunity versus oVersus.
+        ///   * Returns true if oCreature has immunity of type nImmunity versus oVersus.
         /// </summary>
         public static int GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
@@ -1681,7 +1664,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Set oEncounter's active state to nNewValue.
-        ///   - nNewValue: TRUE/FALSE
+        ///   - nNewValue: true/false
         ///   - oEncounter
         /// </summary>
         public static void SetEncounterActive(int nNewValue, uint oEncounter = OBJECT_INVALID)
@@ -2043,7 +2026,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature is of a playable racial type.
+        ///   * Returns true if oCreature is of a playable racial type.
         /// </summary>
         public static bool GetIsPlayableRacialType(uint oCreature)
         {
@@ -2239,7 +2222,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if tTalent is valid.
+        ///   * Returns true if tTalent is valid.
         /// </summary>
         public static bool GetIsTalentValid(Talent tTalent)
         {
@@ -2294,7 +2277,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Get the public part of the CD Key that oPlayer used when logging in.
-        ///   - nSinglePlayerCDKey: If set to TRUE, the player's public CD Key will
+        ///   - nSinglePlayerCDKey: If set to true, the player's public CD Key will
         ///   be returned when the player is playing in single player mode
         ///   (otherwise returns an empty string in single player mode).
         /// </summary>
@@ -2410,7 +2393,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if the weapon equipped is capable of damaging oVersus.
+        ///   * Returns true if the weapon equipped is capable of damaging oVersus.
         /// </summary>
         public static bool GetIsWeaponEffective(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
@@ -2423,7 +2406,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Use this in a SpellCast script to determine whether the spell was considered
         ///   harmful.
-        ///   * Returns TRUE if the last spell cast was harmful.
+        ///   * Returns true if the last spell cast was harmful.
         /// </summary>
         public static bool GetLastSpellHarmful()
         {
@@ -2532,7 +2515,7 @@ namespace SWLOR.Game.Server.NWN
         ///   floaty text.
         ///   - nStrRefToDisplay: String ref (therefore text is translated)
         ///   - oCreatureToFloatAbove
-        ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
+        ///   - bBroadcastToFaction: If this is true then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
         /// </summary>
@@ -2551,7 +2534,7 @@ namespace SWLOR.Game.Server.NWN
         ///   floaty text.
         ///   - sStringToDisplay: String
         ///   - oCreatureToFloatAbove
-        ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
+        ///   - bBroadcastToFaction: If this is true then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
         /// </summary>
@@ -2565,7 +2548,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if a specific key is required to open the lock on oObject.
+        ///   * Returns true if a specific key is required to open the lock on oObject.
         /// </summary>
         public static bool GetLockKeyRequired(uint oObject)
         {
@@ -2585,7 +2568,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if the lock on oObject is lockable.
+        ///   * Returns true if the lock on oObject is lockable.
         /// </summary>
         public static bool GetLockLockable(uint oObject)
         {
@@ -2617,7 +2600,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   - nFeat: FEAT_*
         ///   - oObject
-        ///   * Returns TRUE if oObject has effects on it originating from nFeat.
+        ///   * Returns true if oObject has effects on it originating from nFeat.
         /// </summary>
         public static int GetHasFeatEffect(int nFeat, uint oObject = OBJECT_INVALID)
         {
@@ -2630,8 +2613,8 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Set the status of the illumination for oPlaceable.
         ///   - oPlaceable
-        ///   - bIlluminate: if this is TRUE, oPlaceable's illumination will be turned on.
-        ///   If this is FALSE, oPlaceable's illumination will be turned off.
+        ///   - bIlluminate: if this is true, oPlaceable's illumination will be turned on.
+        ///   If this is false, oPlaceable's illumination will be turned off.
         ///   Note: You must call RecomputeStaticLighting() after calling this function in
         ///   order for the changes to occur visually for the players.
         ///   SetPlaceableIllumination() buffers the illumination changes, which are then
@@ -2650,7 +2633,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if the illumination for oPlaceable is on
+        ///   * Returns true if the illumination for oPlaceable is on
         /// </summary>
         public static bool GetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID)
         {
@@ -2662,7 +2645,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   - oPlaceable
         ///   - nPlaceableAction: PLACEABLE_ACTION_*
-        ///   * Returns TRUE if nPlacebleAction is valid for oPlaceable.
+        ///   * Returns true if nPlacebleAction is valid for oPlaceable.
         /// </summary>
         public static int GetIsPlaceableObjectActionPossible(uint oPlaceable, int nPlaceableAction)
         {
@@ -3161,7 +3144,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Get if oPlayer is currently connected over a relay (instead of directly).
-        ///   Returns FALSE for any other object, including OBJECT_INVALID.
+        ///   Returns false for any other object, including OBJECT_INVALID.
         /// </summary>
         public static int GetIsPlayerConnectionRelayed(uint oPlayer)
         {
@@ -3312,7 +3295,7 @@ namespace SWLOR.Game.Server.NWN
         ///   The script chunk runs immediately, same as ExecuteScript().
         ///   The script is jitted in place and currently not cached: Each invocation will recompile the script chunk.
         ///   Note that the script chunk will run as if a separate script. This is not eval().
-        ///   By default, the script chunk is wrapped into void main() {}. Pass in bWrapIntoMain = FALSE to override.
+        ///   By default, the script chunk is wrapped into void main() {}. Pass in bWrapIntoMain = false to override.
         ///   Returns "" on success, or the compilation error.
         /// </summary>
         public static string ExecuteScriptChunk(string sScriptChunk, uint oObject, bool bWrapIntoMain = true)

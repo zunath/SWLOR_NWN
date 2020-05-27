@@ -34,13 +34,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
                 return;
             }
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == DisturbType.Added)
             {
                 ItemService.ReturnItem(player, item);
                 player.SendMessage("Items cannot be placed inside.");
                 return;
             }
-            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == DisturbType.Removed)
             {
                 var removeItem = DataService.PCBaseStructureItem.GetByPCBaseStructureIDAndItemGlobalIDOrDefault(controlTower.ID, item.GlobalID.ToString());
                 if (removeItem == null) return;

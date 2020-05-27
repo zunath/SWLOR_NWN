@@ -17,7 +17,7 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Service
 
             // Activator and target must be in the same area and within line of sight.
             if (activator.Area.Resref != target.Area.Resref ||
-                    _.LineOfSightObject(activator.Object, target.Object) == FALSE)
+                    _.LineOfSightObject(activator.Object, target.Object) == false)
             {
                 activator.SendMessage("You cannot see your target.");
                 return false;
@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var vfx = _.EffectVisualEffect(vfxID);
                 vfx = _.TagEffect(vfx, "ACTIVATION_VFX");
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, activator.Object, activationTime + 0.2f);
+                _.ApplyEffectToObject(DurationType.Temporary, vfx, activator.Object, activationTime + 0.2f);
             }
 
             // If an animation has been specified, make the player play that animation now.
@@ -846,9 +846,9 @@ namespace SWLOR.Game.Server.Service
             if (!_.GetHasFeat(Feat.PlasmaCell, player)) return;  // Check if player has the perk
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
                 player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; // Check if player has the right weapons
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;   // Check if Tranquilizer is on to avoid conflict
-            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.TRUE) return;  // Check if Plasma Cell toggle is on or off
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;   // Check if Tranquilizer is on to avoid conflict
+            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == true) return;  // Check if Plasma Cell toggle is on or off
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.PlasmaCell);
             int chance;
@@ -939,7 +939,7 @@ namespace SWLOR.Game.Server.Service
 
             if (RandomService.D100(1) <= chance)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target, duration);
             }
         }
 
@@ -1006,12 +1006,12 @@ namespace SWLOR.Game.Server.Service
         {
             const float MaxDistance = 10.0f;
             int nth = 1;
-            NWCreature nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, sender, nth);
+            NWCreature nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, sender, nth);
             while (nearby.IsValid && GetDistanceBetween(sender, nearby) <= MaxDistance)
             {
                 nearby.SendMessage(message);
                 nth++;
-                nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, sender, nth);
+                nearby = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, sender, nth);
             }
         }
     }

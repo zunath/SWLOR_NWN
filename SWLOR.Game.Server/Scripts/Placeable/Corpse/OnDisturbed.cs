@@ -25,12 +25,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
                 _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_LOW, 1.0f, 1.0f);
             });
 
-            if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (type == DisturbType.Added)
             {
                 ItemService.ReturnItem(looter, item);
                 looter.SendMessage("You cannot place items inside of corpses.");
             }
-            else if (type == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (type == DisturbType.Removed)
             {
                 NWItem copy = item.GetLocalObject("CORPSE_ITEM_COPY");
 

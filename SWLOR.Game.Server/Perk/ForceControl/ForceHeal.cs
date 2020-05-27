@@ -84,8 +84,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 amount = difference;
 
             // Apply the heal
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), target);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_HEAD_HOLY), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_HEAD_HOLY), target);
 
             // Give Control XP, if player.
             if (creature.IsPlayer)

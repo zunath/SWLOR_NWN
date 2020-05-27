@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             }
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_SLASHING), target);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectACDecrease(3), target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectACDecrease(3), target, duration);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEAD_EVIL), target);
 
             creature.SendMessage("Your target's armor has been breached.");

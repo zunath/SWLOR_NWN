@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             _.PlaySound("use_bacta");
             Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds. The healing kit will expire in " + duration + " seconds.");
             
             _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The healing kit that you applied to " + target.Name + " has expired."); });

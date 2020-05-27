@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
+                        _.ApplyEffectToObject(_.DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 case 2:
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
+                        _.ApplyEffectToObject(_.DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 case 3:
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
+                        _.ApplyEffectToObject(_.DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 default:
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // Play VFX
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MIND_AFFECTING_POSITIVE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_DUR_MIND_AFFECTING_POSITIVE), target);
 
         }
     }

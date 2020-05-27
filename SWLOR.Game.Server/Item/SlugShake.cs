@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Item
             // But reduces one random attribute by 50 for 2 minutes.
             int stat = RandomService.D6(1)-1;
             var effect = EffectAbilityDecrease(stat, 50);
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, user, 120f);
+            ApplyEffectToObject(DurationType.Temporary, effect, user, 120f);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

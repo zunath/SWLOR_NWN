@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 /**
  * Pazaak item activation code, used for both individual cards and for card collections.

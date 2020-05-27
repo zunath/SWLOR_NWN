@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Service
                     float x = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_X"));
                     float y = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Y"));
                     float z = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Z"));
-                    creature.SetLocalInt("DM_SPAWNED", _.TRUE);
+                    creature.SetLocalInt("DM_SPAWNED", true);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP

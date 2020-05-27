@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
         public void Main()
         {
             int type = _.GetInventoryDisturbType();
-            if (type != _.INVENTORY_DISTURB_TYPE_ADDED) return;
+            if (type != DisturbType.Added) return;
             NWPlaceable device = _.OBJECT_SELF;
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();

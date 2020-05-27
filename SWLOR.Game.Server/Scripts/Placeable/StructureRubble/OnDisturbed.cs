@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
             NWCreature creature = (_.GetLastDisturbed());
             NWPlaceable container = (_.OBJECT_SELF);
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == DisturbType.Added)
             {
                 ItemService.ReturnItem(creature, item);
             }
-            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == DisturbType.Removed)
             {
                 if (!container.InventoryItems.Any())
                 {

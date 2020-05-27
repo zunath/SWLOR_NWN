@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             // Resisted - Only apply slow for six seconds
             if (result.IsResisted)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectSlow(), target, 6.0f);
+                _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectSlow(), target, 6.0f);
             }
 
             // Not resisted - Apply knockdown for the specified duration
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     creature.SendMessage("Lucky Force Push!");
                 }
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
+                _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectKnockdown(), target, duration);
             }
 
             if (creature.IsPlayer)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceAlter, target.Object);
             }
             
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_COM_BLOOD_SPARK_SMALL), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_COM_BLOOD_SPARK_SMALL), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

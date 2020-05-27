@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.Weapons
 {
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 default: return;
             }
 
-            if (equipped.GetLocalInt("LIGHTSABER") == TRUE)
+            if (equipped.GetLocalInt("LIGHTSABER") == true)
             {
                 perkType = PerkType.WeaponFocusLightsaber;
             }

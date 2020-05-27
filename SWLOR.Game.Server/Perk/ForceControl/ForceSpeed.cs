@@ -90,8 +90,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 creature.SendMessage("Lucky Force Speed!");
             }
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, target, duration);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_AC_BONUS), target);
+            _.ApplyEffectToObject(_.DurationType.Temporary, effect, target, duration);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_AC_BONUS), target);
 
             if (creature.IsPlayer)
             {

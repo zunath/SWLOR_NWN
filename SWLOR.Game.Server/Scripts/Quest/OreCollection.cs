@@ -1,5 +1,5 @@
 ﻿using SWLOR.Game.Server.Quest;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Scripts.Quest
 {

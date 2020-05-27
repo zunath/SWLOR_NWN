@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
 
-        public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == TRUE;
+        public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == true;
 
         public IEnumerable<NWObject> Objects
         {

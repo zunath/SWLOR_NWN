@@ -1,7 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 using NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using System.Linq;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             if (text.Contains("!")) animation = ANIMATION_LOOPING_TALK_FORCEFUL;
             if (text.Contains("?")) animation = ANIMATION_LOOPING_TALK_PLEADING;
 
-            SetCommandable(TRUE, receiver);
+            SetCommandable(true, receiver);
             receiver.ClearAllActions();
 
             receiver.AssignCommand(() =>
@@ -90,15 +90,15 @@ namespace SWLOR.Game.Server.Service
 
     public static bool IsInCall(NWPlayer player)
         {
-            if (player.GetLocalInt("HOLOCOM_CALL_CONNECTED") == TRUE) return true;
+            if (player.GetLocalInt("HOLOCOM_CALL_CONNECTED") == true) return true;
             else return false;
         }
         public static void SetIsInCall(NWPlayer sender, NWPlayer receiver, bool value = true)
         {
             if (value) // START CALL
             {
-                sender.SetLocalInt("HOLOCOM_CALL_CONNECTED", TRUE);
-                receiver.SetLocalInt("HOLOCOM_CALL_CONNECTED", TRUE);
+                sender.SetLocalInt("HOLOCOM_CALL_CONNECTED", true);
+                receiver.SetLocalInt("HOLOCOM_CALL_CONNECTED", true);
 
                 sender.SetLocalObject("HOLOCOM_CALL_CONNECTED_WITH", receiver);
                 receiver.SetLocalObject("HOLOCOM_CALL_CONNECTED_WITH", sender);
@@ -114,10 +114,10 @@ namespace SWLOR.Game.Server.Service
                 var holosender = CopyObject(sender, VectorService.MoveLocation(receiver.Location, GetFacing(receiver), 2.0f, 180));
                 var holoreceiver = CopyObject(receiver, VectorService.MoveLocation(sender.Location, GetFacing(sender), 2.0f, 180));
 
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, FALSE), holosender);
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, FALSE), holoreceiver);
-                SetPlotFlag(holoreceiver, TRUE);
-                SetPlotFlag(holosender, TRUE);
+                ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holosender);
+                ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE_NO_SOUND, false), holoreceiver);
+                SetPlotFlag(holoreceiver, true);
+                SetPlotFlag(holosender, true);
                 sender.SetLocalObject("HOLOCOM_HOLOGRAM", holosender);
                 receiver.SetLocalObject("HOLOCOM_HOLOGRAM", holoreceiver);
 
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var effect in sender.Effects)
                 {
-                    if (_.GetIsEffectValid(effect) == TRUE)
+                    if (_.GetIsEffectValid(effect) == true)
                     {
                         int effectType = GetEffectType(effect);
                         if (effectType == EFFECT_TYPE_CUTSCENEIMMOBILIZE)
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var effect in receiver.Effects)
                 {
-                    if (_.GetIsEffectValid(effect) == TRUE)
+                    if (_.GetIsEffectValid(effect) == true)
                     {
                         int effectType = GetEffectType(effect);
                         if (effectType == EFFECT_TYPE_CUTSCENEIMMOBILIZE)
@@ -223,13 +223,13 @@ namespace SWLOR.Game.Server.Service
         }
         public static bool IsCallSender(NWPlayer player)
         {
-            if (player.GetLocalInt("HOLOCOM_CALL_SENDER") == TRUE) return true;
+            if (player.GetLocalInt("HOLOCOM_CALL_SENDER") == true) return true;
             else return false;
         }
         public static void SetIsCallSender(NWPlayer player, bool value = true)
         {
-            if (value) player.SetLocalInt("HOLOCOM_CALL_SENDER", TRUE);
-            else player.SetLocalInt("HOLOCOM_CALL_SENDER", FALSE);
+            if (value) player.SetLocalInt("HOLOCOM_CALL_SENDER", true);
+            else player.SetLocalInt("HOLOCOM_CALL_SENDER", false);
         }
         public static NWPlayer GetCallSender(NWPlayer player)
         {
@@ -242,13 +242,13 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsCallReceiver(NWPlayer player)
         {
-            if (player.GetLocalInt("HOLOCOM_CALL_RECEIVER") == TRUE) return true;
+            if (player.GetLocalInt("HOLOCOM_CALL_RECEIVER") == true) return true;
             else return false;
         }
         public static void SetIsCallReceiver(NWPlayer player, bool value = true)
         {
-            if (value) player.SetLocalInt("HOLOCOM_CALL_RECEIVER", TRUE);
-            else player.SetLocalInt("HOLOCOM_CALL_RECEIVER", FALSE);
+            if (value) player.SetLocalInt("HOLOCOM_CALL_RECEIVER", true);
+            else player.SetLocalInt("HOLOCOM_CALL_RECEIVER", false);
         }        
         public static NWPlayer GetCallReceiver(NWPlayer player)
         {

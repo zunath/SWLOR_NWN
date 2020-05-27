@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         public void Main()
         {
-            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED) return;
+            if (_.GetInventoryDisturbType() != DisturbType.Added) return;
 
             NWPlayer pc = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 return false;
             }
 
-            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == _.TRUE)
+            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == true)
             {
                 ReturnItemToPC(pc, item, "This forge is currently in use. Please wait...");
                 return false;
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             var @event = new OnCompleteSmelt(pc, itemResref, itemProperties);
             pc.DelayEvent(baseCraftDelay, @event);
             
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
+            _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
             pc.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
             item.Destroy();
         }
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         private void ReturnItemToPC(NWPlayer pc, NWItem item, string message)
         {
-            _.CopyItem(item.Object, pc.Object, _.TRUE);
+            _.CopyItem(item.Object, pc.Object, true);
             item.Destroy();
             pc.SendMessage(message);
         }

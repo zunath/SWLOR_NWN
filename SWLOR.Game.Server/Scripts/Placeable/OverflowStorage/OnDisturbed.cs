@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
             NWItem oItem = (_.GetInventoryDisturbItem());
             int type = _.GetInventoryDisturbType();
 
-            if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (type == DisturbType.Added)
             {
                 container.AssignCommand(() => _.ActionGiveItem(oItem.Object, oPC.Object));
                 return;

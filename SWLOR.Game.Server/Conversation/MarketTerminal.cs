@@ -8,7 +8,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Conversation
                         }
 
                         // Take gold from buyer.
-                        _.TakeGoldFromCreature(listing.Price, buyer, TRUE);
+                        _.TakeGoldFromCreature(listing.Price, buyer, true);
 
                         // Give gold to seller.
                         MarketService.GiveMarketGoldToPlayer(listing.SellerPlayerID, listing.Price);
@@ -731,7 +731,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            _.TakeGoldFromCreature(fees, player, TRUE);
+            _.TakeGoldFromCreature(fees, player, true);
 
             PCMarketListing listing = new PCMarketListing
             {

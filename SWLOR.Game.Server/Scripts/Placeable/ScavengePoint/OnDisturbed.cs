@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
             NWPlaceable point = (_.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == DisturbType.Added)
             {
                 ItemService.ReturnItem(oPC, oItem);
             }

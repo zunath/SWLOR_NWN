@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int adjust = perkLevel * 10;
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), target, 3.0f);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), target, 3.0f);
             EnmityService.AdjustPercentEnmityOnAllTaggedCreatures(creature, -adjust, -adjust);
         }
 

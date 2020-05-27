@@ -10,7 +10,7 @@ using SpellSchool = SWLOR.Game.Server.NWN.Enum.SpellSchool;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   adds an item property to the specified item
@@ -1178,7 +1178,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Returns the total duration of the item property in seconds.
-        ///   - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
+        ///   - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
         public static int GetItemPropertyDuration(ItemProperty nProperty)
         {
@@ -1189,7 +1189,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Returns the remaining duration of the item property in seconds.
-        ///   - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
+        ///   - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
         public static int GetItemPropertyDurationRemaining(ItemProperty nProperty)
         {

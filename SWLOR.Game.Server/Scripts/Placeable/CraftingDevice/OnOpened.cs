@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 {
@@ -19,14 +20,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         public void Main()
         {
-            NWPlaceable device = (_.OBJECT_SELF);
-            NWPlayer oPC = (_.GetLastOpenedBy());
+            NWPlaceable device = OBJECT_SELF;
+            NWPlayer oPC = GetLastOpenedBy();
             var model = CraftService.GetPlayerCraftingData(oPC);
             
             if (model.Access != CraftingAccessType.None)
             {
-                NWItem menuItem = (_.CreateItemOnObject("cft_confirm", device.Object));
-                NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
+                NWItem menuItem = CreateItemOnObject("cft_confirm", device.Object);
+                NWPlaceable storage = GetObjectByTag("craft_temp_store");
                 var storageItems = storage.InventoryItems.ToList();
                 List<NWItem> list = null;
 
@@ -60,7 +61,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
                 foreach (var item in list)
                 {
                     NWItem storageItem = storageItems.Single(x => x.GlobalID == item.GlobalID);
-                    _.CopyItem(storageItem.Object, device.Object, _.TRUE);
+                    CopyItem(storageItem.Object, device.Object, true);
                 }
 
                 oPC.FloatingText("Place the components inside the container and then click the item named '" + menuItem.Name + "' to continue.");

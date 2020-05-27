@@ -2,7 +2,7 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Get the PC that sent the last player chat(text) message.

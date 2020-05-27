@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(damage, _.DAMAGE_TYPE_SONIC), oTarget);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, _.DAMAGE_TYPE_SONIC), oTarget);
             });
             
         }

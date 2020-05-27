@@ -13,7 +13,7 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
                 dbArea.SouthwestLootTableID = southwestLootTableID > 0 ? southwestLootTableID : new int?();
                 dbArea.SoutheastLootTableID = southeastLootTableID > 0 ? southeastLootTableID : new int?();
                 dbArea.IsBuildable =
-                    (area.GetLocalInt("IS_BUILDABLE") == TRUE &&
+                    (area.GetLocalInt("IS_BUILDABLE") == true &&
                     dbArea.Width == 32 &&
                     dbArea.Height == 32 &&
                     dbArea.PurchasePrice > 0 &&
@@ -94,9 +94,9 @@ namespace SWLOR.Game.Server.Service
                     dbArea.NortheastLootTableID != null &&
                     dbArea.SouthwestLootTableID != null &&
                     dbArea.SoutheastLootTableID != null) ||
-                    (area.GetLocalInt("IS_BUILDING") == TRUE);
+                    (area.GetLocalInt("IS_BUILDING") == true);
                 dbArea.IsActive = true;
-                dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == TRUE;
+                dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == true;
                 dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
                 dbArea.MaxResourceQuality = area.GetLocalInt("RESOURCE_MAX_QUALITY");
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             
             instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());
             instance.SetLocalString("ORIGINAL_RESREF", areaResref);
-            instance.SetLocalInt("IS_AREA_INSTANCE", TRUE);
+            instance.SetLocalInt("IS_AREA_INSTANCE", true);
             instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
 
             NWObject searchByObject = _.GetFirstObjectInArea(instance);

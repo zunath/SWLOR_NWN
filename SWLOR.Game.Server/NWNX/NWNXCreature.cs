@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.NWNX
             return (Feat)Internal.NativeFunctions.nwnxPopInt();
         }
 
-        // Returns TRUE if creature meets all requirements to take given feat
+        // Returns true if creature meets all requirements to take given feat
         public static bool GetMeetsFeatRequirements(uint creature, Feat feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMeetsFeatRequirements");
@@ -692,8 +692,8 @@ namespace SWLOR.Game.Server.NWNX
         // NOTE: AB vs. <Type> and +AB on Gauntlets are excluded
         //
         // int isMelee values:
-        //   TRUE: Get Melee/Unarmed Attack Bonus
-        //   FALSE: Get Ranged Attack Bonus
+        //   true: Get Melee/Unarmed Attack Bonus
+        //   false: Get Ranged Attack Bonus
         public static int GetAttackBonus(uint creature, bool isMelee = true, bool isTouchAttack = false,
             bool isOffhand = false, bool includeBaseAttackBonus = true)
         {
@@ -823,7 +823,7 @@ namespace SWLOR.Game.Server.NWNX
 
         /// @brief Get whether the creature can be disarmed.
         /// @param creature The creature object.
-        /// @return TRUE if the creature can be disarmed.
+        /// @return true if the creature can be disarmed.
         public static int GetDisarmable(uint creature)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDisarmable");
@@ -834,7 +834,7 @@ namespace SWLOR.Game.Server.NWNX
 
         /// @brief Set whether a creature can be disarmed.
         /// @param creature The creature object.
-        /// @param disarmable Set to TRUE if the creature can be disarmed.
+        /// @param disarmable Set to true if the creature can be disarmed.
         public static void SetDisarmable(uint creature, bool isDisarmable)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDisarmable");
@@ -895,7 +895,7 @@ namespace SWLOR.Game.Server.NWNX
 
         /// @brief Get whether a creature is flat-footed.
         /// @param The creature object.
-        /// @return TRUE if the creature is flat-footed.
+        /// @return true if the creature is flat-footed.
         public static bool GetFlatFooted(uint creature)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFlatFooted");
@@ -918,7 +918,7 @@ namespace SWLOR.Game.Server.NWNX
         /// @brief Deserialize sSerializedQuickbar for oCreature
         /// @param oCreature The creature.
         /// @param sSerializedQuickbar A base64 string of a quickbar
-        /// @return TRUE on success
+        /// @return true on success
         public static bool DeserializeQuickbar(uint creature, string serializedQuickbar)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DeserializeQuickbar");

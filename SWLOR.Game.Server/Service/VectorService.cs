@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using static System.Math;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;

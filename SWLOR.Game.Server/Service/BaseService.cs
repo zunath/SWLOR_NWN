@@ -17,7 +17,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.SpawnRule.Contracts;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var record in areaStructures)
             {
                 var structure = record.Structure;
-                if (structure.GetLocalInt("REQUIRES_BASE_POWER") == TRUE)
+                if (structure.GetLocalInt("REQUIRES_BASE_POWER") == true)
                 {
                     if (isPoweredOn)
                     {
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Service
             var doorRule = GetDoorRule(spawnRule);
             NWPlaceable door = doorRule.Run(area, location);
             door.SetLocalString("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
-            door.SetLocalInt("IS_DOOR", TRUE);
+            door.SetLocalInt("IS_DOOR", true);
 
             return door;
         }
@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            player.AssignCommand(() => _.TakeGoldFromCreature(purchasePrice, player.Object, TRUE));
+            player.AssignCommand(() => _.TakeGoldFromCreature(purchasePrice, player.Object, true));
 
             switch (sector)
             {
@@ -763,7 +763,7 @@ namespace SWLOR.Game.Server.Service
             {
                 item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
                 item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
-                item.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", TRUE);
+                item.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", true);
             }
 
             return item;
@@ -1264,7 +1264,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanHandleChat(NWObject sender)
         {
             bool validTarget = sender.IsPlayer || sender.IsDM;
-            return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == TRUE;
+            return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == true;
         }
 
         private static void OnModuleNWNXChat()

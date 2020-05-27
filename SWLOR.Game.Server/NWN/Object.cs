@@ -2,7 +2,7 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Sets a new tag for oObject.
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.NWN
         ///   or on an error returns PORTRAIT_INVALID. In these instances
         ///   try using GetPortraitResRef() instead.
         /// </summary>
-        public static int GetPortraitId(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetPortraitId(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(831);
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Returns: The Portrait ResRef being used for the object oTarget.
         ///   The Portrait ResRef will not include a trailing size letter.
         /// </summary>
-        public static string GetPortraitResRef(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static string GetPortraitResRef(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(833);
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.NWN
         ///   Can be a creature, item, placeable, door, trigger or module object.
         ///   - bOriginalDescription:  if set to true any new description specified via a SetDescription scripting command
         ///   is ignored and the original object's description is returned instead.
-        ///   - bIdentified: If oObject is an item, setting this to TRUE will return the identified description,
-        ///   setting this to FALSE will return the unidentified description. This flag has no
+        ///   - bIdentified: If oObject is an item, setting this to true will return the identified description,
+        ///   setting this to false will return the unidentified description. This flag has no
         ///   effect on objects other than items.
         /// </summary>
         public static string GetDescription(uint oObject, bool bOriginalDescription = false,
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.NWN
         ///   - oObject: the object for which you are changing the description
         ///   Can be a creature, placeable, item, door, or trigger.
         ///   - sNewDescription: the new description that the object will use.
-        ///   - bIdentified: If oObject is an item, setting this to TRUE will set the identified description,
-        ///   setting this to FALSE will set the unidentified description. This flag has no
+        ///   - bIdentified: If oObject is an item, setting this to true will set the identified description,
+        ///   setting this to false will set the unidentified description. This flag has no
         ///   effect on objects other than items.
         ///   Note: Setting an object's description to "" will make the object
         ///   revert to using the description it originally had before any
@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.NWN
         ///   or unlocks the player's camera pitch.
         ///   Stops the player from tilting their camera angle.
         ///   - oPlayer: A player object.
-        ///   - bLocked: TRUE/FALSE.
+        ///   - bLocked: true/false.
         /// </summary>
         public static void LockCameraPitch(uint oPlayer, bool bLocked = true)
         {
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.NWN
         ///   or unlocks the player's camera distance.
         ///   Stops the player from being able to zoom in/out the camera.
         ///   - oPlayer: A player object.
-        ///   - bLocked: TRUE/FALSE.
+        ///   - bLocked: true/false.
         /// </summary>
         public static void LockCameraDistance(uint oPlayer, bool bLocked = true)
         {
@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.NWN
         ///   freely again.
         ///   Stops the player from being able to rotate the camera direction.
         ///   - oPlayer: A player object.
-        ///   - bLocked: TRUE/FALSE.
+        ///   - bLocked: true/false.
         /// </summary>
         public static void LockCameraDirection(uint oPlayer, bool bLocked = true)
         {
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.NWN
         ///   returns -1 on an error or if used on an object that is
         ///   neither a door nor a placeable object.
         /// </summary>
-        public static int GetHardness(uint oObject = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetHardness(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(796);
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Does nothing if used on an object that is neither
         ///   a door nor a placeable.
         /// </summary>
-        public static void SetHardness(int nHardness, uint oObject = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetHardness(int nHardness, uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.StackPushInteger(nHardness);
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.NWN
         ///   can be specified either in the toolset, or by using
         ///   the SetLockKeyTag() scripting command.
         ///   - oObject: a door, or placeable.
-        ///   - nKeyRequired: TRUE/FALSE
+        ///   - nKeyRequired: true/false
         /// </summary>
         public static void SetLockKeyRequired(uint oObject, bool nKeyRequired = true)
         {
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets whether or not the object can be locked.
         ///   - oObject: a door or placeable.
-        ///   - nLockable: TRUE/FALSE
+        ///   - nLockable: true/false
         /// </summary>
         public static void SetLockLockable(uint oObject, bool nLockable = true)
         {
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.NWN
         ///   of pounds (as per the baseitems.2da).
         ///   - oTarget: the item or creature for which the weight is needed
         /// </summary>
-        public static int GetWeight(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetWeight(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(706);
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If the object is a creature, they will be created at the location.
         ///   If a new tag is specified, it will be assigned to the new object.
         /// </summary>
-        public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID,
+        public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = SWLOR.Game.Server.NWN._.OBJECT_INVALID,
             string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
@@ -462,8 +462,8 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Determine whether oObject has an inventory.
-        ///   * Returns TRUE for creatures and stores, and checks to see if an item or placeable object is a container.
-        ///   * Returns FALSE for all other object types.
+        ///   * Returns true for creatures and stores, and checks to see if an item or placeable object is a container.
+        ///   * Returns false for all other object types.
         /// </summary>
         public static bool GetHasInventory(uint oObject)
         {
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Determine whether oTarget is a plot object.
         /// </summary>
-        public static bool GetPlotFlag(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetPlotFlag(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(455);
@@ -589,7 +589,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nVoiceChatID: VOICE_CHAT_*
         ///   - oTarget
         /// </summary>
-        public static void PlayVoiceChat(int nVoiceChatID, uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void PlayVoiceChat(int nVoiceChatID, uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.StackPushInteger(nVoiceChatID);
@@ -599,7 +599,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Get the amount of gold possessed by oTarget.
         /// </summary>
-        public static int GetGold(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetGold(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(418);
@@ -652,7 +652,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - oTokenTarget: This must be specified if there are creature-specific tokens
         ///   in the string.
         /// </summary>
-        public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTokenTarget);
             Internal.NativeFunctions.StackPushStringUTF8(sDialogResRef);
@@ -661,10 +661,10 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Set the destroyable status of the caller.
-        ///   - bDestroyable: If this is FALSE, the caller does not fade out on death, but
+        ///   - bDestroyable: If this is false, the caller does not fade out on death, but
         ///   sticks around as a corpse.
-        ///   - bRaiseable: If this is TRUE, the caller can be raised via resurrection.
-        ///   - bSelectableWhenDead: If this is TRUE, the caller is selectable after death.
+        ///   - bRaiseable: If this is true, the caller can be raised via resurrection.
+        ///   - bSelectableWhenDead: If this is true, the caller is selectable after death.
         /// </summary>
         public static void SetIsDestroyable(bool bDestroyable = true, bool bRaiseable = true,
             bool bSelectableWhenDead = false)
@@ -723,7 +723,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nNth
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestObject(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, ObjectType nObjectType = ObjectType.All,
+        public static uint GetNearestObject(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID, ObjectType nObjectType = ObjectType.All,
             int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
@@ -754,7 +754,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the nth Object nearest to oTarget that has sTag as its tag.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestObjectByTag(string sTag, uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, int nNth = 1)
+        public static uint GetNearestObjectByTag(string sTag, uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID, int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static ObjectType GetObjectType(uint oTarget)
         {
-            if (SWLOR.Game.Server.NWN.NWScript.GetIsPC(oTarget)) return ObjectType.Player;
+            if (SWLOR.Game.Server.NWN._.GetIsPC(oTarget)) return ObjectType.Player;
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(106);
             return (ObjectType)Internal.NativeFunctions.StackPopInteger();
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the current hitpoints of oObject
         ///   * Return value on error: 0
         /// </summary>
-        public static int GetCurrentHitPoints(uint oObject = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetCurrentHitPoints(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(49);
@@ -804,7 +804,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the maximum hitpoints of oObject
         ///   * Return value on error: 0
         /// </summary>
-        public static int GetMaxHitPoints(uint oObject = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetMaxHitPoints(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(50);
@@ -812,7 +812,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oObject is a valid object.
+        ///   * Returns true if oObject is a valid object.
         /// </summary>
         public static bool GetIsObjectValid(uint oObject)
         {

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             var damage = _.EffectDamage(target.MaxHP+11);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, target);
+            _.ApplyEffectToObject(DurationType.Instant, damage, target);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.CustomEffect
             oCaster.AssignCommand(() =>
             {
                 Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, oTarget.Object);
+                _.ApplyEffectToObject(DurationType.Instant, damage, oTarget.Object);
             });
         }
 

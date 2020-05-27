@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -86,17 +86,17 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             // Penalize the caster
             Effect effect = _.EffectACDecrease(amount);
             effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
-            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
+            ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
 
 
-            NWCreature targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+            NWCreature targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, creature, nth);
             while (targetCreature.IsValid && GetDistanceBetween(creature, targetCreature) <= MaxDistance)
             {
                 // Skip the caster, if they get picked up.
                 if (targetCreature == creature)
                 {
                     nth++;
-                    targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+                    targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, creature, nth);
                     continue;
                 }
 
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         if (_.GetIsReactionTypeHostile(targetCreature, creature) == 1)
                         {
                             nth++;
-                            targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+                            targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, creature, nth);
                             continue;        
                         }                            
                         break;
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         if (_.GetIsReactionTypeHostile(targetCreature, creature) == 1)
                         {
                             nth++;
-                            targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+                            targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, creature, nth);
                             continue;
                         }
                         break;
@@ -141,11 +141,11 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, targetCreature, 6.1f);
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), targetCreature);
+                _.ApplyEffectToObject(_.DurationType.Temporary, effect, targetCreature, 6.1f);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_DUR_MAGIC_RESISTANCE), targetCreature);
                 
                 nth++;
-                targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, creature, nth);
+                targetCreature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, creature, nth);
             }
             
         }

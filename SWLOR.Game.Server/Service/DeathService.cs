@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,15 +29,15 @@ namespace SWLOR.Game.Server.Service
             _.SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, player);
             _.SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, player);
 
-            var factionMember = _.GetFirstFactionMember(hostile.Object, FALSE);
-            while (_.GetIsObjectValid(factionMember) == TRUE)
+            var factionMember = _.GetFirstFactionMember(hostile.Object, false);
+            while (_.GetIsObjectValid(factionMember) == true)
             {
                 _.ClearPersonalReputation(player.Object, factionMember);
-                factionMember = _.GetNextFactionMember(hostile.Object, FALSE);
+                factionMember = _.GetNextFactionMember(hostile.Object, false);
             }
             
             const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
-            _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
+            _.PopUpDeathGUIPanel(player.Object, true, true, 0, RespawnMessage);
         }
 
         private static void ApplyDurabilityLoss(NWPlayer player)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
-            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
+            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, false);
         }
 
 

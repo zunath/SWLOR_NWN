@@ -17,7 +17,7 @@ namespace NWN.Scripts
             {
                 RimerDeckType deck = RandomService.Random(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
                 RimerCPU.ConfigureGameSettings(_.OBJECT_SELF, deck, RimerAIDifficulty.Easy);
-                return _.FALSE;
+                return false;
             }
         }
     }

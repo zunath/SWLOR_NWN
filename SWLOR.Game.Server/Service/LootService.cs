@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCorpse()
         {
-            SetIsDestroyable(FALSE);
+            SetIsDestroyable(false);
 
             NWObject self = _.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                 NWItem item = GetItemInSlot(slot, self);
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
-                    NWItem copy = CopyItem(item, container, TRUE);
+                    NWItem copy = CopyItem(item, container, true);
 
                     if (slot == INVENTORY_SLOT_HEAD ||
                         slot == INVENTORY_SLOT_CHEST)
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
-                    CopyItem(item, container, TRUE);
+                    CopyItem(item, container, true);
                     item.Destroy();
                 }
             }
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service
                 if (!container.IsValid) return;
 
                 NWObject body = container.GetLocalObject("CORPSE_BODY");
-                body.AssignCommand(() => SetIsDestroyable(TRUE));
+                body.AssignCommand(() => SetIsDestroyable(true));
                 body.DestroyAllInventoryItems();
                 body.Destroy();
 

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Scripts.Area
             for (int x = 1; x <= CopyCount; x++)
             {
                 NWArea copy = _.CopyArea(source);
-                copy.SetLocalInt("IS_AREA_INSTANCE", _.TRUE);
+                copy.SetLocalInt("IS_AREA_INSTANCE", true);
                 copy.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                 MessageHub.Instance.Publish(new OnAreaInstanceCreated(copy));
             }

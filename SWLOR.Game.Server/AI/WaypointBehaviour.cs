@@ -1,7 +1,7 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
 using System;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using NWN;
 
 namespace SWLOR.Game.Server.AI
@@ -48,10 +48,10 @@ namespace SWLOR.Game.Server.AI
         }
 
         // Set a given WalkWayPoints condition
-        void SetWalkCondition(int nCondition, NWCreature oCreature, int bValid = TRUE)
+        void SetWalkCondition(int nCondition, NWCreature oCreature, int bValid = true)
         {
             int nCurrentCond = GetLocalInt(oCreature, sWalkwayVarname);
-            if (bValid == TRUE)
+            if (bValid == true)
             {
                 SetLocalInt(oCreature, sWalkwayVarname, nCurrentCond | nCondition);
             }
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.AI
             {
                 oWay = GetObjectByTag(sTag + GetWaypointSuffix(nNth));
             }
-            if (GetIsObjectValid(oWay) != TRUE)
+            if (GetIsObjectValid(oWay) != true)
             {
                 if (bCrossAreas != 1)
                 {
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.AI
                 {
                     oWay = GetObjectByTag("POST_" + GetTag(oCreature));
                 }
-                if (GetIsObjectValid(oWay) == TRUE)
+                if (GetIsObjectValid(oWay) == true)
                 {
                     // no waypoints but a post
                     SetLocalInt(oCreature, "WP_NUM", 1);
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.AI
             else
             {
                 // look up and store all the waypoints
-                while (GetIsObjectValid(oWay) == TRUE)
+                while (GetIsObjectValid(oWay) == true)
                 {
                     SetLocalObject(oCreature, "WP_" + IntToString(nNth), oWay);
                     nNth++;
@@ -172,13 +172,13 @@ namespace SWLOR.Game.Server.AI
             {
                 // we're either walking forwards or backwards -- check
                 int bGoingBackwards = GetWalkCondition(NW_WALK_FLAG_BACKWARDS, oCreature);
-                if (bGoingBackwards == TRUE)
+                if (bGoingBackwards == true)
                 {
                     nCurWay--;
                     if (nCurWay == 0)
                     {
                         nCurWay = 2;
-                        SetWalkCondition(NW_WALK_FLAG_BACKWARDS, oCreature, FALSE);
+                        SetWalkCondition(NW_WALK_FLAG_BACKWARDS, oCreature, false);
                     }
                 }
                 else
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.AI
                     if (nCurWay > nPoints)
                     {
                         nCurWay = nCurWay - 2;
-                        SetWalkCondition(NW_WALK_FLAG_BACKWARDS, oCreature, TRUE);
+                        SetWalkCondition(NW_WALK_FLAG_BACKWARDS, oCreature, true);
                     }
                 }
             }
@@ -234,16 +234,16 @@ namespace SWLOR.Game.Server.AI
 
 
         // Make the caller walk through their waypoints or go to their post.
-        void WalkWayPoints(NWCreature oCreature, int nRun = FALSE, float fPause = 1.0F)
+        void WalkWayPoints(NWCreature oCreature, int nRun = false, float fPause = 1.0F)
         {
             // * don't interrupt current circuit
             uint oNearestEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
             int bIsEnemyValid = GetIsObjectValid(oNearestEnemy);
 
             // * if I can see an enemy I should not be trying to walk waypoints
-            if (bIsEnemyValid == TRUE)
+            if (bIsEnemyValid == true)
             {
-                if (GetObjectSeen(oNearestEnemy) == TRUE)
+                if (GetObjectSeen(oNearestEnemy) == true)
                 {
                     return;
                 }
@@ -254,18 +254,18 @@ namespace SWLOR.Game.Server.AI
             int bMoving = GetCurrentAction(oCreature);
             int bWaiting = GetCurrentAction(oCreature);
 
-            if (bIsInConversation == TRUE || bMoving == TRUE || bWaiting == TRUE)
+            if (bIsInConversation == true || bMoving == true || bWaiting == true)
                 return;
 
             // Initialize if necessary
-            if (GetWalkCondition(NW_WALK_FLAG_INITIALIZED, oCreature) != TRUE)
+            if (GetWalkCondition(NW_WALK_FLAG_INITIALIZED, oCreature) != true)
             {
                 LookUpWalkWayPoints(oCreature);
                 SetWalkCondition(NW_WALK_FLAG_INITIALIZED, oCreature);
             }
             // Move to the next waypoint
             uint oWay = GetNextWalkWayPoint(oCreature);
-            if (GetIsObjectValid(oWay) == TRUE)
+            if (GetIsObjectValid(oWay) == true)
             {
                 SetWalkCondition(NW_WALK_FLAG_CONSTANT, oCreature);
                 // * Feb 7 2003: Moving this from 299 to 321, because I don't see the point

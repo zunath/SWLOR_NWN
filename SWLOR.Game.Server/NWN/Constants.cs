@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         public const uint OBJECT_INVALID = 0x7F000000;
 

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
         public void Main()
         {
-            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (_.GetInventoryDisturbType() != DisturbType.Added)
                 return;
             
             NWPlayer player = _.GetLastDisturbed();

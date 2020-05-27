@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -87,8 +87,8 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), target, duration);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_IMP_ACID_L), target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneImmobilize(), target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VFX_IMP_ACID_L), target, duration);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

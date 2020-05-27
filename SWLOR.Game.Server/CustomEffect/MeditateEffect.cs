@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {

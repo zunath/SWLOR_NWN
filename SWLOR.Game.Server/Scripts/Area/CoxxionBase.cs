@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.Scripts.Area
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Scripts.Area
             var doors = new List<NWObject>();
 
             var obj = _.GetFirstObjectInArea(area);
-            while (_.GetIsObjectValid(obj) == _.TRUE)
+            while (_.GetIsObjectValid(obj) == true)
             {
                 int colorID = _.GetLocalInt(obj, "DOOR_COLOR");
 

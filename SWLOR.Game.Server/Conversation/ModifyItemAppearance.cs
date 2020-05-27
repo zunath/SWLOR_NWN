@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            SetCommandable(FALSE, GetPC());
+            SetCommandable(false, GetPC());
             LoadMainPage();
         }
         
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Conversation
 
             bool canModifyMain = main.IsValid && !main.IsPlot && !main.IsCursed &&
                                  // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                 main.CustomItemType != CustomItemType.Lightsaber && main.GetLocalInt("LIGHTSABER") == FALSE;
+                                 main.CustomItemType != CustomItemType.Lightsaber && main.GetLocalInt("LIGHTSABER") == false;
 
             if (canModifyMain)
             {
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Conversation
 
             bool canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed &&
                                     // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalInt("LIGHTSABER") == FALSE;
+                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalInt("LIGHTSABER") == false;
 
             if (canModifyOffHand)
             {
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Save/Load Outfits
-                    SetCommandable(TRUE, player);
+                    SetCommandable(true, player);
                     SwitchConversation("Outfit");
                     break;
                 case 2: // Main Hand
@@ -645,27 +645,27 @@ namespace SWLOR.Game.Server.Conversation
             int type = model.ItemTypeID;
             int index = model.Index;
 
-            NWItem copy = CopyItemAndModify(item, type, index, partID, TRUE);
+            NWItem copy = CopyItemAndModify(item, type, index, partID, true);
             item.Destroy();
             model.TargetItem = copy;
 
             player.AssignCommand(() =>
             {
-                SetCommandable(TRUE, player);
+                SetCommandable(true, player);
                 ActionEquipItem(copy, slotID);
-                SetCommandable(FALSE, player);
+                SetCommandable(false, player);
             });
         }
 
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-            SetCommandable(TRUE, GetPC());
+            SetCommandable(true, GetPC());
         }
 
         public override void EndDialog()
         {
-            SetCommandable(TRUE, GetPC());
+            SetCommandable(true, GetPC());
         }
     }
 }

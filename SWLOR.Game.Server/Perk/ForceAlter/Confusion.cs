@@ -97,13 +97,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    if ((creature.Wisdom > _.GetAbilityModifier(_.ABILITY_WISDOM, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
+                    if ((creature.Wisdom > _.GetAbilityModifier(_.AbilityType.Wisdom, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
                     {
                         creature.AssignCommand(() =>
                         {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
+                            _.ApplyEffectToObject(_.DurationType.Temporary, confusionEffect, target, 6.1f);
                             // Play VFX
-                            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), target);
+                            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), target);
                         });
                         if (!creature.IsPlayer)
                         {
@@ -131,9 +131,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var targetCreatureCopy = targetCreature; // Closure can modify the iteration variable so we copy it first.
                             creature.AssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, targetCreatureCopy, 6.1f);
+                                _.ApplyEffectToObject(_.DurationType.Temporary, confusionEffect, targetCreatureCopy, 6.1f);
                                 // Play VFX
-                                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), targetCreatureCopy);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_CONFUSION_S), targetCreatureCopy);
                             });
 
                             if (!creature.IsPlayer)

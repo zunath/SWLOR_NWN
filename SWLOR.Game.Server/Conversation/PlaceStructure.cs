@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canPlaceStructure = true;
             bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
             bool isPlacingBuilding = structure.BaseStructureTypeID == (int)BaseStructureType.Building;
-            bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INITIALIZED") == FALSE;
+            bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INITIALIZED") == false;
 
             double powerInUse = BaseService.GetPowerInUse(data.PCBaseID);
             double cpuInUse = BaseService.GetCPUInUse(data.PCBaseID);
@@ -491,7 +491,7 @@ namespace SWLOR.Game.Server.Conversation
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             var style = DataService.BuildingStyle.GetByID(styleID);
             var area = AreaService.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
-            area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
+            area.SetLocalInt("IS_BUILDING_PREVIEW", true);
             NWPlayer player = GetPC();
 
             BaseService.JumpPCToBuildingInterior(player, area);

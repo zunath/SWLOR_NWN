@@ -14,7 +14,7 @@ using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Scripting;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
                 var quest = _quests[pcQuest.QuestID];
-                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, FALSE);
+                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, false);
             }
         }
 

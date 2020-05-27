@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -65,9 +65,9 @@ namespace NWN.Scripts
             directorsChambers.SetLocalObject("DIRECTORS_CHAMBERS", directorsChambers);
 
             // Set local variables for instances
-            restrictedLevel.SetLocalInt("IS_AREA_INSTANCE", TRUE);
-            mainLevel.SetLocalInt("IS_AREA_INSTANCE", TRUE);
-            directorsChambers.SetLocalInt("IS_AREA_INSTANCE", TRUE);
+            restrictedLevel.SetLocalInt("IS_AREA_INSTANCE", true);
+            mainLevel.SetLocalInt("IS_AREA_INSTANCE", true);
+            directorsChambers.SetLocalInt("IS_AREA_INSTANCE", true);
             restrictedLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
             mainLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
             directorsChambers.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();

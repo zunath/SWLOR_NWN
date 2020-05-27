@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Service
                         _.d6(1),
                         _.DAMAGE_TYPE_ACID));
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, eEffect, oTarget);
+            _.ApplyEffectToObject(DurationType.Instant, eEffect, oTarget);
 
             _.DelayCommand(6.0f, () => { ApplyAcid(oTarget, oArea); });
         }
@@ -482,7 +482,7 @@ namespace SWLOR.Game.Server.Service
                         _.d6(2),
                         _.DAMAGE_TYPE_BLUDGEONING));
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, eEffect, oTarget);
+            _.ApplyEffectToObject(DurationType.Instant, eEffect, oTarget);
 
             _.DelayCommand(6.0f, () => { ApplySandstorm(oTarget, oArea); });
         }
@@ -513,7 +513,7 @@ namespace SWLOR.Game.Server.Service
                           _.d6(2),
                           _.DAMAGE_TYPE_ACID));
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, eEffect, oCreature);
+                _.ApplyEffectToObject(DurationType.Instant, eEffect, oCreature);
 
                 _.DelayCommand(6.0f, () => { ApplyAcid(oCreature, oArea); });
             }
@@ -531,7 +531,7 @@ namespace SWLOR.Game.Server.Service
                             _.d6(2),
                             _.DAMAGE_TYPE_BLUDGEONING));
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, eEffect, oCreature);
+                _.ApplyEffectToObject(DurationType.Instant, eEffect, oCreature);
 
                 _.DelayCommand(6.0f, () => { ApplySandstorm(oCreature, oArea); });
             }                                    
@@ -714,7 +714,7 @@ namespace SWLOR.Game.Server.Service
 
             if (nSuccess == 0)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY,
+                _.ApplyEffectToObject(_.DurationType.Temporary,
                                       _.EffectKnockdown(),
                                       oCreature,
                                       6.0f);
@@ -760,7 +760,7 @@ namespace SWLOR.Game.Server.Service
             //Effects
             Effect eEffBolt = _.EffectVisualEffect(_.VFX_IMP_LIGHTNING_M);
             Effect eEffKnock = _.EffectKnockdown();
-            _.ApplyEffectAtLocation(_.DURATION_TYPE_INSTANT, eEffBolt, lLocation);
+            _.ApplyEffectAtLocation(DurationType.Instant, eEffBolt, lLocation);
 
             Effect eEffDam;
             int nType;
@@ -773,14 +773,14 @@ namespace SWLOR.Game.Server.Service
                     eEffDam = _.EffectDamage(
                         _.FloatToInt(_.IntToFloat(nPower) - (_.GetDistanceBetweenLocations(lLocation, _.GetLocation(oObject)) * 10.0f)),
                         _.DAMAGE_TYPE_ELECTRICAL);
-                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, eEffDam, oObject);
+                    _.ApplyEffectToObject(DurationType.Instant, eEffDam, oObject);
 
                     if (nType == _.OBJECT_TYPE_CREATURE)
                     {
                         if (_.GetIsPC(oObject) == 1) _.SendMessageToPC(oObject, FB_T_WEATHER_LIGHTNING);
 
                         _.PlayVoiceChat(_.VOICE_CHAT_PAIN1, oObject);
-                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, eEffKnock, oObject, _.IntToFloat(_.d6(1)));
+                        _.ApplyEffectToObject(_.DurationType.Temporary, eEffKnock, oObject, _.IntToFloat(_.d6(1)));
                     }
                 }
                 oObject = _.GetNextObjectInShape(_.SHAPE_SPHERE, fRange, lLocation, 0, _.OBJECT_TYPE_CREATURE | _.OBJECT_TYPE_DOOR | _.OBJECT_TYPE_PLACEABLE);

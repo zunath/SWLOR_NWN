@@ -19,8 +19,10 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWN.Events.Creature;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.Service
             public float range;
         }
 
-        private static ShipStats GetShipStatsByAppearance(int appearance)
+        private static ShipStats GetShipStatsByAppearance(AppearanceType appearance)
         {
             ShipStats stats = new ShipStats();
 
@@ -387,7 +389,7 @@ namespace SWLOR.Game.Server.Service
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
-            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
+            bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             starship.SetLocalObject("STARSHIP_RESOURCE_BAY", bay.Object);
             bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
@@ -821,14 +823,14 @@ namespace SWLOR.Game.Server.Service
 
             // Apply ghost effects so we can stand on each other's heads, and create the ship again.
             Effect eGhost = _.EffectCutsceneGhost();
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, player, 3.5f);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, copy, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eGhost, player, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eGhost, copy, 3.5f);
             copy.Area.DeleteLocalObject("CREATURE");
             CreateShipInSpace(copy.Area, player.Location);
             player.AssignCommand(() => { _.ClearAllActions(); _.ActionJumpToLocation(copy.Location); });
 
             // Make ourselves invisible for 2.5s and destroy the copy at the same time.  
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), player, 2.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), player, 2.5f);
             copy.Destroy(2.5f);
 
             // Set our appearance back to normal (now that we're invisible). 
@@ -886,7 +888,7 @@ namespace SWLOR.Game.Server.Service
             NWCreature copy = player.GetLocalObject("COPY");
 
             // Apply ghost effect so we can stand on each other's heads.
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneGhost(), copy, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneGhost(), copy, 3.5f);
             player.AssignCommand(() => { _.ClearAllActions();  _.ActionJumpToLocation(copy.Location); });
 
             // Return our appearance to normal.
@@ -934,15 +936,15 @@ namespace SWLOR.Game.Server.Service
 
             // Make the player invisible for a short period of time, and allow the two to move through each other. 
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eGhost, copy);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInv, player, 2.5f);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, player, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eInv, player, 2.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eGhost, player, 3.5f);
 
             // Clear the copy's inventory and gold. (This won't clear equipped items). 
             _.TakeGoldFromCreature(_.GetGold(copy), copy, 1);
             NWItem item = _.GetFirstItemInInventory(copy);
             while (item.IsValid)
             {
-                _.SetDroppableFlag(item, FALSE);
+                _.SetDroppableFlag(item, false);
                 item.Destroy();
                 item = _.GetNextItemInInventory(copy);
             }
@@ -1027,7 +1029,7 @@ namespace SWLOR.Game.Server.Service
                 if (creature.IsPC || creature.IsDM)
                 {
                     _.FloatingTextStringOnCreature(message, creature);
-                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SCREEN_BUMP), creature);
+                    _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Bump), creature);
                     // TODO - play sound.
                 }
                 else if (creature.Tag == "spaceship_copy")
@@ -1086,7 +1088,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         // For now, do pirates (4) instead of customs (1).
                         string resref = _.d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
-                        NWCreature pirate = _.CreateObject(OBJECT_TYPE_CREATURE, resref, trigger.Location);
+                        NWCreature pirate = _.CreateObject(ObjectType.Creature, resref, trigger.Location);
                         pirate.SetLocalInt("DC", encounter.Difficulty);
                         pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTable);
                         // TODO - play proximity alert sound.
@@ -1110,8 +1112,8 @@ namespace SWLOR.Game.Server.Service
                             if (targetHP <= 0)
                             {
                                 // Boom!
-                                _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_FNF_IMPLOSION), player.Location, 2.0f);
-                                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDeath(), player);
+                                _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Fnf_Implosion), player.Location, 2.0f);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectDeath(), player);
                             }
                             else
                             {
@@ -1274,7 +1276,7 @@ namespace SWLOR.Game.Server.Service
                 if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
 
                 Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST);
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
+                _.ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
 
                 // Reduce the attacker's Stronidium by half their weapon strength.
                 attackStron -= attackWeapons/2;
@@ -1299,7 +1301,7 @@ namespace SWLOR.Game.Server.Service
                 if (targetHP <= 0)
                 {
                     // Boom!
-                    _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_FNF_IMPLOSION), target.Location, 2.0f);
+                    _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VFX_FNF_IMPLOSION), target.Location, 2.0f);
                     _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDeath(), target);
                 }
                 else
@@ -1321,7 +1323,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Get a miss location near the target.
                 Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST, 1);
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
+                _.ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
 
                 /* See amove comment about making a custom spell that uses this.
                 Vector vTarget = _.GetPosition(target);
@@ -1332,7 +1334,7 @@ namespace SWLOR.Game.Server.Service
                                                 target.Location.Orientation);
 
                 -- This doesn't work, EffectBeams can't be fired at locations.
-                _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, eBeam, missLoc, 0.5f);*/
+                _.ApplyEffectAtLocation(DurationType.Temporary, eBeam, missLoc, 0.5f);*/
 
                 // Reduce the attacker's Stronidium by half their weapon strength.
                 attackStron -= attackWeapons/2;
@@ -1482,11 +1484,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, true, OBJECT_TYPE_CREATURE, creature.Position);
             while (target.IsValid)
             {
 
-                if (_.GetIsEnemy(target, creature) == TRUE &&
+                if (_.GetIsEnemy(target, creature) == true &&
                     !target.IsDead &&
                     target.GetLocalInt("IS_GUNNER") == 0 &&
                     _.GetDistanceBetween(creature, target) <= range &&
@@ -1497,7 +1499,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 }
 
-                target = _.GetNextObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+                target = _.GetNextObjectInShape(shape, range, targetLocation, true, OBJECT_TYPE_CREATURE, creature.Position);
             }
         }
 
@@ -1522,7 +1524,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer equipper = _.GetPCItemLastEquippedBy();
-            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             if (equipper.GetLocalInt("IS_SHIP") > 0)
             {

@@ -8,7 +8,7 @@ using SpellSchool = SWLOR.Game.Server.NWN.Enum.SpellSchool;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Returns the string tag set for the provided effect.
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Returns the total duration of the effect in seconds.
-        ///   - Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY.
+        ///   - Returns 0 if the duration type of the effect is not DurationType.Temporary.
         /// </summary>
         public static int GetEffectDuration(Effect eEffect)
         {
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Returns the remaining duration of the effect in seconds.
-        ///   - Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY.
+        ///   - Returns 0 if the duration type of the effect is not DurationType.Temporary.
         /// </summary>
         public static int GetEffectDurationRemaining(Effect eEffect)
         {
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Returns TRUE if the item is cursed and cannot be dropped
+        ///   Returns true if the item is cursed and cannot be dropped
         /// </summary>
         public static bool GetItemCursedFlag(uint oItem)
         {
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.NWN
         ///   the function will return the merged stack object. If the merged stack
         ///   overflowed, the function will return the overflowed stack that was created.
         /// </summary>
-        public static uint CreateItemOnObject(string sTag, uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, int nStackSize = 1,
+        public static uint CreateItemOnObject(string sTag, uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Create a Death effect
-        ///   - nSpectacularDeath: if this is TRUE, the creature to which this effect is
+        ///   - nSpectacularDeath: if this is true, the creature to which this effect is
         ///   applied will die in an extraordinary fashion
         ///   - nDisplayFeedback
         /// </summary>
@@ -438,8 +438,8 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if eEffect is a valid effect. The effect must have been applied to
-        ///   * an object or else it will return FALSE
+        ///   * Returns true if eEffect is a valid effect. The effect must have been applied to
+        ///   * an object or else it will return false
         /// </summary>
         public static bool GetIsEffectValid(Effect eEffect)
         {
@@ -648,7 +648,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Create a Swarm effect.
-        ///   - nLooping: If this is TRUE, for the duration of the effect when one creature
+        ///   - nLooping: If this is true, for the duration of the effect when one creature
         ///   created by this effect dies, the next one in the list will be created.  If
         ///   the last creature in the list dies, we loop back to the beginning and
         ///   sCreatureTemplate1 will be created, and so on...
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.NWN
         ///   cause the dispel effect to use the level of the creature that created the
         ///   effect.
         /// </summary>
-        public static Effect EffectDispelMagicBest(int nCasterLevel = SWLOR.Game.Server.NWN.NWScript.USE_CREATURE_LEVEL)
+        public static Effect EffectDispelMagicBest(int nCasterLevel = SWLOR.Game.Server.NWN._.USE_CREATURE_LEVEL)
         {
             Internal.NativeFunctions.StackPushInteger(nCasterLevel);
             Internal.NativeFunctions.CallBuiltIn(473);
@@ -835,7 +835,7 @@ namespace SWLOR.Game.Server.NWN
         ///   cause the dispel effect to use the level of the creature that created the
         ///   effect.
         /// </summary>
-        public static Effect EffectDispelMagicAll(int nCasterLevel = SWLOR.Game.Server.NWN.NWScript.USE_CREATURE_LEVEL)
+        public static Effect EffectDispelMagicAll(int nCasterLevel = SWLOR.Game.Server.NWN._.USE_CREATURE_LEVEL)
         {
             Internal.NativeFunctions.StackPushInteger(nCasterLevel);
             Internal.NativeFunctions.CallBuiltIn(460);
@@ -1053,7 +1053,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Activate oItem.
         /// </summary>
-        public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
@@ -1256,7 +1256,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nBeamVisualEffect: VFX_BEAM_*
         ///   - oEffector: the beam is emitted from this creature
         ///   - nBodyPart: BODY_NODE_*
-        ///   - bMissEffect: If this is TRUE, the beam will fire to a random vector near or
+        ///   - bMissEffect: If this is true, the beam will fire to a random vector near or
         ///   past the target
         ///   * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nBeamVisualEffect is
         ///   not valid.
@@ -1293,7 +1293,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   * Create a Visual Effect that can be applied to an object.
         ///   - nVisualEffectId
-        ///   - nMissEffect: if this is TRUE, a random vector near or past the target will
+        ///   - nMissEffect: if this is true, a random vector near or past the target will
         ///   be generated, on which to play the effect
         /// </summary>
         public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false)

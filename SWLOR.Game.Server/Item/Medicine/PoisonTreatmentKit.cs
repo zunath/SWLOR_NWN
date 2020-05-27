@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == TRUE)
+                if (_.GetIsEffectValid(effect) == true)
                 {
                     int effectType = _.GetEffectType(effect);
                     if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             bool hasEffect = false;
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == TRUE)
+                if (_.GetIsEffectValid(effect) == true)
                 {
                     int effectType = _.GetEffectType(effect);
                     if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)

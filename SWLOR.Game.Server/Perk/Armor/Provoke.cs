@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             NWCreature npc = (target.Object);
             var vfx = _.EffectVisualEffect(_.VFX_IMP_CHARM);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, vfx, target.Object);
+            _.ApplyEffectToObject(DurationType.Instant, vfx, target.Object);
             
             creature.AssignCommand(() =>
             {

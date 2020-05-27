@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Bank
@@ -28,16 +30,16 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            int disturbType = _.GetInventoryDisturbType();
+            var disturbType = _.GetInventoryDisturbType();
             int itemCount = terminal.InventoryItems.Count();
             int itemLimit = terminal.GetLocalInt("BANK_LIMIT");
             if (itemLimit <= 0) itemLimit = 20;
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == DisturbType.Added)
             {
-                if (_.GetHasInventory(item) == _.TRUE)
+                if (_.GetHasInventory(item) == true)
                 {
-                    item.SetLocalInt("RETURNING_ITEM", _.TRUE);
+                    item.SetLocalInt("RETURNING_ITEM", true);
                     ItemService.ReturnItem(player, item);
                     player.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return;
@@ -66,9 +68,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                     MessageHub.Instance.Publish(new OnStoreBankItem(player, itemEntity));
                 }
             }
-            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == DisturbType.Removed)
             {
-                if (item.GetLocalInt("RETURNING_ITEM") == _.TRUE)
+                if (item.GetLocalInt("RETURNING_ITEM") == true)
                 {
                     item.DeleteLocalInt("RETURNING_ITEM");
                 }

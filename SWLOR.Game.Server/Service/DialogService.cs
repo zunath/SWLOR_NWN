@@ -7,11 +7,10 @@ using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -142,16 +141,16 @@ namespace SWLOR.Game.Server.Service
             PlayerDialog dialog = AppCache.PlayerDialogs[player.GlobalID];
 
             // NPC conversations
-            if (NWScript.GetObjectType(talkTo) == ObjectType.Creature &&
+            if (GetObjectType(talkTo) == ObjectType.Creature &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                talkTo.AssignCommand(() => ActionStartConversation(player, "dialog" + dialog.DialogNumber, TRUE, FALSE));
+                talkTo.AssignCommand(() => ActionStartConversation(player, "dialog" + dialog.DialogNumber, true, false));
             }
             // Everything else
             else
             {
-                player.AssignCommand(() => ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, TRUE, FALSE));
+                player.AssignCommand(() => ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, true, false));
             }
         }
 
@@ -170,9 +169,9 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleRest()
         {
             NWPlayer player = (GetLastPCRested());
-            int restType = GetLastRestEventType();
+            var restType = GetLastRestEventType();
 
-            if (restType != REST_EVENTTYPE_REST_STARTED ||
+            if (restType != RestEventType.Started ||
                 !player.IsValid ||
                 player.IsDM) return;
 
@@ -330,8 +329,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    int objectType = GetObjectType(OBJECT_SELF);
-                    if (objectType == OBJECT_TYPE_PLACEABLE)
+                    var objectType = GetObjectType(OBJECT_SELF);
+                    if (objectType == ObjectType.Placeable)
                     {
                         NWPlaceable talkTo = (OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
@@ -344,7 +343,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    ActionStartConversation(pc.Object, "", TRUE, FALSE);
+                    ActionStartConversation(pc.Object, "", true, false);
                 }
             }
         }

@@ -1,6 +1,6 @@
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +11,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return QuestComplete.Check(3, 5) ? TRUE : FALSE;
+            return QuestComplete.Check(3, 5) ? true : false;
         }
     }
 }

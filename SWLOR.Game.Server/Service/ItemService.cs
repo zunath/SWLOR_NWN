@@ -19,7 +19,7 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum.Item;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Service
             // Attack bonus, damage, base attack bonus: weapons only
             // AC - armor items only.
             ItemProperty ip = GetFirstItemProperty(examinedItem);
-            while (GetIsItemPropertyValid(ip) == TRUE)
+            while (GetIsItemPropertyValid(ip) == true)
             {
                 if (GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
                 {
@@ -493,7 +493,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUnequipItem()
         {
             NWPlayer player = GetPCItemLastUnequippedBy();
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = GetPCItemLastUnequipped();
 
@@ -596,7 +596,7 @@ namespace SWLOR.Game.Server.Service
 
             NWPlayer player = GetPCItemLastEquippedBy();
 
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = (GetPCItemLastEquipped());
             int baseItemType = oItem.BaseItemType;
@@ -673,7 +673,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReturnItem(NWObject target, NWItem item)
         {
-            if (GetHasInventory(item) == TRUE)
+            if (GetHasInventory(item) == true)
             {
                 NWObject possessor = item.Possessor;
                 possessor.AssignCommand(() =>
@@ -683,7 +683,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                CopyItem(item.Object, target.Object, TRUE);
+                CopyItem(item.Object, target.Object, true);
                 item.Destroy();
             }
         }
@@ -848,7 +848,7 @@ namespace SWLOR.Game.Server.Service
                 else if (item.CustomItemType == CustomItemType.ForceArmor) return SkillType.ForceArmor;
 
                 // Training lightsabers are katana weapons with special local variables.
-                if (item.GetLocalInt("LIGHTSABER") == TRUE)
+                if (item.GetLocalInt("LIGHTSABER") == true)
                 {
                     return SkillType.Lightsaber;
                 }
@@ -878,7 +878,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender)
         {
-            return sender.GetLocalInt("ITEM_RENAMING_LISTENING") == TRUE;
+            return sender.GetLocalInt("ITEM_RENAMING_LISTENING") == true;
         }
 
         private static void OnModuleNWNXChat()

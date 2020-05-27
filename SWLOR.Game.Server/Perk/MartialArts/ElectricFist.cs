@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
                 default: return;
             }
             
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectStunned(), target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectStunned(), target, duration);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL), target);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_SUNSTRIKE), target);
         }

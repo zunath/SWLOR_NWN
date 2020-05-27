@@ -1,6 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Scripts.Placeable
 {
@@ -16,15 +18,15 @@ namespace SWLOR.Game.Server.Scripts.Placeable
 
         public void Main()
         {
-            NWPlaceable placeable = (_.OBJECT_SELF);
-            NWPlayer user = placeable.ObjectType == _.OBJECT_TYPE_PLACEABLE ?
-                _.GetLastUsedBy() :
-                _.GetClickingObject();
+            NWPlaceable placeable = (OBJECT_SELF);
+            NWPlayer user = placeable.ObjectType == ObjectType.Placeable ?
+                GetLastUsedBy() :
+                GetClickingObject();
 
             if (!user.IsPlayer && !user.IsDM) return;
 
             string conversation = placeable.GetLocalString("CONVERSATION");
-            NWObject target = placeable.GetLocalInt("TARGET_PC") == _.TRUE ? user.Object : placeable.Object;
+            NWObject target = GetLocalBool(placeable, "TARGET_PC") ? user.Object : placeable.Object;
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
@@ -32,7 +34,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             }
             else
             {
-                user.AssignCommand(() => _.ActionStartConversation(target, string.Empty, _.TRUE, _.FALSE));
+                user.AssignCommand(() => ActionStartConversation(target, string.Empty, true, false));
             }
 
         }

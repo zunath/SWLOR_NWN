@@ -4,7 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
             if (channel == ChatChannel.PlayerShout && sender.IsPC && 
-                sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+                sender.GetLocalInt("DISPLAY_HOLONET") == false)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannel.PlayerShout)
             {
-                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
+                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == true));
                 recipients.AddRange(AppCache.ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Service
 
                 var originalSender = sender;
                 // temp set sender to hologram owner for holocoms
-                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
+                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == true)
                 {
                     sender = HoloComService.GetHoloGramOwner(sender);
                 }
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
+            player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? true : false);
         }
         
         private enum WorkingOnEmoteStyle

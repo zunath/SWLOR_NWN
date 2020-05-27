@@ -13,7 +13,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             NWObject obj = GetFirstObjectInArea(area.Object);
             while (obj.IsValid)
             {
-                bool isSpawn = obj.ObjectType == OBJECT_TYPE_WAYPOINT && obj.GetLocalInt("IS_SPAWN") == TRUE;
+                bool isSpawn = obj.ObjectType == OBJECT_TYPE_WAYPOINT && obj.GetLocalInt("IS_SPAWN") == true;
 
                 if (isSpawn)
                 {
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
         {
-            NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalInt("IS_AREA_INSTANCE") == FALSE);
+            NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalInt("IS_AREA_INSTANCE") == false);
             AreaSpawn copyAreaSpawn = AreaSpawns[originalArea].Clone();
             AreaSpawns.Add(copyArea, copyAreaSpawn);
         }
@@ -380,7 +380,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (creature.Spawn.IsValid)
                 {
-                    bool eventsDisabled = creature.Spawn.GetLocalInt("SPAWN_EVENTS_DISABLED") == TRUE;
+                    bool eventsDisabled = creature.Spawn.GetLocalInt("SPAWN_EVENTS_DISABLED") == true;
                     bool isCreature = creature.Spawn.IsCreature;
 
                     if (isCreature)
@@ -389,13 +389,13 @@ namespace SWLOR.Game.Server.Service
                         if (eventsDisabled && playerCount > 0)
                         {
                             EnableCreatureEvents(creature.SpawnCreature);
-                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", FALSE);
+                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", false);
                         }
                         // Currently enabled, but players are no longer in area. Disable them.
                         else if (!eventsDisabled && playerCount <= 0)
                         {
                             DisableCreatureEvents(creature.SpawnCreature);
-                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", TRUE);
+                            creature.SpawnCreature.SetLocalInt("SPAWN_EVENTS_DISABLED", true);
                         }
                     }
                 }
@@ -411,7 +411,7 @@ namespace SWLOR.Game.Server.Service
                 // The reason for this is because we don't want lag when players enter an area. 
                 // This'll use more memory but the CPU usage will be very limited as none of the
                 // creatures will have scripts assigned.
-                bool hasRunOnce = NWModule.Get().GetLocalInt("SPAWN_HAS_RUN_ONCE") == TRUE;
+                bool hasRunOnce = NWModule.Get().GetLocalInt("SPAWN_HAS_RUN_ONCE") == true;
 
                 foreach (var spawn in AreaSpawns)
                 {
@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                NWModule.Get().SetLocalInt("SPAWN_HAS_RUN_ONCE", TRUE);
+                NWModule.Get().SetLocalInt("SPAWN_HAS_RUN_ONCE", true);
             }
         }
 

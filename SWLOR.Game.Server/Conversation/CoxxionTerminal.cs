@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -68,13 +68,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (door.GetLocalInt("DOOR_COLOR") == terminalColorID)
                 {
-                    _.SetLocked(door, FALSE);
+                    _.SetLocked(door, false);
                     door.AssignCommand(() => _.ActionOpenDoor(door));
                 }
                 else
                 {
                     door.AssignCommand(() => _.ActionCloseDoor(door));
-                    _.SetLocked(door, TRUE);
+                    _.SetLocked(door, true);
                 }
             }
 

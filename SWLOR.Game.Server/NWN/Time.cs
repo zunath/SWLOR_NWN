@@ -1,9 +1,9 @@
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
-        ///   * Returns TRUE if it is currently day.
+        ///   * Returns true if it is currently day.
         /// </summary>
         public static bool GetIsDay()
         {
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if it is currently night.
+        ///   * Returns true if it is currently night.
         /// </summary>
         public static bool GetIsNight()
         {
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if it is currently dawn.
+        ///   * Returns true if it is currently dawn.
         /// </summary>
         public static bool GetIsDawn()
         {
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if it is currently dusk.
+        ///   * Returns true if it is currently dusk.
         /// </summary>
         public static bool GetIsDusk()
         {

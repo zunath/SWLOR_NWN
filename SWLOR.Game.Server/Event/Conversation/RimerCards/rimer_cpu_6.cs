@@ -17,7 +17,7 @@ namespace NWN.Scripts
             {
                 RimerDeckType deck = RandomService.Random(4) <= 3 ? RimerDeckType.Spells : RimerDeckType.Angels;
                 RimerCPU.ConfigureGameSettings(_.OBJECT_SELF, deck, RimerAIDifficulty.Normal);
-                return _.FALSE;
+                return false;
             }
         }
     }

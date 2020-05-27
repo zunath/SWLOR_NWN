@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             Effect effect = _.EffectAbilityIncrease(ability, amount);
             effect = _.TagEffect(effect, "STIM_PACK_EFFECT");
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, target, duration);
+            _.ApplyEffectToObject(_.DurationType.Temporary, effect, target, duration);
 
             user.SendMessage("You inject " + target.Name + " with a stim pack. The stim pack will expire in " + duration + " seconds.");
 
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
 
-            if (existing != null && _.GetIsEffectValid(existing) == _.TRUE)
+            if (existing != null && _.GetIsEffectValid(existing) == true)
             {
                 return "Your target is already under the effects of another stimulant.";
             }

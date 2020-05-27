@@ -8,7 +8,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
+            _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Item
 
             _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), effectLocation);
 
-            if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == FALSE)
+            if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == false)
             {
                 int scanningBonus = item.ScanningBonus;
                 SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);

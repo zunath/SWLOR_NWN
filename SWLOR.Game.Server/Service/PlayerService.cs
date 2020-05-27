@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
@@ -520,7 +520,7 @@ namespace SWLOR.Game.Server.Service
                             amount += sturdinessLevel + 1;
                         }
                     }
-                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+                    _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), oPC.Object);
                 }
 
                 entity.RegenerationTick = rate;

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using System.Collections.Generic;
 using System.Collections;
 using SWLOR.Game.Server.NWN;
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Conversation
                             }
                         }
 
-                        _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(356), player);
 
                         // Clean up the base structure, if we were in a PC dock not public starport.
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.Conversation
                                     // Found our dock.  Clear its variable and play some VFX.
                                     plc.Structure.SetLocalInt("DOCKED_STARSHIP", 0);
                                     DoDustClouds(plc.Structure.Location);
-                                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), plc.Structure);
+                                    _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(356), plc.Structure);
                                 }
                                 else if (plc.PCBaseStructureID == structure.ID)
                                 {
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     // And shake the screen, because stuff.
-                    _.ApplyEffectAtLocation(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
+                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(356), loc);
                     DoDustClouds(loc);            
                 }
 
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                 }
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(356), player);
                 SpaceService.RemoveShipInSpace(player.Area);
 
                 EndConversation();

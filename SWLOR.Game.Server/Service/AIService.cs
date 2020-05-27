@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Service
             NWCreature self = _.OBJECT_SELF;
 
             // Don't modify AI behaviour for DM-spawned creatures.
-            if (self.GetLocalInt("DM_SPAWNED") == _.TRUE) return;
+            if (self.GetLocalInt("DM_SPAWNED") == true) return;
 
             string script = GetBehaviourScript(_.OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;

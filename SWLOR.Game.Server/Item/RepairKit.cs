@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Item
 
         private static SkillType GetSkillType(NWItem item)
         {
-            if (item.GetLocalInt("LIGHTSABER") == TRUE)
+            if (item.GetLocalInt("LIGHTSABER") == true)
             {
                 return SkillType.Engineering;
             }

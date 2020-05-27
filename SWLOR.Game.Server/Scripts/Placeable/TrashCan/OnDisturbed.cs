@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.TrashCan
             NWItem oItem = (_.GetInventoryDisturbItem());
             int type = _.GetInventoryDisturbType();
 
-            if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (type == DisturbType.Added)
             {
                 oItem.Destroy();
             }

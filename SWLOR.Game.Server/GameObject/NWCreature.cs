@@ -4,7 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -60,17 +60,17 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual int Constitution => _.GetAbilityScore(Object, ABILITY_CONSTITUTION);
 
-        public virtual int Wisdom => _.GetAbilityScore(Object, ABILITY_WISDOM);
-        public virtual int Intelligence => _.GetAbilityScore(Object, ABILITY_INTELLIGENCE);
+        public virtual int Wisdom => _.GetAbilityScore(Object, AbilityType.Wisdom);
+        public virtual int Intelligence => _.GetAbilityScore(Object, AbilityType.Intelligence);
 
-        public virtual int Charisma => _.GetAbilityScore(Object, ABILITY_CHARISMA);
+        public virtual int Charisma => _.GetAbilityScore(Object, AbilityType.Charisma);
         
         public virtual int StrengthModifier => _.GetAbilityModifier(ABILITY_STRENGTH, Object);
         public virtual int DexterityModifier => _.GetAbilityModifier(ABILITY_DEXTERITY, Object);
         public virtual int ConstitutionModifier => _.GetAbilityModifier(ABILITY_CONSTITUTION, Object);
-        public virtual int WisdomModifier => _.GetAbilityModifier(ABILITY_WISDOM, Object);
-        public virtual int IntelligenceModifier => _.GetAbilityModifier(ABILITY_INTELLIGENCE, Object);
-        public virtual int CharismaModifier => _.GetAbilityModifier(ABILITY_CHARISMA, Object);
+        public virtual int WisdomModifier => _.GetAbilityModifier(AbilityType.Wisdom, Object);
+        public virtual int IntelligenceModifier => _.GetAbilityModifier(AbilityType.Intelligence, Object);
+        public virtual int CharismaModifier => _.GetAbilityModifier(AbilityType.Charisma, Object);
 
         public virtual int XP
         {
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             AssignCommand(() =>
             {
-                _.ClearAllActions(clearCombatState ? TRUE : FALSE);
+                _.ClearAllActions(clearCombatState ? true : false);
             });
         }
 
@@ -119,14 +119,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsDead => _.GetIsDead(Object) == 1;
 
-        public virtual bool IsPossessedFamiliar => _.GetIsPossessedFamiliar(Object) == TRUE;
+        public virtual bool IsPossessedFamiliar => _.GetIsPossessedFamiliar(Object) == true;
 
-        public virtual bool IsDMPossessed => _.GetIsDMPossessed(Object) == TRUE;
+        public virtual bool IsDMPossessed => _.GetIsDMPossessed(Object) == true;
 
         public bool HasAnyEffect(params int[] effectIDs)
         {
             Effect eff = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(eff) == TRUE)
+            while (_.GetIsEffectValid(eff) == true)
             {
                 if (effectIDs.Contains(_.GetEffectType(eff)))
                 {
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWPlayer member = _.GetFirstFactionMember(Object, FALSE); member.IsValid; member = _.GetNextFactionMember(Object, FALSE))
+                for (NWPlayer member = _.GetFirstFactionMember(Object, false); member.IsValid; member = _.GetNextFactionMember(Object, false))
                 {
                     yield return member;
                 }

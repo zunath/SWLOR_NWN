@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Bioware
             if (fDuration == 0.0f)
             {
 
-                nDuration = _.DURATION_TYPE_PERMANENT;
+                nDuration = DurationType.Permanent;
             }
             else
             {
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Bioware
 
             }
 
-            if (nDuration == _.DURATION_TYPE_PERMANENT)
+            if (nDuration == DurationType.Permanent)
             {
                 _.AddItemProperty(nDuration, ip, oItem.Object);
             }

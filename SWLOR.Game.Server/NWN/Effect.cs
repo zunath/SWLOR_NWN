@@ -796,9 +796,9 @@ namespace SWLOR.Game.Server.NWN
         ///   * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nInvisibilityType
         ///   is invalid.
         /// </summary>
-        public static Effect EffectInvisibility(int nInvisibilityType)
+        public static Effect EffectInvisibility(InvisibilityType nInvisibilityType)
         {
-            Internal.NativeFunctions.StackPushInteger(nInvisibilityType);
+            Internal.NativeFunctions.StackPushInteger((int)nInvisibilityType);
             Internal.NativeFunctions.CallBuiltIn(457);
             return new Effect(Internal.NativeFunctions.StackPopEffect());
         }
@@ -1261,10 +1261,10 @@ namespace SWLOR.Game.Server.NWN
         ///   * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nBeamVisualEffect is
         ///   not valid.
         /// </summary>
-        public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, int nBodyPart, bool bMissEffect = false)
+        public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, BodyNode nBodyPart, bool bMissEffect = false)
         {
             Internal.NativeFunctions.StackPushInteger(bMissEffect ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nBodyPart);
+            Internal.NativeFunctions.StackPushInteger((int)nBodyPart);
             Internal.NativeFunctions.StackPushObject(oEffector);
             Internal.NativeFunctions.StackPushInteger((int)nBeamVisualEffect);
             Internal.NativeFunctions.CallBuiltIn(207);

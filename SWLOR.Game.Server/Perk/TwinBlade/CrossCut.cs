@@ -88,9 +88,9 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                     break;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_SLASHING), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_SLASHING), target);
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectACDecrease(3), target, duration);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEAD_EVIL), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_HEAD_EVIL), target);
 
             creature.SendMessage("Your target's armor has been breached.");
         }

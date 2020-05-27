@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
@@ -140,7 +141,7 @@ namespace SWLOR.Game.Server.Item
                 target.SetLocalInt("RESOURCE_COUNT", remaining);
             }
 
-            ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
         }
         
 
@@ -163,7 +164,7 @@ namespace SWLOR.Game.Server.Item
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
             return ANIMATION_LOOPING_GET_MID;
         }

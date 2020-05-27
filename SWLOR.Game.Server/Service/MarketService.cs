@@ -336,19 +336,19 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Check for mods
-                if (propertyType == (int)CustomItemPropertyType.BlueMod)
+                if (propertyType == ItemPropertyType.BlueMod)
                 {
                     return 98;
                 }
-                if (propertyType == (int)CustomItemPropertyType.GreenMod)
+                if (propertyType == ItemPropertyType.GreenMod)
                 {
                     return 99;
                 }
-                if (propertyType == (int)CustomItemPropertyType.RedMod)
+                if (propertyType == ItemPropertyType.RedMod)
                 {
                     return 100;
                 }
-                if (propertyType == (int)CustomItemPropertyType.YellowMod)
+                if (propertyType == ItemPropertyType.YellowMod)
                 {
                     return 101;
                 }

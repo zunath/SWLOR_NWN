@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target.Object, length);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

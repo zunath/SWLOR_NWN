@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
-                    oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
+                    oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
                     while (oObject.IsValid && iCount < 3)
                     {
                         if (oObject != target && oObject != player)
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             }
                             iCount += 1;
                         }
-                        oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
+                        oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
                     }
                     break;
                 case 5:
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
-                    oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
+                    oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
                     while (oObject.IsValid && iCount < 4)
                     {
                         if (oObject != target && oObject != player)
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             }
                             iCount += 1;
                         }
-                        oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
+                        oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, ObjectType.Creature, _.GetPosition(player));
                     }
                     break;
                 default:

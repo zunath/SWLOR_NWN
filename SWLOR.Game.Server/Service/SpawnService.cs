@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
                 if (isSpawn)
                 {
                     int spawnType = obj.GetLocalInt("SPAWN_TYPE");
-                    int objectType = spawnType == 0 || spawnType == OBJECT_TYPE_CREATURE ? OBJECT_TYPE_CREATURE : spawnType;
+                    int objectType = spawnType == 0 || spawnType == ObjectType.Creature ? ObjectType.Creature : spawnType;
                     int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
                     int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
                     string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
@@ -192,11 +192,11 @@ namespace SWLOR.Game.Server.Service
                             newSpawn.Respawns = false;
                         }
 
-                        if (objectType == OBJECT_TYPE_CREATURE)
+                        if (objectType == ObjectType.Creature)
                         {
                             areaSpawn.Creatures.Add(newSpawn);
                         }
-                        else if (objectType == OBJECT_TYPE_PLACEABLE)
+                        else if (objectType == ObjectType.Placeable)
                         {
                             areaSpawn.Placeables.Add(newSpawn);
                         }                      
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Service
                 int index = RandomService.GetRandomWeightedIndex(weights);
                 var dbSpawn = possibleSpawns.ElementAt(index);
                 Location location = GetRandomSpawnPoint(area);
-                NWPlaceable plc = (CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
+                NWPlaceable plc = (CreateObject(ObjectType.Placeable, dbSpawn.Resref, location));
                 ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                 spawn.Spawn = plc;
 
@@ -427,12 +427,12 @@ namespace SWLOR.Game.Server.Service
 
                     foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
-                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
+                        ProcessSpawn(plc, ObjectType.Placeable, spawn.Key, forceSpawn);
                     }
 
                     foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
-                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
+                        ProcessSpawn(creature, ObjectType.Creature, spawn.Key, forceSpawn);
                     }
 
                     areaSpawn.SecondsEmpty = 0.0f;
@@ -517,7 +517,7 @@ namespace SWLOR.Game.Server.Service
 
                 spawn.Spawn.SetLocalInt("AI_FLAGS", (int) aiFlags);
 
-                if (objectType == OBJECT_TYPE_CREATURE)
+                if (objectType == ObjectType.Creature)
                     AssignScriptEvents(spawn.Spawn.Object);
 
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))

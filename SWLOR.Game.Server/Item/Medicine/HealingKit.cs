@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 {
                     blastHeal *= 2;
                 }
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(blastHeal), target.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(blastHeal), target.Object);
             }
 
             float interval = 6.0f;
@@ -86,7 +87,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
             return ANIMATION_LOOPING_GET_MID;
         }

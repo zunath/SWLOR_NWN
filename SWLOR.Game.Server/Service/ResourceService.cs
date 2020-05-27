@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var ip in tempItem.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentType)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
                     typeID = _.GetItemPropertyCostTableValue(ip);
                     break;

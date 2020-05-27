@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 {
                     Effect outOfPowerEffect = _.EffectVisualEffect(_.VFX_DUR_AURA_RED);
                     outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
-                    _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, outOfPowerEffect, tower.Object);
+                    _.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
 
                     var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
 

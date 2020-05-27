@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             Vector lootPosition = Vector(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
             Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
-            NWPlaceable container = CreateObject(OBJECT_TYPE_PLACEABLE, "corpse", spawnLocation);
+            NWPlaceable container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             container.SetLocalObject("CORPSE_BODY", self);
             container.Name = self.Name + "'s Corpse";
 

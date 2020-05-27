@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerStatService.ApplyStatChanges(player, null, true);
                 LanguageService.InitializePlayerLanguages(player);
 
-                _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
+                _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(999), player));
 
                 InitializeHotBar(player);
             }
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Service
 
             if (damage != 0)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage), player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), player);
             }
 
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Service
 
             var eGhostWalk = _.EffectCutsceneGhost();
             eGhostWalk = _.TagEffect(eGhostWalk, "GHOST_WALK");
-            _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, eGhostWalk, oPC.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, eGhostWalk, oPC.Object);
 
         }
 

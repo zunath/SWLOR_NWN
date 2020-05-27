@@ -116,13 +116,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     }
                     break;
                 case 2:
-                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
+                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, ObjectType.Creature);
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(targetCreature, creature) == 0)
                         {
                             // Do nothing against droids or non-hostile creatures, skip object
-                            targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
+                            targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, ObjectType.Creature);
                             continue;
                         }
 
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             creature.SendMessage("Confusion failed.");
                         }
 
-                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
+                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, ObjectType.Creature);
                     }
                     break;
                 default:

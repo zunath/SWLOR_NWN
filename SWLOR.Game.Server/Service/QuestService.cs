@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Location location = oPC.Location;
-            NWPlaceable collector = CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location);
+            NWPlaceable collector = CreateObject(ObjectType.Placeable, "qst_item_collect", location);
             collector.SetLocalObject("QUEST_OWNER", questOwner);
 
             collector.AssignCommand(() =>

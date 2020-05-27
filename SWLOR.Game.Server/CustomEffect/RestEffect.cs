@@ -73,9 +73,9 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 int amount = CalculateAmount(player);
 
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), player);
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_HOLY);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
+                _.ApplyEffectToObject(DurationType.Instant, vfx, player);
                 restTick = 0;
             }
 

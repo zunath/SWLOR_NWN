@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
                 default: return;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
             CustomEffectService.ApplyCustomEffect(creature, target.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
 
 

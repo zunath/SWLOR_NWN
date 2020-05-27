@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Conversation
             var structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
             string resref = GetPlaceableResref(structure);
 
-            NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
+            NWPlaceable plc = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
             plc.IsUseable = false;
             plc.Destroy(6.0f);
             _.DelayCommand(6.1f, () => { data.IsPreviewing = false; });
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
                 string resref = GetPlaceableResref(structure);
-                data.StructurePreview = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
+                data.StructurePreview = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
                 _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), data.StructurePreview.Object);
             }

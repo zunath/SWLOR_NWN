@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Service
             });
             _.DelayCommand(1.0f * (modifiedCraftDelay / 2.0f), () =>
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
             });
             var immobilize = _.EffectCutsceneImmobilize();
             immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");

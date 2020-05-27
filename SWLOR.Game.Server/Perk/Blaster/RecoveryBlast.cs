@@ -87,8 +87,8 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 amount *= 2;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), member);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEALING_S), member);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), member);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_HEALING_S), member);
         }
 
 

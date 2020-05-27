@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Item
             starkillerBase.Starcharts |= starcharts;
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_CONFUSION_S), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_CONFUSION_S), target);
             _.FloatingTextStringOnCreature("Starcharts loaded!", player);
             item.Destroy();
         }
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Item
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
             return ANIMATION_LOOPING_GET_MID;
         }

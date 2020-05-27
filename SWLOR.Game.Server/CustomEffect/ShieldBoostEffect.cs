@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             if (healAmount > 0)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(healAmount), oTarget);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(healAmount), oTarget);
             }
 
             return null;

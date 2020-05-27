@@ -86,8 +86,8 @@ namespace NWN.Scripts
             NWLocation keyCardLocation1 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard1, GetFirstObjectInArea(mainLevel)));
             NWLocation keyCardLocation2 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard2, GetFirstObjectInArea(mainLevel)));
             
-            CreateObject(OBJECT_TYPE_PLACEABLE, "station_key_card", keyCardLocation1);
-            CreateObject(OBJECT_TYPE_PLACEABLE, "station_key_card", keyCardLocation2);
+            CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation1);
+            CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation2);
 
             mainLevel.SetLocalInt("KEY_CARDS_REMAINING", 2);
 
@@ -100,8 +100,8 @@ namespace NWN.Scripts
             keyCardLocation1 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard1, GetFirstObjectInArea(restrictedLevel)));
             keyCardLocation2 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard2, GetFirstObjectInArea(restrictedLevel)));
             
-            CreateObject(OBJECT_TYPE_PLACEABLE, "station_key_card", keyCardLocation1);
-            CreateObject(OBJECT_TYPE_PLACEABLE, "station_key_card", keyCardLocation2);
+            CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation1);
+            CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation2);
 
             restrictedLevel.SetLocalInt("KEY_CARDS_REMAINING", 2);
 

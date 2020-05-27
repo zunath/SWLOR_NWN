@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked
             {
-                Property = (int)CustomItemPropertyType.ComponentBonus,
+                Property = ItemPropertyType.ComponentBonus,
                 SubType = (int)bonus,
                 CostTable = 62,
                 CostTableValue = 0,

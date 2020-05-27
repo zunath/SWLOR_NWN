@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             }
 
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneImmobilize(), target, duration);
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VFX_IMP_ACID_L), target, duration);
         }

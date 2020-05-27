@@ -764,18 +764,18 @@ namespace SWLOR.Game.Server.Service
 
             Effect eEffDam;
             int nType;
-            NWObject oObject = _.GetFirstObjectInShape(_.SHAPE_SPHERE, fRange, lLocation, 0, _.OBJECT_TYPE_CREATURE | _.OBJECT_TYPE_DOOR | _.OBJECT_TYPE_PLACEABLE);
+            NWObject oObject = _.GetFirstObjectInShape(_.SHAPE_SPHERE, fRange, lLocation, 0, ObjectType.Creature | _.OBJECT_TYPE_DOOR | ObjectType.Placeable);
             while (_.GetIsObjectValid(oObject) == 1)
             {
                 nType = _.GetObjectType(oObject);
-                if ((nType & (_.OBJECT_TYPE_CREATURE | _.OBJECT_TYPE_DOOR | _.OBJECT_TYPE_PLACEABLE)) == 1)
+                if ((nType & (ObjectType.Creature | _.OBJECT_TYPE_DOOR | ObjectType.Placeable)) == 1)
                 {
                     eEffDam = _.EffectDamage(
                         _.FloatToInt(_.IntToFloat(nPower) - (_.GetDistanceBetweenLocations(lLocation, _.GetLocation(oObject)) * 10.0f)),
                         _.DAMAGE_TYPE_ELECTRICAL);
                     _.ApplyEffectToObject(DurationType.Instant, eEffDam, oObject);
 
-                    if (nType == _.OBJECT_TYPE_CREATURE)
+                    if (nType == ObjectType.Creature)
                     {
                         if (_.GetIsPC(oObject) == 1) _.SendMessageToPC(oObject, FB_T_WEATHER_LIGHTNING);
 
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.Service
                         _.ApplyEffectToObject(_.DurationType.Temporary, eEffKnock, oObject, _.IntToFloat(_.d6(1)));
                     }
                 }
-                oObject = _.GetNextObjectInShape(_.SHAPE_SPHERE, fRange, lLocation, 0, _.OBJECT_TYPE_CREATURE | _.OBJECT_TYPE_DOOR | _.OBJECT_TYPE_PLACEABLE);
+                oObject = _.GetNextObjectInShape(_.SHAPE_SPHERE, fRange, lLocation, 0, ObjectType.Creature | _.OBJECT_TYPE_DOOR | ObjectType.Placeable);
             }
         }
 
@@ -843,7 +843,7 @@ namespace SWLOR.Game.Server.Service
 
                             string sResRef = "x3_plc_mist";
 
-                            NWPlaceable oPlaceable = _.CreateObject(_.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
+                            NWPlaceable oPlaceable = _.CreateObject(ObjectType.Placeable, sResRef, _.Location(oArea, vPosition, fFacing));
                             _.SetObjectVisualTransform(oPlaceable, _.OBJECT_VISUAL_TRANSFORM_SCALE, _.IntToFloat(200 + _.Random(200)) / 100.0f);
 
                             weatherObjects.Add(oPlaceable);

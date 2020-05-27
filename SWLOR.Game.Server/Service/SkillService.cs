@@ -794,7 +794,7 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
             if (oTarget.IsPlayer || oTarget.IsDM) return;
-            if (oTarget.ObjectType != OBJECT_TYPE_CREATURE) return;
+            if (oTarget.ObjectType != ObjectType.Creature) return;
 
             int skillID = (int)skillType;
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(oTarget.GlobalID);

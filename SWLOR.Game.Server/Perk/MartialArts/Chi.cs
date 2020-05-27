@@ -66,8 +66,8 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             heal = RandomService.Random(minimum, heal);
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), target);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEALING_G), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(heal), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_IMP_HEALING_G), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

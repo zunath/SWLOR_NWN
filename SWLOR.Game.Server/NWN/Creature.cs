@@ -462,11 +462,11 @@ namespace SWLOR.Game.Server.NWN
         ///   possessed by his master.
         ///   returns false if not or if the creature object is invalid
         /// </summary>
-        public static int GetIsPossessedFamiliar(uint oCreature)
+        public static bool GetIsPossessedFamiliar(uint oCreature)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(714);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>

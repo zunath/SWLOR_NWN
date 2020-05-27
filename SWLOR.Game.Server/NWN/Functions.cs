@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.NWN
         ///   as parameters to delayed actions.  Instead, the effect should be created in the
         ///   script and then passed into the action.  For example:
         ///   effect eDamage = EffectDamage(nDamage, DAMAGE_TYPE_MAGICAL);
-        ///   DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDamage, oTarget);
+        ///   DelayCommand(fDelay, ApplyEffectToObject(DurationType.Instant, eDamage, oTarget);
         /// </summary>
         public static void DelayCommand(float fSeconds, ActionDelegate aActionToDelay)
         {
@@ -705,7 +705,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nObjectFilter: This allows you to filter out undesired object types, using
         ///   bitwise "or".
         ///   For example, to return only creatures and doors, the value for this
-        ///   parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        ///   parameter would be ObjectType.Creature | OBJECT_TYPE_DOOR
         ///   - vOrigin: This is only used for cylinders and cones, and specifies the
         ///   origin of the effect(normally the spell-caster's position).
         ///   Return value on error: OBJECT_INVALID
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.NWN
         ///   at a height 1m above the ground
         ///   - nObjectFilter: This allows you to filter out undesired object types, using
         ///   bitwise "or". For example, to return only creatures and doors, the value for
-        ///   this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        ///   this parameter would be ObjectType.Creature | OBJECT_TYPE_DOOR
         ///   - vOrigin: This is only used for cylinders and cones, and specifies the origin
         ///   of the effect (normally the spell-caster's position).
         ///   Return value on error: OBJECT_INVALID
@@ -1643,13 +1643,13 @@ namespace SWLOR.Game.Server.NWN
         ///   alignment of oVersus
         ///   * Returns true if oCreature has immunity of type nImmunity versus oVersus.
         /// </summary>
-        public static int GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
+        public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oVersus);
             Internal.NativeFunctions.StackPushInteger((int)nImmunityType);
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(274);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>

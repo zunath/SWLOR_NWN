@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Item
             int hp = user.MaxHP;
 
             // Restores HP to max
-            ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectHeal(hp), user);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), user);
 
             // But reduces one random attribute by 50 for 2 minutes.
             int stat = RandomService.D6(1)-1;
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
             return 0;
         }

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.CustomEffect
             int damage = RandomService.D4(1);
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_COLD), oTarget);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_COLD), oTarget);
             });
             
         }

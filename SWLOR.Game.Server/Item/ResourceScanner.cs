@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Item
                 return;
             }
 
-            _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), effectLocation);
+            _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), effectLocation);
 
             if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == false)
             {
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Item
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
             return ANIMATION_LOOPING_GET_MID;
         }

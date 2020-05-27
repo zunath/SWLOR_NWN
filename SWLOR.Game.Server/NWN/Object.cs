@@ -697,7 +697,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Create an object of the specified type at lLocation.
-        ///   - nObjectType: OBJECT_TYPE_ITEM, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE,
+        ///   - nObjectType: OBJECT_TYPE_ITEM, ObjectType.Creature, ObjectType.Placeable,
         ///   OBJECT_TYPE_STORE, OBJECT_TYPE_WAYPOINT
         ///   - sTemplate
         ///   - lLocation

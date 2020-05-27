@@ -406,6 +406,32 @@ namespace SWLOR.Game.Server.NWN.Enum
         DrowWarrior2 = 477,
         DrowFemale1 = 478,
         DrowFemale2 = 479,
-        DrowWarrior3 = 480
+        DrowWarrior3 = 480,
+
+        // SWLOR Starts Here
+
+        TiefighterSM = 870,
+        SmallCargoShip = 893,
+        SmallShuttle3 = 895,
+        SmallShuttle4 = 896,
+        SmallFighter1 = 897,
+        SmallFighter2 = 898,
+        SmallFighter3 = 899,
+        XWingSmall = 964,
+        AWingSmall = 965,
+        ImperialShuttleSmall = 872,
+        SmallCargoShip2 = 894,
+        SmallScoutShip = 969,
+        SmallFirefly = 973,
+        BWingSmall = 966,
+        FreighterSmall = 967,
+        CorvetteSmall = 968,
+        VLambda = 2002,
+        VEWing = 2003,
+        VYWing = 2005,
+        StarDestroyer = 2169,
+        MonCalaCruiser = 2170,
+
+
     }
 }

@@ -391,6 +391,13 @@ namespace SWLOR.Game.Server.NWN.Enum
         HorsePartyMount,
         HorsePartyDismount,
         HorseAssignMount,
-        PaladinSummonMount
+        PaladinSummonMount,
+
+        Grenade10 = 974,
+        Grenade11 = 975,
+        Grenade12 = 976,
+        Grenade13 = 977,
+        Grenade14 = 978,
+        Grenade15 = 979,
     }
 }

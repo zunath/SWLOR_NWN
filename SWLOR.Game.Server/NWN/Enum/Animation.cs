@@ -2,6 +2,7 @@ namespace SWLOR.Game.Server.NWN.Enum
 {
     public enum Animation
     {
+        Invalid = -1,
         // Looping animation constants.
         LoopingPause,
         LoopingPause2,
@@ -78,6 +79,4 @@ namespace SWLOR.Game.Server.NWN.Enum
         DoorOpen2,
         DoorDestro7
     }
-
-    // These are for GetFirstInPersistentObject() and GetNextInPersistentObject()
 }

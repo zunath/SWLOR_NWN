@@ -71,10 +71,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
-                if (type == (int)CustomItemPropertyType.RedMod ||
-                    type == (int)CustomItemPropertyType.BlueMod ||
-                    type == (int)CustomItemPropertyType.GreenMod ||
-                    type == (int)CustomItemPropertyType.YellowMod)
+                if (type == ItemPropertyType.RedMod ||
+                    type == ItemPropertyType.BlueMod ||
+                    type == ItemPropertyType.GreenMod ||
+                    type == ItemPropertyType.YellowMod)
                 {
                     ipType = (CustomItemPropertyType)type;
                     break;
@@ -92,19 +92,19 @@ namespace SWLOR.Game.Server.Service
                 int type = _.GetItemPropertyType(ip);
                 switch (type)
                 {
-                    case (int)CustomItemPropertyType.ModSlotRed:
+                    case ItemPropertyType.ModSlotRed:
                         modSlots.RedSlots++;
                         break;
-                    case (int)CustomItemPropertyType.ModSlotBlue:
+                    case ItemPropertyType.ModSlotBlue:
                         modSlots.BlueSlots++;
                         break;
-                    case (int)CustomItemPropertyType.ModSlotGreen:
+                    case ItemPropertyType.ModSlotGreen:
                         modSlots.GreenSlots++;
                         break;
-                    case (int)CustomItemPropertyType.ModSlotYellow:
+                    case ItemPropertyType.ModSlotYellow:
                         modSlots.YellowSlots++;
                         break;
-                    case (int)CustomItemPropertyType.ModSlotPrismatic:
+                    case ItemPropertyType.ModSlotPrismatic:
                         modSlots.PrismaticSlots++;
                         break;
                 }

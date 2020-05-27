@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Service
                 resref = exteriorStyle.Resref;
             }
 
-            NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
+            NWPlaceable plc = (_.CreateObject(ObjectType.Placeable, resref, location));
             plc.SetLocalString("PC_BASE_STRUCTURE_ID", pcStructure.ID.ToString());
             plc.SetLocalInt("REQUIRES_BASE_POWER", baseStructure.RequiresBasePower ? 1 : 0);
             plc.SetLocalString("ORIGINAL_SCRIPT_CLOSED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED));
@@ -652,7 +652,7 @@ namespace SWLOR.Game.Server.Service
             if (baseStructureType.ID == (int)BaseStructureType.Starship)
             {
                 int nNth = 1;
-                NWObject dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                NWObject dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
 
                 while (dock.IsValid)
                 {
@@ -663,7 +663,7 @@ namespace SWLOR.Game.Server.Service
                     if (dock.GetLocalInt("DOCKED_STARSHIP") == 1)
                     {
                         nNth++;
-                        dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                        dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
                         continue;
                     }
 
@@ -739,7 +739,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     nNth++;
-                    dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                    dock = _.GetNearestObjectToLocation(ObjectType.Placeable, targetLocation, nNth);
                 }
 
                 return "Unable to dock starship.  Starships must be docked on a vacant docking bay.";
@@ -881,7 +881,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         // Container doesn't exist yet. Create a new one and add it to the dictionary.
                         var cachedStructure = areaStructures.Single(s => s.PCBaseStructureID == structureKey && s.ChildStructure == null);
-                        rubbleContainer = _.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", cachedStructure.Structure.Location);
+                        rubbleContainer = _.CreateObject(ObjectType.Placeable, "structure_rubble", cachedStructure.Structure.Location);
                         rubbleContainers.Add(structureKey, rubbleContainer);
                     }
                 }
@@ -965,7 +965,7 @@ namespace SWLOR.Game.Server.Service
                 if (displayExplosion)
                 {
                     Location location = structure.Structure.Location;
-                    _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
+                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
                 }
             }
         }

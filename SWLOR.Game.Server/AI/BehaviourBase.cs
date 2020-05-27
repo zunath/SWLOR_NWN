@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.AI
             int vfx = self.GetLocalInt("DEATH_VFX");
             if (vfx > 0)
             {
-                ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(vfx), self);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), self);
             }
         }
 
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.AI
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
             int nth = 1;
-            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
+            NWCreature creature = _.GetNearestObject(ObjectType.Creature, self, nth);
             while (creature.IsValid)
             {
                 float aggroRange = GetAggroRange(creature);
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.AI
                     Link(self, creature);
                 }
                 nth++;
-                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
+                creature = _.GetNearestObject(ObjectType.Creature, self, nth);
             }
         }
 

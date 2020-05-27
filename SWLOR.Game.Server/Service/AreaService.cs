@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                     bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
 
                     // Location is not walkable if another object exists nearby.
-                    NWObject nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE | OBJECT_TYPE_TRIGGER, checkLocation));
+                    NWObject nearest = (_.GetNearestObjectToLocation(ObjectType.Creature | OBJECT_TYPE_DOOR | ObjectType.Placeable | OBJECT_TYPE_TRIGGER, checkLocation));
                     float distance = _.GetDistanceBetweenLocations(checkLocation, nearest.Location);
                     if (nearest.IsValid && distance <= MinDistance)
                     {

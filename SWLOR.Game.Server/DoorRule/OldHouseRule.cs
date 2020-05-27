@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.DoorRule
             doorPosition.Y = doorPosition.Y - fMod;
             Location doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
 
-            return _.CreateObject(_.OBJECT_TYPE_PLACEABLE, "building_door", doorLocation);
+            return _.CreateObject(ObjectType.Placeable, "building_door", doorLocation);
         }
     }
 }

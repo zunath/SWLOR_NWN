@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Service
             ApplyDurabilityLoss(oPC);
 
             int amount = oPC.MaxHP / 2;
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), oPC.Object);
 
             NWArea area = oPC.Area;
             

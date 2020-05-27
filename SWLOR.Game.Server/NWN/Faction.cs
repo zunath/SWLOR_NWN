@@ -283,9 +283,9 @@ namespace SWLOR.Game.Server.NWN
         ///   ** This will only work on an NPC **
         ///   - nStandardFaction: STANDARD_FACTION_*
         /// </summary>
-        public static void ChangeToStandardFaction(uint oCreatureToChange, int nStandardFaction)
+        public static void ChangeToStandardFaction(uint oCreatureToChange, StandardFaction nStandardFaction)
         {
-            Internal.NativeFunctions.StackPushInteger(nStandardFaction);
+            Internal.NativeFunctions.StackPushInteger((int)nStandardFaction);
             Internal.NativeFunctions.StackPushObject(oCreatureToChange);
             Internal.NativeFunctions.CallBuiltIn(412);
         }

@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Conversation
 
             string structureID = chest.GetLocalString("PC_BASE_STRUCTURE_ID");
             Location location = oPC.Location;
-            NWPlaceable copy = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "str_storage_copy", location));
+            NWPlaceable copy = (_.CreateObject(ObjectType.Placeable, "str_storage_copy", location));
             copy.Name = chest.Name;
             copy.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 

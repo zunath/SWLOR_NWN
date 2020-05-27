@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessVersion6_ComponentBonuses(NWItem item, ItemProperty ip)
         {
             // Component Bonuses
-            if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+            if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
             {
                 // +AC Component Bonus
                 if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
@@ -251,17 +251,17 @@ namespace SWLOR.Game.Server.Service
         {
             int[] ipsToRemove =
             {
-                (int)CustomItemPropertyType.DarkPotencyBonus,
-                (int)CustomItemPropertyType.LightPotencyBonus,
-                (int)CustomItemPropertyType.MindPotencyBonus,
-                (int)CustomItemPropertyType.ElectricalPotencyBonus,
-                (int)CustomItemPropertyType.ForcePotencyBonus,
-                (int)CustomItemPropertyType.ForceAccuracyBonus,
-                (int)CustomItemPropertyType.ForceDefenseBonus,
-                (int)CustomItemPropertyType.ElectricalDefenseBonus,
-                (int)CustomItemPropertyType.MindDefenseBonus,
-                (int)CustomItemPropertyType.LightDefenseBonus,
-                (int)CustomItemPropertyType.DarkDefenseBonus
+                ItemPropertyType.DarkPotencyBonus,
+                ItemPropertyType.LightPotencyBonus,
+                ItemPropertyType.MindPotencyBonus,
+                ItemPropertyType.ElectricalPotencyBonus,
+                ItemPropertyType.ForcePotencyBonus,
+                ItemPropertyType.ForceAccuracyBonus,
+                ItemPropertyType.ForceDefenseBonus,
+                ItemPropertyType.ElectricalDefenseBonus,
+                ItemPropertyType.MindDefenseBonus,
+                ItemPropertyType.LightDefenseBonus,
+                ItemPropertyType.DarkDefenseBonus
             };
 
             if (ipsToRemove.Contains(_.GetItemPropertyType(ip)))

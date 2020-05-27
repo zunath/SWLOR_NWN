@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
             foreach (var ip in component.ItemProperties)
             {
                 int ipType = _.GetItemPropertyType(ip);
-                if (ipType != (int)CustomItemPropertyType.ComponentBonus) continue;
+                if (ipType != ItemPropertyType.ComponentBonus) continue;
 
                 int bonusTypeID = _.GetItemPropertySubType(ip);
                 int tlkID = Convert.ToInt32(_.Get2DAString("iprp_compbon", "Name", bonusTypeID));
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                         // If the target item is a component itself, we want to add the component bonuses instead of the
                         // actual item property bonuses.
                         // In other words, we want the custom item property "Component Bonus: AC UP" instead of the "AC Bonus" item property.
-                        var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentType);
+                        var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == ItemPropertyType.ComponentType);
                         if (componentIP == null)
                             ComponentBonusService.ApplyComponentBonus(item, ip);
                         else

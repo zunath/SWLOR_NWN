@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
                 AbilityService.RestorePlayerFP(player, amount);
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
+                _.ApplyEffectToObject(DurationType.Instant, vfx, player);
                 meditateTick = 0;
             }
 

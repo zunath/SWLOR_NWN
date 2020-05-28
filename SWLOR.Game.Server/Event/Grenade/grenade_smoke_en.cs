@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWN._;
 
 // ReSharper disable once CheckNamespace

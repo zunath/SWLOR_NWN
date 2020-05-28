@@ -1,5 +1,5 @@
 ﻿//using System;
-//using NWN;
+//using SWLOR.Game.Server.NWN;
 //using SWLOR.Game.Server.ChatCommand.Contracts;
 //using SWLOR.Game.Server.DoorRule.Contracts;
 //using SWLOR.Game.Server.Enumeration;

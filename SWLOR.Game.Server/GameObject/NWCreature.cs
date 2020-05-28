@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using static SWLOR.Game.Server.NWN._;

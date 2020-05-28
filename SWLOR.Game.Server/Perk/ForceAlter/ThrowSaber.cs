@@ -1,5 +1,5 @@
 using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;

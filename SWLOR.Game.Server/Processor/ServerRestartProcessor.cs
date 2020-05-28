@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;

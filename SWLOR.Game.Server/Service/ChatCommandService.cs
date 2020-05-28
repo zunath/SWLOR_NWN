@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;

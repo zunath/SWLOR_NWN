@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWN._;
 using static System.Math;
 using SWLOR.Game.Server.Enumeration;

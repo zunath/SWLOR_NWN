@@ -1,5 +1,5 @@
 ﻿
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -55,9 +55,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillGained(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillDecayed(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -81,9 +81,9 @@ namespace SWLOR.Game.Server.Service
 
             // Don't fire for ammo as it reapplies bonuses we **just** removed from blasters.
             if (ignoreItem != null &&
-                (ignoreItem.BaseItemType == BASE_ITEM_BOLT ||
-                 ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
-                 ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
+                (ignoreItem.BaseItemType == BaseItem.Bolt ||
+                 ignoreItem.BaseItemType == BaseItem.Arrow ||
+                 ignoreItem.BaseItemType == BaseItem.Bullet)) return;
 
             Player pcEntity = DataService.Player.GetByID(player.GlobalID);
             List<PCSkill> skills = DataService.PCSkill

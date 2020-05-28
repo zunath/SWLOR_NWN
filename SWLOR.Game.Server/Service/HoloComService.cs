@@ -1,6 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;

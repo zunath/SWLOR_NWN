@@ -653,11 +653,11 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Get the size (CREATURE_SIZE_*) of oCreature.
         /// </summary>
-        public static int GetCreatureSize(uint oCreature)
+        public static CreatureSize GetCreatureSize(uint oCreature)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(479);
-            return Internal.NativeFunctions.StackPopInteger();
+            return (CreatureSize)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>

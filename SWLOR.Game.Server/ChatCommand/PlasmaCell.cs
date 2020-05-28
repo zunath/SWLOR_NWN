@@ -4,7 +4,7 @@
 /// Dec. 31st, 2018 by Kenji
 ////////////////////////////////
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;

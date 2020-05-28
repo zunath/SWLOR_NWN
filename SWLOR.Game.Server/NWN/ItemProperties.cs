@@ -384,10 +384,10 @@ namespace SWLOR.Game.Server.NWN
         ///   The damage penalty should be a uint, 1 - 5 only.
         ///   will reduce any value < 5 to 5.
         /// </summary>
-        public static ItemProperty ItemPropertyDamagePenalty(uint nPenalty)
+        public static ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             if (nPenalty > 5) nPenalty = 5;
-            Internal.NativeFunctions.StackPushInteger((int)nPenalty);
+            Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(636);
             return new ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }

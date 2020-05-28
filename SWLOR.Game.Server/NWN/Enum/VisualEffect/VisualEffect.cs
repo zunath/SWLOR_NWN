@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.NWN.Enum.VisualEffect
 {
     public enum VisualEffect
     {
-        None = -1,
+        Invalid = -1,
         Dur_Blur = 0,
         Dur_Darkness = 1,
         Dur_Entangle = 2,

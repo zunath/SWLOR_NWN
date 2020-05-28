@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -131,21 +132,22 @@ namespace SWLOR.Game.Server.Service
             });
 
             // Dump equipped items in container
-            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
-                if (slot == INVENTORY_SLOT_CARMOUR ||
-                    slot == INVENTORY_SLOT_CWEAPON_B ||
-                    slot == INVENTORY_SLOT_CWEAPON_L ||
-                    slot == INVENTORY_SLOT_CWEAPON_R)
+                var inventorySlot = (InventorySlot) slot;
+                if (inventorySlot == InventorySlot.CreatureArmor ||
+                    inventorySlot == InventorySlot.CreatureBite ||
+                    inventorySlot == InventorySlot.CreatureRight ||
+                    inventorySlot == InventorySlot.CreatureLeft)
                     continue;
 
-                NWItem item = GetItemInSlot(slot, self);
+                NWItem item = GetItemInSlot(inventorySlot, self);
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
                     NWItem copy = CopyItem(item, container, true);
 
-                    if (slot == INVENTORY_SLOT_HEAD ||
-                        slot == INVENTORY_SLOT_CHEST)
+                    if (inventorySlot == InventorySlot.Head  ||
+                        inventorySlot == InventorySlot.Chest)
                     {
                         copy.SetLocalObject("CORPSE_ITEM_COPY", item);
                     }

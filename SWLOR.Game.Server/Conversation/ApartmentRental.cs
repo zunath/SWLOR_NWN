@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             var style = DataService.BuildingStyle.GetByID(data.BuildingStyleID);
             var area = AreaService.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
-            area.SetLocalInt("IS_BUILDING_PREVIEW", true);
+            SetLocalBool(area, "IS_BUILDING_PREVIEW", true);
             BaseService.JumpPCToBuildingInterior(player, area);
         }
 

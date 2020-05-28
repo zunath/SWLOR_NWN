@@ -1,5 +1,6 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -19,10 +20,10 @@ namespace NWN.Scripts
                 int reqGold = _.GetLocalInt(oNPC, "gold");
                 if (nGold > reqGold)
                 {
-                    return true;
+                    return 1;
                 }
 
-                return false;
+                return 0;
             }
         }
     }

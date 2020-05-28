@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server;
 
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -21,7 +23,7 @@ namespace NWN.Scripts
 
                 if (string.IsNullOrWhiteSpace(storeTag))
                 {
-                    store = _.GetNearestObject(_.OBJECT_TYPE_STORE, self);
+                    store = _.GetNearestObject(self, ObjectType.Store);
                 }
                 else
                 {

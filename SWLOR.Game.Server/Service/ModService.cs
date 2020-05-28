@@ -5,7 +5,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Mod.Contracts;

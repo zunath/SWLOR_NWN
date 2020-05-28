@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;

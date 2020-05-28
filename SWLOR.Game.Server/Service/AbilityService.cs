@@ -1,4 +1,4 @@
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -507,7 +507,7 @@ namespace SWLOR.Game.Server.Service
             string uuid = Guid.NewGuid().ToString();
             float baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
-            var vfxID = VisualEffect.None;
+            var vfxID = VisualEffect.Invalid;
             var animationID = Animation.Invalid;
             
             if (baseActivationTime > 0f && activationTime < 1.0f)
@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If a VFX ID has been specified, play that effect instead of the default one.
-            if (vfxID != VisualEffect.None)
+            if (vfxID != VisualEffect.Invalid)
             {
                 var vfx = _.EffectVisualEffect(vfxID);
                 vfx = _.TagEffect(vfx, "ACTIVATION_VFX");

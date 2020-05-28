@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.GameObject
             BaseItem[] blasterRifles =
             {
                 BaseItem.LightCrossbow,
-                BaseItem.Rifle
+                BaseItem.HeavyCrossbow
             };
 
             BaseItem[] blasterPistol =

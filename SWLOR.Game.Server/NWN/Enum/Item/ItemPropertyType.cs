@@ -2,6 +2,7 @@ namespace SWLOR.Game.Server.NWN.Enum.Item
 {
     public enum ItemPropertyType
     {
+        Invalid = -1,
         AbilityBonus = 0,
         ACBonus = 1,
         ACBonusVsAlignmentGroup = 2,

@@ -1,5 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.Scripts.Placeable
 {
@@ -24,7 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
                 _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(vfxID), self);
             }
 
-            _.SetEventScript(self, _.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);
+            _.SetEventScript(self, EventScript.Placeable_OnHeartbeat, string.Empty);
         }
     }
 }

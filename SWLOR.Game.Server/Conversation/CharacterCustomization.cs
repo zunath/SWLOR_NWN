@@ -6,6 +6,9 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.NWN._;
 
@@ -16,10 +19,10 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public int AssociationID { get; set; }
-            public int BodyPartID { get; set; }
+            public CreaturePart BodyPartID { get; set; }
             public int[] Parts { get; set; }
             public string PartName { get; set; }
-            public int TattooChannel { get; set; }
+            public ColorChannel TattooChannel { get; set; }
         }
 
 
@@ -101,11 +104,11 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            CustomRaceType race = (CustomRaceType)GetPC().RacialType;
+            RacialType race = (RacialType)GetPC().RacialType;
             string hairText = "Hair";
 
-            if (race == CustomRaceType.Trandoshan ||
-                race == CustomRaceType.MonCalamari)
+            if (race == RacialType.Trandoshan ||
+                race == RacialType.MonCalamari)
             {
                 hairText = "Eyes";
                 SetResponseVisible("MainPage", 5, false);
@@ -114,7 +117,7 @@ namespace SWLOR.Game.Server.Conversation
             SetResponseText("MainPage", 4, "Change " + hairText);
 
             // Skin color can't change for Wookiees. Disable the option.
-            if (race == CustomRaceType.Wookiee)
+            if (race == RacialType.Wookiee)
             {
                 SetResponseVisible("MainPage", 2, false);
             }
@@ -217,45 +220,45 @@ namespace SWLOR.Game.Server.Conversation
             };
             int[] UgnaughtSkinColors = { 0, 1, 2, 3, 4, 5, 10, 12, 13, 14, 116, 117 };
 
-            CustomRaceType race = (CustomRaceType)GetPC().RacialType;
+            RacialType race = (RacialType)GetPC().RacialType;
             int[] colorsToUse;
 
             switch (race)
             {
-                case CustomRaceType.Human:
+                case RacialType.Human:
                     colorsToUse = HumanSkinColors;
                     break;
-                case CustomRaceType.Bothan:
+                case RacialType.Bothan:
                     colorsToUse = BothanSkinColors;
                     break;
-                case CustomRaceType.Chiss:
+                case RacialType.Chiss:
                     colorsToUse = ChissSkinColors;
                     break;
-                case CustomRaceType.Zabrak:
+                case RacialType.Zabrak:
                     colorsToUse = ZabrakSkinColors;
                     break;
-                case CustomRaceType.Twilek:
+                case RacialType.Twilek:
                     colorsToUse = TwilekSkinColors;
                     break;
-                case CustomRaceType.Mirialan:
+                case RacialType.Mirialan:
                     colorsToUse = MirialanSkinColors;
                     break;
-                case CustomRaceType.Echani:
+                case RacialType.Echani:
                     colorsToUse = EchaniSkinColors;
                     break;
-                case CustomRaceType.Cyborg:
+                case RacialType.Cyborg:
                     colorsToUse = CyborgSkinColors;
                     break;
-                case CustomRaceType.Cathar:
+                case RacialType.Cathar:
                     colorsToUse = CatharSkinColors;
                     break;
-                case CustomRaceType.Trandoshan:
+                case RacialType.Trandoshan:
                     colorsToUse = TrandoshanSkinColors;
                     break;
-                case CustomRaceType.MonCalamari:
+                case RacialType.MonCalamari:
                     colorsToUse = MonCalamariSkinColors;
                     break;
-                case CustomRaceType.Ugnaught:
+                case RacialType.Ugnaught:
                     colorsToUse = UgnaughtSkinColors;
                     break;
                 default:
@@ -345,7 +348,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeSkinColorResponses(int responseID)
         {
             int colorID = (int)GetResponseByID("ChangeSkinColorPage", responseID).CustomData;
-            _.SetColor(GetPC(), COLOR_CHANNEL_SKIN, colorID);
+            _.SetColor(GetPC(), ColorChannel.Skin, colorID);
 
         }
 
@@ -353,7 +356,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeHeadResponses(int responseID)
         {
             int headID = (int)GetResponseByID("ChangeHeadPage", responseID).CustomData;
-            _.SetCreatureBodyPart(CREATURE_PART_HEAD, headID, GetPC());
+            _.SetCreatureBodyPart(CreaturePart.Head, (ModelType)headID, GetPC());
         }
 
         private void LoadHeadPage()
@@ -388,58 +391,58 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122 };
             int[] FemaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
 
-            CustomRaceType race = (CustomRaceType)GetPC().RacialType;
-            int gender = GetPC().Gender;
+            RacialType race = (RacialType)GetPC().RacialType;
+            var gender = GetPC().Gender;
             int[] headsToUse;
             
             switch (race)
             {
-                case CustomRaceType.Human:
-                    headsToUse = gender == GENDER_MALE ? MaleHumanHeads : FemaleHumanHeads;
+                case RacialType.Human:
+                    headsToUse = gender == Gender.Male ? MaleHumanHeads : FemaleHumanHeads;
                     break;
-                case CustomRaceType.Bothan:
-                    headsToUse = gender == GENDER_MALE ? MaleBothanHeads : FemaleBothanHeads;
+                case RacialType.Bothan:
+                    headsToUse = gender == Gender.Male ? MaleBothanHeads : FemaleBothanHeads;
                     break;
-                case CustomRaceType.Chiss:
-                    headsToUse = gender == GENDER_MALE ?
+                case RacialType.Chiss:
+                    headsToUse = gender == Gender.Male ?
                         MaleChissHeads.Concat(MaleHumanHeads).ToArray() :
                         FemaleChissHeads.Concat(FemaleHumanHeads).ToArray();
                     break;
-                case CustomRaceType.Zabrak:
-                    headsToUse = gender == GENDER_MALE ? MaleZabrakHeads : FemaleZabrakHeads;
+                case RacialType.Zabrak:
+                    headsToUse = gender == Gender.Male ? MaleZabrakHeads : FemaleZabrakHeads;
                     break;
-                case CustomRaceType.Twilek:
-                    headsToUse = gender == GENDER_MALE ? MaleTwilekHeads : FemaleTwilekHeads;
+                case RacialType.Twilek:
+                    headsToUse = gender == Gender.Male ? MaleTwilekHeads : FemaleTwilekHeads;
                     break;
-                case CustomRaceType.Mirialan:
-                    headsToUse = gender == GENDER_MALE ? 
+                case RacialType.Mirialan:
+                    headsToUse = gender == Gender.Male ? 
                         MaleMirialanHeads.Concat(MaleHumanHeads).ToArray() : 
                         FemaleMirialanHeads.Concat(FemaleHumanHeads).ToArray();
                     break;
-                case CustomRaceType.Echani:
-                    headsToUse = gender == GENDER_MALE ? 
+                case RacialType.Echani:
+                    headsToUse = gender == Gender.Male ? 
                         MaleEchaniHeads.Concat(MaleHumanHeads).ToArray() :
                         FemaleEchaniHeads.Concat(FemaleHumanHeads).ToArray();
                     break;
-                case CustomRaceType.Cyborg:
-                    headsToUse = gender == GENDER_MALE ?
+                case RacialType.Cyborg:
+                    headsToUse = gender == Gender.Male ?
                         MaleCyborgHeads.Concat(MaleHumanHeads).ToArray() :
                         FemaleCyborgHeads.Concat(FemaleHumanHeads).ToArray();
                     break;
-                case CustomRaceType.Cathar:
-                    headsToUse = gender == GENDER_MALE ? MaleCatharHeads : FemaleCatharHeads;
+                case RacialType.Cathar:
+                    headsToUse = gender == Gender.Male ? MaleCatharHeads : FemaleCatharHeads;
                     break;
-                case CustomRaceType.Trandoshan:
-                    headsToUse = gender == GENDER_MALE ? MaleTrandoshanHeads : FemaleTrandoshanHeads;
+                case RacialType.Trandoshan:
+                    headsToUse = gender == Gender.Male ? MaleTrandoshanHeads : FemaleTrandoshanHeads;
                     break;
-                case CustomRaceType.Wookiee:
-                    headsToUse = gender == GENDER_MALE ? MaleWookieeHeads : FemaleWookieeHeads;
+                case RacialType.Wookiee:
+                    headsToUse = gender == Gender.Male ? MaleWookieeHeads : FemaleWookieeHeads;
                     break;
-                case CustomRaceType.MonCalamari:
-                    headsToUse = gender == GENDER_MALE ? MaleMonCalamariHeads : FemaleMonCalamariHeads;
+                case RacialType.MonCalamari:
+                    headsToUse = gender == Gender.Male ? MaleMonCalamariHeads : FemaleMonCalamariHeads;
                     break;
-                case CustomRaceType.Ugnaught:
-                    headsToUse = gender == GENDER_MALE ? MaleUgnaughtHeads : FemaleUgnaughtHeads;
+                case RacialType.Ugnaught:
+                    headsToUse = gender == Gender.Male ? MaleUgnaughtHeads : FemaleUgnaughtHeads;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -471,48 +474,48 @@ namespace SWLOR.Game.Server.Conversation
             int[] MonCalamariHairColors = { }; // All
             int[] UgnaughtHairColors = { 16, 17, 18, 19, 62, 120, 128, 164, 166, 168 };
 
-            CustomRaceType race = (CustomRaceType)GetPC().RacialType;
+            RacialType race = (RacialType)GetPC().RacialType;
             int[] colorsToUse;
 
             switch (race)
             {
-                case CustomRaceType.Human:
+                case RacialType.Human:
                     colorsToUse = HumanHairColors;
                     break;
-                case CustomRaceType.Bothan:
+                case RacialType.Bothan:
                     colorsToUse = BothanHairColors;
                     break;
-                case CustomRaceType.Chiss:
+                case RacialType.Chiss:
                     colorsToUse = ChissHairColors;
                     break;
-                case CustomRaceType.Zabrak:
+                case RacialType.Zabrak:
                     colorsToUse = ZabrakHairColors;
                     break;
-                case CustomRaceType.Twilek:
+                case RacialType.Twilek:
                     colorsToUse = TwilekHairColors;
                     break;
-                case CustomRaceType.Mirialan:
+                case RacialType.Mirialan:
                     colorsToUse = MirialanHairColors;
                     break;
-                case CustomRaceType.Echani:
+                case RacialType.Echani:
                     colorsToUse = EchaniHairColors;
                     break;
-                case CustomRaceType.Cyborg:
+                case RacialType.Cyborg:
                     colorsToUse = CyborgHairColors.Concat(HumanHairColors).ToArray();
                     break;
-                case CustomRaceType.Cathar:
+                case RacialType.Cathar:
                     colorsToUse = CatharHairColors;
                     break;
-                case CustomRaceType.Trandoshan:
+                case RacialType.Trandoshan:
                     colorsToUse = TrandoshanEyeColors;
                     break;
-                case CustomRaceType.Wookiee:
+                case RacialType.Wookiee:
                     colorsToUse = WookieeHairColors;
                     break;
-                case CustomRaceType.MonCalamari:
+                case RacialType.MonCalamari:
                     colorsToUse = MonCalamariHairColors;
                     break;
-                case CustomRaceType.Ugnaught:
+                case RacialType.Ugnaught:
                     colorsToUse = UgnaughtHairColors;
                     break;
                 default:
@@ -541,13 +544,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             int colorID = (int)GetResponseByID("ChangeHairColorPage", responseID).CustomData;
             
-            _.SetColor(GetPC(), COLOR_CHANNEL_HAIR, colorID);
+            _.SetColor(GetPC(), ColorChannel.Hair, colorID);
         }
         
         private void ChangeBodyPartResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            CustomRaceType race = (CustomRaceType)GetPC().RacialType;
+            RacialType race = (RacialType)GetPC().RacialType;
             
             // Note: The following part IDs are found in the "parts_*.2da" files.
             // Don't use the ID number listed in the toolset when selecting parts to make available.
@@ -555,13 +558,13 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Torso
-                    model.BodyPartID = CREATURE_PART_TORSO;
+                    model.BodyPartID = CreaturePart.Torso;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] {208, 209};
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] {204};
                             break;
                         default:
@@ -571,13 +574,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Torso";
                     break;
                 case 2: // Pelvis
-                    model.BodyPartID = CREATURE_PART_PELVIS;
+                    model.BodyPartID = CreaturePart.Pelvis;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208, 209 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -587,13 +590,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Pelvis";
                     break;
                 case 3: // Right Bicep
-                    model.BodyPartID = CREATURE_PART_RIGHT_BICEP;
+                    model.BodyPartID = CreaturePart.RightBicep;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -603,13 +606,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Right Bicep";
                     break;
                 case 4: // Right Forearm
-                    model.BodyPartID = CREATURE_PART_RIGHT_FOREARM;
+                    model.BodyPartID = CreaturePart.RightForearm;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -619,13 +622,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Right Forearm";
                     break;
                 case 5: // Right Hand
-                    model.BodyPartID = CREATURE_PART_RIGHT_HAND;
+                    model.BodyPartID = CreaturePart.RightHand;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -635,13 +638,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Right Hand";
                     break;
                 case 6: // Right Thigh
-                    model.BodyPartID = CREATURE_PART_RIGHT_THIGH;
+                    model.BodyPartID = CreaturePart.RightThigh;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -651,13 +654,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Right Thigh";
                     break;
                 case 7: // Right Shin
-                    model.BodyPartID = CREATURE_PART_RIGHT_SHIN;
+                    model.BodyPartID = CreaturePart.RightShin;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -667,13 +670,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Right Shin";
                     break;
                 case 8: // Left Bicep
-                    model.BodyPartID = CREATURE_PART_LEFT_BICEP;
+                    model.BodyPartID = CreaturePart.LeftBicep;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -683,13 +686,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Left Bicep";
                     break;
                 case 9: // Left Forearm
-                    model.BodyPartID = CREATURE_PART_LEFT_FOREARM;
+                    model.BodyPartID = CreaturePart.LeftForearm;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -699,13 +702,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Left Forearm";
                     break;
                 case 10: // Left Hand
-                    model.BodyPartID = CREATURE_PART_LEFT_HAND;
+                    model.BodyPartID = CreaturePart.LeftHand;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -715,13 +718,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Left Hand";
                     break;
                 case 11: // Left Thigh
-                    model.BodyPartID = CREATURE_PART_LEFT_THIGH;
+                    model.BodyPartID = CreaturePart.LeftThigh;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -731,13 +734,13 @@ namespace SWLOR.Game.Server.Conversation
                     model.PartName = "Left Thigh";
                     break;
                 case 12: // Left Shin
-                    model.BodyPartID = CREATURE_PART_LEFT_SHIN;
+                    model.BodyPartID = CreaturePart.LeftShin;
                     switch (race)
                     {
-                        case CustomRaceType.Wookiee:
+                        case RacialType.Wookiee:
                             model.Parts = new[] { 208 };
                             break;
-                        case CustomRaceType.MonCalamari:
+                        case RacialType.MonCalamari:
                             model.Parts = new[] { 204 };
                             break;
                         default:
@@ -758,12 +761,12 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1:
-                    model.TattooChannel = COLOR_CHANNEL_TATTOO_1;
+                    model.TattooChannel = ColorChannel.Tattoo1;
                     LoadChangeTattooColorPage();
                     ChangePage("ChangeTattooColorPage");
                     break;
                 case 2:
-                    model.TattooChannel = COLOR_CHANNEL_TATTOO_2;
+                    model.TattooChannel = ColorChannel.Tattoo2;
                     LoadChangeTattooColorPage();
                     ChangePage("ChangeTattooColorPage");
                     break;
@@ -785,7 +788,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("ChangeTattooColorPage", responseID);
             int colorID = (int)response.CustomData;
-            int colorChannel = model.TattooChannel;
+            var colorChannel = model.TattooChannel;
 
             _.SetColor(GetPC(), colorChannel, colorID);
         }
@@ -811,7 +814,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("EditPartPage", responseID);
             int modelID = (int)response.CustomData;
-            _.SetCreatureBodyPart(model.BodyPartID, modelID, GetPC());
+            _.SetCreatureBodyPart(model.BodyPartID, (ModelType)modelID, GetPC());
         }
 
         public override void EndDialog()

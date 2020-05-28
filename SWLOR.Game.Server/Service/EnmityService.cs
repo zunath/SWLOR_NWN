@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.Service
 {

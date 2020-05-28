@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.NWN._;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 using PCBaseType = SWLOR.Game.Server.Enumeration.PCBaseType;
 
@@ -37,10 +38,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleEnter()
         {
-            NWPlayer oPC = (_.GetEnteringObject());
+            NWPlayer oPC = (GetEnteringObject());
             string name = oPC.Name;
-            string cdKey = _.GetPCPublicCDKey(oPC.Object);
-            string account = _.GetPCPlayerName(oPC.Object);
+            string cdKey = GetPCPublicCDKey(oPC.Object);
+            string account = GetPCPlayerName(oPC.Object);
             DateTime now = DateTime.UtcNow;
             string nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
 
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLeave()
         {
-            NWPlayer oPC = (_.GetExitingObject());
+            NWPlayer oPC = (GetExitingObject());
             string name = oPC.Name;
             string cdKey = oPC.GetLocalString("PC_CD_KEY");
             string account = oPC.GetLocalString("PC_ACCOUNT");
@@ -119,7 +120,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void OnModuleNWNXChat()
         {
-            NWPlayer sender = _.OBJECT_SELF;
+            NWPlayer sender = OBJECT_SELF;
             if (!sender.IsPlayer && !sender.IsDM) return;
             string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Service
             var channelEntity = DataService.ChatChannel.GetByID(channel);
 
             // Sender - should always have this data.
-            string senderCDKey = _.GetPCPublicCDKey(sender.Object);
+            string senderCDKey = GetPCPublicCDKey(sender.Object);
             string senderAccountName = sender.Name;
             Guid? senderPlayerID = null;
             string senderDMName = null;
@@ -150,7 +151,7 @@ namespace SWLOR.Game.Server.Service
 
             if (recipient.IsValid)
             {
-                receiverCDKey =  _.GetPCPublicCDKey(recipient.Object);
+                receiverCDKey =  GetPCPublicCDKey(recipient.Object);
                 receiverAccountName = recipient.Name;
 
                 // DMs do not have PlayerIDs so store their name in another field.
@@ -183,13 +184,13 @@ namespace SWLOR.Game.Server.Service
         {
             string details = ProcessEventAndBuildDetails(actionTypeID);
 
-            NWObject dm = _.OBJECT_SELF;
+            NWObject dm = OBJECT_SELF;
 
             var record = new DMAction
             {
                 DMActionTypeID = actionTypeID,
                 Name = dm.Name,
-                CDKey = _.GetPCPublicCDKey(dm),
+                CDKey = GetPCPublicCDKey(dm),
                 Details = details
             };
 
@@ -207,13 +208,13 @@ namespace SWLOR.Game.Server.Service
             {
                 case 1: // Spawn Creature
                     var area = NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA"));
-                    string areaName = _.GetName(area);
+                    string areaName = GetName(area);
                     NWCreature creature = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     int objectTypeID = Convert.ToInt32(NWNXEvents.GetEventData("OBJECT_TYPE"));
                     float x = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_X"));
                     float y = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Y"));
                     float z = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Z"));
-                    creature.SetLocalInt("DM_SPAWNED", true);
+                    SetLocalBool(creature, "DM_SPAWNED", true);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP
@@ -238,13 +239,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleDeath()
         {
-            NWPlayer player = _.GetLastPlayerDied();
+            NWPlayer player = GetLastPlayerDied();
             var @event = new ModuleEvent
             {
                 ModuleEventTypeID = 3,
                 PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
+                CDKey = GetPCPublicCDKey(player),
+                AccountName = GetPCPlayerName(player),
             };
 
             // Bypass the caching logic
@@ -253,13 +254,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleRespawn()
         {
-            NWPlayer player = _.GetLastRespawnButtonPresser();
+            NWPlayer player = GetLastRespawnButtonPresser();
             var @event = new ModuleEvent
             {
                 ModuleEventTypeID = 4,
                 PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
+                CDKey = GetPCPublicCDKey(player),
+                AccountName = GetPCPlayerName(player),
             };
 
             // Bypass the caching logic
@@ -272,8 +273,8 @@ namespace SWLOR.Game.Server.Service
             {
                 ModuleEventTypeID = 5,
                 PlayerID = entity.PlayerID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
+                CDKey = GetPCPublicCDKey(player),
+                AccountName = GetPCPlayerName(player),
                 BankID = entity.BankID,
                 ItemID = new Guid(entity.ItemID),
                 ItemName = entity.ItemName,
@@ -291,8 +292,8 @@ namespace SWLOR.Game.Server.Service
             {
                 ModuleEventTypeID = 6,
                 PlayerID = entity.PlayerID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
+                CDKey = GetPCPublicCDKey(player),
+                AccountName = GetPCPlayerName(player),
                 BankID = entity.BankID,
                 ItemID = new Guid(entity.ItemID),
                 ItemName = entity.ItemName,
@@ -312,8 +313,8 @@ namespace SWLOR.Game.Server.Service
             {
                 ModuleEventTypeID = 7,
                 PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
+                CDKey = GetPCPublicCDKey(player),
+                AccountName = GetPCPlayerName(player),
                 ItemID = new Guid(entity.ItemGlobalID),
                 ItemName = entity.ItemName,
                 ItemTag = entity.ItemTag,
@@ -336,8 +337,8 @@ namespace SWLOR.Game.Server.Service
             {
                 ModuleEventTypeID = 8,
                 PlayerID = player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(player),
-                AccountName = _.GetPCPlayerName(player),
+                CDKey = GetPCPublicCDKey(player),
+                AccountName = GetPCPlayerName(player),
                 ItemID = new Guid(entity.ItemGlobalID),
                 ItemName = entity.ItemName,
                 ItemTag = entity.ItemTag,
@@ -358,8 +359,8 @@ namespace SWLOR.Game.Server.Service
             {
                 ModuleEventTypeID = 9,
                 PlayerID = message.Player.GlobalID,
-                CDKey = _.GetPCPublicCDKey(message.Player),
-                AccountName = _.GetPCPlayerName(message.Player),
+                CDKey = GetPCPublicCDKey(message.Player),
+                AccountName = GetPCPlayerName(message.Player),
                 AreaSector = message.Sector,
                 AreaName = message.AreaName,
                 AreaTag = message.AreaTag,

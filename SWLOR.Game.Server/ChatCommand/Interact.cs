@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             user.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_GET_MID);
+                _.ActionPlayAnimation(Animation.LoopingGetMid);
             });
         }
 

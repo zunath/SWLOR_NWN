@@ -9,6 +9,9 @@ using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Mod.Contracts;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 
@@ -65,18 +68,18 @@ namespace SWLOR.Game.Server.Service
             return _modHandlers[modTypeID];
         }
 
-        public static CustomItemPropertyType GetModType(NWItem item)
+        public static ItemPropertyType GetModType(NWItem item)
         {
-            CustomItemPropertyType ipType = CustomItemPropertyType.Unknown;
+            ItemPropertyType ipType = ItemPropertyType.Invalid;
             foreach (var ip in item.ItemProperties)
             {
-                int type = _.GetItemPropertyType(ip);
+                var type = _.GetItemPropertyType(ip);
                 if (type == ItemPropertyType.RedMod ||
                     type == ItemPropertyType.BlueMod ||
                     type == ItemPropertyType.GreenMod ||
                     type == ItemPropertyType.YellowMod)
                 {
-                    ipType = (CustomItemPropertyType)type;
+                    ipType = (ItemPropertyType)type;
                     break;
                 }
             }
@@ -89,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             ModSlots modSlots = new ModSlots();
             foreach (var ip in item.ItemProperties)
             {
-                int type = _.GetItemPropertyType(ip);
+                var type = _.GetItemPropertyType(ip);
                 switch (type)
                 {
                     case ItemPropertyType.ModSlotRed:
@@ -146,7 +149,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsRune(NWItem item)
         {
-            return GetModType(item) != CustomItemPropertyType.Unknown;
+            return GetModType(item) != ItemPropertyType.Invalid;
         }
 
         public static string PrismaticString()
@@ -157,7 +160,7 @@ namespace SWLOR.Game.Server.Service
 
         public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
-            if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != ObjectType.Item) return existingDescription;
             NWItem examinedItem = (examinedObject.Object);
             string description = string.Empty;
             ModSlots slot = GetModSlots(examinedItem);

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using static SWLOR.Game.Server.NWN._;

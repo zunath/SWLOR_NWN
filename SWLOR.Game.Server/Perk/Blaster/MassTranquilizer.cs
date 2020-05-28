@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 using static SWLOR.Game.Server.NWN._;
@@ -110,7 +112,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                     target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
                     Effect effect = _.EffectDazed();
-                    effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+                    effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
                     effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
                     _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
@@ -121,7 +123,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
             int current = 1;
-            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);
+            NWCreature nearest = _.GetNearestCreature(Type.IsAlive, 1, target, current);
             while (nearest.IsValid)
             {
                 float distance = _.GetDistanceBetween(nearest, target);
@@ -137,18 +139,18 @@ namespace SWLOR.Game.Server.Perk.Blaster
                     concentrationEffect.Type == PerkType.MindShield)
                 {
                     current++;
-                    nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);
+                    nearest = _.GetNearestCreature(Type.IsAlive, 1, target, current);
                     continue;
                 }
 
                 target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
                 Effect effect = _.EffectDazed();
-                effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+                effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
                 effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
                 _.ApplyEffectToObject(DurationType.Temporary, effect, nearest, duration);
 
                 current++;
-                nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, target, current);
+                nearest = _.GetNearestCreature(Type.IsAlive, 1, target, current);
             }
 
         }

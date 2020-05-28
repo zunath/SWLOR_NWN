@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.ValueObject
 {

@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.NWN
         ///   or on an error returns PORTRAIT_INVALID. In these instances
         ///   try using GetPortraitResRef() instead.
         /// </summary>
-        public static int GetPortraitId(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetPortraitId(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(831);
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Returns: The Portrait ResRef being used for the object oTarget.
         ///   The Portrait ResRef will not include a trailing size letter.
         /// </summary>
-        public static string GetPortraitResRef(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static string GetPortraitResRef(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(833);
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.NWN
         ///   returns -1 on an error or if used on an object that is
         ///   neither a door nor a placeable object.
         /// </summary>
-        public static int GetHardness(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetHardness(uint oObject = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(796);
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Does nothing if used on an object that is neither
         ///   a door nor a placeable.
         /// </summary>
-        public static void SetHardness(int nHardness, uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static void SetHardness(int nHardness, uint oObject = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.StackPushInteger(nHardness);
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.NWN
         ///   of pounds (as per the baseitems.2da).
         ///   - oTarget: the item or creature for which the weight is needed
         /// </summary>
-        public static int GetWeight(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetWeight(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(706);
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If the object is a creature, they will be created at the location.
         ///   If a new tag is specified, it will be assigned to the new object.
         /// </summary>
-        public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = SWLOR.Game.Server.NWN._.OBJECT_INVALID,
+        public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = OBJECT_INVALID,
             string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Determine whether oTarget is a plot object.
         /// </summary>
-        public static bool GetPlotFlag(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static bool GetPlotFlag(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(455);
@@ -589,17 +589,17 @@ namespace SWLOR.Game.Server.NWN
         ///   - nVoiceChatID: VOICE_CHAT_*
         ///   - oTarget
         /// </summary>
-        public static void PlayVoiceChat(int nVoiceChatID, uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static void PlayVoiceChat(VoiceChat nVoiceChatID, uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushInteger(nVoiceChatID);
+            Internal.NativeFunctions.StackPushInteger((int)nVoiceChatID);
             Internal.NativeFunctions.CallBuiltIn(421);
         }
 
         /// <summary>
         ///   Get the amount of gold possessed by oTarget.
         /// </summary>
-        public static int GetGold(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetGold(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(418);
@@ -652,7 +652,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - oTokenTarget: This must be specified if there are creature-specific tokens
         ///   in the string.
         /// </summary>
-        public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTokenTarget);
             Internal.NativeFunctions.StackPushStringUTF8(sDialogResRef);
@@ -697,7 +697,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Create an object of the specified type at lLocation.
-        ///   - nObjectType: OBJECT_TYPE_ITEM, ObjectType.Creature, ObjectType.Placeable,
+        ///   - nObjectType: ObjectType.Item, ObjectType.Creature, ObjectType.Placeable,
         ///   OBJECT_TYPE_STORE, OBJECT_TYPE_WAYPOINT
         ///   - sTemplate
         ///   - lLocation
@@ -723,7 +723,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nNth
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestObject(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID, ObjectType nObjectType = ObjectType.All,
+        public static uint GetNearestObject(uint oTarget = OBJECT_INVALID, ObjectType nObjectType = ObjectType.All,
             int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
@@ -754,7 +754,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the nth Object nearest to oTarget that has sTag as its tag.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestObjectByTag(string sTag, uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID, int nNth = 1)
+        public static uint GetNearestObjectByTag(string sTag, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static ObjectType GetObjectType(uint oTarget)
         {
-            if (SWLOR.Game.Server.NWN._.GetIsPC(oTarget)) return ObjectType.Player;
+            if (GetIsPC(oTarget)) return ObjectType.Player;
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(106);
             return (ObjectType)Internal.NativeFunctions.StackPopInteger();
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the current hitpoints of oObject
         ///   * Return value on error: 0
         /// </summary>
-        public static int GetCurrentHitPoints(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetCurrentHitPoints(uint oObject = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(49);
@@ -804,7 +804,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the maximum hitpoints of oObject
         ///   * Return value on error: 0
         /// </summary>
-        public static int GetMaxHitPoints(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetMaxHitPoints(uint oObject = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(50);

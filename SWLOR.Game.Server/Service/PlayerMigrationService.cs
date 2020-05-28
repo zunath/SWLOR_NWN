@@ -10,6 +10,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using static SWLOR.Game.Server.NWN._;
 
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var serialized in serializedItems)
             {
                 var item = SerializationService.DeserializeItem(serialized.Data, player);
-                BiowareXP2.IPRemoveAllItemProperties(item, DURATION_TYPE_PERMANENT);
+                BiowareXP2.IPRemoveAllItemProperties(item, DurationType.Permanent);
                 foreach (var ip in serialized.ItemPropertiesToAdd)
                 {
                     BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -249,7 +250,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="ip">The item property to check and remove, if applicable.</param>
         private static void ProcessVersion6_DeprecatedStats(NWItem item, ItemProperty ip)
         {
-            int[] ipsToRemove =
+            ItemPropertyType[] ipsToRemove =
             {
                 ItemPropertyType.DarkPotencyBonus,
                 ItemPropertyType.LightPotencyBonus,

@@ -50,10 +50,10 @@ namespace SWLOR.Game.Server.NWN
         ///   * Returns -1 on error.
         ///   Note: Private tells do not trigger a OnPlayerChat event.
         /// </summary>
-        public static int GetPCChatVolume()
+        public static TalkVolume GetPCChatVolume()
         {
             Internal.NativeFunctions.CallBuiltIn(840);
-            return Internal.NativeFunctions.StackPopInteger();
+            return (TalkVolume)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>

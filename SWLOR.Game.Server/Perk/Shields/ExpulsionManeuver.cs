@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
             if (RandomService.Random(100) + 1 <= chance)
             {
-                _.ApplyEffectToObject(_.DurationType.Temporary, _.EffectAttackIncrease(ab), creature.Object, length);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectAttackIncrease(ab), creature.Object, length);
                 creature.SendMessage(ColorTokenService.Combat("You perform a defensive maneuver."));
             }
         }

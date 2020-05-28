@@ -10,6 +10,7 @@ using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
 using System;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -376,10 +377,10 @@ namespace SWLOR.Game.Server.AI
                 return;
             }
 
-            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
                 _.IsInConversation(self.Object) == false &&
-                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
-                _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
+                _.GetCurrentAction(self.Object) != ActionType.RandomWalk &&
+                _.GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
@@ -391,9 +392,9 @@ namespace SWLOR.Game.Server.AI
             if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
                 return;
 
-            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
                 _.IsInConversation(self.Object) == false &&
-                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
+                _.GetCurrentAction(self.Object) != ActionType.RandomWalk)
             {
                 var flags = GetAIFlags(self);
                 Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");

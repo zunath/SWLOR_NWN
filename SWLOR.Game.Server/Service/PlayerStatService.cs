@@ -10,7 +10,9 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.ValueObject;
@@ -317,7 +319,7 @@ namespace SWLOR.Game.Server.Service
             // Calculating effective stats can be expensive, so we cache it on the item.
             SkillType skill; 
             
-            if(item.BaseItemType == BASE_ITEM_AMULET || item.BaseItemType == BASE_ITEM_RING)
+            if(item.BaseItemType == BaseItem.Amulet || item.BaseItemType == BaseItem.Ring)
             {
                 var forceArmor = SkillService.GetPCSkill(player, (int)SkillType.ForceArmor);
                 var lightArmor = SkillService.GetPCSkill(player, (int)SkillType.LightArmor);
@@ -420,9 +422,9 @@ namespace SWLOR.Game.Server.Service
             stats.EnmityRate = 1.0f;
 
             HashSet<NWItem> processed = new HashSet<NWItem>();
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
 
                 if (!item.IsValid || item.Equals(ignoreItem)) continue;
 

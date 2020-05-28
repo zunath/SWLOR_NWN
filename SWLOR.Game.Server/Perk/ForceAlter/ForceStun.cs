@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 case 1:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
-                    if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+                    if (targetCreature.RacialType == (int)RacialType.Robot)
                         return "This ability cannot be used on droids.";
                     if (concentrationEffect.Type == PerkType.MindShield)                    
                         return "Your target is immune to tranquilization effects.";                    
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 case 2:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
-                    if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+                    if (targetCreature.RacialType == (int)RacialType.Robot)
                         return "This ability cannot be used on droids.";
                     if (concentrationEffect.Type == PerkType.MindShield)
                         return "Your target is immune to tranquilization effects.";

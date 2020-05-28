@@ -87,7 +87,7 @@ void main()
         }
     else
         {
-        DelayCommand(1.0,FloatingTextStringOnCreature(GetStringByStrRef(nZEPFoundSecret,GENDER_MALE),oidUser));
+        DelayCommand(1.0,FloatingTextStringOnCreature(GetStringByStrRef(nZEPFoundSecret,Gender.Male),oidUser));
             {
             DelayCommand(0.1,AssignCommand(OBJECT_SELF,PlaySound("as_dr_stonmedop1")));
             DelayCommand(0.3,AssignCommand(OBJECT_SELF,PlayAnimation(ANIMATION_PLACEABLE_OPEN)));

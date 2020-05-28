@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             if (!oTarget.IsCreature)
                 return "This ability can only be used on living creatures.";
             NWCreature targetCreature = oTarget.Object;
-            if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+            if (targetCreature.RacialType == (int)RacialType.Robot)
                 return "This ability cannot be used on droids.";
 
             return string.Empty;

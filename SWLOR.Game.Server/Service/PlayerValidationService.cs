@@ -2,6 +2,7 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service

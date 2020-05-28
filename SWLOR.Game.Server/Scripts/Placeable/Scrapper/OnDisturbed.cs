@@ -3,6 +3,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -20,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
 
         public void Main()
         {
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
             if (type != DisturbType.Added) return;
             NWPlaceable device = _.OBJECT_SELF;
             NWPlayer player = _.GetLastDisturbed();

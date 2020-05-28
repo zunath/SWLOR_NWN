@@ -57,7 +57,7 @@ void main()
 
     if (GetLocked(OBJECT_SELF) == 1){
         //FloatingTextStringOnCreature("Locked", OBJECT_SELF);
-        string sLockedMSG = GetStringByStrRef(nZEPDoorLocked,GENDER_MALE);
+        string sLockedMSG = GetStringByStrRef(nZEPDoorLocked,Gender.Male);
         SpeakString(sLockedMSG);
         return;
     }

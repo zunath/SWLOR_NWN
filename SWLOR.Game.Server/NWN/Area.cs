@@ -249,11 +249,11 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   This will return true if the area is flagged as either interior or underground.
         /// </summary>
-        public static AboveGround GetIsAreaInterior(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static bool GetIsAreaInterior(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(716);
-            return (AboveGround)Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>

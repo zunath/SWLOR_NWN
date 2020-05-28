@@ -11,7 +11,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return QuestCanAccept.Check(1) ? true : false;
+            return QuestCanAccept.Check(1) ? 1 : 0;
         }
     }
 }

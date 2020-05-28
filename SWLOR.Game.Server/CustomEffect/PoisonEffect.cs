@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.CustomEffect
             Effect decreaseAC = _.EffectACDecrease(2);
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(_.DurationType.Temporary, decreaseAC, oTarget.Object, 1.0f);
+                _.ApplyEffectToObject(DurationType.Temporary, decreaseAC, oTarget.Object, 1.0f);
             });
             
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_ACID_S), oTarget.Object);

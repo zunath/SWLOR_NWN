@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.NWN.Enum.Item
         BastardSword = 3,
         LightFlail = 4,
         WarHammer = 5,
-        Rifle = 6, // Heavy Crossbow replaced with Rifle
+        HeavyCrossbow = 6, // Heavy Crossbow replaced with Rifle
         LightCrossbow = 7,
         Longbow = 8,
         LightMace = 9,

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = (user.Object);
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            target.RemoveEffect(EFFECT_TYPE_REGENERATE);
+            target.RemoveEffect(EffectTypeScript.Regenerate);
             int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             int luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public Animation AnimationID()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.LoopingGetMid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

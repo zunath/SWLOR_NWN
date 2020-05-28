@@ -87,9 +87,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target of the perk feat.</param>
         /// <param name="featID">The ID number of the feat being used.</param>
         /// <returns>true if able to use perk feat on target, false otherwise.</returns>
-        public static bool CanUsePerkFeat(NWCreature activator, NWObject target, int featID)
+        public static bool CanUsePerkFeat(NWCreature activator, NWObject target, Feat featID)
         {
-            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault(featID);
+            var perkFeat = DataService.PerkFeat.GetByFeatIDOrDefault((int)featID);
 
             // There's no matching feat in the DB for this ability. Exit early.
             if (perkFeat == null) return false;
@@ -227,13 +227,13 @@ namespace SWLOR.Game.Server.Service
             // Target is who the activator selected to use this feat on.
             NWCreature activator = _.OBJECT_SELF;
             NWCreature target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
-            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
+            var featID = (Feat)Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
 
             // Ensure this perk feat can be activated.
             if (!CanUsePerkFeat(activator, target, featID)) return;
 
             // Retrieve information necessary for activation of perk feat.
-            var perkFeat = DataService.PerkFeat.GetByFeatID(featID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID((int)featID);
             Data.Entity.Perk perk = DataService.Perk.GetByID(perkFeat.PerkID);
             int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
@@ -666,15 +666,15 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
-        private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
+        private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, Feat spellFeatID)
         {
-            var perkFeat = DataService.PerkFeat.GetByFeatID(spellFeatID);
+            var perkFeat = DataService.PerkFeat.GetByFeatID((int)spellFeatID);
             int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.CooldownCategory.GetByID(Convert.ToInt32(cooldownCategoryID));
             string queueUUID = Guid.NewGuid().ToString();
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
-            activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
+            activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", (int)spellFeatID);
             activator.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
             SendAOEMessage(activator, activator.Name + " readies weapon skill '" + entity.Name + "'.");
 

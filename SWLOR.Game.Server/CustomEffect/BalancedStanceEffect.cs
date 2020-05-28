@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.CustomEffect
             var effect = _.EffectImmunity(IMMUNITY_TYPE_KNOCKDOWN);
             effect = _.TagEffect(effect, "BALANCED_STANCE");
 
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, effect, target);
+            _.ApplyEffectToObject(DurationType.Permanent, effect, target);
             return null;
         }
 

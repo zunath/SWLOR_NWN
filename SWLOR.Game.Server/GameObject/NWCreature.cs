@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual RacialType RacialType => _.GetRacialType(Object);
 
-        public virtual int Gender => _.GetGender(Object);
+        public virtual Gender Gender => _.GetGender(Object);
 
         public virtual bool IsResting => _.GetIsResting(Object);
 

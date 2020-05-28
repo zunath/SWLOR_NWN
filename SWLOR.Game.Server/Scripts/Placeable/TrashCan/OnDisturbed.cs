@@ -1,5 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.TrashCan
 {
@@ -16,7 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.TrashCan
         public void Main()
         {
             NWItem oItem = (_.GetInventoryDisturbItem());
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
 
             if (type == DisturbType.Added)
             {

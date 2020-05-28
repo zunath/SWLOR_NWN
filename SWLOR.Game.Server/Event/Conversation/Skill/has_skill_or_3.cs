@@ -11,7 +11,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return HasSkillRank.Check(3, "OR") ? true : false;
+            return HasSkillRank.Check(3, "OR") ? 1 : 0;
         }
     }
 }

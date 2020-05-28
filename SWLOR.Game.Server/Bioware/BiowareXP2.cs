@@ -1,8 +1,10 @@
 ﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWN;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Bioware
 {
@@ -37,9 +39,9 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="bIgnoreSubType"></param>
         public static void IPSafeAddItemProperty(NWItem oItem, ItemProperty ip, float fDuration, AddItemPropertyPolicy nAddItemPropertyPolicy, bool bIgnoreDurationType, bool bIgnoreSubType)
         {
-            int nType = _.GetItemPropertyType(ip);
-            int nSubType = _.GetItemPropertySubType(ip);
-            int nDuration;
+            var nType = GetItemPropertyType(ip);
+            int nSubType = GetItemPropertySubType(ip);
+            DurationType nDuration;
             // if duration is 0.0f, make the item property permanent
             if (fDuration == 0.0f)
             {
@@ -49,13 +51,13 @@ namespace SWLOR.Game.Server.Bioware
             else
             {
 
-                nDuration = _.DurationType.Temporary;
+                nDuration = DurationType.Temporary;
             }
 
-            int nDurationCompare = nDuration;
+            var nDurationCompare = nDuration;
             if (bIgnoreDurationType)
             {
-                nDurationCompare = -1;
+                nDurationCompare = DurationType.Invalid;
             }
 
             if (nAddItemPropertyPolicy == AddItemPropertyPolicy.ReplaceExisting)
@@ -66,12 +68,12 @@ namespace SWLOR.Game.Server.Bioware
                 {
                     nSubType = -1;
                 }
-                IPRemoveMatchingItemProperties(oItem, nType, nDurationCompare, nSubType);
+                IPRemoveMatchingItemProperties(oItem, (int)nType, (int)nDurationCompare, nSubType);
             }
             else if (nAddItemPropertyPolicy == AddItemPropertyPolicy.KeepExisting)
             {
                 // do not replace existing properties
-                if (IPGetItemHasProperty(oItem, ip, nDurationCompare, bIgnoreSubType))
+                if (IPGetItemHasProperty(oItem, ip, (int)nDurationCompare, bIgnoreSubType))
                 {
                     return; // item already has property, return
                 }
@@ -83,11 +85,11 @@ namespace SWLOR.Game.Server.Bioware
 
             if (nDuration == DurationType.Permanent)
             {
-                _.AddItemProperty(nDuration, ip, oItem.Object);
+                AddItemProperty(nDuration, ip, oItem.Object);
             }
             else
             {
-                _.AddItemProperty(nDuration, ip, oItem.Object, fDuration);
+                AddItemProperty(nDuration, ip, oItem.Object, fDuration);
             }
         }
 
@@ -110,21 +112,21 @@ namespace SWLOR.Game.Server.Bioware
             foreach (var prop in props)
             {
                 // same property type?
-                if (_.GetItemPropertyType(prop) == nItemPropertyType)
+                if ((int)GetItemPropertyType(prop) == nItemPropertyType)
                 {
                     // same duration or duration ignored?
-                    if (_.GetItemPropertyDurationType(prop) == nItemPropertyDuration || nItemPropertyDuration == -1)
+                    if ((int)GetItemPropertyDurationType(prop) == nItemPropertyDuration || nItemPropertyDuration == -1)
                     {
                         // same subtype or subtype ignored
-                        if (_.GetItemPropertySubType(prop) == nItemPropertySubType || nItemPropertySubType == -1)
+                        if (GetItemPropertySubType(prop) == nItemPropertySubType || nItemPropertySubType == -1)
                         {
                             // Put a warning into the logfile if someone tries to remove a permanent ip with a temporary one!
-                            /*if (nItemPropertyDuration == DurationType.Temporary &&  GetItemPropertyDurationType(ip) == DURATION_TYPE_PERMANENT)
+                            /*if (nItemPropertyDuration == DurationType.Temporary &&  GetItemPropertyDurationType(ip) == DurationType.Permanent)
                             {
                                WriteTimestampedLogEntry("x2_inc_itemprop:: IPRemoveMatchingItemProperties() - WARNING: Permanent item property removed by temporary on "+GetTag(oItem));
                             }
                             */
-                            _.RemoveItemProperty(oItem.Object, prop);
+                            RemoveItemProperty(oItem.Object, prop);
                         }
                     }
                 }
@@ -146,11 +148,11 @@ namespace SWLOR.Game.Server.Bioware
 
             foreach (ItemProperty ip in props)
             {
-                if ((_.GetItemPropertyType(ip) == _.GetItemPropertyType(ipCompareTo)))
+                if ((GetItemPropertyType(ip) == GetItemPropertyType(ipCompareTo)))
                 {
-                    if (_.GetItemPropertySubType(ip) == _.GetItemPropertySubType(ipCompareTo) || bIgnoreSubType)
+                    if (GetItemPropertySubType(ip) == GetItemPropertySubType(ipCompareTo) || bIgnoreSubType)
                     {
-                        if (_.GetItemPropertyDurationType(ip) == nDurationCompare || nDurationCompare == -1)
+                        if ((int)GetItemPropertyDurationType(ip) == nDurationCompare || nDurationCompare == -1)
                         {
                             return true; // if duration is not ignored and durationtypes are equal, true
                         }
@@ -166,15 +168,15 @@ namespace SWLOR.Game.Server.Bioware
         /// </summary>
         /// <param name="oItem"></param>
         /// <param name="nItemPropertyDuration"></param>
-        public static void IPRemoveAllItemProperties(NWItem oItem, int nItemPropertyDuration)
+        public static void IPRemoveAllItemProperties(NWItem oItem, DurationType nItemPropertyDuration)
         {
             var props = oItem.ItemProperties;
             foreach (var prop in props)
             {
-                _.GetItemPropertyDurationType(prop);
-                if (_.GetItemPropertyDurationType(prop) == nItemPropertyDuration)
+                GetItemPropertyDurationType(prop);
+                if (GetItemPropertyDurationType(prop) == nItemPropertyDuration)
                 {
-                    _.RemoveItemProperty(oItem.Object, prop);
+                    RemoveItemProperty(oItem.Object, prop);
                 }
             }
         }

@@ -4,6 +4,9 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Drill
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
             {
                 if (outOfPowerEffect == null)
                 {
-                    outOfPowerEffect = _.EffectVisualEffect(_.VFX_DUR_AURA_RED);
+                    outOfPowerEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
                     outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
                     _.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, drill);
                 }

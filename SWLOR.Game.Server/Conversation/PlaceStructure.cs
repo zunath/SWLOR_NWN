@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Conversation
             plc.IsUseable = false;
             plc.Destroy(6.0f);
             _.DelayCommand(6.1f, () => { data.IsPreviewing = false; });
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), plc.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), plc.Object);
         }
 
         private void LoadRotatePage()
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Conversation
                 string resref = GetPlaceableResref(structure);
                 data.StructurePreview = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
-                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), data.StructurePreview.Object);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), data.StructurePreview.Object);
             }
 
             SetPageHeader("RotatePage", header);

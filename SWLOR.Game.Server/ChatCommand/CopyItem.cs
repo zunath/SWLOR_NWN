@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (target.ObjectType != OBJECT_TYPE_ITEM)
+            if (target.ObjectType != ObjectType.Item)
             {
                 user.SendMessage("You can only copy items with this command.");
                 return;

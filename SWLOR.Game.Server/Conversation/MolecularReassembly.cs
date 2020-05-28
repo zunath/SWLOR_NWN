@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Conversation
                         player.AssignCommand(() =>
                         {
                             _.ClearAllActions();
-                            _.ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0f, delay);
+                            _.ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, delay);
                         });
 
                         // Show sparks halfway through the process.
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Immobilize the player while crafting.
                         var immobilize = _.EffectCutsceneImmobilize();
                         immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
-                        _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, player);
+                        _.ApplyEffectToObject(DurationType.Permanent, immobilize, player);
 
                         // Clear the temporary crafting data and end this conversation.
                         model.SerializedSalvageItem = string.Empty;

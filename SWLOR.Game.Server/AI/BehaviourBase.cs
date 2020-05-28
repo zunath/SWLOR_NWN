@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
@@ -11,6 +11,7 @@ using static SWLOR.Game.Server.NWN._;
 using System;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -84,8 +85,8 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnDeath(NWCreature self)
         {
-            int vfx = self.GetLocalInt("DEATH_VFX");
-            if (vfx > 0)
+            var vfx = (VisualEffect)self.GetLocalInt("DEATH_VFX");
+            if (vfx != VisualEffect.Invalid)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), self);
             }
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.AI
                 });
             }
             // We don't have a valid target but we're still attacking someone. We shouldn't be attacking them anymore. Clear all actions.
-            else if(target == null && GetCurrentAction(self) == ACTION_ATTACKOBJECT)
+            else if(target == null && GetCurrentAction(self) == ActionType.AttackObject)
             {
                 self.AssignCommand(() =>
                 {
@@ -274,7 +275,7 @@ namespace SWLOR.Game.Server.AI
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
             int nth = 1;
-            NWCreature creature = _.GetNearestObject(ObjectType.Creature, self, nth);
+            NWCreature creature = _.GetNearestObject(self, ObjectType.Creature, nth);
             while (creature.IsValid)
             {
                 float aggroRange = GetAggroRange(creature);
@@ -293,7 +294,7 @@ namespace SWLOR.Game.Server.AI
                     Link(self, creature);
                 }
                 nth++;
-                creature = _.GetNearestObject(ObjectType.Creature, self, nth);
+                creature = _.GetNearestObject(self, ObjectType.Creature, nth);
             }
         }
 
@@ -326,7 +327,7 @@ namespace SWLOR.Game.Server.AI
             if (GetIsEnemy(nearby, self.Object) == false) return;
 
             // Does the nearby creature have sanctuary?
-            if (nearby.HasAnyEffect(EFFECT_TYPE_SANCTUARY)) return;
+            if (nearby.HasAnyEffect(EffectTypeScript.Sanctuary)) return;
 
             // Does the nearby creature have line of sight to the creature being attacked?
             if (LineOfSightObject(self, nearby) == false) return;
@@ -437,11 +438,11 @@ namespace SWLOR.Game.Server.AI
             foreach (var perkDetails in randomizedFeatIDs)
             {
                 // Move to next feat if this creature cannot use this one.
-                if (!AbilityService.CanUsePerkFeat(self, target, perkDetails.FeatID)) continue;
+                if (!AbilityService.CanUsePerkFeat(self, target, (Feat)perkDetails.FeatID)) continue;
                 
                 self.AssignCommand(() =>
                 {
-                    _.ActionUseFeat(perkDetails.FeatID, target);
+                    _.ActionUseFeat((Feat)perkDetails.FeatID, target);
                 });
 
                 break;

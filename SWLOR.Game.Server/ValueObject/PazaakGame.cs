@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
@@ -56,15 +56,15 @@ namespace SWLOR.Game.Server.ValueObject
             {
                 int c1 = DrawCard();
                 int c2 = DrawCard();
-                FloatingTextStringOnCreature("Draws " + c1 + " for first player (highest plays first)", player1, 0);
+                FloatingTextStringOnCreature("Draws " + c1 + " for first player (highest plays first)", player1, false);
 
-                if (GetIsPC(player2) == 1)
+                if (GetIsPC(player2))
                 {
-                    FloatingTextStringOnCreature("Draws " + c2 + " for first player (highest plays first)", player2, 0);
+                    FloatingTextStringOnCreature("Draws " + c2 + " for first player (highest plays first)", player2, true);
                 }
                 else
                 {
-                    DelayCommand(1.0f, () => { FloatingTextStringOnCreature(player2.Name + " draws " + c2 + " to start", player1, 0); });
+                    DelayCommand(1.0f, () => { FloatingTextStringOnCreature(player2.Name + " draws " + c2 + " to start", player1, false); });
                 }
 
                 if (c1 > c2) startedThisRound = player1;

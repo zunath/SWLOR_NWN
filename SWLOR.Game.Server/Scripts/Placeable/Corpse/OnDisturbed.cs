@@ -1,5 +1,6 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
@@ -18,11 +19,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
         {
             NWCreature looter = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
 
             looter.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_LOW, 1.0f, 1.0f);
+                _.ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 1.0f);
             });
 
             if (type == DisturbType.Added)

@@ -1,7 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
 using static SWLOR.Game.Server.NWN._;

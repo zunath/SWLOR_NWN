@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;

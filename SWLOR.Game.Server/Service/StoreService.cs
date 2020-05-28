@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Store;
 using SWLOR.Game.Server.GameObject;

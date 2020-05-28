@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeHeadResponses(int responseID)
         {
             int headID = (int)GetResponseByID("ChangeHeadPage", responseID).CustomData;
-            _.SetCreatureBodyPart(CreaturePart.Head, (ModelType)headID, GetPC());
+            _.SetCreatureBodyPart(CreaturePart.Head, headID, GetPC());
         }
 
         private void LoadHeadPage()
@@ -814,7 +814,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("EditPartPage", responseID);
             int modelID = (int)response.CustomData;
-            _.SetCreatureBodyPart(model.BodyPartID, (ModelType)modelID, GetPC());
+            _.SetCreatureBodyPart(model.BodyPartID, modelID, GetPC());
         }
 
         public override void EndDialog()

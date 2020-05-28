@@ -1,7 +1,8 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
                 dc--;
             }
 
-            oPC.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_LOW, 1.0f, 2.0f));
+            oPC.AssignCommand(() => _.ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f));
 
             for (int attempt = 1; attempt <= searchAttempts; attempt++)
             {

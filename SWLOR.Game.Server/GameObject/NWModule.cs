@@ -1,6 +1,6 @@
 ﻿
 using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN;
 
 

@@ -705,7 +705,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nObjectFilter: This allows you to filter out undesired object types, using
         ///   bitwise "or".
         ///   For example, to return only creatures and doors, the value for this
-        ///   parameter would be ObjectType.Creature | OBJECT_TYPE_DOOR
+        ///   parameter would be ObjectType.Creature | ObjectType.Door
         ///   - vOrigin: This is only used for cylinders and cones, and specifies the
         ///   origin of the effect(normally the spell-caster's position).
         ///   Return value on error: OBJECT_INVALID
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.NWN
         ///   at a height 1m above the ground
         ///   - nObjectFilter: This allows you to filter out undesired object types, using
         ///   bitwise "or". For example, to return only creatures and doors, the value for
-        ///   this parameter would be ObjectType.Creature | OBJECT_TYPE_DOOR
+        ///   this parameter would be ObjectType.Creature | ObjectType.Door
         ///   - vOrigin: This is only used for cylinders and cones, and specifies the origin
         ///   of the effect (normally the spell-caster's position).
         ///   Return value on error: OBJECT_INVALID

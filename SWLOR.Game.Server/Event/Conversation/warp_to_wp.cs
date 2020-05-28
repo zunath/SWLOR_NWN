@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server;
 
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace

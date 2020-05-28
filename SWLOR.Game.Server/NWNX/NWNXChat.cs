@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 using SWLOR.Game.Server.GameObject;

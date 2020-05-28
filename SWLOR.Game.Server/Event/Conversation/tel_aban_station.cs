@@ -3,6 +3,8 @@ using System.Linq;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
@@ -65,9 +67,9 @@ namespace NWN.Scripts
             directorsChambers.SetLocalObject("DIRECTORS_CHAMBERS", directorsChambers);
 
             // Set local variables for instances
-            restrictedLevel.SetLocalInt("IS_AREA_INSTANCE", true);
-            mainLevel.SetLocalInt("IS_AREA_INSTANCE", true);
-            directorsChambers.SetLocalInt("IS_AREA_INSTANCE", true);
+            SetLocalBool(restrictedLevel, "IS_AREA_INSTANCE", true);
+            SetLocalBool(mainLevel, "IS_AREA_INSTANCE", true);
+            SetLocalBool(directorsChambers, "IS_AREA_INSTANCE", true);
             restrictedLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
             mainLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
             directorsChambers.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();

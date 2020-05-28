@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;

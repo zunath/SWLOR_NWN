@@ -4,7 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;

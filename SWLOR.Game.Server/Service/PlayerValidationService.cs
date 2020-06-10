@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Service
             
             if (!string.IsNullOrWhiteSpace(error))
             {
-                _.BootPC(player, error);
                 NWNXAdmin.DeletePlayerCharacter(player, true);
             }
         }

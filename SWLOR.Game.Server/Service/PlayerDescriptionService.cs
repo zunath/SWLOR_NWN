@@ -1,7 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 
@@ -32,13 +32,12 @@ namespace SWLOR.Game.Server.Service
         public static void ChangePlayerDescription(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
             string newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
             _.SetDescription(player.Object, newDescription);
-            _.SetDescription(player.Object, newDescription, _.FALSE);
+            _.SetDescription(player.Object, newDescription, false);
 
-            _.FloatingTextStringOnCreature("New description set!", player.Object, _.FALSE);
+            _.FloatingTextStringOnCreature("New description set!", player.Object, false);
         }
     }
 }

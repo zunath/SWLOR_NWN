@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Returns the amount of gold a store currently has. -1 indicates it is not using gold.

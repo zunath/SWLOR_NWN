@@ -26,9 +26,25 @@ namespace SWLOR.Game.Server.NWN.Enum
         Shapechanger = 23,
         Undead = 24,
         Vermin = 25,
-        All = 28, // Oh bioware..
-        Invalid = 28, // yep...
-        Ooze = 29, // oh yep..
-        Plant = 52 // wtf.
+        All = 28, 
+        Invalid = 28, 
+        Ooze = 29, 
+        Plant = 52,
+
+        Robot = 150,
+        Alien = 151,
+        Bothan = 152,
+        Chiss = 153,
+        Zabrak = 154,
+        Wookiee = 155,
+        Twilek = 156,
+        Cyborg = 157,
+        Cathar = 158,
+        Trandoshan = 159,
+        Mirialan = 160,
+        Echani = 161,
+        MonCalamari = 162,
+        Ugnaught = 163
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-using NWN;
 using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.Bioware

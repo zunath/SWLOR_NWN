@@ -37,7 +37,7 @@ int DMFI_get_line(object oSpeaker, int iChannel, string sEventScriptName,
     {
 // SendMessageToPC(GetFirstPC(), "getline - apply hook");
         hdlHook = DMFI_ChatHookAdd(sEventScriptName, oRequester, (1 << iChannel),
-                false, oSpeaker, true);
+                FALSE, oSpeaker, TRUE);
 // SendMessageToPC(GetFirstPC(), "getline - hook handle returned is " + IntToString(hdlHook));
         SetLocalInt(oRequester, DMFI_GETLINE_HOOK_HANDLE_VARNAME, hdlHook);
     }

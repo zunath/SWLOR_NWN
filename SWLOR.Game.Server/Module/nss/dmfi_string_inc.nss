@@ -42,7 +42,7 @@ string LTrim(string sTrimMe, string sDelim = " ")
 }
 
 ////////////////////////////////////////////////////////////////////////
-void DMFISendMessageToPC(object oPC, string sMsg, int bAllDMs=false,
+void DMFISendMessageToPC(object oPC, string sMsg, int bAllDMs=FALSE,
                          string sRGB="")
 {
     string sColMsg;

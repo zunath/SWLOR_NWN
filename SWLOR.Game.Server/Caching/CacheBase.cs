@@ -4,9 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Caching.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 

@@ -10,7 +10,7 @@ using SpellSchool = SWLOR.Game.Server.NWN.Enum.SpellSchool;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   adds an item property to the specified item
@@ -384,10 +384,10 @@ namespace SWLOR.Game.Server.NWN
         ///   The damage penalty should be a uint, 1 - 5 only.
         ///   will reduce any value < 5 to 5.
         /// </summary>
-        public static ItemProperty ItemPropertyDamagePenalty(uint nPenalty)
+        public static ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             if (nPenalty > 5) nPenalty = 5;
-            Internal.NativeFunctions.StackPushInteger((int)nPenalty);
+            Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.CallBuiltIn(636);
             return new ItemProperty(Internal.NativeFunctions.StackPopItemProperty());
         }
@@ -1146,7 +1146,7 @@ namespace SWLOR.Game.Server.NWN
         ///   when a successful strike is made, or (when applied to armor) is struck by an opponent.
         ///   - nSpell uses the IP_CONST_ONHIT_CASTSPELL_* constants
         /// </summary>
-        public static ItemProperty ItemPropertyOnHitCastSpell(OnHitCastSpell nSpell, int nLevel)
+        public static ItemProperty ItemPropertyOnHitCastSpell(OnHitCastSpellType nSpell, int nLevel)
         {
             Internal.NativeFunctions.StackPushInteger(nLevel);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
@@ -1178,7 +1178,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Returns the total duration of the item property in seconds.
-        ///   - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
+        ///   - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
         public static int GetItemPropertyDuration(ItemProperty nProperty)
         {
@@ -1189,7 +1189,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Returns the remaining duration of the item property in seconds.
-        ///   - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
+        ///   - Returns 0 if the duration type of the item property is not DurationType.Temporary.
         /// </summary>
         public static int GetItemPropertyDurationRemaining(ItemProperty nProperty)
         {

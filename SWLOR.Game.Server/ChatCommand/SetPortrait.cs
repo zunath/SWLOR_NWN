@@ -1,9 +1,8 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX;
-
+using SWLOR.Game.Server.NWN.Enum;
 
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (!target.IsValid || target.ObjectType != _.OBJECT_TYPE_CREATURE)
+            if (!target.IsValid || target.ObjectType != ObjectType.Creature)
             {
                 user.SendMessage("Only creatures may be targeted with this command.");
                 return;

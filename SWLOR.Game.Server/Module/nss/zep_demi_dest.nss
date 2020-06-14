@@ -75,7 +75,7 @@ void DestroyDemilich(object oBones)
         return;
 
     // Prevent the demilich from regenerating.
-    SetLocalInt(oBones, "DESTROYED", true);
+    SetLocalInt(oBones, "DESTROYED", TRUE);
 
     // Allow a module-specific script to be called here.
     SetLocalObject(oBones, "MyDestroyer", OBJECT_SELF);
@@ -91,7 +91,7 @@ void DestroyDemilich(object oBones)
         DestroyObject(oHolyWater);
 
     // Display the demilich's soul departing. (Impressive, no?)
-    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_FNF_WAIL_O_BANSHEES), oBones);
+    ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_WAIL_O_BANSHEES), oBones);
 
     // Display some floating text over the PC who did the demilich in.
     FloatingTextStringOnCreature(ZEP_DEMI_FINAL_DEST, OBJECT_SELF);
@@ -110,7 +110,7 @@ void DestroyDemilich(object oBones)
     DestroyObject(GetLocalObject(oBones, ZEP_DEMI_LOCAL_HOLDER), WAIL_TIME);
     DestroyObject(oBones, WAIL_TIME + 0.1); // Slightly longer delay so DeathKnell() can finish.
     // A little extra visual effect as the bones disappear.
-    DelayCommand(WAIL_TIME, ApplyEffectToObject(DurationType.Instant,
+    DelayCommand(WAIL_TIME, ApplyEffectToObject(DURATION_TYPE_INSTANT,
                                 EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE),
                                 oBones));
     // Effects of the death knell.
@@ -131,7 +131,7 @@ void DeathKnell()
 
     // Prepare to loop through all nearby creatures.
     int nCount = 1;
-    object oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, nCount);
+    object oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, OBJECT_SELF, nCount);
     float fDistance = GetDistanceToObject(oCreature);
 
     // Start with those relatively close. These will be stunned or dazed.
@@ -140,13 +140,13 @@ void DeathKnell()
         // Allow a Will save.
         if ( !WillSave(oCreature, nDC) )
             // Stun them for 1-4 rounds.
-            ApplyEffectToObject(DurationType.Temporary, eStun, oCreature, RoundsToSeconds(d4()));
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eStun, oCreature, RoundsToSeconds(d4()));
         else
             // Daze them for 1-2 rounds.
-            ApplyEffectToObject(DurationType.Temporary, eDaze, oCreature, RoundsToSeconds(d2()));
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eDaze, oCreature, RoundsToSeconds(d2()));
 
         // Update the loop.
-        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, ++nCount);
+        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, OBJECT_SELF, ++nCount);
         fDistance = GetDistanceToObject(oCreature);
     }
 
@@ -156,10 +156,10 @@ void DeathKnell()
         // Allow a Will save.
         if ( !WillSave(oCreature, nDC) )
             // Daze them for 1-4 rounds.
-            ApplyEffectToObject(DurationType.Temporary, eDaze, oCreature, RoundsToSeconds(d4()));
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eDaze, oCreature, RoundsToSeconds(d4()));
 
         // Update the loop.
-        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, true, OBJECT_SELF, ++nCount);
+        oCreature = GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, OBJECT_SELF, ++nCount);
         fDistance = GetDistanceToObject(oCreature);
     }
 }

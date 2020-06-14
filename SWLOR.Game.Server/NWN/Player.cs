@@ -2,15 +2,15 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Gets the current cutscene state of the player specified by oCreature.
-        ///   Returns TRUE if the player is in cutscene mode.
-        ///   Returns FALSE if the player is not in cutscene mode, or on an error
+        ///   Returns true if the player is in cutscene mode.
+        ///   Returns false if the player is not in cutscene mode, or on an error
         ///   (such as specifying a non creature object).
         /// </summary>
-        public static bool GetIsInCutsceneMode(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetIsInCutsceneMode(uint oCreature = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(781);
@@ -212,12 +212,12 @@ namespace SWLOR.Game.Server.NWN
         ///   Sets the given creature into cutscene mode.  This prevents the player from
         ///   using the GUI and camera controls.
         ///   - oCreature: creature in a cutscene
-        ///   - nInCutscene: TRUE to move them into cutscene, FALSE to remove cutscene mode
-        ///   - nLeftClickingEnabled: TRUE to allow the user to interact with the game world using the left mouse button only.
-        ///   FALSE to stop the user from interacting with the game world.
-        ///   Note: SetCutsceneMode(oPlayer, TRUE) will also make the player 'plot' (unkillable).
-        ///   SetCutsceneMode(oPlayer, FALSE) will restore the player's plot flag to what it
-        ///   was when SetCutsceneMode(oPlayer, TRUE) was called.
+        ///   - nInCutscene: true to move them into cutscene, false to remove cutscene mode
+        ///   - nLeftClickingEnabled: true to allow the user to interact with the game world using the left mouse button only.
+        ///   false to stop the user from interacting with the game world.
+        ///   Note: SetCutsceneMode(oPlayer, true) will also make the player 'plot' (unkillable).
+        ///   SetCutsceneMode(oPlayer, false) will restore the player's plot flag to what it
+        ///   was when SetCutsceneMode(oPlayer, true) was called.
         /// </summary>
         public static void SetCutsceneMode(uint oCreature, bool nInCutscene = true, bool nLeftClickingEnabled = false)
         {
@@ -253,9 +253,9 @@ namespace SWLOR.Game.Server.NWN
         ///   if you want to turn off the "Respawn" or "Wait for Help" buttons, this is the
         ///   function to use.
         ///   - oPC
-        ///   - bRespawnButtonEnabled: if this is TRUE, the "Respawn" button will be enabled
+        ///   - bRespawnButtonEnabled: if this is true, the "Respawn" button will be enabled
         ///   on the Death GUI.
-        ///   - bWaitForHelpButtonEnabled: if this is TRUE, the "Wait For Help" button will
+        ///   - bWaitForHelpButtonEnabled: if this is true, the "Wait For Help" button will
         ///   be enabled on the Death GUI (Note: This button will not appear in single player games).
         ///   - nHelpStringReference
         ///   - sHelpString

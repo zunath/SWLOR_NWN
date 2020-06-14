@@ -28,7 +28,7 @@ void main()
     // int bListenAll;
     object oRunner;
     int bAutoRemove;
-    int bDirtyList = false;
+    int bDirtyList = FALSE;
     int iHook;
     object oMod = GetModule();
 // SendMessageToPC(GetFirstPC(), "OnPlayerChat - process hooks");
@@ -42,15 +42,15 @@ void main()
         {
 // SendMessageToPC(GetFirstPC(), "OnPlayerChat --- channel matched");
 
-            bInvoke = false;
-            if (GetLocalArrayInt(oMod, DMFI_CHATHOOK_LISTENALL_ARRAYNAME, iHook) != false)
+            bInvoke = FALSE;
+            if (GetLocalArrayInt(oMod, DMFI_CHATHOOK_LISTENALL_ARRAYNAME, iHook) != FALSE)
             {
-                bInvoke = true;
+                bInvoke = TRUE;
             }
             else
             {
                 object oDesiredSpeaker = GetLocalArrayObject(oMod, DMFI_CHATHOOK_SPEAKER_ARRAYNAME, iHook);
-                if (oShouter == oDesiredSpeaker) bInvoke = true;
+                if (oShouter == oDesiredSpeaker) bInvoke = TRUE;
             }
             if (bInvoke) // right speaker
             {
@@ -63,7 +63,7 @@ void main()
                 if (bAutoRemove)
                 {
 // SendMessageToPC(GetFirstPC(), "OnPlayerChat --- scheduling autoremove");
-                    bDirtyList = true;
+                    bDirtyList = TRUE;
                     SetLocalArrayInt(oMod, DMFI_CHATHOOK_HANDLE_ARRAYNAME, iHook, 0);
                 }
             }

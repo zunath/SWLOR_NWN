@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Conversation
         private void OpenScrapperInventory()
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
-            NWPlaceable container = _.CreateObject(OBJECT_TYPE_PLACEABLE, "cft_scrapper", GetPC().Location);
+            NWPlaceable container = _.CreateObject(ObjectType.Placeable, "cft_scrapper", GetPC().Location);
             container.IsLocked = false;
             model.IsAccessingStorage = true;
             

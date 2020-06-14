@@ -2,10 +2,10 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
-        ///   * Returns TRUE if oObject (which is a placeable or a door) is currently open.
+        ///   * Returns true if oObject (which is a placeable or a door) is currently open.
         /// </summary>
         public static bool GetIsOpen(uint oObject)
         {
@@ -66,14 +66,14 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   - oTargetDoor
         ///   - nDoorAction: DOOR_ACTION_*
-        ///   * Returns TRUE if nDoorAction can be performed on oTargetDoor.
+        ///   * Returns true if nDoorAction can be performed on oTargetDoor.
         /// </summary>
-        public static int GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
+        public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDoorAction);
             Internal.NativeFunctions.StackPushObject(oTargetDoor);
             Internal.NativeFunctions.CallBuiltIn(337);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>

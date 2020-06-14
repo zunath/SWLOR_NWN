@@ -1,7 +1,6 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -134,7 +133,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     // Take the gold.
-                    _.TakeGoldFromCreature(model.Price, player, _.TRUE);
+                    _.TakeGoldFromCreature(model.Price, player, true);
 
                     // Get the location based on the waypoint tag.
                     Location location = _.GetLocation(_.GetWaypointByTag(model.DestinationTag));

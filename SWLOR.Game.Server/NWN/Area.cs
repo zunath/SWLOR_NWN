@@ -3,7 +3,7 @@ using SWLOR.Game.Server.NWN.Enum.Area;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Get the area that oTarget is currently in
@@ -247,13 +247,13 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   This will return TRUE if the area is flagged as either interior or underground.
+        ///   This will return true if the area is flagged as either interior or underground.
         /// </summary>
-        public static AboveGround GetIsAreaInterior(uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetIsAreaInterior(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(716);
-            return (AboveGround)Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static void SetSkyBox(Skybox nSkyBox, uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetSkyBox(Skybox nSkyBox, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nSkyBox);
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nFogColor);
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static Skybox GetSkyBox(uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static Skybox GetSkyBox(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(782);
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static FogColor GetFogColor(FogType nFogType, uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static FogColor GetFogColor(FogType nFogType, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nFogType);
@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger(nFogAmount);
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static int GetFogAmount(FogType nFogType, uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetFogAmount(FogType nFogType, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nFogType);
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of the caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static int GetAreaSize(Dimension nAreaDimension, uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetAreaSize(Dimension nAreaDimension, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nAreaDimension);
@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area is specified, it will use the caller's area.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetFirstObjectInArea(uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetFirstObjectInArea(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(93);
@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area is specified, it will use the caller's area.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNextObjectInArea(uint oArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetNextObjectInArea(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(94);
@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Expose/Hide the entire map of oArea for oPlayer.
         ///   - oArea: The area that the map will be exposed/hidden for.
         ///   - oPlayer: The player the map will be exposed/hidden for.
-        ///   - bExplored: TRUE/FALSE. Whether the map should be completely explored or hidden.
+        ///   - bExplored: true/false. Whether the map should be completely explored or hidden.
         /// </summary>
         public static void ExploreAreaForPlayer(uint oArea, uint oPlayer, bool bExplored = true)
         {
@@ -666,7 +666,7 @@ namespace SWLOR.Game.Server.NWN
         ///   and the fog of war for interior and underground areas.
         ///   This means that if you turn off auto exploration, it falls to you to manage this
         ///   through SetTileExplored(); otherwise, the player will not be able to see anything.
-        ///   Valid arguments: TRUE and FALSE.
+        ///   Valid arguments: true and false.
         ///   Does nothing for non-creatures.
         ///   Returns the previous state (or -1 if non-creature).
         /// </summary>
@@ -679,8 +679,8 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Returns TRUE if the creature is set to auto-explore the map as it walks around (on by default).
-        ///   Returns FALSE if creature is not actually a creature.
+        ///   Returns true if the creature is set to auto-explore the map as it walks around (on by default).
+        ///   Returns false if creature is not actually a creature.
         /// </summary>
         public static int GetCreatureExploresMinimap(uint creature)
         {
@@ -717,7 +717,7 @@ namespace SWLOR.Game.Server.NWN
         ///   This function will tell you if the creature has triggered an onEnter event,
         ///   not if it is physically within the space of the subarea
         /// </summary>
-        public static bool GetIsInSubArea(uint oCreature, uint oSubArea = global::SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetIsInSubArea(uint oCreature, uint oSubArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSubArea);
             Internal.NativeFunctions.StackPushObject(oCreature);

@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {

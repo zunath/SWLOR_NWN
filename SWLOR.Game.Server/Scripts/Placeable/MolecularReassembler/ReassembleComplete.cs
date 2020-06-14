@@ -1,11 +1,11 @@
 ﻿using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked
             {
-                Property = (int)CustomItemPropertyType.ComponentBonus,
+                Property = (int)ItemPropertyType.ComponentBonus,
                 SubType = (int)bonus,
                 CostTable = 62,
                 CostTableValue = 0,

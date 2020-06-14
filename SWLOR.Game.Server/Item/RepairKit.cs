@@ -1,12 +1,12 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Item
 
         private static SkillType GetSkillType(NWItem item)
         {
-            if (item.GetLocalInt("LIGHTSABER") == TRUE)
+            if (GetLocalBool(item, "LIGHTSABER") == true)
             {
                 return SkillType.Engineering;
             }
@@ -112,9 +112,9 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.LoopingGetMid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Item
             float maxDurability = DurabilityService.GetMaxDurability(targetItem);
             float durability = DurabilityService.GetDurability(targetItem);
 
-            if (target.ObjectType != OBJECT_TYPE_ITEM)
+            if (target.ObjectType != ObjectType.Item)
             {
                 return "Only items may be targeted by repair kits.";
             }

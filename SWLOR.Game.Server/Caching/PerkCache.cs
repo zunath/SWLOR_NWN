@@ -1,5 +1,3 @@
-using SWLOR.Game.Server.Data.Entity;
-
 namespace SWLOR.Game.Server.Caching
 {
     public class PerkCache: CacheBase<Data.Entity.Perk>

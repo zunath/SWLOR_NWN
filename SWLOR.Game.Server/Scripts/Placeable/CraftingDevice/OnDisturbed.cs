@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
@@ -19,13 +21,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         public void Main()
         {
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
             
-            if (type == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            if (type == DisturbType.Removed)
             {
                 HandleRemoveItem();
             }
-            else if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            else if (type == DisturbType.Added)
             {
                 HandleAddItem();
             }
@@ -113,7 +115,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentItemTypeRestriction)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentItemTypeRestriction)
                 {
                     int restrictionType = _.GetItemPropertyCostTableValue(ip);
                     allowedItemTypes.Add((CustomItemType)restrictionType);
@@ -132,13 +134,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentType)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
                     int compType = _.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)
                     {
                         oItem.GetOrAssignGlobalID();
-                        NWItem copy = (_.CopyItem(oItem.Object, storage.Object, _.TRUE));
+                        NWItem copy = (_.CopyItem(oItem.Object, storage.Object, true));
                         list.Add(copy);
                         return;
                     }

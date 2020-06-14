@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Messaging
         /// <param name="message">The message to published</param>
         /// <param name="useProfiler"></param>
         public void Publish<T>(T message, bool useProfiler = true)
+            where T: class
         {
             var localSubscriptions = _subscriptions.GetTheLatestSubscriptions();
 
@@ -100,7 +101,11 @@ namespace SWLOR.Game.Server.Messaging
         /// <typeparam name="T">The type of message to subscribe to</typeparam>
         /// <param name="action">The callback to be invoked once the message is published on the <see cref="MessageHub"/></param>
         /// <returns>The token representing the subscription</returns>
-        public Guid Subscribe<T>(Action<T> action) => Subscribe(action, TimeSpan.Zero);
+        public Guid Subscribe<T>(Action<T> action)
+            where T: class
+        {
+            return Subscribe(action, TimeSpan.Zero);
+        }
 
         /// <summary>
         /// Subscribes a callback against the <see cref="MessageHub"/> for a specific type of message.
@@ -110,6 +115,7 @@ namespace SWLOR.Game.Server.Messaging
         /// <param name="throttleBy">The <see cref="TimeSpan"/> specifying the rate at which subscription is throttled</param>
         /// <returns>The token representing the subscription</returns>
         public Guid Subscribe<T>(Action<T> action, TimeSpan throttleBy)
+            where T: class
         {
             EnsureNotNull(action);
             return _subscriptions.Register(throttleBy, action);

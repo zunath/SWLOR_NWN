@@ -1,6 +1,5 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.SWLOR

@@ -2,9 +2,10 @@
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -28,16 +29,16 @@ namespace SWLOR.Game.Server.CustomEffect
             oCaster.AssignCommand(() =>
             {
                 Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, oTarget.Object);
+                _.ApplyEffectToObject(DurationType.Instant, damage, oTarget.Object);
             });
             
             Effect decreaseAC = _.EffectACDecrease(2);
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, decreaseAC, oTarget.Object, 1.0f);
+                _.ApplyEffectToObject(DurationType.Temporary, decreaseAC, oTarget.Object, 1.0f);
             });
             
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_ACID_S), oTarget.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Acid_S), oTarget.Object);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)

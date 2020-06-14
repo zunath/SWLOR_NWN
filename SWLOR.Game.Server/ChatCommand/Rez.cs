@@ -2,7 +2,8 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 
@@ -22,10 +23,10 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             if (user.IsDead)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectResurrection(), user.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), user.Object);
             }
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(999), user.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(999), user.Object);
             AbilityService.RestorePlayerFP(user, 9999);
         }
 

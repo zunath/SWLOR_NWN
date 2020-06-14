@@ -1,8 +1,7 @@
 ﻿using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.TutorialPortal
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.TutorialPortal
         {
             NWPlayer player = (_.GetLastUsedBy());
             NWPlaceable warp = (_.OBJECT_SELF);
-            bool isExit = warp.GetLocalInt("IS_EXIT") == _.TRUE;
+            bool isExit = warp.GetLocalBool("IS_EXIT") == true;
 
             if (isExit)
             {

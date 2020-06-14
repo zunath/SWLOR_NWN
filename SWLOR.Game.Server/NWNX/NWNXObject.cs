@@ -369,7 +369,7 @@ namespace SWLOR.Game.Server.NWNX
         /// The Z value of vPosition is ignored.
         /// oTrigger The trigger.
         /// vPosition The position.
-        /// TRUE if vPosition is inside oTrigger's geometry.
+        /// true if vPosition is inside oTrigger's geometry.
         /// </summary>
         public static bool GetPositionIsInTrigger(uint obj, Vector position)
         {
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Useful to give deserialized items to an object, may not work if oItem is already possessed by an object.
         /// oObject The object receiving oItem, must be a Creature, Placeable, Store or Item
         /// oItem The item.
-        /// TRUE on success.
+        /// true on success.
         /// </summary>
         public static int AcquireItem(uint oObject, uint oItem)
         {

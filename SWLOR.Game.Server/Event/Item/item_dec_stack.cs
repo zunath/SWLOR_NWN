@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 
 // ReSharper disable once CheckNamespace
@@ -13,15 +15,13 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            if (_.OBJECT_SELF == null) return;
-
             NWItem item = _.OBJECT_SELF;
             if (!item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
-            if(item.BaseItemType == _.BASE_ITEM_SHURIKEN ||
-               item.BaseItemType == _.BASE_ITEM_DART ||
-               item.BaseItemType == _.BASE_ITEM_THROWINGAXE)
+            if(item.BaseItemType == BaseItem.Shuriken ||
+               item.BaseItemType == BaseItem.Dart ||
+               item.BaseItemType == BaseItem.ThrowingAxe)
             {
                 NWNXEvents.SkipEvent();
             }

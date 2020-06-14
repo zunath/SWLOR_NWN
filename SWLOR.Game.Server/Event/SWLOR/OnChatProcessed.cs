@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Event.SWLOR

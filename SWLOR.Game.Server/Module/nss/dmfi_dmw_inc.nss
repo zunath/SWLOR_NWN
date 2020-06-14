@@ -671,7 +671,7 @@ void SmokePipe(object oActivator)
     float fHeight = 1.7;
     float fDistance = 0.1;
     // Set height based on race and gender
-    if (GetGender(oActivator) == Gender.Male)
+    if (GetGender(oActivator) == GENDER_MALE)
     {
         switch (GetRacialType(oActivator))
         {
@@ -939,7 +939,7 @@ string dmwand_Gender(object oEntity)
 {
    switch (GetGender(oEntity))
    {
-      case Gender.Male:   return "Male"; break;
+      case GENDER_MALE:   return "Male"; break;
       case GENDER_FEMALE: return "Female"; break;
       case GENDER_BOTH:   return "Both";  break;
       case GENDER_NONE:   return "None";  break;

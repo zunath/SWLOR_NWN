@@ -125,7 +125,7 @@ void ZEPGenderRestrict(object oItem, object oPC)
             //Not equal, so take it off!
             AssignCommand(oPC,ActionUnequipItem(oItem));
             //Tell PC why.
-            string sMessageToPC= GetStringByStrRef(nZEPGenderRestTXT,Gender.Male);
+            string sMessageToPC= GetStringByStrRef(nZEPGenderRestTXT,GENDER_MALE);
             SendMessageToPC(oPC,sMessageToPC);
             }
         }

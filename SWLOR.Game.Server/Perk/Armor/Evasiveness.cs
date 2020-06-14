@@ -3,6 +3,8 @@ using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -74,10 +76,10 @@ namespace SWLOR.Game.Server.Perk.Armor
             Effect effect = _.EffectConcealment(concealment);
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_DUR_AURA_CYAN);
+            effect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Cyan);
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
+            effect = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus);
             _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);
         }
 

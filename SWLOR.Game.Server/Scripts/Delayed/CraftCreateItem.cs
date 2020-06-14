@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
             if (componentLevel < 1) componentLevel = 1;
             foreach (var ip in component.ItemProperties)
             {
-                int ipType = _.GetItemPropertyType(ip);
+                var ipType = _.GetItemPropertyType(ip);
                 if (ipType != ItemPropertyType.ComponentBonus) continue;
 
                 int bonusTypeID = _.GetItemPropertySubType(ip);

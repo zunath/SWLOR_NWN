@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Scripts.Placeable
 {
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
         {
             NWPlaceable self = _.OBJECT_SELF;
 
-            int vfxID = self.GetLocalInt("PERMANENT_VFX_ID");
+            var vfxID = (VisualEffect)self.GetLocalInt("PERMANENT_VFX_ID");
             
             if (vfxID > 0)
             {

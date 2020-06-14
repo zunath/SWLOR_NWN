@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
@@ -56,7 +58,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY");
                 if (bay.IsValid)
                 {
-                    bool isStronidium = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == true;
+                    bool isStronidium = bay.GetLocalBool("CONTROL_TOWER_FUEL_TYPE") == true;
                     if (!isStronidium)
                     {
                         NWItem fuel = _.GetFirstItemInInventory(bay.Object);
@@ -84,7 +86,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
                 if (!outOfPowerHasBeenApplied)
                 {
-                    Effect outOfPowerEffect = _.EffectVisualEffect(_.VFX_DUR_AURA_RED);
+                    Effect outOfPowerEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
                     outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
                     _.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
 

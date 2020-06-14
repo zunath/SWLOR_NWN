@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.GameObject
 
         private CustomItemType GetCustomItemType(NWItem item)
         {
-            if (GetLocalBool(item, "LIGHTSABER"))
+            if (GetLocalBool("LIGHTSABER"))
             {
                 return CustomItemType.Lightsaber;
             }

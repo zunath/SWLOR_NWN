@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender)
         {
-            return sender.GetLocalInt("MESSAGE_BOARD_LISTENING") == true;
+            return sender.GetLocalBool("MESSAGE_BOARD_LISTENING") == true;
         }
 
         private static void OnModuleNWNXChat()

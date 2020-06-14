@@ -115,13 +115,13 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 default: return;
             }
 
-            if (equipped.GetLocalInt("LIGHTSABER") == true)
+            if (equipped.GetLocalBool("LIGHTSABER") == true)
             {
                 perkType = PerkType.ImprovedCriticalLightsabers;
             }
             
             int perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
-            int type = equipped.BaseItemType;
+            var type = equipped.BaseItemType;
             if (perkLevel > 0)
             {
                 AddCriticalFeat(creature, type);
@@ -130,96 +130,100 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
         private void RemoveAllFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_BASTARD_SWORD);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_BATTLE_AXE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_CLUB);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_DAGGER);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_DART);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_DIRE_MACE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_DOUBLE_AXE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_DWAXE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_GREAT_AXE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_GREAT_SWORD);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_HALBERD);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_HAND_AXE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_HEAVY_CROSSBOW);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_HEAVY_FLAIL);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_KAMA);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_KATANA);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_KUKRI);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_LIGHT_CROSSBOW);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_LIGHT_FLAIL);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_LIGHT_HAMMER);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_LIGHT_MACE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_LONGBOW);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_LONG_SWORD);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_MORNING_STAR);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_RAPIER);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SCIMITAR);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SCYTHE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SHORTBOW);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SHORT_SWORD);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SHURIKEN);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SICKLE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SLING);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_SPEAR);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_STAFF);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_THROWING_AXE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_TRIDENT);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_WAR_HAMMER);
-            NWNXCreature.RemoveFeat(creature, (Feat)FEAT_IMPROVED_CRITICAL_WHIP);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_BastardSword);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_BattleAxe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Club);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Dagger);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Dart);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_DireMace);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_DoubleAxe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Dwaxe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_GreatAxe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_GreatSword);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Halberd);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_HandAxe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_HeavyCrossbow);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_HeavyFlail);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Kama);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Katana);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Kukri);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_LightCrossbow);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_LightFlail);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_LightHammer);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_LightMace);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Longbow);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_LongSword);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_MorningStar);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Rapier);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Scimitar);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Scythe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Shortbow);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_ShortSword);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Shuriken);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Sickle);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Sling);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Spear);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Staff);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_ThrowingAxe);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Trident);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_TwoBladedSword);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_UnarmedStrike);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_WarHammer);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_Whip);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_LongSword);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedCritical_TwoBladedSword);
         }
 
-        private void AddCriticalFeat(NWCreature creature, int type)
+        private void AddCriticalFeat(NWCreature creature, BaseItem type)
         {
-            int feat;
+            Feat feat;
 
             switch (type)
             {
-                case (BASE_ITEM_BASTARDSWORD): feat = FEAT_IMPROVED_CRITICAL_BASTARD_SWORD; break;
-                case (BASE_ITEM_BATTLEAXE): feat = FEAT_IMPROVED_CRITICAL_BATTLE_AXE; break;
-                case (BASE_ITEM_CLUB): feat = FEAT_IMPROVED_CRITICAL_CLUB; break;
-                case (BASE_ITEM_DAGGER): feat = FEAT_IMPROVED_CRITICAL_DAGGER; break;
-                case (BASE_ITEM_DART): feat = FEAT_IMPROVED_CRITICAL_DART; break;
-                case (BASE_ITEM_DIREMACE): feat = FEAT_IMPROVED_CRITICAL_DIRE_MACE; break;
-                case (BASE_ITEM_DOUBLEAXE): feat = FEAT_IMPROVED_CRITICAL_DOUBLE_AXE; break;
-                case (BASE_ITEM_DWARVENWARAXE): feat = FEAT_IMPROVED_CRITICAL_DWAXE; break;
-                case (BASE_ITEM_GREATAXE): feat = FEAT_IMPROVED_CRITICAL_GREAT_AXE; break;
-                case (BASE_ITEM_GREATSWORD): feat = FEAT_IMPROVED_CRITICAL_GREAT_SWORD; break;
-                case (BASE_ITEM_HALBERD): feat = FEAT_IMPROVED_CRITICAL_HALBERD; break;
-                case (BASE_ITEM_HANDAXE): feat = FEAT_IMPROVED_CRITICAL_HAND_AXE; break;
-                case (BASE_ITEM_HEAVYCROSSBOW): feat = FEAT_IMPROVED_CRITICAL_HEAVY_CROSSBOW; break;
-                case (BASE_ITEM_HEAVYFLAIL): feat = FEAT_IMPROVED_CRITICAL_HEAVY_FLAIL; break;
-                case (BASE_ITEM_KAMA): feat = FEAT_IMPROVED_CRITICAL_KAMA; break;
-                case (BASE_ITEM_KATANA): feat = FEAT_IMPROVED_CRITICAL_KATANA; break;
-                case (BASE_ITEM_KUKRI): feat = FEAT_IMPROVED_CRITICAL_KUKRI; break;
-                case (BASE_ITEM_LIGHTCROSSBOW): feat = FEAT_IMPROVED_CRITICAL_LIGHT_CROSSBOW; break;
-                case (BASE_ITEM_LIGHTFLAIL): feat = FEAT_IMPROVED_CRITICAL_LIGHT_FLAIL; break;
-                case (BASE_ITEM_LIGHTHAMMER): feat = FEAT_IMPROVED_CRITICAL_LIGHT_HAMMER; break;
-                case (BASE_ITEM_LIGHTMACE): feat = FEAT_IMPROVED_CRITICAL_LIGHT_MACE; break;
-                case (BASE_ITEM_LONGBOW): feat = FEAT_IMPROVED_CRITICAL_LONGBOW; break;
-                case (BASE_ITEM_LONGSWORD): feat = FEAT_IMPROVED_CRITICAL_LONG_SWORD; break;
-                case (BASE_ITEM_MORNINGSTAR): feat = FEAT_IMPROVED_CRITICAL_MORNING_STAR; break;
-                case (BASE_ITEM_RAPIER): feat = FEAT_IMPROVED_CRITICAL_RAPIER; break;
-                case (BASE_ITEM_SCIMITAR): feat = FEAT_IMPROVED_CRITICAL_SCIMITAR; break;
-                case (BASE_ITEM_SCYTHE): feat = FEAT_IMPROVED_CRITICAL_SCYTHE; break;
-                case (BASE_ITEM_SHORTBOW): feat = FEAT_IMPROVED_CRITICAL_SHORTBOW; break;
-                case (BASE_ITEM_SHORTSWORD): feat = FEAT_IMPROVED_CRITICAL_SHORT_SWORD; break;
-                case (BASE_ITEM_SHURIKEN): feat = FEAT_IMPROVED_CRITICAL_SHURIKEN; break;
-                case (BASE_ITEM_SICKLE): feat = FEAT_IMPROVED_CRITICAL_SICKLE; break;
-                case (BASE_ITEM_SLING): feat = FEAT_IMPROVED_CRITICAL_SLING; break;
-                case (BASE_ITEM_SHORTSPEAR): feat = FEAT_IMPROVED_CRITICAL_SPEAR; break;
-                case (BASE_ITEM_QUARTERSTAFF): feat = FEAT_IMPROVED_CRITICAL_STAFF; break;
-                case (BASE_ITEM_THROWINGAXE): feat = FEAT_IMPROVED_CRITICAL_THROWING_AXE; break;
-                case (BASE_ITEM_TRIDENT): feat = FEAT_IMPROVED_CRITICAL_TRIDENT; break;
-                case (BASE_ITEM_TWOBLADEDSWORD): feat = FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD; break;
-                case (BASE_ITEM_INVALID): feat = FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE; break;
-                case (BASE_ITEM_WARHAMMER): feat = FEAT_IMPROVED_CRITICAL_WAR_HAMMER; break;
-                case (BASE_ITEM_WHIP): feat = FEAT_IMPROVED_CRITICAL_WHIP; break;
-                case ((int)BaseItem.Lightsaber): feat = FEAT_IMPROVED_CRITICAL_LONG_SWORD; break;
-                case ((int)BaseItem.Saberstaff): feat = FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD; break;
+
+                case (BaseItem.BastardSword): feat = Feat.ImprovedCritical_BastardSword; break;
+                case (BaseItem.BattleAxe): feat = Feat.ImprovedCritical_BattleAxe; break;
+                case (BaseItem.Club): feat = Feat.ImprovedCritical_Club; break;
+                case (BaseItem.Dagger): feat = Feat.ImprovedCritical_Dagger; break;
+                case (BaseItem.Dart): feat = Feat.ImprovedCritical_Dart; break;
+                case (BaseItem.DireMace): feat = Feat.ImprovedCritical_DireMace; break;
+                case (BaseItem.DoubleAxe): feat = Feat.ImprovedCritical_DoubleAxe; break;
+                case (BaseItem.DwarvenWarAxe): feat = Feat.ImprovedCritical_Dwaxe; break;
+                case (BaseItem.GreatAxe): feat = Feat.ImprovedCritical_GreatAxe; break;
+                case (BaseItem.GreatSword): feat = Feat.ImprovedCritical_GreatSword; break;
+                case (BaseItem.Halberd): feat = Feat.ImprovedCritical_Halberd; break;
+                case (BaseItem.HandAxe): feat = Feat.ImprovedCritical_HandAxe; break;
+                case (BaseItem.HeavyCrossbow): feat = Feat.ImprovedCritical_HeavyCrossbow; break;
+                case (BaseItem.HeavyFlail): feat = Feat.ImprovedCritical_HeavyFlail; break;
+                case (BaseItem.Kama): feat = Feat.ImprovedCritical_Kama; break;
+                case (BaseItem.Katana): feat = Feat.ImprovedCritical_Katana; break;
+                case (BaseItem.Kukri): feat = Feat.ImprovedCritical_Kukri; break;
+                case (BaseItem.LightCrossbow): feat = Feat.ImprovedCritical_LightCrossbow; break;
+                case (BaseItem.LightFlail): feat = Feat.ImprovedCritical_LightFlail; break;
+                case (BaseItem.LightHammer): feat = Feat.ImprovedCritical_LightHammer; break;
+                case (BaseItem.LightMace): feat = Feat.ImprovedCritical_LightMace; break;
+                case (BaseItem.Longbow): feat = Feat.ImprovedCritical_Longbow; break;
+                case (BaseItem.Longsword): feat = Feat.ImprovedCritical_LongSword; break;
+                case (BaseItem.MorningStar): feat = Feat.ImprovedCritical_MorningStar; break;
+                case (BaseItem.Rapier): feat = Feat.ImprovedCritical_Rapier; break;
+                case (BaseItem.Scimitar): feat = Feat.ImprovedCritical_Scimitar; break;
+                case (BaseItem.Scythe): feat = Feat.ImprovedCritical_Scythe; break;
+                case (BaseItem.ShortBow): feat = Feat.ImprovedCritical_Shortbow; break;
+                case (BaseItem.ShortSword): feat = Feat.ImprovedCritical_ShortSword; break;
+                case (BaseItem.Shuriken): feat = Feat.ImprovedCritical_Shuriken; break;
+                case (BaseItem.Sickle): feat = Feat.ImprovedCritical_Sickle; break;
+                case (BaseItem.Sling): feat = Feat.ImprovedCritical_Sling; break;
+                case (BaseItem.ShortSpear): feat = Feat.ImprovedCritical_Spear; break;
+                case (BaseItem.QuarterStaff): feat = Feat.ImprovedCritical_Staff; break;
+                case (BaseItem.ThrowingAxe): feat = Feat.ImprovedCritical_ThrowingAxe; break;
+                case (BaseItem.Trident): feat = Feat.ImprovedCritical_Trident; break;
+                case (BaseItem.TwoBladedSword): feat = Feat.ImprovedCritical_TwoBladedSword; break;
+                case (BaseItem.Invalid): feat = Feat.ImprovedCritical_UnarmedStrike; break;
+                case (BaseItem.WarHammer): feat = Feat.ImprovedCritical_WarHammer; break;
+                case (BaseItem.Whip): feat = Feat.ImprovedCritical_Whip; break;
+                case (BaseItem.Lightsaber): feat = Feat.ImprovedCritical_LongSword; break;
+                case (BaseItem.Saberstaff): feat = Feat.ImprovedCritical_TwoBladedSword; break;
+
                 default: return;
             }
 

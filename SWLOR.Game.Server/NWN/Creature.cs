@@ -1030,7 +1030,7 @@ namespace SWLOR.Game.Server.NWN
         ///   further specify the type of creature that we are looking for.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestCreatureToLocation(Type nFirstCriteriaType, bool nFirstCriteriaValue,
+        public static uint GetNearestCreatureToLocation(CreatureType nFirstCriteriaType, bool nFirstCriteriaValue,
             Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {

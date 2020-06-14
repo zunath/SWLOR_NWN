@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             List<NWCreature> members = player.PartyMembers.ToList();
 
             int nth = 1;
-            NWCreature creature = GetNearestCreature(NWN.Enum.Creature.Type.IsAlive, 1, player.Object, nth, (int)NWN.Enum.Creature.Type.PlayerCharacter, 0);
+            NWCreature creature = GetNearestCreature(NWN.Enum.Creature.CreatureType.IsAlive, 1, player.Object, nth, (int)NWN.Enum.Creature.CreatureType.PlayerCharacter, 0);
             while (creature.IsValid)
             {
                 if (GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 nth++;
-                creature = GetNearestCreature(NWN.Enum.Creature.Type.IsAlive, 1, player.Object, nth, (int)NWN.Enum.Creature.Type.PlayerCharacter, 0);
+                creature = GetNearestCreature(NWN.Enum.Creature.CreatureType.IsAlive, 1, player.Object, nth, (int)NWN.Enum.Creature.CreatureType.PlayerCharacter, 0);
             }
         }
 

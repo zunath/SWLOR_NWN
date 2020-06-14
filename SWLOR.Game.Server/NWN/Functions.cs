@@ -1,6 +1,6 @@
 using System;
 using SWLOR.Game.Server.NWN.Enum;
-using Type = SWLOR.Game.Server.NWN.Enum.Creature.Type;
+using SWLOR.Game.Server.NWN.Enum.Creature;
 
 
 namespace SWLOR.Game.Server.NWN
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.NWN
         ///   further specify the type of creature that we are looking for.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestCreature(Type nFirstCriteriaType, int nFirstCriteriaValue,
+        public static uint GetNearestCreature(CreatureType nFirstCriteriaType, int nFirstCriteriaValue,
             uint oTarget = OBJECT_INVALID, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the first object in nShape
         ///   - nShape: SHAPE_*
         ///   - fSize:
-        ///   -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
+        ///   -> If nShape == Shape.Sphere, this is the radius of the sphere
         ///   -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder
         ///   Spell Cylinder's always have a radius of 1.5m.
         ///   -> If nShape == SHAPE_CONE, this is the widest radius of the cone
@@ -727,7 +727,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the next object in nShape
         ///   - nShape: SHAPE_*
         ///   - fSize:
-        ///   -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
+        ///   -> If nShape == Shape.Sphere, this is the radius of the sphere
         ///   -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder.
         ///   Spell Cylinder's always have a radius of 1.5m.
         ///   -> If nShape == SHAPE_CONE, this is the widest radius of the cone

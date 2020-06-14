@@ -53,9 +53,9 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == true)
+            if (GetIsDoorActionPossible(door.Object, DoorAction.Open) == true)
             {
-                DoDoorAction(door.Object, DOOR_ACTION_OPEN);
+                DoDoorAction(door.Object, DoorAction.Open);
             }
         }
 

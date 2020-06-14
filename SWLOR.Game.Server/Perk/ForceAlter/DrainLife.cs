@@ -2,6 +2,8 @@
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -14,7 +16,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             if (!oTarget.IsCreature)
                 return "This ability can only be used on living creatures.";
             NWCreature targetCreature = oTarget.Object;
-            if (targetCreature.RacialType == (int)RacialType.Robot)
+            if (targetCreature.RacialType == RacialType.Robot)
                 return "This ability cannot be used on droids.";
 
             return string.Empty;
@@ -107,7 +109,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, _.DAMAGE_TYPE_NEGATIVE), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Negative), target);
             });
 
             // Only apply a heal if caster is not at max HP. Otherwise they'll get unnecessary spam.
@@ -121,7 +123,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_COM_HIT_NEGATIVE), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Negative), target);
         }
     }
 }

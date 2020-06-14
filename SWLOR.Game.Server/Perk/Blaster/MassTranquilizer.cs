@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
             int current = 1;
-            NWCreature nearest = _.GetNearestCreature(Type.IsAlive, 1, target, current);
+            NWCreature nearest = _.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
             while (nearest.IsValid)
             {
                 float distance = _.GetDistanceBetween(nearest, target);
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                     concentrationEffect.Type == PerkType.MindShield)
                 {
                     current++;
-                    nearest = _.GetNearestCreature(Type.IsAlive, 1, target, current);
+                    nearest = _.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
                     continue;
                 }
 
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 _.ApplyEffectToObject(DurationType.Temporary, effect, nearest, duration);
 
                 current++;
-                nearest = _.GetNearestCreature(Type.IsAlive, 1, target, current);
+                nearest = _.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
             }
 
         }

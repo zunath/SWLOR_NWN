@@ -1146,7 +1146,7 @@ namespace SWLOR.Game.Server.NWN
         ///   when a successful strike is made, or (when applied to armor) is struck by an opponent.
         ///   - nSpell uses the IP_CONST_ONHIT_CASTSPELL_* constants
         /// </summary>
-        public static ItemProperty ItemPropertyOnHitCastSpell(OnHitCastSpell nSpell, int nLevel)
+        public static ItemProperty ItemPropertyOnHitCastSpell(OnHitCastSpellType nSpell, int nLevel)
         {
             Internal.NativeFunctions.StackPushInteger(nLevel);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);

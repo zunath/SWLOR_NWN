@@ -266,6 +266,7 @@ namespace SWLOR.Game.Server.GameObject
         }
 
         public virtual void DelayEvent<T>(float seconds, T data)
+            where T: class
         {
             DelayCommand(seconds, () =>
             {

@@ -8,8 +8,6 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
-using System;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 

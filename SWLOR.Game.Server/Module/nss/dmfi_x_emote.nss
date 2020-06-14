@@ -65,11 +65,11 @@ void SmokePipe(object oActivator)
         case 3: AssignCommand(oActivator, ActionSpeakString(sEmote3));break;
     }
     // glow red
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
     // wait a moment
     AssignCommand(oActivator, ActionWait(3.0));
     // puff of smoke above and in front of head
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
     // if female, turn head to left
     if ((GetGender(oActivator) == GENDER_FEMALE) && (GetRacialType(oActivator) != RACIAL_TYPE_DWARF))
         AssignCommand(oActivator, ActionPlayAnimation(ANIMATION_FIREFORGET_HEAD_TURN_LEFT, 1.0, 5.0));
@@ -77,8 +77,8 @@ void SmokePipe(object oActivator)
 
 void EmoteDance(object oPC)
 {
-    object oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
-    object oLeftHand =  GetItemInSlot(InventorySlot.LeftHand,oPC);
+    object oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+    object oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
 
     AssignCommand(oPC,ActionUnequipItem(oRightHand));
     AssignCommand(oPC,ActionUnequipItem(oLeftHand));
@@ -88,7 +88,7 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_TALK_LAUGHING, 2.0, 2.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY1,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY3,2.0));
-    AssignCommand(oPC,ActionPlayAnimation( Animation.Get_Mid, 3.0, 1.0));
+    AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
     AssignCommand(oPC,ActionDoCommand(PlayVoiceChat(VOICE_CHAT_LAUGH,oPC)));
@@ -96,11 +96,11 @@ void EmoteDance(object oPC)
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY1,1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY3,2.0));
     AssignCommand(oPC,ActionDoCommand(PlayVoiceChat(VOICE_CHAT_LAUGH,oPC)));
-    AssignCommand(oPC,ActionPlayAnimation( Animation.Get_Mid, 3.0, 1.0));
+    AssignCommand(oPC,ActionPlayAnimation( ANIMATION_LOOPING_GET_MID, 3.0, 1.0));
     AssignCommand(oPC,ActionPlayAnimation( ANIMATION_FIREFORGET_VICTORY2,1.0));
 
-    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,InventorySlot.LeftHand)));
-    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,InventorySlot.RightHand)));
+    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oLeftHand,INVENTORY_SLOT_LEFTHAND)));
+    AssignCommand(oPC,ActionDoCommand(ActionEquipItem(oRightHand,INVENTORY_SLOT_RIGHTHAND)));
 }
 
 void SitInNearestChair(object oPC)
@@ -161,9 +161,9 @@ void SitInNearestChair(object oPC)
      // if no one is sitting in the object the PC is closest to, have him sit in it
      if (GetSittingCreature(oSit) == OBJECT_INVALID)
          {
-           oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
-           oLeftHand =  GetItemInSlot(InventorySlot.LeftHand,oPC);
-           AssignCommand(oPC,ActionMoveToObject(oSit,false,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
+           oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+           oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
+           AssignCommand(oPC,ActionMoveToObject(oSit,FALSE,2.0)); //:: Presumably this will be fixed in a patch so that Plares will not run to chair
            ActionUnequipItem(oRightHand); //:: Added to resolve clipping issues when seated
            ActionUnequipItem(oLeftHand);  //:: Added to resolve clipping issues when seated
            ActionDoCommand(AssignCommand(oPC,ActionSit(oSit)));
@@ -198,12 +198,12 @@ void main()
         case 82: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE1, 1.0, fDur)); break;
         case 83: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE2, 1.0, fDur)); break;
         case 84: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_LOW, 1.0, fDur)); break;
-        case 85: AssignCommand(oTarget, PlayAnimation( Animation.Get_Mid, 1.0, fDur)); break;
+        case 85: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_MID, 1.0, fDur)); break;
         case 86: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_MEDITATE, 1.0, fDur)); break;
         case 87: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL, 1.0, fDur)); break;
         case 88: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_WORSHIP, 1.0, fDur)); break;
-        case 10: if (!GetLocalInt(oTarget, "hls_emotemute")) FloatingTextStringOnCreature("*emote* commands are off", oTarget, false);
-                 else FloatingTextStringOnCreature("*emote* commands are on", oTarget, false);
+        case 10: if (!GetLocalInt(oTarget, "hls_emotemute")) FloatingTextStringOnCreature("*emote* commands are off", oTarget, FALSE);
+                 else FloatingTextStringOnCreature("*emote* commands are on", oTarget, FALSE);
                  SetLocalInt(oTarget, "hls_emotemute", abs(GetLocalInt(oTarget, "hls_emotemute") - 1)); break;
         case 91: EmoteDance(oTarget); break;
         case 92: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_PAUSE_DRUNK, 1.0, fDur)); break;

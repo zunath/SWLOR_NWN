@@ -14,8 +14,8 @@ void main()
 {
     ExecuteScript("crea_on_percept", OBJECT_SELF);
 
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_PERCEPTION_EVENT") == true) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_PERCEPTION_EVENT") == TRUE) return;
 
 
 // * if not runnning normal or better Ai then exit for performance reasons
@@ -25,7 +25,7 @@ void main()
     object oPercep = GetLastPerceived();
     int bSeen = GetLastPerceptionSeen();
     int bHeard = GetLastPerceptionHeard();
-    if (bHeard == false)
+    if (bHeard == FALSE)
     {
         // Has someone vanished in front of me?
         bHeard = GetLastPerceptionVanished();
@@ -70,13 +70,13 @@ void main()
     if (GetIsInCombat(OBJECT_SELF))
     {
         // don't do anything else, we're busy
-        //MyPrintString("GetIsFighting: true");
+        //MyPrintString("GetIsFighting: TRUE");
 
     }
     // * BK FEB 2003 Only fight if you can see them. DO NOT RELY ON HEARING FOR ENEMY DETECTION
     else if (GetIsEnemy(oPercep) && bSeen)
     { // SpawnScriptDebugger();
-        //MyPrintString("GetIsEnemy: true");
+        //MyPrintString("GetIsEnemy: TRUE");
         // We spotted an enemy and we're not already fighting
         if(!GetHasEffect(EFFECT_TYPE_SLEEP)) {
             if(GetBehaviorState(NW_FLAG_BEHAVIOR_SPECIAL))
@@ -96,7 +96,7 @@ void main()
     {
         if (bSeen)
         {
-            //MyPrintString("GetLastPerceptionSeen: true");
+            //MyPrintString("GetLastPerceptionSeen: TRUE");
             if(GetBehaviorState(NW_FLAG_BEHAVIOR_SPECIAL)) {
                 DetermineSpecialBehavior();
             } else if (GetSpawnInCondition(NW_FLAG_SPECIAL_CONVERSATION)
@@ -117,19 +117,19 @@ void main()
             // * don't want creatures wandering too far after noises
             if (GetDistanceToObject(oPercep) <= 7.0)
             {
-//                if (GetHasSpell(SPELL_TRUE_SEEING) == true)
+//                if (GetHasSpell(SPELL_TRUE_SEEING) == TRUE)
                 if (GetHasSpell(SPELL_TRUE_SEEING))
                 {
                     ActionCastSpellAtObject(SPELL_TRUE_SEEING, OBJECT_SELF);
                 }
                 else
-//                if (GetHasSpell(SPELL_SEE_INVISIBILITY) == true)
+//                if (GetHasSpell(SPELL_SEE_INVISIBILITY) == TRUE)
                 if (GetHasSpell(SPELL_SEE_INVISIBILITY))
                 {
                     ActionCastSpellAtObject(SPELL_SEE_INVISIBILITY, OBJECT_SELF);
                 }
                 else
-//                if (GetHasSpell(SPELL_INVISIBILITY_PURGE) == true)
+//                if (GetHasSpell(SPELL_INVISIBILITY_PURGE) == TRUE)
                 if (GetHasSpell(SPELL_INVISIBILITY_PURGE))
                 {
                     ActionCastSpellAtObject(SPELL_INVISIBILITY_PURGE, OBJECT_SELF);

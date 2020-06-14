@@ -6,8 +6,8 @@ int StartingConditional()
 
     string sName = GetDescription(oTarget);
     SetCustomToken(20682, sName);
-    string sOrigName = GetDescription(oTarget, true);
+    string sOrigName = GetDescription(oTarget, TRUE);
     SetCustomToken(20683, sOrigName);
 
-    return true;
+    return TRUE;
 }

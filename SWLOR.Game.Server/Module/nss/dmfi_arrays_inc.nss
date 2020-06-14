@@ -49,7 +49,7 @@ void InitializeLocalArray(object oidObject, string sVarName)
     SetLocalArrayLowerBound(oidObject, sVarName, 0);
     SetLocalArrayUpperBound(oidObject, sVarName, -1);
     sFullVarName = sVarName + "_INIT";
-    SetLocalInt(oidObject, sFullVarName, true);
+    SetLocalInt(oidObject, sFullVarName, TRUE);
 }
 
 ////////////////////////////////////////////////////////////////////////

@@ -6,9 +6,9 @@ void main()
 object oArea = GetArea(OBJECT_SELF);
 object oPC = GetLastUsedBy();
 object oFan24 = GetNearestObjectByTag("rivalClone");
-int cloneDeathFlag = false;
+int cloneDeathFlag = FALSE;
 
-        if (GetIsDead(oFan24) == true)
+        if (GetIsDead(oFan24) == TRUE)
         {
 
 
@@ -40,9 +40,9 @@ int cloneDeathFlag = false;
 
 
         // Start cutscene, fade in
-        GestaltStartCutscene    (oPC,"mycutscene",true,true,true,true,2);
+        GestaltStartCutscene    (oPC,"mycutscene",TRUE,TRUE,TRUE,TRUE,2);
 
-        GestaltPlayMusic(0.0,oArea, true,391, 34.5);
+        GestaltPlayMusic(0.0,oArea, TRUE,391, 34.5);
         GestaltSpeak(2.0, oPC,"*A voice once again resonates within your mind.* You are more resilient than I originally anticipated. How interesting.");
         GestaltSpeak(8.0, oPC,"Rarely will we find ourselves in situations where running is an option. Especially in these dire times. You have a fighting spirit, traveler. You'll need it.");
 
@@ -55,7 +55,7 @@ int cloneDeathFlag = false;
 location locSpellTarget = GetLocation(OBJECT_SELF);
 
 object portal = GetNearestObjectByTag("WP_jumpTarget3");
- DelayCommand(18.0,ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_IMP_UNSUMMON), locSpellTarget));
+ DelayCommand(18.0,ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_UNSUMMON), locSpellTarget));
 
     DelayCommand(19.0,AssignCommand(oPC,ActionJumpToObject(portal)));
     DelayCommand(34.5,MusicBackgroundChangeDay(oArea,469));

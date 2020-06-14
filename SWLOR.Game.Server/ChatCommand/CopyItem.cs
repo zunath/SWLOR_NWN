@@ -1,9 +1,8 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -12,13 +11,13 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (target.ObjectType != OBJECT_TYPE_ITEM)
+            if (target.ObjectType != ObjectType.Item)
             {
                 user.SendMessage("You can only copy items with this command.");
                 return;
             }
 
-            _.CopyItem(target, user, TRUE);
+            _.CopyItem(target, user, true);
             user.SendMessage("Item copied successfully.");
         }
 

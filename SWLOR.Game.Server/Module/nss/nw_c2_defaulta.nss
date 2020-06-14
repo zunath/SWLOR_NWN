@@ -16,7 +16,7 @@ void main()
 {
     ExecuteScript("crea_on_rested", OBJECT_SELF);
 
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_RESTED_EVENT") == true) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_RESTED_EVENT") == TRUE) return;
 
 }

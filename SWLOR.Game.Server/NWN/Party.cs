@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Add oPC to oPartyLeader's party.  This will only work on two PCs.
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.NWN
         ///   flashing.
         ///   - oPlayer
         ///   - nButton: PANEL_BUTTON_*
-        ///   - nEnableFlash: if this is TRUE nButton will start flashing.  It if is FALSE,
+        ///   - nEnableFlash: if this is true nButton will start flashing.  It if is false,
         ///   nButton will stop flashing.
         /// </summary>
         public static void SetPanelButtonFlash(uint oPlayer, int nButton, int nEnableFlash)

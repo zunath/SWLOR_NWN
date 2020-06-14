@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWPlaceable overridePlaceable = _.OBJECT_SELF;
             NWObject door = _.GetNearestObjectByTag("aban_director_exit", overridePlaceable);
             NWPlayer player = _.GetLastUsedBy();
-            door.AssignCommand(() =>_.SetLocked(door, _.FALSE));
+            door.AssignCommand(() =>_.SetLocked(door, false));
             int questID = overridePlaceable.GetLocalInt("QUEST_ID_1");
 
             _.SpeakString("The tractor beam has been disabled. A door in this room has unlocked.");

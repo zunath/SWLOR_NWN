@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.NWN.Enum;
 
 
 namespace SWLOR.Game.Server.Service
@@ -194,43 +195,43 @@ namespace SWLOR.Game.Server.Service
 
         public static void InitializePlayerLanguages(NWPlayer player)
         {
-            CustomRaceType race = (CustomRaceType)player.RacialType;
+            RacialType race = (RacialType)player.RacialType;
             BackgroundType background = (BackgroundType)player.Class1;
             var languages = new List<SkillType>(new[] { SkillType.Basic });
 
             switch (race)
             {
-                case CustomRaceType.Bothan:
+                case RacialType.Bothan:
                     languages.Add(SkillType.Bothese);
                     break;
-                case CustomRaceType.Chiss:
+                case RacialType.Chiss:
                     languages.Add(SkillType.Cheunh);
                     break;
-                case CustomRaceType.Zabrak:
+                case RacialType.Zabrak:
                     languages.Add(SkillType.Zabraki);
                     break;
-                case CustomRaceType.Wookiee:
+                case RacialType.Wookiee:
                     languages.Add(SkillType.Shyriiwook);
                     break;
-                case CustomRaceType.Twilek:
+                case RacialType.Twilek:
                     languages.Add(SkillType.Twileki);
                     break;
-                case CustomRaceType.Cathar:
+                case RacialType.Cathar:
                     languages.Add(SkillType.Catharese);
                     break;
-                case CustomRaceType.Trandoshan:
+                case RacialType.Trandoshan:
                     languages.Add(SkillType.Dosh);
                     break;
-                case CustomRaceType.Cyborg:
+                case RacialType.Cyborg:
                     languages.Add(SkillType.Droidspeak);
                     break;
-                case CustomRaceType.Mirialan:
+                case RacialType.Mirialan:
                     languages.Add(SkillType.Mirialan);
                     break;
-                case CustomRaceType.MonCalamari:
+                case RacialType.MonCalamari:
                     languages.Add(SkillType.MonCalamarian);
                     break;
-                case CustomRaceType.Ugnaught:
+                case RacialType.Ugnaught:
                     languages.Add(SkillType.Ugnaught);
                     break;
             }

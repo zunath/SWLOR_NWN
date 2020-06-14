@@ -2,7 +2,7 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Adjust the alignment of oSubject.
@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.NWN
         ///   then if nShift is 15, the law/chaos value will become 50 and the
         ///   good/evil value will become 55
         ///   - nShift: this is the desired shift in alignment
-        ///   - bAllPartyMembers: when TRUE the alignment shift of oSubject also has a
+        ///   - bAllPartyMembers: when true the alignment shift of oSubject also has a
         ///   diminished affect all members of oSubject's party (if oSubject is a Player).
-        ///   When FALSE the shift only affects oSubject.
+        ///   When false the shift only affects oSubject.
         ///   * No return value
         /// </summary>
         public static void AdjustAlignment(uint oSubject, Alignment nAlignment, int nShift,
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Clear all personal feelings that oSource has about oTarget.
         /// </summary>
-        public static void ClearPersonalReputation(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void ClearPersonalReputation(uint oTarget, uint oSource = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -104,15 +104,15 @@ namespace SWLOR.Game.Server.NWN
         ///   Make oSource into a temporary friend of oTarget using personal reputation.
         ///   - oTarget
         ///   - oSource
-        ///   - bDecays: If this is TRUE, the friendship decays over fDurationInSeconds;
+        ///   - bDecays: If this is true, the friendship decays over fDurationInSeconds;
         ///   otherwise it is indefinite.
-        ///   - fDurationInSeconds: This is only used if bDecays is TRUE, it is how long
+        ///   - fDurationInSeconds: This is only used if bDecays is true, it is how long
         ///   the friendship lasts.
-        ///   Note: If bDecays is TRUE, the personal reputation amount decreases in size
+        ///   Note: If bDecays is true, the personal reputation amount decreases in size
         ///   over fDurationInSeconds. Friendship will only be in effect as long as
         ///   (faction reputation + total personal reputation) >= REPUTATION_TYPE_FRIEND.
         /// </summary>
-        public static void SetIsTemporaryFriend(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, bool bDecays = false,
+        public static void SetIsTemporaryFriend(uint oTarget, uint oSource = SWLOR.Game.Server.NWN._.OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
@@ -126,15 +126,15 @@ namespace SWLOR.Game.Server.NWN
         ///   Make oSource into a temporary enemy of oTarget using personal reputation.
         ///   - oTarget
         ///   - oSource
-        ///   - bDecays: If this is TRUE, the enmity decays over fDurationInSeconds;
+        ///   - bDecays: If this is true, the enmity decays over fDurationInSeconds;
         ///   otherwise it is indefinite.
-        ///   - fDurationInSeconds: This is only used if bDecays is TRUE, it is how long
+        ///   - fDurationInSeconds: This is only used if bDecays is true, it is how long
         ///   the enmity lasts.
-        ///   Note: If bDecays is TRUE, the personal reputation amount decreases in size
+        ///   Note: If bDecays is true, the personal reputation amount decreases in size
         ///   over fDurationInSeconds. Enmity will only be in effect as long as
         ///   (faction reputation + total personal reputation) <= REPUTATION_TYPE_ENEMY.
         /// </summary>
-        public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, bool bDecays = false,
+        public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = SWLOR.Game.Server.NWN._.OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
@@ -148,16 +148,16 @@ namespace SWLOR.Game.Server.NWN
         ///   Make oSource temporarily neutral to oTarget using personal reputation.
         ///   - oTarget
         ///   - oSource
-        ///   - bDecays: If this is TRUE, the neutrality decays over fDurationInSeconds;
+        ///   - bDecays: If this is true, the neutrality decays over fDurationInSeconds;
         ///   otherwise it is indefinite.
-        ///   - fDurationInSeconds: This is only used if bDecays is TRUE, it is how long
+        ///   - fDurationInSeconds: This is only used if bDecays is true, it is how long
         ///   the neutrality lasts.
-        ///   Note: If bDecays is TRUE, the personal reputation amount decreases in size
+        ///   Note: If bDecays is true, the personal reputation amount decreases in size
         ///   over fDurationInSeconds. Neutrality will only be in effect as long as
         ///   (faction reputation + total personal reputation) > REPUTATION_TYPE_ENEMY and
         ///   (faction reputation + total personal reputation) < REPUTATION_TYPE_FRIEND.
         /// </summary>
-        public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, bool bDecays = false,
+        public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = SWLOR.Game.Server.NWN._.OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);

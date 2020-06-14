@@ -38,34 +38,34 @@ namespace SWLOR.Game.Server.NWNX
         public static void StartGuiTimingBar(uint player, float seconds, string script = "",
             TimingBarType type = TimingBarType.Custom)
         {
-            if (NWScript.GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1) return;
+            if (_.GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1) return;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StartGuiTimingBar");
             Internal.NativeFunctions.nwnxPushInt((int)type);
             Internal.NativeFunctions.nwnxPushFloat(seconds);
             Internal.NativeFunctions.nwnxPushObject(player);
             Internal.NativeFunctions.nwnxCallFunction();
 
-            var id = NWScript.GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
-            NWScript.SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
-            NWScript.SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID", id);
+            var id = _.GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
+            _.SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
+            _.SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID", id);
 
-            NWScript.DelayCommand(seconds, () => StopGuiTimingBar(player, script, id));
+            _.DelayCommand(seconds, () => StopGuiTimingBar(player, script, id));
         }
 
         // Stops displaying a timing bar.
         // Runs a script if specified.
         public static void StopGuiTimingBar(uint creature, string script, int id)
         {
-            var activeId = NWScript.GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            var activeId = _.GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
             if (activeId == 0) return;
             // If id != -1, we ended up here through DelayCommand. Make sure it's for the right ID
             if (id != -1 && id != activeId) return;
-            NWScript.DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            _.DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StopGuiTimingBar");
             Internal.NativeFunctions.nwnxPushObject(creature);
             Internal.NativeFunctions.nwnxCallFunction();
-            if (!string.IsNullOrWhiteSpace(script)) NWScript.ExecuteScript(script, creature);
+            if (!string.IsNullOrWhiteSpace(script)) _.ExecuteScript(script, creature);
         }
 
         // Stops displaying a timing bar.

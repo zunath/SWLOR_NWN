@@ -1,11 +1,10 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.NWN;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
@@ -26,8 +25,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                Effect effect = _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, effect, oTarget);
+                Effect effect = _.EffectDamage(damage, DamageType.Electrical);
+                _.ApplyEffectToObject(DurationType.Instant, effect, oTarget);
             });
         }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -8,7 +8,6 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
@@ -308,7 +307,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, false);
                         return;
                     }
 
@@ -423,7 +422,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 7: // Rename Building/Apartment
                     GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
-                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
+                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, false);
                     ChangePage("RenamePage");
                     break;
                 case 8: // Edit Building Mode

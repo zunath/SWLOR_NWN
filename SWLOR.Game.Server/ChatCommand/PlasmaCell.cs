@@ -4,7 +4,7 @@
 /// Dec. 31st, 2018 by Kenji
 ////////////////////////////////
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             //Checks if the player has toggled plasma cell off
-            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.FALSE)
+            if (user.GetLocalBool("PLASMA_CELL_TOGGLE_OFF") == false)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
                 user.SendMessage(ColorTokenService.Red("Plasma Cell is now toggled off."));

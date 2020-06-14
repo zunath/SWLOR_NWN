@@ -1,5 +1,5 @@
 ﻿
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -11,8 +11,9 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.ValueObject;
 using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
@@ -53,9 +54,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillGained(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -63,9 +64,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillDecayed(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -79,9 +80,9 @@ namespace SWLOR.Game.Server.Service
 
             // Don't fire for ammo as it reapplies bonuses we **just** removed from blasters.
             if (ignoreItem != null &&
-                (ignoreItem.BaseItemType == BASE_ITEM_BOLT ||
-                 ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
-                 ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
+                (ignoreItem.BaseItemType == BaseItem.Bolt ||
+                 ignoreItem.BaseItemType == BaseItem.Arrow ||
+                 ignoreItem.BaseItemType == BaseItem.Bullet)) return;
 
             Player pcEntity = DataService.Player.GetByID(player.GlobalID);
             List<PCSkill> skills = DataService.PCSkill
@@ -194,7 +195,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int amount = player.CurrentHP - player.MaxHP;
                 var damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
+                _.ApplyEffectToObject(DurationType.Instant, damage, player.Object);
             }
 
             // Apply FP
@@ -317,7 +318,7 @@ namespace SWLOR.Game.Server.Service
             // Calculating effective stats can be expensive, so we cache it on the item.
             SkillType skill; 
             
-            if(item.BaseItemType == BASE_ITEM_AMULET || item.BaseItemType == BASE_ITEM_RING)
+            if(item.BaseItemType == BaseItem.Amulet || item.BaseItemType == BaseItem.Ring)
             {
                 var forceArmor = SkillService.GetPCSkill(player, (int)SkillType.ForceArmor);
                 var lightArmor = SkillService.GetPCSkill(player, (int)SkillType.LightArmor);
@@ -420,9 +421,9 @@ namespace SWLOR.Game.Server.Service
             stats.EnmityRate = 1.0f;
 
             HashSet<NWItem> processed = new HashSet<NWItem>();
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
 
                 if (!item.IsValid || item.Equals(ignoreItem)) continue;
 

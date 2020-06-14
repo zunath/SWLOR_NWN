@@ -1,12 +1,9 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-
-
-using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections;
@@ -18,9 +15,12 @@ using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
+using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWN.Events.Creature;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 
@@ -55,13 +55,13 @@ namespace SWLOR.Game.Server.Service
             public float range;
         }
 
-        private static ShipStats GetShipStatsByAppearance(int appearance)
+        private static ShipStats GetShipStatsByAppearance(AppearanceType appearance)
         {
             ShipStats stats = new ShipStats();
 
             switch (appearance)
             {
-                case 870: //Tiefightersm
+                case AppearanceType.TiefighterSM: //Tiefightersm
                     stats.weapons = 3;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 893: //b_SmallCargoShip
+                case AppearanceType.SmallCargoShip: //b_SmallCargoShip
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 895: //b_SmallShuttle3
+                case AppearanceType.SmallShuttle3: //b_SmallShuttle3
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 2;
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 896: //b_SmallShuttle4
+                case AppearanceType.SmallShuttle4: //b_SmallShuttle4
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 2;
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 897: //b_SmallFighter1
+                case AppearanceType.SmallFighter1: //b_SmallFighter1
                     stats.weapons = 3;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 898: //b_SmallFighter2
+                case AppearanceType.SmallFighter2: //b_SmallFighter2
                     stats.weapons = 3;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 899: //b_SmallFighter3
+                case AppearanceType.SmallFighter3: //b_SmallFighter3
                     stats.weapons = 3;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 1.0f;
                     stats.range = 10.0f;
                     break;
-                case 964: //XWingSmall
+                case AppearanceType.XWingSmall: //XWingSmall
                     stats.weapons = 3;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
                     stats.speed = 100;
                     stats.range = 10.0f;
                     break;
-                case 965: //AWingSmall
+                case AppearanceType.AWingSmall: //AWingSmall
                     stats.weapons = 3;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Service
                     break;
 
                 // Appearances that are one scale up, and need to be scaled down. 
-                case 872: //Impshuttlesm
+                case AppearanceType.ImperialShuttleSmall: //Impshuttlesm
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 0.25f;
                     stats.range = 10.0f;
                     break;
-                case 894: //b_SmallCargoShip2
+                case AppearanceType.SmallCargoShip2: //b_SmallCargoShip2
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 0.25f;
                     stats.range = 10.0f;
                     break;
-                case 969: //d_SmallScoutship
+                case AppearanceType.SmallScoutShip: //d_SmallScoutship
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 2;
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 0.25f;
                     stats.range = 10.0f;
                     break;
-                case 973: //b_SmallFirefly
+                case AppearanceType.SmallFirefly: //b_SmallFirefly
                     stats.weapons = 1;
                     stats.shields = 3;
                     stats.stealth = 0;
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Service
                     break;
 
                 //Appearances that are one scale down, and need to be scaled up.
-                case 966: //BWingSmall
+                case AppearanceType.BWingSmall: //BWingSmall
                     stats.weapons = 4;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 20.0f;
                     break;
-                case 967: //FreighterSmall
+                case AppearanceType.FreighterSmall: //FreighterSmall
                     stats.weapons = 1;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 10.0f;
                     break;
-                case 968: //CorvetteSmall
+                case AppearanceType.CorvetteSmall: //CorvetteSmall
                     stats.weapons = 6;
                     stats.shields = 5;
                     stats.stealth = 0;
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 20.0f;
                     break;
-                case 2002: //v_lambda
+                case AppearanceType.VLambda: //v_lambda
                     stats.weapons = 0;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 10.0f;
                     break;
-                case 2003: //v_ewing
+                case AppearanceType.VEWing: //v_ewing
                     stats.weapons = 3;
                     stats.shields = 3;
                     stats.stealth = 0;
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 10.0f;
                     break;
-                case 2005: //v_ywing
+                case AppearanceType.VYWing: //v_ywing
                     stats.weapons = 4;
                     stats.shields = 2;
                     stats.stealth = 0;
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 15.0f;
                     break;
-                case 2169: //star destroyer
+                case AppearanceType.StarDestroyer: //star destroyer
                     stats.weapons = 10;
                     stats.shields = 10;
                     stats.stealth = 0;
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 25.0f;
                     break;
-                case 2170: //mon cala cruiser
+                case AppearanceType.MonCalaCruiser: //mon cala cruiser
                     stats.weapons = 10;
                     stats.shields = 10;
                     stats.stealth = 0;
@@ -278,19 +278,19 @@ namespace SWLOR.Game.Server.Service
             return stats;
         }
 
-        private static int GetPCShipAppearanceByStyleID(int style)
+        private static AppearanceType GetPCShipAppearanceByStyleID(int style)
         {
             switch (style)
             {
                 case 20:
                 case 22:
-                    return 967;
+                    return AppearanceType.FreighterSmall;
                 case 21:
                 case 23:
-                    return 898;
+                    return AppearanceType.SmallFighter2;
             }
 
-            return 895;
+            return AppearanceType.SmallShuttle3;
         }
 
         // Utility methods.
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Service
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
-            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
+            bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             starship.SetLocalObject("STARSHIP_RESOURCE_BAY", bay.Object);
             bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
@@ -417,17 +417,17 @@ namespace SWLOR.Game.Server.Service
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             NWPlaceable bay = GetCargoBay(area, null);
 
-            ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipWeaponsBonus));
-            ship.SetLocalInt("SHIELDS", stats.shields + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipShieldsBonus));
-            ship.SetLocalInt("STEALTH", stats.stealth + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStealthBonus));
-            ship.SetLocalInt("SCANNING", stats.scanning + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipScanningBonus));
-            ship.SetLocalInt("SPEED", stats.speed + 25 * GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipSpeedBonus));
+            ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, ItemPropertyType.StarshipWeaponsBonus));
+            ship.SetLocalInt("SHIELDS", stats.shields + GetCargoBonus(bay, ItemPropertyType.StarshipShieldsBonus));
+            ship.SetLocalInt("STEALTH", stats.stealth + GetCargoBonus(bay, ItemPropertyType.StarshipStealthBonus));
+            ship.SetLocalInt("SCANNING", stats.scanning + GetCargoBonus(bay, ItemPropertyType.StarshipScanningBonus));
+            ship.SetLocalInt("SPEED", stats.speed + 25 * GetCargoBonus(bay, ItemPropertyType.StarshipSpeedBonus));
             ship.SetLocalInt("STRONIDIUM", pcBase.ReinforcedFuel);
             ship.SetLocalInt("HP", (int) structure.Durability);
-            ship.SetLocalFloat("RANGE", stats.range + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipRangeBonus));
+            ship.SetLocalFloat("RANGE", stats.range + GetCargoBonus(bay, ItemPropertyType.StarshipRangeBonus));
         }
 
-        public static int GetCargoBonus(NWPlaceable bay, int stat)
+        public static int GetCargoBonus(NWPlaceable bay, ItemPropertyType stat)
         {
             int bonus = 0;
             if (bay == null) return bonus;
@@ -439,7 +439,7 @@ namespace SWLOR.Game.Server.Service
                 // Find any items with the right properties to improve starship abilities.
                 ItemProperty prop = _.GetFirstItemProperty(item);
 
-                while (_.GetIsItemPropertyValid(prop) == 1)
+                while (_.GetIsItemPropertyValid(prop))
                 {
                     if (_.GetItemPropertyType(prop) == stat) bonus += _.GetItemPropertyCostTableValue(prop);
                     prop = _.GetNextItemProperty(item);
@@ -684,7 +684,7 @@ namespace SWLOR.Game.Server.Service
                 location = waypoint.Location;
             }
 
-            NWCreature shipCreature = _.CreateObject(_.OBJECT_TYPE_CREATURE, "starship" + shipBase.BuildingStyleID.ToString(), location, 0, shipID);
+            NWCreature shipCreature = _.CreateObject(ObjectType.Creature, "starship" + shipBase.BuildingStyleID, location, false, shipID);
 
             shipCreature.SetLocalObject("AREA", ship);
             ship.SetLocalObject("CREATURE", shipCreature);
@@ -756,25 +756,25 @@ namespace SWLOR.Game.Server.Service
             PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
             PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
-            int shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
+            var shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
 
             int shipSpeed = GetShipStatsByAppearance(shipAppearance).speed + 
-                            25 * GetCargoBonus(GetCargoBay(ship, null), (int)CustomItemPropertyType.StarshipSpeedBonus);
+                            25 * GetCargoBonus(GetCargoBay(ship, null), ItemPropertyType.StarshipSpeedBonus);
 
             NWPlaceable chair = _.GetNearestObjectByTag("pilot_chair", player);
             ClonePCAndSit(player, chair);
 
             // Find the dummy ship - swap the PC and the dummy ship.
             // Note that the PC is currently invisible thanks to the clone method.
-            player.Chest.SetLocalInt("APPEARANCE", _.GetAppearanceType(player));
+            player.Chest.SetLocalInt("APPEARANCE", (int)GetAppearanceType(player));
             player.SetLocalInt("IS_SHIP", 1);
             player.SetLocalObject("AREA", ship);
             _.SetCreatureAppearanceType(player, shipAppearance);
 
-            _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, GetShipStatsByAppearance(shipAppearance).scale);
+            _.SetObjectVisualTransform(player, ObjectVisualTransform.Scale, GetShipStatsByAppearance(shipAppearance).scale);
 
             // Make immune to physical damage.
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectDamageImmunityIncrease(DAMAGE_TYPE_BLUDGEONING, 100), player);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectDamageImmunityIncrease(DamageType.Bludgeoning, 100), player);
 
             player.AssignCommand(() => { _.ActionUnequipItem(player.LeftHand); });
             player.AssignCommand(() => { _.ActionUnequipItem(player.RightHand); });
@@ -784,11 +784,11 @@ namespace SWLOR.Game.Server.Service
                             10 * PerkService.GetCreaturePerkLevel(player, PerkType.Racer);
             if (shipSpeed > 100)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedIncrease(shipSpeed - 100), player);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectMovementSpeedIncrease(shipSpeed - 100), player);
             }
             else
             {
-                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedDecrease(100 - shipSpeed), player);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectMovementSpeedDecrease(100 - shipSpeed), player);
             }
             
             // Clean up the ship model.
@@ -821,25 +821,25 @@ namespace SWLOR.Game.Server.Service
 
             // Apply ghost effects so we can stand on each other's heads, and create the ship again.
             Effect eGhost = _.EffectCutsceneGhost();
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, player, 3.5f);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, copy, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eGhost, player, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eGhost, copy, 3.5f);
             copy.Area.DeleteLocalObject("CREATURE");
             CreateShipInSpace(copy.Area, player.Location);
             player.AssignCommand(() => { _.ClearAllActions(); _.ActionJumpToLocation(copy.Location); });
 
             // Make ourselves invisible for 2.5s and destroy the copy at the same time.  
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), player, 2.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Cutscene_Invisibility), player, 2.5f);
             copy.Destroy(2.5f);
 
             // Set our appearance back to normal (now that we're invisible). 
-            _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
-            _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
+            _.SetCreatureAppearanceType(player, (AppearanceType)player.Chest.GetLocalInt("APPEARANCE"));
+            _.SetObjectVisualTransform(player, ObjectVisualTransform.Scale, 1.0f);
             player.DeleteLocalInt("IS_SHIP");
             player.DeleteLocalObject("AREA");
             player.DeleteLocalObject("COPY");
-            player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_INCREASE);
-            player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_DECREASE);
-            player.RemoveEffect(EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE);
+            player.RemoveEffect(EffectTypeScript.MovementSpeedIncrease);
+            player.RemoveEffect(EffectTypeScript.MovementSpeedDecrease);
+            player.RemoveEffect(EffectTypeScript.DamageImmunityIncrease);
 
             _.ExportSingleCharacter(player);
         }
@@ -856,16 +856,16 @@ namespace SWLOR.Game.Server.Service
             ClonePCAndSit(player, chair);
 
             NWCreature shipCreature = ship.GetLocalObject("CREATURE");
-            player.Chest.SetLocalInt("APPEARANCE", _.GetAppearanceType(player));
-            _.SetCreatureAppearanceType(player, APPEARANCE_TYPE_INVISIBLE_HUMAN_MALE);
+            player.Chest.SetLocalInt("APPEARANCE", (int)_.GetAppearanceType(player));
+            _.SetCreatureAppearanceType(player, AppearanceType.InvisibleHumanMale);
             player.SetLocalInt("IS_GUNNER", 1);
 
             // Apply effects so we can't be seen or hit.
             player.AssignCommand(() => { _.ActionUnequipItem(player.LeftHand); });
             player.AssignCommand(() => { _.ActionUnequipItem(player.RightHand); });
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectCutsceneGhost(), player);
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectInvisibility(INVISIBILITY_TYPE_NORMAL), player);
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedIncrease(200), player);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectCutsceneGhost(), player);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectInvisibility(InvisibilityType.Normal), player);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectMovementSpeedIncrease(200), player);
 
             ship.SetLocalObject("GUNNER", player);
 
@@ -873,7 +873,7 @@ namespace SWLOR.Game.Server.Service
             {
                 _.ActionJumpToLocation(shipCreature.Location);
                 _.ActionForceFollowObject(shipCreature);
-                _.SetCommandable(0, player);
+                _.SetCommandable(false, player);
             });
 
             player.SendMessage("Type /exit to exit gunner mode.");
@@ -881,24 +881,24 @@ namespace SWLOR.Game.Server.Service
 
         public static void DoStopCrewGuns(NWPlayer player)
         {
-            _.SetCommandable(1, player);
+            _.SetCommandable(true, player);
 
             NWCreature copy = player.GetLocalObject("COPY");
 
             // Apply ghost effect so we can stand on each other's heads.
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneGhost(), copy, 3.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectCutsceneGhost(), copy, 3.5f);
             player.AssignCommand(() => { _.ClearAllActions();  _.ActionJumpToLocation(copy.Location); });
 
             // Return our appearance to normal.
-            _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
+            _.SetCreatureAppearanceType(player, (AppearanceType)player.Chest.GetLocalInt("APPEARANCE"));
             player.DeleteLocalInt("IS_GUNNER");
             player.DeleteLocalObject("COPY");
-            player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_INCREASE);
+            player.RemoveEffect(EffectTypeScript.MovementSpeedIncrease);
 
             _.DelayCommand(2.5f, () => 
             {
-                player.RemoveEffect(EFFECT_TYPE_CUTSCENEGHOST);
-                player.RemoveEffect(EFFECT_TYPE_INVISIBILITY);
+                player.RemoveEffect(EffectTypeScript.CutsceneGhost);
+                player.RemoveEffect(EffectTypeScript.Invisibility);
             });
 
             copy.Area.DeleteLocalObject("GUNNER");
@@ -924,25 +924,25 @@ namespace SWLOR.Game.Server.Service
         {
             // Create a copy of the PC and link the two. 
             NWObject copy = _.CopyObject(player, player.Location, _.OBJECT_INVALID, "spaceship_copy");
-            _.ChangeToStandardFaction(copy, STANDARD_FACTION_DEFENDER);
+            _.ChangeToStandardFaction(copy, StandardFaction.Defender);
 
-            Effect eInv = _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY);
+            Effect eInv = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Cutscene_Invisibility);
             Effect eGhost = _.EffectCutsceneGhost();
 
             player.SetLocalObject("COPY", copy);
             copy.SetLocalObject("OWNER", player);
 
             // Make the player invisible for a short period of time, and allow the two to move through each other. 
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eGhost, copy);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInv, player, 2.5f);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, player, 3.5f);
+            _.ApplyEffectToObject(DurationType.Permanent, eGhost, copy);
+            _.ApplyEffectToObject(DurationType.Temporary, eInv, player, 2.5f);
+            _.ApplyEffectToObject(DurationType.Temporary, eGhost, player, 3.5f);
 
             // Clear the copy's inventory and gold. (This won't clear equipped items). 
-            _.TakeGoldFromCreature(_.GetGold(copy), copy, 1);
+            _.TakeGoldFromCreature(_.GetGold(copy), copy, true);
             NWItem item = _.GetFirstItemInInventory(copy);
             while (item.IsValid)
             {
-                _.SetDroppableFlag(item, FALSE);
+                _.SetDroppableFlag(item, false);
                 item.Destroy();
                 item = _.GetNextItemInInventory(copy);
             }
@@ -1027,7 +1027,7 @@ namespace SWLOR.Game.Server.Service
                 if (creature.IsPC || creature.IsDM)
                 {
                     _.FloatingTextStringOnCreature(message, creature);
-                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SCREEN_BUMP), creature);
+                    _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Bump), creature);
                     // TODO - play sound.
                 }
                 else if (creature.Tag == "spaceship_copy")
@@ -1086,7 +1086,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         // For now, do pirates (4) instead of customs (1).
                         string resref = _.d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
-                        NWCreature pirate = _.CreateObject(OBJECT_TYPE_CREATURE, resref, trigger.Location);
+                        NWCreature pirate = _.CreateObject(ObjectType.Creature, resref, trigger.Location);
                         pirate.SetLocalInt("DC", encounter.Difficulty);
                         pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTable);
                         // TODO - play proximity alert sound.
@@ -1110,8 +1110,8 @@ namespace SWLOR.Game.Server.Service
                             if (targetHP <= 0)
                             {
                                 // Boom!
-                                _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_FNF_IMPLOSION), player.Location, 2.0f);
-                                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDeath(), player);
+                                _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Fnf_Implosion), player.Location, 2.0f);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectDeath(), player);
                             }
                             else
                             {
@@ -1273,8 +1273,8 @@ namespace SWLOR.Game.Server.Service
                 if (target.IsPC) SkillService.GiveSkillXP(new NWPlayer(target), SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, attackerPiloting, defenderPiloting));
                 if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
 
-                Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST);
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
+                Effect eBeam = _.EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, attacker,  BodyNode.Chest);
+                _.ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
 
                 // Reduce the attacker's Stronidium by half their weapon strength.
                 attackStron -= attackWeapons/2;
@@ -1299,8 +1299,8 @@ namespace SWLOR.Game.Server.Service
                 if (targetHP <= 0)
                 {
                     // Boom!
-                    _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_FNF_IMPLOSION), target.Location, 2.0f);
-                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDeath(), target);
+                    _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Fnf_Implosion), target.Location, 2.0f);
+                    _.ApplyEffectToObject(DurationType.Instant, _.EffectDeath(), target);
                 }
                 else
                 {
@@ -1320,8 +1320,8 @@ namespace SWLOR.Game.Server.Service
                 if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
 
                 // Get a miss location near the target.
-                Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST, 1);
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
+                Effect eBeam = _.EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, attacker, BodyNode.Chest, true);
+                _.ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
 
                 /* See amove comment about making a custom spell that uses this.
                 Vector vTarget = _.GetPosition(target);
@@ -1332,7 +1332,7 @@ namespace SWLOR.Game.Server.Service
                                                 target.Location.Orientation);
 
                 -- This doesn't work, EffectBeams can't be fired at locations.
-                _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, eBeam, missLoc, 0.5f);*/
+                _.ApplyEffectAtLocation(DurationType.Temporary, eBeam, missLoc, 0.5f);*/
 
                 // Reduce the attacker's Stronidium by half their weapon strength.
                 attackStron -= attackWeapons/2;
@@ -1436,7 +1436,7 @@ namespace SWLOR.Game.Server.Service
             ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
             if (stats.scale == default(float)) return;
 
-            _.SetObjectVisualTransform(creature, OBJECT_VISUAL_TRANSFORM_SCALE, stats.scale);
+            _.SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, stats.scale);
             if (String.IsNullOrWhiteSpace(creature.GetLocalString("BEHAVIOUR"))) creature.SetLocalString("BEHAVIOUR", "StarshipBehaviour");
 
             // Save off our stats.
@@ -1451,7 +1451,7 @@ namespace SWLOR.Game.Server.Service
             creature.SetLocalFloat("RANGE", stats.range);
 
             // Make immune to physical damage.
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectDamageImmunityIncrease(DAMAGE_TYPE_BLUDGEONING, 100), creature);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectDamageImmunityIncrease(DamageType.Bludgeoning, 100), creature);
         }
 
         private static void ShootValidTarget(NWCreature creature)
@@ -1460,7 +1460,7 @@ namespace SWLOR.Game.Server.Service
 
             // Fire weapons.
             bool hasGunner = false;
-            int shape = SHAPE_SPELLCYLINDER;
+            var shape = Shape.SpellCylinder;
             float range = stats.range;
 
             Location targetLocation = _.Location(
@@ -1473,7 +1473,7 @@ namespace SWLOR.Game.Server.Service
             if ((area.IsValid && ((NWObject)area.GetLocalObject("GUNNER")).IsValid) || creature.GetLocalInt("HAS_GUNNER") > 0)
             {
                 hasGunner = true;
-                shape = SHAPE_SPHERE;
+                shape = Shape.Sphere;
                 targetLocation = creature.Location;
 
                 if (area.IsValid && ((NWObject)area.GetLocalObject("GUNNER")).IsValid)
@@ -1482,22 +1482,22 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, true, ObjectType.Creature, creature.Position);
             while (target.IsValid)
             {
 
-                if (_.GetIsEnemy(target, creature) == TRUE &&
+                if (_.GetIsEnemy(target, creature) == true &&
                     !target.IsDead &&
                     target.GetLocalInt("IS_GUNNER") == 0 &&
                     _.GetDistanceBetween(creature, target) <= range &&
-                    !target.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
+                    !target.HasAnyEffect(EffectTypeScript.Invisibility, EffectTypeScript.Sanctuary))
                 {
                     LoggingService.Trace(TraceComponent.Space, "Found valid target: " + target.Name);
                     DoSpaceAttack(creature, target, hasGunner);
                     break;
                 }
 
-                target = _.GetNextObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+                target = _.GetNextObjectInShape(shape, range, targetLocation, true, ObjectType.Creature, creature.Position);
             }
         }
 
@@ -1522,14 +1522,14 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEquipItem()
         {
             NWPlayer equipper = _.GetPCItemLastEquippedBy();
-            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (GetLocalBool(equipper, "IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             if (equipper.GetLocalInt("IS_SHIP") > 0)
             {
                 NWItem item = _.GetPCItemLastEquipped();
 
                 // Using ActionUnequipItem doesn't seem to work.  So copy and destroy.
-                _.CopyItem(item, equipper, 1);
+                _.CopyItem(item, equipper, true);
                 item.Destroy();
                 equipper.SendMessage("You cannot equip items while flying a ship.");
             }
@@ -1557,7 +1557,7 @@ namespace SWLOR.Game.Server.Service
 
             if (stats.scale == default(float)) return;
 
-            if (_.GetIsEnemy(perceived, creature) == 0) return;
+            if (_.GetIsEnemy(perceived, creature) == false) return;
             if (perceived.GetLocalInt("IS_GUNNER") == 1) return;
 
             // Would be ideal to respect turning circles and only turn the ship a bit at a time. Less urgent now since 
@@ -1574,7 +1574,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                _.AssignCommand(creature, () => { _.ActionMoveToObject(perceived, 1, stats.range - 2); });
+                _.AssignCommand(creature, () => { _.ActionMoveToObject(perceived, true, stats.range - 2); });
             }
         }
 
@@ -1586,29 +1586,29 @@ namespace SWLOR.Game.Server.Service
                 BiowarePosition.GetChangedPosition(creature.Position, 25.0f, creature.Facing),
                 creature.Facing + 180.0f);
 
-            int shape = SHAPE_SPELLCONE;           
+            var shape = Shape.SpellCone;           
 
             bool hasGunner = creature.GetLocalInt("HAS_GUNNER") == 1;
             if (hasGunner)
             {
-                shape = SHAPE_SPHERE;
+                shape = Shape.Sphere;
                 targetLocation = creature.Location;
             }
 
-            NWCreature enemy = _.GetFirstObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+            NWCreature enemy = _.GetFirstObjectInShape(shape, 25.0f, targetLocation, true, ObjectType.Creature);
 
             while (enemy.IsValid)
             {
-                if (_.GetIsEnemy(enemy, creature) == 1)
+                if (_.GetIsEnemy(enemy, creature))
                 {
                     OnPerception(creature, enemy);
                     return true;
                 }
 
-                enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+                enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, true, ObjectType.Creature);
             }
 
-            enemy = _.GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY, creature);
+            enemy = _.GetNearestCreature(CreatureType.Reputation, (int)ReputationType.Enemy, creature);
 
             if (enemy.IsValid && _.GetDistanceBetween(enemy, creature) < 25.0f)
             {
@@ -1638,7 +1638,7 @@ namespace SWLOR.Game.Server.Service
                   BiowarePosition.GetChangedPosition(creature.Position, 5.0f, myFacing),
                   myFacing + 180.0f);
 
-                _.AssignCommand(creature, () => { _.ActionMoveToLocation(targetLocation, 1); });
+                _.AssignCommand(creature, () => { _.ActionMoveToLocation(targetLocation, true); });
             }
 
             return false;

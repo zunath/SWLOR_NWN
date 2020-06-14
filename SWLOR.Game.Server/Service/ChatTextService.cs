@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using System.Text;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
             if (channel == ChatChannel.PlayerShout && sender.IsPC && 
-                sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+                GetLocalBool(sender, "DISPLAY_HOLONET") == false)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannel.PlayerShout)
             {
-                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
+                recipients.AddRange(NWModule.Get().Players.Where(player => GetLocalBool(player, "DISPLAY_HOLONET") == true));
                 recipients.AddRange(AppCache.ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Service
 
                 var originalSender = sender;
                 // temp set sender to hologram owner for holocoms
-                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
+                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == true)
                 {
                     sender = HoloComService.GetHoloGramOwner(sender);
                 }
@@ -251,8 +251,8 @@ namespace SWLOR.Game.Server.Service
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);                
-                if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
+                RacialType race = (RacialType) _.GetRacialType(sender);                
+                if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
+            SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? true : false);
         }
         
         private enum WorkingOnEmoteStyle

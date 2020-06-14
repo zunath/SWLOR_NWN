@@ -7,7 +7,6 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using MySql.Data.MySqlClient;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Data

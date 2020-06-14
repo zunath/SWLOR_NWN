@@ -2,7 +2,7 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Set the calendar to the specified date.
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Note: Only placeables, doors and triggers can be trapped.
-        ///   * Returns TRUE if oObject is trapped.
+        ///   * Returns true if oObject is trapped.
         /// </summary>
         public static int GetIsTrapped(uint oObject)
         {
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
-        ///   * Returns TRUE if oTrapObject is disarmable.
+        ///   * Returns true if oTrapObject is disarmable.
         /// </summary>
         public static bool GetTrapDisarmable(uint oTrapObject)
         {
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
-        ///   * Returns TRUE if oTrapObject is detectable.
+        ///   * Returns true if oTrapObject is detectable.
         /// </summary>
         public static bool GetTrapDetectable(uint oTrapObject)
         {
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
         ///   - oCreature
-        ///   * Returns TRUE if oCreature has detected oTrapObject
+        ///   * Returns true if oCreature has detected oTrapObject
         /// </summary>
         public static bool GetTrapDetectedBy(uint oTrapObject, uint oCreature)
         {
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
-        ///   * Returns TRUE if oTrapObject has been flagged as visible to all creatures.
+        ///   * Returns true if oTrapObject has been flagged as visible to all creatures.
         /// </summary>
         public static bool GetTrapFlagged(uint oTrapObject)
         {
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
-        ///   * Returns TRUE if oTrapObject is one-shot (i.e. it does not reset itself
+        ///   * Returns true if oTrapObject is one-shot (i.e. it does not reset itself
         ///   after firing.
         /// </summary>
         public static bool GetTrapOneShot(uint oTrapObject)
@@ -257,10 +257,10 @@ namespace SWLOR.Game.Server.NWN
         ///   Note : "trap objects" are actually any trigger, placeable or door that is
         ///   trapped in oTarget's area.
         ///   - oTarget
-        ///   - nTrapDetected: if this is TRUE, the trap returned has to have been detected
+        ///   - nTrapDetected: if this is true, the trap returned has to have been detected
         ///   by oTarget.
         /// </summary>
-        public static uint GetNearestTrapToObject(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, bool nTrapDetected = true)
+        public static uint GetNearestTrapToObject(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID, bool nTrapDetected = true)
         {
             Internal.NativeFunctions.StackPushInteger(nTrapDetected ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the last trap detected by oTarget.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetLastTrapDetected(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetLastTrapDetected(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(486);
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
-        ///   * Returns TRUE if oTrapObject is active
+        ///   * Returns true if oTrapObject is active
         /// </summary>
         public static bool GetTrapActive(uint oTrapObject)
         {
@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets whether or not the trap is an active trap
         ///   - oTrapObject: a placeable, door or trigger
-        ///   - nActive: TRUE/FALSE
+        ///   - nActive: true/false
         ///   Notes:
         ///   Setting a trap as inactive will not make the
         ///   trap disappear if it has already been detected.
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   - oTrapObject: a placeable, door or trigger
-        ///   * Returns TRUE if oTrapObject can be recovered.
+        ///   * Returns true if oTrapObject can be recovered.
         /// </summary>
         public static bool GetTrapRecoverable(uint oTrapObject)
         {
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets whether or not the trapped object can be disarmed.
         ///   - oTrapObject: a placeable, door or trigger
-        ///   - nDisarmable: TRUE/FALSE
+        ///   - nDisarmable: true/false
         /// </summary>
         public static void SetTrapDisarmable(uint oTrapObject, bool nDisarmable = true)
         {
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets whether or not the trapped object can be detected.
         ///   - oTrapObject: a placeable, door or trigger
-        ///   - nDetectable: TRUE/FALSE
+        ///   - nDetectable: true/false
         ///   Note: Setting a trapped object to not be detectable will
         ///   not make the trap disappear if it has already been detected.
         /// </summary>
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Sets whether or not the trap is a one-shot trap
         ///   (i.e. whether or not the trap resets itself after firing).
         ///   - oTrapObject: a placeable, door or trigger
-        ///   - nOneShot: TRUE/FALSE
+        ///   - nOneShot: true/false
         /// </summary>
         public static void SetTrapOneShot(uint oTrapObject, bool nOneShot = true)
         {

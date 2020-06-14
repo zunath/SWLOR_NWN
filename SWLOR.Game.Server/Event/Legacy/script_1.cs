@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Legacy;
+﻿using SWLOR.Game.Server.Event.Legacy;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts

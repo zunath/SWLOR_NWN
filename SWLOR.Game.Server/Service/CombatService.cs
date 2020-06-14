@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                      weapon.CustomItemType == CustomItemType.Saberstaff ||
-                     weapon.GetLocalInt("LIGHTSABER") == TRUE)
+                     GetLocalBool(weapon, "LIGHTSABER"))
             {
                 int statBonus = (int) (player.CharismaModifier * 0.25f);
                 data.Base += statBonus;
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
                      targetWeapon.CustomItemType == CustomItemType.Saberstaff ||
-                     targetWeapon.GetLocalInt("LIGHTSABER") == TRUE)
+                     GetLocalBool(targetWeapon, "LIGHTSABER"))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);
@@ -200,7 +201,7 @@ namespace SWLOR.Game.Server.Service
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
                     // Play a visual effect signifying the ability was activated.
-                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
+                    _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Dur_Blur), target, 0.5f);
                 }
             }
 
@@ -299,7 +300,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
-            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
+            bool isActive = GetLocalBool(damager,"RECOVERY_BLAST_ACTIVE");
             damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
             NWItem weapon = _.GetLastWeaponUsed(damager.Object);
 
@@ -335,7 +336,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            for (var effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(self.Object))
+            for (var effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == true; effect = _.GetNextEffect(self.Object))
             {
                 if (_.GetEffectTag(effect) == "TRANQUILIZER_EFFECT")
                 {
@@ -386,17 +387,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>Data regarding the ability resistance roll</returns>
         public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {
-            int abilityScoreType;
+            AbilityType abilityScoreType;
             switch (skill)
             {
                 case SkillType.ForceAlter:
-                    abilityScoreType = ABILITY_INTELLIGENCE;
+                    abilityScoreType = AbilityType.Intelligence;
                     break;
                 case SkillType.ForceControl:
-                    abilityScoreType = ABILITY_WISDOM;
+                    abilityScoreType = AbilityType.Wisdom;
                     break;
                 case SkillType.ForceSense:
-                    abilityScoreType = ABILITY_CHARISMA;
+                    abilityScoreType = AbilityType.Charisma;
                     break;
                 default:
                     throw new ArgumentException("Invalid skill type called for " + nameof(CalculateAbilityResistance) + ", value '" + skill + "' not supported.");

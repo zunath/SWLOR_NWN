@@ -3,7 +3,7 @@ using SWLOR.Game.Server.NWN.Enum.Item;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Queries the current value of the appearance settings on an item. The parameters are
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.NWN
         ///   * if it is possible to merge this item with any others in the target location,
         ///   then it will do so and return the merged object.
         /// </summary>
-        public static uint CopyItem(uint oItem, uint oTargetInventory = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, bool bCopyVars = false)
+        public static uint CopyItem(uint oItem, uint oTargetInventory = SWLOR.Game.Server.NWN._.OBJECT_INVALID, bool bCopyVars = false)
         {
             Internal.NativeFunctions.StackPushInteger(bCopyVars ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oTargetInventory);
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - The intended usage of this function is to provide an easy way to hide helmets, but it
         ///   can be used equally for any slot which has creature mesh visibility when equipped,
         ///   e.g.: armour, helm, cloak, left hand, and right hand.
-        ///   - nValue should be TRUE or FALSE.
+        ///   - nValue should be true or false.
         /// </summary>
         public static void SetHiddenWhenEquipped(uint oItem, int nValue)
         {
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   returns TRUE if the item is flagged as infinite.
+        ///   returns true if the item is flagged as infinite.
         ///   - oItem: an item.
         ///   The infinite property affects the buying/selling behavior of the item in a store.
         ///   An infinite item will still be available to purchase from a store after a player
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets the Infinite flag on an item
         ///   - oItem: the item to change
-        ///   - bInfinite: TRUE or FALSE, whether the item should be Infinite
+        ///   - bInfinite: true or false, whether the item should be Infinite
         ///   The infinite property affects the buying/selling behavior of the item in a store.
         ///   An infinite item will still be available to purchase from a store after a player
         ///   buys the item (non-infinite items will disappear from the store when purchased).
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   returns TRUE if the item CAN be pickpocketed
+        ///   returns true if the item CAN be pickpocketed
         /// </summary>
         public static bool GetPickpocketableFlag(uint oItem)
         {
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets the Pickpocketable flag on an item
         ///   - oItem: the item to change
-        ///   - bPickpocketable: TRUE or FALSE, whether the item can be pickpocketed.
+        ///   - bPickpocketable: true or false, whether the item can be pickpocketed.
         /// </summary>
         public static void SetPickpocketableFlag(uint oItem, bool bPickpocketable)
         {
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets the droppable flag on an item
         ///   - oItem: the item to change
-        ///   - bDroppable: TRUE or FALSE, whether the item should be droppable
+        ///   - bDroppable: true or false, whether the item should be droppable
         ///   Droppable items will appear on a creature's remains when the creature is killed.
         /// </summary>
         public static void SetDroppableFlag(uint oItem, bool bDroppable)
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   returns TRUE if the item CAN be dropped
+        ///   returns true if the item CAN be dropped
         ///   Droppable items will appear on a creature's remains when the creature is killed.
         /// </summary>
         public static bool GetDroppableFlag(uint oItem)
@@ -223,9 +223,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   returns TRUE if the placeable object is usable
+        ///   returns true if the placeable object is usable
         /// </summary>
-        public static bool GetUseableFlag(uint oObject = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetUseableFlag(uint oObject = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(587);
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   returns TRUE if the item is stolen
+        ///   returns true if the item is stolen
         /// </summary>
         public static bool GetStolenFlag(uint oStolen)
         {
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oItem is a ranged weapon.
+        ///   * Returns true if oItem is a ranged weapon.
         /// </summary>
         public static bool GetWeaponRanged(uint oItem)
         {
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Determines whether oItem has nProperty.
         ///   - oItem
         ///   - nProperty: ITEM_PROPERTY_*
-        ///   * Returns FALSE if oItem is not a valid item, or if oItem does not have
+        ///   * Returns false if oItem is not a valid item, or if oItem does not have
         ///   nProperty.
         /// </summary>
         public static bool GetItemHasItemProperty(uint oItem, ItemPropertyType nProperty)
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.NWN
         ///   * Returns OBJECT_INVALID if the caller is not a creature, item, placeable or store,
         ///   or if no item is found.
         /// </summary>
-        public static uint GetFirstItemInInventory(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetFirstItemInInventory(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(339);
@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.NWN
         ///   * Returns OBJECT_INVALID if the caller is not a creature, item, placeable or store,
         ///   or if no item is found.
         /// </summary>
-        public static uint GetNextItemInInventory(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetNextItemInInventory(uint oTarget = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(340);
@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.NWN
         ///   * Returns OBJECT_INVALID if oCreature is not a valid creature or there is no
         ///   item in nInventorySlot.
         /// </summary>
-        public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nInventorySlot);

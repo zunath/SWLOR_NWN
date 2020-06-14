@@ -544,7 +544,7 @@ int SelectionToIndex(int nSelection)
                         case 9: return  51; // Aged rust
                         case 0: return  53; // Aged dark rust
                     }
-            }//switch(nHue) - true greys and multi-chromatics
+            }//switch(nHue) - TRUE greys and multi-chromatics
     }//switch(nFamily)
 
     // Unrecognized code.

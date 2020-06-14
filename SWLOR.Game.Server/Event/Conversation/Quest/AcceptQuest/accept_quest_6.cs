@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest;
-using static NWN._;
+﻿using SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +9,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return QuestAccept.Check(6) ? TRUE : FALSE;
+            return QuestAccept.Check(6) ? 1 : 0;
         }
     }
 }

@@ -1143,15 +1143,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.0
+    "value": 18.97829627990723
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 6.0
+    "value": 5.520429611206055
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 0.0
+    "value": -5.7220458984375e-006
   },
   "Mod_Expan_List": {
     "type": "list",

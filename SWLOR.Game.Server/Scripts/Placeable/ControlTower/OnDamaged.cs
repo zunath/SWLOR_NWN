@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             }
 
             // HP is tracked in the database. Heal the placeable so it doesn't get destroyed.
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(9999), tower.Object);
 
             if(attacker.IsPlayer)
             {

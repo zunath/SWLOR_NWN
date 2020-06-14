@@ -1,9 +1,8 @@
-﻿using System;
-using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 
 
 namespace SWLOR.Game.Server.Service
@@ -178,7 +177,7 @@ namespace SWLOR.Game.Server.Service
                 // Look for existing properties, get the value and add it. Then remove that item property.
                 foreach (var ip in product.ItemProperties)
                 {
-                    if (_.GetItemPropertyType(ip) == _.ITEM_PROPERTY_ATTACK_BONUS)
+                    if (_.GetItemPropertyType(ip) == ItemPropertyType.AttackBonus)
                     {
                         amount = _.GetItemPropertyCostTableValue(ip);
                         attackBonus += amount;

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum.Area;
-using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {

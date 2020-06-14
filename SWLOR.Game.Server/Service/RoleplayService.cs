@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 
 namespace SWLOR.Game.Server.Service

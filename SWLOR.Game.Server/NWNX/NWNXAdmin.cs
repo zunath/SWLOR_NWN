@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {

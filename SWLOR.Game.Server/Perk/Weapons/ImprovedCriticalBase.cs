@@ -7,8 +7,6 @@ using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
-using static SWLOR.Game.Server.NWN._;
-
 namespace SWLOR.Game.Server.Perk.Weapons
 {
     public abstract class ImprovedCriticalBase : IPerkHandler

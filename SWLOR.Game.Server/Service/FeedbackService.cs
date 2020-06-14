@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {

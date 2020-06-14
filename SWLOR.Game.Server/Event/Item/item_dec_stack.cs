@@ -15,8 +15,6 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            if (_.OBJECT_SELF == null) return;
-
             NWItem item = _.OBJECT_SELF;
             if (!item.IsValid) return;
 

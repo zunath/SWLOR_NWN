@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Trigger

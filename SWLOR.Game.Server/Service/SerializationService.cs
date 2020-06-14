@@ -2,9 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
-using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -20,7 +18,6 @@ namespace SWLOR.Game.Server.Service
             if (location == null) throw new ArgumentException("Invalid target location during creature deserialization.");
 
             NWCreature creature = NWNXObject.Deserialize(base64String);
-            if (creature.Object == null) throw new NullReferenceException("Unable to deserialize creature.");
             creature.Location = location;
 
             return creature;
@@ -34,7 +31,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWItem item = NWNXObject.Deserialize(base64String);
-            if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
             var result = _.CopyItem(item.Object, target.Object, true);
             item.Destroy();
 
@@ -49,7 +45,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWItem item = NWNXObject.Deserialize(base64String);
-            if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
             item.Location = targetLocation;
             
             return item;
@@ -63,7 +58,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWItem item = NWNXObject.Deserialize(base64String);
-            if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
             var result = _.CopyItem(item.Object, target.Object, true);
             item.Destroy();
 

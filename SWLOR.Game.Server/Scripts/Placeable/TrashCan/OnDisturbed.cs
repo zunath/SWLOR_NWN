@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.TrashCan

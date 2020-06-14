@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.NWN;
-using System;
 using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.GameObject;
 

@@ -1,8 +1,6 @@
 ﻿
 using SWLOR.Game.Server.Event.Conversation.RimerCards;
-using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace

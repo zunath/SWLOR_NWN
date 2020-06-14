@@ -1,12 +1,9 @@
 ﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
-
-using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {

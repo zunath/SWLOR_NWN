@@ -219,7 +219,6 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skillID">The ID of the skill we're granting XP to.</param>
         /// <param name="xp">The amount of XP to give.</param>
         /// <param name="enableResidencyBonus">If enabled, a player's primary residence will be factored into the XP gain.</param>
-        /// <param name="enableTotalSkillPointPenalty">If enabled, penalties will be applied to the XP if the player falls into the ranges of the skill penalties.</param>
         /// <param name="enableDMBonus">If enabled, bonuses granted by DMs will be applied.</param>
         public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableDMBonus = true)
         {

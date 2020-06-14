@@ -17,11 +17,11 @@ void main()
 {
     ExecuteScript("crea_on_blocked", OBJECT_SELF);
 
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_BLOCKED_EVENT") == true) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_BLOCKED_EVENT") == TRUE) return;
 
     object oDoor = GetBlockingDoor();
-    if (GetObjectType(oDoor) == ObjectType.Creature)
+    if (GetObjectType(oDoor) == OBJECT_TYPE_CREATURE)
     {
         // * Increment number of times blocked
         /*SetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED", GetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED") + 1);
@@ -31,7 +31,7 @@ void main()
             SetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED",0);
             ClearAllActions();
             object oEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
-            if (GetIsObjectValid(oEnemy) == true)
+            if (GetIsObjectValid(oEnemy) == TRUE)
             {
                 ActionEquipMostDamagingRanged(oEnemy);
                 ActionAttack(oEnemy);
@@ -40,9 +40,9 @@ void main()
         }   */
         return;
     }
-    if(GetAbilityScore(OBJECT_SELF, Ability.Intelligence) >= 5)
+    if(GetAbilityScore(OBJECT_SELF, ABILITY_INTELLIGENCE) >= 5)
     {
-        if(GetIsDoorActionPossible(oDoor, DOOR_ACTION_OPEN) && GetAbilityScore(OBJECT_SELF, Ability.Intelligence) >= 7 )
+        if(GetIsDoorActionPossible(oDoor, DOOR_ACTION_OPEN) && GetAbilityScore(OBJECT_SELF, ABILITY_INTELLIGENCE) >= 7 )
         {
             DoDoorAction(oDoor, DOOR_ACTION_OPEN);
         }

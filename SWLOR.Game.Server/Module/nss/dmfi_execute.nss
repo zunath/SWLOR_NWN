@@ -74,12 +74,12 @@ object DMFI_NextTarget(object oTarget, object oUser)
 //DMFI Creates the "settings" creature
 void CreateSetting(object oUser)
 {
-    object oSetting = CreateObject(ObjectType.Creature, "dmfi_setting", GetLocation(oUser));
+    object oSetting = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_setting", GetLocation(oUser));
     DelayCommand(0.5f, AssignCommand(oSetting, ActionSpeakString(GetLocalString(oUser, "EffectSetting") + " is currently set at " + FloatToString(GetLocalFloat(oUser, GetLocalString(oUser, "EffectSetting"))))));
     SetLocalObject(oSetting, "MyMaster", oUser);
     SetListenPattern(oSetting, "**", LISTEN_PATTERN); //listen to all text
     SetLocalInt(oSetting, "hls_Listening", 1); //listen to all text
-    SetListening(oSetting, true);          //be sure NPC is listening
+    SetListening(oSetting, TRUE);          //be sure NPC is listening
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -124,12 +124,12 @@ void RollDemBones(object oUser, int iBroadcast, int iMod = 0, string sAbility = 
         case 83: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_TAUNT, 1.0)); break;
         case 84: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_LISTEN, 1.0, 5.0f)); break;
         case 85: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_PAUSE_SCRATCH_HEAD, 1.0)); break;
-        case 89: AssignCommand(oUser, ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BARD_SONG), oUser, 6.0f)); break;
+        case 89: AssignCommand(oUser, ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BARD_SONG), oUser, 6.0f)); break;
         case 91: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_TALK_PLEADING, 1.0, 5.0f)); break;
         case 95: AssignCommand(oUser, PlayAnimation(ANIMATION_LOOPING_CONJURE2, 1.0, 5.0f)); break;
         case 97: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_TAUNT, 1.0)); break;
         case 98: AssignCommand(oUser, PlayAnimation(ANIMATION_FIREFORGET_DODGE_DUCK, 1.0)); break;
-        default: AssignCommand(oUser, PlayAnimation (Animation.Get_Mid, 1.0, 3.0)); break;
+        default: AssignCommand(oUser, PlayAnimation (ANIMATION_LOOPING_GET_MID, 1.0, 3.0)); break;
         }
     }
 
@@ -164,12 +164,12 @@ void DoDiceBagFunction(int iDice, object oUser, int iDMOverride = 0)
     int iRight = StringToInt(GetStringRight(IntToString(iDice), 1));
     switch (iDice)
     {
-    case 61: iNum = 1; iSide = 20; sAbility="Strength Check, "; iMod = GetAbilityModifier(Ability.Strength, oUser); break;
-    case 62: iNum = 1; iSide = 20; sAbility="Dexterity Check, "; iMod = GetAbilityModifier(Ability.Dexterity, oUser); break;
-    case 63: iNum = 1; iSide = 20; sAbility="Constitution Check, "; iMod = GetAbilityModifier(Ability.Constitution, oUser); break;
-    case 64: iNum = 1; iSide = 20; sAbility="Intelligence Check, "; iMod = GetAbilityModifier(Ability.Intelligence, oUser); break;
-    case 65: iNum = 1; iSide = 20; sAbility="Wisdom Check, "; iMod = GetAbilityModifier(Ability.Wisdom, oUser); break;
-    case 66: iNum = 1; iSide = 20; sAbility="Charisma Check, "; iMod = GetAbilityModifier(Ability.Charisma, oUser); break;
+    case 61: iNum = 1; iSide = 20; sAbility="Strength Check, "; iMod = GetAbilityModifier(ABILITY_STRENGTH, oUser); break;
+    case 62: iNum = 1; iSide = 20; sAbility="Dexterity Check, "; iMod = GetAbilityModifier(ABILITY_DEXTERITY, oUser); break;
+    case 63: iNum = 1; iSide = 20; sAbility="Constitution Check, "; iMod = GetAbilityModifier(ABILITY_CONSTITUTION, oUser); break;
+    case 64: iNum = 1; iSide = 20; sAbility="Intelligence Check, "; iMod = GetAbilityModifier(ABILITY_INTELLIGENCE, oUser); break;
+    case 65: iNum = 1; iSide = 20; sAbility="Wisdom Check, "; iMod = GetAbilityModifier(ABILITY_WISDOM, oUser); break;
+    case 66: iNum = 1; iSide = 20; sAbility="Charisma Check, "; iMod = GetAbilityModifier(ABILITY_CHARISMA, oUser); break;
     case 67: iNum = 1; iSide = 20; sAbility="Fortitude Save, "; iMod = GetFortitudeSavingThrow(oUser); break;
     case 68: iNum = 1; iSide = 20; sAbility="Reflex Save, "; iMod = GetReflexSavingThrow(oUser); break;
     case 69: iNum = 1; iSide = 20; sAbility="Will Save, "; iMod = GetWillSavingThrow(oUser); break;
@@ -205,9 +205,9 @@ void DoDiceBagFunction(int iDice, object oUser, int iDMOverride = 0)
     case 98: iNum = 1; iSide = 20; iTrain = 1; sAbility="Tumble Check, "; iMod = GetSkillRank(SKILL_TUMBLE, oUser); break;
     case 99: iNum = 1; iSide = 20; iTrain = 1; sAbility="Use Magic Device Check, "; iMod = GetSkillRank(SKILL_USE_MAGIC_DEVICE, oUser); break;
 
-    case 101: SetLocalInt(oUser, "dmfi_dicebag", 2); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 2, oUser); SetCustomToken(20681, "Local"); FloatingTextStringOnCreature("Broadcast Mode set to Local", oUser, false); return; break;
-    case 102: SetLocalInt(oUser, "dmfi_dicebag", 1); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 1, oUser); SetCustomToken(20681, "Global"); FloatingTextStringOnCreature("Broadcast Mode set to Global", oUser, false); return; break;
-    case 103: SetLocalInt(oUser, "dmfi_dicebag", 0); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 0, oUser); SetCustomToken(20681, "Private"); FloatingTextStringOnCreature("Broadcast Mode set to Private", oUser, false); return; break;
+    case 101: SetLocalInt(oUser, "dmfi_dicebag", 2); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 2, oUser); SetCustomToken(20681, "Local"); FloatingTextStringOnCreature("Broadcast Mode set to Local", oUser, FALSE); return; break;
+    case 102: SetLocalInt(oUser, "dmfi_dicebag", 1); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 1, oUser); SetCustomToken(20681, "Global"); FloatingTextStringOnCreature("Broadcast Mode set to Global", oUser, FALSE); return; break;
+    case 103: SetLocalInt(oUser, "dmfi_dicebag", 0); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 0, oUser); SetCustomToken(20681, "Private"); FloatingTextStringOnCreature("Broadcast Mode set to Private", oUser, FALSE); return; break;
     default: iNum = iRight;
 
         switch (iLeft)
@@ -249,41 +249,41 @@ void DestroyAllItems()
             DestroyObject(oItem);
             oItem = GetNextItemInInventory();
         }
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Arms)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_ARMS)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Arrows)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_ARROWS)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Belt)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BELT)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Bolts)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BOLTS)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Boots)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BOOTS)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Bullets)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_BULLETS)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureSkin)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CARMOUR)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Chest)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CHEST)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Cloak)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CLOAK)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureWeaponBite)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CWEAPON_B)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureWeaponLeft)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CWEAPON_L)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.CreatureWeaponRight)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_CWEAPON_R)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Head)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_HEAD)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.LeftHand)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_LEFTHAND)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.LeftRing)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_LEFTRING)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.Neck)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_NECK)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.RightHand)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_RIGHTHAND)))
             DestroyObject(oItem);
-        if (GetIsObjectValid(oItem=GetItemInSlot(InventorySlot.RightRing)))
+        if (GetIsObjectValid(oItem=GetItemInSlot(INVENTORY_SLOT_RIGHTRING)))
             DestroyObject(oItem);
     }
 }
@@ -292,7 +292,7 @@ void DestroyAllItems()
 // Function to destroy a target, by OldManWhistler, for the DMFI Control Wand
 void DestroyCreature(object oTarget)
 {
-    AssignCommand(oTarget,SetIsDestroyable(true,false,false));
+    AssignCommand(oTarget,SetIsDestroyable(TRUE,FALSE,FALSE));
     DestroyObject(oTarget);
 }
 
@@ -308,7 +308,7 @@ void DoControlFunction(int iFaction, object oUser)
     int nReport;
     int nMessage;
 
-    object oAlignTarget = GetNearestObject(ObjectType.Creature, oUser);
+    object oAlignTarget = GetNearestObject(OBJECT_TYPE_CREATURE, oUser);
 
     fAlignShift = GetLocalFloat(oUser, "dmfi_reputation");
 
@@ -327,11 +327,11 @@ void DoControlFunction(int iFaction, object oUser)
             while (GetIsObjectValid(oChange))
             {
                 if (GetObjectType(oChange) == OBJECT_TYPE_ENCOUNTER)
-                    SetEncounterActive(true, oChange);
+                    SetEncounterActive(TRUE, oChange);
                 oChange = GetNextObjectInArea(oArea);
             }
-            FloatingTextStringOnCreature("Bioware encounters are active",oUser, false);
-            SetLocalInt(oArea, "dmfi_encounter_inactive", false);
+            FloatingTextStringOnCreature("Bioware encounters are active",oUser, FALSE);
+            SetLocalInt(oArea, "dmfi_encounter_inactive", FALSE);
         }
         else
         {
@@ -339,108 +339,108 @@ void DoControlFunction(int iFaction, object oUser)
             while (GetIsObjectValid(oChange))
             {
                 if (GetObjectType(oChange) == OBJECT_TYPE_ENCOUNTER)
-                    SetEncounterActive(false, oChange);
-                if (GetObjectType(oChange) == ObjectType.Creature)
+                    SetEncounterActive(FALSE, oChange);
+                if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE)
                 {
                     if (GetIsEncounterCreature(oChange))
                         DestroyObject(oChange); //Nuke any encounter creatures in the area
                 }
                 oChange = GetNextObjectInArea(oArea);
             }
-            FloatingTextStringOnCreature("Bioware encounters deactivated",oUser, false);
-            SetLocalInt(oArea, "dmfi_encounter_inactive", true);
+            FloatingTextStringOnCreature("Bioware encounters deactivated",oUser, FALSE);
+            SetLocalInt(oArea, "dmfi_encounter_inactive", TRUE);
         }
         break;
-    case 11: ChangeToStandardFaction(oTarget, StandardFaction.Hostile);  break;
-    case 12: ChangeToStandardFaction(oTarget, StandardFaction.Commoner); break;
-    case 13: ChangeToStandardFaction(oTarget, StandardFaction.Defender); break;
-    case 14: ChangeToStandardFaction(oTarget, StandardFaction.Merchant); break;
+    case 11: ChangeToStandardFaction(oTarget, STANDARD_FACTION_HOSTILE);  break;
+    case 12: ChangeToStandardFaction(oTarget, STANDARD_FACTION_COMMONER); break;
+    case 13: ChangeToStandardFaction(oTarget, STANDARD_FACTION_DEFENDER); break;
+    case 14: ChangeToStandardFaction(oTarget, STANDARD_FACTION_MERCHANT); break;
     case 15: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, StandardFaction.Hostile);
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
+                ChangeToStandardFaction(oChange, STANDARD_FACTION_HOSTILE);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 16: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, StandardFaction.Commoner);
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
+                ChangeToStandardFaction(oChange, STANDARD_FACTION_COMMONER);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 17: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, StandardFaction.Defender);
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
+                ChangeToStandardFaction(oChange, STANDARD_FACTION_DEFENDER);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 18: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
-                ChangeToStandardFaction(oChange, StandardFaction.Merchant);
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
+                ChangeToStandardFaction(oChange, STANDARD_FACTION_MERCHANT);
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 21: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(StandardFaction.Hostile, 0, oChange);
-            SetStandardFactionReputation(StandardFaction.Commoner, 100, oChange);
-            SetStandardFactionReputation(StandardFaction.Defender, 100, oChange);
-            SetStandardFactionReputation(StandardFaction.Merchant, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 0, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, oChange);
             oChange = GetNextPC();
         }break;
     case 22: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(StandardFaction.Hostile, 20, oChange);
-            SetStandardFactionReputation(StandardFaction.Commoner, 91, oChange);
-            SetStandardFactionReputation(StandardFaction.Defender, 100, oChange);
-            SetStandardFactionReputation(StandardFaction.Merchant, 50, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 20, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 91, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 50, oChange);
             oChange = GetNextPC();
         }break;
     case 23: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(StandardFaction.Hostile, 0 , oChange);
-            SetStandardFactionReputation(StandardFaction.Commoner, 0, oChange);
-            SetStandardFactionReputation(StandardFaction.Defender, 0, oChange);
-            SetStandardFactionReputation(StandardFaction.Merchant, 0, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 0 , oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 0, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 0, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 0, oChange);
             oChange = GetNextPC();
         }break;
     case 24: oChange = GetFirstPC();
         while (GetIsObjectValid(oChange))
         {
-            SetStandardFactionReputation(StandardFaction.Hostile, 100, oChange);
-            SetStandardFactionReputation(StandardFaction.Commoner, 100, oChange);
-            SetStandardFactionReputation(StandardFaction.Defender, 100, oChange);
-            SetStandardFactionReputation(StandardFaction.Merchant, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, oChange);
+            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, oChange);
             oChange = GetNextPC();
         }break;
     case 25: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature)
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE)
             {
-                SetStandardFactionReputation(StandardFaction.Hostile, 0, oChange);
-                SetStandardFactionReputation(StandardFaction.Commoner, 0, oChange);
-                SetStandardFactionReputation(StandardFaction.Defender, 0, oChange);
-                SetStandardFactionReputation(StandardFaction.Merchant, 0, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 0, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 0, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 0, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 0, oChange);
             }
             oChange = GetNextObjectInArea(oArea);
         }break;
     case 26: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature)
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE)
             {
-                AssignCommand(oChange, ClearAllActions(true));
-                SetStandardFactionReputation(StandardFaction.Hostile, 50, oChange);
-                SetStandardFactionReputation(StandardFaction.Commoner, 50, oChange);
-                SetStandardFactionReputation(StandardFaction.Defender, 50, oChange);
-                SetStandardFactionReputation(StandardFaction.Merchant, 50, oChange);
+                AssignCommand(oChange, ClearAllActions(TRUE));
+                SetStandardFactionReputation(STANDARD_FACTION_HOSTILE, 50, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 50, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 50, oChange);
+                SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 50, oChange);
             }
             oChange = GetNextObjectInArea(oArea);
         }break;
@@ -466,32 +466,32 @@ void DoControlFunction(int iFaction, object oUser)
         SetLocalObject(oUser, "dmfi_henchman", oTarget); nMessage = -1;break;
     case 52: RemoveHenchman(oTarget, GetAssociate(ASSOCIATE_TYPE_HENCHMAN, oTarget));
         AddHenchman(oTarget, GetLocalObject(oUser, "dmfi_henchman")); nMessage = -1;break;
-    case 61: AssignCommand(oTarget, ClearAllActions()); AssignCommand(oTarget, ActionMoveAwayFromObject(oUser, true)); nMessage = -1;break;
-    case 62: AssignCommand(oTarget, ClearAllActions()); AssignCommand(oTarget, ActionForceMoveToObject(oUser, true, 2.0f, 30.0f)); nMessage = -1;break;
+    case 61: AssignCommand(oTarget, ClearAllActions()); AssignCommand(oTarget, ActionMoveAwayFromObject(oUser, TRUE)); nMessage = -1;break;
+    case 62: AssignCommand(oTarget, ClearAllActions()); AssignCommand(oTarget, ActionForceMoveToObject(oUser, TRUE, 2.0f, 30.0f)); nMessage = -1;break;
     case 63: AssignCommand(oTarget, ClearAllActions()); AssignCommand(oTarget, ActionRandomWalk());nMessage = -1; break;
     case 64: AssignCommand(oTarget, ClearAllActions()); AssignCommand(oTarget, ActionRest());nMessage = -1; break;
     case 65: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
             {
-                AssignCommand(oChange, ClearAllActions()); AssignCommand(oChange, ActionMoveAwayFromObject(oUser, true));
+                AssignCommand(oChange, ClearAllActions()); AssignCommand(oChange, ActionMoveAwayFromObject(oUser, TRUE));
             }
             oChange = GetNextObjectInArea(oArea);
         }nMessage = -1; break;
     case 66: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
             {
-                AssignCommand(oChange, ClearAllActions()); AssignCommand(oChange, ActionForceMoveToObject(oUser, true, 2.0f, 30.0f));
+                AssignCommand(oChange, ClearAllActions()); AssignCommand(oChange, ActionForceMoveToObject(oUser, TRUE, 2.0f, 30.0f));
             }
             oChange = GetNextObjectInArea(oArea);
         }nMessage = -1; break;
     case 67: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
             {
                 AssignCommand(oChange, ClearAllActions()); AssignCommand(oChange, ActionRandomWalk());
             }
@@ -500,27 +500,27 @@ void DoControlFunction(int iFaction, object oUser)
     case 68: oChange = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oChange))
         {
-            if (GetObjectType(oChange) == ObjectType.Creature && !GetIsPC(oChange))
+            if (GetObjectType(oChange) == OBJECT_TYPE_CREATURE && !GetIsPC(oChange))
             {
                 AssignCommand(oChange, ClearAllActions()); AssignCommand(oChange, ActionRest());
             }
             oChange = GetNextObjectInArea(oArea);
         } nMessage = -1;break;
-    case 69: ApplyEffectToObject(DurationType.Instant, EffectDisappear(), oTarget);
+    case 69: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectDisappear(), oTarget);
         DestroyObject(oTarget, 1.0); nMessage = -1;break;
     case 70: DestroyCreature(oTarget); nMessage = -1;break;
-    case 71: AssignCommand(oTarget, SetIsDestroyable(false, true, true)); nMessage = -1;break;
-    case 72: AssignCommand(oTarget, SetIsDestroyable(false, false, true)); nMessage = -1;break;
-    case 73: AssignCommand(oTarget, SetIsDestroyable(false, false, false));nMessage = -1; break;
-    case 74: AssignCommand(oTarget, SetIsDestroyable(true, false, false));nMessage = -1; break;
-    case 75: AssignCommand(oTarget, SetIsDestroyable(false, true, true));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget))); nMessage = -1;break;
-    case 76: AssignCommand(oTarget, SetIsDestroyable(false, false, true));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget))); nMessage = -1;break;
-    case 77: AssignCommand(oTarget, SetIsDestroyable(false, false, false));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget))); nMessage = -1;break;
-    case 78: AssignCommand(oTarget, SetIsDestroyable(true, false, false));
-        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DurationType.Permanent, EffectDeath(), oTarget)));nMessage = -1; break;
+    case 71: AssignCommand(oTarget, SetIsDestroyable(FALSE, TRUE, TRUE)); nMessage = -1;break;
+    case 72: AssignCommand(oTarget, SetIsDestroyable(FALSE, FALSE, TRUE)); nMessage = -1;break;
+    case 73: AssignCommand(oTarget, SetIsDestroyable(FALSE, FALSE, FALSE));nMessage = -1; break;
+    case 74: AssignCommand(oTarget, SetIsDestroyable(TRUE, FALSE, FALSE));nMessage = -1; break;
+    case 75: AssignCommand(oTarget, SetIsDestroyable(FALSE, TRUE, TRUE));
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget))); nMessage = -1;break;
+    case 76: AssignCommand(oTarget, SetIsDestroyable(FALSE, FALSE, TRUE));
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget))); nMessage = -1;break;
+    case 77: AssignCommand(oTarget, SetIsDestroyable(FALSE, FALSE, FALSE));
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget))); nMessage = -1;break;
+    case 78: AssignCommand(oTarget, SetIsDestroyable(TRUE, FALSE, FALSE));
+        DelayCommand(0.1, AssignCommand(oTarget, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectDeath(), oTarget)));nMessage = -1; break;
     case 79: AssignCommand(oTarget, DestroyAllItems());
         DelayCommand(1.0, DestroyCreature(oTarget));nMessage = -1;break;
     case 81:  //AdjustReputation(oAlignTarget, oTarget, nAlignShift);
@@ -549,13 +549,13 @@ void DoControlFunction(int iFaction, object oUser)
             {
                 SetLocalInt(GetModule(), "dmfi_safe_factions", 1);
                 SetDMFIPersistentInt("dmfi", "dmfi_safe_factions", 1, oUser);
-                FloatingTextStringOnCreature("Default non-hostile faction should ignore PC attacks",oUser, false);
+                FloatingTextStringOnCreature("Default non-hostile faction should ignore PC attacks",oUser, FALSE);
             }
             else
             {
                 SetLocalInt(GetModule(), "dmfi_safe_factions", 0);
                 SetDMFIPersistentInt("dmfi", "dmfi_safe_factions", 0, oUser);
-                FloatingTextStringOnCreature("Bioware faction behavior restored",oUser, false);
+                FloatingTextStringOnCreature("Bioware faction behavior restored",oUser, FALSE);
             }
         }
 
@@ -570,7 +570,7 @@ void DoControlFunction(int iFaction, object oUser)
         else
         {
             effect eInvis =EffectBlindness();
-            ApplyEffectToObject(DurationType.Temporary, eInvis, oTarget, 6.1);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInvis, oTarget, 6.1);
             FloatingTextStringOnCreature("Faction Adjusted - Perception event will fire in 6 seconds", oUser);
         }
     }
@@ -583,8 +583,8 @@ void IdenStuff(object oTarget)
     object oItem = GetFirstItemInInventory(oTarget);
     while (GetIsObjectValid(oItem))
     {
-        if (GetIdentified(oItem)==false)
-            SetIdentified(oItem, true);
+        if (GetIdentified(oItem)==FALSE)
+            SetIdentified(oItem, TRUE);
 
         oItem = GetNextItemInInventory(oTarget);
     }
@@ -602,24 +602,24 @@ void TakeStuff(int Level, object oTarget, object oUser)
 
     if (Level == 1)
     {
-        DestroyObject(GetItemInSlot(InventorySlot.Arms,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Arrows,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Belt,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Bolts,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Boots,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Bullets,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.CreatureSkin,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Chest,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Cloak,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.CreatureWeaponBite,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.CreatureWeaponLeft,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.CreatureWeaponRight,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Head,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.LeftHand,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.LeftRing,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.Neck,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.RightHand,oTarget));
-        DestroyObject(GetItemInSlot(InventorySlot.RightRing,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_ARMS,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_ARROWS,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BELT,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BOLTS,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BOOTS,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_BULLETS,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CARMOUR,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CHEST,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CLOAK,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CWEAPON_B,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CWEAPON_L,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_CWEAPON_R,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_HEAD,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_LEFTRING,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_NECK,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oTarget));
+        DestroyObject(GetItemInSlot(INVENTORY_SLOT_RIGHTRING,oTarget));
     }
     FloatingTextStringOnCreature("DM Intervention:  Inventory Destroyed by DM", oTarget);
 }
@@ -650,9 +650,9 @@ void TakeUber(object oTarget)
 void RotateMe(object oTarget, int Amount, object oUser)
 {
     location lLocation = GetLocation (oTarget);
-    if (GetObjectType(oTarget) != ObjectType.Placeable)
+    if (GetObjectType(oTarget) != OBJECT_TYPE_PLACEABLE)
     {
-        oTarget = GetNearestObject(ObjectType.Placeable, oUser);
+        oTarget = GetNearestObject(OBJECT_TYPE_PLACEABLE, oUser);
         FloatingTextStringOnCreature("Target was not a placable, used placeable closest to your avitar", oUser);
     }
     if (Amount == -2)
@@ -673,9 +673,9 @@ void RotateMe(object oTarget, int Amount, object oUser)
 void DMFI_Object (object oTarget, int Action, object oUser)
 {
     location lLocation = GetLocation (oTarget);
-    if (GetObjectType(oTarget) != ObjectType.Placeable)
+    if (GetObjectType(oTarget) != OBJECT_TYPE_PLACEABLE)
     {
-        oTarget = GetNearestObject(ObjectType.Placeable, oUser);
+        oTarget = GetNearestObject(OBJECT_TYPE_PLACEABLE, oUser);
         FloatingTextStringOnCreature("Target was not a placable, used placeable closest to your avitar", oUser);
     }
     if (GetIsObjectValid(oTarget))
@@ -688,13 +688,13 @@ void DMFI_Object (object oTarget, int Action, object oUser)
         else if (Action ==2)
         {
             AssignCommand(oTarget, PlayAnimation(ANIMATION_PLACEABLE_DEACTIVATE));
-            DelayCommand(0.4,SetPlaceableIllumination(oTarget, false));
+            DelayCommand(0.4,SetPlaceableIllumination(oTarget, FALSE));
             DelayCommand(0.5,RecomputeStaticLighting(GetArea(oTarget)));
         }
         else if (Action ==3)
         {
             AssignCommand(oTarget, PlayAnimation(ANIMATION_PLACEABLE_ACTIVATE));
-            DelayCommand(0.4,SetPlaceableIllumination(oTarget, true));
+            DelayCommand(0.4,SetPlaceableIllumination(oTarget, TRUE));
             DelayCommand(0.5,RecomputeStaticLighting(GetArea(oTarget)));
         }
     }
@@ -728,17 +728,17 @@ void dmwand_AdvanceTime(int nHours)
 ////////////////////////////////////////////////////////////////////////
 void DMFI_Align(object oUser, object oTarget, int nAlign, int nParty)
 {
-    if (GetObjectType(oTarget)== ObjectType.Creature)
+    if (GetObjectType(oTarget)== OBJECT_TYPE_CREATURE)
     {
         int nAmount = GetLocalInt(oUser, "dmfi_alignshift");
 
         if (nParty)
         {
-            object oParty = GetFirstFactionMember(oTarget, true);
+            object oParty = GetFirstFactionMember(oTarget, TRUE);
             while (GetIsObjectValid(oParty))
             {
                 AdjustAlignment(oParty, nAlign, nAmount);
-                oParty = GetNextFactionMember(oTarget, true);
+                oParty = GetNextFactionMember(oTarget, TRUE);
             }
             FloatingTextStringOnCreature("Party Alignment shifted by " + IntToString(nAmount), oUser);
         }
@@ -900,9 +900,9 @@ void DoNewDMThingy(int iChoice, object oUser)
         SendMessageToPC(oUser, "Charges remaining: " + IntToString(GetItemCharges(oTarget)));
         break;
 
-    case 32: if (GetObjectType(oTarget)==ObjectType.Item)
+    case 32: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
-            SetPlotFlag(oTarget, false); DestroyObject(oTarget);
+            SetPlotFlag(oTarget, FALSE); DestroyObject(oTarget);
             FloatingTextStringOnCreature(GetName(oTarget)+": Item destroyed", oUser);
         }
         else
@@ -910,7 +910,7 @@ void DoNewDMThingy(int iChoice, object oUser)
             FloatingTextStringOnCreature("Invalid target. Target item directly from inventory screen", oUser);
         }
         break;
-    case 33: if (GetObjectType(oTarget)==ObjectType.Item)
+    case 33: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
             SetItemCharges(oTarget, 0);
             FloatingTextStringOnCreature( GetName(oTarget)+": Remaining charges removed", oUser);
@@ -922,7 +922,7 @@ void DoNewDMThingy(int iChoice, object oUser)
         break;
 
 
-    case 34: if (GetObjectType(oTarget)==ObjectType.Item)
+    case 34: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
             SetItemCharges(oTarget, 999);
             FloatingTextStringOnCreature( GetName(oTarget)+": Item fully recharged",oUser); break;
@@ -933,16 +933,16 @@ void DoNewDMThingy(int iChoice, object oUser)
         }
         break;
 
-    case 35: if (GetObjectType(oTarget)==ObjectType.Item)
+    case 35: if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
             if (GetDroppableFlag(oTarget))
             {
-                SetDroppableFlag(oTarget, false);
+                SetDroppableFlag(oTarget, FALSE);
                 FloatingTextStringOnCreature(GetName(oTarget)+": can NOT be dropped", oUser);
             }
             else
             {
-                SetDroppableFlag(oTarget, true);
+                SetDroppableFlag(oTarget, TRUE);
                 FloatingTextStringOnCreature( GetName(oTarget)+": can be dropped", oUser);
             }
         }
@@ -952,16 +952,16 @@ void DoNewDMThingy(int iChoice, object oUser)
         }
         break;
 
-    case 36:   if (GetObjectType(oTarget)==ObjectType.Item)
+    case 36:   if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
             if (GetItemCursedFlag(oTarget))
             {
-                SetItemCursedFlag(oTarget, false);
+                SetItemCursedFlag(oTarget, FALSE);
                 FloatingTextStringOnCreature(GetName(oTarget)+": NOT cursed", oUser);
             }
             else
             {
-                SetItemCursedFlag(oTarget, true);
+                SetItemCursedFlag(oTarget, TRUE);
                 FloatingTextStringOnCreature( GetName(oTarget)+": set to CURSED", oUser);
             }
         }
@@ -971,16 +971,16 @@ void DoNewDMThingy(int iChoice, object oUser)
         }
         break;
 
-    case 37:  if (GetObjectType(oTarget)==ObjectType.Item)
+    case 37:  if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
             if (GetPlotFlag(oTarget))
             {
-                SetPlotFlag(oTarget, false);
+                SetPlotFlag(oTarget, FALSE);
                 FloatingTextStringOnCreature(GetName(oTarget)+": NOT plot related", oUser);
             }
             else
             {
-                SetPlotFlag(oTarget, true);
+                SetPlotFlag(oTarget, TRUE);
                 FloatingTextStringOnCreature( GetName(oTarget)+": set to PLOT", oUser);
             }
         }
@@ -989,16 +989,16 @@ void DoNewDMThingy(int iChoice, object oUser)
             FloatingTextStringOnCreature("Invalid target. Target item directly from inventory screen", oUser);
         }
         break;
-    case 38:   if (GetObjectType(oTarget)==ObjectType.Item)
+    case 38:   if (GetObjectType(oTarget)==OBJECT_TYPE_ITEM)
         {
             if (GetStolenFlag(oTarget))
             {
-                SetStolenFlag(oTarget, false);
+                SetStolenFlag(oTarget, FALSE);
                 FloatingTextStringOnCreature(GetName(oTarget)+": NOT stolen", oUser);
             }
             else
             {
-                SetStolenFlag(oTarget, true);
+                SetStolenFlag(oTarget, TRUE);
                 FloatingTextStringOnCreature( GetName(oTarget)+": set to Stolen", oUser);
             }
         }
@@ -1036,11 +1036,11 @@ void DoNewDMThingy(int iChoice, object oUser)
     case 65: ExploreAreaForPlayer(GetArea(oTarget), oTarget); FloatingTextStringOnCreature("Map Given: Target", oUser);break;
     case 66: {
             FloatingTextStringOnCreature("Map Given: Party", oUser);
-            object oParty = GetFirstFactionMember(oTarget,true);
+            object oParty = GetFirstFactionMember(oTarget,TRUE);
             while (GetIsObjectValid(oParty))
             {
                 ExploreAreaForPlayer(GetArea(oTarget), oTarget);
-                oParty = GetNextFactionMember(oTarget,true);
+                oParty = GetNextFactionMember(oTarget,TRUE);
             }
             break;
         }
@@ -1063,14 +1063,14 @@ void DoNewDMThingy(int iChoice, object oUser)
     case 89: TLResetAreaGroundTiles(GetArea(oUser), iXAxis, iYAxis); break;
     case 91: StoreCampaignObject("dmfi", "dmfi_copyplayer1", oTarget);
         FloatingTextStringOnCreature("Target stored", oUser);break;
-    case 92:   oParty = GetFirstFactionMember(oTarget, true);
+    case 92:   oParty = GetFirstFactionMember(oTarget, TRUE);
         n=1;
         while (GetIsObjectValid(oParty))
         {
             StoreCampaignObject("dmfi", "dmfi_copyplayer"+IntToString(n), oParty);
             SendMessageToPC(oUser, GetName(oParty) + " stored");
             n=n+1;
-            oParty = GetNextFactionMember(oTarget, true);
+            oParty = GetNextFactionMember(oTarget, TRUE);
         }
         FloatingTextStringOnCreature("Party stored", oUser);
         break;
@@ -1079,11 +1079,11 @@ void DoNewDMThingy(int iChoice, object oUser)
         oCopy = RetrieveCampaignObject("dmfi", "dmfi_copyplayer"+IntToString(n), lLocation);
         while (GetIsObjectValid(oCopy))
         {
-            ChangeToStandardFaction(oCopy, StandardFaction.Commoner);
+            ChangeToStandardFaction(oCopy, STANDARD_FACTION_COMMONER);
 
             n=n+1;
             oCopy = RetrieveCampaignObject("dmfi", "dmfi_copyplayer"+IntToString(n), lLocation);
-            AssignCommand(oCopy, SetIsDestroyable(false, true, true));
+            AssignCommand(oCopy, SetIsDestroyable(FALSE, TRUE, TRUE));
         }
         break;
     case 101: SetLocalInt(GetModule(), "dmfi_tileset" , 0);   break;
@@ -1123,7 +1123,7 @@ void DoDMDiceBagFunction(int iDice, object oUser)
         oRoll = GetFirstObjectInArea(oArea);
         while (GetIsObjectValid(oRoll))
         {
-            if ((GetIsPC(oTarget) && GetIsPC(oRoll)) || (!GetIsPC(oTarget) && !GetIsPC(oRoll) && GetObjectType(oRoll) == ObjectType.Creature))
+            if ((GetIsPC(oTarget) && GetIsPC(oRoll)) || (!GetIsPC(oTarget) && !GetIsPC(oRoll) && GetObjectType(oRoll) == OBJECT_TYPE_CREATURE))
                 DoDiceBagFunction(iDice+10, oRoll, iOverride);
             oRoll = GetNextObjectInArea(oArea);
         }
@@ -1131,10 +1131,10 @@ void DoDMDiceBagFunction(int iDice, object oUser)
     case 10: {
             switch (iDice)
             {
-            case 101: SetLocalInt(oUser, "dmfi_dicebag", 2); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 2, oUser); SetCustomToken(20681, "Local"); FloatingTextStringOnCreature("Broadcast Mode set to Local", oUser, false); return; break;
-            case 102: SetLocalInt(oUser, "dmfi_dicebag", 1); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 1, oUser); SetCustomToken(20681, "Global"); FloatingTextStringOnCreature("Broadcast Mode set to Global", oUser, false); return; break;
-            case 103: SetLocalInt(oUser, "dmfi_dicebag", 0); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 0, oUser); SetCustomToken(20681, "Private"); FloatingTextStringOnCreature("Broadcast Mode set to Private", oUser, false); return; break;
-            case 104: SetLocalInt(oUser, "dmfi_dicebag", 3); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 3, oUser); SetCustomToken(20681, "DM Only"); FloatingTextStringOnCreature("Broadcast Mode set to DM Only", oUser, false); return; break;
+            case 101: SetLocalInt(oUser, "dmfi_dicebag", 2); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 2, oUser); SetCustomToken(20681, "Local"); FloatingTextStringOnCreature("Broadcast Mode set to Local", oUser, FALSE); return; break;
+            case 102: SetLocalInt(oUser, "dmfi_dicebag", 1); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 1, oUser); SetCustomToken(20681, "Global"); FloatingTextStringOnCreature("Broadcast Mode set to Global", oUser, FALSE); return; break;
+            case 103: SetLocalInt(oUser, "dmfi_dicebag", 0); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 0, oUser); SetCustomToken(20681, "Private"); FloatingTextStringOnCreature("Broadcast Mode set to Private", oUser, FALSE); return; break;
+            case 104: SetLocalInt(oUser, "dmfi_dicebag", 3); SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 3, oUser); SetCustomToken(20681, "DM Only"); FloatingTextStringOnCreature("Broadcast Mode set to DM Only", oUser, FALSE); return; break;
             case 105: DMFI_NextTarget(oTarget, oUser);break;
             case 106: {
                     if (GetLocalInt(oUser, "dmfi_dice_no_animate")==1)
@@ -1188,7 +1188,7 @@ void DoOneRingFunction(int iRing, object oUser)
     default: SetLocalString(oUser, "dmfi_univ_conv", "dmw"); break;
     }
     AssignCommand(oUser, ClearAllActions());
-    AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", true));
+    AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", TRUE));
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1214,73 +1214,73 @@ void DoSoundFunction(int iSound, object oUser)
 
     switch (iSound)
     {
-    case 11: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_batsflap1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 12: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_bugsscary1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 13: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_crptvoice1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 14: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_orcgrunt1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 15: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_minepick2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 16: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_ratssqeak1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 17: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_rockfallg1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 18: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_rockfalgl2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 19: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_gustcavrn1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 21: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_belltower3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 22: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_claybreak3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 23: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_glasbreak2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 24: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_gongring3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 25: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_marketgrp4"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 26: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_cv_millwheel1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 27: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_sawing1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 28: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_bellwind1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 29: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_cv_smithhamr2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 31: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_firelarge1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 32: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_lavapillr1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 33: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_lavafire1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 34: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_firelarge2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 35: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_surf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 36: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_drips1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 37: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_waterlap1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 38: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_stream4"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 39: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_waterfall2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 41: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_crynight3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 42: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_bushmove1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 43: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_birdsflap2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 44: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_grassmove3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 45: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_hawk1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 46: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_leafmove3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 47: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_gulls2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 48: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_songbirds1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 49: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_an_toads1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 51: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_beaker1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 52: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_cauldron1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 53: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_chntmagic1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 54: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_crystalev1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 55: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_crystalic1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 56: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_portal1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 57: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_mg_telepin1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 58: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_mg_telepout1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 59: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_mg_frstmagic1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 61: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_tavclap1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 62: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_battlegrp7"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 63: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_laughincf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 64: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_comtntgrp3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 65: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_chantingm2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 66: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_cryingf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 67: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_laughingf3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 68: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_chantingf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 69: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_wailingm6"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 71: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_evilchantm"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 72: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_crows2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 73: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_wailingcf1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 74: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_crptvoice2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 75: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_lafspook2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 76: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_owlhoot1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 77: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_wolfhowl1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 78: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_screamf3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 79: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_zombiem3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 81: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_gustsoft1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 82: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_thundercl3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 83: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_thunderds4"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
-    case 84: oTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_gusforst1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 11: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_batsflap1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 12: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_bugsscary1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 13: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_crptvoice1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 14: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_orcgrunt1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 15: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_minepick2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 16: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_ratssqeak1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 17: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_rockfallg1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 18: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_rockfalgl2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 19: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_gustcavrn1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 21: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_belltower3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 22: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_claybreak3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 23: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_glasbreak2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 24: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_gongring3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 25: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_marketgrp4"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 26: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_cv_millwheel1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 27: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_sawing1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 28: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_cv_bellwind1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 29: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_cv_smithhamr2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 31: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_firelarge1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 32: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_lavapillr1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 33: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_lavafire1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 34: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_firelarge2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 35: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_surf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 36: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_drips1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 37: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_waterlap1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 38: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_stream4"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 39: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_na_waterfall2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 41: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_crynight3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 42: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_bushmove1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 43: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_birdsflap2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 44: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_grassmove3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 45: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_hawk1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 46: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_na_leafmove3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 47: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_gulls2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 48: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_songbirds1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 49: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_an_toads1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 51: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_beaker1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 52: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_cauldron1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 53: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_chntmagic1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 54: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_crystalev1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 55: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_crystalic1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 56: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("al_mg_portal1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 57: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_mg_telepin1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 58: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_mg_telepout1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 59: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_mg_frstmagic1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 61: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_tavclap1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 62: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_battlegrp7"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 63: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_laughincf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 64: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_comtntgrp3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 65: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_chantingm2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 66: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_cryingf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 67: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_laughingf3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 68: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_chantingf2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 69: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_wailingm6"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 71: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_evilchantm"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 72: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_crows2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 73: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_wailingcf1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 74: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_crptvoice2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 75: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_lafspook2"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 76: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_owlhoot1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 77: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_an_wolfhowl1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 78: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_screamf3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 79: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_pl_zombiem3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 81: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_gustsoft1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 82: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_thundercl3"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 83: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_thunderds4"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
+    case 84: oTarget = CreateObject(OBJECT_TYPE_PLACEABLE, "plc_invisobj", lLocation); DelayCommand(fDelay, AssignCommand(oTarget, PlaySound("as_wt_gusforst1"))); DelayCommand(20.0f, DestroyObject(oTarget)); break;
 
         //Settings
     case 91:
@@ -1352,9 +1352,9 @@ void DoVoiceFunction(int iSay, object oUser)
             // // XXXX DM Spy Functionality - Currently BROKEN
             // SetDMFIPersistentInt("dmfi", "dmfi_DMSpy", abs(GetDMFIPersistentInt("dmfi", "dmfi_DMSpy", oUser) - 1), oUser);
             // if (GetDMFIPersistentInt("dmfi", "dmfi_DMSpy", oUser) == 1)
-            //     FloatingTextStringOnCreature("DM Spy is on.", oUser, false);
+            //     FloatingTextStringOnCreature("DM Spy is on.", oUser, FALSE);
             // else
-            //     FloatingTextStringOnCreature("DM Spy is off.", oUser, false);
+            //     FloatingTextStringOnCreature("DM Spy is off.", oUser, FALSE);
             // break;
 
             // v1.09 - eavesdrop at location
@@ -1373,14 +1373,14 @@ void DoVoiceFunction(int iSay, object oUser)
                     {
                         DestroyObject(GetLocalObject(oUser, "dmfi_MyVoice"));
                         DeleteLocalObject(oUser, "dmfi_MyVoice");
-                        FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, false);
+                        FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, FALSE);
                     }
-                    oVoice = CreateObject(ObjectType.Creature, "dmfi_voice", lLocation);
+                    oVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", lLocation);
                     //Sets the Voice as the object to throw to.
                     SetLocalObject(oUser, "dmfi_VoiceTarget", oVoice);
                     //Set Ownership of the Voice to the User
                     SetLocalObject(oUser, "dmfi_MyVoice", oVoice);
-                    DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice is operational", oUser, false));
+                    DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice is operational", oUser, FALSE));
                 }
                 else
                 {
@@ -1395,15 +1395,15 @@ void DoVoiceFunction(int iSay, object oUser)
         //     {
         //         DestroyObject(GetLocalObject(oUser, "dmfi_MyVoice"));
         //         DeleteLocalObject(oUser, "dmfi_MyVoice");
-        //         FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, false);
+        //         FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, FALSE);
         //     }
         //     //Create the Voice
-        //     oVoice = CreateObject(ObjectType.Creature, "dmfi_voice", lLocation);
+        //     oVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", lLocation);
         //     //Sets the Voice as the object to throw to.
         //     SetLocalObject(oUser, "dmfi_VoiceTarget", oVoice);
         //     //Set Ownership of the Voice to the User
         //     SetLocalObject(oUser, "dmfi_MyVoice", oVoice);
-        //     DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice is operational", oUser, false));
+        //     DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice is operational", oUser, FALSE));
         //     break;
 
         case 9:
@@ -1417,13 +1417,13 @@ void DoVoiceFunction(int iSay, object oUser)
                 if (partylisten == 0) sRange = "EARSHOT";
                 else if (partylisten == 1) sRange = "AREA";
                 else sRange = "MODULE";
-                DelayCommand(1.0f, FloatingTextStringOnCreature("Location eavesdrop mode for new eavesdroppers set to " + sRange, oUser, false));
+                DelayCommand(1.0f, FloatingTextStringOnCreature("Location eavesdrop mode for new eavesdroppers set to " + sRange, oUser, FALSE));
             }
             break;
 
         // Create a Loiter Voice
         default:
-            oVoice = CreateObject(ObjectType.Creature, "dmfi_voice", lLocation);
+            oVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", lLocation);
             SetLocalInt(oVoice, "dmfi_Loiter", 1);
             SetLocalString(oVoice, "dmfi_LoiterSay", GetDMFIPersistentString("dmfi", "hls206" + IntToString(iSay)));
             break;
@@ -1438,9 +1438,9 @@ void DoVoiceFunction(int iSay, object oUser)
         // Toggle the mute / unmute NPC function
         case 8: SetDMFIPersistentInt("dmfi", "dmfi_AllMute", abs(GetDMFIPersistentInt("dmfi", "dmfi_AllMute") - 1));
             if (GetDMFIPersistentInt("dmfi", "dmfi_AllMute") == 1)
-                FloatingTextStringOnCreature("All NPC conversations are muted", oUser, false);
+                FloatingTextStringOnCreature("All NPC conversations are muted", oUser, FALSE);
             else
-                FloatingTextStringOnCreature("All NPC conversations are unmuted", oUser, false);
+                FloatingTextStringOnCreature("All NPC conversations are unmuted", oUser, FALSE);
             break;
 
         //     // XXXX Create a Ditto Voice - Duplicate functionality
@@ -1449,15 +1449,15 @@ void DoVoiceFunction(int iSay, object oUser)
         //     {
         //         DestroyObject(GetLocalObject(oUser, "dmfi_MyVoice"));
         //         DeleteLocalObject(oUser, "dmfi_MyVoice");
-        //         FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, false);
+        //         FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, FALSE);
         //     }
         //     //Create the Voice
-        //     oVoice = CreateObject(ObjectType.Creature, "dmfi_voice", lLocation);
+        //     oVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", lLocation);
         //
         //     SetLocalObject(oUser, "dmfi_VoiceTarget", oVoice);
         //     //Set Ownership of the Voice to the User
         //     SetLocalObject(oUser, "dmfi_MyVoice", oVoice);
-        //     DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice is operational", oUser, false));
+        //     DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice is operational", oUser, FALSE));
         //     break;
 
         case 9:
@@ -1466,7 +1466,7 @@ void DoVoiceFunction(int iSay, object oUser)
                 int hookbcast = GetLocalInt(oUser, "dmfi_MyListenerBcastMode");
                 hookbcast = !hookbcast;
                 SetLocalInt(oUser, "dmfi_MyListenerBcastMode", hookbcast);
-                DelayCommand(1.0f, FloatingTextStringOnCreature("DM-Broadcast mode for new eavesdroppers set to " + (hookbcast ? "ON" : "OFF"), oUser, false));
+                DelayCommand(1.0f, FloatingTextStringOnCreature("DM-Broadcast mode for new eavesdroppers set to " + (hookbcast ? "ON" : "OFF"), oUser, FALSE));
             }
 
         case 10:
@@ -1484,14 +1484,14 @@ void DoVoiceFunction(int iSay, object oUser)
                 {
                     DestroyObject(GetLocalObject(oUser, "dmfi_MyVoice"));
                     DeleteLocalObject(oUser, "dmfi_MyVoice");
-                    FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, false);
+                    FloatingTextStringOnCreature("You have destroyed your previous Voice", oUser, FALSE);
                 }
             }
             break;
 
         default:
             // record a new phrase
-            FloatingTextStringOnCreature("Ready to record new phrase", oUser, false);
+            FloatingTextStringOnCreature("Ready to record new phrase", oUser, FALSE);
             SetLocalInt(oUser, "hls_EditPhrase", 20600 + iSay);
             // set up to capture next spoken line of text
             DMFI_get_line(oUser, TALKVOLUME_TALK, "dmfi_univ_listen", OBJECT_SELF);
@@ -1513,10 +1513,10 @@ void DoVoiceFunction(int iSay, object oUser)
             // SetLocalObject(oUser, "dmfi_VoiceTarget", oTarget);
             // if (!GetIsPC(oTarget))
             // {
-            //     FloatingTextStringOnCreature(GetName(oTarget) + " is listening", oUser, false);
+            //     FloatingTextStringOnCreature(GetName(oTarget) + " is listening", oUser, FALSE);
             //     SetListenPattern(oTarget, "**", LISTEN_PATTERN); //listen to all text
             //     SetLocalInt(oTarget, "hls_Listening", 1); //listen to all text
-            //     SetListening(oTarget, true);      //be sure NPC is listening
+            //     SetListening(oTarget, TRUE);      //be sure NPC is listening
             // }
             // //You Targetted a PC - make a voice follow that sucker and listen.
             // else
@@ -1525,15 +1525,15 @@ void DoVoiceFunction(int iSay, object oUser)
             //     if (GetIsObjectValid(GetLocalObject(oTarget, "dmfi_VoiceFollow")))
             //     {
             //         DestroyObject(GetLocalObject(oUser, "dmfi_VoiceFollow"));
-            //         FloatingTextStringOnCreature("The prior voice following this character was destroyed", oUser, false);
+            //         FloatingTextStringOnCreature("The prior voice following this character was destroyed", oUser, FALSE);
             //     }
             //
             //     //Create the Voice
-            //     oVoice = CreateObject(ObjectType.Creature, "dmfi_voice", lLocation);
+            //     oVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", lLocation);
             //     //Sets the Voice as the object to throw to.
             //     DelayCommand(2.0, SetLocalObject(oTarget, "dmfi_VoiceFollow", oVoice)); //only set this for finding a duplicate later
             //     DelayCommand(2.0, SetLocalObject(oVoice, "dmfi_follow", oTarget));  //set up the player as something to follow
-            //     DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice will follow and listen to " +GetName(oTarget), oUser, false));
+            //     DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice will follow and listen to " +GetName(oTarget), oUser, FALSE));
             // }
             // break;
 
@@ -1558,16 +1558,16 @@ void DoVoiceFunction(int iSay, object oUser)
                         {
                             DestroyObject(oVoice);
                             DeleteLocalObject(oTarget, "dmfi_VoiceFollow");
-                            FloatingTextStringOnCreature("The prior voice following this character was destroyed", oUser, false);
+                            FloatingTextStringOnCreature("The prior voice following this character was destroyed", oUser, FALSE);
                         }
 
                         // 08.05.13 tsunami282 - we don't use following voices anymore
                         // // Create the Voice
-                        // oVoice = CreateObject(ObjectType.Creature, "dmfi_voice", lLocation);
+                        // oVoice = CreateObject(OBJECT_TYPE_CREATURE, "dmfi_voice", lLocation);
                         // // Sets the Voice as the object to throw to.
                         // DelayCommand(2.0, SetLocalObject(oTarget, "dmfi_VoiceFollow", oVoice)); //only set this for finding a duplicate later
                         // DelayCommand(2.0, SetLocalObject(oVoice, "dmfi_follow", oTarget));  //set up the player as something to follow
-                        // DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice will follow " +GetName(oTarget), oUser, false));
+                        // DelayCommand(1.0f, FloatingTextStringOnCreature("The Voice will follow " +GetName(oTarget), oUser, FALSE));
                     }
                     else
                     {
@@ -1590,7 +1590,7 @@ void DoVoiceFunction(int iSay, object oUser)
                 partylisten++;
                 if (partylisten > 1) partylisten = 0;
                 SetLocalInt(oUser, "dmfi_MyListenerPartyMode", partylisten);
-                DelayCommand(1.0f, FloatingTextStringOnCreature("PC eavesdrop mode for new eavesdroppers set to " + (partylisten ? "PARTY" : "PC ONLY"), oUser, false));
+                DelayCommand(1.0f, FloatingTextStringOnCreature("PC eavesdrop mode for new eavesdroppers set to " + (partylisten ? "PARTY" : "PC ONLY"), oUser, FALSE));
             }
             break;
         default:
@@ -1675,13 +1675,13 @@ void ReportImmunity(object oT, object oUser)
 ////////////////////////////////////////////////////////////////////////
 void CheckForEffect(effect eA, object oT, object oUser)
 {
-    int Result = false;
+    int Result = FALSE;
     effect Check = GetFirstEffect(oT);
 
     while (GetIsEffectValid(Check))
     {
         if (Check == eA)
-            Result = true;
+            Result = TRUE;
 
         Check = GetNextEffect(oT);
     }
@@ -1720,10 +1720,10 @@ void DoAfflictFunction(int iAfflict, object oUser)
 
     nSaveAmount = FloatToInt(fSaveAmount);
 
-    if (!(GetObjectType(oTarget) == ObjectType.Creature) ||
+    if (!(GetObjectType(oTarget) == OBJECT_TYPE_CREATURE) ||
         GetIsDM(oTarget))
     {
-        FloatingTextStringOnCreature("You must target a valid creature!", oUser, false);
+        FloatingTextStringOnCreature("You must target a valid creature!", oUser, FALSE);
         return;
     }
     switch (iAfflict)
@@ -1794,7 +1794,7 @@ void DoAfflictFunction(int iAfflict, object oUser)
     case 69: eD = EffectDamage( GetCurrentHitPoints(oTarget)-1, DAMAGE_TYPE_MAGICAL, DAMAGE_POWER_NORMAL);
         AssignCommand( oTarget, ClearAllActions());
         AssignCommand( oTarget, ActionPlayAnimation( ANIMATION_LOOPING_DEAD_FRONT, 1.0, 99999.0));
-        DelayCommand(0.5, SetCommandable( false, oTarget)); break;
+        DelayCommand(0.5, SetCommandable( FALSE, oTarget)); break;
     case 71: eA = EffectCutsceneDominated();break;
     case 72: eA = EffectCutsceneGhost(); break;
     case 73: eA = EffectCutsceneImmobilize(); break;
@@ -1848,7 +1848,7 @@ void DoAfflictFunction(int iAfflict, object oUser)
             RemoveEffect(oTarget, eEffect);
             eEffect = GetNextEffect(oTarget);
         } break;
-    case 89: SetCommandable(true, oTarget);
+    case 89: SetCommandable(TRUE, oTarget);
         AssignCommand(oTarget, ClearAllActions()); break;
     case 80: eEffect = GetFirstEffect(oTarget);
         while (GetIsEffectValid(eEffect))
@@ -1905,19 +1905,19 @@ void DoAfflictFunction(int iAfflict, object oUser)
     if ((GetEffectType(eD)!= EFFECT_TYPE_INVALIDEFFECT) ||
         (GetEffectType(eVis) != EFFECT_TYPE_INVALIDEFFECT))
     {
-        ApplyEffectToObject(DurationType.Permanent, eD, oTarget);
-        ApplyEffectToObject(DurationType.Permanent, eVis, oTarget);
+        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eD, oTarget);
+        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eVis, oTarget);
         return;
     }
     if (GetEffectType(eA)!= EFFECT_TYPE_INVALIDEFFECT)
     {
-        ApplyEffectToObject(DurationType.Permanent, eA, oTarget);
+        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eA, oTarget);
         DelayCommand(5.0, CheckForEffect(eA, oTarget, oUser));
         return;
     }
     if ((GetEffectType(eT)!= EFFECT_TYPE_INVALIDEFFECT) || (nBug ==1))
     {
-        ApplyEffectToObject(DurationType.Temporary, eT, oTarget, fDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eT, oTarget, fDuration);
 
         if ((GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_INCREASE) ||
             (GetEffectType(eT)==EFFECT_TYPE_SAVING_THROW_DECREASE))
@@ -1929,20 +1929,20 @@ void DoAfflictFunction(int iAfflict, object oUser)
     }
     if (nBug == -1)
     {
-        object oFollowMe = GetFirstFactionMember(oTarget, true);
+        object oFollowMe = GetFirstFactionMember(oTarget, TRUE);
 
         if (!GetIsObjectValid(oFollowMe))
-            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 1,CREATURE_TYPE_IS_ALIVE, true);
+            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 1,CREATURE_TYPE_IS_ALIVE, TRUE);
 
         if (GetIsDM(oFollowMe) || GetIsDMPossessed(oFollowMe))
-            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 2,CREATURE_TYPE_IS_ALIVE, true);
+            oFollowMe = GetNearestCreature(CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC, oTarget, 2,CREATURE_TYPE_IS_ALIVE, TRUE);
 
         if (!GetIsObjectValid(oFollowMe))
             oFollowMe = oUser;
 
-        AssignCommand(oFollowMe, ApplyEffectToObject(DurationType.Permanent, EffectCutsceneDominated(), oTarget));
-        ApplyEffectToObject(DurationType.Permanent, EffectCutsceneGhost(), oTarget);
-        ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
+        AssignCommand(oFollowMe, ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneDominated(), oTarget));
+        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectCutsceneGhost(), oTarget);
+        ApplyEffectToObject(DURATION_TYPE_PERMANENT, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget);
     }
 
     return;
@@ -1998,30 +1998,30 @@ void DoXPFunction(int iXP, object oUser)
         SendMessageToPC(oUser, GetName(oTarget) +" has "+ IntToString(GetGold(oTarget)) + " gp.");
         SendMessageToPC(oUser, GetName(oTarget) +" has items totaling " + IntToString(DMFI_GetNetWorth(oTarget)) + " in gp value.");
         return; break;
-    case 62:   oPartyMember=GetFirstFactionMember(oTarget, true);
-        while (GetIsObjectValid(oPartyMember)==true)
+    case 62:   oPartyMember=GetFirstFactionMember(oTarget, TRUE);
+        while (GetIsObjectValid(oPartyMember)==TRUE)
         {
             iGold = iGold + GetGold(oPartyMember);
             iValue = iValue + DMFI_GetNetWorth(oPartyMember);
             SendMessageToPC(oUser, GetName(oPartyMember) +" has " + IntToString(GetXP(oPartyMember)) + " XP total.");
-            oPartyMember = GetNextFactionMember(oTarget, true);
+            oPartyMember = GetNextFactionMember(oTarget, TRUE);
         }
         SendMessageToPC(oUser, "The party has a total of "+ IntToString(iGold) + " gp.");
         SendMessageToPC(oUser, "The party has items totaling " + IntToString(iValue) + " in gp value.");
         return; break;
-    case 63:   oPartyMember=GetFirstFactionMember(oTarget, true);
-        while (GetIsObjectValid(oPartyMember)==true)
+    case 63:   oPartyMember=GetFirstFactionMember(oTarget, TRUE);
+        while (GetIsObjectValid(oPartyMember)==TRUE)
         {
             SendMessageToPC(oUser, GetName(oPartyMember) +" has received " + IntToString(GetLocalInt(oPartyMember, "dmfi_XPGiven")) + " DMFI WAND XP this session.");
-            oPartyMember = GetNextFactionMember(oTarget, true);
+            oPartyMember = GetNextFactionMember(oTarget, TRUE);
         }
         return; break;
-    case 64:   oPartyMember=GetFirstFactionMember(oTarget, true);
-        while (GetIsObjectValid(oPartyMember)==true)
+    case 64:   oPartyMember=GetFirstFactionMember(oTarget, TRUE);
+        while (GetIsObjectValid(oPartyMember)==TRUE)
         {
             int iHD = GetHitDice(oPartyMember);
             SendMessageToPC(oUser, GetName(oPartyMember) + " is level " + IntToString(GetHitDice(oPartyMember)) + " and needs " + IntToString(((iHD * (iHD + 1)) / 2 * 1000) - GetXP(oPartyMember)) + " XP to level up.");
-            oPartyMember = GetNextFactionMember(oTarget, true);
+            oPartyMember = GetNextFactionMember(oTarget, TRUE);
         }
         return; break;
     case 71:  sFloating =  "DM XP PENALTY"; iReward = -50; break;
@@ -2039,18 +2039,18 @@ void DoXPFunction(int iXP, object oUser)
     if (iParty==1)
     {
         // 2008.05.26 tsunami282 - grant percent XP based on each party member's level, not selected party member
-        int bUsePercent = false;
-        if (iReward==0) bUsePercent = true;
+        int bUsePercent = FALSE;
+        if (iReward==0) bUsePercent = TRUE;
 
-        oPartyMember=GetFirstFactionMember(oTarget, true);
+        oPartyMember=GetFirstFactionMember(oTarget, TRUE);
         while (GetIsObjectValid(oPartyMember))
         {
             if (bUsePercent) iReward = (GetHitDice(oPartyMember)*iPercent*10);
             GiveXPToCreature(oPartyMember, iReward);
             SetLocalInt(oPartyMember, "dmfi_XPGiven", GetLocalInt(oPartyMember, "dmfi_XPGiven") + iReward);
-            FloatingTextStringOnCreature(sFloating + ": " + IntToString(iReward), oPartyMember, false);
+            FloatingTextStringOnCreature(sFloating + ": " + IntToString(iReward), oPartyMember, FALSE);
             SendMessageToAllDMs(GetName(oPartyMember) +" received a "+GetLocalString(oUser, "BonusType")+ " experience reward of "+ IntToString(iReward)+ ".");
-            oPartyMember = GetNextFactionMember(oTarget, true);
+            oPartyMember = GetNextFactionMember(oTarget, TRUE);
         }
         // SendMessageToAllDMs("The entire party was granted "+ IntToString(iReward)+ " XP.");
     }
@@ -2065,7 +2065,7 @@ void DoXPFunction(int iXP, object oUser)
         SetXP(oTarget, nPrior+iReward);
 
         SetLocalInt(oTarget, "dmfi_XPGiven", GetLocalInt(oTarget, "dmfi_XPGiven") + iReward);
-        FloatingTextStringOnCreature(sFloating + ": " + IntToString(iReward), oTarget, false);
+        FloatingTextStringOnCreature(sFloating + ": " + IntToString(iReward), oTarget, FALSE);
         SendMessageToAllDMs(GetName(oTarget) +" received a "+GetLocalString(oUser, "BonusType")+ " experience reward of "+ IntToString(iReward)+ ".");
 
     }
@@ -2165,9 +2165,9 @@ void DoMusicFunction(int iMusic, object oUser)
 
 ////////////////////////////////////////////////////////////////////////
 //This function is for the DMFI Encounter Wand
-void Spawn(string sCreature, location lCreature, int iTF = false)
+void Spawn(string sCreature, location lCreature, int iTF = FALSE)
 {
-    CreateObject(ObjectType.Creature, sCreature, lCreature, iTF);
+    CreateObject(OBJECT_TYPE_CREATURE, sCreature, lCreature, iTF);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -2177,7 +2177,7 @@ void CopyMon(object oMon, location lEncounter)
     effect eEffect = GetFirstEffect(oMon);
     while (GetIsEffectValid(eEffect))
     {
-        ApplyEffectToObject(DurationType.Permanent, eEffect, oCreature);
+        ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, oCreature);
         eEffect = GetNextEffect(oMon);
     }
 }
@@ -2187,13 +2187,13 @@ void CreateCustomEncounter(string Template, location lEncounter)
 {
     object oWP = GetWaypointByTag(Template);
     int n = 1;
-    object oMon = GetNearestCreatureToLocation(CREATURE_TYPE_IS_ALIVE, true, GetLocation(oWP), n);
+    object oMon = GetNearestCreatureToLocation(CREATURE_TYPE_IS_ALIVE, TRUE, GetLocation(oWP), n);
 
     while (GetIsObjectValid(oMon)  && (GetDistanceBetween(oWP, oMon)<8.0) && (n<9))
     {
         DelayCommand(IntToFloat(n), CopyMon(oMon, lEncounter));
         n=n+1;
-        oMon = GetNearestCreatureToLocation(CREATURE_TYPE_IS_ALIVE, true, GetLocation(oWP), n);
+        oMon = GetNearestCreatureToLocation(CREATURE_TYPE_IS_ALIVE, TRUE, GetLocation(oWP), n);
     }
 }
 
@@ -2205,544 +2205,544 @@ void CreateEncounter(int iEncounter, location lEncounter, object oUser)
     {
     case 11: //Animal - Low Badger Encounter
         SetLocalString(oUser, "EncounterName", "Low Badger");
-        CreateObject(ObjectType.Creature, "NW_BADGER", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_BADGER", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BADGER", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BADGER", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_BADGER", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_BADGER", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BADGER", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BADGER", lEncounter, FALSE));
         break;
     case 12: //Animal - Low Canine Encounter
         SetLocalString(oUser, "EncounterName", "Low Canine");
-        CreateObject(ObjectType.Creature, "NW_WOLF", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_WOLF", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_WOLF", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_WOLF", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_WOLF", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_WOLF", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_WOLF", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_WOLF", lEncounter, FALSE));
         break;
     case 13: //Animal - Low Feline Encounter
         SetLocalString(oUser, "EncounterName", "Low Feline");
-        CreateObject(ObjectType.Creature, "NW_COUGAR", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_COUGAR", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_COUGAR", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_COUGAR", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_COUGAR", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_COUGAR", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_COUGAR", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_COUGAR", lEncounter, FALSE));
         break;
     case 14: //Animal - Low Bear Encounter
         SetLocalString(oUser, "EncounterName", "Low Bear (Boss)");
-        CreateObject(ObjectType.Creature, "NW_BEARBLCK", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_BEARBLCK", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BEARBLCK", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BEARBRWN", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_BEARBLCK", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_BEARBLCK", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BEARBLCK", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BEARBRWN", lEncounter, FALSE));
         break;
     case 15: //Animal - Boar Encounter
         SetLocalString(oUser, "EncounterName", "Boar (Boss)");
-        CreateObject(ObjectType.Creature, "NW_BOAR", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_BOAR", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BOAR", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BOARDIRE", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_BOAR", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_BOAR", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BOAR", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BOARDIRE", lEncounter, FALSE));
         break;
     case 16: //Animal - Medium Feline Encounter
         SetLocalString(oUser, "EncounterName", "Medium Feline");
-        CreateObject(ObjectType.Creature, "NW_LION", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_LION", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_LION", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_LION", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_LION", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_LION", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_LION", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_LION", lEncounter, FALSE));
         break;
     case 17: //Animal - High Canine Encounter
         SetLocalString(oUser, "EncounterName", "High Canine");
-        CreateObject(ObjectType.Creature, "NW_DIREWOLF", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_DIREWOLF", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_DIREWOLF", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DIREWOLF", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_DIREWOLF", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_DIREWOLF", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_DIREWOLF", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DIREWOLF", lEncounter, FALSE));
         break;
     case 18: //Animal - High Feline Encounter
         SetLocalString(oUser, "EncounterName", "High Feline");
-        CreateObject(ObjectType.Creature, "NW_DIRETIGER", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_BEASTMALAR001", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BEASTMALAR001", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BEASTMALAR001", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_DIRETIGER", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_BEASTMALAR001", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BEASTMALAR001", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BEASTMALAR001", lEncounter, FALSE));
         break;
     case 19: //Animal - High Bear Encounter
         SetLocalString(oUser, "EncounterName", "High Bear");
-        CreateObject(ObjectType.Creature, "NW_BEARDIRE", lEncounter, false);
-        DelayCommand(1.0f, Spawn("NW_BEARDIRE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BEARDIRE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BEARDIREBOSS", lEncounter, false));
+        CreateObject(OBJECT_TYPE_CREATURE, "NW_BEARDIRE", lEncounter, FALSE);
+        DelayCommand(1.0f, Spawn("NW_BEARDIRE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BEARDIRE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BEARDIREBOSS", lEncounter, FALSE));
         break;
 
     case 21: //Construct - Flesh Golem
         SetLocalString(oUser, "EncounterName", "Flesh Golem");
-        DelayCommand(1.0f, Spawn("NW_GOLFLESH", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GOLFLESH", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GOLFLESH", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GOLFLESH", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GOLFLESH", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GOLFLESH", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GOLFLESH", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GOLFLESH", lEncounter, FALSE));
         break;
     case 22: //Construct - Minogan
         SetLocalString(oUser, "EncounterName", "Minogon");
-        DelayCommand(1.0f, Spawn("NW_MINOGON", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_MINOGON", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_MINOGON", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_MINOGON", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_MINOGON", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_MINOGON", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_MINOGON", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_MINOGON", lEncounter, FALSE));
         break;
     case 23: //Construct - Clay Golem
         SetLocalString(oUser, "EncounterName", "Clay Golem");
-        DelayCommand(1.0f, Spawn("NW_GolClay", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GolClay", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GolClay", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GolClay", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GolClay", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GolClay", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GolClay", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GolClay", lEncounter, FALSE));
         break;
     case 24: //Construct - Bone Golem
         SetLocalString(oUser, "EncounterName", "Bone Golem");
-        DelayCommand(1.0f, Spawn("NW_GolBone", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GolBone", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GolBone", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GolBone", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GolBone", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GolBone", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GolBone", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GolBone", lEncounter, FALSE));
         break;
     case 25: //Construct - Helmed Horror
         SetLocalString(oUser, "EncounterName", "Helmed Horror");
-        DelayCommand(1.0f, Spawn("NW_HELMHORR", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_HELMHORR", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_HELMHORR", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_HELMHORR", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_HELMHORR", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_HELMHORR", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_HELMHORR", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_HELMHORR", lEncounter, FALSE));
         break;
     case 26: //Construct - Stone Golem
         SetLocalString(oUser, "EncounterName", "Stone Golem");
-        DelayCommand(1.0f, Spawn("NW_GOLSTONE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GOLSTONE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GOLSTONE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GOLSTONE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GOLSTONE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GOLSTONE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GOLSTONE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GOLSTONE", lEncounter, FALSE));
         break;
     case 27: //Construct - Battle Horror
         SetLocalString(oUser, "EncounterName", "Battle Horror");
-        DelayCommand(1.0f, Spawn("NW_BATHORROR", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BATHORROR", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BATHORROR", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BATHORROR", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BATHORROR", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BATHORROR", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BATHORROR", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BATHORROR", lEncounter, FALSE));
         break;
     case 28: //Construct - Shield Guardian
         SetLocalString(oUser, "EncounterName", "Shield Guardian");
-        DelayCommand(1.0f, Spawn("NW_SHGUARD", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SHGUARD", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SHGUARD", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SHGUARD", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SHGUARD", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SHGUARD", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SHGUARD", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SHGUARD", lEncounter, FALSE));
         break;
     case 29: //Construct - Iron Golem
         SetLocalString(oUser, "EncounterName", "Iron Golem");
-        DelayCommand(1.0f, Spawn("NW_GOLIRON", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GOLIRON", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GOLIRON", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GOLIRON", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GOLIRON", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GOLIRON", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GOLIRON", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GOLIRON", lEncounter, FALSE));
         break;
     case 31: //Dragon - Adult White Dragon
         SetLocalString(oUser, "EncounterName", "Adult White Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGWHITE001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGWHITE001", lEncounter, FALSE));
         break;
     case 32: //Dragon - Adult Black Dragon
         SetLocalString(oUser, "EncounterName", "Adult Black Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGBLACK001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGBLACK001", lEncounter, FALSE));
         break;
     case 33: //Dragon - Adult Green Dragon
         SetLocalString(oUser, "EncounterName", "Adult Green Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGGREEN001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGGREEN001", lEncounter, FALSE));
         break;
     case 34: //Dragon - Adult Blue Dragon
         SetLocalString(oUser, "EncounterName", "Adult Blue Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGBLUE001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGBLUE001", lEncounter, FALSE));
         break;
     case 35: //Dragon - Adult Red Dragon
         SetLocalString(oUser, "EncounterName", "Adult Red Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGRED001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGRED001", lEncounter, FALSE));
         break;
     case 36: //Dragon - Old White Dragon
         SetLocalString(oUser, "EncounterName", "Old White Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGWHITE002", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGWHITE002", lEncounter, FALSE));
         break;
     case 37: //Dragon - Old Blue Dragon
         SetLocalString(oUser, "EncounterName", "Old Blue Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGBLUE002", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGBLUE002", lEncounter, FALSE));
         break;
     case 38: //Dragon - Old Red Dragon
         SetLocalString(oUser, "EncounterName", "Old Red Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGRED002", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGRED002", lEncounter, FALSE));
         break;
     case 39: //Dragon - Ancient Red Dragon
         SetLocalString(oUser, "EncounterName", "Ancient Red Dragon");
-        DelayCommand(1.0f, Spawn("NW_DRGRED003", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DRGRED003", lEncounter, FALSE));
         break;
     case 41: //Elemental - Air Elemental
         SetLocalString(oUser, "EncounterName", "Air Elemental");
-        DelayCommand(1.0f, Spawn("NW_AIR", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_AIR", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_AIR", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_AIR", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_AIR", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_AIR", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_AIR", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_AIR", lEncounter, FALSE));
         break;
     case 42: //Elemental - Earth Elemental
         SetLocalString(oUser, "EncounterName", "Earth Elemental");
-        DelayCommand(1.0f, Spawn("NW_EARTH", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_EARTH", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_EARTH", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_EARTH", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_EARTH", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_EARTH", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_EARTH", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_EARTH", lEncounter, FALSE));
         break;
     case 43: //Elemental - Fire Elemental
         SetLocalString(oUser, "EncounterName", "Fire Elemental");
-        DelayCommand(1.0f, Spawn("NW_FIRE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_FIRE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_FIRE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_FIRE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_FIRE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_FIRE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_FIRE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_FIRE", lEncounter, FALSE));
         break;
     case 44: //Elemental - Water Elemental
         SetLocalString(oUser, "EncounterName", "Water Elemental");
-        DelayCommand(1.0f, Spawn("NW_WATER", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_WATER", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_WATER", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_WATER", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_WATER", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_WATER", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_WATER", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_WATER", lEncounter, FALSE));
         break;
     case 45: //Elemental - Huge Air Elemental
         SetLocalString(oUser, "EncounterName", "Huge Air Elemental");
-        DelayCommand(1.0f, Spawn("NW_AIRHUGE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_AIRHUGE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_AIRHUGE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_AIRHUGE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_AIRHUGE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_AIRHUGE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_AIRHUGE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_AIRHUGE", lEncounter, FALSE));
         break;
     case 46: //Elemental - Huge Earth Elemental
         SetLocalString(oUser, "EncounterName", "Huge Earth Elemental");
-        DelayCommand(1.0f, Spawn("NW_EARTHHUGE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_EARTHHUGE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_EARTHHUGE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_EARTHHUGE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_EARTHHUGE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_EARTHHUGE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_EARTHHUGE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_EARTHHUGE", lEncounter, FALSE));
         break;
     case 47: //Elemental - Huge Fire Elemental
         SetLocalString(oUser, "EncounterName", "Huge Fire Elemental");
-        DelayCommand(1.0f, Spawn("NW_FIREHUGE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_FIREHUGE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_FIREHUGE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_FIREHUGE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_FIREHUGE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_FIREHUGE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_FIREHUGE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_FIREHUGE", lEncounter, FALSE));
         break;
     case 48: //Elemental - Huge Water Elemental
         SetLocalString(oUser, "EncounterName", "Huge Water Elemental");
-        DelayCommand(1.0f, Spawn("NW_WATERHUGE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_WATERHUGE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_WATERHUGE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_WATERHUGE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_WATERHUGE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_WATERHUGE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_WATERHUGE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_WATERHUGE", lEncounter, FALSE));
         break;
     case 49: //Elemental - Elemental Swarm
         SetLocalString(oUser, "EncounterName", "Elemental Swarm");
-        DelayCommand(1.0f, Spawn("NW_AIRGREAT", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_EARTHGREAT", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_FIREGREAT", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_WATERGREAT", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_AIRGREAT", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_EARTHGREAT", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_FIREGREAT", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_WATERGREAT", lEncounter, FALSE));
         break;
     case 51: //Giant - Low Ogre
         SetLocalString(oUser, "EncounterName", "Low Ogre");
-        DelayCommand(1.0f, Spawn("NW_OGRE01", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_OGRE01", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_OGRE02", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_OGRE02", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_OGRE01", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_OGRE01", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_OGRE02", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_OGRE02", lEncounter, FALSE));
         break;
     case 52: //Giant - Low Troll
         SetLocalString(oUser, "EncounterName", "Low Troll");
-        DelayCommand(1.0f, Spawn("NW_TROLL", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_TROLL", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_TROLL", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_TROLL", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_TROLL", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_TROLL", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_TROLL", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_TROLL", lEncounter, FALSE));
         break;
     case 53: //Giant - High Ogre
         SetLocalString(oUser, "EncounterName", "High Ogre");
-        DelayCommand(1.0f, Spawn("NW_OGRECHIEF01", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_OGRECHIEF02", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_OGRECHIEF01", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_OGREMAGE02", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_OGRECHIEF01", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_OGRECHIEF02", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_OGRECHIEF01", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_OGREMAGE02", lEncounter, FALSE));
         break;
     case 54: //Giant - High Troll
         SetLocalString(oUser, "EncounterName", "High Troll");
-        DelayCommand(1.0f, Spawn("NW_TROLLCHIEF", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_TROLLCHIEF", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_TROLLWIZ", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_TROLLWIZ", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_TROLLCHIEF", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_TROLLCHIEF", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_TROLLWIZ", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_TROLLWIZ", lEncounter, FALSE));
         break;
     case 55: //Giant - Ettin
         SetLocalString(oUser, "EncounterName", "Ettin");
-        DelayCommand(1.0f, Spawn("NW_ETTIN", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_ETTIN", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_ETTIN", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ETTIN", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_ETTIN", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_ETTIN", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_ETTIN", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ETTIN", lEncounter, FALSE));
         break;
     case 56: //Giant - Hill Giant
         SetLocalString(oUser, "EncounterName", "Hill Giant");
-        DelayCommand(1.0f, Spawn("NW_GNTHILL", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GNTHILL", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GNTMOUNT", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GNTMOUNT", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GNTHILL", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GNTHILL", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GNTMOUNT", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GNTMOUNT", lEncounter, FALSE));
         break;
     case 57: //Giant - Frost Giant
         SetLocalString(oUser, "EncounterName", "Frost Giant");
-        DelayCommand(1.0f, Spawn("NW_GNTFROST", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GNTFROST", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GNTFROST", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GNTFROST", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GNTFROST", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GNTFROST", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GNTFROST", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GNTFROST", lEncounter, FALSE));
         break;
     case 58: //Giant - Fire Giant
         SetLocalString(oUser, "EncounterName", "Fire Giant");
-        DelayCommand(1.0f, Spawn("NW_GNTFIRE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GNTFIRE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GNTFIRE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GNTFIRE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GNTFIRE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GNTFIRE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GNTFIRE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GNTFIRE", lEncounter, FALSE));
         break;
     case 59: //Giant - Ogre Mage (Boss)
         SetLocalString(oUser, "EncounterName", "Ogre Mage (Boss)");
-        DelayCommand(1.0f, Spawn("nw_ogreboss", lEncounter, false));
-        DelayCommand(2.0f, Spawn("nw_ogreboss", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_OGREMAGEBOSS", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_OGREMAGEBOSS", lEncounter, false));
+        DelayCommand(1.0f, Spawn("nw_ogreboss", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("nw_ogreboss", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_OGREMAGEBOSS", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_OGREMAGEBOSS", lEncounter, FALSE));
         break;
     case 61: //Humanoid - Goblin
         SetLocalString(oUser, "EncounterName", "Goblin");
-        DelayCommand(1.0f, Spawn("NW_GOBLINA", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GOBLINA", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GOBLINA", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GOBLINB", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GOBLINA", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GOBLINA", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GOBLINA", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GOBLINB", lEncounter, FALSE));
         break;
     case 62: //Humanoid - Kobold
         SetLocalString(oUser, "EncounterName", "Kobold");
-        DelayCommand(1.0f, Spawn("NW_KOBOLD002", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_KOBOLD002", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_KOBOLD002", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_KOBOLD001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_KOBOLD002", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_KOBOLD002", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_KOBOLD002", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_KOBOLD001", lEncounter, FALSE));
         break;
     case 63: //Humanoid - Low Orc
         SetLocalString(oUser, "EncounterName", "Low Orc");
-        DelayCommand(1.0f, Spawn("NW_ORCB", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_ORCA", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_ORCA", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ORCA", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_ORCB", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_ORCA", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_ORCA", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ORCA", lEncounter, FALSE));
         break;
     case 64: //Humanoid - High Orc (Wiz)
         SetLocalString(oUser, "EncounterName", "High Orc (Wiz)");
-        DelayCommand(1.0f, Spawn("NW_OrcChiefA", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_ORCCHIEFB", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_ORCCHIEFB", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ORCWIZA", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_OrcChiefA", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_ORCCHIEFB", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_ORCCHIEFB", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ORCWIZA", lEncounter, FALSE));
         break;
     case 65: //Humanoid - Bugbear
         SetLocalString(oUser, "EncounterName", "Bugbear");
-        DelayCommand(1.0f, Spawn("NW_BUGBEARA", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BUGBEARA", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BUGBEARA", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BUGBEARB", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BUGBEARA", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BUGBEARA", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BUGBEARA", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BUGBEARB", lEncounter, FALSE));
         break;
     case 66: //Humanoid - Lizardfolk
         SetLocalString(oUser, "EncounterName", "Lizardfolk");
-        DelayCommand(1.0f, Spawn("NW_OLDWARRA", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_OLDWARRA", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_OLDWARRA", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_OLDWARB", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_OLDWARRA", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_OLDWARRA", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_OLDWARRA", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_OLDWARB", lEncounter, FALSE));
         break;
     case 67: //Humanoid - Minotaur (Wiz)
         SetLocalString(oUser, "EncounterName", "Minotaur (Wiz)");
-        DelayCommand(1.0f, Spawn("NW_MINOTAUR", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_MINOTAUR", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_MINOTAUR", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_MINWIZ", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_MINOTAUR", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_MINOTAUR", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_MINOTAUR", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_MINWIZ", lEncounter, FALSE));
         break;
     case 68: //Humanoid - Fey
         SetLocalString(oUser, "EncounterName", "Fey (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_GRIG", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GRIG", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_PIXIE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_PIXIE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GRIG", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GRIG", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_PIXIE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_PIXIE", lEncounter, FALSE));
         break;
     case 69: //Humanoid -  Yuan-Ti (Mixed)
         SetLocalString(oUser, "EncounterName", "Yuan-Ti (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_YUAN_TI001", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_YUAN_TI001", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_YUAN_TI002", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_YUAN_TI003", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_YUAN_TI001", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_YUAN_TI001", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_YUAN_TI002", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_YUAN_TI003", lEncounter, FALSE));
         break;
     case 71: //Insects - Fire Beetle
         SetLocalString(oUser, "EncounterName", "Fire Beetle");
-        DelayCommand(1.0f, Spawn("NW_BTLFIRE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BTLFIRE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BTLFIRE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BTLFIRE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BTLFIRE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BTLFIRE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BTLFIRE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BTLFIRE", lEncounter, FALSE));
         break;
     case 72: //Insects - Spitting Fire Beetle
         SetLocalString(oUser, "EncounterName", "Spitting Fire Beetle");
-        DelayCommand(1.0f, Spawn("NW_BTLFIRE02", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BTLFIRE02", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BTLFIRE02", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BTLFIRE02", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BTLFIRE02", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BTLFIRE02", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BTLFIRE02", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BTLFIRE02", lEncounter, FALSE));
         break;
     case 73: //Insects - Low Beetle (Mixed)
         SetLocalString(oUser, "EncounterName", "Low Beetle (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_BTLBOMB", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BTLBOMB", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BTLSTINK", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BTLFIRE02", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BTLBOMB", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BTLBOMB", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BTLSTINK", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BTLFIRE02", lEncounter, FALSE));
         break;
     case 74: //Insects - Giant Spider
         SetLocalString(oUser, "EncounterName", "Giant Spider");
-        DelayCommand(1.0f, Spawn("NW_SPIDGIANT", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SPIDGIANT", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SPIDGIANT", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SPIDGIANT", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SPIDGIANT", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SPIDGIANT", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SPIDGIANT", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SPIDGIANT", lEncounter, FALSE));
         break;
     case 75: //Insects - Sword Spider
         SetLocalString(oUser, "EncounterName", "Sword Spider");
-        DelayCommand(1.0f, Spawn("NW_SPIDSWRD", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SPIDSWRD", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SPIDSWRD", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SPIDSWRD", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SPIDSWRD", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SPIDSWRD", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SPIDSWRD", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SPIDSWRD", lEncounter, FALSE));
         break;
     case 76: //Insects - Wraith Spider
         SetLocalString(oUser, "EncounterName", "Wraith Spider");
-        DelayCommand(1.0f, Spawn("NW_SPIDWRA", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SPIDWRA", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SPIDWRA", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SPIDWRA", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SPIDWRA", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SPIDWRA", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SPIDWRA", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SPIDWRA", lEncounter, FALSE));
         break;
     case 77: //Insects - Stag Beetle
         SetLocalString(oUser, "EncounterName", "Stag Beetle");
-        DelayCommand(1.0f, Spawn("NW_BTLSTAG", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BTLSTAG", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BTLSTAG", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BTLSTAG", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BTLSTAG", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BTLSTAG", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BTLSTAG", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BTLSTAG", lEncounter, FALSE));
         break;
     case 78: //Insects - Dire Spider
         SetLocalString(oUser, "EncounterName", "Dire Spider");
-        DelayCommand(1.0f, Spawn("NW_SPIDDIRE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SPIDDIRE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SPIDDIRE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SPIDDIRE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SPIDDIRE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SPIDDIRE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SPIDDIRE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SPIDDIRE", lEncounter, FALSE));
         break;
     case 79: //Insects - Queen Spider
         SetLocalString(oUser, "EncounterName", "Queen Spider");
-        DelayCommand(1.0f, Spawn("NW_SPIDERBOSS", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SPIDERBOSS", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SPIDERBOSS", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SPIDERBOSS", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SPIDERBOSS", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SPIDERBOSS", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SPIDERBOSS", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SPIDERBOSS", lEncounter, FALSE));
         break;
     case 81: //Undead - Low Zombie
         SetLocalString(oUser, "EncounterName", "Zombie");
-        DelayCommand(1.0f, Spawn("NW_ZOMBIE01", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_ZOMBIE02", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_ZOMBIE01", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ZOMBIE02", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_ZOMBIE01", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_ZOMBIE02", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_ZOMBIE01", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ZOMBIE02", lEncounter, FALSE));
         break;
     case 82: //Undead - Low Skeleton
         SetLocalString(oUser, "EncounterName", "Low Skeleton");
-        DelayCommand(1.0f, Spawn("NW_SKELETON", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SKELETON", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SKELETON", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SKELETON", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SKELETON", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SKELETON", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SKELETON", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SKELETON", lEncounter, FALSE));
         break;
     case 83: //Undead - Ghoul
         SetLocalString(oUser, "EncounterName", "Ghoul");
-        DelayCommand(1.0f, Spawn("NW_GHOUL", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GHOUL", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GHOUL", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GHOUL", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GHOUL", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GHOUL", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GHOUL", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GHOUL", lEncounter, FALSE));
         break;
     case 84: //Undead - Shadow
         SetLocalString(oUser, "EncounterName", "Shadow");
-        DelayCommand(1.0f, Spawn("NW_SHADOW", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SHADOW", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SHADOW", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SHADOW", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SHADOW", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SHADOW", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SHADOW", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SHADOW", lEncounter, FALSE));
         break;
     case 85: //Undead - Mummy
         SetLocalString(oUser, "EncounterName", "Mummy");
-        DelayCommand(1.0f, Spawn("NW_MUMMY", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_MUMMY", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_MUMMY", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_MUMMY", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_MUMMY", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_MUMMY", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_MUMMY", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_MUMMY", lEncounter, FALSE));
         break;
     case 86: //Undead - High Skeleton
         SetLocalString(oUser, "EncounterName", "High Skeleton (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_SKELWARR01", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_SKELWARR02", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_SKELMAGE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_SKELPRIEST", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_SKELWARR01", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_SKELWARR02", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_SKELMAGE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_SKELPRIEST", lEncounter, FALSE));
         break;
     case 87: //Undead - Curst (Mixed)
         SetLocalString(oUser, "EncounterName", "Curst (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_CURST001", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_CURST002", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_CURST003", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_CURST004", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_CURST001", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_CURST002", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_CURST003", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_CURST004", lEncounter, FALSE));
         break;
     case 88: //Undead - Doom Knight
         SetLocalString(oUser, "EncounterName", "Doom Knight");
-        DelayCommand(1.0f, Spawn("NW_DOOMKGHT", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_DOOMKGHT", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DOOMKGHT", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_DOOMKGHT", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DOOMKGHT", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_DOOMKGHT", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DOOMKGHT", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_DOOMKGHT", lEncounter, FALSE));
         break;
     case 89: //Undead - Vampire (Mixed)
         SetLocalString(oUser, "EncounterName", "Vampire (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_VAMPIRE001", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_VAMPIRE002", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_VAMPIRE003", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_VAMPIRE004", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_VAMPIRE001", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_VAMPIRE002", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_VAMPIRE003", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_VAMPIRE004", lEncounter, FALSE));
         break;
     case 91: //NPC - Low Gypsy
         SetLocalString(oUser, "EncounterName", "Low Gypsy");
-        DelayCommand(1.0f, Spawn("NW_GYPMALE", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_GYPMALE", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_GYPFEMALE", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_GYPFEMALE", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_GYPMALE", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_GYPMALE", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_GYPFEMALE", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_GYPFEMALE", lEncounter, FALSE));
         break;
     case 92: //NPC - Low Bandit
         SetLocalString(oUser, "EncounterName", "Low Bandit");
-        DelayCommand(1.0f, Spawn("NW_BANDIT001", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BANDIT001", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BANDIT001", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BANDIT002", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BANDIT001", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BANDIT001", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BANDIT001", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BANDIT002", lEncounter, FALSE));
         break;
     case 93: //NPC - Medium Bandit (Mixed)
         SetLocalString(oUser, "EncounterName", "Medium Bandit (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_BANDIT005", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_BANDIT002", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_BANDIT003", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_BANDIT004", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_BANDIT005", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_BANDIT002", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_BANDIT003", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_BANDIT004", lEncounter, FALSE));
         break;
     case 94: //NPC - Low Mercenary (Mixed)
         SetLocalString(oUser, "EncounterName", "Low Mercenary (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_HUMANMERC001", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_HALFMERC001", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DWARFMERC001", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ELFMERC001", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_HUMANMERC001", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_HALFMERC001", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DWARFMERC001", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ELFMERC001", lEncounter, FALSE));
         break;
     case 95: //NPC - Elf Ranger
         SetLocalString(oUser, "EncounterName", "Elf Ranger");
-        DelayCommand(1.0f, Spawn("NW_ELFRANGER005", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_ELFRANGER005", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_ELFRANGER005", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ELFRANGER005", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_ELFRANGER005", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_ELFRANGER005", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_ELFRANGER005", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ELFRANGER005", lEncounter, FALSE));
         break;
     case 96: //NPC - Low Drow (Mixed)
         SetLocalString(oUser, "EncounterName", "Low Drow (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_DROWFIGHT005", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_DROWMAGE005", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DROWROGUE005", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_DROWCLER005", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DROWFIGHT005", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_DROWMAGE005", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DROWROGUE005", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_DROWCLER005", lEncounter, FALSE));
         break;
     case 97: //NPC - Medium Mercenary (Mixed)
         SetLocalString(oUser, "EncounterName", "Medium Mercenary (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_HUMANMERC004", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_HALFMERC004", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DWARFMERC004", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ELFMERC004", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_HUMANMERC004", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_HALFMERC004", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DWARFMERC004", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ELFMERC004", lEncounter, FALSE));
         break;
     case 98: //NPC - High Drow (Mixed)
         SetLocalString(oUser, "EncounterName", "High Drow (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_DROWFIGHT020", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_DROWMAGE020", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DROWROGUE020", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_DROWCLER020", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_DROWFIGHT020", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_DROWMAGE020", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DROWROGUE020", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_DROWCLER020", lEncounter, FALSE));
         break;
     case 99: //NPC - High Mercenary (Mixed)
         SetLocalString(oUser, "EncounterName", "High Mercenary (Mixed)");
-        DelayCommand(1.0f, Spawn("NW_HUMANMERC006", lEncounter, false));
-        DelayCommand(2.0f, Spawn("NW_HALFMERC006", lEncounter, false));
-        DelayCommand(3.0f, Spawn("NW_DWARFMERC006", lEncounter, false));
-        DelayCommand(4.0f, Spawn("NW_ELFMERC006", lEncounter, false));
+        DelayCommand(1.0f, Spawn("NW_HUMANMERC006", lEncounter, FALSE));
+        DelayCommand(2.0f, Spawn("NW_HALFMERC006", lEncounter, FALSE));
+        DelayCommand(3.0f, Spawn("NW_DWARFMERC006", lEncounter, FALSE));
+        DelayCommand(4.0f, Spawn("NW_ELFMERC006", lEncounter, FALSE));
         break;
     case 101: // Custom Encounters
         CreateCustomEncounter("DMFI_E1", lEncounter); break;
@@ -2770,8 +2770,8 @@ void FXWand_Firestorm(object oDM)
 
 
     // tell the DM object to rain fire and destruction
-    AssignCommand ( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_METEOR_SWARM), lDMLoc));
-    AssignCommand ( oDM, DelayCommand (1.0, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect (VFX_FNF_SCREEN_SHAKE), lDMLoc)));
+    AssignCommand ( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_METEOR_SWARM), lDMLoc));
+    AssignCommand ( oDM, DelayCommand (1.0, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect (VFX_FNF_SCREEN_SHAKE), lDMLoc)));
 
     // create some fires
     object oTargetArea = GetArea(oDM);
@@ -2786,8 +2786,8 @@ void FXWand_Firestorm(object oDM)
         vNewVector.y += nYPos;
 
         location lFireLoc = Location(oTargetArea, vNewVector, 0.0);
-        object oFire = CreateObject ( ObjectType.Placeable, "plc_flamelarge", lFireLoc, false);
-        object oDust = CreateObject ( ObjectType.Placeable, "plc_dustplume", lFireLoc, false);
+        object oFire = CreateObject ( OBJECT_TYPE_PLACEABLE, "plc_flamelarge", lFireLoc, FALSE);
+        object oDust = CreateObject ( OBJECT_TYPE_PLACEABLE, "plc_dustplume", lFireLoc, FALSE);
         DelayCommand ( 10.0, DestroyObject ( oFire));
         DelayCommand ( 14.0, DestroyObject ( oDust));
     }
@@ -2803,11 +2803,11 @@ void FXWand_Earthquake(object oDM)
     location lDMLoc = GetLocation ( oDM);
 
     // tell the DM object to shake the screen
-    AssignCommand( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect(VFX_FNF_SCREEN_SHAKE), lDMLoc));
-    AssignCommand ( oDM, DelayCommand( 2.8, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
-    AssignCommand ( oDM, DelayCommand( 3.0, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_SHAKE), lDMLoc)));
-    AssignCommand ( oDM, DelayCommand( 4.5, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
-    AssignCommand ( oDM, DelayCommand( 5.8, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
+    AssignCommand( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SCREEN_SHAKE), lDMLoc));
+    AssignCommand ( oDM, DelayCommand( 2.8, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
+    AssignCommand ( oDM, DelayCommand( 3.0, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_SHAKE), lDMLoc)));
+    AssignCommand ( oDM, DelayCommand( 4.5, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
+    AssignCommand ( oDM, DelayCommand( 5.8, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect ( VFX_FNF_SCREEN_BUMP), lDMLoc)));
     // tell the DM object to play an earthquake sound
     AssignCommand ( oDM, PlaySound ("as_cv_boomdist1"));
     AssignCommand ( oDM, DelayCommand ( 2.0, PlaySound ("as_wt_thunderds3")));
@@ -2825,7 +2825,7 @@ void FXWand_Earthquake(object oDM)
         vNewVector.y += nYPos;
 
         location lDustLoc = Location(oTargetArea, vNewVector, 0.0);
-        object oDust = CreateObject ( ObjectType.Placeable, "plc_dustplume", lDustLoc, false);
+        object oDust = CreateObject ( OBJECT_TYPE_PLACEABLE, "plc_dustplume", lDustLoc, FALSE);
         DelayCommand ( 4.0, DestroyObject ( oDust));
     }
 }
@@ -2836,11 +2836,11 @@ void FXWand_Lightning(object oDM, location lDMLoc)
 {
     // Lightning Strike by Jhenne. 06/29/02
     // tell the DM object to create a Lightning visual effect at targetted location
-    AssignCommand( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect(VFX_IMP_LIGHTNING_M), lDMLoc));
+    AssignCommand( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_LIGHTNING_M), lDMLoc));
     // tell the DM object to play a thunderclap
     AssignCommand ( oDM, PlaySound ("as_wt_thundercl3"));
     // create a scorch mark where the lightning hit
-    object oScorch = CreateObject ( ObjectType.Placeable, "plc_weathmark", lDMLoc, false);
+    object oScorch = CreateObject ( OBJECT_TYPE_PLACEABLE, "plc_weathmark", lDMLoc, FALSE);
     object oTargetArea = GetArea(oDM);
     int nXPos, nYPos, nCount;
     for (nCount = 0; nCount < 5; nCount++)
@@ -2853,7 +2853,7 @@ void FXWand_Lightning(object oDM, location lDMLoc)
         vNewVector.y += nYPos;
 
         location lNewLoc = Location(oTargetArea, vNewVector, 0.0);
-        AssignCommand( oDM, ApplyEffectAtLocation ( DurationType.Instant, EffectVisualEffect(VFX_IMP_LIGHTNING_S), lNewLoc));
+        AssignCommand( oDM, ApplyEffectAtLocation ( DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_LIGHTNING_S), lNewLoc));
     }
     DelayCommand ( 20.0, DestroyObject ( oScorch));
 }
@@ -2861,8 +2861,8 @@ void FXWand_Lightning(object oDM, location lDMLoc)
 ////////////////////////////////////////////////////////////////////////
 void FnFEffect(object oUser, int iVFX, location lEffect, float fDelay)
 {
-    if (fDelay>2.0) FloatingTextStringOnCreature("Delay effect created", oUser, false);
-    DelayCommand( fDelay, ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(iVFX),lEffect));
+    if (fDelay>2.0) FloatingTextStringOnCreature("Delay effect created", oUser, FALSE);
+    DelayCommand( fDelay, ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(iVFX),lEffect));
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -2893,20 +2893,20 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     switch (iEffect)
     {
     //SoU/HotU Duration Effects(must have a target)
-    case 101: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_CLENCHED_FIST), oTarget, fDuration); break;
-    case 102: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_CRUSHING_HAND), oTarget, fDuration); break;
-    case 103: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_GRASPING_HAND), oTarget, fDuration); break;
-    case 104: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BIGBYS_INTERPOSING_HAND), oTarget, fDuration); break;
-    case 105: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ICESKIN), oTarget, fDuration); break;
-    case 106: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_INFERNO), oTarget, fDuration); break;
-    case 107: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PIXIEDUST), oTarget, fDuration); break;
-    case 108: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget, fDuration); break;
-    case 109: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_FREEZE_ANIMATION), oTarget, fDuration); break;
-    case 100: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_GHOSTLY_PULSE), oTarget, fDuration); break;
+    case 101: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_CLENCHED_FIST), oTarget, fDuration); break;
+    case 102: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_CRUSHING_HAND), oTarget, fDuration); break;
+    case 103: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_GRASPING_HAND), oTarget, fDuration); break;
+    case 104: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BIGBYS_INTERPOSING_HAND), oTarget, fDuration); break;
+    case 105: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ICESKIN), oTarget, fDuration); break;
+    case 106: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_INFERNO), oTarget, fDuration); break;
+    case 107: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PIXIEDUST), oTarget, fDuration); break;
+    case 108: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), oTarget, fDuration); break;
+    case 109: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_FREEZE_ANIMATION), oTarget, fDuration); break;
+    case 100: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_GHOSTLY_PULSE), oTarget, fDuration); break;
         //Magical Duration Effects
-    case 10: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_CALTROPS),lEffect, fDuration); break;
-    case 11: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_TENTACLE),lEffect, fDuration); break;
-    case 12: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_WEB_MASS),lEffect, fDuration); break;
+    case 10: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_CALTROPS),lEffect, fDuration); break;
+    case 11: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_TENTACLE),lEffect, fDuration); break;
+    case 12: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_WEB_MASS),lEffect, fDuration); break;
     case 13: FnFEffect(oUser, VFX_FNF_GAS_EXPLOSION_MIND,lEffect, fDelay); break;
     case 14: FnFEffect(oUser, VFX_FNF_LOS_HOLY_30,lEffect, fDelay); break;
     case 15: FnFEffect(oUser, VFX_FNF_LOS_EVIL_30,lEffect, fDelay); break;
@@ -2915,16 +2915,16 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     case 18: FnFEffect(oUser, VFX_FNF_DISPEL_DISJUNCTION,lEffect, fDelay); break;
     case 19: FnFEffect(oUser, VFX_FNF_GAS_EXPLOSION_EVIL,lEffect, fDelay); break;
         //Magical Status Effects (must have a target)
-    case 21: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, fDuration); break;
-    case 22: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, fDuration); break;
-    case 23: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ENTANGLE), oTarget, fDuration); break;
-    case 24: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ETHEREAL_VISAGE), oTarget, fDuration); break;
-    case 25: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), oTarget, fDuration); break;
-    case 26: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_INVISIBILITY), oTarget, fDuration); break;
-    case 27: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BARD_SONG), oTarget, fDuration); break;
-    case 28: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_GLOBE_INVULNERABILITY), oTarget, fDuration); break;
-    case 29: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PARALYZED), oTarget, fDuration); break;
-    case 20: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_SHADOW_ARMOR), oTarget, fDuration); break;
+    case 21: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, fDuration); break;
+    case 22: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, fDuration); break;
+    case 23: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ENTANGLE), oTarget, fDuration); break;
+    case 24: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ETHEREAL_VISAGE), oTarget, fDuration); break;
+    case 25: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), oTarget, fDuration); break;
+    case 26: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_INVISIBILITY), oTarget, fDuration); break;
+    case 27: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BARD_SONG), oTarget, fDuration); break;
+    case 28: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_GLOBE_INVULNERABILITY), oTarget, fDuration); break;
+    case 29: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PARALYZED), oTarget, fDuration); break;
+    case 20: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_SHADOW_ARMOR), oTarget, fDuration); break;
         //Magical Burst Effects
     case 31: FnFEffect(oUser, VFX_FNF_FIREBALL,lEffect, fDelay); break;
     case 32: FnFEffect(oUser, VFX_FNF_FIRESTORM,lEffect, fDelay); break;
@@ -2937,33 +2937,33 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     case 39: FnFEffect(oUser, VFX_FNF_STRIKE_HOLY,lEffect, fDelay); break;
     case 30: FnFEffect(oUser, VFX_FNF_WORD,lEffect, fDelay); break;
         //Lighting Effects
-    case 41: ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BLACKOUT),lEffect, fDuration); break;
-    case 42: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_ANTI_LIGHT_10),oTarget, fDuration); break;
-    case 43: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_BLUE_20),oTarget, fDuration); break;
-    case 44: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_GREY_20),oTarget, fDuration); break;
-    case 45: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_ORANGE_20),oTarget, fDuration); break;
-    case 46: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_PURPLE_20),oTarget, fDuration); break;
-    case 47: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_RED_20),oTarget, fDuration); break;
-    case 48: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_WHITE_20),oTarget, fDuration); break;
-    case 49: ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_YELLOW_20),oTarget, fDuration); break;
+    case 41: ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLACKOUT),lEffect, fDuration); break;
+    case 42: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_ANTI_LIGHT_10),oTarget, fDuration); break;
+    case 43: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_BLUE_20),oTarget, fDuration); break;
+    case 44: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_GREY_20),oTarget, fDuration); break;
+    case 45: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_ORANGE_20),oTarget, fDuration); break;
+    case 46: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_PURPLE_20),oTarget, fDuration); break;
+    case 47: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_RED_20),oTarget, fDuration); break;
+    case 48: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_WHITE_20),oTarget, fDuration); break;
+    case 49: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_YELLOW_20),oTarget, fDuration); break;
         //Beam Effects
-    case 50: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_CHAIN, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 51: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 52: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 53: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 54: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 55: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 56: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 57: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 58: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
-    case 59: ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration);
-        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, false), oTarget, fBeamDuration); break;
+    case 50: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_CHAIN, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 51: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 52: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 53: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 54: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 55: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 56: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 57: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 58: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
+    case 59: ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_COLD, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_EVIL, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_FIRE_LASH, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_HOLY, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_LIGHTNING, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_MIND, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectBeam(VFX_BEAM_ODD, oUser, BODY_NODE_CHEST, FALSE), oTarget, fBeamDuration); break;
 
         //Environmental Effects
     case 60: FnFEffect(oUser, VFX_FNF_NATURES_BALANCE,lEffect, fDelay);break;
@@ -2988,11 +2988,11 @@ void CreateEffects(int iEffect, location lEffect, object oUser)
     case 79: FnFEffect(oUser, VFX_FNF_UNDEAD_DRAGON,lEffect, fDelay); break;
     case 70: FnFEffect(oUser, VFX_FNF_WAIL_O_BANSHEES,lEffect, fDelay); break;
         //SoU/HotU Effects
-    case 80: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(322), oTarget, fDuration); break;
-    case 81: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(132), oTarget, fDuration); break;
-    case 82: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(133), oTarget, fDuration); break;
-    case 83: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(136), oTarget, fDuration); break;
-    case 84: ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(137), oTarget, fDuration); break;
+    case 80: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(322), oTarget, fDuration); break;
+    case 81: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(132), oTarget, fDuration); break;
+    case 82: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(133), oTarget, fDuration); break;
+    case 83: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(136), oTarget, fDuration); break;
+    case 84: ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(137), oTarget, fDuration); break;
     case 85: FnFEffect(oUser, VFX_FNF_DEMON_HAND,lEffect, fDelay); break;
     case 86: FnFEffect(oUser, VFX_FNF_ELECTRIC_EXPLOSION,lEffect, fDelay); break;
     case 87: FnFEffect(oUser, VFX_FNF_GREATER_RUIN,lEffect, fDelay); break;
@@ -3072,12 +3072,12 @@ void DoEmoteFunction(int iEmote, object oUser)
     case 82: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE1, 1.0, fDur)); break;
     case 83: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_CONJURE2, 1.0, fDur)); break;
     case 84: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_LOW, 1.0, fDur)); break;
-    case 85: AssignCommand(oTarget, PlayAnimation( Animation.Get_Mid, 1.0, fDur)); break;
+    case 85: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_GET_MID, 1.0, fDur)); break;
     case 86: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_MEDITATE, 1.0, fDur)); break;
     case 87: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_TALK_FORCEFUL, 1.0, fDur)); break;
     case 88: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_WORSHIP, 1.0, fDur)); break;
-    case 10: if (!GetLocalInt(oTarget, "hls_emotemute")) FloatingTextStringOnCreature("*emote* commands are off", oTarget, false);
-        else FloatingTextStringOnCreature("*emote* commands are on", oTarget, false);
+    case 10: if (!GetLocalInt(oTarget, "hls_emotemute")) FloatingTextStringOnCreature("*emote* commands are off", oTarget, FALSE);
+        else FloatingTextStringOnCreature("*emote* commands are on", oTarget, FALSE);
         SetLocalInt(oTarget, "hls_emotemute", abs(GetLocalInt(oTarget, "hls_emotemute") - 1)); break;
     case 91: EmoteDance(oTarget); break;
     case 92: AssignCommand(oTarget, PlayAnimation( ANIMATION_LOOPING_PAUSE_DRUNK, 1.0, fDur)); break;
@@ -3621,16 +3621,16 @@ void DoBuff (int iChoice, object oUser)
     if (Party==1)
     {
         sParty = "party";
-        object oParty = GetFirstFactionMember(oTarget, false);
+        object oParty = GetFirstFactionMember(oTarget, FALSE);
         while (GetIsObjectValid(oParty))
         {
             AssignCommand(oTarget, ClearAllActions());
             if (nSpell1!=SPELL_ALL_SPELLS)
-                AssignCommand(oTarget, ActionCastSpellAtObject(nSpell1, oTarget, METAMAGIC_ANY, true, CL, PROJECTILE_PATH_TYPE_DEFAULT, true));
+                AssignCommand(oTarget, ActionCastSpellAtObject(nSpell1, oTarget, METAMAGIC_ANY, TRUE, CL, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             if (nSpell2!=SPELL_ALL_SPELLS)
-                AssignCommand(oTarget, ActionCastSpellAtObject(nSpell2, oTarget, METAMAGIC_ANY, true, CL, PROJECTILE_PATH_TYPE_DEFAULT, true));
+                AssignCommand(oTarget, ActionCastSpellAtObject(nSpell2, oTarget, METAMAGIC_ANY, TRUE, CL, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             if (nSpell3!=SPELL_ALL_SPELLS)
-                AssignCommand(oTarget, ActionCastSpellAtObject(nSpell3, oTarget, METAMAGIC_ANY, true, CL, PROJECTILE_PATH_TYPE_DEFAULT, true));
+                AssignCommand(oTarget, ActionCastSpellAtObject(nSpell3, oTarget, METAMAGIC_ANY, TRUE, CL, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             oParty = GetNextFactionMember (oTarget);
         }
     }
@@ -3638,11 +3638,11 @@ void DoBuff (int iChoice, object oUser)
     {
         AssignCommand(oTarget, ClearAllActions());
         if (nSpell1!=SPELL_ALL_SPELLS)
-            AssignCommand(oTarget, ActionCastSpellAtObject(nSpell1, oTarget, METAMAGIC_ANY, true, CL, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            AssignCommand(oTarget, ActionCastSpellAtObject(nSpell1, oTarget, METAMAGIC_ANY, TRUE, CL, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
         if (nSpell2!=SPELL_ALL_SPELLS)
-            AssignCommand(oTarget, ActionCastSpellAtObject(nSpell2, oTarget, METAMAGIC_ANY, true, CL, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            AssignCommand(oTarget, ActionCastSpellAtObject(nSpell2, oTarget, METAMAGIC_ANY, TRUE, CL, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
         if (nSpell3!=SPELL_ALL_SPELLS)
-            AssignCommand(oTarget, ActionCastSpellAtObject(nSpell3, oTarget, METAMAGIC_ANY, true, CL, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            AssignCommand(oTarget, ActionCastSpellAtObject(nSpell3, oTarget, METAMAGIC_ANY, TRUE, CL, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
     }
     SendMessageToPC(oUser, "Buffs Applied to " + sParty + ".  Caster Level: " + IntToString(CL));
 }
@@ -3663,7 +3663,7 @@ void ToggleRestVariable(int iCurrent, int iChange, int iDefault, string sTextMes
         } //Remove the variable
         SetDMFIPersistentInt("dmfi", "dmfi_r_" + sArea, iCurrent & ~iChange);
         if (sTextMessage != "")
-            FloatingTextStringOnCreature(sTextMessage + sOnOff, oUser, false);
+            FloatingTextStringOnCreature(sTextMessage + sOnOff, oUser, FALSE);
     }
     else //if the variable doesn't already exist
     {
@@ -3677,7 +3677,7 @@ void ToggleRestVariable(int iCurrent, int iChange, int iDefault, string sTextMes
         } //Add the variable
         SetDMFIPersistentInt("dmfi", "dmfi_r_" + sArea, iCurrent | iChange);
         if (sTextMessage != "")
-            FloatingTextStringOnCreature(sTextMessage + sOnOff, oUser, false);
+            FloatingTextStringOnCreature(sTextMessage + sOnOff, oUser, FALSE);
     }
 }
 
@@ -3707,8 +3707,8 @@ void DoRestFunction(int iRest, object oUser)
         }
         else
         {
-            SetLocalInt(oUser, "dmfi_r_bypass", true); AssignCommand(oUser, ActionRest());
-            SetLocalInt(oUser, "dmfi_r_init", true);
+            SetLocalInt(oUser, "dmfi_r_bypass", TRUE); AssignCommand(oUser, ActionRest());
+            SetLocalInt(oUser, "dmfi_r_init", TRUE);
             int iTime = GetTimeSecond() + GetTimeMinute() * 60 + GetTimeHour() * 3600 + GetCalendarDay() * 24 * 3600 + GetCalendarMonth() *3600 * 24 * 28 + GetCalendarYear() * 24 * 28 * 12 * 3600;
             SetLocalInt(oUser, "dmfi_r_startseconds", iTime);
             AssignCommand(oUser, ActionRest());
@@ -3716,425 +3716,425 @@ void DoRestFunction(int iRest, object oUser)
     case 8:
         SetLocalString(oUser, "dmfi_univ_conv", "pc_emote");
         AssignCommand(oUser, ClearAllActions());
-        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", true)); break;
+        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", TRUE)); break;
     case 9:
         SetLocalString(oUser, "dmfi_univ_conv", "pc_dicebag");
         AssignCommand(oUser, ClearAllActions());
-        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", true)); break;
+        AssignCommand(oUser, ActionStartConversation(OBJECT_SELF, "dmfi_universal", TRUE)); break;
     case 11: //Set Unlimited Rest (module): default is ON
         iCurrentMod = iCurrentMod & ~0x00000002; //Remove No Rest, if it exists
         //Toggle the current Unlimited Rest Variable
-        ToggleRestVariable(iCurrentMod, 0x00000001, true, "GLOBAL: Unlimited Rest is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000001, TRUE, "GLOBAL: Unlimited Rest is ", oUser); break;
     case 12: //Set No Rest (module): default is OFF
         iCurrentMod = iCurrentMod | 0x00000001; //Remove Unlimited Rest, if it exists
         //Toggle the current No Rest Variable
-        ToggleRestVariable(iCurrentMod, 0x00000002, false, "GLOBAL: No Rest is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000002, FALSE, "GLOBAL: No Rest is ", oUser); break;
     case 13: //Limit Rest by Time: default is OFF
-        ToggleRestVariable(iCurrentMod, 0x00000004, false, "GLOBAL: Limited Rest - Time is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000004, FALSE, "GLOBAL: Limited Rest - Time is ", oUser); break;
     case 14: //Limit Rest by Placeables: default is OFF
-        ToggleRestVariable(iCurrentMod, 0x00000008, false, "GLOBAL: Limited Rest - Placeables is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000008, FALSE, "GLOBAL: Limited Rest - Placeables is ", oUser); break;
     case 15: //Limit Rest by Armor: default is OFF
-        ToggleRestVariable(iCurrentMod, 0x00000010, false, "GLOBAL: Limited Rest - Armor is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000010, FALSE, "GLOBAL: Limited Rest - Armor is ", oUser); break;
     case 16: //Limit Hit Points healed from resting: default is OFF
-        ToggleRestVariable(iCurrentMod, 0x00000020, false, "GLOBAL: Limit Hit Points is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000020, FALSE, "GLOBAL: Limit Hit Points is ", oUser); break;
     case 17: //Allow spell memorization: default is ON
-        ToggleRestVariable(iCurrentMod, 0x00000040, true, "GLOBAL: Spell Memorization is ", oUser); break;
+        ToggleRestVariable(iCurrentMod, 0x00000040, TRUE, "GLOBAL: Spell Memorization is ", oUser); break;
     case 21: //Set Unlimited Rest (Local)
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod & ~0x00000002; //Remove No Rest, if it exists
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000001, true, "LOCAL: Unlimited Rest is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000001, TRUE, "LOCAL: Unlimited Rest is ", oUser, sAreaTag);
         break;
     case 22: //Set No Rest (module)
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod | 0x00000001; //Remove Unlimited Rest, if it exists
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000002, false, "LOCAL: No Rest is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000002, FALSE, "LOCAL: No Rest is ", oUser, sAreaTag);
         break;
     case 23: //Limit Rest by Time: default is OFF
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000004, false, "LOCAL: Limited Rest - Time is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000004, FALSE, "LOCAL: Limited Rest - Time is ", oUser, sAreaTag);
         break;
     case 24: //Limit Rest by Placeables: default is OFF
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000008, false, "LOCAL: Limited Rest - Placeables is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000008, FALSE, "LOCAL: Limited Rest - Placeables is ", oUser, sAreaTag);
         break;
     case 25: //Limit Rest by Armor: default is OFF
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000010, false, "LOCAL: Limited Rest - Armor is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000010, FALSE, "LOCAL: Limited Rest - Armor is ", oUser, sAreaTag);
         break;
     case 26: //Limit Hit Points healed from resting: default is OFF
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000020, false, "LOCAL: Limit Hit Points is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000020, FALSE, "LOCAL: Limit Hit Points is ", oUser, sAreaTag);
         break;
     case 27: //Allow spell memorization: default is ON
         if (iCurrentArea & 0x00000080)
             iCurrentMod = iCurrentArea;
         iCurrentMod = iCurrentMod | 0x00000080; //Add Area Override bitflag
-        ToggleRestVariable(iCurrentMod, 0x00000040, false, "LOCAL: Spell Restriction is ", oUser, sAreaTag);
+        ToggleRestVariable(iCurrentMod, 0x00000040, FALSE, "LOCAL: Spell Restriction is ", oUser, sAreaTag);
         break;
     case 28: //Reset area to module defaults
-        FloatingTextStringOnCreature("Area set to module defaults", oUser, false);
+        FloatingTextStringOnCreature("Area set to module defaults", oUser, FALSE);
         SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, 0x00000000);
         break;
     case 31: //Set Time Limit to 1 game hour per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 1 game hour per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 1 game hour per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000100);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 1 game hour per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 1 game hour per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000100);
         } break;
     case 32: //Set Time Limit to 2 game hours per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 2 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 2 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000200);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 2 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 2 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000200);
         } break;
     case 33: //Set Time Limit to 4 game hours per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 4 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 4 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000300);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 4 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 4 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000300);
         } break;
     case 34: //Set Time Limit to 6 game hours per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 6 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 6 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000400);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 6 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 6 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000400);
         } break;
     case 35: //Set Time Limit to 8 game hours per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 8 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 8 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000500);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 8 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 8 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000500);
         }    break;
     case 36: //Set Time Limit to 12 game hours per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 12 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 12 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000600);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 12 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 12 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000600);
         }   break;
     case 37: //Set Time Limit to 24 game hours per day
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Time Limit set to 24 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Time Limit set to 24 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00000700);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00000f00; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 24 game hours per rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Time Limit set to 24 game hours per rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00000700);
         }
     case 41: //Toggle placeable flag: DMFI Placeables (tag = dmfi_rest), by default ON
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00001000, true, "LOCAL: DMFI Placeables are ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00001000, TRUE, "LOCAL: DMFI Placeables are ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00001000, true, "GLOBAL: DMFI Placeables are ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00001000, TRUE, "GLOBAL: DMFI Placeables are ", oUser);
         break;
     case 42: //Toggle placeable flag: Campfires
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00002000, false, "LOCAL: Campfire Placeables are ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00002000, FALSE, "LOCAL: Campfire Placeables are ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00002000, false, "GLOBAL: Campfire Placeables are ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00002000, FALSE, "GLOBAL: Campfire Placeables are ", oUser);
         break;
     case 43: //Toggle placeable flag: Bed Rolls
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00004000, false, "LOCAL: Bed Roll Placeables are ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00004000, FALSE, "LOCAL: Bed Roll Placeables are ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00004000, false, "GLOBAL: Bed Roll Placeables are ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00004000, FALSE, "GLOBAL: Bed Roll Placeables are ", oUser);
         break;
     case 44: //Toggle placeable flag: Beds
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00008000, false, "LOCAL: Bed Placeables are ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00008000, FALSE, "LOCAL: Bed Placeables are ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00008000, false, "GLOBAL: Bed Placeables are ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00008000, FALSE, "GLOBAL: Bed Placeables are ", oUser);
         break;
     case 45: //Toggle placeable flag: Tents
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00010000, false, "LOCAL: Tent Placeables are ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00010000, FALSE, "LOCAL: Tent Placeables are ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00010000, false, "GLOBAL: Tent Placeables are ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00010000, FALSE, "GLOBAL: Tent Placeables are ", oUser);
         break;
     case 46: //Toggle placeable flag: Ignore Druids
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00020000, false, "LOCAL: Ignore Druids for Placeable Checks is ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00020000, FALSE, "LOCAL: Ignore Druids for Placeable Checks is ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00020000, false, "GLOBAL: Ignore Druids for Placeable Checks is ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00020000, FALSE, "GLOBAL: Ignore Druids for Placeable Checks is ", oUser);
         break;
     case 47: //Toggle placeable flag: Ignore Rangers
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00040000, false, "LOCAL: Ignore Rangers for Placeable Checks is ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00040000, FALSE, "LOCAL: Ignore Rangers for Placeable Checks is ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00040000, false, "GLOBAL: Ignore Rangers for Placeable Checks is ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00040000, FALSE, "GLOBAL: Ignore Rangers for Placeable Checks is ", oUser);
         break;
     case 48: //Toggle placeable flag: Ignore Barbarians
         if (iCurrentArea & 0x00000080)
-            ToggleRestVariable(iCurrentArea, 0x00080000, false, "LOCAL: Ignore Barbarians for Placeable Checks is ", oUser, sAreaTag);
+            ToggleRestVariable(iCurrentArea, 0x00080000, FALSE, "LOCAL: Ignore Barbarians for Placeable Checks is ", oUser, sAreaTag);
         else
-            ToggleRestVariable(iCurrentMod, 0x00080000, false, "GLOBAL: Ignore Barbarians for Placeable Checks is ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x00080000, FALSE, "GLOBAL: Ignore Barbarians for Placeable Checks is ", oUser);
         break;
     case 51: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 2 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 2 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00100000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 2 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 2 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00100000);
         }    break;
     case 52: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 6 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 6 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00200000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 6 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 6 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00200000);
         }    break;
     case 53: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 11 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 11 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00300000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 11 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 11 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00300000);
         } break;
     case 54: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 16 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 16 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00400000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 16 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 16 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00400000);
         } break;
     case 55: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 31 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 31 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00500000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 31 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 31 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00500000);
         }    break;
     case 56: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 41 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 41 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00600000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 41 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 41 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00600000);
         } break;
     case 57: //Set Armor Weight Restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 46 pounds", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: Armor Restriction set to 46 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x00700000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x00f00000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 46 pounds", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: Armor Restriction set to 46 pounds", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x00700000);
         } break;
     case 61: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: No hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: No hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x01000000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: No hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: No hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x01000000);
         }    break;
     case 62: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: 1 hitpoint/level regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: 1 hitpoint/level regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x02000000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: 1 hitpoint/level regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: 1 hitpoint/level regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x02000000);
         }    break;
     case 63: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: (CON) hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: (CON) hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x03000000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: (CON) hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: (CON) hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x03000000);
         }    break;
     case 64: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: 10 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: 10 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x04000000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: 10 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: 10 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x04000000);
         } break;
     case 65: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: 25 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: 25 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x05000000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: 25 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: 25 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x05000000);
         } break;
     case 66: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: 50 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: 50 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea | 0x06000000);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: 50 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: 50 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod | 0x06000000);
         } break;
     case 67: //Set Hit Point restrictions
         if (iCurrentArea & 0x00000080)
         {
             iCurrentArea = iCurrentArea & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("LOCAL: 100 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("LOCAL: 100 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_" + sAreaTag, iCurrentArea);
         }
         else
         {
             iCurrentMod = iCurrentMod & ~0x0f000000; //Erase current setting
-            FloatingTextStringOnCreature("GLOBAL: 100 percent of hitpoints regained on rest", oUser, false);
+            FloatingTextStringOnCreature("GLOBAL: 100 percent of hitpoints regained on rest", oUser, FALSE);
             SetDMFIPersistentInt("dmfi", "dmfi_r_", iCurrentMod);
         } break;
     case 101: //Use Rest Conversation Toggle
         if (GetIsDM(oUser))
-            ToggleRestVariable(iCurrentMod, 0x10000000, true, "GLOBAL: Rest Conversation is ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x10000000, TRUE, "GLOBAL: Rest Conversation is ", oUser);
         else
         {
-            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_MEDITATE); SetLocalInt(oUser, "dmfi_r_bypass", true); AssignCommand(oUser, ActionRest());
+            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_MEDITATE); SetLocalInt(oUser, "dmfi_r_bypass", TRUE); AssignCommand(oUser, ActionRest());
         } break;
     case 102: //Use Rest VFX
         if (GetIsDM(oUser))
-            ToggleRestVariable(iCurrentMod, 0x20000000, true, "GLOBAL: Rest VFX are ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x20000000, TRUE, "GLOBAL: Rest VFX are ", oUser);
         else
         {
-            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_DEAD_FRONT); SetLocalInt(oUser, "dmfi_r_bypass", true); AssignCommand(oUser, ActionRest());
+            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_DEAD_FRONT); SetLocalInt(oUser, "dmfi_r_bypass", TRUE); AssignCommand(oUser, ActionRest());
         } break;
     case 103: //Floating Text Feedback
         if (GetIsDM(oUser))
-            ToggleRestVariable(iCurrentMod, 0x40000000, true, "GLOBAL: Floating Text Feedback is ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x40000000, TRUE, "GLOBAL: Floating Text Feedback is ", oUser);
         else
         {
-            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_DEAD_BACK); SetLocalInt(oUser, "dmfi_r_bypass", true); AssignCommand(oUser, ActionRest());
+            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_DEAD_BACK); SetLocalInt(oUser, "dmfi_r_bypass", TRUE); AssignCommand(oUser, ActionRest());
         } break;
     case 104: //Immobilized Resting
         if (GetIsDM(oUser))
-            ToggleRestVariable(iCurrentMod, 0x80000000, true, "GLOBAL: Immobile resting is ", oUser);
+            ToggleRestVariable(iCurrentMod, 0x80000000, TRUE, "GLOBAL: Immobile resting is ", oUser);
         else
         {
-            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_WORSHIP); SetLocalInt(oUser, "dmfi_r_bypass", true); AssignCommand(oUser, ActionRest());
+            SetLocalInt(oUser, "dmfi_r_alternate", ANIMATION_LOOPING_WORSHIP); SetLocalInt(oUser, "dmfi_r_bypass", TRUE); AssignCommand(oUser, ActionRest());
         } break;
     case 108: //All PCs in Area are Rested
         break;

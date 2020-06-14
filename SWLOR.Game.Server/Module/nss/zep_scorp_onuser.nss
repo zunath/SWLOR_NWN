@@ -19,14 +19,14 @@ void JumpToWeakestEnemy(object oTargetVictim)
      object oTargetVictim = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
     location lTargetVictim = GetLocation((oTargetVictim));
     // * won't jump if closer than 4 meters to victim
-    if ((GetDistanceToObject(oTargetVictim) > 4.0)   && (GetObjectSeen(oTargetVictim) == true))
+    if ((GetDistanceToObject(oTargetVictim) > 4.0)   && (GetObjectSeen(oTargetVictim) == TRUE))
     {
         ClearAllActions();
         effect eVis = EffectDisappearAppear (lTargetVictim);
         effect eGate = EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE);
-        ApplyEffectToObject(DurationType.Temporary, eGate, OBJECT_SELF, 2.0);
-        DelayCommand(0.3,ApplyEffectToObject(DurationType.Temporary, eVis, OBJECT_SELF, 2.0));
-        DelayCommand(2.3,ApplyEffectAtLocation(DurationType.Temporary, eGate, lTargetVictim, 2.0));
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGate, OBJECT_SELF, 2.0);
+        DelayCommand(0.3,ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eVis, OBJECT_SELF, 2.0));
+        DelayCommand(2.3,ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, eGate, lTargetVictim, 2.0));
         DelayCommand(6.0,ActionAttack(oTargetVictim));
     }
 }

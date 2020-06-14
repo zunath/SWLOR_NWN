@@ -26,7 +26,7 @@
 void main()
 {
     // Spawn the demilich.
-    ZEPDemilichFromBones(OBJECT_SELF, GetLocalString(OBJECT_SELF, ZEP_DEMI_LOCAL_RESREF), true);
+    ZEPDemilichFromBones(OBJECT_SELF, GetLocalString(OBJECT_SELF, ZEP_DEMI_LOCAL_RESREF), TRUE);
     // Destroy the detector.
     DestroyObject(GetLocalObject(OBJECT_SELF, ZEP_DEMI_LOCAL_SOURCE));
     // Destroy the placeables.

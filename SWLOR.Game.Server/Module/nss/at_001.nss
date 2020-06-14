@@ -8,6 +8,6 @@
 void main()
 {
 
-	// Remove some gold from the player
-	TakeGoldFromCreature(50, GetPCSpeaker(), true);
+    // Remove some gold from the player
+    TakeGoldFromCreature(50, GetPCSpeaker(), TRUE);
 }

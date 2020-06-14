@@ -57,7 +57,7 @@ void main()
         if (sKey != "" && GetIsObjectValid(oKey))
         {
             SendMessageToPC(oidUser, GetStringByStrRef(7945));
-            SetLocked(OBJECT_SELF, false);
+            SetLocked(OBJECT_SELF, FALSE);
         }
         else
         {
@@ -73,7 +73,7 @@ void main()
     }
     if(GetIsOpen(OBJECT_SELF))
         {
-        AssignCommand(oidUser,ActionJumpToObject(oidDest,false));
+        AssignCommand(oidUser,ActionJumpToObject(oidDest,FALSE));
         //Send All Animal Companions
         SendAllAssociatesOfType(ASSOCIATE_TYPE_ANIMALCOMPANION,oidUser,oidDest);
         //Send all Dominated Creatures
@@ -100,7 +100,7 @@ void SendCreature(object oCreature, object oDest)
     if(oCreature != OBJECT_INVALID)
     {
         AssignCommand(oCreature, ClearAllActions());
-        AssignCommand(oCreature, ActionJumpToObject(oDest,false));
+        AssignCommand(oCreature, ActionJumpToObject(oDest,FALSE));
     }
 }
 

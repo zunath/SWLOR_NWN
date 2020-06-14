@@ -38,8 +38,8 @@ oTarget = oPC;
 int nInt;
 nInt = GetObjectType(oTarget);
 
-if (nInt != ObjectType.Waypoint) ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_IMP_UNSUMMON), oTarget);
-else ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_IMP_UNSUMMON), GetLocation(oTarget));
+if (nInt != OBJECT_TYPE_WAYPOINT) ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_UNSUMMON), oTarget);
+else ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_UNSUMMON), GetLocation(oTarget));
 
 }
 

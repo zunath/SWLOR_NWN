@@ -10,7 +10,7 @@ int StartingConditional()
 
 	// Add the randomness
 	if(Random(100) >= 1)
-		return false;
+		return FALSE;
 
-	return true;
+	return TRUE;
 }

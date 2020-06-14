@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             //Checks if the player has toggled plasma cell off
-            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == false)
+            if (user.GetLocalBool("PLASMA_CELL_TOGGLE_OFF") == false)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
                 user.SendMessage(ColorTokenService.Red("Plasma Cell is now toggled off."));

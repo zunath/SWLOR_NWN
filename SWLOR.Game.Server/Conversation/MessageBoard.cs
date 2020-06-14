@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("CreatePostPage", header);
 
-            player.SetLocalInt("MESSAGE_BOARD_LISTENING", true);
+            player.SetLocalBool("MESSAGE_BOARD_LISTENING", true);
         }
 
         private void CreatePostPageResponses(int responseID)

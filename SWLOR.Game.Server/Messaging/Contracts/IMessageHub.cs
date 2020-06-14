@@ -28,7 +28,8 @@ namespace SWLOR.Game.Server.Messaging.Contracts
         /// </summary>
         /// <param name="message">The message to published</param>
         /// <param name="useProfiler">If true, use the profiler. If false, leave it disabled. Some actions in NWNX conflict with the profiler so this is necessary. Leave it on for all other scenarios.</param>
-        void Publish<T>(T message, bool useProfiler = true);
+        void Publish<T>(T message, bool useProfiler = true)
+            where T: class;
 
         /// <summary>
         /// Subscribes a callback against the <see cref="IMessageHub"/> for a specific type of message.
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Messaging.Contracts
         /// <typeparam name="T">The type of message to subscribe to</typeparam>
         /// <param name="action">The callback to be invoked once the message is published on the <see cref="IMessageHub"/></param>
         /// <returns>The token representing the subscription</returns>
-        Guid Subscribe<T>(Action<T> action);
+        Guid Subscribe<T>(Action<T> action)
+            where T: class;
 
         /// <summary>
         /// Subscribes a callback against the <see cref="MessageHub"/> for a specific type of message.
@@ -45,7 +47,8 @@ namespace SWLOR.Game.Server.Messaging.Contracts
         /// <param name="action">The callback to be invoked once the message is published on the <see cref="MessageHub"/></param>
         /// <param name="throttleBy">The <see cref="TimeSpan"/> specifying the rate at which subscription is throttled</param>
         /// <returns>The token representing the subscription</returns>
-        Guid Subscribe<T>(Action<T> action, TimeSpan throttleBy);
+        Guid Subscribe<T>(Action<T> action, TimeSpan throttleBy)
+            where T: class;
 
         /// <summary>
         /// Unsubscribes a subscription from the <see cref="IMessageHub"/>.

@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN.Enum.Item.Property
 {
-    public enum OnHitCastSpell
+    public enum OnHitCastSpellType
     {
         ACID_FOG = 0,
         BESTOW_CURSE = 1,

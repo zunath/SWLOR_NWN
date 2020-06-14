@@ -17,9 +17,9 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.NWN.Enum.Item.Property;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using static SWLOR.Game.Server.NWN._;
-using static SWLOR.Game.Server.NWN.Enum.Item.Property.OnHitCastSpell;
 using OnHitCastSpell = SWLOR.Game.Server.Event.Feat.OnHitCastSpell;
 using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
@@ -662,7 +662,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell)
                 {
-                    if (GetItemPropertySubType(ip) == (int)ONHIT_UNIQUEPOWER)
+                    if (GetItemPropertySubType(ip) == (int)OnHitCastSpellType.ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            BiowareXP2.IPSafeAddItemProperty(oItem, ItemPropertyOnHitCastSpell(ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
         public static void ReturnItem(NWObject target, NWItem item)

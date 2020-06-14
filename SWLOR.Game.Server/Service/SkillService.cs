@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;

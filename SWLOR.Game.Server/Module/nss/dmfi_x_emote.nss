@@ -29,7 +29,7 @@ void SmokePipe(object oActivator)
     float fHeight = 1.7;
     float fDistance = 0.1;
     // Set height based on race and gender
-    if (GetGender(oActivator) == Gender.Male)
+    if (GetGender(oActivator) == GENDER_MALE)
     {
         switch (GetRacialType(oActivator))
         {

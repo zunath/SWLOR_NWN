@@ -1,6 +1,7 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
 using System;
+using SWLOR.Game.Server.NWN.Enum;
 using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.AI
@@ -17,21 +18,21 @@ namespace SWLOR.Game.Server.AI
 
         private void Dance(NWCreature self)
         {
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_SPASM, 3.0F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY3, 3.0F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_DUCK);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY2, 3.0F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_DUCK);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_SPASM, 3.0F);
-            ActionPlayAnimation(ANIMATION_LOOPING_PAUSE_DRUNK, 3.0F, 1.0F);
-            ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 3.0F, 0.5F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_LOOPING_PAUSE_DRUNK, 3.0F, 1.0F);
-            ActionPlayAnimation(ANIMATION_LOOPING_CONJURE2, 3.0F, 0.5F);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
-            ActionPlayAnimation(ANIMATION_FIREFORGET_VICTORY1, 3.0F);
+            ActionPlayAnimation(Animation.FireForgetDodgeSide);
+            ActionPlayAnimation(Animation.FireForgetSpasm, 3.0F);
+            ActionPlayAnimation(Animation.FireForgetVictory3, 3.0F);
+            ActionPlayAnimation(Animation.FireForgetDodgeDuck);
+            ActionPlayAnimation(Animation.FireForgetDodgeSide);
+            ActionPlayAnimation(Animation.FireForgetVictory2, 3.0F);
+            ActionPlayAnimation(Animation.FireForgetDodgeDuck);
+            ActionPlayAnimation(Animation.FireForgetSpasm, 3.0F);
+            ActionPlayAnimation(Animation.LoopingPauseDrunk, 3.0F, 1.0F);
+            ActionPlayAnimation(Animation.LoopingConjure1, 3.0F, 0.5F);
+            ActionPlayAnimation(Animation.FireForgetDodgeSide);
+            ActionPlayAnimation(Animation.LoopingPauseDrunk, 3.0F, 1.0F);
+            ActionPlayAnimation(Animation.LoopingConjure2, 3.0F, 0.5F);
+            ActionPlayAnimation(Animation.FireForgetDodgeSide);
+            ActionPlayAnimation(Animation.FireForgetVictory1, 3.0F);
             ActionDoCommand(() => SetCommandable(true));
             SetCommandable(false);
         }

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.CustomEffect
                 return null;
             }
 
-            var effect = _.EffectImmunity(IMMUNITY_TYPE_KNOCKDOWN);
+            var effect = _.EffectImmunity(ImmunityType.Knockdown);
             effect = _.TagEffect(effect, "BALANCED_STANCE");
 
             _.ApplyEffectToObject(DurationType.Permanent, effect, target);

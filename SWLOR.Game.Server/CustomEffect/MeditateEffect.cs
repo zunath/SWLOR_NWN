@@ -5,6 +5,8 @@ using SWLOR.Game.Server.GameObject;
 
 using System;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.NWN._;
 
@@ -21,7 +23,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_MEDITATE, 1.0f, 6.1f);
+                _.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 6.1f);
             });
 
             player.IsBusy = true;
@@ -65,7 +67,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_MEDITATE, 1.0f, 6.1f);
+                _.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 6.1f);
             });
             
             if (meditateTick >= 6)
@@ -73,7 +75,7 @@ namespace SWLOR.Game.Server.CustomEffect
                 int amount = CalculateAmount(player);
 
                 AbilityService.RestorePlayerFP(player, amount);
-                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
+                Effect vfx = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Mind);
                 _.ApplyEffectToObject(DurationType.Instant, vfx, player);
                 meditateTick = 0;
             }

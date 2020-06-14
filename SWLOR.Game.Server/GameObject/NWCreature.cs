@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
 using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.GameObject
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.GameObject
             set => _.SetCommandable(value, Object);
         }
 
-        public virtual int Size => _.GetCreatureSize(Object);
+        public virtual CreatureSize Size => _.GetCreatureSize(Object);
 
         public virtual PhenoType Phenotype
         {

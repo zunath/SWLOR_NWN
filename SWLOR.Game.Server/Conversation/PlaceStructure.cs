@@ -7,6 +7,8 @@ using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -64,7 +66,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canPlaceStructure = true;
             bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
             bool isPlacingBuilding = structure.BaseStructureTypeID == (int)BaseStructureType.Building;
-            bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INITIALIZED") == false;
+            bool canChangeBuildingStyles = isPlacingBuilding && data.StructureItem.GetLocalBool("STRUCTURE_BUILDING_INITIALIZED") == false;
 
             double powerInUse = BaseService.GetPowerInUse(data.PCBaseID);
             double cpuInUse = BaseService.GetCPUInUse(data.PCBaseID);
@@ -256,7 +258,7 @@ namespace SWLOR.Game.Server.Conversation
             plc.IsUseable = false;
             plc.Destroy(6.0f);
             _.DelayCommand(6.1f, () => { data.IsPreviewing = false; });
-            _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), plc.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Green), plc.Object);
         }
 
         private void LoadRotatePage()
@@ -273,7 +275,7 @@ namespace SWLOR.Game.Server.Conversation
                 string resref = GetPlaceableResref(structure);
                 data.StructurePreview = (_.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
-                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), data.StructurePreview.Object);
+                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Green), data.StructurePreview.Object);
             }
 
             SetPageHeader("RotatePage", header);
@@ -491,7 +493,7 @@ namespace SWLOR.Game.Server.Conversation
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             var style = DataService.BuildingStyle.GetByID(styleID);
             var area = AreaService.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
-            area.SetLocalInt("IS_BUILDING_PREVIEW", true);
+            area.SetLocalBool("IS_BUILDING_PREVIEW", true);
             NWPlayer player = GetPC();
 
             BaseService.JumpPCToBuildingInterior(player, area);

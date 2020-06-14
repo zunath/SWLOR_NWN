@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 
 namespace SWLOR.Game.Server.Service
 {

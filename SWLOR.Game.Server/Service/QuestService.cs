@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;

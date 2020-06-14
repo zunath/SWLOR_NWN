@@ -3,6 +3,8 @@ using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
@@ -22,7 +24,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 case 1:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
-                    if (targetCreature.RacialType == (int)RacialType.Robot)
+                    if (targetCreature.RacialType == RacialType.Robot)
                         return "This ability cannot be used on droids.";
                     if (concentrationEffect.Type == PerkType.MindShield)                    
                         return "Your target is immune to tranquilization effects.";                    
@@ -30,7 +32,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 case 2:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
-                    if (targetCreature.RacialType == (int)RacialType.Robot)
+                    if (targetCreature.RacialType == RacialType.Robot)
                         return "This ability cannot be used on droids.";
                     if (concentrationEffect.Type == PerkType.MindShield)
                         return "Your target is immune to tranquilization effects.";
@@ -112,7 +114,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             
             // Tranquilization effect - Daze target(s). Occurs on succeeding the DC check.
             Effect successEffect = EffectDazed();
-            successEffect = EffectLinkEffects(successEffect, EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+            successEffect = EffectLinkEffects(successEffect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
             successEffect = TagEffect(successEffect, "TRANQUILIZER_EFFECT");
 
             // AC & AB decrease effect - Occurs on failing the DC check.
@@ -158,7 +160,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     RunEffect(creature, target);
                     
                     // Target the next nearest creature and do the same thing.
-                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
+                    targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature != target)
@@ -168,18 +170,18 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             break;
                         }
 
-                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
+                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
                     }
                     break;
                 // Tier 3 - All creatures within 10m are tranquilized using tier 1 rules.
                 case 3:
                     RunEffect(creature, target);
                     
-                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
+                    targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
                     while (targetCreature.IsValid)
                     {
                         RunEffect(creature, target);
-                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, true);
+                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
                     }
                     break;
                 default:

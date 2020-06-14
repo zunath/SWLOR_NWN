@@ -68,12 +68,12 @@ namespace SWLOR.Game.Server.NWN
         ///   - nDoorAction: DOOR_ACTION_*
         ///   * Returns true if nDoorAction can be performed on oTargetDoor.
         /// </summary>
-        public static int GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
+        public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDoorAction);
             Internal.NativeFunctions.StackPushObject(oTargetDoor);
             Internal.NativeFunctions.CallBuiltIn(337);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>

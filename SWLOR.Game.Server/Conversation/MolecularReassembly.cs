@@ -2,6 +2,9 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -87,8 +90,8 @@ namespace SWLOR.Game.Server.Conversation
             // Start by checking attack bonus since we're not storing this value as a local variable on the item.
             foreach (var prop in item.ItemProperties)
             {
-                int propTypeID = _.GetItemPropertyType(prop);
-                if (propTypeID == ITEM_PROPERTY_ATTACK_BONUS)
+                var propTypeID = _.GetItemPropertyType(prop);
+                if (propTypeID == ItemPropertyType.AttackBonus)
                 {
                     // Get the amount of Attack Bonus
                     int amount = _.GetItemPropertyCostTableValue(prop);
@@ -206,7 +209,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Show sparks halfway through the process.
                         _.DelayCommand(1.0f * (delay / 2.0f), () =>
                         {
-                            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), _.OBJECT_SELF);
+                            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), _.OBJECT_SELF);
                         });
                         
                         // Immobilize the player while crafting.

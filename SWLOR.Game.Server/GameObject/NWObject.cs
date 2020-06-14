@@ -150,14 +150,29 @@ namespace SWLOR.Game.Server.GameObject
             return _.GetLocalInt(Object, name);
         }
 
+        public virtual bool GetLocalBool(string name)
+        {
+            return _.GetLocalBool(Object, name);
+        }
+
         public virtual void SetLocalInt(string name, int value)
         {
             _.SetLocalInt(Object, name, value);
         }
 
+        public virtual void SetLocalBool(string name, bool value)
+        {
+            _.SetLocalBool(Object, name, value);
+        }
+
         public virtual void DeleteLocalInt(string name)
         {
             _.DeleteLocalInt(Object, name);
+        }
+
+        public virtual void DeleteLocalBool(string name)
+        {
+            _.DeleteLocalBool(Object, name);
         }
 
 

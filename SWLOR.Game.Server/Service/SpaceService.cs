@@ -20,13 +20,13 @@ using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
-using Type = SWLOR.Game.Server.NWN.Enum.Creature.Type;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -1612,7 +1612,7 @@ namespace SWLOR.Game.Server.Service
                 enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, true, ObjectType.Creature);
             }
 
-            enemy = _.GetNearestCreature(Type.Reputation, (int)ReputationType.Enemy, creature);
+            enemy = _.GetNearestCreature(CreatureType.Reputation, (int)ReputationType.Enemy, creature);
 
             if (enemy.IsValid && _.GetDistanceBetween(enemy, creature) < 25.0f)
             {

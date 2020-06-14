@@ -2,6 +2,8 @@
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -90,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             AbilityService.RestorePlayerFP(target.Object, recovery);
 
             // Play VFX
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(_.VFX_IMP_HEAD_ODD), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
 
             // Grant XP, if player.
             if (creature.IsPlayer)

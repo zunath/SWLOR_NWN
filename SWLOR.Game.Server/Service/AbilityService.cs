@@ -16,13 +16,13 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 using Skill = SWLOR.Game.Server.NWN.Enum.Skill;
-using Type = SWLOR.Game.Server.NWN.Enum.Creature.Type;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -1010,12 +1010,12 @@ namespace SWLOR.Game.Server.Service
         {
             const float MaxDistance = 10.0f;
             int nth = 1;
-            NWCreature nearby = _.GetNearestCreature(Type.IsAlive, 1, sender, nth);
+            NWCreature nearby = _.GetNearestCreature(CreatureType.IsAlive, 1, sender, nth);
             while (nearby.IsValid && GetDistanceBetween(sender, nearby) <= MaxDistance)
             {
                 nearby.SendMessage(message);
                 nth++;
-                nearby = _.GetNearestCreature(Type.IsAlive, 1, sender, nth);
+                nearby = _.GetNearestCreature(CreatureType.IsAlive, 1, sender, nth);
             }
         }
     }

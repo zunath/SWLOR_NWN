@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using static SWLOR.Game.Server.NWN._;
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target.Object, length);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Bludgeoning), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

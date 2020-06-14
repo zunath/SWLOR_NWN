@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadHeader()
         {
             NWPlayer player = GetPC();
-            player.SetLocalInt("ITEM_RENAMING_LISTENING", true);
+            player.SetLocalBool("ITEM_RENAMING_LISTENING", true);
 
             NWItem item = player.GetLocalObject("ITEM_BEING_RENAMED");
             string originalName = item.GetLocalString("RENAMED_ITEM_ORIGINAL_NAME");

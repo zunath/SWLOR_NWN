@@ -1,6 +1,4 @@
-﻿using System;
-using SWLOR.Game.Server;
-using SWLOR.Game.Server.Messaging;
+﻿using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
 
 

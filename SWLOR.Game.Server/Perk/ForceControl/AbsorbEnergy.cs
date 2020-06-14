@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.ForceControl

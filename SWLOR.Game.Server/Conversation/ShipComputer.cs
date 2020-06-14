@@ -6,10 +6,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static SWLOR.Game.Server.NWN._;
 using System.Collections.Generic;
 using System.Collections;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;

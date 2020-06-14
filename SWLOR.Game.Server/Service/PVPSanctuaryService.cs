@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Service
         public static bool PlayerHasPVPSanctuary(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
             DateTime now = DateTime.UtcNow;
@@ -23,7 +22,6 @@ namespace SWLOR.Game.Server.Service
         public static void SetPlayerPVPSanctuaryOverride(NWPlayer player, bool overrideStatus)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
             pc.IsSanctuaryOverrideEnabled = overrideStatus;

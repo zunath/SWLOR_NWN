@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;

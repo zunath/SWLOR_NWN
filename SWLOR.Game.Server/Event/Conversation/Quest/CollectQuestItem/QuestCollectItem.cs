@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Event.Conversation.Quest.CanAcceptQuest;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;

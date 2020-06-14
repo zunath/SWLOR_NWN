@@ -1,6 +1,4 @@
-using SWLOR.Game.Server;
 using SWLOR.Game.Server.Event.Conversation.Quest.QuestIsDone;
-using static SWLOR.Game.Server.NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts

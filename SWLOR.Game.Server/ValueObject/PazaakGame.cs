@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using System.Linq;

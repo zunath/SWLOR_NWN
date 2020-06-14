@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
@@ -114,7 +112,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual int MaxHP => GetMaxHitPoints(Object);
 
-        public virtual bool IsValid => Object != null && GetIsObjectValid(Object);
+        public virtual bool IsValid => GetIsObjectValid(Object);
 
         public virtual string IdentifiedDescription
         {

@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWN;
 
 /**
  * PazaakService
@@ -121,17 +120,10 @@ namespace SWLOR.Game.Server.Service
             // Return the game currently being played by player.  This allows them to be interrupted while playing and resume seamlessly. 
             if (ActiveGames == null) ActiveGames = new Dictionary<NWObject, PazaakGame>();
 
-            try
-            {
-                PazaakGame game = ActiveGames[table];
-                return game;
-            }
-            catch (System.Collections.Generic.KeyNotFoundException e)
-            {
-                // This table has no current game. 
-            }
+            if (!ActiveGames.ContainsKey(table))
+                return null;
 
-            return null;
+            return ActiveGames[table];
         }
 
         public static PazaakGame StartGame(NWObject table, NWObject player1, NWObject player2)

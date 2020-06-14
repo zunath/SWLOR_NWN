@@ -2,7 +2,6 @@
 using System.Linq;
 
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 using static SWLOR.Game.Server.NWN._;

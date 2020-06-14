@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Service
         public static void InitializePlayer(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
             if (!player.IsPlayer) return;
 
             // Player is initialized but not in the DB. Wipe the tag and rerun them through initialization - something went wrong before.

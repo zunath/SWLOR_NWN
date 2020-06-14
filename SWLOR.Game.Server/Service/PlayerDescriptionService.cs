@@ -4,7 +4,6 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 
 
 namespace SWLOR.Game.Server.Service
@@ -33,7 +32,6 @@ namespace SWLOR.Game.Server.Service
         public static void ChangePlayerDescription(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
             string newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
             _.SetDescription(player.Object, newDescription);

@@ -1,6 +1,5 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
-using System;
 using SWLOR.Game.Server.NWN.Enum;
 using static SWLOR.Game.Server.NWN._;
 

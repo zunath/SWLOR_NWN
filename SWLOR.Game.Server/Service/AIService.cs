@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Module;

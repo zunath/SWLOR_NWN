@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.Service;
 

@@ -1,8 +1,6 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
-using System;
 using static SWLOR.Game.Server.NWN._;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.AI

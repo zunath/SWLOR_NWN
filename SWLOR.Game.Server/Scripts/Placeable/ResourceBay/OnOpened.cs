@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
 {

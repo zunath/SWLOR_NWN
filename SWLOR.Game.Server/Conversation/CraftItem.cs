@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Conversation
             device.IsLocked = false;
             model.IsAccessingStorage = true;
 
-            _.SetEventScript(device.Object, EventScript.Placeable_OnOpen, string.Empty);
+            _.SetEventScript(device.Object, EventScript.Placeable_OnUsed, string.Empty);
             _.SetEventScript(device.Object, EventScript.Placeable_OnOpen, "script_2");
             _.SetEventScript(device.Object, EventScript.Placeable_OnClosed, "script_3");
             _.SetEventScript(device.Object, EventScript.Placeable_OnInventoryDisturbed, "script_4");

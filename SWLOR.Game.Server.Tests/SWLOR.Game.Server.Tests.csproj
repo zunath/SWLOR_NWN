@@ -16,11 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="GameObject\" />
-    <Folder Include="Service\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
   </ItemGroup>
 

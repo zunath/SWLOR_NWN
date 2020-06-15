@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Service
             
             if (!string.IsNullOrWhiteSpace(error))
             {
-                NWNXAdmin.DeletePlayerCharacter(player, true);
+                // todo: Temporarily removed until NWNX gets fixed.
+                //NWNXAdmin.DeletePlayerCharacter(player, true);
             }
         }
 

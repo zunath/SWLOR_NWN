@@ -783,7 +783,6 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static ObjectType GetObjectType(uint oTarget)
         {
-            if (GetIsPC(oTarget)) return ObjectType.Player;
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(106);
             return (ObjectType)Internal.NativeFunctions.StackPopInteger();

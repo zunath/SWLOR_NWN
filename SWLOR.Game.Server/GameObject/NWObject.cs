@@ -41,6 +41,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual Guid GetOrAssignGlobalID()
         {
+            if (!GetIsPC(Object) || GetIsDM(Object)) return Guid.Empty;
+
             if (!GetIsObjectValid(Object))
                 throw new Exception("NWN object has not been set for this wrapper.");
 

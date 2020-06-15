@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = data.Damager.Object;
             NWCreature target = _.OBJECT_SELF;
 
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
             LoggingService.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType);

@@ -103,9 +103,13 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer player = GetPC();
             NWItem main = player.RightHand;           
 
-            bool canModifyMain = main.IsValid && !main.IsPlot && !main.IsCursed &&
+            bool canModifyMain = main.IsValid && 
+                                 !main.IsPlot && 
+                                 !main.IsCursed &&
                                  // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                 main.CustomItemType != CustomItemType.Lightsaber && main.GetLocalBool("LIGHTSABER") == false;
+                                 main.CustomItemType != CustomItemType.Lightsaber && 
+                                 main.CustomItemType != CustomItemType.Saberstaff &&
+                                 main.GetLocalBool("LIGHTSABER") == false;
 
             if (canModifyMain)
             {

@@ -1,6 +1,4 @@
-using SWLOR.Game.Server;
 using SWLOR.Game.Server.Event.Conversation.Quest.CollectQuestItem;
-using static NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +9,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return QuestCollectItem.Check(7) ? TRUE : FALSE;
+            return QuestCollectItem.Check(7) ? 1 : 0;
         }
     }
 }

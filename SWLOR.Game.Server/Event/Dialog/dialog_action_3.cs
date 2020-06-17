@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server;
-
-using SWLOR.Game.Server.Service;
+﻿using SWLOR.Game.Server.Service;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts

@@ -1,7 +1,4 @@
-﻿using System;
-using NWN;
-using static NWN._;
-using SWLOR.Game.Server.Data.Entity;
+﻿using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 

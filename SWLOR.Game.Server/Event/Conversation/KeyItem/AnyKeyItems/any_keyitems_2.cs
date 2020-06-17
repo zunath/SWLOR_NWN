@@ -1,6 +1,4 @@
-using SWLOR.Game.Server;
 using SWLOR.Game.Server.Event.Conversation.KeyItem;
-using static NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +9,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return KeyItemCheck.Check(2, 2) ? TRUE : FALSE;
+            return KeyItemCheck.Check(2, 2) ? 1 : 0;
         }
     }
 }

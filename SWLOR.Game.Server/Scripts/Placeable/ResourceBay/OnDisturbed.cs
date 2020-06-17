@@ -1,8 +1,8 @@
 ﻿using System;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
         {
             NWPlayer player = _.GetLastDisturbed();
             NWPlaceable bay = _.OBJECT_SELF;
-            int disturbType = _.GetInventoryDisturbType();
+            var disturbType = _.GetInventoryDisturbType();
             NWItem item = _.GetInventoryDisturbItem();
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             Guid structureGUID = new Guid(structureID);
@@ -34,13 +34,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
                 return;
             }
 
-            if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (disturbType == DisturbType.Added)
             {
                 ItemService.ReturnItem(player, item);
                 player.SendMessage("Items cannot be placed inside.");
                 return;
             }
-            else if (disturbType == _.INVENTORY_DISTURB_TYPE_REMOVED)
+            else if (disturbType == DisturbType.Removed)
             {
                 var removeItem = DataService.PCBaseStructureItem.GetByPCBaseStructureIDAndItemGlobalIDOrDefault(controlTower.ID, item.GlobalID.ToString());
                 if (removeItem == null) return;

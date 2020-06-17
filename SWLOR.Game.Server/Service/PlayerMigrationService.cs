@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -181,7 +180,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var serialized in serializedItems)
             {
                 var item = SerializationService.DeserializeItem(serialized.Data, player);
-                BiowareXP2.IPRemoveAllItemProperties(item, DURATION_TYPE_PERMANENT);
+                BiowareXP2.IPRemoveAllItemProperties(item, DurationType.Permanent);
                 foreach (var ip in serialized.ItemPropertiesToAdd)
                 {
                     BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -220,7 +219,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessVersion6_ComponentBonuses(NWItem item, ItemProperty ip)
         {
             // Component Bonuses
-            if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+            if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
             {
                 // +AC Component Bonus
                 if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
@@ -249,19 +248,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="ip">The item property to check and remove, if applicable.</param>
         private static void ProcessVersion6_DeprecatedStats(NWItem item, ItemProperty ip)
         {
-            int[] ipsToRemove =
+            ItemPropertyType[] ipsToRemove =
             {
-                (int)CustomItemPropertyType.DarkPotencyBonus,
-                (int)CustomItemPropertyType.LightPotencyBonus,
-                (int)CustomItemPropertyType.MindPotencyBonus,
-                (int)CustomItemPropertyType.ElectricalPotencyBonus,
-                (int)CustomItemPropertyType.ForcePotencyBonus,
-                (int)CustomItemPropertyType.ForceAccuracyBonus,
-                (int)CustomItemPropertyType.ForceDefenseBonus,
-                (int)CustomItemPropertyType.ElectricalDefenseBonus,
-                (int)CustomItemPropertyType.MindDefenseBonus,
-                (int)CustomItemPropertyType.LightDefenseBonus,
-                (int)CustomItemPropertyType.DarkDefenseBonus
+                ItemPropertyType.DarkPotencyBonus,
+                ItemPropertyType.LightPotencyBonus,
+                ItemPropertyType.MindPotencyBonus,
+                ItemPropertyType.ElectricalPotencyBonus,
+                ItemPropertyType.ForcePotencyBonus,
+                ItemPropertyType.ForceAccuracyBonus,
+                ItemPropertyType.ForceDefenseBonus,
+                ItemPropertyType.ElectricalDefenseBonus,
+                ItemPropertyType.MindDefenseBonus,
+                ItemPropertyType.LightDefenseBonus,
+                ItemPropertyType.DarkDefenseBonus
             };
 
             if (ipsToRemove.Contains(_.GetItemPropertyType(ip)))

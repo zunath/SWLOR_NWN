@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Get the length of sString
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if sStringToTest matches sPattern.
+        ///   * Returns true if sStringToTest matches sPattern.
         /// </summary>
         public static int TestStringAgainstPattern(string sPattern, string sStringToTest)
         {

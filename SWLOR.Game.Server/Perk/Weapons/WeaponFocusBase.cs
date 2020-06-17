@@ -1,13 +1,11 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Weapons
 {
@@ -121,13 +119,13 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 default: return;
             }
 
-            if (equipped.GetLocalInt("LIGHTSABER") == TRUE)
+            if (equipped.GetLocalBool("LIGHTSABER") == true)
             {
                 perkType = PerkType.WeaponFocusLightsaber;
             }
             
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
-            int type = equipped.BaseItemType;
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
+            var type = equipped.BaseItemType;
             if (perkLevel >= 1)
             {
                 AddFocusFeat(creature, type);
@@ -224,54 +222,54 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
         }
 
-        private void AddFocusFeat(NWCreature creature, int type)
+        private void AddFocusFeat(NWCreature creature, BaseItem type)
         {
-            int feat;
+            Feat feat;
 
             switch (type)
             {
-                case (BASE_ITEM_BASTARDSWORD): feat = FEAT_WEAPON_FOCUS_BASTARD_SWORD; break;
-                case (BASE_ITEM_BATTLEAXE): feat = FEAT_WEAPON_FOCUS_BATTLE_AXE; break;
-                case (BASE_ITEM_CLUB): feat = FEAT_WEAPON_FOCUS_CLUB; break;
-                case (BASE_ITEM_DAGGER): feat = FEAT_WEAPON_FOCUS_DAGGER; break;
-                case (BASE_ITEM_DART): feat = FEAT_WEAPON_FOCUS_DART; break;
-                case (BASE_ITEM_DIREMACE): feat = FEAT_WEAPON_FOCUS_DIRE_MACE; break;
-                case (BASE_ITEM_DOUBLEAXE): feat = FEAT_WEAPON_FOCUS_DOUBLE_AXE; break;
-                case (BASE_ITEM_DWARVENWARAXE): feat = FEAT_WEAPON_FOCUS_DWAXE; break;
-                case (BASE_ITEM_GREATAXE): feat = FEAT_WEAPON_FOCUS_GREAT_AXE; break;
-                case (BASE_ITEM_GREATSWORD): feat = FEAT_WEAPON_FOCUS_GREAT_SWORD; break;
-                case (BASE_ITEM_HALBERD): feat = FEAT_WEAPON_FOCUS_HALBERD; break;
-                case (BASE_ITEM_HANDAXE): feat = FEAT_WEAPON_FOCUS_HAND_AXE; break;
-                case (BASE_ITEM_HEAVYCROSSBOW): feat = FEAT_WEAPON_FOCUS_HEAVY_CROSSBOW; break;
-                case (BASE_ITEM_HEAVYFLAIL): feat = FEAT_WEAPON_FOCUS_HEAVY_FLAIL; break;
-                case (BASE_ITEM_KAMA): feat = FEAT_WEAPON_FOCUS_KAMA; break;
-                case (BASE_ITEM_KATANA): feat = FEAT_WEAPON_FOCUS_KATANA; break;
-                case (BASE_ITEM_KUKRI): feat = FEAT_WEAPON_FOCUS_KUKRI; break;
-                case (BASE_ITEM_LIGHTCROSSBOW): feat = FEAT_WEAPON_FOCUS_LIGHT_CROSSBOW; break;
-                case (BASE_ITEM_LIGHTFLAIL): feat = FEAT_WEAPON_FOCUS_LIGHT_FLAIL; break;
-                case (BASE_ITEM_LIGHTHAMMER): feat = FEAT_WEAPON_FOCUS_LIGHT_HAMMER; break;
-                case (BASE_ITEM_LIGHTMACE): feat = FEAT_WEAPON_FOCUS_LIGHT_MACE; break;
-                case (BASE_ITEM_LONGBOW): feat = FEAT_WEAPON_FOCUS_LONGBOW; break;
-                case (BASE_ITEM_LONGSWORD): feat = FEAT_WEAPON_FOCUS_LONG_SWORD; break;
-                case (BASE_ITEM_MORNINGSTAR): feat = FEAT_WEAPON_FOCUS_MORNING_STAR; break;
-                case (BASE_ITEM_RAPIER): feat = FEAT_WEAPON_FOCUS_RAPIER; break;
-                case (BASE_ITEM_SCIMITAR): feat = FEAT_WEAPON_FOCUS_SCIMITAR; break;
-                case (BASE_ITEM_SCYTHE): feat = FEAT_WEAPON_FOCUS_SCYTHE; break;
-                case (BASE_ITEM_SHORTBOW): feat = FEAT_WEAPON_FOCUS_SHORTBOW; break;
-                case (BASE_ITEM_SHORTSWORD): feat = FEAT_WEAPON_FOCUS_SHORT_SWORD; break;
-                case (BASE_ITEM_SHURIKEN): feat = FEAT_WEAPON_FOCUS_SHURIKEN; break;
-                case (BASE_ITEM_SICKLE): feat = FEAT_WEAPON_FOCUS_SICKLE; break;
-                case (BASE_ITEM_SLING): feat = FEAT_WEAPON_FOCUS_SLING; break;
-                case (BASE_ITEM_SHORTSPEAR): feat = FEAT_WEAPON_FOCUS_SPEAR; break;
-                case (BASE_ITEM_QUARTERSTAFF): feat = FEAT_WEAPON_FOCUS_STAFF; break;
-                case (BASE_ITEM_THROWINGAXE): feat = FEAT_WEAPON_FOCUS_THROWING_AXE; break;
-                case (BASE_ITEM_TRIDENT): feat = FEAT_WEAPON_FOCUS_TRIDENT; break;
-                case (BASE_ITEM_TWOBLADEDSWORD): feat = FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD; break;
-                case (BASE_ITEM_INVALID): feat = FEAT_WEAPON_FOCUS_UNARMED_STRIKE; break;
-                case (BASE_ITEM_WARHAMMER): feat = FEAT_WEAPON_FOCUS_WAR_HAMMER; break;
-                case (BASE_ITEM_WHIP): feat = FEAT_WEAPON_FOCUS_WHIP; break;
-                case ((int)BaseItem.Lightsaber): feat = FEAT_WEAPON_FOCUS_LONG_SWORD; break;
-                case ((int)BaseItem.Saberstaff): feat = FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD; break;
+                case (BaseItem.BastardSword): feat = Feat.WeaponFocus_BastardSword; break;
+                case (BaseItem.BattleAxe): feat = Feat.WeaponFocus_BattleAxe; break;
+                case (BaseItem.Club): feat = Feat.WeaponFocus_Club; break;
+                case (BaseItem.Dagger): feat = Feat.WeaponFocus_Dagger; break;
+                case (BaseItem.Dart): feat = Feat.WeaponFocus_Dart; break;
+                case (BaseItem.DireMace): feat = Feat.WeaponFocus_DireMace; break;
+                case (BaseItem.DoubleAxe): feat = Feat.WeaponFocus_DoubleAxe; break;
+                case (BaseItem.DwarvenWarAxe): feat = Feat.WeaponFocus_Dwaxe; break;
+                case (BaseItem.GreatAxe): feat = Feat.WeaponFocus_GreatAxe; break;
+                case (BaseItem.GreatSword): feat = Feat.WeaponFocus_GreatSword; break;
+                case (BaseItem.Halberd): feat = Feat.WeaponFocus_Halberd; break;
+                case (BaseItem.HandAxe): feat = Feat.WeaponFocus_HandAxe; break;
+                case (BaseItem.HeavyCrossbow): feat = Feat.WeaponFocus_HeavyCrossbow; break;
+                case (BaseItem.HeavyFlail): feat = Feat.WeaponFocus_HeavyFlail; break;
+                case (BaseItem.Kama): feat = Feat.WeaponFocus_Kama; break;
+                case (BaseItem.Katana): feat = Feat.WeaponFocus_Katana; break;
+                case (BaseItem.Kukri): feat = Feat.WeaponFocus_Kukri; break;
+                case (BaseItem.LightCrossbow): feat = Feat.WeaponFocus_LightCrossbow; break;
+                case (BaseItem.LightFlail): feat = Feat.WeaponFocus_LightFlail; break;
+                case (BaseItem.LightHammer): feat = Feat.WeaponFocus_LightHammer; break;
+                case (BaseItem.LightMace): feat = Feat.WeaponFocus_LightMace; break;
+                case (BaseItem.Longbow): feat = Feat.WeaponFocus_Longbow; break;
+                case (BaseItem.Longsword): feat = Feat.WeaponFocus_LongSword; break;
+                case (BaseItem.MorningStar): feat = Feat.WeaponFocus_MorningStar; break;
+                case (BaseItem.Rapier): feat = Feat.WeaponFocus_Rapier; break;
+                case (BaseItem.Scimitar): feat = Feat.WeaponFocus_Scimitar; break;
+                case (BaseItem.Scythe): feat = Feat.WeaponFocus_Scythe; break;
+                case (BaseItem.ShortBow): feat = Feat.WeaponFocus_Shortbow; break;
+                case (BaseItem.ShortSword): feat = Feat.WeaponFocus_ShortSword; break;
+                case (BaseItem.Shuriken): feat = Feat.WeaponFocus_Shuriken; break;
+                case (BaseItem.Sickle): feat = Feat.WeaponFocus_Sickle; break;
+                case (BaseItem.Sling): feat = Feat.WeaponFocus_Sling; break;
+                case (BaseItem.ShortSpear): feat = Feat.WeaponFocus_Spear; break;
+                case (BaseItem.QuarterStaff): feat = Feat.WeaponFocus_Staff; break;
+                case (BaseItem.ThrowingAxe): feat = Feat.WeaponFocus_ThrowingAxe; break;
+                case (BaseItem.Trident): feat = Feat.WeaponFocus_Trident; break;
+                case (BaseItem.TwoBladedSword): feat = Feat.WeaponFocus_TwoBladedSword; break;
+                case (BaseItem.Invalid): feat = Feat.WeaponFocus_UnarmedStrike; break;
+                case (BaseItem.WarHammer): feat = Feat.WeaponFocus_WarHammer; break;
+                case (BaseItem.Whip): feat = Feat.WeaponFocus_Whip; break;
+                case (BaseItem.Lightsaber): feat = Feat.WeaponFocus_LongSword; break;
+                case (BaseItem.Saberstaff): feat = Feat.WeaponFocus_TwoBladedSword; break;
                 default: return;
             }
 
@@ -279,54 +277,54 @@ namespace SWLOR.Game.Server.Perk.Weapons
         }
 
 
-        private void AddSpecializationFeat(NWCreature creature, int type)
+        private void AddSpecializationFeat(NWCreature creature, BaseItem type)
         {
-            int feat;
+            Feat feat;
 
             switch (type)
             {
-                case (BASE_ITEM_BASTARDSWORD): feat = FEAT_WEAPON_SPECIALIZATION_BASTARD_SWORD; break;
-                case (BASE_ITEM_BATTLEAXE): feat = FEAT_WEAPON_SPECIALIZATION_BATTLE_AXE; break;
-                case (BASE_ITEM_CLUB): feat = FEAT_WEAPON_SPECIALIZATION_CLUB; break;
-                case (BASE_ITEM_DAGGER): feat = FEAT_WEAPON_SPECIALIZATION_DAGGER; break;
-                case (BASE_ITEM_DART): feat = FEAT_WEAPON_SPECIALIZATION_DART; break;
-                case (BASE_ITEM_DIREMACE): feat = FEAT_WEAPON_SPECIALIZATION_DIRE_MACE; break;
-                case (BASE_ITEM_DOUBLEAXE): feat = FEAT_WEAPON_SPECIALIZATION_DOUBLE_AXE; break;
-                case (BASE_ITEM_DWARVENWARAXE): feat = FEAT_WEAPON_SPECIALIZATION_DWAXE; break;
-                case (BASE_ITEM_GREATAXE): feat = FEAT_WEAPON_SPECIALIZATION_GREAT_AXE; break;
-                case (BASE_ITEM_GREATSWORD): feat = FEAT_WEAPON_SPECIALIZATION_GREAT_SWORD; break;
-                case (BASE_ITEM_HALBERD): feat = FEAT_WEAPON_SPECIALIZATION_HALBERD; break;
-                case (BASE_ITEM_HANDAXE): feat = FEAT_WEAPON_SPECIALIZATION_HAND_AXE; break;
-                case (BASE_ITEM_HEAVYCROSSBOW): feat = FEAT_WEAPON_SPECIALIZATION_HEAVY_CROSSBOW; break;
-                case (BASE_ITEM_HEAVYFLAIL): feat = FEAT_WEAPON_SPECIALIZATION_HEAVY_FLAIL; break;
-                case (BASE_ITEM_KAMA): feat = FEAT_WEAPON_SPECIALIZATION_KAMA; break;
-                case (BASE_ITEM_KATANA): feat = FEAT_WEAPON_SPECIALIZATION_KATANA; break;
-                case (BASE_ITEM_KUKRI): feat = FEAT_WEAPON_SPECIALIZATION_KUKRI; break;
-                case (BASE_ITEM_LIGHTCROSSBOW): feat = FEAT_WEAPON_SPECIALIZATION_LIGHT_CROSSBOW; break;
-                case (BASE_ITEM_LIGHTFLAIL): feat = FEAT_WEAPON_SPECIALIZATION_LIGHT_FLAIL; break;
-                case (BASE_ITEM_LIGHTHAMMER): feat = FEAT_WEAPON_SPECIALIZATION_LIGHT_HAMMER; break;
-                case (BASE_ITEM_LIGHTMACE): feat = FEAT_WEAPON_SPECIALIZATION_LIGHT_MACE; break;
-                case (BASE_ITEM_LONGBOW): feat = FEAT_WEAPON_SPECIALIZATION_LONGBOW; break;
-                case (BASE_ITEM_LONGSWORD): feat = FEAT_WEAPON_SPECIALIZATION_LONG_SWORD; break;
-                case (BASE_ITEM_MORNINGSTAR): feat = FEAT_WEAPON_SPECIALIZATION_MORNING_STAR; break;
-                case (BASE_ITEM_RAPIER): feat = FEAT_WEAPON_SPECIALIZATION_RAPIER; break;
-                case (BASE_ITEM_SCIMITAR): feat = FEAT_WEAPON_SPECIALIZATION_SCIMITAR; break;
-                case (BASE_ITEM_SCYTHE): feat = FEAT_WEAPON_SPECIALIZATION_SCYTHE; break;
-                case (BASE_ITEM_SHORTBOW): feat = FEAT_WEAPON_SPECIALIZATION_SHORTBOW; break;
-                case (BASE_ITEM_SHORTSWORD): feat = FEAT_WEAPON_SPECIALIZATION_SHORT_SWORD; break;
-                case (BASE_ITEM_SHURIKEN): feat = FEAT_WEAPON_SPECIALIZATION_SHURIKEN; break;
-                case (BASE_ITEM_SICKLE): feat = FEAT_WEAPON_SPECIALIZATION_SICKLE; break;
-                case (BASE_ITEM_SLING): feat = FEAT_WEAPON_SPECIALIZATION_SLING; break;
-                case (BASE_ITEM_SHORTSPEAR): feat = FEAT_WEAPON_SPECIALIZATION_SPEAR; break;
-                case (BASE_ITEM_QUARTERSTAFF): feat = FEAT_WEAPON_SPECIALIZATION_STAFF; break;
-                case (BASE_ITEM_THROWINGAXE): feat = FEAT_WEAPON_SPECIALIZATION_THROWING_AXE; break;
-                case (BASE_ITEM_TRIDENT): feat = FEAT_WEAPON_SPECIALIZATION_TRIDENT; break;
-                case (BASE_ITEM_TWOBLADEDSWORD): feat = FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD; break;
-                case (BASE_ITEM_INVALID): feat = FEAT_WEAPON_SPECIALIZATION_UNARMED_STRIKE; break;
-                case (BASE_ITEM_WARHAMMER): feat = FEAT_WEAPON_SPECIALIZATION_WAR_HAMMER; break;
-                case (BASE_ITEM_WHIP): feat = FEAT_WEAPON_SPECIALIZATION_WHIP; break;
-                case ((int)BaseItem.Lightsaber): feat = FEAT_WEAPON_SPECIALIZATION_LONG_SWORD; break;
-                case ((int)BaseItem.Saberstaff): feat = FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD; break;
+                case (BaseItem.BastardSword): feat = Feat.WeaponSpecialization_BastardSword; break;
+                case (BaseItem.BattleAxe): feat = Feat.WeaponSpecialization_BattleAxe; break;
+                case (BaseItem.Club): feat = Feat.WeaponSpecialization_Club; break;
+                case (BaseItem.Dagger): feat = Feat.WeaponSpecialization_Dagger; break;
+                case (BaseItem.Dart): feat = Feat.WeaponSpecialization_Dart; break;
+                case (BaseItem.DireMace): feat = Feat.WeaponSpecialization_DireMace; break;
+                case (BaseItem.DoubleAxe): feat = Feat.WeaponSpecialization_DoubleAxe; break;
+                case (BaseItem.DwarvenWarAxe): feat = Feat.WeaponSpecialization_Dwaxe; break;
+                case (BaseItem.GreatAxe): feat = Feat.WeaponSpecialization_GreatAxe; break;
+                case (BaseItem.GreatSword): feat = Feat.WeaponSpecialization_GreatSword; break;
+                case (BaseItem.Halberd): feat = Feat.WeaponSpecialization_Halberd; break;
+                case (BaseItem.HandAxe): feat = Feat.WeaponSpecialization_HandAxe; break;
+                case (BaseItem.HeavyCrossbow): feat = Feat.WeaponSpecialization_HeavyCrossbow; break;
+                case (BaseItem.HeavyFlail): feat = Feat.WeaponSpecialization_HeavyFlail; break;
+                case (BaseItem.Kama): feat = Feat.WeaponSpecialization_Kama; break;
+                case (BaseItem.Katana): feat = Feat.WeaponSpecialization_Katana; break;
+                case (BaseItem.Kukri): feat = Feat.WeaponSpecialization_Kukri; break;
+                case (BaseItem.LightCrossbow): feat = Feat.WeaponSpecialization_LightCrossbow; break;
+                case (BaseItem.LightFlail): feat = Feat.WeaponSpecialization_LightFlail; break;
+                case (BaseItem.LightHammer): feat = Feat.WeaponSpecialization_LightHammer; break;
+                case (BaseItem.LightMace): feat = Feat.WeaponSpecialization_LightMace; break;
+                case (BaseItem.Longbow): feat = Feat.WeaponSpecialization_Longbow; break;
+                case (BaseItem.Longsword): feat = Feat.WeaponSpecialization_LongSword; break;
+                case (BaseItem.MorningStar): feat = Feat.WeaponSpecialization_MorningStar; break;
+                case (BaseItem.Rapier): feat = Feat.WeaponSpecialization_Rapier; break;
+                case (BaseItem.Scimitar): feat = Feat.WeaponSpecialization_Scimitar; break;
+                case (BaseItem.Scythe): feat = Feat.WeaponSpecialization_Scythe; break;
+                case (BaseItem.ShortBow): feat = Feat.WeaponSpecialization_Shortbow; break;
+                case (BaseItem.ShortSword): feat = Feat.WeaponSpecialization_ShortSword; break;
+                case (BaseItem.Shuriken): feat = Feat.WeaponSpecialization_Shuriken; break;
+                case (BaseItem.Sickle): feat = Feat.WeaponSpecialization_Sickle; break;
+                case (BaseItem.Sling): feat = Feat.WeaponSpecialization_Sling; break;
+                case (BaseItem.ShortSpear): feat = Feat.WeaponSpecialization_Spear; break;
+                case (BaseItem.QuarterStaff): feat = Feat.WeaponSpecialization_Staff; break;
+                case (BaseItem.ThrowingAxe): feat = Feat.WeaponSpecialization_ThrowingAxe; break;
+                case (BaseItem.Trident): feat = Feat.WeaponSpecialization_Trident; break;
+                case (BaseItem.TwoBladedSword): feat = Feat.WeaponSpecialization_TwoBladedSword; break;
+                case (BaseItem.Invalid): feat = Feat.WeaponSpecialization_UnarmedStrike; break;
+                case (BaseItem.WarHammer): feat = Feat.WeaponSpecialization_WarHammer; break;
+                case (BaseItem.Whip): feat = Feat.WeaponSpecialization_Whip; break;
+                case (BaseItem.Lightsaber): feat = Feat.WeaponSpecialization_LongSword; break;
+                case (BaseItem.Saberstaff): feat = Feat.WeaponSpecialization_TwoBladedSword; break;
                 default: return;
             }
 

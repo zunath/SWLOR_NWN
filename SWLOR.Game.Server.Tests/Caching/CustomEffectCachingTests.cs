@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using SWLOR.Game.Server.Caching;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 

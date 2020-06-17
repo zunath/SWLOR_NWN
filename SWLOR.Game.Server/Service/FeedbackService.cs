@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -14,8 +13,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, TRUE);
-            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, TRUE);
+            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, true);
+            NWNXFeedback.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
         }
     }
 }

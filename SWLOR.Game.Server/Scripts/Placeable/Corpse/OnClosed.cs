@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
 
             corpseOwner.AssignCommand(() =>
             {
-                _.SetIsDestroyable(_.TRUE);
+                _.SetIsDestroyable(true);
             });
         }
 

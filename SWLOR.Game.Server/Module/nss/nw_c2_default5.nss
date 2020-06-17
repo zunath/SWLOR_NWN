@@ -25,17 +25,17 @@ void SafeFaction(object oCurrent, object oAttacker)
         AssignCommand(oAttacker, ClearAllActions());
         AssignCommand(oCurrent, ClearAllActions());
         // * Note: waiting for Sophia to make SetStandardFactionReptuation to clear all personal reputation
-        if (GetStandardFactionReputation(StandardFaction.Commoner, oAttacker) <= 10)
+        if (GetStandardFactionReputation(STANDARD_FACTION_COMMONER, oAttacker) <= 10)
         {   SetLocalInt(oAttacker, "NW_G_Playerhasbeenbad", 10); // * Player bad
-            SetStandardFactionReputation(StandardFaction.Commoner, 80, oAttacker);
+            SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 80, oAttacker);
         }
-        if (GetStandardFactionReputation(StandardFaction.Merchant, oAttacker) <= 10)
+        if (GetStandardFactionReputation(STANDARD_FACTION_MERCHANT, oAttacker) <= 10)
         {   SetLocalInt(oAttacker, "NW_G_Playerhasbeenbad", 10); // * Player bad
-            SetStandardFactionReputation(StandardFaction.Merchant, 80, oAttacker);
+            SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 80, oAttacker);
         }
-        if (GetStandardFactionReputation(StandardFaction.Defender, oAttacker) <= 10)
+        if (GetStandardFactionReputation(STANDARD_FACTION_DEFENDER, oAttacker) <= 10)
         {   SetLocalInt(oAttacker, "NW_G_Playerhasbeenbad", 10); // * Player bad
-            SetStandardFactionReputation(StandardFaction.Defender, 80, oAttacker);
+            SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 80, oAttacker);
         }
 
 
@@ -45,8 +45,8 @@ void SafeFaction(object oCurrent, object oAttacker)
 void main()
 {
     ExecuteScript("crea_on_attacked", OBJECT_SELF);
-    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == true ||
-       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_ATTACKED_EVENT") == true) return;
+    if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
+       GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_ATTACKED_EVENT") == TRUE) return;
 
 
 //DMFI CODE ADDITIONS*****************************
@@ -62,7 +62,7 @@ void main()
 
     if (!GetLocalInt(GetModule(),"X3_NO_MOUNTED_COMBAT_FEAT"))
         { // set variables on target for mounted combat
-            SetLocalInt(OBJECT_SELF,"bX3_LAST_ATTACK_PHYSICAL",true);
+            SetLocalInt(OBJECT_SELF,"bX3_LAST_ATTACK_PHYSICAL",TRUE);
             SetLocalInt(OBJECT_SELF,"nX3_HP_BEFORE",GetCurrentHitPoints(OBJECT_SELF));
         } // set variables on target for mounted combat
 
@@ -72,7 +72,7 @@ void main()
     } else if (GetSpawnInCondition(NW_FLAG_SET_WARNINGS)) {
         // We give an attacker one warning before we attack
         // This is not fully implemented yet
-        SetSpawnInCondition(NW_FLAG_SET_WARNINGS, false);
+        SetSpawnInCondition(NW_FLAG_SET_WARNINGS, FALSE);
 
         //Put a check in to see if this attacker was the last attacker
         //Possibly change the GetNPCWarning function to make the check

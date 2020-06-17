@@ -2,7 +2,7 @@ using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Instantly gives this creature the benefits of a rest (restored hitpoints, spells, feats, etc..)
@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature is resting.
+        ///   * Returns true if oCreature is resting.
         /// </summary>
-        public static bool GetIsResting(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetIsResting(uint oCreature = SWLOR.Game.Server.NWN._.OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(505);
@@ -44,9 +44,9 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   The creature will rest if not in combat and no enemies are nearby.
-        ///   - bCreatureToEnemyLineOfSightCheck: TRUE to allow the creature to rest if enemies
+        ///   - bCreatureToEnemyLineOfSightCheck: true to allow the creature to rest if enemies
         ///   are nearby, but the creature can't see the enemy.
-        ///   FALSE the creature will not rest if enemies are
+        ///   false the creature will not rest if enemies are
         ///   nearby regardless of whether or not the creature
         ///   can see them, such as if an enemy is close by,
         ///   but is in a different room behind a closed door.

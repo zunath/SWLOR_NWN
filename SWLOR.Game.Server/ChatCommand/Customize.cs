@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
             // DMs can use this command anywhere.
-            if (NWScript.GetIsDM(user)) return string.Empty;
+            if (_.GetIsDM(user)) return string.Empty;
 
             // Players can only do this in certain areas.
             string areaResref = user.Area.Resref;

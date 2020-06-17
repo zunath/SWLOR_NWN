@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
 
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             {
                 string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
                 var matchingVisibility = visibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID.ToString() == visibilityObjectID);
-                if (visibilityObject.Value.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE && matchingVisibility == null)
+                if (GetLocalBool(visibilityObject.Value, "VISIBILITY_HIDDEN_DEFAULT") == true && matchingVisibility == null)
                 {
                     NWNXVisibility.SetVisibilityOverride(player, visibilityObject.Value, VisibilityType.Hidden);
                 }
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (visibility == null)
                 {
-                    if(target.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE)
+                    if(GetLocalBool(target, "VISIBILITY_HIDDEN_DEFAULT") == true)
                         NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Hidden);
                     continue;
                 }

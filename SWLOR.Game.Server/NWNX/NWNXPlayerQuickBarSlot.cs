@@ -1,8 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
-
-using NWN;
-using SWLOR.Game.Server.NWN.Enum;
-using static SWLOR.Game.Server.NWN.NWScript;
+﻿using SWLOR.Game.Server.NWN.Enum;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {

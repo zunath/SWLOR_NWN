@@ -3,7 +3,7 @@ using SWLOR.Game.Server.NWN.Enum.Creature;
 
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   returns the footstep type of the creature specified.
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.NWN
         ///   returns FOOTSTEP_TYPE_INVALID if used on a non-creature object, or if
         ///   used on creature that has no footstep sounds by default (e.g. Will-O'-Wisp).
         /// </summary>
-        public static FootstepType GetFootstepType(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static FootstepType GetFootstepType(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(788);
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.NWN
         ///   FOOTSTEP_TYPE_NONE
         ///   - oCreature: the creature to change the footstep sound for.
         /// </summary>
-        public static void SetFootstepType(FootstepType nFootstepType, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetFootstepType(FootstepType nFootstepType, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nFootstepType);
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.NWN
         ///   if the creature has no wings, or if the creature can not have its
         ///   wing type changed in the toolset.
         /// </summary>
-        public static WingType GetCreatureWingType(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static WingType GetCreatureWingType(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(790);
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.NWN
         ///   The MODELTYPE for the part based (playable races) 'P'
         ///   and MODELTYPE 'W'in the appearance.2da
         /// </summary>
-        public static void SetCreatureWingType(WingType nWingType, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetCreatureWingType(WingType nWingType, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nWingType);
@@ -123,12 +123,12 @@ namespace SWLOR.Game.Server.NWN
         ///   CREATURE_PART_LEFT_HAND
         ///   CREATURE_PART_HEAD
         /// </summary>
-        public static Part GetCreatureBodyPart(Part nPart, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static CreaturePart GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nPart);
             Internal.NativeFunctions.CallBuiltIn(792);
-            return (Part)Internal.NativeFunctions.StackPopInteger();
+            return (CreaturePart)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>
@@ -171,10 +171,10 @@ namespace SWLOR.Game.Server.NWN
         ///             Note: Only part based creature appearance types are supported.
         ///             i.e. The model types for the playable races ('P') in the appearance.2da
         /// </summary>
-        public static void SetCreatureBodyPart(Part nPart, ModelType nModelNumber, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetCreatureBodyPart(CreaturePart nPart, int nModelNumber, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.StackPushInteger((int)nModelNumber);
+            Internal.NativeFunctions.StackPushInteger(nModelNumber);
             Internal.NativeFunctions.StackPushInteger((int)nPart);
             Internal.NativeFunctions.CallBuiltIn(793);
         }
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.NWN
         ///   if the creature has no Tail, or if the creature can not have its
         ///   Tail type changed in the toolset.
         /// </summary>
-        public static TailType GetCreatureTailType(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static TailType GetCreatureTailType(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(794);
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.NWN
         ///   The MODELTYPE for the part based (playable) races 'P'
         ///   and MODELTYPE 'T'in the appearance.2da
         /// </summary>
-        public static void SetCreatureTailType(TailType nTailType, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetCreatureTailType(TailType nTailType, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nTailType);
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.NWN
         ///   SetPhenoType will only work on part based creature (i.e. the starting
         ///   default playable races).
         /// </summary>
-        public static void SetPhenoType(PhenoType nPhenoType, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetPhenoType(PhenoType nPhenoType, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nPhenoType);
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.NWN
         ///   1 to 6
         ///   Note: This function does not work on Player Characters
         /// </summary>
-        public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger(nBaseAttackBonus);
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Restores the number of base attacks back to it's
         ///   original state.
         /// </summary>
-        public static void RestoreBaseAttackBonus(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void RestoreBaseAttackBonus(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(756);
@@ -397,9 +397,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Returns TRUE if the creature oCreature is currently possessed by a DM character.
-        ///   Returns FALSE otherwise.
-        ///   Note: GetIsDMPossessed() will return FALSE if oCreature is the DM character.
+        ///   Returns true if the creature oCreature is currently possessed by a DM character.
+        ///   Returns false otherwise.
+        ///   Note: GetIsDMPossessed() will return false if oCreature is the DM character.
         ///   To determine if oCreature is a DM character use GetIsDM()
         /// </summary>
         public static bool GetIsDMPossessed(uint oCreature)
@@ -427,7 +427,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Returns one of the following:
         ///   AI_LEVEL_INVALID, AI_LEVEL_VERY_LOW, AI_LEVEL_LOW, AI_LEVEL_NORMAL, AI_LEVEL_HIGH, AI_LEVEL_VERY_HIGH
         /// </summary>
-        public static AILevel GetAILevel(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static AILevel GetAILevel(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(712);
@@ -458,15 +458,15 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   This will return TRUE if the creature running the script is a familiar currently
+        ///   This will return true if the creature running the script is a familiar currently
         ///   possessed by his master.
-        ///   returns FALSE if not or if the creature object is invalid
+        ///   returns false if not or if the creature object is invalid
         /// </summary>
-        public static int GetIsPossessedFamiliar(uint oCreature)
+        public static bool GetIsPossessedFamiliar(uint oCreature)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(714);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Get the immortal flag on a creature
         /// </summary>
-        public static bool GetImmortal(uint oTarget = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetImmortal(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(708);
@@ -497,9 +497,9 @@ namespace SWLOR.Game.Server.NWN
         ///   ** NOTE ** This is meant to be called inside the spell script for whirlwind
         ///   attack, it is not meant to be used to queue up a new whirlwind attack.  To do
         ///   that you need to call ActionUseFeat(FEAT_WHIRLWIND_ATTACK, oEnemy)
-        ///   - int bDisplayFeedback: TRUE or FALSE, whether or not feedback should be
+        ///   - int bDisplayFeedback: true or false, whether or not feedback should be
         ///   displayed
-        ///   - int bImproved: If TRUE, the improved version of whirlwind is used
+        ///   - int bImproved: If true, the improved version of whirlwind is used
         /// </summary>
         public static void DoWhirlwindAttack(bool bDisplayFeedback = true, bool bImproved = false)
         {
@@ -521,8 +521,8 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Set a creature's immortality flag.
         ///   -oCreature: creature affected
-        ///   -bImmortal: TRUE = creature is immortal and cannot be killed (but still takes damage)
-        ///   FALSE = creature is not immortal and is damaged normally.
+        ///   -bImmortal: true = creature is immortal and cannot be killed (but still takes damage)
+        ///   false = creature is not immortal and is damaged normally.
         ///   This scripting command only works on Creature objects.
         /// </summary>
         public static void SetImmortal(uint oCreature, bool bImmortal)
@@ -538,13 +538,13 @@ namespace SWLOR.Game.Server.NWN
         ///   - nSkill: the skill being used
         ///   - nDifficulty: Difficulty class of skill
         /// </summary>
-        public static int GetIsSkillSuccessful(uint oTarget, Skill nSkill, int nDifficulty)
+        public static bool GetIsSkillSuccessful(uint oTarget, Skill nSkill, int nDifficulty)
         {
             Internal.NativeFunctions.StackPushInteger(nDifficulty);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(689);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>
@@ -632,7 +632,7 @@ namespace SWLOR.Game.Server.NWN
         ///   5) This value will never be overwritten by another non-creature object.
         ///   6) This value will never be a dead/destroyed creature
         /// </summary>
-        public static uint GetLastHostileActor(uint oVictim = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static uint GetLastHostileActor(uint oVictim = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oVictim);
             Internal.NativeFunctions.CallBuiltIn(556);
@@ -643,7 +643,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the number of Hitdice worth of Turn Resistance that oUndead may have.
         ///   This will only work on undead creatures.
         /// </summary>
-        public static int GetTurnResistanceHD(uint oUndead = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetTurnResistanceHD(uint oUndead = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oUndead);
             Internal.NativeFunctions.CallBuiltIn(478);
@@ -653,11 +653,11 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Get the size (CREATURE_SIZE_*) of oCreature.
         /// </summary>
-        public static int GetCreatureSize(uint oCreature)
+        public static CreatureSize GetCreatureSize(uint oCreature)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(479);
-            return Internal.NativeFunctions.StackPopInteger();
+            return (CreatureSize)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>
@@ -677,9 +677,9 @@ namespace SWLOR.Game.Server.NWN
         ///   oSource's Like/Dislike setting for oTarget.
         ///   Note: If you just want to know how two objects feel about each other in terms
         ///   of faction and personal reputation, use GetIsFriend() instead.
-        ///   * Returns TRUE if oSource has a friendly reaction towards oTarget
+        ///   * Returns true if oSource has a friendly reaction towards oTarget
         /// </summary>
-        public static int GetIsReactionTypeFriendly(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetIsReactionTypeFriendly(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -693,9 +693,9 @@ namespace SWLOR.Game.Server.NWN
         ///   oSource's Like/Dislike setting for oTarget.
         ///   Note: If you just want to know how two objects feel about each other in terms
         ///   of faction and personal reputation, use GetIsNeutral() instead.
-        ///   * Returns TRUE if oSource has a neutral reaction towards oTarget
+        ///   * Returns true if oSource has a neutral reaction towards oTarget
         /// </summary>
-        public static int GetIsReactionTypeNeutral(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetIsReactionTypeNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -709,21 +709,21 @@ namespace SWLOR.Game.Server.NWN
         ///   oSource's Like/Dislike setting for oTarget.
         ///   Note: If you just want to know how two objects feel about each other in terms
         ///   of faction and personal reputation, use GetIsEnemy() instead.
-        ///   * Returns TRUE if oSource has a hostile reaction towards oTarget
+        ///   * Returns true if oSource has a hostile reaction towards oTarget
         /// </summary>
-        public static int GetIsReactionTypeHostile(uint oTarget, uint oSource = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetIsReactionTypeHostile(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(471);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger() == 1;
         }
 
         /// <summary>
         ///   Take nAmount of gold from oCreatureToTakeFrom.
         ///   - nAmount
         ///   - oCreatureToTakeFrom: If this is not a valid creature, nothing will happen.
-        ///   - bDestroy: If this is TRUE, the caller will not get the gold.  Instead, the
+        ///   - bDestroy: If this is true, the caller will not get the gold.  Instead, the
         ///   gold will be destroyed and will vanish from the game.
         /// </summary>
         public static void TakeGoldFromCreature(int nAmount, uint oCreatureToTakeFrom, bool bDestroy = false)
@@ -744,8 +744,8 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature is the Dungeon Master.
-        ///   Note: This will return FALSE if oCreature is a DM Possessed creature.
+        ///   * Returns true if oCreature is the Dungeon Master.
+        ///   Note: This will return false if oCreature is a DM Possessed creature.
         ///   To determine if oCreature is a DM Possessed creature, use GetIsDMPossessed()
         /// </summary>
         public static bool GetIsDM(uint oCreature)
@@ -775,9 +775,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature was spawned from an encounter.
+        ///   * Returns true if oCreature was spawned from an encounter.
         /// </summary>
-        public static int GetIsEncounterCreature(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetIsEncounterCreature(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(409);
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - oVersus: You can try to get the most damaging weapon against oVersus
         ///   - bOffHand
         /// </summary>
-        public static void ActionEquipMostDamagingMelee(uint oVersus = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID, bool bOffHand = false)
+        public static void ActionEquipMostDamagingMelee(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
             Internal.NativeFunctions.StackPushInteger(bOffHand ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oVersus);
@@ -807,7 +807,7 @@ namespace SWLOR.Game.Server.NWN
         ///   weapon.
         ///   - oVersus: You can try to get the most damaging weapon against oVersus
         /// </summary>
-        public static void ActionEquipMostDamagingRanged(uint oVersus = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static void ActionEquipMostDamagingRanged(uint oVersus = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oVersus);
             Internal.NativeFunctions.CallBuiltIn(400);
@@ -882,7 +882,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nSpell: SPELL_*
         ///   - oCreature
         /// </summary>
-        public static int GetHasSpell(Spell nSpell, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetHasSpell(Spell nSpell, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
@@ -893,11 +893,11 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Get the gender of oCreature.
         /// </summary>
-        public static int GetGender(uint oCreature)
+        public static Gender GetGender(uint oCreature)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(358);
-            return Internal.NativeFunctions.StackPopInteger();
+            return (Gender)Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>
@@ -930,7 +930,7 @@ namespace SWLOR.Game.Server.NWN
         ///   nClassPosition (i.e. a single-class creature will only have a value in
         ///   nClassLocation=1) or if oCreature is not a valid creature.
         /// </summary>
-        public static ClassType GetClassByPosition(int nClassPosition, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static ClassType GetClassByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger(nClassPosition);
@@ -947,7 +947,7 @@ namespace SWLOR.Game.Server.NWN
         ///   (i.e. a single-class creature will only have a value in nClassLocation=1)
         ///   or if oCreature is not a valid creature.
         /// </summary>
-        public static int GetLevelByPosition(int nClassPosition, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetLevelByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger(nClassPosition);
@@ -960,7 +960,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nClassType: CLASS_TYPE_*
         ///   - oCreature
         /// </summary>
-        public static int GetLevelByClass(ClassType nClassType, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetLevelByClass(ClassType nClassType, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nClassType);
@@ -974,7 +974,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nAbility: ABILITY_*
         ///   - oCreature
         /// </summary>
-        public static int GetAbilityModifier(AbilityType nAbility, uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static int GetAbilityModifier(AbilityType nAbility, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nAbility);
@@ -983,9 +983,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns TRUE if oCreature is in combat.
+        ///   * Returns true if oCreature is in combat.
         /// </summary>
-        public static bool GetIsInCombat(uint oCreature = SWLOR.Game.Server.NWN.NWScript.OBJECT_INVALID)
+        public static bool GetIsInCombat(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(320);
@@ -1009,7 +1009,7 @@ namespace SWLOR.Game.Server.NWN
         ///   -> CLASS_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_CLASS
         ///   -> SPELL_* if nFirstCriteriaType was CREATURE_TYPE_DOES_NOT_HAVE_SPELL_EFFECT
         ///   or CREATURE_TYPE_HAS_SPELL_EFFECT
-        ///   -> TRUE or FALSE if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
+        ///   -> true or false if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
         ///   -> PERCEPTION_* if nFirstCriteriaType was CREATURE_TYPE_PERCEPTION
         ///   -> PLAYER_CHAR_IS_PC or PLAYER_CHAR_NOT_PC if nFirstCriteriaType was
         ///   CREATURE_TYPE_PLAYER_CHAR
@@ -1030,7 +1030,7 @@ namespace SWLOR.Game.Server.NWN
         ///   further specify the type of creature that we are looking for.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestCreatureToLocation(Type nFirstCriteriaType, bool nFirstCriteriaValue,
+        public static uint GetNearestCreatureToLocation(CreatureType nFirstCriteriaType, bool nFirstCriteriaValue,
             Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {

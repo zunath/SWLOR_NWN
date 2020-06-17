@@ -1,7 +1,9 @@
 ﻿using System.Linq;
-using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 {
@@ -17,21 +19,21 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
         public void Main()
         {
-            NWPlayer oPC = _.GetLastUsedBy();
+            NWPlayer oPC = GetLastUsedBy();
 
-            if (_.GetIsInCombat(oPC) == _.TRUE)
+            if (GetIsInCombat(oPC) == true)
             {
-                _.SendMessageToPC(oPC, "You are in combat.");
+                SendMessageToPC(oPC, "You are in combat.");
                 return;
             }
 
-            NWPlaceable self = _.OBJECT_SELF;
+            NWPlaceable self = OBJECT_SELF;
             string destination = self.GetLocalString("DESTINATION");
-            int visualEffectID = self.GetLocalInt("VISUAL_EFFECT");
+            var visualEffectID = self.GetLocalInt("VISUAL_EFFECT") > 0 ? (VisualEffect)self.GetLocalInt("VISUAL_EFFECT") : VisualEffect.Invalid;
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
             string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
-            bool isInstance = self.GetLocalInt("INSTANCE") == _.TRUE;
-            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == _.TRUE;
+            bool isInstance = GetLocalBool(self, "INSTANCE") == true;
+            bool personalInstanceOnly = GetLocalBool(self, "PERSONAL_INSTANCE_ONLY");
 
             if (keyItemID > 0)
             {
@@ -52,11 +54,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
             if (visualEffectID > 0)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(visualEffectID), oPC.Object);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffectID), oPC.Object);
             }
 
-            NWObject entranceWP = _.GetWaypointByTag(destination);
-            NWLocation location = _.GetLocation(entranceWP);
+            NWObject entranceWP = GetWaypointByTag(destination);
+            NWLocation location = GetLocation(entranceWP);
 
             if (!entranceWP.IsValid)
             {
@@ -86,7 +88,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
             oPC.AssignCommand(() =>
             {
-                _.ActionJumpToLocation(location);
+                ActionJumpToLocation(location);
             });
         }
     }

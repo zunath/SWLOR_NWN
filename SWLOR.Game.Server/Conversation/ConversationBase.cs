@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;

@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN
 {
-    public partial class NWScript
+    public partial class _
     {
         /// <summary>
         ///   Determine whether oObject is in conversation.

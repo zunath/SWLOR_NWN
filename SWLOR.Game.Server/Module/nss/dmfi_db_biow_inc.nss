@@ -23,7 +23,7 @@ void FlushDMFIPersistentData(string sDBName)
 
 int IsDMFIPersistentDataDirty(string sDBName)
 {
-    return false; // bioware database system has no cache, so is never dirty
+    return FALSE; // bioware database system has no cache, so is never dirty
 }
 
 //Int functions

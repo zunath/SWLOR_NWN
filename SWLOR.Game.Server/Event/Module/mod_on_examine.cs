@@ -1,8 +1,8 @@
 ﻿using System;
-using SWLOR.Game.Server;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -32,21 +32,21 @@ namespace NWN.Scripts
 
                 string description;
 
-                if (_.GetIsPC(examinedObject.Object) == _.TRUE)
+                if (_.GetIsPC(examinedObject.Object) == true)
                 {
                     // https://github.com/zunath/SWLOR_NWN/issues/853
                     // safest probably to get the modified (non-original) description only for players
                     // may want to always get the modified description for later flexibility?
-                    description = _.GetDescription(examinedObject.Object, _.FALSE) + "\n\n";
+                    description = _.GetDescription(examinedObject.Object, false) + "\n\n";
                 }
                 else
                 {
-                    description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
+                    description = _.GetDescription(examinedObject.Object, true) + "\n\n";
                 }                
 
                 if (examinedObject.IsCreature)
                 {
-                    int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
+                    var racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", (int)_.GetRacialType(examinedObject)));
                     string racialtype = _.GetStringByStrRef(racialID);
                     if (!description.Contains(ColorTokenService.Green("Racial Type: ") + racialtype))
                     {
@@ -60,7 +60,7 @@ namespace NWN.Scripts
 
                 if (!string.IsNullOrWhiteSpace(description))
                 {
-                    _.SetDescription(examinedObject.Object, description, _.FALSE);
+                    _.SetDescription(examinedObject.Object, description, false);
                     _.SetDescription(examinedObject.Object, description);
                 }
             }

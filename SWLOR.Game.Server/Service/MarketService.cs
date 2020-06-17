@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
@@ -179,41 +179,41 @@ namespace SWLOR.Game.Server.Service
             // Weapons - These IDs are based solely on the NWN BaseItemType
             switch (item.BaseItemType)
             {
-                case BASE_ITEM_GREATAXE: return 1;
-                case BASE_ITEM_BATTLEAXE: return 2;
-                case BASE_ITEM_BASTARDSWORD: return 3;
-                case BASE_ITEM_DAGGER: return 4;
-                case BASE_ITEM_GREATSWORD: return 5;
-                case BASE_ITEM_LONGSWORD: return 7;
-                case BASE_ITEM_RAPIER: return 8;
-                case BASE_ITEM_KATANA: return 9;
-                case BASE_ITEM_SHORTSWORD: return 10;
-                case BASE_ITEM_CLUB: return 11;
-                case BASE_ITEM_LIGHTMACE: return 12;
-                case BASE_ITEM_MORNINGSTAR: return 13;
-                case BASE_ITEM_QUARTERSTAFF: return 15;
-                case BASE_ITEM_DOUBLEAXE: return 16;
-                case BASE_ITEM_TWOBLADEDSWORD: return 17;
-                case BASE_ITEM_KUKRI: return 18;
-                case BASE_ITEM_HALBERD: return 19;
-                case BASE_ITEM_SHORTSPEAR: return 20;
-                case BASE_ITEM_LIGHTCROSSBOW: return 21; // Blaster Rifles
-                case BASE_ITEM_SHORTBOW: return 22; // Blaster Pistols
-                case BASE_ITEM_HELMET: return 23;
-                case BASE_ITEM_SMALLSHIELD: return 28; // Shields
-                case BASE_ITEM_LARGESHIELD: return 28; // Shields
-                case BASE_ITEM_TOWERSHIELD: return 28; // Shields
-                case BASE_ITEM_BOOK: return 29;
-                case BASE_ITEM_GLOVES: return 30; // Power Gloves
-                case BASE_ITEM_AMULET: return 102; // Necklace
-                case BASE_ITEM_RING: return 103;
+                case BaseItem.GreatAxe: return 1;
+                case BaseItem.BattleAxe: return 2;
+                case BaseItem.BastardSword: return 3;
+                case BaseItem.Dagger: return 4;
+                case BaseItem.GreatSword: return 5;
+                case BaseItem.Longsword: return 7;
+                case BaseItem.Rapier: return 8;
+                case BaseItem.Katana: return 9;
+                case BaseItem.ShortSword: return 10;
+                case BaseItem.Club: return 11;
+                case BaseItem.LightMace: return 12;
+                case BaseItem.MorningStar: return 13;
+                case BaseItem.QuarterStaff: return 15;
+                case BaseItem.DoubleAxe: return 16;
+                case BaseItem.TwoBladedSword: return 17;
+                case BaseItem.Kukri: return 18;
+                case BaseItem.Halberd: return 19;
+                case BaseItem.ShortSpear: return 20;
+                case BaseItem.LightCrossbow: return 21; // Blaster Rifles
+                case BaseItem.ShortBow: return 22; // Blaster Pistols
+                case BaseItem.Helmet: return 23;
+                case BaseItem.SmallShield: return 28; // Shields
+                case BaseItem.LargeShield: return 28; // Shields
+                case BaseItem.TowerShield: return 28; // Shields
+                case BaseItem.Book: return 29;
+                case BaseItem.Gloves: return 30; // Power Gloves
+                case BaseItem.Amulet: return 102; // Necklace
+                case BaseItem.Ring: return 103;
             }
 
             // Check for armor.
-            if (item.BaseItemType == BASE_ITEM_ARMOR ||
-                item.BaseItemType == BASE_ITEM_BELT ||
-                item.BaseItemType == BASE_ITEM_CLOAK ||
-                item.BaseItemType == BASE_ITEM_BOOTS)
+            if (item.BaseItemType == BaseItem.Armor ||
+                item.BaseItemType == BaseItem.Belt ||
+                item.BaseItemType == BaseItem.Cloak ||
+                item.BaseItemType == BaseItem.Boots)
             {
                 switch (item.CustomItemType)
                 {
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var propertyType = _.GetItemPropertyType(prop);
                 // Check for components
-                if (propertyType == (int) CustomItemPropertyType.ComponentType)
+                if (propertyType == ItemPropertyType.ComponentType)
                 {
                     // IDs are mapped to the iprp_comptype.2da file.
                     switch (_.GetItemPropertyCostTableValue(prop))
@@ -336,19 +336,19 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Check for mods
-                if (propertyType == (int)CustomItemPropertyType.BlueMod)
+                if (propertyType == ItemPropertyType.BlueMod)
                 {
                     return 98;
                 }
-                if (propertyType == (int)CustomItemPropertyType.GreenMod)
+                if (propertyType == ItemPropertyType.GreenMod)
                 {
                     return 99;
                 }
-                if (propertyType == (int)CustomItemPropertyType.RedMod)
+                if (propertyType == ItemPropertyType.RedMod)
                 {
                     return 100;
                 }
-                if (propertyType == (int)CustomItemPropertyType.YellowMod)
+                if (propertyType == ItemPropertyType.YellowMod)
                 {
                     return 101;
                 }

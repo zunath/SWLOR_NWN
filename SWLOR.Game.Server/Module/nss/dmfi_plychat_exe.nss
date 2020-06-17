@@ -24,7 +24,7 @@
 #include "dmfi_plchlishk_i"
 #include "dmfi_db_inc"
 
-const int DMFI_LOG_CONVERSATION = true; // turn on or off logging of conversation text
+const int DMFI_LOG_CONVERSATION = TRUE; // turn on or off logging of conversation text
 
 ////////////////////////////////////////////////////////////////////////
 int AppearType (string sCom)
@@ -788,11 +788,11 @@ void SmokePipe(object oActivator)
     case 3: AssignCommand(oActivator, ActionSpeakString(sEmote3));break;
     }
     // glow red
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_LIGHT_RED_5), oActivator, 0.15)));
     // wait a moment
     AssignCommand(oActivator, ActionWait(3.0));
     // puff of smoke above and in front of head
-    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
+    AssignCommand(oActivator, ActionDoCommand(ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_FNF_SMOKE_PUFF), lAboveHead)));
     // if female, turn head to left
     if ((GetGender(oActivator) == GENDER_FEMALE) && (GetRacialType(oActivator) != RACIAL_TYPE_DWARF))
         AssignCommand(oActivator, ActionPlayAnimation(ANIMATION_FIREFORGET_HEAD_TURN_LEFT, 1.0, 5.0));
@@ -808,8 +808,8 @@ void ParseEmote(string sEmote, object oPC)
     if (GetLocalInt(oPC, "hls_emotemute") != 0) return;
 
     DeleteLocalInt(oPC, "dmfi_univ_int");
-    object oRightHand = GetItemInSlot(InventorySlot.RightHand,oPC);
-    object oLeftHand =  GetItemInSlot(InventorySlot.LeftHand,oPC);
+    object oRightHand = GetItemInSlot(INVENTORY_SLOT_RIGHTHAND,oPC);
+    object oLeftHand =  GetItemInSlot(INVENTORY_SLOT_LEFTHAND,oPC);
 
     if (GetStringLeft(sEmote, 1) == "*")
     {
@@ -1000,7 +1000,7 @@ void ParseEmote(string sEmote, object oPC)
              FindSubString(GetStringLowerCase(sEmote), "stoop")!= -1)
         AssignCommand(oPC, ActionPlayAnimation(ANIMATION_LOOPING_GET_LOW, 1.0, 99999.0));
     else if (FindSubString(GetStringLowerCase(sEmote), "fiddle")!= -1)
-        AssignCommand(oPC, ActionPlayAnimation(Animation.Get_Mid, 1.0, 5.0));
+        AssignCommand(oPC, ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0, 5.0));
     else if (FindSubString(GetStringLowerCase(sEmote), "nod")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), "agree")!= -1)
         AssignCommand(oPC, ActionPlayAnimation(ANIMATION_LOOPING_LISTEN, 1.0, 4.0));
@@ -1051,11 +1051,11 @@ void ParseEmote(string sEmote, object oPC)
              FindSubString(GetStringLowerCase(sEmote), "*naps")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), " naps")!= -1||
              FindSubString(GetStringLowerCase(sEmote), "nap")!= -1)
-        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_IMP_SLEEP), oPC);
+        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_SLEEP), oPC);
     else if (FindSubString(GetStringLowerCase(sEmote), "*sings")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), " sings")!= -1 ||
              FindSubString(GetStringLowerCase(sEmote), "hums")!= -1)
-        ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_BARD_SONG), oPC, 6.0f);
+        ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BARD_SONG), oPC, 6.0f);
     else if (FindSubString(GetStringLowerCase(sEmote), "whistles")!= -1)
         AssignCommand(oPC, PlaySound("as_pl_whistle2"));
     else if (FindSubString(GetStringLowerCase(sEmote), "talks")!= -1 ||
@@ -2680,9 +2680,9 @@ int GetIsAlphanumeric(string sCharacter)
         sCharacter == "8" ||
         sCharacter == "9" ||
         sCharacter == "0")
-        return true;
+        return TRUE;
 
-    return false;
+    return FALSE;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -2697,7 +2697,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
     int bValidTarget = GetIsObjectValid(oTarget);
     if (!bValidTarget)
     {
-        DMFISendMessageToPC(oCommander, "No current command target - no commands will function.", false, DMFI_MESSAGE_COLOR_ALERT);
+        DMFISendMessageToPC(oCommander, "No current command target - no commands will function.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
         return;
     }
 
@@ -2713,49 +2713,49 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         SetLocalInt(oCommander, "dmfi_dicebag", 2);
         SetCustomToken(20681, "Local");
         SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 2, oCommander);
-        FloatingTextStringOnCreature("Broadcast Mode set to Local", oCommander, false); return;
+        FloatingTextStringOnCreature("Broadcast Mode set to Local", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 4) == ".glo")
     {
         SetLocalInt(oCommander, "dmfi_dicebag", 1);
         SetCustomToken(20681, "Global");
         SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 1, oCommander);
-        FloatingTextStringOnCreature("Broadcast Mode set to Global", oCommander, false); return;
+        FloatingTextStringOnCreature("Broadcast Mode set to Global", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 4) == ".pri")
     {
         SetLocalInt(oCommander, "dmfi_dicebag", 0);
         SetCustomToken(20681, "Private");
         SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 0, oCommander);
-        FloatingTextStringOnCreature("Broadcast Mode set to Private", oCommander, false); return;
+        FloatingTextStringOnCreature("Broadcast Mode set to Private", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 3) == ".dm")
     {
         SetLocalInt(oCommander, "dmfi_dicebag", 3);
         SetCustomToken(20681, "DM Only");
         SetDMFIPersistentInt("dmfi", "dmfi_dicebag", 3, oCommander);
-        FloatingTextStringOnCreature("Broadcast Mode set to DM Only", oCommander, false); return;
+        FloatingTextStringOnCreature("Broadcast Mode set to DM Only", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 5) == ".aniy")
     {
         SetLocalInt(oCommander, "dmfi_dice_no_animate", 0);
-        FloatingTextStringOnCreature("Rolls will show animation", oCommander, false); return;
+        FloatingTextStringOnCreature("Rolls will show animation", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 5) == ".anin")
     {
         SetLocalInt(oCommander, "dmfi_dice_no_animate", 1);
-        FloatingTextStringOnCreature("Rolls will NOT show animation", oCommander, false); return;
+        FloatingTextStringOnCreature("Rolls will NOT show animation", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 5) == ".emoy") // control emotes (based on Morderon code)
     {
         SetLocalInt(oCommander, "hls_emotemute", 0);
-        FloatingTextStringOnCreature("*emote* commands are on", oCommander, false);
+        FloatingTextStringOnCreature("*emote* commands are on", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 5) == ".emon") // control emotes (based on Morderon code)
     {
         SetLocalInt(oCommander, "hls_emotemute", 1);
-        FloatingTextStringOnCreature("*emote* commands are off", oCommander, false);
+        FloatingTextStringOnCreature("*emote* commands are off", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".lan") //sets the language of the target
@@ -2764,7 +2764,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         if (!(GetIsDM(oCommander) || GetIsDMPossessed(oCommander) ||
             oTarget == oCommander || GetMaster(oTarget) == oCommander))
         {
-            FloatingTextStringOnCreature("You cannot perform this command on a creature you do not control.", oCommander, false);
+            FloatingTextStringOnCreature("You cannot perform this command on a creature you do not control.", oCommander, FALSE);
             return;
         }
 
@@ -2859,7 +2859,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
             // language must be default racial or class language, or target
             // must have a language widget for it
             if (!(GetIsObjectValid(GetItemPossessedBy(oTarget, "hlslang_"+IntToString(iLang))) ||
-                GetDefaultRacialLanguage(oTarget, false) == iLang ||
+                GetDefaultRacialLanguage(oTarget, FALSE) == iLang ||
                 GetDefaultClassLanguage(oTarget) == iLang))
             {
                 iLang = 0;
@@ -2869,11 +2869,11 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         {
             SetLocalInt(oTarget, "hls_MyLanguage", iLang);
             SetLocalString(oTarget, "hls_MyLanguageName", sLang);
-            FloatingTextStringOnCreature("Language for "+GetName(oTarget)+" set to "+sLang, oCommander, false);
+            FloatingTextStringOnCreature("Language for "+GetName(oTarget)+" set to "+sLang, oCommander, FALSE);
         }
         else
         {
-            FloatingTextStringOnCreature("Unable to set language - invalid target or language", oCommander, false);
+            FloatingTextStringOnCreature("Unable to set language - invalid target or language", oCommander, FALSE);
         }
         return;
     }
@@ -2881,14 +2881,14 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
     // that's all the PC commands, bail out if not DM
     if (!GetIsDM(oCommander) && !GetIsDMPossessed(oCommander))
     {
-        DMFISendMessageToPC(oCommander, "DMFI dot command nonexistent or restricted to DM's - aborting.", false, DMFI_MESSAGE_COLOR_ALERT);
+        DMFISendMessageToPC(oCommander, "DMFI dot command nonexistent or restricted to DM's - aborting.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
         return;
     }
 
     if (GetStringLeft(sCom, 7) ==".appear")
     {
         string sNew = sArgs;
-        DMFISendMessageToPC(oCommander, "Setting target appearance to: " + sNew, false, DMFI_MESSAGE_COLOR_STATUS);
+        DMFISendMessageToPC(oCommander, "Setting target appearance to: " + sNew, FALSE, DMFI_MESSAGE_COLOR_STATUS);
         int Appear = AppearType(sNew);
 
         if (Appear!=-1)
@@ -2997,7 +2997,7 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         }
         else
         {
-            DMFISendMessageToPC(oCommander, "No valid DMFI target!", false, DMFI_MESSAGE_COLOR_ALERT);
+            DMFISendMessageToPC(oCommander, "No valid DMFI target!", FALSE, DMFI_MESSAGE_COLOR_ALERT);
         }
 
         dmw_CleanUp(oCommander);
@@ -3021,17 +3021,17 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
             else
             {
                 SetLocalObject(GetModule(), "hls_NPCControl" + GetStringLeft(sArgs, 1), oTarget);
-                FloatingTextStringOnCreature("The Control character for " + GetName(oTarget) + " is " + GetStringLeft(sArgs, 1), oCommander, false);
+                FloatingTextStringOnCreature("The Control character for " + GetName(oTarget) + " is " + GetStringLeft(sArgs, 1), oCommander, FALSE);
                 return;
             }
         }
-        FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, false);
+        FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".ani")
     {
         int iArg = StringToInt(sArgs);
-        AssignCommand(oTarget, ClearAllActions(true));
+        AssignCommand(oTarget, ClearAllActions(TRUE));
         AssignCommand(oTarget, ActionPlayAnimation(iArg, 1.0, 99999.0f));
         return;
     }
@@ -3040,93 +3040,93 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         string sArgsLC = GetStringLowerCase(sArgs);
         if (FindSubString(sArgsLC, "low") !=-1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_RESISTANCE, oTarget, METAMAGIC_ANY, true, 5, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_GHOSTLY_VISAGE, oTarget, METAMAGIC_ANY, true, 5, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_CLARITY,  oTarget,METAMAGIC_ANY, true, 5, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_RESISTANCE, oTarget, METAMAGIC_ANY, TRUE, 5, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_GHOSTLY_VISAGE, oTarget, METAMAGIC_ANY, TRUE, 5, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_CLARITY,  oTarget,METAMAGIC_ANY, TRUE, 5, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             FloatingTextStringOnCreature("Low Buff applied: " + GetName(oTarget), oCommander);   return;
         }
         else if (FindSubString(sArgsLC, "mid") !=-1)
         {
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_LESSER_SPELL_MANTLE, oTarget, METAMAGIC_ANY, true, 10, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_STONESKIN, oTarget, METAMAGIC_ANY, true, 10, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_ELEMENTAL_SHIELD,  oTarget,METAMAGIC_ANY, true, 10, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_LESSER_SPELL_MANTLE, oTarget, METAMAGIC_ANY, TRUE, 10, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_STONESKIN, oTarget, METAMAGIC_ANY, TRUE, 10, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_ELEMENTAL_SHIELD,  oTarget,METAMAGIC_ANY, TRUE, 10, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             FloatingTextStringOnCreature("Mid Buff applied: " + GetName(oTarget), oCommander);  return;
         }
         else if (FindSubString(sArgsLC, "high") !=-1)
         {
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SPELL_MANTLE, oTarget, METAMAGIC_ANY, true, 15, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_STONESKIN, oTarget, METAMAGIC_ANY, true,15, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SHADOW_SHIELD,  oTarget,METAMAGIC_ANY, true, 15, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SPELL_MANTLE, oTarget, METAMAGIC_ANY, TRUE, 15, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_STONESKIN, oTarget, METAMAGIC_ANY, TRUE,15, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SHADOW_SHIELD,  oTarget,METAMAGIC_ANY, TRUE, 15, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             FloatingTextStringOnCreature("High Buff applied: " + GetName(oTarget), oCommander);  return;
         }
         else if (FindSubString(sArgsLC, "epic") !=-1)
         {
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_GREATER_SPELL_MANTLE, oTarget, METAMAGIC_ANY, true, 20, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SPELL_RESISTANCE, oTarget, METAMAGIC_ANY, true, 20, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SHADOW_SHIELD,  oTarget,METAMAGIC_ANY, true, 20, PROJECTILE_PATH_TYPE_DEFAULT, true));
-            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_CLARITY,  oTarget,METAMAGIC_ANY, true, 20, PROJECTILE_PATH_TYPE_DEFAULT, true));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_GREATER_SPELL_MANTLE, oTarget, METAMAGIC_ANY, TRUE, 20, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SPELL_RESISTANCE, oTarget, METAMAGIC_ANY, TRUE, 20, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_SHADOW_SHIELD,  oTarget,METAMAGIC_ANY, TRUE, 20, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
+            AssignCommand(oTarget, ActionCastSpellAtObject(SPELL_CLARITY,  oTarget,METAMAGIC_ANY, TRUE, 20, PROJECTILE_PATH_TYPE_DEFAULT, TRUE));
             FloatingTextStringOnCreature("Epic Buff applied: " + GetName(oTarget), oCommander);  return;
         }
         else if (FindSubString(sArgsLC, "barkskin") != -1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);  return;
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectACIncrease(3, AC_NATURAL_BONUS), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_BARKSKIN), oTarget, 3600.0f);  return;
         }
         else if (FindSubString(sArgsLC, "elements") != -1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_COLD, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_FIRE, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_ACID, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_SONIC, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectDamageResistance(DAMAGE_TYPE_ELECTRICAL, 20, 40), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROTECTION_ELEMENTS), oTarget, 3600.0f);  return;
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_COLD, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_FIRE, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_ACID, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_SONIC, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageResistance(DAMAGE_TYPE_ELECTRICAL, 20, 40), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROTECTION_ELEMENTS), oTarget, 3600.0f);  return;
         }
         else if (FindSubString(sArgsLC, "haste") != -1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectHaste(), oTarget, 3600.0f);  return;
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectHaste(), oTarget, 3600.0f);  return;
         }
         else if (FindSubString(sArgsLC, "immortal") != -1) // tsunami282 added
         {
-            SetImmortal(oTarget, true);
-            FloatingTextStringOnCreature("The target is set to Immortal (cannot die).", oCommander, false);  return;
+            SetImmortal(oTarget, TRUE);
+            FloatingTextStringOnCreature("The target is set to Immortal (cannot die).", oCommander, FALSE);  return;
         }
         else if (FindSubString(sArgsLC, "mortal") != -1) // tsunami282 added
         {
-            SetImmortal(oTarget, true);
-            FloatingTextStringOnCreature("The target is set to Mortal (can die).", oCommander, false);  return;
+            SetImmortal(oTarget, TRUE);
+            FloatingTextStringOnCreature("The target is set to Mortal (can die).", oCommander, FALSE);  return;
         }
         else if (FindSubString(sArgsLC, "invis") != -1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(INVISIBILITY_TYPE_NORMAL), oTarget, 3600.0f);   return;
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectInvisibility(INVISIBILITY_TYPE_NORMAL), oTarget, 3600.0f);   return;
         }
         else if (FindSubString(sArgsLC, "unplot") != -1)
         {
-            SetPlotFlag(oTarget, false);
-            FloatingTextStringOnCreature("The target is set to non-Plot.", oCommander, false); return;
+            SetPlotFlag(oTarget, FALSE);
+            FloatingTextStringOnCreature("The target is set to non-Plot.", oCommander, FALSE); return;
         }
         else if (FindSubString(sArgsLC, "plot") != -1)
         {
-            SetPlotFlag(oTarget, true);
-            FloatingTextStringOnCreature("The target is set to Plot.", oCommander, false);  return;
+            SetPlotFlag(oTarget, TRUE);
+            FloatingTextStringOnCreature("The target is set to Plot.", oCommander, FALSE);  return;
         }
         else if (FindSubString(sArgsLC, "stoneskin") != -1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectDamageReduction(10, DAMAGE_POWER_PLUS_THREE, 100), oTarget, 3600.0f);
-            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, 3600.0f); return;
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectDamageReduction(10, DAMAGE_POWER_PLUS_THREE, 100), oTarget, 3600.0f);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_PROT_GREATER_STONESKIN), oTarget, 3600.0f); return;
         }
         else if (FindSubString(sArgsLC, "trues") != -1)
         {
-            ApplyEffectToObject(DurationType.Temporary, EffectTrueSeeing(), oTarget, 3600.0f); return;
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectTrueSeeing(), oTarget, 3600.0f); return;
         }
     }
     else if (GetStringLeft(sCom, 4) == ".dam")
     {
         int iArg = StringToInt(sArgs);
-        ApplyEffectToObject(DurationType.Instant, EffectDamage(iArg, DAMAGE_TYPE_MAGICAL, DAMAGE_POWER_NORMAL), oTarget);
-        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_COM_BLOOD_LRG_RED), oTarget);
-        FloatingTextStringOnCreature(GetName(oTarget) + " has taken " + IntToString(iArg) + " damage.", oCommander, false);
+        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectDamage(iArg, DAMAGE_TYPE_MAGICAL, DAMAGE_POWER_NORMAL), oTarget);
+        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_COM_BLOOD_LRG_RED), oTarget);
+        FloatingTextStringOnCreature(GetName(oTarget) + " has taken " + IntToString(iArg) + " damage.", oCommander, FALSE);
         return;
     }
     // 2008.05.29 tsunami282 - set description
@@ -3143,17 +3143,17 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
             {
                 SetDescription(oTarget, sArgs);
             }
-            FloatingTextStringOnCreature("Target's description set to " + GetDescription(oTarget), oCommander, false);
+            FloatingTextStringOnCreature("Target's description set to " + GetDescription(oTarget), oCommander, FALSE);
         }
         else
         {
-            FloatingTextStringOnCreature("Invalid target - command not processed.", oCommander, false);
+            FloatingTextStringOnCreature("Invalid target - command not processed.", oCommander, FALSE);
         }
     }
     else if (GetStringLeft(sCom, 5) == ".dism")
     {
         DestroyObject(oTarget);
-        FloatingTextStringOnCreature(GetName(oTarget) + " dismissed", oCommander, false); return;
+        FloatingTextStringOnCreature(GetName(oTarget) + " dismissed", oCommander, FALSE); return;
     }
     else if (GetStringLeft(sCom, 4) == ".inv")
     {
@@ -3173,69 +3173,69 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
         string sArgsLC = GetStringLowerCase(sArgs);
         if (FindSubString(sArgsLC, "hostile") != -1)
         {
-            ChangeToStandardFaction(oTarget, StandardFaction.Hostile);
-            FloatingTextStringOnCreature("Faction set to hostile", oCommander, false);
+            ChangeToStandardFaction(oTarget, STANDARD_FACTION_HOSTILE);
+            FloatingTextStringOnCreature("Faction set to hostile", oCommander, FALSE);
         }
         else if (FindSubString(sArgsLC, "commoner") != -1)
         {
-            ChangeToStandardFaction(oTarget, StandardFaction.Commoner);
-            FloatingTextStringOnCreature("Faction set to commoner", oCommander, false);
+            ChangeToStandardFaction(oTarget, STANDARD_FACTION_COMMONER);
+            FloatingTextStringOnCreature("Faction set to commoner", oCommander, FALSE);
         }
         else if (FindSubString(sArgsLC, "defender") != -1)
         {
-            ChangeToStandardFaction(oTarget, StandardFaction.Defender);
-            FloatingTextStringOnCreature("Faction set to defender", oCommander, false);
+            ChangeToStandardFaction(oTarget, STANDARD_FACTION_DEFENDER);
+            FloatingTextStringOnCreature("Faction set to defender", oCommander, FALSE);
         }
         else if (FindSubString(sArgsLC, "merchant") != -1)
         {
-            ChangeToStandardFaction(oTarget, StandardFaction.Merchant);
-            FloatingTextStringOnCreature("Faction set to merchant", oCommander, false);
+            ChangeToStandardFaction(oTarget, STANDARD_FACTION_MERCHANT);
+            FloatingTextStringOnCreature("Faction set to merchant", oCommander, FALSE);
         }
         else
         {
-            DMFISendMessageToPC(oCommander, "Invalid faction name - command aborted.", false, DMFI_MESSAGE_COLOR_ALERT);
+            DMFISendMessageToPC(oCommander, "Invalid faction name - command aborted.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
             return;
         }
 
         // toggle blindness on the target, to cause a re-perception
         if (GetIsImmune(oTarget, IMMUNITY_TYPE_BLINDNESS))
         {
-            DMFISendMessageToPC(oCommander, "Targeted creature is blind immune - no attack will occur until new perception event is fired", false, DMFI_MESSAGE_COLOR_ALERT);
+            DMFISendMessageToPC(oCommander, "Targeted creature is blind immune - no attack will occur until new perception event is fired", FALSE, DMFI_MESSAGE_COLOR_ALERT);
         }
         else
         {
             effect eInvis =EffectBlindness();
-            ApplyEffectToObject(DurationType.Temporary, eInvis, oTarget, 6.1);
-            DMFISendMessageToPC(oCommander, "Faction Adjusted - will take effect in 6 seconds", false, DMFI_MESSAGE_COLOR_STATUS);
+            ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInvis, oTarget, 6.1);
+            DMFISendMessageToPC(oCommander, "Faction Adjusted - will take effect in 6 seconds", FALSE, DMFI_MESSAGE_COLOR_STATUS);
         }
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".fle")
     {
-        AssignCommand(oTarget, ClearAllActions(true));
-        AssignCommand(oTarget, ActionMoveAwayFromObject(oCommander, true));
+        AssignCommand(oTarget, ClearAllActions(TRUE));
+        AssignCommand(oTarget, ActionMoveAwayFromObject(oCommander, TRUE));
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".fly")
     {
-        ApplyEffectToObject(DurationType.Instant, EffectDisappear(), oTarget);
+        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectDisappear(), oTarget);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".fol")
     {
         int iArg = StringToInt(sArgs);
-        FloatingTextStringOnCreature(GetName(oTarget) + " will follow you for "+IntToString(iArg)+" seconds.", oCommander, false);
-        AssignCommand(oTarget, ClearAllActions(true));
-        AssignCommand(oTarget, ActionForceMoveToObject(oCommander, true, 2.0f, IntToFloat(iArg)));
-        DelayCommand(IntToFloat(iArg), FloatingTextStringOnCreature(GetName(oTarget) + " has stopped following you.", oCommander, false));
+        FloatingTextStringOnCreature(GetName(oTarget) + " will follow you for "+IntToString(iArg)+" seconds.", oCommander, FALSE);
+        AssignCommand(oTarget, ClearAllActions(TRUE));
+        AssignCommand(oTarget, ActionForceMoveToObject(oCommander, TRUE, 2.0f, IntToFloat(iArg)));
+        DelayCommand(IntToFloat(iArg), FloatingTextStringOnCreature(GetName(oTarget) + " has stopped following you.", oCommander, FALSE));
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".fre")
     {
-        FloatingTextStringOnCreature(GetName(oTarget) + " frozen", oCommander, false);
-        SetCommandable(true, oTarget);
-        AssignCommand(oTarget, ClearAllActions(true));
-        DelayCommand(0.5f, SetCommandable(false, oTarget));
+        FloatingTextStringOnCreature(GetName(oTarget) + " frozen", oCommander, FALSE);
+        SetCommandable(TRUE, oTarget);
+        AssignCommand(oTarget, ClearAllActions(TRUE));
+        DelayCommand(0.5f, SetCommandable(FALSE, oTarget));
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".get")
@@ -3260,12 +3260,12 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
                 }
                 else
                 {
-                    FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, false);
+                    FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, FALSE);
                 }
                 return;
             }
         }
-        FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, false);
+        FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, FALSE);
         return;
 
     }
@@ -3291,26 +3291,26 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
                 }
                 else
                 {
-                    FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, false);
+                    FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, FALSE);
                 }
                 return;
             }
         }
-        FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, false);
+        FloatingTextStringOnCreature("Your Control Character is not valid. Perhaps you are using a reserved character.", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".hea")
     {
         int iArg = StringToInt(sArgs);
-        ApplyEffectToObject(DurationType.Instant, EffectHeal(iArg), oTarget);
-        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VFX_IMP_HEALING_M), oTarget);
-        FloatingTextStringOnCreature(GetName(oTarget) + " has healed " + IntToString(iArg) + " HP.", oCommander, false);
+        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectHeal(iArg), oTarget);
+        ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_HEALING_M), oTarget);
+        FloatingTextStringOnCreature(GetName(oTarget) + " has healed " + IntToString(iArg) + " HP.", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".ite")
     {
         object oCreate = CreateItemOnObject(sArgs, oTarget, 1);
-        if (GetIsObjectValid(oCreate)) FloatingTextStringOnCreature("Item " + GetName(oCreate) + " created.", oCommander, false);
+        if (GetIsObjectValid(oCreate)) FloatingTextStringOnCreature("Item " + GetName(oCreate) + " created.", oCommander, FALSE);
         return;
     }
     // 2008.05.29 tsunami282 - set name
@@ -3327,31 +3327,31 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
             {
                 SetName(oTarget, sArgs);
             }
-            FloatingTextStringOnCreature("Target's name set to " + GetName(oTarget), oCommander, false);
+            FloatingTextStringOnCreature("Target's name set to " + GetName(oTarget), oCommander, FALSE);
         }
         else
         {
-            FloatingTextStringOnCreature("Invalid target - command not processed.", oCommander, false);
+            FloatingTextStringOnCreature("Invalid target - command not processed.", oCommander, FALSE);
         }
     }
     else if (GetStringLeft(sCom, 4) == ".mut")
     {
-        FloatingTextStringOnCreature(GetName(oTarget) + " muted", oCommander, false);
+        FloatingTextStringOnCreature(GetName(oTarget) + " muted", oCommander, FALSE);
         SetLocalInt(oTarget, "dmfi_Mute", 1);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".npc")
     {
-        object oCreate = CreateObject(ObjectType.Creature, sArgs, GetLocation(oTarget));
+        object oCreate = CreateObject(OBJECT_TYPE_CREATURE, sArgs, GetLocation(oTarget));
         if (GetIsObjectValid(oCreate))
-            FloatingTextStringOnCreature("NPC " + GetName(oCreate) + " created.", oCommander, false);
+            FloatingTextStringOnCreature("NPC " + GetName(oCreate) + " created.", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".pla")
     {
-        object oCreate = CreateObject(ObjectType.Placeable, sArgs, GetLocation(oTarget));
+        object oCreate = CreateObject(OBJECT_TYPE_PLACEABLE, sArgs, GetLocation(oTarget));
         if (GetIsObjectValid(oCreate))
-            FloatingTextStringOnCreature("Placeable " + GetName(oCreate) + " created.", oCommander, false);
+            FloatingTextStringOnCreature("Placeable " + GetName(oCreate) + " created.", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".rem")
@@ -3382,31 +3382,31 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
             {
                 // SetLocalObject(oCommander, "dmfi_VoiceTarget", oGet);
                 SetLocalObject(oCommander, "dmfi_univ_target", oGet);
-                FloatingTextStringOnCreature("You have targeted " + GetName(oGet) + " with the DMFI Targeting Widget", oCommander, false);
+                FloatingTextStringOnCreature("You have targeted " + GetName(oGet) + " with the DMFI Targeting Widget", oCommander, FALSE);
                 return;
             }
             oGet = GetNextObjectInArea(GetArea(oCommander));
         }
-        FloatingTextStringOnCreature("Target not found.", oCommander, false);
+        FloatingTextStringOnCreature("Target not found.", oCommander, FALSE);
         return;
     }
     else if (GetStringLeft(sCom, 4) == ".unf")
     {
-        FloatingTextStringOnCreature(GetName(oTarget) + " unfrozen", oCommander, false);
-        SetCommandable(true, oTarget); return;
+        FloatingTextStringOnCreature(GetName(oTarget) + " unfrozen", oCommander, FALSE);
+        SetCommandable(TRUE, oTarget); return;
     }
     else if (GetStringLeft(sCom, 4) == ".unm")
     {
-        FloatingTextStringOnCreature(GetName(oTarget) + " un-muted", oCommander, false);
+        FloatingTextStringOnCreature(GetName(oTarget) + " un-muted", oCommander, FALSE);
         DeleteLocalInt(oTarget, "dmfi_Mute"); return;
     }
     else if (GetStringLeft(sCom, 4) == ".vfx")
     {
         int iArg = StringToInt(sArgs);
         if (GetTag(oTarget) == "dmfi_voice")
-            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(iArg), GetLocation(oTarget), 10.0f);
+            ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(iArg), GetLocation(oTarget), 10.0f);
         else
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(iArg), oTarget, 10.0f);
+            ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(iArg), oTarget, 10.0f);
         return;
     }
     else if (GetStringLeft(sCom, 5) == ".vtar")
@@ -3417,12 +3417,12 @@ void ParseCommand(object oTarget, object oCommander, string sComIn)
             if (FindSubString(GetName(oGet), sArgs) != -1)
             {
                 SetLocalObject(oCommander, "dmfi_VoiceTarget", oGet);
-                FloatingTextStringOnCreature("You have targeted " + GetName(oGet) + " with the Voice Widget", oCommander, false);
+                FloatingTextStringOnCreature("You have targeted " + GetName(oGet) + " with the Voice Widget", oCommander, FALSE);
                 return;
             }
             oGet = GetNextObjectInArea(GetArea(oCommander));
         }
-        FloatingTextStringOnCreature("Target not found.", oCommander, false);
+        FloatingTextStringOnCreature("Target not found.", oCommander, FALSE);
         return;
     }
 }
@@ -3447,7 +3447,7 @@ void subTranslateToLanguage(string sSaid, object oShouter, int nVolume,
         GetIsDM(oEavesdrop) ||
         GetIsDMPossessed(oEavesdrop))
     {
-        DelayCommand(0.1, DMFISendMessageToPC(oEavesdrop, GetName(oShouter) + " " + sVolume + " in " + sLanguageName + ": " + sSaid, false, DMFI_MESSAGE_COLOR_TRANSLATION));
+        DelayCommand(0.1, DMFISendMessageToPC(oEavesdrop, GetName(oShouter) + " " + sVolume + " in " + sLanguageName + ": " + sSaid, FALSE, DMFI_MESSAGE_COLOR_TRANSLATION));
     }
     else
     {
@@ -3456,7 +3456,7 @@ void subTranslateToLanguage(string sSaid, object oShouter, int nVolume,
             string sKnownLanguage;
             if (d20() + GetSkillRank(SKILL_LORE, oEavesdrop) > 20) sKnownLanguage = sLanguageName;
             else sKnownLanguage = "a language you do not recognize";
-            DelayCommand(0.1, DMFISendMessageToPC(oEavesdrop, GetName(oShouter)+" "+sVolume+" something in "+sKnownLanguage+".", false, DMFI_MESSAGE_COLOR_TRANSLATION));
+            DelayCommand(0.1, DMFISendMessageToPC(oEavesdrop, GetName(oShouter)+" "+sVolume+" something in "+sKnownLanguage+".", FALSE, DMFI_MESSAGE_COLOR_TRANSLATION));
         }
     }
 }
@@ -3476,7 +3476,7 @@ string TranslateToLanguage(string sSaid, object oShouter, int nVolume, object oM
     if (!iTranslate) iTranslate = GetDefaultRacialLanguage(oShouter, 1);
     if (!iTranslate)
     {
-        DMFISendMessageToPC(oMaster, "Translator Error: your message was dropped.", false, DMFI_MESSAGE_COLOR_ALERT);
+        DMFISendMessageToPC(oMaster, "Translator Error: your message was dropped.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
         return "";
     }
 
@@ -3507,14 +3507,14 @@ string TranslateToLanguage(string sSaid, object oShouter, int nVolume, object oM
     string sKnownLanguage;
 
     // send translated message to PC's in range who understand it
-    object oEavesdrop = GetFirstObjectInShape(Shape.Sphere, fDistance, GetLocation(oShouter), false, ObjectType.Creature);
+    object oEavesdrop = GetFirstObjectInShape(SHAPE_SPHERE, fDistance, GetLocation(oShouter), FALSE, OBJECT_TYPE_CREATURE);
     while (GetIsObjectValid(oEavesdrop))
     {
         if (GetIsPC(oEavesdrop) || GetIsDM(oEavesdrop) || GetIsDMPossessed(oEavesdrop) || GetIsPossessedFamiliar(oEavesdrop))
         {
             subTranslateToLanguage(sSaid, oShouter, nVolume, oMaster, iTranslate, sLanguageName, oEavesdrop);
         }
-        oEavesdrop = GetNextObjectInShape(Shape.Sphere, fDistance, GetLocation(oShouter), false, ObjectType.Creature);
+        oEavesdrop = GetNextObjectInShape(SHAPE_SPHERE, fDistance, GetLocation(oShouter), FALSE, OBJECT_TYPE_CREATURE);
     }
 
     // send translated message to DM's in range
@@ -3582,18 +3582,18 @@ int RelayTextToEavesdropper(object oShouter, int nVolume, string sSaid)
                         if (GetIsObjectValid(oTargeted))
                         {
                             rangemode = GetLocalInt(oMod, sHookRangeModeVarname+siHook);
-                            if (rangemode) oListener = GetFirstFactionMember(oTargeted, false); // everyone in party are our listeners
+                            if (rangemode) oListener = GetFirstFactionMember(oTargeted, FALSE); // everyone in party are our listeners
                             else oListener = oTargeted; // only selected PC is our listener
                             while (GetIsObjectValid(oListener))
                             {
                                 // check speaker:
                                 // check within earshot
-                                int bInRange = false;
+                                int bInRange = FALSE;
                                 locShouter = GetLocation(oShouter);
                                 locListener = GetLocation(oListener);
                                 if (oShouter == oListener)
                                 {
-                                    bInRange = true; // the target can always hear himself
+                                    bInRange = TRUE; // the target can always hear himself
                                 }
                                 else if (GetAreaFromLocation(locShouter) == GetAreaFromLocation(locListener))
                                 {
@@ -3601,7 +3601,7 @@ int RelayTextToEavesdropper(object oShouter, int nVolume, string sSaid)
                                     if ((nVolume == TALKVOLUME_WHISPER && dist <= WHISPER_DISTANCE) ||
                                         (nVolume != TALKVOLUME_WHISPER && dist <= TALK_DISTANCE))
                                     {
-                                        bInRange = true;
+                                        bInRange = TRUE;
                                     }
                                 }
                                 if (bInRange)
@@ -3614,7 +3614,7 @@ int RelayTextToEavesdropper(object oShouter, int nVolume, string sSaid)
                                 }
                                 if (rangemode == 0) break; // only check the target creature for rangemode 0
                                 if (bInRange) break; // once any party member hears shouter, we're done
-                                oListener = GetNextFactionMember(oTargeted, false);
+                                oListener = GetNextFactionMember(oTargeted, FALSE);
                             }
                         }
                         else
@@ -3637,7 +3637,7 @@ int RelayTextToEavesdropper(object oShouter, int nVolume, string sSaid)
                         }
                         locShouter = GetLocation(oShouter);
                         rangemode = GetLocalInt(oMod, sHookRangeModeVarname+siHook);
-                        int bInRange = false;
+                        int bInRange = FALSE;
                         if (rangemode == 0)
                         {
                             // check within earshot
@@ -3647,19 +3647,19 @@ int RelayTextToEavesdropper(object oShouter, int nVolume, string sSaid)
                                 if ((nVolume == TALKVOLUME_WHISPER && dist <= WHISPER_DISTANCE) ||
                                     (nVolume != TALKVOLUME_WHISPER && dist <= TALK_DISTANCE))
                                 {
-                                    bInRange = true;
+                                    bInRange = TRUE;
                                 }
                             }
                         }
                         else if (rangemode == 1)
                         {
                             // check within area
-                            if (GetAreaFromLocation(locShouter) == GetAreaFromLocation(locListener)) bInRange = true;
+                            if (GetAreaFromLocation(locShouter) == GetAreaFromLocation(locListener)) bInRange = TRUE;
                         }
                         else
                         {
                             // module-wide
-                            bInRange = true;
+                            bInRange = TRUE;
                         }
                         if (bInRange)
                         {
@@ -3705,7 +3705,7 @@ void main()
     string sSaid = GetPCChatMessage();
 
 // SpawnScriptDebugger();
-// DMFISendMessageToPC(oShouter, IntToString(nVolume)+">> "+sSaid, false, "737");
+// DMFISendMessageToPC(oShouter, IntToString(nVolume)+">> "+sSaid, FALSE, "737");
 
     // pass on any heard text to registered listeners
     // since listeners are set by DM's, pass the raw unprocessed command text to them
@@ -3836,7 +3836,7 @@ void main()
                     {
                         // target invalid
                         bChangedText = 1;
-                        DMFISendMessageToPC(oShouter, "Invalid command target - not processed.", false, DMFI_MESSAGE_COLOR_ALERT);
+                        DMFISendMessageToPC(oShouter, "Invalid command target - not processed.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
                         sSaid = "";
                     }
                 }
@@ -3852,7 +3852,7 @@ void main()
                     {
                         // target invalid
                         bChangedText = 1;
-                        DMFISendMessageToPC(oShouter, "Invalid emote target - not processed.", false, DMFI_MESSAGE_COLOR_ALERT);
+                        DMFISendMessageToPC(oShouter, "Invalid emote target - not processed.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
                         sSaid = "";
                     }
                 }
@@ -3868,7 +3868,7 @@ void main()
                     {
                         // target invalid
                         bChangedText = 1;
-                        DMFISendMessageToPC(oShouter, "Invalid language target - not processed.", false, DMFI_MESSAGE_COLOR_ALERT);
+                        DMFISendMessageToPC(oShouter, "Invalid language target - not processed.", FALSE, DMFI_MESSAGE_COLOR_ALERT);
                         sSaid = "";
                     }
                 }

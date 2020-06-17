@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using SWLOR.Game.Server.Caching;
 using SWLOR.Game.Server.Data.Entity;

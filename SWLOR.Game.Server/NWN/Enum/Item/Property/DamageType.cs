@@ -15,6 +15,10 @@ namespace SWLOR.Game.Server.NWN.Enum.Item.Property
         Fire,
         Negative,
         Positive,
-        Sonic
+        Sonic,
+
+        Ballistic = 14,
+        Energy = 15,
+        Bullet = 16
     }
 }

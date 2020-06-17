@@ -2,32 +2,32 @@
 {
     public enum AdministrationOption
     {
-        AllKillable = 0,  // TRUE/FALSE
-        NonPartyKillable = 1,  // TRUE/FALSE
-        RequireResurrection = 2,  // TRUE/FALSE
-        LoseStolenItems = 3,  // TRUE/FALSE
-        LoseItems = 4,  // TRUE/FALSE
-        LoseExp = 5,  // TRUE/FALSE
-        LoseGold = 6,  // TRUE/FALSE
+        AllKillable = 0,  // true/false
+        NonPartyKillable = 1,  // true/false
+        RequireResurrection = 2,  // true/false
+        LoseStolenItems = 3,  // true/false
+        LoseItems = 4,  // true/false
+        LoseExp = 5,  // true/false
+        LoseGold = 6,  // true/false
         LoseGoldNum = 7,
         LoseExpNum = 8,
         LoseItemsNum = 9,
         PvpSetting = 10, // 0 = No PVP, 1 = Party PVP, 2 = Full PVP
-        PauseAndPlay = 11, // TRUE/FALSE
-        OnePartyOnly = 12, // TRUE/FALSE
-        EnforceLegalCharacters = 13, // TRUE/FALSE
-        ItemLevelRestrictions = 14, // TRUE/FALSE
-        CDKeyBanListAllowList = 15, // TRUE/FALSE
-        DisallowShouting = 16, // TRUE/FALSE
-        ShowDMJoinedMessage = 17, // TRUE/FALSE
-        BackupSavedCharacters = 18, // TRUE/FALSE
-        AutoFailSaveOn1 = 19, // TRUE/FALSE
-        ValidateSpells = 20, // TRUE/FALSE
-        ExamineEffects = 21, // TRUE/FALSE
-        ExamineChallengeRating = 22, // TRUE/FALSE
-        UseMaxHitpoints = 23, // TRUE/FALSE
-        RestoreSpellUses = 24, // TRUE/FALSE
-        ResetEncounterSpawnPool = 25, // TRUE/FALSE
-        HideHitpointsGained = 26, // TRUE/FALSE
+        PauseAndPlay = 11, // true/false
+        OnePartyOnly = 12, // true/false
+        EnforceLegalCharacters = 13, // true/false
+        ItemLevelRestrictions = 14, // true/false
+        CDKeyBanListAllowList = 15, // true/false
+        DisallowShouting = 16, // true/false
+        ShowDMJoinedMessage = 17, // true/false
+        BackupSavedCharacters = 18, // true/false
+        AutoFailSaveOn1 = 19, // true/false
+        ValidateSpells = 20, // true/false
+        ExamineEffects = 21, // true/false
+        ExamineChallengeRating = 22, // true/false
+        UseMaxHitpoints = 23, // true/false
+        RestoreSpellUses = 24, // true/false
+        ResetEncounterSpawnPool = 25, // true/false
+        HideHitpointsGained = 26, // true/false
     }
 }

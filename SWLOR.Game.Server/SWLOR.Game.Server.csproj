@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,10 +12,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Properties\PublishProfiles\FolderProfile.pubxml.user" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,5 +28,9 @@
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).runtimeconfig.json" />
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).deps.json" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(OutDir)&quot; &quot;%25USERPROFILE%25/Documents/Neverwinter Nights/dotnet&quot; /Y /E" />
   </Target>
 </Project>

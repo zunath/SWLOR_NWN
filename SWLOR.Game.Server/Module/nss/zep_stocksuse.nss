@@ -54,5 +54,5 @@ void main()
     {
         AssignCommand(oUser,PlaySound("as_pl_despairm2"));
     }
-    //AssignCommand(OBJECT_SELF,ActionStartConversation(oUser,"",false,false));
+    //AssignCommand(OBJECT_SELF,ActionStartConversation(oUser,"",FALSE,FALSE));
 }

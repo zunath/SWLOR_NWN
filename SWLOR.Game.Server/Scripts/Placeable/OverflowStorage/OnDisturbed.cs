@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
@@ -23,9 +24,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
             NWPlaceable container = (_.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastDisturbed());
             NWItem oItem = (_.GetInventoryDisturbItem());
-            int type = _.GetInventoryDisturbType();
+            var type = _.GetInventoryDisturbType();
 
-            if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
+            if (type == DisturbType.Added)
             {
                 container.AssignCommand(() => _.ActionGiveItem(oItem.Object, oPC.Object));
                 return;

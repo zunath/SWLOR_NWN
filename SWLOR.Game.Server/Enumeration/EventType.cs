@@ -1,6 +1,4 @@
-﻿using System.CodeDom;
-
-namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.Enumeration
 {
     public class EventType
     {

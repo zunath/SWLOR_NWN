@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.CustomEffect
                 return null;
             }
 
-            var effect = _.EffectImmunity(IMMUNITY_TYPE_KNOCKDOWN);
+            var effect = _.EffectImmunity(ImmunityType.Knockdown);
             effect = _.TagEffect(effect, "BALANCED_STANCE");
 
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, effect, target);
+            _.ApplyEffectToObject(DurationType.Permanent, effect, target);
             return null;
         }
 

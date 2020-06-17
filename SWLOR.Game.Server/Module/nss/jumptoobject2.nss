@@ -5,7 +5,7 @@ object oPC = GetPlaceableLastClickedBy();
 location locSpellTarget = GetLocation(OBJECT_SELF);
 
 object portal = GetNearestObjectByTag("WP_jumpTarget2");
- ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VFX_IMP_UNSUMMON), locSpellTarget);
+ ApplyEffectAtLocation(DURATION_TYPE_INSTANT, EffectVisualEffect(VFX_IMP_UNSUMMON), locSpellTarget);
 
     AssignCommand(oPC,ActionJumpToObject(portal));
 

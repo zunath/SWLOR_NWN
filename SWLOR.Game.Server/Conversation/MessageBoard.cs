@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -156,7 +155,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("CreatePostPage", header);
 
-            player.SetLocalInt("MESSAGE_BOARD_LISTENING", TRUE);
+            player.SetLocalBool("MESSAGE_BOARD_LISTENING", true);
         }
 
         private void CreatePostPageResponses(int responseID)
@@ -234,7 +233,7 @@ namespace SWLOR.Game.Server.Conversation
                             DateRemoved = null
                         };
                         DataService.SubmitDataChange(post, DatabaseActionType.Insert);
-                        _.TakeGoldFromCreature(price, player, TRUE);
+                        _.TakeGoldFromCreature(price, player, true);
 
                         player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
                         player.DeleteLocalString("MESSAGE_BOARD_TEXT");

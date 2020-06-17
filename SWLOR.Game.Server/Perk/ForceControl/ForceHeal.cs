@@ -1,6 +1,8 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -84,8 +86,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 amount = difference;
 
             // Apply the heal
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), target);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_HEAD_HOLY), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
 
             // Give Control XP, if player.
             if (creature.IsPlayer)

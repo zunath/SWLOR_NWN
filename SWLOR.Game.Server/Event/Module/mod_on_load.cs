@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.NWN.Enum.Item;
@@ -84,14 +85,14 @@ namespace NWN.Scripts
         private static void SetAreaEventScripts()
         {
             uint area = _.GetFirstArea();
-            while (_.GetIsObjectValid(area) == _.TRUE)
+            while (_.GetIsObjectValid(area) == true)
             {
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_EXIT, "area_on_exit");
+                _.SetEventScript(area, EventScript.Area_OnEnter, "area_on_enter");
+                _.SetEventScript(area, EventScript.Area_OnExit, "area_on_exit");
                 // Heartbeat events will be set when players enter the area.
                 // There's no reason to have them firing if no players are in the area.
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, string.Empty);
-                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_USER_DEFINED_EVENT, "area_on_user");
+                _.SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty);
+                _.SetEventScript(area, EventScript.Area_OnUserDefined, "area_on_user");
 
                 area = _.GetNextArea();
             }
@@ -101,22 +102,22 @@ namespace NWN.Scripts
         private static void SetModuleEventScripts()
         {
             // Vanilla NWN Event Hooks
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_ACQUIRE_ITEM, "mod_on_acquire");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_ACTIVATE_ITEM, "mod_on_activate");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_CLIENT_ENTER, "mod_on_enter");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_CLIENT_EXIT, "mod_on_leave");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_CANCEL_CUTSCENE, "mod_on_csabort");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_HEARTBEAT, "mod_on_heartbeat");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_CHAT, "mod_on_chat");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_DEATH, "mod_on_death");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_DYING, "mod_on_dying");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_EQUIP_ITEM, "mod_on_equip");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_LEVEL_UP, "mod_on_levelup");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_RESPAWN_BUTTON_PRESSED, "mod_on_respawn");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_REST, "mod_on_rest");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_UNEQUIP_ITEM, "mod_on_unequip");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_LOSE_ITEM, "mod_on_unacquire");
-            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_USER_DEFINED_EVENT, "mod_on_user");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnAcquireItem, "mod_on_acquire");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnActivateItem, "mod_on_activate");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnClientEnter, "mod_on_enter");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnClientExit, "mod_on_leave");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnPlayerCancelCutscene, "mod_on_csabort");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnHeartbeat, "mod_on_heartbeat");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnPlayerChat , "mod_on_chat");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnPlayerDeath, "mod_on_death");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnPlayerDying, "mod_on_dying");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnEquipItem, "mod_on_equip");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnPlayerLevelUp, "mod_on_levelup");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnRespawnButtonPressed, "mod_on_respawn");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnPlayerRest, "mod_on_rest");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnUnequipItem, "mod_on_unequip");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnLoseItem, "mod_on_unacquire");
+            _.SetEventScript(_.GetModule(), EventScript.Module_OnUserDefined , "mod_on_user");
 
             // NWNX Hooks
             NWNXEvents.SubscribeEvent(EventType.StartCombatRoundBefore, "mod_on_attack");

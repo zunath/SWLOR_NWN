@@ -1,12 +1,11 @@
 ﻿using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
+                _.ActionPlayAnimation(Animation.LoopingSitCross, 1.0f, 6.1f);
             });
 
             player.IsBusy = true;
@@ -66,16 +65,16 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
+                _.ActionPlayAnimation(Animation.LoopingSitCross, 1.0f, 6.1f);
             });
 
             if (restTick >= 6)
             {
                 int amount = CalculateAmount(player);
 
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), player);
-                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_HOLY);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), player);
+                Effect vfx = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy);
+                _.ApplyEffectToObject(DurationType.Instant, vfx, player);
                 restTick = 0;
             }
 

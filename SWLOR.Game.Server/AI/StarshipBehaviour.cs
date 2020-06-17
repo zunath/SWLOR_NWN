@@ -1,10 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-using NWN;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.AI
 {

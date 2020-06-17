@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -9,12 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
-using SWLOR.Game.Server.Scripting;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.Service
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
                 var quest = _quests[pcQuest.QuestID];
-                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, FALSE);
+                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, false);
             }
         }
 
@@ -286,7 +285,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Location location = oPC.Location;
-            NWPlaceable collector = CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location);
+            NWPlaceable collector = CreateObject(ObjectType.Placeable, "qst_item_collect", location);
             collector.SetLocalObject("QUEST_OWNER", questOwner);
 
             collector.AssignCommand(() =>

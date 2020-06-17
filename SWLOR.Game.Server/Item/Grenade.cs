@@ -1,13 +1,14 @@
 ﻿using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -46,13 +47,13 @@ namespace SWLOR.Game.Server.Item
             }
 
             Effect impactEffect = null;
-            int spellId = 0;
+            var spellId = Spell.Invalid;
             string soundName = null;
             int perkLevel = 1 + PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
             int skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Throwing);
             if (perkLevel == 0) perkLevel += 1;
 
-            if (GetIsObjectValid(target) == TRUE) targetLocation = GetLocation(target);
+            if (GetIsObjectValid(target) == true) targetLocation = GetLocation(target);
             string grenadeType = item.GetLocalString("TYPE");
             Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
             Location originalLocation = targetLocation;
@@ -69,8 +70,8 @@ namespace SWLOR.Game.Server.Item
                     targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     int count = 0;
-                    while ((GetSurfaceMaterial(targetLocation) == FALSE ||
-                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE) &&
+                    while ((GetSurfaceMaterial(targetLocation) == 0 ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false) &&
                            count < 10)
                     {
                         count += 1;
@@ -85,8 +86,8 @@ namespace SWLOR.Game.Server.Item
                     targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     int count = 0;
-                    while ((GetSurfaceMaterial(targetLocation) == FALSE ||
-                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE) &&
+                    while ((GetSurfaceMaterial(targetLocation) == 0 ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false) &&
                            count < 10)
                     {
                         count += 1;
@@ -95,8 +96,8 @@ namespace SWLOR.Game.Server.Item
                     }
                 }
 
-                if (GetSurfaceMaterial(targetLocation) == FALSE ||
-                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == FALSE)
+                if (GetSurfaceMaterial(targetLocation) == 0 ||
+                           LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false)
                 {
                     targetLocation = originalLocation;
                 }
@@ -105,34 +106,34 @@ namespace SWLOR.Game.Server.Item
             switch (grenadeType)
             {
                 case "FRAG":                    
-                    impactEffect = EffectVisualEffect(VFX_FNF_FIREBALL);
+                    impactEffect = EffectVisualEffect(VisualEffect.Fnf_Fireball);
                     // force a specific spell id (for projectile model) for this grenade.
-                    spellId = 974;
+                    spellId = Spell.Grenade10;
                     soundName = "explosion2";                    
                     break;
                 case "CONCUSSION":
-                    impactEffect = EffectVisualEffect(VFX_FNF_SOUND_BURST_SILENT);
-                    impactEffect = EffectLinkEffects(EffectVisualEffect(VFX_FNF_SCREEN_SHAKE), impactEffect);
+                    impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
+                    impactEffect = EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), impactEffect);
                     //spellId = 974;
                     soundName = "explosion1";
                     break;
                 case "FLASHBANG":
-                    impactEffect = EffectVisualEffect(VFX_FNF_MYSTICAL_EXPLOSION);
+                    impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Mystical_Explosion);
                     //spellId = 974;
                     soundName = "explosion1";
                     break;
                 case "ION":
-                    impactEffect = EffectVisualEffect(VFX_FNF_ELECTRIC_EXPLOSION);
+                    impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion);
                     //spellId = 974;
                     soundName = "explosion1";
                     break;
                 case "BACTA":
-                    impactEffect = EffectVisualEffect(VFX_FNF_GAS_EXPLOSION_NATURE);
+                    impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature);
                     //spellId = 974;
                     //soundName = "explosion1";
                     break;
                 case "ADHESIVE":
-                    impactEffect = EffectVisualEffect(VFX_FNF_DISPEL_GREATER);
+                    impactEffect = EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater);
                     //spellId = 974;
                     //soundName = "explosion1";
                     break;
@@ -164,7 +165,7 @@ namespace SWLOR.Game.Server.Item
             {
                 // start 974 through 979 in spells.2da for grenades
                 // lets randomly assign a projectile appearance for flavor?
-                spellId = RandomService.D6(1) + 973;
+                spellId = (Spell)(RandomService.D6(1) + 973);
             }
 
             float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
@@ -174,8 +175,8 @@ namespace SWLOR.Game.Server.Item
             //user.DelayAssignCommand(() => _.ActionPlayAnimation(32), 0.0f);
             user.AssignCommand(() =>
             {
-                ActionPlayAnimation(32);
-                ActionCastSpellAtLocation(spellId, targetLocation, METAMAGIC_ANY, TRUE, PROJECTILE_PATH_TYPE_BALLISTIC, TRUE);
+                ActionPlayAnimation(Animation.LoopingCustom17);
+                ActionCastSpellAtLocation(spellId, targetLocation, MetaMagic.Any, true, ProjectilePathType.Ballistic, true);
                 //ActionCastFakeSpellAtLocation(spellId, targetLocation, PROJECTILE_PATH_TYPE_BALLISTIC);
             });            
 
@@ -191,14 +192,14 @@ namespace SWLOR.Game.Server.Item
             {
                 user.DelayAssignCommand(() =>
                 {
-                    ApplyEffectAtLocation(DURATION_TYPE_INSTANT, impactEffect, targetLocation);
+                    ApplyEffectAtLocation(DurationType.Instant, impactEffect, targetLocation);
                 }, delay);
             }
 
             user.DelayAssignCommand(
                          () =>
                          {
-                             DoImpact(user, targetLocation, grenadeType, perkLevel, RADIUS_SIZE_LARGE, OBJECT_TYPE_CREATURE);
+                             DoImpact(user, targetLocation, grenadeType, perkLevel, RadiusSize.Large, ObjectType.Creature);
                          }, delay + 0.75f);
 
 
@@ -226,25 +227,25 @@ namespace SWLOR.Game.Server.Item
 
         }
 
-        public void DoImpact(NWCreature user, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, int nObjectFilter)
+        public void DoImpact(NWCreature user, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, ObjectType nObjectFilter)
         {
-            Effect damageEffect = EffectDamage(0, DAMAGE_TYPE_NEGATIVE);
+            Effect damageEffect = EffectDamage(0, DamageType.Negative);
             Effect durationEffect = null;
             int duration = perkLevel;
 
             switch (grenadeType)
             {
                 case "SMOKE":
-                    durationEffect = EffectAreaOfEffect(AOE_PER_FOG_OF_BEWILDERMENT, "grenade_smoke_en", "grenade_smoke_hb", "");
+                    durationEffect = EffectAreaOfEffect(AreaOfEffect.FogOfBewilderment, "grenade_smoke_en", "grenade_smoke_hb", "");
                     break;
                 case "BACTABOMB":
-                    durationEffect = EffectAreaOfEffect(AOE_PER_FOGMIND, "grenade_bbomb_en", "grenade_bbomb_hb", "");
+                    durationEffect = EffectAreaOfEffect(AreaOfEffect.FogMind, "grenade_bbomb_en", "grenade_bbomb_hb", "");
                     break;
                 case "INCENDIARY":
-                    durationEffect = EffectAreaOfEffect(AOE_PER_FOGFIRE, "grenade_incen_en", "grenade_incen_hb", "");
+                    durationEffect = EffectAreaOfEffect(AreaOfEffect.FogFire, "grenade_incen_en", "grenade_incen_hb", "");
                     break;
                 case "GAS":
-                    durationEffect = EffectAreaOfEffect(AOE_PER_FOGGHOUL, "grenade_gas_en", "grenade_gas_hb", "");
+                    durationEffect = EffectAreaOfEffect(AreaOfEffect.FogGhoul, "grenade_gas_en", "grenade_gas_hb", "");
                     break;
                 default:
                     break;
@@ -253,14 +254,14 @@ namespace SWLOR.Game.Server.Item
             if (durationEffect != null)
             {
                 //Apply AOE
-                ApplyEffectAtLocation(_.DURATION_TYPE_TEMPORARY, durationEffect, targetLocation, duration * 6.0f);
+                ApplyEffectAtLocation(DurationType.Temporary, durationEffect, targetLocation, duration * 6.0f);
             }
             else
             {
                 //Apply impact
 
                 // Target the next nearest creature and do the same thing.
-                NWObject targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
+                NWObject targetCreature = GetFirstObjectInShape(Shape.Sphere, fExplosionRadius, targetLocation, true, nObjectFilter);
                 while (targetCreature.IsValid)
                 {
                     Console.WriteLine("Grenade hit on " + targetCreature.Name);
@@ -268,8 +269,8 @@ namespace SWLOR.Game.Server.Item
                     switch (grenadeType)
                     {
                         case "FRAG":
-                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_FIRE);
-                            damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel), _.DAMAGE_TYPE_PIERCING), damageEffect);
+                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Fire);
+                            damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel), DamageType.Piercing), damageEffect);
                             if (RandomService.D6(1) > 4)
                             {
                                 Console.WriteLine("grenade effect bleeding - frag");
@@ -283,7 +284,7 @@ namespace SWLOR.Game.Server.Item
                             Console.WriteLine("grenade effects set - frag");
                             break;
                         case "CONCUSSION":
-                            damageEffect = EffectDamage(RandomService.D12(perkLevel), DAMAGE_TYPE_SONIC);
+                            damageEffect = EffectDamage(RandomService.D12(perkLevel), DamageType.Sonic);
                             durationEffect = EffectDeaf();
                             if (RandomService.D6(1) > 4)
                             {
@@ -300,9 +301,9 @@ namespace SWLOR.Game.Server.Item
                             break;
                         case "ION":
                             duration = RandomService.D4(1);
-                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_ELECTRICAL);
-                            if (GetRacialType(targetCreature) == (int)CustomRaceType.Robot ||
-                                (RandomService.D6(1) > 4 && GetRacialType(targetCreature) == (int)CustomRaceType.Cyborg))
+                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Electrical);
+                            if (GetRacialType(targetCreature) == RacialType.Robot ||
+                                (RandomService.D6(1) > 4 && GetRacialType(targetCreature) == RacialType.Cyborg))
                             {
                                 durationEffect = EffectStunned();
                             }
@@ -324,15 +325,15 @@ namespace SWLOR.Game.Server.Item
 
                     Console.WriteLine("applying effects to " + GetName(targetCreature));
 
-                    if (damageEffect != null) ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damageEffect, targetCreature);
-                    if (durationEffect != null) ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, durationEffect, targetCreature, duration * 6.0f);
+                    if (damageEffect != null) ApplyEffectToObject(DurationType.Instant, damageEffect, targetCreature);
+                    if (durationEffect != null) ApplyEffectToObject(DurationType.Temporary, durationEffect, targetCreature, duration * 6.0f);
 
                     if (!targetCreature.IsPlayer)
                     {
                         SkillService.RegisterPCToNPCForSkill(user.Object, targetCreature, SkillType.Throwing);
                     }                    
 
-                    targetCreature = GetNextObjectInShape(SHAPE_SPHERE, fExplosionRadius, targetLocation, TRUE, nObjectFilter);
+                    targetCreature = GetNextObjectInShape(Shape.Sphere, fExplosionRadius, targetLocation, true, nObjectFilter);
                 }
             }
         }
@@ -350,13 +351,13 @@ namespace SWLOR.Game.Server.Item
             switch (grenadeType)
             {
                 case "SMOKE":
-                    durationEffect = EffectInvisibility(INVISIBILITY_TYPE_NORMAL);
+                    durationEffect = EffectInvisibility(InvisibilityType.Normal);
                     break;
                 case "BACTABOMB":
                     durationEffect = EffectRegenerate(perkLevel*2, 6.0f);
                     break;
                 case "INCENDIARY":
-                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_FIRE);
+                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Fire);
                     duration = RandomService.D6(1);
                     if (RandomService.D6(1) > 4)
                     {
@@ -364,21 +365,21 @@ namespace SWLOR.Game.Server.Item
                     }
                     break;
                 case "GAS":
-                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DAMAGE_TYPE_ACID);
+                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Acid);
                     duration = RandomService.D6(1);
-                    if (RandomService.D6(1) > 4 && GetIsImmune(oTarget, IMMUNITY_TYPE_POISON) == FALSE)
+                    if (RandomService.D6(1) > 4 && GetIsImmune(oTarget, ImmunityType.Poison) == false)
                     {
-                        durationEffect = EffectPoison(POISON_ARSENIC);
+                        durationEffect = EffectPoison(Poison.Arsenic);
                     }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(grenadeType));
             }
 
-            if (GetIsObjectValid(oTarget) == TRUE)
+            if (GetIsObjectValid(oTarget) == true)
             {
-                if (impactEffect != null) ApplyEffectToObject(_.DURATION_TYPE_INSTANT, impactEffect, oTarget);
-                if (durationEffect != null) ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, durationEffect, oTarget, duration * 6.0f);
+                if (impactEffect != null) ApplyEffectToObject(DurationType.Instant, impactEffect, oTarget);
+                if (durationEffect != null) ApplyEffectToObject(DurationType.Temporary, durationEffect, oTarget, duration * 6.0f);
                 if (!oTarget.IsPlayer)
                 {
                     SkillService.RegisterPCToNPCForSkill(user.Object, oTarget, SkillType.Throwing);
@@ -396,9 +397,9 @@ namespace SWLOR.Game.Server.Item
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
-            return -1;
+            return Animation.Invalid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

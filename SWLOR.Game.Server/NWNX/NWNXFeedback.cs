@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public static int GetFeedbackMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
         {
-            if (player == null) player = NWScript.OBJECT_INVALID;
+            if (player == null) player = _.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMessageHidden");
             Internal.NativeFunctions.nwnxPushInt((int)messageType);
             Internal.NativeFunctions.nwnxPushInt(0);
@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static void SetFeedbackMessageHidden(FeedbackMessageTypes messageType, int hide, uint? player = null)
+        public static void SetFeedbackMessageHidden(FeedbackMessageTypes messageType, bool hide, uint? player = null)
         {
-            if (player == null) player = NWScript.OBJECT_INVALID;
+            if (player == null) player = _.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMessageHidden");
-            Internal.NativeFunctions.nwnxPushInt(hide);
+            Internal.NativeFunctions.nwnxPushInt(hide ? 1 : 0);
             Internal.NativeFunctions.nwnxPushInt((int)messageType);
             Internal.NativeFunctions.nwnxPushInt(0);
             Internal.NativeFunctions.nwnxPushObject((uint)player);
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public static int GetCombatLogMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
         {
-            if (player == null) player = NWScript.OBJECT_INVALID;
+            if (player == null) player = _.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMessageHidden");
             Internal.NativeFunctions.nwnxPushInt((int)messageType);
             Internal.NativeFunctions.nwnxPushInt(1);
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.NWNX
         public static void SetCombatLogMessageHidden(FeedbackMessageTypes messageType, int hide,
             uint? player = null)
         {
-            if (player == null) player = NWScript.OBJECT_INVALID;
+            if (player == null) player = _.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMessageHidden");
             Internal.NativeFunctions.nwnxPushInt(hide);
             Internal.NativeFunctions.nwnxPushInt((int)messageType);
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public static int GetJournalUpdatedMessageHidden(uint? player = null)
         {
-            if (player == null) player = NWScript.OBJECT_INVALID;
+            if (player == null) player = _.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMessageHidden");
             Internal.NativeFunctions.nwnxPushInt(0);
             Internal.NativeFunctions.nwnxPushInt(2);

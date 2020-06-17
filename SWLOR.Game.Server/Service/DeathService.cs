@@ -2,13 +2,13 @@
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -25,26 +25,26 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetLastPlayerDied();
             NWObject hostile = _.GetLastHostileActor(player.Object);
 
-            _.SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, player);
-            _.SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, player);
-            _.SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Defender, 100, player);
 
-            var factionMember = _.GetFirstFactionMember(hostile.Object, FALSE);
-            while (_.GetIsObjectValid(factionMember) == TRUE)
+            var factionMember = _.GetFirstFactionMember(hostile.Object, false);
+            while (_.GetIsObjectValid(factionMember) == true)
             {
                 _.ClearPersonalReputation(player.Object, factionMember);
-                factionMember = _.GetNextFactionMember(hostile.Object, FALSE);
+                factionMember = _.GetNextFactionMember(hostile.Object, false);
             }
             
             const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
-            _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
+            _.PopUpDeathGUIPanel(player.Object, true, true, 0, RespawnMessage);
         }
 
         private static void ApplyDurabilityLoss(NWPlayer player)
         {
-            for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
+            for (int index = 0; index < NumberOfInventorySlots; index++)
             {
-                NWItem equipped = _.GetItemInSlot(index, player);
+                NWItem equipped = _.GetItemInSlot((InventorySlot)index, player);
                 DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
             }
 
@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Service
             ApplyDurabilityLoss(oPC);
 
             int amount = oPC.MaxHP / 2;
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), oPC.Object);
 
             NWArea area = oPC.Area;
             
@@ -86,7 +86,6 @@ namespace SWLOR.Game.Server.Service
         public static void SetRespawnLocation(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
             pc.RespawnLocationX = player.Position.X;
@@ -95,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
-            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
+            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, false);
         }
 
 

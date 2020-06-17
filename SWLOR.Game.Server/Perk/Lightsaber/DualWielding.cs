@@ -4,7 +4,7 @@ using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber &&
-                oItem.GetLocalInt("LIGHTSABER") == FALSE) 
+                GetLocalBool(oItem, "LIGHTSABER") == false) 
                 return;
 
             ApplyFeatChanges(creature, null);
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber &&
-                oItem.GetLocalInt("LIGHTSABER") == FALSE)
+                GetLocalBool(oItem, "LIGHTSABER") == false)
                 return;
 
             ApplyFeatChanges(creature, oItem);
@@ -103,9 +103,9 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
             // Main or offhand is not acceptable item type.
             if ((mainEquipped.CustomItemType != CustomItemType.Lightsaber &&
-                 mainEquipped.GetLocalInt("LIGHTSABER") == FALSE) ||
+                 GetLocalBool(mainEquipped, "LIGHTSABER") == false) ||
                 (offEquipped.CustomItemType != CustomItemType.Lightsaber &&
-                 offEquipped.GetLocalInt("LIGHTSABER") == FALSE))
+                 GetLocalBool(offEquipped, "LIGHTSABER") == false))
             {
                 RemoveFeats(creature);
                 return;

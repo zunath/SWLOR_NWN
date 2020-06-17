@@ -1,8 +1,7 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.DoorRule
 {
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.DoorRule
             position.Y = position.Y - mod;
             Location doorLocation = _.Location(area.Object, position, _.GetFacingFromLocation(location));
 
-            return _.CreateObject(OBJECT_TYPE_PLACEABLE, "building_ent1", doorLocation);
+            return _.CreateObject(ObjectType.Placeable, "building_ent1", doorLocation);
         }
     }
 }

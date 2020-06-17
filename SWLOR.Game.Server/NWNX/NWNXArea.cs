@@ -1,7 +1,4 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
-using static SWLOR.Game.Server.NWNX.NWNXCore;
+﻿using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -92,7 +89,7 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        // Returns TRUE if resting is not allowed in area
+        // Returns true if resting is not allowed in area
         public static bool GetNoRestingAllowed(uint area)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoRestingAllowed");
@@ -102,8 +99,8 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Set whether resting is allowed in area
-        // TRUE: Resting not allowed
-        // FALSE: Resting allowed
+        // true: Resting not allowed
+        // false: Resting allowed
         public static void SetNoRestingAllowed(uint area, bool bNoRestingAllowed)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoRestingAllowed");

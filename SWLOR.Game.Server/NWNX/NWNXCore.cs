@@ -65,5 +65,17 @@ namespace SWLOR.Game.Server.NWNX
         {
             return _.GetLocalString(_.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
+
+        public static Effect NWNX_GetReturnValueEffect(string pluginName, string functionName)
+        {
+            var e = _.EffectBlindness();
+            return _.TagEffect(e, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+        }
+
+        public static ItemProperty NWNX_GetReturnValueItemProperty(string pluginName, string functionName)
+        {
+            ItemProperty ip = _.ItemPropertyTrueSeeing();
+            return _.TagItemProperty(ip, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+        }
     }
 }

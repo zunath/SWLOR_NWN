@@ -10,46 +10,48 @@ namespace SWLOR.Game.Server.NWNX
         // Convert native itemproperty type to unpacked structure
         public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnpackIP");
+            const string func = "UnpackIP";
 
-            Internal.NativeFunctions.nwnxPushItemProperty(ip.Handle);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNXCore.NWNX_PushArgumentItemProperty(PLUGIN_NAME, func, ip);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, func);
 
             return new ItemPropertyUnpacked
             {
-                Property = Internal.NativeFunctions.nwnxPopInt(),
-                SubType = Internal.NativeFunctions.nwnxPopInt(),
-                CostTable = Internal.NativeFunctions.nwnxPopInt(),
-                CostTableValue = Internal.NativeFunctions.nwnxPopInt(),
-                Param1 = Internal.NativeFunctions.nwnxPopInt(),
-                Param1Value = Internal.NativeFunctions.nwnxPopInt(),
-                UsesPerDay = Internal.NativeFunctions.nwnxPopInt(),
-                ChanceToAppear = Internal.NativeFunctions.nwnxPopInt(),
-                IsUseable = Convert.ToBoolean(Internal.NativeFunctions.nwnxPopInt()),
-                SpellID = Internal.NativeFunctions.nwnxPopInt(),
-                Creator = Internal.NativeFunctions.nwnxPopObject(),
-                Tag = Internal.NativeFunctions.nwnxPopString()
+                Property = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                SubType = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                CostTable = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                CostTableValue = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                Param1 = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                Param1Value = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                UsesPerDay = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                ChanceToAppear = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                IsUseable = Convert.ToBoolean(NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func)),
+                SpellID = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                Creator = NWNXCore.NWNX_GetReturnValueObject(PLUGIN_NAME, func),
+                Tag = NWNXCore.NWNX_GetReturnValueString(PLUGIN_NAME, func)
             };
         }
 
         // Convert unpacked itemproperty structure to native type.
         public static ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PackIP");
-            Internal.NativeFunctions.nwnxPushString(itemProperty.Tag);
-            Internal.NativeFunctions.nwnxPushObject(itemProperty.Creator ?? Internal.OBJECT_INVALID);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.SpellID);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.IsUseable ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.ChanceToAppear);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.UsesPerDay);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.Param1Value);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.Param1);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.CostTableValue);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.CostTable);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.SubType);
-            Internal.NativeFunctions.nwnxPushInt(itemProperty.Property);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return new ItemProperty(Internal.NativeFunctions.nwnxPopItemProperty());
+            const string sFunc = "PackIP";
+
+            NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, itemProperty.Tag);
+            NWNXCore.NWNX_PushArgumentObject(PLUGIN_NAME, sFunc, itemProperty.Creator);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.SpellID);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.IsUseable ? 1 : 0);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.ChanceToAppear);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.UsesPerDay);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.Param1Value);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.Param1);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.CostTableValue);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.CostTable);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.SubType);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.Property);
+
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
+            return NWNXCore.NWNX_GetReturnValueItemProperty(PLUGIN_NAME, sFunc);
         }
     }
 }

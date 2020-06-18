@@ -89,9 +89,7 @@ namespace SWLOR.Game.Server.NWN
 
         ~ItemProperty()
         {
-            // todo: We're getting a double free on this for some reason. This is an awful hack but it's causing crashes.
-            // todo: I'll take a temporary memory leak over a crash at this point.
-            //Internal.NativeFunctions.FreeItemProperty(Handle);
+            Internal.NativeFunctions.FreeItemProperty(Handle);
         }
     }
 

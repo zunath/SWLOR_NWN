@@ -3,15 +3,17 @@ Server-side C# code used in the Neverwinter Nights Star Wars: Legends of the Old
 
 Game: Neverwinter Nights: Enhanced Edition
 
-Website: http://starwarsnwn.com/
+Website: https://starwarsnwn.com/
 
 Discord: https://discord.gg/MyQAM6m
+
+Forums: https://forums.starwarsnwn.com/
 
 # Project Description
 
 This project contains the C# source code used on the Star Wars: Legends of the Old Republic server. 
 
-It serves as a replacement for NWScript and handles most server features and functions. This is possible by using the NWNX_Mono plugin for NWNX.
+It serves as a replacement for NWScript and handles most server features and functions. This is possible by using the NWNX_DotNet plugin for NWNX.
 
 Refer to the quick start guide below and be sure to post any issues on our forums. The link to the forums is above.
 
@@ -19,7 +21,7 @@ Refer to the quick start guide below and be sure to post any issues on our forum
 
 1.) Install Git from here: https://git-scm.com/downloads
 
-2.) Install Visual Studio Community Edition 2017 from here: https://www.visualstudio.com/downloads/
+2.) Install Visual Studio Community Edition 2019 from here: https://www.visualstudio.com/downloads/
 
 3.) Start up Visual Studio.
 

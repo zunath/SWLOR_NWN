@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
+            if (user.IsCreature) { DurabilityService.RunItemDecay((NWPlayer) user, item, 1.0f); }
             return null;
         }
 
@@ -33,15 +34,15 @@ namespace SWLOR.Game.Server.Item
             {
                 unlockDateTime = DateTime.ParseExact(GetLocalString(user, "GRENADE_UNLOCKTIME"), "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
             }
-            Console.WriteLine("IsValidTarget - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("IsValidTarget - Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("IsValidTarget - DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
+            //Console.WriteLine("IsValidTarget - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            //Console.WriteLine("IsValidTarget - Unlocktime = " + unlockDateTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            //Console.WriteLine("IsValidTarget - DateTime.Compare = " + DateTime.Compare(unlockDateTime, now));
 
             // Check if we've passed the unlock date. Exit early if we have not.
             if (DateTime.Compare(unlockDateTime, now) > 0 || unlockDateTime > now)
             {
                 string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
+                //Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
                 SendMessageToPC(user, "That ability can be used in " + timeToWait + ".");
                 return;
             }
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Item
 
             if (GetIsObjectValid(target) == true) targetLocation = GetLocation(target);
             string grenadeType = item.GetLocalString("TYPE");
-            Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
+            //Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
             Location originalLocation = targetLocation;
 
             int roll = RandomService.D100(1);
@@ -114,47 +115,47 @@ namespace SWLOR.Game.Server.Item
                 case "CONCUSSION":
                     impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
                     impactEffect = EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), impactEffect);
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     soundName = "explosion1";
                     break;
                 case "FLASHBANG":
                     impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Mystical_Explosion);
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     soundName = "explosion1";
                     break;
                 case "ION":
                     impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion);
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     soundName = "explosion1";
                     break;
                 case "BACTA":
                     impactEffect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature);
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     //soundName = "explosion1";
                     break;
                 case "ADHESIVE":
                     impactEffect = EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater);
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     //soundName = "explosion1";
                     break;
                 case "SMOKE":
                     impactEffect = null;
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     //soundName = "explosion1";
                     break;
                 case "BACTABOMB":
                     impactEffect = null;
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     //soundName = "explosion1";
                     break;
                 case "INCENDIARY":
                     impactEffect = null;
-                    //spellId = 974;
+                    spellId = Spell.Grenade10;
                     //soundName = "explosion1";
                     break;
                 case "GAS":
-                    impactEffect = null;                    
-                    //spellId = 974;
+                    impactEffect = null;
+                    spellId = Spell.Grenade10;
                     //soundName = "explosion1";
                     break;
                 default:
@@ -175,7 +176,7 @@ namespace SWLOR.Game.Server.Item
             //user.DelayAssignCommand(() => _.ActionPlayAnimation(32), 0.0f);
             user.AssignCommand(() =>
             {
-                ActionPlayAnimation(Animation.LoopingCustom17);
+                ActionPlayAnimation(Animation.LoopingCustom12);
                 ActionCastSpellAtLocation(spellId, targetLocation, MetaMagic.Any, true, ProjectilePathType.Ballistic, true);
                 //ActionCastFakeSpellAtLocation(spellId, targetLocation, PROJECTILE_PATH_TYPE_BALLISTIC);
             });            
@@ -222,8 +223,8 @@ namespace SWLOR.Game.Server.Item
             }
 
             SetLocalString(user, "GRENADE_UNLOCKTIME", unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            //Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+            //Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
 
         }
 
@@ -231,7 +232,7 @@ namespace SWLOR.Game.Server.Item
         {
             Effect damageEffect = EffectDamage(0, DamageType.Negative);
             Effect durationEffect = null;
-            int duration = perkLevel;
+            int duration = perkLevel + 1;
 
             switch (grenadeType)
             {
@@ -264,7 +265,7 @@ namespace SWLOR.Game.Server.Item
                 NWObject targetCreature = GetFirstObjectInShape(Shape.Sphere, fExplosionRadius, targetLocation, true, nObjectFilter);
                 while (targetCreature.IsValid)
                 {
-                    Console.WriteLine("Grenade hit on " + targetCreature.Name);
+                    //Console.WriteLine("Grenade hit on " + targetCreature.Name);
 
                     switch (grenadeType)
                     {
@@ -273,21 +274,22 @@ namespace SWLOR.Game.Server.Item
                             damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel), DamageType.Piercing), damageEffect);
                             if (RandomService.D6(1) > 4)
                             {
-                                Console.WriteLine("grenade effect bleeding - frag");
+                                //Console.WriteLine("grenade effect bleeding - frag");
                                 CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Bleeding, duration * 6, perkLevel, Convert.ToString(perkLevel));
                             }
                             if (RandomService.D6(1) > 4)
                             {
-                                Console.WriteLine("grenade effects burning - frag");
+                                //Console.WriteLine("grenade effects burning - frag");
                                 CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
                             }
-                            Console.WriteLine("grenade effects set - frag");
+                            //Console.WriteLine("grenade effects set - frag");
                             break;
                         case "CONCUSSION":
                             damageEffect = EffectDamage(RandomService.D12(perkLevel), DamageType.Sonic);
                             durationEffect = EffectDeaf();
                             if (RandomService.D6(1) > 4)
                             {
+                                FloatingTextStringOnCreature("Your ears ring and your body shakes.", targetCreature);
                                 durationEffect = EffectLinkEffects(EffectKnockdown(), durationEffect);
                             }
                             break;
@@ -296,6 +298,7 @@ namespace SWLOR.Game.Server.Item
                             durationEffect = EffectDeaf();
                             if (RandomService.D6(1) > 4)
                             {
+                                FloatingTextStringOnCreature("Your vision blurs and blacks out.", targetCreature);
                                 durationEffect = EffectLinkEffects(EffectBlindness(), durationEffect);
                             }
                             break;
@@ -305,6 +308,7 @@ namespace SWLOR.Game.Server.Item
                             if (GetRacialType(targetCreature) == RacialType.Robot ||
                                 (RandomService.D6(1) > 4 && GetRacialType(targetCreature) == RacialType.Cyborg))
                             {
+                                FloatingTextStringOnCreature("Your circuits are overloaded.", targetCreature);
                                 durationEffect = EffectStunned();
                             }
                             break;
@@ -316,6 +320,7 @@ namespace SWLOR.Game.Server.Item
                             durationEffect = EffectSlow();
                             if (RandomService.D6(1) > 4)
                             {
+                                FloatingTextStringOnCreature("You are slowed by the adhesive explosion.", targetCreature);
                                 durationEffect = EffectLinkEffects(EffectCutsceneImmobilize(), durationEffect);
                             }
                             break;
@@ -323,7 +328,7 @@ namespace SWLOR.Game.Server.Item
                             throw new ArgumentOutOfRangeException(nameof(grenadeType));
                     }
 
-                    Console.WriteLine("applying effects to " + GetName(targetCreature));
+                    //Console.WriteLine("applying effects to " + GetName(targetCreature));
 
                     if (damageEffect != null) ApplyEffectToObject(DurationType.Instant, damageEffect, targetCreature);
                     if (durationEffect != null) ApplyEffectToObject(DurationType.Temporary, durationEffect, targetCreature, duration * 6.0f);
@@ -346,7 +351,7 @@ namespace SWLOR.Game.Server.Item
             Effect impactEffect = null;
             Effect durationEffect = null;
 
-            Console.WriteLine("In grenadeAoe for grenade type " + grenadeType + " on " + GetName(oTarget));
+            //Console.WriteLine("In grenadeAoe for grenade type " + grenadeType + " on " + GetName(oTarget));
 
             switch (grenadeType)
             {

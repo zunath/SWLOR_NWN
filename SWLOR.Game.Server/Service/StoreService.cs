@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service
             if(!string.IsNullOrWhiteSpace(closeDateString))
             {
                 DateTime closeDate = DateTime.Parse(closeDateString);
-                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return; // todo change to 10 minutes
+                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return;
             }
 
             // By this point we know that the store needs to be cleaned up.

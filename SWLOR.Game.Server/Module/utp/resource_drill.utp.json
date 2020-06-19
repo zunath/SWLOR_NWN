@@ -112,7 +112,7 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": "script_1"
+    "value": ""
   },
   "OnInvDisturbed": {
     "type": "resref",

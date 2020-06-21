@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Character Management & Information Page",
                 "Disable PVP Protection",
                 "Toggle Helmet Display",
+                "Toggle Dual Blaster Pistol Mode",
                 "Change Character Description"
             );
 
@@ -48,7 +49,10 @@ namespace SWLOR.Game.Server.Conversation
                         case 2: // Toggle Helmet Display
                             HelmetToggleService.ToggleHelmetDisplay(GetPC());
                             break;
-                        case 3: // Change Character Description
+                        case 3: // Toggle Dual Pistol Display
+                            DualPistolService.ToggleDualPistolMode(GetPC());
+                            break;
+                        case 4: // Change Character Description
                             SwitchConversation("ChangeDescription");
                             break;
                     }

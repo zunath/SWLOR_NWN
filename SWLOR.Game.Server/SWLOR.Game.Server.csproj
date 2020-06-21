@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\Migrations\2020-06-20.1.sql" />
     <None Remove="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\2020-06-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 

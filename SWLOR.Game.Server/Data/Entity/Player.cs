@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public SpecializationType SpecializationID { get; set; }
         public int? ActiveConcentrationPerkID { get; set; }
         public int ActiveConcentrationTier { get; set; }
+        public bool ModeDualPistol { get; set; }
 
         public IEntity Clone()
         {
@@ -119,7 +120,8 @@ namespace SWLOR.Game.Server.Data.Entity
                 RoleplayXP = RoleplayXP,
                 SpecializationID = SpecializationID,
                 ActiveConcentrationPerkID = ActiveConcentrationPerkID,
-                ActiveConcentrationTier = ActiveConcentrationTier
+                ActiveConcentrationTier = ActiveConcentrationTier,
+                ModeDualPistol = ModeDualPistol
             };
         }
     }

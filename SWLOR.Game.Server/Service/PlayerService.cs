@@ -254,7 +254,8 @@ namespace SWLOR.Game.Server.Service
                 DisplayHolonet = true,
                 DisplayDiscord = true, 
                 XPBonus = 0,
-                LeaseRate = 0
+                LeaseRate = 0,
+                ModeDualPistol = false
             };
 
             return entity;

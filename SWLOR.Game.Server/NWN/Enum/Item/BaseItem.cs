@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.NWN.Enum.Item
         CraftMaterialSmall = 110,
         Whip = 111,
         CraftBase = 112,
+        OffHandPistol = 213,
         Invalid = 255,
 
 

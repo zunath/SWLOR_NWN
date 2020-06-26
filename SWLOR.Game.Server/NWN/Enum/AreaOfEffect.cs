@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.NWN.Enum
         WallBlade,
         Web,
         Entangle,
+        Chaos,
         Darkness,
         CircleEvil,
         CircleGood,

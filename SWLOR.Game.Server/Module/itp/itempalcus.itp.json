@@ -18347,6 +18347,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dual Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dualpistolmain"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dual Pistol (Offhand)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "offhandpistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Pistolet Blaster Jawa"
                           },
                           "RESREF": {

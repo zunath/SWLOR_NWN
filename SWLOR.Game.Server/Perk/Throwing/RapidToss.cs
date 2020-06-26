@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.RapidReload);
+            NWNXCreature.RemoveFeat(creature, Feat.RapidShot);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
             if (Equals(equippedWeapon, oItem) ||
                 equippedWeapon.CustomItemType != CustomItemType.Throwing)
             {
-                NWNXCreature.RemoveFeat(creature, Feat.RapidReload);
+                NWNXCreature.RemoveFeat(creature, Feat.RapidShot);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, Feat.RapidReload);
+            NWNXCreature.AddFeat(creature, Feat.RapidShot);
         }
 
         public bool IsHostile()

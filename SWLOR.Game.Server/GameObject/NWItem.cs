@@ -210,7 +210,8 @@ namespace SWLOR.Game.Server.GameObject
             BaseItem[] blasterPistol =
             {
                 BaseItem.ShortBow,
-                BaseItem.Longbow
+                BaseItem.Longbow,
+                BaseItem.Sling
             };
 
             BaseItem[] throwing =

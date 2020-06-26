@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.NWN;
+using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.GameObject;
-
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustEnmity(NWCreature npc, NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
         {
             if (!npc.IsNPC) return;
+            if (attacker == null || attacker.Area != npc.Area || LineOfSightObject(npc, attacker) == false) return;
 
             bool adjustVolatile = volatileAdjust != 0;
             bool adjustCumulative = cumulativeAdjust != 0;

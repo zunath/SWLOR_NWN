@@ -33,6 +33,6 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(OutDir)&quot; &quot;%25USERPROFILE%25/Documents/Neverwinter Nights/dotnet&quot; /Y /E" />
+    <Exec Command="xcopy &quot;C:\Users\bmoore\source\repos\SWLOR_NWN\SWLOR.Game.Server\bin\Debug\netcoreapp3.1&quot; &quot;C:\Users\bmoore\Documents\Neverwinter Nights\dotnet&quot; /Y /E" />
   </Target>
 </Project>

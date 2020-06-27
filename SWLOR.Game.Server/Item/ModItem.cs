@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Item
         public string IsValidTarget(NWCreature user, NWItem mod, NWObject target, Location targetLocation)
         {
             if (target.ObjectType != ObjectType.Item) return "Only items may be targeted by mods.";
-            if (!user.IsPlayer) return "Only players may use mods.";
+            if (!user.IsPlayer && !user.IsDM) return "Only players may use mods.";
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
 
@@ -213,10 +213,10 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Check for perk level requirement
-            if (perkLevel < requiredPerkLevel) return "You do not have the necessary perk rank required. (Required: " + requiredPerkLevel + ", Your level: " + perkLevel + ")";
+            if (perkLevel < requiredPerkLevel && !player.IsDM) return "You do not have the necessary perk rank required. (Required: " + requiredPerkLevel + ", Your level: " + perkLevel + ")";
 
             // Can't modify items above perk level * 10
-            if (itemLevel > perkLevel * 10) return "Your current perks allow you to add mods to items up to level " + perkLevel * 10 + ". This item is level " + itemLevel + " so you can't install a mod into it.";
+            if (itemLevel > perkLevel * 10 && !player.IsDM) return "Your current perks allow you to add mods to items up to level " + perkLevel * 10 + ". This item is level " + itemLevel + " so you can't install a mod into it.";
 
             // Item must be in the user's inventory.
             if (!targetItem.Possessor.Equals(player)) return "Targeted item must be in your inventory.";

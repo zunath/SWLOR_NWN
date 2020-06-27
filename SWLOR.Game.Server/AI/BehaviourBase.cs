@@ -2,9 +2,9 @@
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.NWN._;
@@ -423,6 +423,12 @@ namespace SWLOR.Game.Server.AI
 
             NWObject target = _.GetAttackTarget(self);
             if (!target.IsValid) return;
+
+            if (target.Effects.Any(x => NWNXEffect.UnpackEffect(x).Type == (int)EffectTypeEngine.Knockdown) ||
+                target.Effects.Any(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
+            {
+                return;
+            }
 
             // Pull back whatever concentration effect is currently active, if any.
             var concentration = AbilityService.GetActiveConcentrationEffect(self);

@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Switches the active language. Use /language help for more information.", CommandPermissionType.DM | CommandPermissionType.Admin)]
+    [CommandDetails("Plays a VFX from visualeffects.2da. Only parameter is ID from the 2da.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class PlayVFX : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

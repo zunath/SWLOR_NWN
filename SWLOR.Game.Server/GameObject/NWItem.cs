@@ -216,7 +216,6 @@ namespace SWLOR.Game.Server.GameObject
 
             BaseItem[] throwing =
             {
-                BaseItem.Sling,
                 BaseItem.Dart,
                 BaseItem.Shuriken,
                 BaseItem.ThrowingAxe

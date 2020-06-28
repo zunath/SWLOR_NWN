@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
@@ -145,7 +146,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
             finalEffect = _.TagEffect(finalEffect, "FORCE_ABILITY_RAGE");
 
-            Effect damageEffect = _.EffectDamage(hpPenalty);
+            Effect damageEffect = _.EffectDamage(hpPenalty, DamageType.Divine);
 
             // Apply both effects.
             creature.AssignCommand(() =>

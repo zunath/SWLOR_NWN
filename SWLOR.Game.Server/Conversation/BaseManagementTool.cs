@@ -940,7 +940,9 @@ namespace SWLOR.Game.Server.Conversation
             Vector position = _.GetPositionFromLocation(data.TargetLocation);
             Vector playerposition = _.GetPositionFromLocation(GetPC().Location); 
 
-            if (data.BuildingType == Enumeration.BuildingType.Interior)
+            if (data.BuildingType == Enumeration.BuildingType.Interior ||
+                data.BuildingType == Enumeration.BuildingType.Apartment ||
+                data.BuildingType == Enumeration.BuildingType.Starship)
             {
                 var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canPlaceEditStructures = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);

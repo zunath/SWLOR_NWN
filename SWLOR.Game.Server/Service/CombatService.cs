@@ -28,8 +28,6 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = data.Damager.Object;
             NWCreature target = _.OBJECT_SELF;
 
-            if (!GetIsPC(player) || GetIsDM(player)) return;
-
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
             LoggingService.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType);
@@ -97,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             string action;
             // Check target's equipped weapon, armor and perk.
             if (targetWeapon.CustomItemType == CustomItemType.MartialArtWeapon ||
-                !target.RightHand.IsValid && !target.LeftHand.IsValid)
+                (!target.RightHand.IsValid && !target.LeftHand.IsValid))
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.EvadeBlasterFire);
@@ -198,7 +196,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     reduction = perkReduction;
                     // Calculate and award force XP based on total damage reduced.
-                    int xp = (int)(data.Total * reduction * 3);
+                    int xp = (int)(data.Total * 3);
                     if (xp < 5) xp = 5;
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
@@ -209,7 +207,7 @@ namespace SWLOR.Game.Server.Service
 
             // No reduction found. Bail out early.
             if (reduction <= 0.0f) return;
-
+            target.SendMessage("Total Damage: " + data.Total);
             target.SendMessage("Damage reduced by " + (int)(reduction * 100) + "%");
             reduction = 1.0f - reduction;
 
@@ -219,13 +217,15 @@ namespace SWLOR.Game.Server.Service
             data.Magical = (int)(data.Magical * reduction);
             data.Acid = (int)(data.Acid * reduction);
             data.Cold = (int)(data.Cold * reduction);
-            data.Divine = (int)(data.Divine * reduction);
+            //data.Divine = (int)(data.Divine * reduction); -- special damage types, such as force rage
             data.Electrical = (int)(data.Electrical * reduction);
             data.Fire = (int)(data.Fire * reduction);
             data.Negative = (int)(data.Negative * reduction);
             data.Positive = (int)(data.Positive * reduction);
             data.Sonic = (int)(data.Sonic * reduction);
             data.Base = (int)(data.Base * reduction);
+            
+            target.SendMessage("Total Damage: " + data.Total);
 
             NWNXDamage.SetDamageEventData(data);
         }

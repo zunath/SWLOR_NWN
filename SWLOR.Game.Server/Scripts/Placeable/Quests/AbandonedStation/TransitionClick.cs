@@ -23,7 +23,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWArea area = door.Area.GetLocalObject(destinationAreaTag);
             NWObject waypoint = GetNearestObjectByTag(destinationWaypointTag, GetFirstObjectInArea(area));
             NWLocation location = waypoint.Location;
-            player.AssignCommand(() => { ActionJumpToLocation(location); });
+            player.AssignCommand(() => 
+            { 
+                ActionJumpToLocation(location);
+                SetFacing(GetFacing(waypoint));
+            });
         }
     }
 }

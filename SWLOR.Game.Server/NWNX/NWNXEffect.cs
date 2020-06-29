@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.NWNX
         // Convert native effect type to unpacked structure
         public static EffectUnpacked UnpackEffect(Effect effect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeType");
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnpackEffect");
             Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
             Internal.NativeFunctions.nwnxCallFunction();
 

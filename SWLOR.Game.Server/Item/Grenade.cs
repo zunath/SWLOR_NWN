@@ -17,8 +17,7 @@ namespace SWLOR.Game.Server.Item
         public string CustomKey => null;
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
-        {
-            if (user.IsCreature) { DurabilityService.RunItemDecay((NWPlayer) user, item, 1.0f); }
+        {            
             return null;
         }
 
@@ -225,7 +224,7 @@ namespace SWLOR.Game.Server.Item
             SetLocalString(user, "GRENADE_UNLOCKTIME", unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
             //Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
             //Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-
+            if (user.IsCreature) { DurabilityService.RunItemDecay((NWPlayer)user, item, 1.0f); }
         }
 
         public void DoImpact(NWCreature user, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, ObjectType nObjectFilter)
@@ -414,7 +413,6 @@ namespace SWLOR.Game.Server.Item
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            // infinite for testing only
             return false;
         }
 

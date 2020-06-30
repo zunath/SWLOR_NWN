@@ -819,10 +819,10 @@ namespace SWLOR.Game.Server.Service
             {BaseItem.Arrow, SkillType.Firearms},
             {BaseItem.Bolt, SkillType.Firearms},
             {BaseItem.Bullet, SkillType.Firearms},
+            {BaseItem.Sling, SkillType.Firearms},
             // Throwing Skills
             {BaseItem.Grenade, SkillType.Throwing},
-            {BaseItem.Shuriken, SkillType.Throwing},
-            {BaseItem.Sling, SkillType.Throwing},
+            {BaseItem.Shuriken, SkillType.Throwing},            
             {BaseItem.ThrowingAxe, SkillType.Throwing},
             {BaseItem.Dart, SkillType.Throwing},
             // Shield Skills

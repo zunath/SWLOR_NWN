@@ -19,12 +19,14 @@ namespace SWLOR.Game.Server.Service
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+            MessageHub.Instance.Subscribe<OnModuleUnacquireItem>(message => OnModuleUnaquireItem());
+            MessageHub.Instance.Subscribe<OnModuleAcquireItem>(message => OnModuleAquireItem());
         }
-        private static NWItem CopyWeaponAppearance(NWPlayer oPC, NWItem oSource, NWItem oDest)
+        private static NWItem CopyWeaponAppearance(NWPlayer oPC, NWItem oSource, NWItem oDest, bool copyPropsAndVars)
         {
             NWPlaceable oTempStorage = (GetObjectByTag("OUTFIT_BARREL"));
             oSource.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
-
+            
             uint oCopy = CopyItem(oDest.Object, oTempStorage.Object, true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 0, (int)GetItemAppearance(oSource, ItemAppearanceType.WeaponModel, 0), true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 0, (int)GetItemAppearance(oSource, ItemAppearanceType.WeaponColor, 0), true);
@@ -37,10 +39,27 @@ namespace SWLOR.Game.Server.Service
 
             SetName(oCopy, GetName(oSource));
             SetDescription(oCopy, GetDescription(oSource));
-            LocalVariableService.CopyVariables(oSource, oCopy);
+            //LocalVariableService.CopyVariables(oSource, oCopy);
 
             NWItem oFinal = (CopyItem(oCopy, oPC.Object, true));
             oFinal.DeleteLocalString("TEMP_OUTFIT_UUID");
+
+            if (copyPropsAndVars)
+            {
+                // strip all item props from new item
+                foreach (ItemProperty itemProp in oFinal.ItemProperties)
+                {
+                    RemoveItemProperty(oFinal, itemProp);
+                }
+                // add all item props from original item to new item
+                foreach (ItemProperty itemProp in oSource.ItemProperties)
+                {
+                    AddItemProperty(DurationType.Permanent, itemProp, oFinal);
+                }
+                // finally, copy local vars
+                LocalVariableService.CopyVariables(oSource, oFinal);
+            }
+
             DestroyObject(oCopy);
             oDest.Destroy();
 
@@ -75,6 +94,30 @@ namespace SWLOR.Game.Server.Service
                 });
             }
         }
+        private static void HandleOffhand(NWPlayer oPC, NWItem oMainHandPistol)
+        {
+            NWItem oOffHandPistol = CreateItemOnObject("offhandpistol", oPC);
+            //if (NWNX.NWNXObject.CheckFit(oPC, (int)BaseItem.OffHandPistol) == 1)
+            if (oOffHandPistol.Possessor == oPC)
+            {
+                //Console.WriteLine("It fits!");
+
+                oOffHandPistol = CopyWeaponAppearance(oPC, oMainHandPistol, oOffHandPistol, false);
+                oPC.AssignCommand(() =>
+                {
+                    ActionEquipItem(oOffHandPistol, InventorySlot.LeftHand);
+                });
+            }
+            else
+            {
+                //Console.WriteLine("It doesn't fit :(");
+                oPC.DelayAssignCommand(() =>
+                {
+                    ActionUnequipItem(oMainHandPistol);
+                    DestroyObject(oOffHandPistol);
+                }, 0.5f);
+            }
+        }
         private static void ToggleDualModeWeapon(NWPlayer oPC)
         {
             NWItem oOriginalItem = _.GetPCItemLastEquipped();
@@ -91,7 +134,7 @@ namespace SWLOR.Game.Server.Service
                 oMainHandPistol = CreateItemOnObject("blaster_b", oPC);
             }
 
-            oMainHandPistol = CopyWeaponAppearance(oPC, oOriginalItem, oMainHandPistol);
+            oMainHandPistol = CopyWeaponAppearance(oPC, oOriginalItem, oMainHandPistol, true);
             oPC.AssignCommand(() =>
             {
                 ActionEquipItem(oMainHandPistol, InventorySlot.RightHand);
@@ -99,13 +142,7 @@ namespace SWLOR.Game.Server.Service
 
             if (pc.ModeDualPistol)
             {
-                NWItem oOffHandPistol = CreateItemOnObject("offhandpistol", oPC);
-
-                oOffHandPistol = CopyWeaponAppearance(oPC, oMainHandPistol, oOffHandPistol);
-                oPC.AssignCommand(() =>
-                {
-                    ActionEquipItem(oOffHandPistol, InventorySlot.LeftHand);
-                });
+                _.DelayCommand(0.2f, () => { HandleOffhand(oPC, oMainHandPistol); });
             }
 
             oOriginalItem.Destroy();
@@ -137,12 +174,7 @@ namespace SWLOR.Game.Server.Service
             }            
             else if (oItem.BaseItemType == BaseItem.Sling && pc.ModeDualPistol)
             {
-                NWItem oOffHandPistol = CreateItemOnObject("offhandpistol", oPC);
-                oOffHandPistol = CopyWeaponAppearance(oPC, oItem, oOffHandPistol);
-                oPC.AssignCommand(() =>
-                {
-                    ActionEquipItem(oOffHandPistol, InventorySlot.LeftHand);
-                });
+                _.DelayCommand(0.2f, () => { HandleOffhand(oPC, oItem); });
             }
         }
 
@@ -170,6 +202,31 @@ namespace SWLOR.Game.Server.Service
                 });
                 DestroyObject(oItem);
             }
+        }
+        private static void OnModuleUnaquireItem()
+        {
+            NWPlayer oPC = _.GetModuleItemLostBy();
+            NWItem oItem = _.GetModuleItemLost();
+
+            if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
+            if (!oPC.IsPlayer) return;
+
+            if (oItem.BaseItemType == BaseItem.OffHandPistol)
+            {                
+                NWItem oMainHandItem = GetItemInSlot(InventorySlot.RightHand, oPC);
+                if (oMainHandItem.BaseItemType == BaseItem.Sling)
+                {
+                    oPC.AssignCommand(() =>
+                    {
+                        ActionUnequipItem(oMainHandItem);
+                    });
+
+                }
+                DestroyObject(oItem);
+            }
+        }
+        private static void OnModuleAquireItem()
+        {
         }
     }
 }

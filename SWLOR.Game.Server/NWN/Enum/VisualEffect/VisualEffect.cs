@@ -528,5 +528,6 @@ namespace SWLOR.Game.Server.NWN.Enum.VisualEffect
         Vfx_Imp_Starburst_Green = 644,
         Vfx_Imp_Starburst_Red = 645,
         Vfx_Imp_Nightmare_Head_Hit = 670,
+        Vfx_Placement_Grid = 821,
     }
 }

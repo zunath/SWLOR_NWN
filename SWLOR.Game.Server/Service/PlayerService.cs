@@ -309,6 +309,15 @@ namespace SWLOR.Game.Server.Service
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), player);
             }
 
+            // Handle item stats
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
+            {
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
+                PlayerStatService.CalculateEffectiveStats(player, item);
+            }
+            PlayerStatService.ApplyStatChanges(player, null);
+
+
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
 
             // Cleanup code in case people log out as spaceships.

@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             return baseAC;
         }
 
-        private static void CalculateEffectiveStats(NWPlayer player, NWItem item)
+        public static void CalculateEffectiveStats(NWPlayer player, NWItem item)
         {
             if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM || !player.IsInitializedAsPlayer) return;
 

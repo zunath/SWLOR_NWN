@@ -18,44 +18,6 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            NWArea area = _.GetArea(player);
-            bool gridPlaced = false;
-            if (area.GetLocalInt("PLACEMENT_GRID") == 1)
-            {
-                gridPlaced = true;                
-            }
-            else
-            {
-                area.SetLocalInt("PLACEMENT_GRID", 1);
-            }            
-
-            if (player.IsValid && !gridPlaced)
-            {
-                // Setup placement grid                
-                Vector vPos;
-                vPos.X = 5.0f;
-                vPos.Y = 0.0f;
-                vPos.Z = 0.1f;
-                for (int i = 0; i <= area.Height; i++)
-                {
-                    vPos.Y = -5.0f;
-                    for (int j = 0; j <= area.Width; j++)
-                    {
-                        vPos.Y += 10.0f;
-                        NWObject oTile = _.CreateObject(ObjectType.Placeable, "plc_invisobj", 
-                                                           _.Location(area, vPos, 0.0f), false, 
-                                                           "x2_tmp_tile" + player.GlobalID.ToString());
-                        _.SetPlotFlag(oTile, true);
-                        _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), oTile);
-                        NWNX.NWNXVisibility.SetVisibilityOverride(_.OBJECT_INVALID, oTile, VisibilityType.Hidden);                        
-                        NWNX.NWNXVisibility.SetVisibilityOverride(player, oTile, VisibilityType.Visible);
-                        _.DelayCommand(30.0f, () => { _.DestroyObject(oTile); });
-                    }
-                    vPos.X += 10.0f;
-                }
-                _.DelayCommand(30.0f, () => { area.DeleteLocalInt("PLACEMENT_GRID"); });
-            }
-
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(string.Empty,
                 "Place Structure",
@@ -84,6 +46,31 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("RotatePage", rotatePage);
             dialog.AddPage("StylePage", stylePage);
+
+            // Setup placement grid                
+            NWArea area = _.GetArea(player);            
+            Vector vPos;
+            vPos.X = 5.0f;
+            vPos.Y = 0.0f;
+            vPos.Z = 0.1f;
+            for (int i = 0; i <= area.Height; i++)
+            {
+                vPos.Y = -5.0f;
+                for (int j = 0; j <= area.Width; j++)
+                {
+                    vPos.Y += 10.0f;
+                    NWObject oTile = _.CreateObject(ObjectType.Placeable, "plc_invisobj",
+                                                        _.Location(area, vPos, 0.0f), false,
+                                                        "x2_tmp_tile" + player.GlobalID.ToString());
+                    _.SetPlotFlag(oTile, true);
+                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), oTile);
+                    NWNX.NWNXVisibility.SetVisibilityOverride(_.OBJECT_INVALID, oTile, VisibilityType.Hidden);
+                    NWNX.NWNXVisibility.SetVisibilityOverride(player, oTile, VisibilityType.Visible);                    
+                    mainPage.CustomData.Add("PLACEMENT_GRID_" + i + "_" + j, oTile);
+                }
+                vPos.X += 10.0f;
+            }
+
             return dialog;
         }
 
@@ -536,7 +523,17 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         public override void EndDialog()
-        {            
+        {
+            // tear down placement grid
+            DialogPage mainPage = GetPageByName("MainPage");
+            foreach (var placementGrid in mainPage.CustomData)
+            {
+                if (placementGrid.Key.StartsWith("PLACEMENT_GRID_"))
+                {                    
+                    _.DestroyObject(placementGrid.Value);
+                }
+            }
+                
             BaseService.ClearPlayerTempData(GetPC());
         }
     }

@@ -428,6 +428,8 @@ namespace SWLOR.Game.Server.AI
             // todo: GetEffectType() returns EFFECT_TYPE_INVALIDEFFECT for knockdown effects.
             // todo: The following code is causing a segfault crash... look into other solutions or figure out what's causing that.
             // target.Effects.Any(x => NWNXEffect.UnpackEffect(x).Type == (int)EffectTypeEngine.Knockdown) ||
+            // Potential workaround: if (target.GetLocalBool("KNOCKDOWN")) return;
+            if (target.GetLocalBool("KNOCKDOWN")) return;
             if (target.Effects.Any(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
             {
                 return;

@@ -154,7 +154,6 @@ namespace SWLOR.Game.Server.GameObject
 
             BaseItem[] batons =
             {
-                BaseItem.Club,
                 BaseItem.LightFlail,
                 BaseItem.LightHammer,
                 BaseItem.LightMace,
@@ -195,6 +194,7 @@ namespace SWLOR.Game.Server.GameObject
 
             BaseItem[] martialArts =
             {
+                BaseItem.Club,
                 BaseItem.Gloves,
                 BaseItem.Bracer,
                 BaseItem.Kama,

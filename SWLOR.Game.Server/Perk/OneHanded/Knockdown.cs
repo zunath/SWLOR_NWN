@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
                 default: return;
             }
 
-            _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target.Object, length);
+            _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, length), target.Object, length);
             _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Bludgeoning), target);
         }
 

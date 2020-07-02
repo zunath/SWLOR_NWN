@@ -776,8 +776,7 @@ namespace SWLOR.Game.Server.Service
         {
             // One-Handed Skills
             {BaseItem.BastardSword, SkillType.OneHanded},
-            {BaseItem.BattleAxe, SkillType.OneHanded},
-            {BaseItem.Club, SkillType.OneHanded},
+            {BaseItem.BattleAxe, SkillType.OneHanded},            
             {BaseItem.Dagger, SkillType.OneHanded},
             {BaseItem.HandAxe, SkillType.OneHanded},
             {BaseItem.Kama, SkillType.OneHanded},
@@ -808,12 +807,13 @@ namespace SWLOR.Game.Server.Service
             {BaseItem.TwoBladedSword, SkillType.TwinBlades },
             {BaseItem.DoubleAxe, SkillType.TwinBlades },
             // Martial Arts Skills
+            {BaseItem.Club, SkillType.MartialArts},
             {BaseItem.Bracer, SkillType.MartialArts},
             {BaseItem.Gloves, SkillType.MartialArts},
             {BaseItem.QuarterStaff, SkillType.MartialArts},
+            // Firearms Skills
             {BaseItem.HeavyCrossbow, SkillType.Firearms},
             {BaseItem.LightCrossbow, SkillType.Firearms},
-            // Firearms Skills
             {BaseItem.Longbow, SkillType.Firearms},
             {BaseItem.ShortBow, SkillType.Firearms},
             {BaseItem.Arrow, SkillType.Firearms},

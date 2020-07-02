@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canRenameStructure = false;
             bool canChangeStructureMode = false;
             bool canEditPublicBasePermissions = false;
+            bool canAdjustLighting = false;
 
             string header = ColorTokenService.Green("Base Management Menu\n\n");
             header += ColorTokenService.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
@@ -117,6 +118,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditBuildingPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
                 canEditBuildingPublicPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPublicPermissions);
                 canChangeStructureMode = false; // Starships cannot be workshops.
+                canAdjustLighting = true;
                 data.StructureID = pcBaseStructureID;
             }
             // Area is not buildable.
@@ -156,6 +158,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditBuildingPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
                 canEditBuildingPublicPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPublicPermissions);
                 canChangeStructureMode = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanChangeStructureMode);
+                canAdjustLighting = true;
                 data.StructureID = pcBaseStructureID;
             }
             // Building type is an apartment
@@ -178,6 +181,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditPrimaryResidence = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
                 canRemovePrimaryResidence = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRemovePrimaryResidence);
                 canRenameStructure = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRenameStructures);
+                canAdjustLighting = true;
                 data.PCBaseID = pcBaseID;
             }
             // Building type is an exterior building
@@ -265,6 +269,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Edit Primary Residence", canEditPrimaryResidence || canRemovePrimaryResidence);
             AddResponseToPage("MainPage", "Rename Building", canRenameStructure);
             AddResponseToPage("MainPage", "Edit Building Mode", canChangeStructureMode);
+            AddResponseToPage("MainPage", "Adjust Lighting", canAdjustLighting);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -427,6 +432,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 8: // Edit Building Mode
                     SwitchConversation("EditBuildingMode");
+                    break;
+                case 9: // AdjustLighting
+                    SwitchConversation("AdjustLighting");
                     break;
             }
         }

@@ -181,6 +181,7 @@ namespace NWN.Scripts
             NWNXWeapon.SetWeaponFinesseSize(BaseItem.Longsword, CreatureSize.Medium);
 
             NWNXWeapon.SetWeaponUnarmed(BaseItem.QuarterStaff);
+            NWNXWeapon.SetWeaponUnarmed(BaseItem.Club);
         }
 
 

@@ -942,8 +942,14 @@ namespace SWLOR.Game.Server.Service
 
             if (RandomService.D100(1) <= chance)
             {
-                _.ApplyEffectToObject(DurationType.Temporary, _.EffectKnockdown(), target, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, duration), target, duration);
             }
+        }
+        public static Effect EffectKnockdown(NWObject target, float duration)
+        {
+            target.SetLocalBool("KNOCKDOWN", true);
+            _.DelayCommand(duration, () => { target.SetLocalBool("KNOCKDOWN", false); });
+            return Server.NWN._.EffectKnockdown();            
         }
 
         /// <summary>

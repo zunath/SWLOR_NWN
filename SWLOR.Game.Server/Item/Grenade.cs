@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Item
                             if (RandomService.D6(1) > 4)
                             {
                                 FloatingTextStringOnCreature("Your ears ring and your body shakes.", targetCreature);
-                                durationEffect = EffectLinkEffects(EffectKnockdown(), durationEffect);
+                                durationEffect = EffectLinkEffects(AbilityService.EffectKnockdown(targetCreature, duration), durationEffect);
                             }
                             break;
                         case "FLASHBANG":

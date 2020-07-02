@@ -1510,6 +1510,10 @@ namespace SWLOR.Game.Server.Service
             List<PCBaseStructure> furnitureStructures = null;
             string name = "";
             int type = 0;
+            int mainLight1;
+            int mainLight2;
+            int sourceLight1;
+            int sourceLight2;
 
             if (isBase)
             {
@@ -1524,6 +1528,11 @@ namespace SWLOR.Game.Server.Service
                     Player owner = DataService.Player.GetByID(pcBase.PlayerID);
                     name = owner.CharacterName + "'s Apartment";
                 }
+
+                mainLight1 = pcBase.TileMainLight1Color;
+                mainLight2 = pcBase.TileMainLight2Color;
+                sourceLight1 = pcBase.TileSourceLight1Color;
+                sourceLight2 = pcBase.TileSourceLight2Color;
             }
             else
             {
@@ -1541,6 +1550,11 @@ namespace SWLOR.Game.Server.Service
                     Player owner = PlayerService.GetPlayerEntity(pcBase.PlayerID);
                     name = owner.CharacterName + (starship ? "'s Starship" : "'s Building");
                 }
+
+                mainLight1 = structure.TileMainLight1Color;
+                mainLight2 = structure.TileMainLight2Color;
+                sourceLight1 = structure.TileSourceLight1Color;
+                sourceLight2 = structure.TileSourceLight2Color;
             }
 
             // Create the area instance, assign the building type, and then assign local variables to the exit placeable for later use.
@@ -1556,6 +1570,41 @@ namespace SWLOR.Game.Server.Service
             {
                 SpawnStructure(instance, furniture.ID);
             }
+
+            // Set lighting if changed
+            Vector vPos;
+            vPos.X = 0.0f;
+            vPos.Y = 0.0f;
+            vPos.Z = 0.0f;
+            for (int i = 0; i <= instance.Height; i++)
+            {
+                vPos.X = (float)i;
+                for (int j = 0; j <= instance.Width; j++)
+                {
+                    vPos.Y = (float)j;
+
+                    Location location = _.Location(instance, vPos, 0.0f);
+
+                    //Console.WriteLine("Setting Tile Color: X = " + vPos.X + " Y = " + vPos.Y);
+                    if (mainLight1 >= 0)
+                    {
+                        _.SetTileMainLightColor(location, mainLight1, _.GetTileMainLight2Color(location));
+                    }
+                    if (mainLight2 >= 0)
+                    {
+                        _.SetTileMainLightColor(location, _.GetTileMainLight1Color(location), mainLight2);
+                    }
+                    if (sourceLight1 >= 0)
+                    {
+                        _.SetTileSourceLightColor(location, sourceLight1, _.GetTileSourceLight2Color(location));
+                    }
+                    if (sourceLight2 >= 0)
+                    {
+                        _.SetTileSourceLightColor(location, _.GetTileSourceLight1Color(location), sourceLight2);
+                    }
+                }
+            }
+            RecomputeStaticLighting(instance);
 
             LoggingService.Trace(TraceComponent.Space, "Created instance with ID " + instanceID.ToString() + ", name " + instance.Name);
 

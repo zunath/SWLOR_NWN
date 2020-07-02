@@ -718,7 +718,7 @@ namespace SWLOR.Game.Server.Service
             if (nSuccess == 0)
             {
                 ApplyEffectToObject(DurationType.Temporary,
-                                      EffectKnockdown(),
+                                      AbilityService.EffectKnockdown(oCreature, 6.0f),
                                       oCreature,
                                       6.0f);
                 FloatingTextStringOnCreature("*is unbalanced by a strong gust*", oCreature);
@@ -762,7 +762,6 @@ namespace SWLOR.Game.Server.Service
 
             //Effects
             Effect eEffBolt = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_M);
-            Effect eEffKnock = EffectKnockdown();
             ApplyEffectAtLocation(DurationType.Instant, eEffBolt, lLocation);
 
             Effect eEffDam;
@@ -785,7 +784,8 @@ namespace SWLOR.Game.Server.Service
                         if (GetIsPC(oObject)) SendMessageToPC(oObject, FB_T_WEATHER_LIGHTNING);
 
                         PlayVoiceChat(VoiceChat.Pain1, oObject);
-                        ApplyEffectToObject(DurationType.Temporary, eEffKnock, oObject, IntToFloat(d6(1)));
+                        float duration = IntToFloat(d6(1));
+                        ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(oObject, duration), oObject, duration);
                     }
                 }
                 oObject = GetNextObjectInShape(Shape.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);

@@ -117,7 +117,7 @@ VALUES ( 707 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 708 ,    -- ID - int
          12 ,    -- CraftCategoryID - int
@@ -477,7 +477,7 @@ VALUES ( 722 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 723 ,    -- ID - int
          12 ,    -- CraftCategoryID - int
@@ -597,7 +597,7 @@ VALUES ( 727 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 728 ,    -- ID - int
          12 ,    -- CraftCategoryID - int
@@ -717,7 +717,7 @@ VALUES ( 732 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 733 ,    -- ID - int
          12 ,    -- CraftCategoryID - int
@@ -837,7 +837,7 @@ VALUES ( 737 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 738 ,    -- ID - int
          12 ,    -- CraftCategoryID - int
@@ -957,7 +957,7 @@ VALUES ( 742 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 743 ,    -- ID - int
          12 ,    -- CraftCategoryID - int
@@ -1077,7 +1077,7 @@ VALUES ( 747 ,    -- ID - int
          3 ,    -- SecondaryMaximum - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
-		)
+		);
 INSERT into CraftBlueprint ( ID ,CraftCategoryID ,BaseLevel ,ItemName ,ItemResref ,Quantity ,SkillID ,CraftDeviceID ,PerkID ,RequiredPerkLevel ,IsActive ,MainComponentTypeID ,MainMinimum ,SecondaryComponentTypeID ,SecondaryMinimum ,TertiaryComponentTypeID ,TertiaryMinimum ,EnhancementSlots ,MainMaximum ,SecondaryMaximum ,TertiaryMaximum ,BaseStructureID )
 VALUES ( 748 ,    -- ID - int
          12 ,    -- CraftCategoryID - int

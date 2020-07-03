@@ -530,7 +530,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (placementGrid.Key.StartsWith("PLACEMENT_GRID_"))
                 {                    
-                    _.DestroyObject(placementGrid.Value);
+                    _.DelayCommand(10.0f, () => { _.DestroyObject(placementGrid.Value); });
                 }
             }
                 

@@ -97,13 +97,13 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             if (dbPlayer.RoleplayPoints >= 50)
             {
-                const int BaseXP = 500;
+                const int BaseXP = 1000;
                 float residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
                 int xp = (int)(BaseXP + BaseXP * residencyBonus);
                 float dmBonusModifier = dbPlayer.XPBonus * 0.01f;
                 if (dmBonusModifier > 0.25f)
                     dmBonusModifier = 0.25f;
-                xp += (int)(xp * dmBonusModifier);
+                xp += (int)(xp * dmBonusModifier + ((dbPlayer.RoleplayPoints - 50) * 50));
 
                 dbPlayer.RoleplayXP += xp;
                 dbPlayer.RoleplayPoints = 0;

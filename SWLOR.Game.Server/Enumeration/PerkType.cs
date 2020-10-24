@@ -90,7 +90,7 @@
         ScavengingExpert = 85,
         ForceInsight = 86,
         WeaponFocusLightsaber = 87,
-        // 88 is free
+        SpeedyCrafting = 88,
         Dash = 89,
         CarefulScavenger = 90,
         FarmingEfficiency = 91,
@@ -99,7 +99,7 @@
         PlasmaCell = 94,
         Chi = 95,
         EngineeringBlueprints = 96,
-        // 97 is free
+        //97 is free
         SpeedyWeaponsmith = 98,
         SpeedyArmorsmith = 99,
         SpeedyCooking = 100,
@@ -117,11 +117,11 @@
         // 114-122 are free
         SneakAttack = 123,
         ArmorBlueprints = 124,
-        // 125 is free
+        //125 is free
         ForceStun = 126,
         Clarity = 127,
         Sturdiness = 128,
-        // 129 is free
+        //129 is free
         SpeedyResourceScanner = 130,
         CrossCut = 131,
         ShieldOath = 132,
@@ -165,6 +165,9 @@
         ForcePush = 183,
         ForceBreach = 184,
         ForceHeal = 185,
+        ForceSpark = 186,
+        ForceCrush = 187,
+        ThrowRock = 188,
     }
 
 }

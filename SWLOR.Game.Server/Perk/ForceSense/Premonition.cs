@@ -1,5 +1,11 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using System;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -62,7 +68,44 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+            Effect effect;
+            float duration = 6.1f;
+            int concealment;
+            int hitpoints;
+
+            switch (perkLevel)
+            {
+
+                case 1:
+                    hitpoints = 10;
+                    effect = _.EffectTemporaryHitpoints(hitpoints);
+                    break;
+                case 2:
+                    hitpoints = 20;
+                    effect = _.EffectTemporaryHitpoints(hitpoints);
+                    break;
+                case 3:
+                    concealment = 5;
+                    hitpoints = 30;
+                    effect = _.EffectConcealment(concealment);
+                    effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
+                    break;
+                default:
+                    throw new ArgumentException(nameof(perkLevel) + " invalid. Value " + perkLevel + " is unhandled.");
+
+
+            }
+
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Purple), creature, duration);
+
+            if (_.GetIsInCombat(creature))
+            {
+                if (creature.IsPlayer)
+                {
+                    SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (perkLevel * 50));
+                }
+            }
         }
     }
 }

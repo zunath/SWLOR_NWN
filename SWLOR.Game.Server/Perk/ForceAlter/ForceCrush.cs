@@ -8,14 +8,20 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceBreach: IPerkHandler
+    public class ForceCrush : IPerkHandler
     {
-        public PerkType PerkType => PerkType.ForceBreach;
+        public PerkType PerkType => PerkType.ForceCrush;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
+            if (!oTarget.IsCreature)
+                return "This ability can only be used on living creatures.";
+            NWCreature targetCreature = oTarget.Object;
+            if (targetCreature.RacialType == RacialType.Robot)
+                return "This ability cannot be used on droids.";
+
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -38,47 +44,6 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int damage;
-            int intMod = creature.IntelligenceModifier;
-
-            switch (spellTier)
-            {
-                case 1:
-                    damage = 10 + intMod;
-                    break;
-                case 2:
-                    damage = 15 + intMod;
-                    break;
-                case 3:
-                    damage = 20 + ((intMod * 15)/10);
-                    break;
-                case 4:
-                    damage = 25 + ((intMod * 17) / 10);
-                    break;
-                case 5:
-                    damage = 30 + (intMod * 2);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(spellTier));
-            }
-
-            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
-
-            // +/- percent change based on resistance
-            float delta = 0.01f * result.Delta;
-            damage = damage + (int)(damage * delta);
-
-            creature.AssignCommand(() =>
-            {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), target);
-            });
-
-            if (creature.IsPlayer)
-            {
-                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
-            }
-
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -106,9 +71,50 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
-            
+            int amount;
+            int Mod = ((creature.WisdomModifier + creature.IntelligenceModifier)/2);
+
+            switch (spellTier)
+            {
+                case 1:
+                    amount = 2 + Mod;
+                    break;
+                case 2:
+                    amount = 3 + Mod;
+                    break;
+                case 3:
+                    amount = 4 + Mod;
+                    break;
+                case 4:
+                    amount = 5 + Mod;
+                    break;
+                case 5:
+                    amount = 6 + Mod;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
+
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+
+            // +/- percent change based on resistance
+            float delta = 0.01f * result.Delta;
+            amount = amount + (int)(amount * delta);
+
+
+            creature.AssignCommand(() =>
+            {
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Bludgeoning), target);
+            });
+
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+            }
+
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Bigbys_Crushing_Hand), target, 6.1f);
         }
     }
 }

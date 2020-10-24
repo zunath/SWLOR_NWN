@@ -8,11 +8,11 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Item.Medicine
+namespace SWLOR.Game.Server.Item.Cooking
 {
-    public class StimPack: IActionItem
+    public class Drink : IActionItem
     {
-        public string CustomKey => "Medicine.StimPack";
+        public string CustomKey => "Cooking.Drink";
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -21,38 +21,21 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (target.ObjectType != ObjectType.Creature)
-            {
-                user.SendMessage("You may only use stim packs on creatures!");
-                return;
-            }
 
             NWPlayer player = user.Object;
-            var ability = (AbilityType)item.GetLocalInt("ABILITY_TYPE");
-            int amount = item.GetLocalInt("AMOUNT") + (item.MedicineBonus * 2);
-            int rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, SkillType.Medicine) : 0;
+            var ability = (AbilityType)item.GetLocalInt("MISC_TYPE");
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int amount = item.GetLocalInt("AMOUNT") + effectiveStats.Cooking;
             int recommendedLevel = item.RecommendedLevel;
-            float duration = 30.0f * (rank / 10);
-            int perkLevel = player.IsPlayer ? PerkService.GetCreaturePerkLevel(player, PerkType.StimFiend) : 0;
-            float percentIncrease = perkLevel * 0.25f;
-            duration = duration + (duration * percentIncrease);
+            int duration = 3600;
             Effect effect = _.EffectAbilityIncrease(ability, amount);
-            effect = _.TagEffect(effect, "STIM_PACK_EFFECT");
+            effect = _.TagEffect(effect, "DRINK_EFFECT");
 
             _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
 
-            user.SendMessage("You inject " + target.Name + " with a stim pack. The stim pack will expire in " + duration + " seconds.");
+            user.SendMessage("The effects of this drink will last for one hour.");
 
-            _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The stim pack that you applied to " + target.Name + " has expired."); });
-
-            if (!Equals(user, target))
-            {
-                NWCreature targetCreature = target.Object;
-                targetCreature.SendMessage(user.Name + " injects you with a stim pack.");
-            }
-
-            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-            SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
+            _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The effects of the meal you have eaten have expired."); });
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -82,11 +65,11 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
+            var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "DRINK_EFFECT");
 
             if (existing != null && _.GetIsEffectValid(existing) == true)
             {
-                return "Your target is already under the effects of another stimulant.";
+                return "Already under the effects of another drink.";
             }
 
             return null;

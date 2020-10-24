@@ -74,24 +74,24 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
             int amount;
-            int Mod = ((creature.WisdomModifier + creature.IntelligenceModifier)/2);
+            int mod = ((creature.WisdomModifier + creature.IntelligenceModifier)/2);
 
             switch (spellTier)
             {
                 case 1:
-                    amount = 2 + Mod;
+                    amount = 2 + mod;
                     break;
                 case 2:
-                    amount = 3 + Mod;
+                    amount = 3 + mod;
                     break;
                 case 3:
-                    amount = 4 + Mod;
+                    amount = 4 + mod;
                     break;
                 case 4:
-                    amount = 5 + Mod;
+                    amount = 5 + mod;
                     break;
                 case 5:
-                    amount = 6 + Mod;
+                    amount = 6 + mod;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spellTier));

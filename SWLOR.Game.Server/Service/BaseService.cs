@@ -1320,11 +1320,11 @@ namespace SWLOR.Game.Server.Service
                                       if (x == null) return 0;
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
                                       return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.02f;
+                                  }) * 0.01f;
 
             var fuelMax = towerStructure.Storage;
 
-            return (int)(fuelMax + fuelMax * siloBonus);
+            return (int)(fuelMax + fuelMax * (siloBonus * 2));
         }
 
         public static int CalculateMaxReinforcedFuel(Guid pcBaseID)
@@ -1353,11 +1353,11 @@ namespace SWLOR.Game.Server.Service
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
 
                                       return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.02f;
+                                  }) * 0.01f;
 
             var fuelMax = towerBaseStructure.ReinforcedStorage;
 
-            return (int)(fuelMax + fuelMax * siloBonus);
+            return (int)(fuelMax + fuelMax * (siloBonus * 2));
         }
 
         public static int CalculateResourceCapacity(Guid pcBaseID)
@@ -1387,11 +1387,11 @@ namespace SWLOR.Game.Server.Service
                                       var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
 
                                       return baseStructure.Storage + x.StructureBonus;
-                                  }) * 0.02f;
+                                  }) * 0.01f;
 
             var resourceMax = towerBaseStructure.ResourceStorage;
 
-            return (int)(resourceMax + resourceMax * siloBonus);
+            return (int)(resourceMax + resourceMax * (siloBonus * 2));
         }
 
         public static string UpgradeControlTower(NWCreature user, NWItem item, NWObject target)

@@ -16,74 +16,17 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             NWCreature targetCreature = oTarget.Object;
             
 
+            if (!oTarget.IsCreature)
+                return "This ability can only be used on living creatures.";
+            if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
+             {
+                oPC.SendMessage("Creature Immune To Animal Bonding");
+             }
+            if (targetCreature.RacialType != RacialType.Animal)
+                return "This ability can only be used on animals.";
+            else
+                throw new ArgumentOutOfRangeException(nameof(targetCreature));
 
-            switch (spellTier)
-            {
-                case 1:
-                    if (!oTarget.IsCreature)
-                        return "This ability can only be used on living creatures.";
-                    if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
-                    {
-                        oPC.SendMessage("Creature Immune To Animal Bonding");
-                    }
-                    if (targetCreature.RacialType != RacialType.Animal)
-                        return "This ability can only be used on animals.";
-                    break;
-                case 2:
-                    if (!oTarget.IsCreature)
-                        return "This ability can only be used on living creatures.";
-                    if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
-                    {
-                        oPC.SendMessage("Creature Immune To Animal Bonding");
-                    }
-                    if (targetCreature.RacialType != RacialType.Animal)
-                        return "This ability can only be used on animals.";
-                    break;
-                case 3:
-                    if (!oTarget.IsCreature)
-                        return "This ability can only be used on living creatures.";
-                    if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
-                    {
-                        oPC.SendMessage("Creature Immune To Animal Bonding");
-                    }
-                    if (targetCreature.RacialType != RacialType.Animal)
-                        return "This ability can only be used on animals.";
-                    break;
-                case 4:
-                    if (!oTarget.IsCreature)
-                        return "This ability can only be used on living creatures.";
-                    if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
-                    {
-                        oPC.SendMessage("Creature Immune To Animal Bonding");
-                    }
-                    if (targetCreature.RacialType != RacialType.Animal)
-                        return "This ability can only be used on animals.";
-                    break;
-                case 5:
-                    if (!oTarget.IsCreature)
-                        return "This ability can only be used on living creatures.";
-                    if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
-                    {
-                        oPC.SendMessage("Creature Immune To Animal Bonding");
-                    }
-                    if (targetCreature.RacialType != RacialType.Animal)
-                        return "This ability can only be used on animals.";
-                    break;
-                case 6:
-                    if (!oTarget.IsCreature)
-                        return "This ability can only be used on living creatures.";
-                    if (oTarget.GetLocalInt("FORCE_BOND_IMMUNITY") == 1)
-                    {
-                        oPC.SendMessage("Creature Immune To Animal Bonding");
-                    }
-                    if (targetCreature.RacialType != RacialType.Animal)
-                        return "This ability can only be used on animals.";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(spellTier));
-            }
-
-            return string.Empty;
         }
         
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
@@ -114,15 +57,15 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
             Effect effect = _.EffectDominated();
-            int ABCR;
+            int animalbondcreaturerating;
             float duration = 300f;
-            int CRXP = ((int)_.GetChallengeRating(target));
+            int challengeratingxp = ((int)_.GetChallengeRating(target));
 
             switch (spellTier)
             {
                 case 1:
-                    ABCR = 4;
-                    if (ABCR >= _.GetChallengeRating(target))
+                    animalbondcreaturerating = 4;
+                    if (animalbondcreaturerating >= _.GetChallengeRating(target))
                     {
                         creature.AssignCommand(() =>
                         {
@@ -132,7 +75,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         // Give Sense XP, if player.
                         if (creature.IsPlayer)
                         {
-                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (CRXP * 100));
+                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (challengeratingxp * 100));
                         }
                     }
                     else
@@ -141,8 +84,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     }
                     break;
                 case 2:
-                    ABCR = 8;
-                    if (ABCR >= _.GetChallengeRating(target))
+                    animalbondcreaturerating = 8;
+                    if (animalbondcreaturerating >= _.GetChallengeRating(target))
                     {
                         creature.AssignCommand(() =>
                         {
@@ -152,7 +95,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         // Give Sense XP, if player.
                         if (creature.IsPlayer)
                         {
-                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (CRXP * 100));
+                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (challengeratingxp * 100));
                         }
                     }
                     else
@@ -161,8 +104,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     }
                     break;
                 case 3:
-                    ABCR = 12;
-                    if (ABCR >= _.GetChallengeRating(target))
+                    animalbondcreaturerating = 12;
+                    if (animalbondcreaturerating >= _.GetChallengeRating(target))
                     {
                         creature.AssignCommand(() =>
                         {
@@ -172,7 +115,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         // Give Sense XP, if player.
                         if (creature.IsPlayer)
                         {
-                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (CRXP * 100));
+                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (challengeratingxp * 100));
                         }
                     }
                     else
@@ -181,8 +124,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     }
                     break;
                 case 4:
-                    ABCR = 16;
-                    if (ABCR >= _.GetChallengeRating(target))
+                    animalbondcreaturerating = 16;
+                    if (animalbondcreaturerating >= _.GetChallengeRating(target))
                     {
                         creature.AssignCommand(() =>
                         {
@@ -192,7 +135,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         // Give Sense XP, if player.
                         if (creature.IsPlayer)
                         {
-                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (CRXP * 100));
+                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (challengeratingxp * 100));
                         }
                     }
                     else
@@ -201,8 +144,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     }
                     break;
                 case 5:
-                    ABCR = 20;
-                    if (ABCR >= _.GetChallengeRating(target))
+                    animalbondcreaturerating = 20;
+                    if (animalbondcreaturerating >= _.GetChallengeRating(target))
                     {
                         creature.AssignCommand(() =>
                         {
@@ -212,7 +155,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         // Give Sense XP, if player.
                         if (creature.IsPlayer)
                         {
-                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (CRXP * 100));
+                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (challengeratingxp * 100));
                         }
                     }
                     else
@@ -221,8 +164,8 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     }
                     break;
                 case 6:
-                    ABCR = 0;
-                    if (ABCR > _.GetChallengeRating(target))
+                    animalbondcreaturerating = 0;
+                    if (animalbondcreaturerating > _.GetChallengeRating(target))
                     {
                         creature.AssignCommand(() =>
                         {
@@ -232,7 +175,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         // Give Sense XP, if player.
                         if (creature.IsPlayer)
                         {
-                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (CRXP * 100));
+                            SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (challengeratingxp * 100));
                         }
                     }
                     break;

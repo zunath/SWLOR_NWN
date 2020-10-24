@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
 
         const string FB_T_WEATHER_DUST_STORM = "There is a dust storm!  Visibility is drastically reduced.";
         const string FB_T_WEATHER_SAND_STORM = "There is a sand storm! Take cover immediately, these storms are very dangerous!";
-        const string FB_T_WEATHER_SNOW_STORM = "There is a snow storm! The Visability is reduced!";
+        const string FB_T_WEATHER_SNOW_STORM = "There is a snow storm! Visibility is reduced.";
 
         // Module and area variables.
         const string VAR_WEATHER_CHANGE = "VAR_WEATHER_CHANGE";

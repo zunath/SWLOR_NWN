@@ -8,14 +8,14 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ForceBreach: IPerkHandler
+    public class ThrowRock : IPerkHandler
     {
-        public PerkType PerkType => PerkType.ForceBreach;
+        public PerkType PerkType => PerkType.ThrowRock;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -39,30 +39,30 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int damage;
-            int intMod = creature.IntelligenceModifier;
+            int Mod = creature.WisdomModifier;
 
             switch (spellTier)
             {
                 case 1:
-                    damage = 10 + intMod;
+                    damage = 5 + Mod;
                     break;
                 case 2:
-                    damage = 15 + intMod;
+                    damage = 10 + ((Mod * 125) / 10);
                     break;
                 case 3:
-                    damage = 20 + ((intMod * 15)/10);
+                    damage = 10 + ((Mod * 15) / 10);
                     break;
                 case 4:
-                    damage = 25 + ((intMod * 17) / 10);
+                    damage = 15 + ((Mod * 175) / 10);
                     break;
                 case 5:
-                    damage = 30 + (intMod * 2);
+                    damage = 15 + (Mod * 2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal, true);
 
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Bludgeoning), target);
             });
 
             if (creature.IsPlayer)
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

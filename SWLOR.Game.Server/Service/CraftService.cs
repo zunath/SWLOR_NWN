@@ -233,13 +233,14 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType = (SkillType)skillID;
 
             // Identify which perk to use for this skill.
-            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyWeaponsmith;
-            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
-            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
-            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
-            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
-            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
-            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
+            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyCrafting;
+            else if (skillType == SkillType.Lightsaber) perkType = PerkType.SpeedyCrafting;
             else return BaseCraftDelay;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);

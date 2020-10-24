@@ -48,10 +48,6 @@ namespace SWLOR.Game.Server.Service
                 DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
             }
 
-            foreach (var item in player.InventoryItems)
-            {
-                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.10f, 0.50f));
-            }
         }
 
         private static void OnModuleRespawn()

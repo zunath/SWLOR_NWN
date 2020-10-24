@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Service
         private static void HandleRegenerationTick(NWPlayer oPC, Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
-            int rate = 5;
+            int rate = 10;
             int amount = entity.HPRegenerationAmount;
 
             if (entity.RegenerationTick <= 0)
@@ -511,7 +511,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
                     // CON bonus
-                    int con = oPC.ConstitutionModifier;
+                    int con = (oPC.ConstitutionModifier / 2);
                     if (con > 0)
                     {
                         amount += con;

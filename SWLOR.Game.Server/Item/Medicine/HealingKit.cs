@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             int luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
-            float duration = 30.0f + (rank * 0.4f) + perkDurationBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + item.MedicineBonus;
+            float duration = 30.0f + (rank * 0.4f) + perkDurationBonus + item.MedicineBonus;
+            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + (rank / 10);
             int delta = item.RecommendedLevel - rank;
             float effectivenessPercent = 1.0f;
 

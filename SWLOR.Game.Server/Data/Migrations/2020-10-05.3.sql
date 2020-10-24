@@ -1,0 +1,1 @@
+﻿Update Perk Set ExecutionTypeID = 3 Where ID = 180;

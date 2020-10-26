@@ -61,76 +61,48 @@ namespace SWLOR.Game.Server.Service
         }
 
         // Feedback texts.
-        const string FB_T_WEATHER_LIGHTNING = "You were hit by the bolt of lightning!";
-        const string FB_T_WEATHER_MESSAGE_CLOUDY = "Clouds move across the sky at a brisk pace, driven by strong wind.";
-        const string FB_T_WEATHER_MESSAGE_COLD_CLOUDY = "Cold air is punctuated by an overcast sky, the clouds thick and dark.";
-        const string FB_T_WEATHER_MESSAGE_COLD_WINDY = "A chill wind is in the air, cutting like a knife.";
-        const string FB_T_WEATHER_MESSAGE_COLD_MILD = "It is quite cold out. Wrap up warm by wearing winter clothing.";
-        const string FB_T_WEATHER_MESSAGE_FREEZING = "The air is bitingly cold right now. Make sure you are wrapped up warm and have plenty of rations.";
-        const string FB_T_WEATHER_MESSAGE_MILD = "It is lovely and sunny here.";
-        const string FB_T_WEATHER_MESSAGE_MILD_NIGHT = "The weather is fine tonight.";
-        const string FB_T_WEATHER_MESSAGE_MIST = "It is still and very humid, the mist hangs in the air about you.";
-        const string FB_T_WEATHER_MESSAGE_WARM_CLOUDY = "It is hot, and clouds are dotted around. Travels will be tiring - you should wear light clothing.";
-        const string FB_T_WEATHER_MESSAGE_WARM_MILD = "It is warm and calm here. Make sure you have enough to drink in the extra heat, and wear light clothing.";
-        const string FB_T_WEATHER_MESSAGE_WARM_WINDY = "Warm gusts of wind ripple the air here, and there are a worrying number of clouds casting shadows over the earth. We might experience thunderstorms, so be careful.";
-        const string FB_T_WEATHER_MESSAGE_RAIN_NORMAL = "It is raining. Your travels will be a little difficult because of it.";
-        const string FB_T_WEATHER_MESSAGE_RAIN_WARM = "It is raining, and the air is humid. Thunderstorms are likely, and it will be more difficult to make progress on your journey.";
-        const string FB_T_WEATHER_MESSAGE_SCORCHING = "The heat is blazing here! You should wear something to protect your face and hands, if you can.";
-        const string FB_T_WEATHER_MESSAGE_SNOW = "It is snowing right now! Remember to wrap up warm and pack extra provisions.";
-        const string FB_T_WEATHER_MESSAGE_STORM = "There is a thunderstorm at the moment. It will be quite dangerous out.";
-        const string FB_T_WEATHER_MESSAGE_WINDY = "The wind is very strong, and there are many clouds in the sky. The weather could shift at any time.";
+        private const string FB_T_WEATHER_LIGHTNING = "You were hit by the bolt of lightning!";
+        private const string FB_T_WEATHER_MESSAGE_CLOUDY = "Clouds move across the sky at a brisk pace, driven by strong wind.";
+        private const string FB_T_WEATHER_MESSAGE_COLD_CLOUDY = "Cold air is punctuated by an overcast sky, the clouds thick and dark.";
+        private const string FB_T_WEATHER_MESSAGE_COLD_WINDY = "A chill wind is in the air, cutting like a knife.";
+        private const string FB_T_WEATHER_MESSAGE_COLD_MILD = "It is quite cold out. Wrap up warm by wearing winter clothing.";
+        private const string FB_T_WEATHER_MESSAGE_FREEZING = "The air is bitingly cold right now. Make sure you are wrapped up warm and have plenty of rations.";
+        private const string FB_T_WEATHER_MESSAGE_MILD = "It is lovely and sunny here.";
+        private const string FB_T_WEATHER_MESSAGE_MILD_NIGHT = "The weather is fine tonight.";
+        private const string FB_T_WEATHER_MESSAGE_MIST = "It is still and very humid, the mist hangs in the air about you.";
+        private const string FB_T_WEATHER_MESSAGE_WARM_CLOUDY = "It is hot, and clouds are dotted around. Travels will be tiring - you should wear light clothing.";
+        private const string FB_T_WEATHER_MESSAGE_WARM_MILD = "It is warm and calm here. Make sure you have enough to drink in the extra heat, and wear light clothing.";
+        private const string FB_T_WEATHER_MESSAGE_WARM_WINDY = "Warm gusts of wind ripple the air here, and there are a worrying number of clouds casting shadows over the earth. We might experience thunderstorms, so be careful.";
+        private const string FB_T_WEATHER_MESSAGE_RAIN_NORMAL = "It is raining. Your travels will be a little difficult because of it.";
+        private const string FB_T_WEATHER_MESSAGE_RAIN_WARM = "It is raining, and the air is humid. Thunderstorms are likely, and it will be more difficult to make progress on your journey.";
+        private const string FB_T_WEATHER_MESSAGE_SCORCHING = "The heat is blazing here! You should wear something to protect your face and hands, if you can.";
+        private const string FB_T_WEATHER_MESSAGE_SNOW = "It is snowing right now! Remember to wrap up warm and pack extra provisions.";
+        private const string FB_T_WEATHER_MESSAGE_STORM = "There is a thunderstorm at the moment. It will be quite dangerous out.";
+        private const string FB_T_WEATHER_MESSAGE_WINDY = "The wind is very strong, and there are many clouds in the sky. The weather could shift at any time.";
 
         const string FB_T_WEATHER_DUST_STORM = "There is a dust storm!  Visibility is drastically reduced.";
         const string FB_T_WEATHER_SAND_STORM = "There is a sand storm! Take cover immediately, these storms are very dangerous!";
         const string FB_T_WEATHER_SNOW_STORM = "There is a snow storm! Visibility is reduced.";
 
         // Module and area variables.
-        const string VAR_WEATHER_CHANGE = "VAR_WEATHER_CHANGE";
-        const string VAR_WEATHER_HEAT = "VAR_WEATHER_HEAT";
-        const string VAR_WEATHER_HUMIDITY = "VAR_WEATHER_HUMIDITY";
-        const string VAR_WEATHER_MIST = "VAR_WEATHER_MIST";
-        const string VAR_WEATHER_WIND = "VAR_WEATHER_WIND";
-        const string VAR_WEATHER_ACID_RAIN = "VAR_WEATHER_ACID_RAIN";
-        const string VAR_EFFECTOR = "VAR_WH_EFFECTOR";
-        const string VAR_INITIALIZED = "VAR_WH_INITIALIZED";
-        const string VAR_SKYBOX = "VAR_WH_SKYBOX";
-        const string VAR_TIMESTAMP = "VAR_WH_TIMESTAMP";
-        const string VAR_FOG_SUN = "VAR_WH_FOG_SUN";
-        const string VAR_FOG_MOON = "VAR_WH_FOG_MOON";
-        const string VAR_FOG_C_SUN = "VAR_WH_FOG_C_SUN";
-        const string VAR_FOG_C_MOON = "VAR_WH_FOG_C_MOON";
+        private const string VAR_WEATHER_CHANGE = "VAR_WEATHER_CHANGE";
+        private const string VAR_WEATHER_HEAT = "VAR_WEATHER_HEAT";
+        private const string VAR_WEATHER_HUMIDITY = "VAR_WEATHER_HUMIDITY";
+        private const string VAR_WEATHER_WIND = "VAR_WEATHER_WIND";
+        private const string VAR_WEATHER_ACID_RAIN = "VAR_WEATHER_ACID_RAIN";
+        private const string VAR_INITIALIZED = "VAR_WH_INITIALIZED";
+        private const string VAR_SKYBOX = "VAR_WH_SKYBOX";
+        private const string VAR_FOG_SUN = "VAR_WH_FOG_SUN";
+        private const string VAR_FOG_MOON = "VAR_WH_FOG_MOON";
+        private const string VAR_FOG_C_SUN = "VAR_WH_FOG_C_SUN";
+        private const string VAR_FOG_C_MOON = "VAR_WH_FOG_C_MOON";
 
-        // Flag variables - used to modify climate per area.
-        const int CLIMATE_HEAT_VERY_COLD = -8;
-        const int CLIMATE_HEAT_COLD = -4;
-        const int CLIMATE_HEAT_NORMAL = 0;
-        const int CLIMATE_HEAT_HOT = 4;
-        const int CLIMATE_HEAT_VERY_HOT = 8;
-
-        const int CLIMATE_HUMIDITY_VERY_WET = 6;
-        const int CLIMATE_HUMIDITY_WET = 2;
-        const int CLIMATE_HUMIDITY_NORMAL = 0;
-        const int CLIMATE_HUMIDITY_DRY = -2;
-        const int CLIMATE_HUMIDITY_VERY_DRY = -6;
-
-        const int CLIMATE_WIND_VERY_SHELTERED = -6;
-        const int CLIMATE_WIND_SHELTERED = -2;
-        const int CLIMATE_WIND_NORMAL = 0;
-        const int CLIMATE_WIND_EXPOSED = 1;
-        const int CLIMATE_WIND_VERY_EXPOSED = 4;
-
-        // WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2
-        const int WEATHER_FOGGY = 3;
-        
-        struct PlanetaryClimate
+        private struct PlanetaryClimate
         {
             public int Heat_Modifier;
             public int Humidity_Modifier;
             public int Wind_Modifier;
 
-            // Does the planet suffer from unusual weather?
-            public bool Acid_Rain;
-            public bool Dust_Storm;
             public bool Sand_Storm;
             public bool Snow_Storm;
 
@@ -256,14 +228,13 @@ namespace SWLOR.Game.Server.Service
             //--------------------------------------------------------------------------
             // Adjust the indices.  Only humidity is affected by the current values.
             //--------------------------------------------------------------------------
-            int nHeat = GetHeatIndex();
-            int nHumidity = GetHumidity();
-            int nWind = GetWindStrength();
+            int nHumidity = GetHumidity(OBJECT_SELF);
+            int nWind = GetWindStrength(OBJECT_SELF);
 
             //--------------------------------------------------------------------------
             // Heat is affected by time of year.
             //--------------------------------------------------------------------------
-            nHeat = Random(5) + (6 - abs(GetCalendarMonth() - 6)); // (0-4 + 0-6)
+            var nHeat = Random(5) + (6 - abs(GetCalendarMonth() - 6));
             if (nHeat < 1) nHeat = 1;
 
             //--------------------------------------------------------------------------
@@ -374,17 +345,7 @@ namespace SWLOR.Game.Server.Service
             if (!bStormy && nWind >= 9 && d3() == 1)
             {
                 // Dust storm - low visibility but no damage.
-                if (_GetClimate(oArea).Dust_Storm)
-                {
-                    SetFogColor(FogType.Sun, FogColor.Brown, oArea);
-                    SetFogColor(FogType.Moon, FogColor.Brown, oArea);
-                    SetFogAmount(FogType.Sun, 80, oArea);
-                    SetFogAmount(FogType.Moon, 80, oArea);
-
-                    oArea.SetLocalInt("DUST_STORM", 1);
-                    bDustStorm = true;
-                }
-                else if (_GetClimate(oArea).Sand_Storm)
+                if (_GetClimate(oArea).Sand_Storm)
                 {
                     SetFogColor(FogType.Sun, FogColor.OrangeDark, oArea);
                     SetFogColor(FogType.Moon, FogColor.OrangeDark, oArea);
@@ -673,11 +634,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public static int GetHeatIndex()
-        {
-            return GetHeatIndex(OBJECT_SELF);
-        }
-
         public static int GetHeatIndex(NWObject oArea)
         {
             //--------------------------------------------------------------------------
@@ -699,11 +655,6 @@ namespace SWLOR.Game.Server.Service
             return nHeat;
         }
 
-        public static int GetHumidity()
-        {
-            return GetHumidity(OBJECT_SELF);
-        }
-
         public static int GetHumidity(NWObject oArea)
         {
             //--------------------------------------------------------------------------
@@ -721,11 +672,6 @@ namespace SWLOR.Game.Server.Service
             if (nHumidity < 1) nHumidity = 1;
 
             return nHumidity;
-        }
-
-        public static int GetWindStrength()
-        {
-            return GetWindStrength(OBJECT_SELF);
         }
 
         public static int GetWindStrength(NWObject oArea)
@@ -948,11 +894,6 @@ namespace SWLOR.Game.Server.Service
 
                 oMod.SetLocalInt("WEATHER_LAST_HOUR", nHour);
             }
-        }
-
-        public static void OnCreatureSpawn()
-        {
-            DoWeatherEffects(OBJECT_SELF);
         }
 
         public static void SetAreaHeatModifier(NWObject oArea, int nModifier)

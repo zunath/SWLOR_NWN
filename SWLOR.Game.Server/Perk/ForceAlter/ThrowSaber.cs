@@ -85,17 +85,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             int iCount = 1;
             float fDelay = 0;
 
-            int saberdamage = player.RightHand.DamageBonus;
-            if (saberdamage > 40 ) saberdamage = 40;
+            int saberDamage = player.RightHand.DamageBonus;
+            if (saberDamage > 40 ) saberDamage = 40;
             
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
             {
-                iDamage = saberdamage + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
+                iDamage = saberDamage + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
             }
             else
             {
-                iDamage = (int)weapon.Weight + player.StrengthModifier + (saberdamage / 2);
+                iDamage = (int)weapon.Weight + player.StrengthModifier + (saberDamage / 2);
             }
 
             NWObject oObject;

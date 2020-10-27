@@ -502,8 +502,9 @@ namespace SWLOR.Game.Server.Service
         private static void HandleRegenerationTick(NWPlayer oPC, Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
-            int rate = 10;
+            int rate = 5;
             int amount = entity.HPRegenerationAmount;
+            
 
             if (entity.RegenerationTick <= 0)
             {

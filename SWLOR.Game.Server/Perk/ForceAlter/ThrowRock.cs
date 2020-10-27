@@ -39,24 +39,24 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int damage;
-            int Mod = creature.WisdomModifier;
+            int mod = creature.WisdomModifier;
 
             switch (spellTier)
             {
                 case 1:
-                    damage = 5 + Mod;
+                    damage = 5 + mod;
                     break;
                 case 2:
-                    damage = 10 + ((Mod * 125) / 10);
+                    damage = 10 + ((mod * 125) / 10);
                     break;
                 case 3:
-                    damage = 10 + ((Mod * 15) / 10);
+                    damage = 10 + ((mod * 15) / 10);
                     break;
                 case 4:
-                    damage = 15 + ((Mod * 175) / 10);
+                    damage = 15 + ((mod * 175) / 10);
                     break;
                 case 5:
-                    damage = 15 + (Mod * 2);
+                    damage = 15 + (mod * 2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spellTier));

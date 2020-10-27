@@ -230,18 +230,7 @@ namespace SWLOR.Game.Server.Service
             int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
             float adjustedSpeed = 1.0f;
-            SkillType skillType = (SkillType)skillID;
-
-            // Identify which perk to use for this skill.
-            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyCrafting;
-            else if (skillType == SkillType.Lightsaber) perkType = PerkType.SpeedyCrafting;
-            else return BaseCraftDelay;
+            perkType = PerkType.SpeedyCrafting;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
 

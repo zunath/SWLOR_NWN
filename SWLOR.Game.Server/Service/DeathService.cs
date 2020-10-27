@@ -45,9 +45,13 @@ namespace SWLOR.Game.Server.Service
             for (int index = 0; index < NumberOfInventorySlots; index++)
             {
                 NWItem equipped = _.GetItemInSlot((InventorySlot)index, player);
-                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
+                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.15f, 0.50f));
             }
 
+            foreach (var item in player.InventoryItems)
+            {
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.10f, 0.25f));
+            }
         }
 
         private static void OnModuleRespawn()

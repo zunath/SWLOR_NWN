@@ -3,7 +3,7 @@
     public enum PerkType
     {
         Unknown = -1,
-        SpeedyFabrication = 1, 
+        // 1 is free
         FabricationBlueprints = 2, 
         ForceSpeed = 3,
         AbsorbEnergy = 4,
@@ -99,11 +99,7 @@
         PlasmaCell = 94,
         Chi = 95,
         EngineeringBlueprints = 96,
-        //97 is free
-        SpeedyWeaponsmith = 98,
-        SpeedyArmorsmith = 99,
-        SpeedyCooking = 100,
-        SpeedyEngineering = 101,
+        // 97-101 are free
         FoodRecipes = 102,
         Meditate = 103,
         Provoke = 104,

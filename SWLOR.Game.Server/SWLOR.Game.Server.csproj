@@ -12,6 +12,7 @@
     <None Remove="Data\Migrations\2020-07-02.2.sql" />
     <None Remove="Data\Migrations\2020-07-02.3.sql" />
     <None Remove="Data\Migrations\2020-09-29.2.sql" />
+    <None Remove="Data\Migrations\2020-10-22.1.sql" />
     <None Remove="Data\Migrations\2020-10-22.2.sql" />
     <None Remove="Data\Migrations\2020-10-22.3.sql" />
     <None Remove="Data\Migrations\Initialization.sql" />
@@ -23,6 +24,7 @@
     <EmbeddedResource Include="Data\Migrations\2020-07-02.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-07-02.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-09-29.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-22.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-10-22.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-10-22.3.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
@@ -42,5 +44,9 @@
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).runtimeconfig.json" />
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).deps.json" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="$(SolutionDir)NWN.Python\deployBuild.exe -b $(ProjectDir)$(OutDir)" />
   </Target>
 </Project>

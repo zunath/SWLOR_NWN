@@ -254,8 +254,6 @@ namespace SWLOR.Game.Server.Scripts.Delayed
             int equipmentBonus = 0;
             float multiplier = 0.5f;
             int atmosphere = CraftService.CalculateAreaAtmosphereBonus(player.Area);
-            int sabercraft = SkillService.GetPCSkillRank(player, SkillType.Lightsaber);
-            int force = ((SkillService.GetPCSkillRank(player, SkillType.ForceAlter) + SkillService.GetPCSkillRank(player, SkillType.ForceControl) + SkillService.GetPCSkillRank(player, SkillType.ForceSense))/3);
 
             if (atmosphere >= 150)
             {
@@ -278,7 +276,6 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 case SkillType.Engineering: equipmentBonus = effectiveStats.Engineering; break;
                 case SkillType.Fabrication: equipmentBonus = effectiveStats.Fabrication; break;
                 case SkillType.Medicine: equipmentBonus = effectiveStats.Medicine; break;
-                case SkillType.Lightsaber: equipmentBonus = ((sabercraft / 10) + force); break;
             }
 
             return equipmentBonus * multiplier; // +0.5%, +0.6%, +0.7%, or 0.8% per equipment bonus

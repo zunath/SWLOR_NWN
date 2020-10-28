@@ -77,16 +77,18 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             {
 
                 case 1:
-                    hitpoints = 10;
+                    hitpoints = 3;
                     effect = _.EffectTemporaryHitpoints(hitpoints);
                     break;
                 case 2:
-                    hitpoints = 20;
-                    effect = _.EffectTemporaryHitpoints(hitpoints);
+                    hitpoints = 3;
+                    concealment = 5;
+                    effect = _.EffectConcealment(concealment);
+                    effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
                     break;
                 case 3:
-                    concealment = 5;
-                    hitpoints = 30;
+                    concealment = 10;
+                    hitpoints = 5;
                     effect = _.EffectConcealment(concealment);
                     effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
                     break;

@@ -13,11 +13,8 @@
     <None Remove="Data\Migrations\2020-07-02.3.sql" />
     <None Remove="Data\Migrations\2020-09-29.2.sql" />
     <None Remove="Data\Migrations\2020-10-22.1.sql" />
-    <None Remove="Data\Migrations\2020-10-22.2.sql" />
-    <None Remove="Data\Migrations\2020-10-22.3.sql" />
     <None Remove="Data\Migrations\2020-10-26.1.sql" />
-    <None Remove="Data\Migrations\2020-10-28.1.sql" />
-    <None Remove="Data\Migrations\2020-10-28.2.sql" />
+    <None Remove="Data\Migrations\2020-10-29.1.sql" />
     <None Remove="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 
@@ -28,11 +25,8 @@
     <EmbeddedResource Include="Data\Migrations\2020-07-02.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-09-29.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-10-22.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2020-10-22.2.sql" />
-    <EmbeddedResource Include="Data\Migrations\2020-10-22.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-10-26.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2020-10-28.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2020-10-28.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-29.1.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 

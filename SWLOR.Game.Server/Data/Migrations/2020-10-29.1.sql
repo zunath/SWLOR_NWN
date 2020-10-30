@@ -1,4 +1,35 @@
-﻿INSERT INTO CooldownCategory (ID , Name, BaseCooldownTime)
+﻿Update Perk Set IsActive = 1 Where ID = 175;
+Update Perk Set ExecutionTypeID = 7 Where ID = 175;
+Update PerkLevel Set Description = 'The caster gains 3 Temporary Hit Points Per Tick' Where PerkID = 175 AND Level = 1;
+Update PerkLevel Set Description = 'The caster gains 3 Temporary Hit Points and 5% Concealment Per Tick' Where PerkID = 175 AND Level = 2;
+Update PerkLevel Set Description = 'The caster gains 5 Temporary Hit Points and 10% Concealment Per Tick' Where PerkID = 175 AND Level = 3;
+Update PerkFeat Set ConcentrationTickInterval = 6 Where FeatID = 1226 AND PerkLevelUnlocked = 1 ;
+Update PerkFeat Set ConcentrationTickInterval = 6 Where FeatID = 1227 AND PerkLevelUnlocked = 2 ;
+Update PerkFeat Set ConcentrationTickInterval = 6 Where FeatID = 1228 AND PerkLevelUnlocked = 3 ;
+Update PerkFeat Set ConcentrationFPCost = 3 Where FeatID = 1226 AND PerkLevelUnlocked = 1 ;
+Update PerkFeat Set ConcentrationFPCost = 4 Where FeatID = 1227 AND PerkLevelUnlocked = 2 ;
+Update PerkFeat Set ConcentrationFPCost = 5 Where FeatID = 1228 AND PerkLevelUnlocked = 3 ;
+Update CooldownCategory Set BaseCooldownTime = 30 Where ID = 16;
+Update Perk Set IsActive = 1 WHERE ID = 175;
+
+UPDATE Perk Set IsActive = 0 WHERE ID = 1;
+UPDATE Perk Set IsActive = 0 WHERE ID = 6;
+UPDATE Perk Set IsActive = 0 WHERE ID = 10;
+UPDATE Perk Set IsActive = 0 WHERE ID = 98;
+UPDATE Perk Set IsActive = 0 WHERE ID = 99;
+UPDATE Perk Set IsActive = 0 WHERE ID = 100;
+UPDATE Perk Set IsActive = 0 WHERE ID = 101;
+
+
+Update PerkFeat Set BaseFPCost = 4 WHERE PerkID = 174 AND PerkLevelUnlocked = 1;
+Update PerkFeat Set BaseFPCost = 5 WHERE PerkID = 174 AND PerkLevelUnlocked = 2;
+Update PerkFeat Set BaseFPCost = 6 WHERE PerkID = 174 AND PerkLevelUnlocked = 3;
+Update PerkFeat Set BaseFPCost = 8 WHERE PerkID = 174 AND PerkLevelUnlocked = 4;
+Update PerkFeat Set BaseFPCost = 10 WHERE PerkID = 174 AND PerkLevelUnlocked = 5;
+
+Update Perk Set PerkCategoryID = 34 WHERE ID = 80 and IsActive = 1;
+
+INSERT INTO CooldownCategory (ID , Name, BaseCooldownTime)
 Values (41, 'Force Spark', 30);
 
 INSERT into Perk (ID, Name, IsActive, BaseCastingTime, Description, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, IsTargetSelfOnly, Enmity, EnmityAdjustmentRuleID, CastAnimationID, ForceBalanceTypeID)
@@ -58,19 +89,19 @@ INSERT into Perk (ID, Name, IsActive, BaseCastingTime, Description, PerkCategory
 Values (187, 'Force Crush', 1, 0, 'Damages the Target for 2 plus average of Wisdom and Intelliegence Modifiers', 40, 42, 7, 0, 10, 1, null, 2);
 
 INSERT into PerkLevel (ID, PerkID, Level, Price, Description, SpecializationID)
-Values (2334, 187, 1, 2, 'Damages the Target for 2 Average of Wisdom and Intelligence Modifiers', 0);
+Values (2334, 187, 1, 2, 'Damages the Target for 2 + Average of Wisdom and Intelligence Modifiers', 0);
 
 INSERT into PerkLevel (ID, PerkID, Level, Price, Description, SpecializationID)
-Values (2335, 187, 2, 3, 'Damages the Target for 3 Average of Wisdom and Intelligence Modifiers', 0);
+Values (2335, 187, 2, 3, 'Damages the Target for 3 + Average of Wisdom and Intelligence Modifiers', 0);
 
 INSERT into PerkLevel (ID, PerkID, Level, Price, Description, SpecializationID)
-Values (2336, 187, 3, 4, 'Damages the Target for 4 Average of Wisdom and Intelligence Modifiers', 0);
+Values (2336, 187, 3, 4, 'Damages the Target for 4 + Average of Wisdom and Intelligence Modifiers', 0);
 
 INSERT into PerkLevel (ID, PerkID, Level, Price, Description, SpecializationID)
-Values (2337, 187, 4, 5, 'Damages the Target for 5 Average of Wisdom and Intelligence Modifiers', 0);
+Values (2337, 187, 4, 5, 'Damages the Target for 5 + Average of Wisdom and Intelligence Modifiers', 0);
 
 INSERT into PerkLevel (ID, PerkID, Level, Price, Description, SpecializationID)
-Values (2338, 187, 5, 6, 'Damages the Target for 6 Average of Wisdom and Intelligence Modifiers', 0);
+Values (2338, 187, 5, 6, 'Damages the Target for 6 + Average of Wisdom and Intelligence Modifiers', 0);
 
 INSERT into PerkFeat (ID, PerkID, FeatID, PerkLevelUnlocked, BaseFPCost, ConcentrationFPCost, ConcentrationTickInterval)
 VALUES (127, 187, 1256, 1, 2, 5, 6);

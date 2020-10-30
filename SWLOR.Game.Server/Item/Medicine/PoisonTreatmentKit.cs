@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 if (_.GetIsEffectValid(effect) == true)
                 {
                     var effectType = _.GetEffectType(effect);
-                    if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease)
+                    if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease || effectType == EffectTypeScript.AbilityDecrease)
                     {
                         _.RemoveEffect(target.Object, effect);
                     }
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 if (_.GetIsEffectValid(effect) == true)
                 {
                     var effectType = _.GetEffectType(effect);
-                    if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease)
+                    if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease || effectType == EffectTypeScript.AbilityDecrease)
                     {
                         hasEffect = true;
                     }

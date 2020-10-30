@@ -55,11 +55,15 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = data.Damager.Object;
             NWItem weapon = _.GetLastWeaponUsed(player);
             
-            if (weapon.CustomItemType == CustomItemType.BlasterPistol ||
-                weapon.CustomItemType == CustomItemType.BlasterRifle)
+            if (weapon.CustomItemType == CustomItemType.BlasterPistol)
             {
                 int statBonus = (int)(player.DexterityModifier * 0.5f);
                 data.Base += statBonus;
+            }
+            else if (weapon.CustomItemType == CustomItemType.BlasterRifle)
+            {
+                int statbonus = (int)(player.DexterityModifier * 0.6f);
+                data.Base += statbonus;
             }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                      weapon.CustomItemType == CustomItemType.Saberstaff ||
@@ -202,6 +206,15 @@ namespace SWLOR.Game.Server.Service
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
                     // Play a visual effect signifying the ability was activated.
                     _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Dur_Blur), target, 0.5f);
+                }
+            }
+            //Shield Oath Damage Immunity
+            NWPlayer player = _.OBJECT_SELF;
+            if (target.IsPC)
+            {
+                if (CustomEffectService.GetCurrentStanceType(player) == CustomEffectType.ShieldOath)
+                {
+                    reduction += 0.2f;
                 }
             }
 

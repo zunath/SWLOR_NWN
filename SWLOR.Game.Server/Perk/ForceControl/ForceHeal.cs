@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
+            creature.AssignCommand(() => _.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 9999));
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             int amount = 0;
+
 
             switch (perkLevel)
             {

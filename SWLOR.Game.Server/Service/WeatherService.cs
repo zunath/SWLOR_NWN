@@ -80,8 +80,9 @@ namespace SWLOR.Game.Server.Service
         private const string FB_T_WEATHER_MESSAGE_STORM = "There is a thunderstorm at the moment. It will be quite dangerous out.";
         private const string FB_T_WEATHER_MESSAGE_WINDY = "The wind is very strong, and there are many clouds in the sky. The weather could shift at any time.";
 
-        private const string FB_T_WEATHER_DUST_STORM = "There is a dust storm!  Visibility is drastically reduced.";
-        private const string FB_T_WEATHER_SAND_STORM = "There is a sand storm! Take cover immediately, these storms are very dangerous!";
+        const string FB_T_WEATHER_DUST_STORM = "There is a dust storm!  Visibility is drastically reduced.";
+        const string FB_T_WEATHER_SAND_STORM = "There is a sand storm! Take cover immediately, these storms are very dangerous!";
+        const string FB_T_WEATHER_SNOW_STORM = "There is a snow storm! Visibility is reduced.";
 
         // Module and area variables.
         private const string VAR_WEATHER_CHANGE = "VAR_WEATHER_CHANGE";
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Service
             public int Wind_Modifier;
 
             public bool Sand_Storm;
+            public bool Snow_Storm;
 
             // Allow overrides of text on different planets.
             public string special_cloudy;
@@ -189,6 +191,8 @@ namespace SWLOR.Game.Server.Service
                 climate.Heat_Modifier = -5;
                 climate.Humidity_Modifier = -8;
 
+                climate.Snow_Storm = true;
+
                 climate.special_freezing = "A wave of cold air rolls in, stinging exposed flesh.";
                 climate.special_snow = "It's snowing... again...";
                 climate.special_windy = "A cold wind sweeps in.";
@@ -196,7 +200,7 @@ namespace SWLOR.Game.Server.Service
                 climate.special_cloudy = "Clouds build over head, and there is a occasional strong gust of wind.";
                 climate.special_cold_cloudy = "The clouds over head build, a cold wind stings exposed flesh. Looks like it is going to snow.";
                 climate.special_cold_mild = "It is cold, the sky is clear, and there is a gentle breeze.";
-                //climate.Snow_Storm = true;
+
             }
 
             return climate;
@@ -300,6 +304,7 @@ namespace SWLOR.Game.Server.Service
             bool bStormy = GetSkyBox(oArea) == Skybox.GrassStorm;
             bool bDustStorm = (oArea.GetLocalInt("DUST_STORM") == 1);
             bool bSandStorm = (oArea.GetLocalInt("SAND_STORM") == 1);
+            bool bSnowStorm = (oArea.GetLocalInt("SNOW_STORM") == 1);
 
             //--------------------------------------------------------------------------
             // Process weather rules for this area.
@@ -350,12 +355,23 @@ namespace SWLOR.Game.Server.Service
                     oArea.SetLocalInt("SAND_STORM", 1);
                     bSandStorm = true;
                 }
+                else if (_GetClimate(oArea).Snow_Storm)
+                {
+                    SetFogColor(FogType.Sun, FogColor.White, oArea);
+                    SetFogColor(FogType.Moon, FogColor.White, oArea);
+                    SetFogAmount(FogType.Sun, 80, oArea);
+                    SetFogAmount(FogType.Moon, 80, oArea);
+
+                    oArea.SetLocalInt("SNOW_STORM", 1);
+                    bSnowStorm = true;
+                }
             }
-            else if (bDustStorm || bSandStorm)
+            else if (bDustStorm || bSandStorm || bSnowStorm)
             {
                 // End the storm.
                 oArea.DeleteLocalInt("DUST_STORM");
                 oArea.DeleteLocalInt("SAND_STORM");
+                oArea.DeleteLocalInt("SNOW_STORM");
 
                 SetFogColor(FogType.Sun, (FogColor)oArea.GetLocalInt(VAR_FOG_C_SUN), oArea);
                 SetFogColor(FogType.Moon, (FogColor)oArea.GetLocalInt(VAR_FOG_C_MOON), oArea);
@@ -363,6 +379,7 @@ namespace SWLOR.Game.Server.Service
                 SetFogAmount(FogType.Moon, oArea.GetLocalInt(VAR_FOG_MOON), oArea);
                 bSandStorm = false;
                 bDustStorm = false;
+                bSnowStorm = false;
             }
 
             LoggingService.Trace(TraceComponent.Weather, "Area weather settings for area: " + GetName(oArea) +
@@ -371,6 +388,7 @@ namespace SWLOR.Game.Server.Service
                                                   ", wind - " + IntToString(nWind) +
                                                  ", thunderstorm - " + bStormy.ToString() +
                                                  ", sand storm - " + bSandStorm.ToString() +
+                                                 ", snow storm - " + bSnowStorm.ToString() +
                                                  ", dust storm - " + bDustStorm.ToString());
         }
 
@@ -431,6 +449,25 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(6.0f, () => { ApplyAcid(oTarget, oArea); });
         }
 
+        public static void ApplyCold(NWObject oTarget, NWObject oArea)
+        {
+            if ((NWObject)GetArea(oTarget) != oArea) return;
+            if (GetIsDead(oTarget) == true) return;
+            if (GetIsPC(oTarget) == true && GetIsPC(GetMaster(oTarget)) == false) return;
+
+            //apply
+            Effect eEffect =
+                EffectLinkEffects(
+                    EffectVisualEffect(VisualEffect.Vfx_Imp_Acid_S),
+                    EffectDamage(
+                        d6(1),
+                        DamageType.Acid));
+
+            ApplyEffectToObject(DurationType.Instant, eEffect, oTarget);
+
+            DelayCommand(6.0f, () => { ApplyCold(oTarget, oArea); });
+        }
+
         public static void ApplySandstorm(NWObject oTarget, NWObject oArea)
         {
             if ((NWObject)GetArea(oTarget) != oArea) return;
@@ -448,6 +485,25 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, eEffect, oTarget);
 
             DelayCommand(6.0f, () => { ApplySandstorm(oTarget, oArea); });
+        }
+
+        public static void ApplySnowstorm(NWObject oTarget, NWObject oArea)
+        {
+            if ((NWObject)GetArea(oTarget) != oArea) return;
+            if (GetIsDead(oTarget) == true) return;
+            if (GetIsPC(oTarget) == true && GetIsPC(GetMaster(oTarget)) == false) return;
+
+            //apply
+            Effect eEffect =
+                EffectLinkEffects(
+                    EffectVisualEffect(VisualEffect.Vfx_Dur_Iceskin),
+                    EffectDamage(
+                        d6(2),
+                        DamageType.Cold));
+
+            ApplyEffectToObject(DurationType.Instant, eEffect, oTarget);
+
+            DelayCommand(6.0f, () => { ApplySnowstorm(oTarget, oArea); });
         }
 
         public static void DoWeatherEffects(NWObject oCreature)
@@ -497,7 +553,21 @@ namespace SWLOR.Game.Server.Service
                 ApplyEffectToObject(DurationType.Instant, eEffect, oCreature);
 
                 DelayCommand(6.0f, () => { ApplySandstorm(oCreature, oArea); });
-            }                                    
+            }
+            else if (bIsPC && oArea.GetLocalInt("SNOW_STORM") == 1)
+            {
+                sMessage = FB_T_WEATHER_SNOW_STORM;
+                Effect eEffect =
+                    EffectLinkEffects(
+                        EffectVisualEffect(VisualEffect.Vfx_Dur_Iceskin),
+                        EffectDamage(
+                            d6(2),
+                            DamageType.Cold));
+
+                ApplyEffectToObject(DurationType.Instant, eEffect, oCreature);
+
+                DelayCommand(6.0f, () => { ApplySnowstorm(oCreature, oArea); });
+            }
             else if (bIsPC)
             {
                 // Stormy weather

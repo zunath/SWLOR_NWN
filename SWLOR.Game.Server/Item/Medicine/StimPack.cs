@@ -29,10 +29,10 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             NWPlayer player = user.Object;
             var ability = (AbilityType)item.GetLocalInt("ABILITY_TYPE");
-            int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
+            int amount = item.GetLocalInt("AMOUNT") + (item.MedicineBonus * 2);
             int rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, SkillType.Medicine) : 0;
             int recommendedLevel = item.RecommendedLevel;
-            float duration = 30.0f;
+            float duration = 30.0f * (rank / 10);
             int perkLevel = player.IsPlayer ? PerkService.GetCreaturePerkLevel(player, PerkType.StimFiend) : 0;
             float percentIncrease = perkLevel * 0.25f;
             duration = duration + (duration * percentIncrease);

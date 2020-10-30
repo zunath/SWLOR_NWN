@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace

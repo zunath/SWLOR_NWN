@@ -1,19 +1,18 @@
-﻿
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.ValueObject;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using MySqlConnector;
 using SWLOR.Game.Server.Caching;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class DataService
     {

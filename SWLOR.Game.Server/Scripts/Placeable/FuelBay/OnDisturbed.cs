@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 

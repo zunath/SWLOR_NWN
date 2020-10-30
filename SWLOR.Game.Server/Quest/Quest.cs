@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Quest.Prerequisite;
 using SWLOR.Game.Server.Quest.Reward;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Quest

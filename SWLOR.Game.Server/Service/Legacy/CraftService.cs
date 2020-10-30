@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class CraftService
     {

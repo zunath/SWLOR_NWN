@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class SerializationService
     {

@@ -7,11 +7,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-
-
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class ObjectVisibilityService
     {

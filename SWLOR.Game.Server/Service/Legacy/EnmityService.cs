@@ -1,13 +1,13 @@
-﻿using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.ValueObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Player;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class EnmityService
     {

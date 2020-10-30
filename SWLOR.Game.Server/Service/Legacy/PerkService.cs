@@ -1,26 +1,26 @@
-﻿using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.ValueObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Perk;
+using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 using Player = SWLOR.Game.Server.Core.NWNX.Player;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class PerkService
     {

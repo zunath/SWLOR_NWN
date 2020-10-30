@@ -1,7 +1,6 @@
 ﻿using System;
 
-
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class RandomService
     {

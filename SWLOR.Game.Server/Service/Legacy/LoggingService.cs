@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class LoggingService
     {

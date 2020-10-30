@@ -1,7 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.Legacy;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 /**

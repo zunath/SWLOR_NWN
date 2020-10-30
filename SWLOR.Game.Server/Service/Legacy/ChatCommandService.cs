@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.ChatCommand;
-using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-
-
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.ChatCommand;
+using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class ChatCommandService
     {

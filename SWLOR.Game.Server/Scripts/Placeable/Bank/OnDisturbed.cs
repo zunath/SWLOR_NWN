@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Bank

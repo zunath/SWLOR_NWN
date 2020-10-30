@@ -1,28 +1,26 @@
-﻿using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.DoorRule.Contracts;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-
-
-using SWLOR.Game.Server.ValueObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.DoorRule.Contracts;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Area = SWLOR.Game.Server.Data.Entity.Area;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class BaseService
     {

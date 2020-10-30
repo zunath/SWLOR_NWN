@@ -1,7 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 
 namespace SWLOR.Game.Server.SpawnRule

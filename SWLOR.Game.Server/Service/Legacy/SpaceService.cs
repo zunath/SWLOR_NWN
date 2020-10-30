@@ -1,8 +1,4 @@
-﻿using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.ValueObject;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +6,23 @@ using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Event.Creature;
-using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Event.Player;
-using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Creature;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.Player;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class SpaceService
     {

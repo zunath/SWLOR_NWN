@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Conversation

@@ -1,8 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 
-
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     /// <summary>
     ///      *

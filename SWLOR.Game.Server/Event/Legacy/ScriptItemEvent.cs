@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Legacy

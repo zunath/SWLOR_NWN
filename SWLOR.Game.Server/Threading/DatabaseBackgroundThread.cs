@@ -1,9 +1,9 @@
 ﻿
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using System;
 using Dapper.Contrib.Extensions;
 using MySqlConnector;
+using SWLOR.Game.Server.Service.Legacy;
 
 namespace SWLOR.Game.Server.Threading
 {

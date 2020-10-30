@@ -2,14 +2,14 @@
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Area;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Profiler = SWLOR.Game.Server.ValueObject.Profiler;
 
@@ -51,7 +51,7 @@ using Profiler = SWLOR.Game.Server.ValueObject.Profiler;
     - Planets have distinct climates, implemented as +/- on each scale
     - Different climates can have different hazards - acid rain, sandstorms etc.
 */
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class WeatherService
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 
 namespace SWLOR.Game.Server
 {

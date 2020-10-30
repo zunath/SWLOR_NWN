@@ -6,8 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation

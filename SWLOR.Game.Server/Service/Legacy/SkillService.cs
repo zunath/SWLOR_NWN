@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
@@ -11,10 +15,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
@@ -23,7 +23,7 @@ using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.DamageType;
 
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class SkillService
     {

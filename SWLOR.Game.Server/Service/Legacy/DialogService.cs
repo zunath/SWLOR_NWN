@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Conversation.Contracts;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class DialogService
     {

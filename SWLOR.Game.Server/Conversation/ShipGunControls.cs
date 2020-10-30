@@ -1,7 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 
 namespace SWLOR.Game.Server.Conversation
 {

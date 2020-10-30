@@ -8,11 +8,10 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-
 using SWLOR.Game.Server.ValueObject;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class MarketService
     {

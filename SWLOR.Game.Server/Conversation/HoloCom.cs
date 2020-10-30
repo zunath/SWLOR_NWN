@@ -1,7 +1,6 @@
 ﻿using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation

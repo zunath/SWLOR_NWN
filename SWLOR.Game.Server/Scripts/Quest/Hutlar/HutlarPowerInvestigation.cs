@@ -1,5 +1,5 @@
 ﻿using SWLOR.Game.Server.Quest;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 
 namespace SWLOR.Game.Server.Scripts.Quest.Hutlar
 {

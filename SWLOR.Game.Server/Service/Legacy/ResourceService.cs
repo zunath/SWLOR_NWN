@@ -1,13 +1,12 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class ResourceService
     {

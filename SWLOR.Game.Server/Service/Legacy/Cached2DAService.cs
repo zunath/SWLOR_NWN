@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class Cached2DAService
     {

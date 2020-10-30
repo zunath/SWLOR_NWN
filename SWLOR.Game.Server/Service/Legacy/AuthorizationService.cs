@@ -8,7 +8,7 @@ using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class AuthorizationService
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 {

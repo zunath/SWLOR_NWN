@@ -2,18 +2,18 @@
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Player = SWLOR.Game.Server.Data.Entity.Player;
 using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class PlayerService
     {

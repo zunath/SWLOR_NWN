@@ -1,29 +1,29 @@
-﻿using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Messaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Messaging;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
 using OnHitCastSpell = SWLOR.Game.Server.Event.Feat.OnHitCastSpell;
 using Profiler = SWLOR.Game.Server.ValueObject.Profiler;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class ItemService
     {

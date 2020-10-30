@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.ValueObject;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.ValueObject;
 
 /**
  * PazaakService
@@ -41,7 +41,7 @@ using SWLOR.Game.Server.Core.NWScript;
  * Use the PazaakCollection item on a PazaakTable to join a game.  The convo will ask whether you're playing against an NPC or waiting for another player to join. 
  */
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     class PazaakService
     {

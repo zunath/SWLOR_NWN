@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 
 
 namespace SWLOR.Game.Server.Mod

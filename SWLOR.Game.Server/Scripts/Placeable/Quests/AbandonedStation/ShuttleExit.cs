@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper

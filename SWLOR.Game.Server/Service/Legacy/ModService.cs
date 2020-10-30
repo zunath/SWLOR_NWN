@@ -4,16 +4,16 @@ using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Event.Module;
-using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class ModService
     {

@@ -1,14 +1,13 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Language;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Language;
 
-
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class LanguageService
     {

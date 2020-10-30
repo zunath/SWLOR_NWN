@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public class FeedbackService
     {

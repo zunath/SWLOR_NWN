@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;

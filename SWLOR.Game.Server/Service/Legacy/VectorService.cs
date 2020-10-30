@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using static System.Math;
-using SWLOR.Game.Server.GameObject;
 
 /*
         // inc_Vectors
@@ -32,14 +32,10 @@ using SWLOR.Game.Server.GameObject;
         // They do not currently work well determining
         // quadrants.
 */
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class VectorService
     {
-        public static void SubscribeEvents()
-        {
-        }
-
         // givemedeath - had to add this one to the Service as it wasn't in the ported script and I needed it for HoloComs.
         public static Location MoveLocation(Location lCurrent, float fDirection, float fDistance, float fOffFacing = 0.0f, float fOffZ = 0.0f)
         {

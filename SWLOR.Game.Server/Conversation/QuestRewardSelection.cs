@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Contracts;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation

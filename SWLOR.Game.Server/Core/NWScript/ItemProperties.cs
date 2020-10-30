@@ -449,7 +449,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   constant(IP_CONST_ABILITY_*) and the modifier constant.  The modifier must be
         ///   a POSITIVE integer between 1 and 10 (ie. 1 = -1).
         /// </summary>
-        public static ItemProperty ItemPropertyDecreaseAbility(Enum.Item.Property.Ability nAbility, int nModifier)
+        public static ItemProperty ItemPropertyDecreaseAbility(Ability nAbility, int nModifier)
         {
             Internal.NativeFunctions.StackPushInteger(nModifier);
             Internal.NativeFunctions.StackPushInteger((int)nAbility);

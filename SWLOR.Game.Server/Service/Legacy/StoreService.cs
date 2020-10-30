@@ -35,10 +35,13 @@ namespace SWLOR.Game.Server.Service.Legacy
             foreach (var area in NWModule.Get().Areas)
             {
                 // Loop through any stores in this area.
-                foreach (var store in area.Objects.Where(x => x.ObjectType == ObjectType.Store))
+
+                for(var store = GetFirstObjectInArea(area); GetIsObjectValid(store); store = GetNextObjectInArea(area))
                 {
+                    if (GetObjectType(store) != ObjectType.Store) continue;
+
                     // Loop through the store's inventory (i.e items which are being sold)
-                    foreach (var item in store.InventoryItems)
+                    for(var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
                     {
                         // Mark this item so it doesn't get cleaned up.
                         SetLocalBool(item, "STORE_SERVICE_IS_STORE_ITEM", true);

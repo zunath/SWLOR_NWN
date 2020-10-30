@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = NWScript.OBJECT_SELF;
+            NWPlaceable door = OBJECT_SELF;
             var apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (apartmentBuildingID <= 0)
             {
-                NWScript.SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
+                SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void EnterApartment(Guid pcBaseID)
         {
-            NWPlaceable door = NWScript.OBJECT_SELF;
+            NWPlaceable door = OBJECT_SELF;
             var oPC = GetPC();
 
             var apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
@@ -131,13 +131,13 @@ namespace SWLOR.Game.Server.Conversation
             // If we're swapping from one apartment to another (without going to an intermediary non-instance)
             // we'll run a check to see if we need to kill the current instance.
             var area = door.Area;
-            NWScript.DelayCommand(1.0f, () =>
+            DelayCommand(1.0f, () =>
             {
-                NWPlayer player = (NWScript.GetFirstPC());
+                NWPlayer player = (GetFirstPC());
                 while (player.IsValid)
                 {
                     if (Equals(player.Area, area)) return;
-                    player = (NWScript.GetNextPC());
+                    player = (GetNextPC());
                 }
 
                 AreaService.DestroyAreaInstance(area);
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // Get or create the new apartment instance.
             var instance = BaseService.GetAreaInstance(pcBaseID, true);
-            if (instance == null)
+            if (!GetIsObjectValid(instance))
             {
                 instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);
             }

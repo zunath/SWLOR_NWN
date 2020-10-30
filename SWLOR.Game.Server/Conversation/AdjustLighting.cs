@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -149,47 +150,49 @@ namespace SWLOR.Game.Server.Conversation
             //Console.WriteLine("New Color Index: " + Int32.Parse(response.CustomData.ToString()));
 
             // Setup placement grid                
-            NWArea area = NWScript.GetArea(GetPC());
+            var area = GetArea(GetPC());
+            var width = GetAreaSize(Dimension.Width, area);
+            var height = GetAreaSize(Dimension.Height, area);
             Vector3 vPos;
             vPos.X = 0.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.0f;
-            for (var i = 0; i <= area.Height; i++)
+            for (var i = 0; i <= height; i++)
             {
                 vPos.X = (float)i;
-                for (var j = 0; j <= area.Width; j++)
+                for (var j = 0; j <= width; j++)
                 {
                     vPos.Y = (float)j;
                     
-                    var location = NWScript.Location(area, vPos, 0.0f);
+                    var location = Location(area, vPos, 0.0f);
 
                     //Console.WriteLine("Setting Tile Color: X = " + vPos.X + " Y = " + vPos.Y);
                     switch (lightType)
                     {
                         case 1: // Change Main Light 1
-                            NWScript.SetTileMainLightColor(location, Int32.Parse(response.CustomData.ToString()), NWScript.GetTileMainLight2Color(location));
+                            SetTileMainLightColor(location, Int32.Parse(response.CustomData.ToString()), GetTileMainLight2Color(location));
                             break;
                         case 2: // Change Main Light 2
-                            NWScript.SetTileMainLightColor(location, NWScript.GetTileMainLight1Color(location), Int32.Parse(response.CustomData.ToString()));
+                            SetTileMainLightColor(location, GetTileMainLight1Color(location), Int32.Parse(response.CustomData.ToString()));
                             break;
                         case 3: // Change Source Light 1
-                            NWScript.SetTileSourceLightColor(location, Int32.Parse(response.CustomData.ToString()), NWScript.GetTileSourceLight2Color(location));
+                            SetTileSourceLightColor(location, Int32.Parse(response.CustomData.ToString()), GetTileSourceLight2Color(location));
                             break;
                         case 4: // Change Source Light 2
-                            NWScript.SetTileSourceLightColor(location, NWScript.GetTileSourceLight1Color(location), Int32.Parse(response.CustomData.ToString()));
+                            SetTileSourceLightColor(location, GetTileSourceLight1Color(location), Int32.Parse(response.CustomData.ToString()));
                             break;
                     }
                 }
             }
-            NWScript.RecomputeStaticLighting(area);
+            RecomputeStaticLighting(area);
             var data = BaseService.GetPlayerTempData(GetPC());
-            var buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-            var buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+            var buildingTypeID = GetLocalInt(data.TargetArea, "BUILDING_TYPE");
+            var buildingType = buildingTypeID <= 0 ? BuildingType.Exterior : (BuildingType)buildingTypeID;
             data.BuildingType = buildingType;
 
-            if (buildingType == Enumeration.BuildingType.Apartment)
+            if (buildingType == BuildingType.Apartment)
             {
-                var pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
+                var pcBaseID = new Guid(GetLocalString(data.TargetArea, "PC_BASE_ID"));
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
 
                 switch (lightType)
@@ -210,9 +213,9 @@ namespace SWLOR.Game.Server.Conversation
 
                 DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
             }
-            else if (buildingType == Enumeration.BuildingType.Interior)
+            else if (buildingType == BuildingType.Interior)
             {
-                var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var pcBaseStructureID = new Guid(GetLocalString(data.TargetArea, "PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
 
                 switch (lightType)
@@ -233,10 +236,10 @@ namespace SWLOR.Game.Server.Conversation
 
                 DataService.SubmitDataChange(structure, DatabaseActionType.Update);
             }
-            else if (buildingType == Enumeration.BuildingType.Starship)
+            else if (buildingType == BuildingType.Starship)
             {
                 // Note - starships need to record in both the base and the structure entries.
-                var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var pcBaseStructureID = new Guid(GetLocalString(data.TargetArea, "PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 

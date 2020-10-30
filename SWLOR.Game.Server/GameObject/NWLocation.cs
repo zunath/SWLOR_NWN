@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.GameObject
         public float Z => NWScript.GetPositionFromLocation(Location).Z;
         public float Orientation => NWScript.GetFacingFromLocation(Location);
 
-        public NWArea Area => NWScript.GetAreaFromLocation(Location);
+        public uint Area => NWScript.GetAreaFromLocation(Location);
 
         public Vector3 Position => NWScript.GetPositionFromLocation(Location);
 

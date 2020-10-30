@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Item
         public static void grenadeAoe(NWObject oTarget, string grenadeType)
         {
             if (oTarget.ObjectType != ObjectType.Creature) return;
-            NWCreature user = GetAreaOfEffectCreator(NWScript.OBJECT_SELF);
+            NWCreature user = GetAreaOfEffectCreator(OBJECT_SELF);
             var perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
             var duration = 1;
             Effect impactEffect = null;

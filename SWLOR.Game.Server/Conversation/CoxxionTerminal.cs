@@ -1,14 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class CoxxionTerminal: ConversationBase
     {
+        private static Dictionary<uint, List<uint>> _areaDoors = new Dictionary<uint, List<uint>>();
+
+        public static void LoadDoors()
+        {
+            // This area used to be an instance so this code made sense then.
+            // Now, however, it would make more sense to refactor and store them as local objects.
+            var area = NWModule.Get().Areas.SingleOrDefault(x => GetResRef(x) == "v_cox_base");
+            if (!GetIsObjectValid(area)) return;
+
+            var doors = new List<uint>();
+
+            var obj = GetFirstObjectInArea(area);
+            while (GetIsObjectValid(obj))
+            {
+                var colorID = GetLocalInt(obj, "DOOR_COLOR");
+
+                if (colorID > 0)
+                {
+                    doors.Add(obj);
+                }
+
+                obj = GetNextObjectInArea(area);
+            }
+
+            _areaDoors[area] = doors;
+        }
+
+
         public override PlayerDialog SetUp(NWPlayer player)
         {
             var dialog = new PlayerDialog("MainPage");
@@ -21,11 +49,11 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable device = NWScript.OBJECT_SELF;
+            NWPlaceable device = OBJECT_SELF;
             var area = device.Area;
 
             var terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
-            var doorStatus = area.GetLocalInt("DOOR_STATUS");
+            var doorStatus = GetLocalInt(area, "DOOR_STATUS");
             var openColor = GetColorString(doorStatus);
             var terminalColor = GetColorString(terminalColorID);
 
@@ -53,26 +81,26 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            NWPlaceable device = NWScript.OBJECT_SELF;
+            NWPlaceable device = OBJECT_SELF;
             var area = device.Area;
             var terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
             var terminalColor = GetColorString(terminalColorID);
 
-            area.SetLocalInt("DOOR_STATUS", terminalColorID);
+            SetLocalInt(area, "DOOR_STATUS", terminalColorID);
 
-            List<NWObject> doors = area.Data["DOORS"];
+            var doors = _areaDoors[area];
 
             foreach (var door in doors)
             {
-                if (door.GetLocalInt("DOOR_COLOR") == terminalColorID)
+                if (GetLocalInt(door, "DOOR_COLOR") == terminalColorID)
                 {
-                    NWScript.SetLocked(door, false);
-                    door.AssignCommand(() => NWScript.ActionOpenDoor(door));
+                    SetLocked(door, false);
+                    AssignCommand(door, () => ActionOpenDoor(door));
                 }
                 else
                 {
-                    door.AssignCommand(() => NWScript.ActionCloseDoor(door));
-                    NWScript.SetLocked(door, true);
+                    AssignCommand(door, () => ActionCloseDoor(door));
+                    SetLocked(door, true);
                 }
             }
 

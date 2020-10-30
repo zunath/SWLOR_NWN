@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using BaseService = SWLOR.Game.Server.Service.Legacy.BaseService;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -21,7 +22,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(tel_aban_station)))
             {
                 NWPlayer player = GetPCSpeaker();
-                NWObject talkingTo = NWScript.OBJECT_SELF;
+                NWObject talkingTo = OBJECT_SELF;
 
                 var mainLevel = GetOrCreateMainLevel(player);
                 NWObject landingWP = GetNearestObjectByTag("ABAN_STATION_LANDING", GetFirstObjectInArea(mainLevel));
@@ -29,13 +30,19 @@ namespace NWN.Scripts
             }
         }
 
-        private static NWArea GetOrCreateMainLevel(NWPlayer player)
+        private static uint GetOrCreateMainLevel(NWPlayer player)
         {
             var memberArea = player
                 .PartyMembers
-                .FirstOrDefault(x => x.Area.Tag == "AbandonedStationDirectorsChamber" ||
-                                     x.Area.Tag == "zomb_abanstation" ||
-                                     x.Area.Tag == "zomb_abanstatio2")
+                .FirstOrDefault(x =>
+                {
+                    var area = GetArea(x);
+                    var areaTag = GetTag(area);
+                    
+                    return areaTag == "AbandonedStationDirectorsChamber" ||
+                           areaTag == "zomb_abanstation" ||
+                           areaTag == "zomb_abanstatio2";
+                })
                 ?.Area;
 
             // No party members are already in an instance. Create a new set of instances and link them up
@@ -45,34 +52,34 @@ namespace NWN.Scripts
                 return BuildInstanceGroup();
             }
 
-            return memberArea.GetLocalObject("MAIN_LEVEL");
+            return GetLocalObject((uint)memberArea, "MAIN_LEVEL");
         }
 
-        private static NWArea BuildInstanceGroup()
+        private static uint BuildInstanceGroup()
         {
-            NWArea restrictedLevel = CreateArea("zomb_abanstatio2");
-            NWArea mainLevel = CreateArea("zomb_abanstation");
-            NWArea directorsChambers = CreateArea("zomb_abanstatio3");
+            var restrictedLevel = CreateArea("zomb_abanstatio2");
+            var mainLevel = CreateArea("zomb_abanstation");
+            var directorsChambers = CreateArea("zomb_abanstatio3");
 
-            restrictedLevel.SetLocalObject("RESTRICTED_LEVEL", restrictedLevel);
-            restrictedLevel.SetLocalObject("MAIN_LEVEL", mainLevel);
-            restrictedLevel.SetLocalObject("DIRECTORS_CHAMBERS", directorsChambers);
+            SetLocalObject(restrictedLevel, "RESTRICTED_LEVEL", restrictedLevel);
+            SetLocalObject(restrictedLevel, "MAIN_LEVEL", mainLevel);
+            SetLocalObject(restrictedLevel, "DIRECTORS_CHAMBERS", directorsChambers);
 
-            mainLevel.SetLocalObject("RESTRICTED_LEVEL", restrictedLevel);
-            mainLevel.SetLocalObject("MAIN_LEVEL", mainLevel);
-            mainLevel.SetLocalObject("DIRECTORS_CHAMBERS", directorsChambers);
+            SetLocalObject(mainLevel, "RESTRICTED_LEVEL", restrictedLevel);
+            SetLocalObject(mainLevel, "MAIN_LEVEL", mainLevel);
+            SetLocalObject(mainLevel, "DIRECTORS_CHAMBERS", directorsChambers);
 
-            directorsChambers.SetLocalObject("RESTRICTED_LEVEL", restrictedLevel);
-            directorsChambers.SetLocalObject("MAIN_LEVEL", mainLevel);
-            directorsChambers.SetLocalObject("DIRECTORS_CHAMBERS", directorsChambers);
+            SetLocalObject(directorsChambers, "RESTRICTED_LEVEL", restrictedLevel);
+            SetLocalObject(directorsChambers, "MAIN_LEVEL", mainLevel);
+            SetLocalObject(directorsChambers, "DIRECTORS_CHAMBERS", directorsChambers);
 
             // Set local variables for instances
             SetLocalBool(restrictedLevel, "IS_AREA_INSTANCE", true);
             SetLocalBool(mainLevel, "IS_AREA_INSTANCE", true);
             SetLocalBool(directorsChambers, "IS_AREA_INSTANCE", true);
-            restrictedLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
-            mainLevel.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
-            directorsChambers.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
+            BaseService.RegisterAreaStructures(restrictedLevel);
+            BaseService.RegisterAreaStructures(mainLevel);
+            BaseService.RegisterAreaStructures(directorsChambers);
             
             // Notify of instance creation
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(restrictedLevel));
@@ -91,7 +98,7 @@ namespace NWN.Scripts
             CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation1);
             CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation2);
 
-            mainLevel.SetLocalInt("KEY_CARDS_REMAINING", 2);
+            SetLocalInt(mainLevel, "KEY_CARDS_REMAINING", 2);
 
             // Now do the same thing on the restricted level.
             spawnIDs = new List<int>{1, 2, 3, 4, 5, 6, 7};
@@ -105,7 +112,7 @@ namespace NWN.Scripts
             CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation1);
             CreateObject(ObjectType.Placeable, "station_key_card", keyCardLocation2);
 
-            restrictedLevel.SetLocalInt("KEY_CARDS_REMAINING", 2);
+            SetLocalInt(restrictedLevel, "KEY_CARDS_REMAINING", 2);
 
             return mainLevel;
         }

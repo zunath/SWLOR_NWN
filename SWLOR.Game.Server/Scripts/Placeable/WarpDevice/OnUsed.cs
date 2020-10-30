@@ -58,6 +58,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
             }
 
             NWObject entranceWP = GetWaypointByTag(destination);
+            var entranceArea = GetArea(entranceWP);
+            var entranceName = GetName(entranceArea);
+            var entranceResref = GetResRef(entranceArea);
             NWLocation location = GetLocation(entranceWP);
 
             if (!entranceWP.IsValid)
@@ -68,21 +71,25 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
             if (isInstance)
             {
-                var members = oPC.PartyMembers.Where(x => x.Area.GetLocalString("ORIGINAL_RESREF") == entranceWP.Area.Resref).ToList();
+                var members = oPC.PartyMembers.Where(x =>
+                {
+                    var area = GetArea(x);
+                    return GetLocalString(area, "ORIGINAL_RESREF") == entranceResref;
+                }).ToList();
 
                 // A party member is in an instance of this type already.
                 // Prompt player to select which instance to enter.
                 if (members.Count >= 1 && !personalInstanceOnly)
                 {
-                    oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Area.Resref);
+                    oPC.SetLocalString("INSTANCE_RESREF", entranceResref);
                     oPC.SetLocalString("INSTANCE_DESTINATION_TAG", destination);
                     DialogService.StartConversation(oPC, self, "InstanceSelection");
                     return;
                 }
 
                 // Otherwise no instance exists yet or this instance only allows one player. Make a new one for this player.
-                var instance = AreaService.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
-                location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
+                var instance = AreaService.CreateAreaInstance(oPC, entranceResref, entranceName, destination);
+                location = GetLocalLocation(instance, "INSTANCE_ENTRANCE");
                 PlayerService.SaveLocation(oPC);
             }
 

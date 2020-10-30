@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.ValueObject
 {
     public class PCTempBaseData
     {
-        public NWArea TargetArea { get; set; }
+        public uint TargetArea { get; set; }
         public Location TargetLocation { get; set; }
         public NWObject TargetObject { get; set; }
         public bool IsConfirming { get; set; }

@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 if (!flames.IsValid)
                 {
                     var flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
-                    var flameLocation = NWScript.Location(forge.Area.Object, flamePosition, 0.0f);
+                    var flameLocation = NWScript.Location(forge.Area, flamePosition, 0.0f);
                     flames = (NWScript.CreateObject(ObjectType.Placeable, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }

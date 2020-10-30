@@ -65,12 +65,12 @@ namespace SWLOR.Tools.LanguageGenerator
                 var lowercase = $@"case '{ch}': sb.Append(""{substitute}""); break;";
                 var uppercase = $@"case '{char.ToUpper(ch)}': sb.Append(""{char.ToUpper(substitute[0])}""); break;";
 
-                System.Console.WriteLine(lowercase);
-                System.Console.WriteLine(uppercase);
-                System.Console.WriteLine();
+                Console.WriteLine(lowercase);
+                Console.WriteLine(uppercase);
+                Console.WriteLine();
             }
 
-            System.Console.ReadKey();
+            Console.ReadKey();
         }
     }
 }

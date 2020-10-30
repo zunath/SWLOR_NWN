@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class WeatherService
     {
+        private static Dictionary<uint, List<uint>> _areaWeatherPlaceables = new Dictionary<uint, List<uint>>();
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
@@ -818,15 +819,16 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 DoWeatherEffects(GetEnteringObject());
 
-                NWArea oArea = (OBJECT_SELF);
+                var oArea = (OBJECT_SELF);
                 var nHour = GetTimeHour();
-                var nLastHour = oArea.GetLocalInt("WEATHER_LAST_HOUR");
+                var nLastHour = GetLocalInt(oArea, "WEATHER_LAST_HOUR");
 
                 if (nHour != nLastHour)
                 {
-                    if (!oArea.Data.ContainsKey("WEATHER_OBJECTS"))
-                        oArea.Data["WEATHER_OBJECTS"] = new List<NWPlaceable>();
-                    List<NWPlaceable> weatherObjects = oArea.Data["WEATHER_OBJECTS"];
+                    if (!_areaWeatherPlaceables.ContainsKey(oArea))
+                        _areaWeatherPlaceables[oArea] = new List<uint>();
+
+                    var weatherObjects = _areaWeatherPlaceables[oArea];
 
                     LoggingService.Trace(TraceComponent.Weather, "Cleaning up old weather");
 
@@ -834,7 +836,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                     for (var x = weatherObjects.Count - 1; x >= 0; x--)
                     {
                         var placeable = weatherObjects.ElementAt(x);
-                        placeable.Destroy();
+                        DestroyObject(placeable);
                         weatherObjects.RemoveAt(x);
                     }
 
@@ -871,8 +873,8 @@ namespace SWLOR.Game.Server.Service.Legacy
                         }
                     }
 
-                    oArea.Data["WEATHER_OBJECTS"] = weatherObjects;
-                    oArea.SetLocalInt("WEATHER_LAST_HOUR", nHour);
+                    _areaWeatherPlaceables[oArea] = weatherObjects;
+                    SetLocalInt(oArea, "WEATHER_LAST_HOUR", nHour);
                 }
             }
         }

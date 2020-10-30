@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Item
             var lootTableID = GetLootTable(targetLocation);
             if (lootTableID <= 0) return;
 
-            NWArea area = NWScript.GetAreaFromLocation(targetLocation);
+            var area = GetAreaFromLocation(targetLocation);
+            var areaName = GetName(area);
             var items = DataService.LootTableItem.GetAllByLootTableID(lootTableID)
                 .OrderByDescending(o => o.Weight);
             var sector = BaseService.GetSectorOfLocation(targetLocation);
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Item
                 case "SE": sectorName = "Southeast"; break;
             }
 
-            user.SendMessage(area.Name + "(" + sectorName + ")");
+            user.SendMessage(areaName + "(" + sectorName + ")");
             user.SendMessage("Scanning results: ");
 
             foreach (var lti in items)
@@ -86,8 +87,9 @@ namespace SWLOR.Game.Server.Item
 
         private int GetLootTable(Location targetLocation)
         {
-            NWArea area = NWScript.GetAreaFromLocation(targetLocation);
-            var dbArea = DataService.Area.GetByResref(area.Resref);
+            var area = GetAreaFromLocation(targetLocation);
+            var areaResref = GetResRef(area);
+            var dbArea = DataService.Area.GetByResref(areaResref);
             var sector = BaseService.GetSectorOfLocation(targetLocation);
             var lootTableID = 0;
 

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.DoorRule
 {
     public class OldHouseRule: IDoorRule
     {
-        public NWPlaceable Run(NWArea area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
+        public NWPlaceable Run(uint area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
         {
             var doorPosition = NWScript.GetPositionFromLocation(location);
             var fOrient = NWScript.GetFacingFromLocation(location);
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.DoorRule
 
             fMod = NWScript.sqrt(13.0f) * NWScript.cos(fOrient);
             doorPosition.Y = doorPosition.Y - fMod;
-            var doorLocation = NWScript.Location(area.Object, doorPosition, NWScript.GetFacingFromLocation(location));
+            var doorLocation = NWScript.Location(area, doorPosition, NWScript.GetFacingFromLocation(location));
 
             return NWScript.CreateObject(ObjectType.Placeable, "building_door", doorLocation);
         }

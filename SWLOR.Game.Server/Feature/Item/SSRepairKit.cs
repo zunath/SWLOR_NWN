@@ -1,17 +1,16 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.Legacy;
+using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Item
 {
-    public class SSEnhancement : IActionItem
+    public class SSRepairKit : IActionItem
     {
         public string CustomKey => null;
 
@@ -24,30 +23,42 @@ namespace SWLOR.Game.Server.Item
         {
             var area = user.Area;
             var player = new NWPlayer(user);
-            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureID = GetLocalString(area, "PC_BASE_STRUCTURE_ID");
             var structureGuid = new Guid(structureID);
 
             var pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             var structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
-            
-            var dbItem = new PCBaseStructureItem
-            {
-                PCBaseStructureID = pcbs.ID,
-                ItemGlobalID = item.GlobalID.ToString(),
-                ItemName = item.Name,
-                ItemResref = item.Resref,
-                ItemTag = item.Tag,
-                ItemObject = SerializationService.Serialize(item)
-            };
 
-            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
-            player.SendMessage(item.Name + " was successfully added to your ship.  Access the cargo bay via the ship's computer to remove it.");
-            item.Destroy();
+            var repair = SkillService.GetPCSkillRank(player, SkillType.Piloting);
+            var maxRepair = (int)structure.Durability - (int)pcbs.Durability;
+
+            if (maxRepair < repair) repair = maxRepair;
+
+            // TODO - add perks to make repairing faster/better/shinier/etc.
+            // Maybe a perk to allow repairing in space, with ground repairs only otherwise?
+
+            NWCreature ship = GetLocalObject(area, "CREATURE");
+
+            if (ship.IsValid)
+            {
+                ship.SetLocalInt("HP", ship.GetLocalInt("HP") + repair);
+                ship.FloatingText("Hull repaired: " + ship.GetLocalInt("HP") + "/" + ship.MaxHP);
+            }
+
+            pcbs.Durability += repair;
+            DataService.SubmitDataChange(pcbs, DatabaseActionType.Update);
+
+            player.SendMessage("Ship repaired for " + repair + " points. (Hull points: " + pcbs.Durability + "/" + structure.Durability + ")");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            return 6.0f;
+            if (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
+            {
+                return 6.0f;
+            }
+
+            return 12.0f;
         }
 
         public bool FaceTarget()
@@ -67,28 +78,35 @@ namespace SWLOR.Game.Server.Item
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            return false;
+            return true;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             var area = user.Area;
 
-            if (area.GetLocalInt("BUILDING_TYPE") != (int)Enumeration.BuildingType.Starship)
+            if (GetLocalInt(area, "BUILDING_TYPE") != (int)BuildingType.Starship)
             {
-                return "This enhancement may only be deployed inside a starship";
+                return "This repair kit may only be used inside a starship";
             }
 
-            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureID = GetLocalString(area, "PC_BASE_STRUCTURE_ID");
             var structureGuid = new Guid(structureID);
 
             var pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
             var structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
-            var count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(pcbs.ID) + 1;
-            if (count > (structure.ResourceStorage + pcbs.StructureBonus))
+            if (structure.Durability == pcbs.Durability)
             {
-                return "Your cargo bay is full!  You cannot add any enhancements.";
+                return "This starship is already fully repaired.";
+            }
+
+            var canRepair = (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
+            var pcBase = DataService.PCBase.GetByID(pcbs.PCBaseID);
+
+            if (!canRepair && SpaceService.IsLocationSpace(pcBase.ShipLocation))
+            {
+                return "You need the Combat Repair perk to repair ships in space.";
             }
 
             return "";

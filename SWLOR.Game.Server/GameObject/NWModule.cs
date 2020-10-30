@@ -28,11 +28,11 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public IEnumerable<NWArea> Areas
+        public IEnumerable<uint> Areas
         {
             get
             {
-                for (NWArea area = NWScript.GetFirstArea(); NWScript.GetIsObjectValid(area) == true; area = NWScript.GetNextArea())
+                for (var area = NWScript.GetFirstArea(); NWScript.GetIsObjectValid(area) == true; area = NWScript.GetNextArea())
                 {
                     yield return area;
                 }

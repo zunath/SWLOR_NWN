@@ -17,10 +17,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
         public void Main()
         {
             NWPlayer player = GetClickingObject();
-            NWObject door = NWScript.OBJECT_SELF;
+            NWObject door = OBJECT_SELF;
+            var doorArea = GetArea(door);
             var destinationAreaTag = door.GetLocalString("DESTINATION_AREA_TAG");
             var destinationWaypointTag = door.GetLocalString("DESTINATION_WAYPOINT");
-            NWArea area = door.Area.GetLocalObject(destinationAreaTag);
+            uint area = GetLocalObject(doorArea, destinationAreaTag);
             NWObject waypoint = GetNearestObjectByTag(destinationWaypointTag, GetFirstObjectInArea(area));
             NWLocation location = waypoint.Location;
             player.AssignCommand(() => 

@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public virtual NWArea Area => GetArea(Object);
+        public virtual uint Area => GetArea(Object);
 
         public virtual Vector3 Position => GetPosition(Object);
 
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.GameObject
         public virtual bool IsPlot
         {
             get => GetPlotFlag(Object);
-            set => NWScript.SetPlotFlag(Object, value);
+            set => SetPlotFlag(Object, value);
         }
 
         public virtual float Facing

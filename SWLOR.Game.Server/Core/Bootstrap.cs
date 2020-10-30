@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Core
         public static void RegisterHandlers(AllHandlers handlers)
         {
             _handlers = handlers;
-            var size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(AllHandlers));
+            var size = Marshal.SizeOf(typeof(AllHandlers));
             var ptr = Marshal.AllocHGlobal(size);
             Marshal.StructureToPtr(_handlers, ptr, false);
             NativeFunctions.RegisterHandlers(ptr, (uint)size);
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Core
                 Console.WriteLine("Received NULL bootstrap structure");
                 return 1;
             }
-            var expectedLength = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BootstrapArgs));
+            var expectedLength = Marshal.SizeOf(typeof(BootstrapArgs));
             if (argLength < expectedLength)
             {
                 Console.WriteLine($"Received bootstrap structure too small - actual={argLength}, expected={expectedLength}");

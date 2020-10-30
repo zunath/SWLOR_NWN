@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             {
                 npc.AssignCommand(() =>
                 {
-                    NWScript.ActionAttack(attacker);
+                    ActionAttack(attacker);
                 });
             }
 
@@ -121,16 +121,16 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         public static void OnNPCPhysicallyAttacked()
         {
-            NWCreature self = (NWScript.OBJECT_SELF);
-            NWCreature attacker = (NWScript.GetLastAttacker(NWScript.OBJECT_SELF));
+            NWCreature self = (OBJECT_SELF);
+            NWCreature attacker = (GetLastAttacker(OBJECT_SELF));
             AdjustEnmity(self, attacker, 0, 1);
         }
 
         public static void OnNPCDamaged()
         {
-            NWCreature self = (NWScript.OBJECT_SELF);
-            NWCreature damager = (NWScript.GetLastDamager(NWScript.OBJECT_SELF));
-            var enmityAmount = NWScript.GetTotalDamageDealt();
+            NWCreature self = (OBJECT_SELF);
+            NWCreature damager = (GetLastDamager(OBJECT_SELF));
+            var enmityAmount = GetTotalDamageDealt();
             if (enmityAmount <= 0) enmityAmount = 1;
 
             AdjustEnmity(self, damager, 0, enmityAmount);
@@ -138,12 +138,12 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         public static void OnPlayerDamaged()
         {
-            NWPlayer player = (NWScript.OBJECT_SELF);
-            NWCreature npc = (NWScript.GetLastDamager(NWScript.OBJECT_SELF));
+            NWPlayer player = (OBJECT_SELF);
+            NWCreature npc = (GetLastDamager(OBJECT_SELF));
 
             if (!player.IsPlayer || !npc.IsNPC) return;
 
-            var damage = NWScript.GetTotalDamageDealt();
+            var damage = GetTotalDamageDealt();
             var enmity = GetEnmity(npc, player);
             enmity.CumulativeAmount -= damage;
         }

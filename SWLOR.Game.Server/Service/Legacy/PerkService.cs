@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         public static void OnModuleEnter()
         {
             // The first time a player logs in, add an entry to the effective perk level cache.
-            NWPlayer player = NWScript.GetEnteringObject();
+            NWPlayer player = GetEnteringObject();
             if (!player.IsPlayer) return;
 
             // Are the player's perks already cached? This has already run for this player. Exit.
@@ -207,10 +207,10 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleEquipItem()
         {
-            NWPlayer oPC = NWScript.GetPCItemLastEquippedBy();
+            NWPlayer oPC = GetPCItemLastEquippedBy();
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = NWScript.GetPCItemLastEquipped();
+            NWItem oItem = GetPCItemLastEquipped();
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
             if (GetLocalBool(oPC, "LOGGED_IN_ONCE") == false) return;
 
@@ -225,10 +225,10 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer oPC = NWScript.GetPCItemLastUnequippedBy();
+            NWPlayer oPC = GetPCItemLastUnequippedBy();
 
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
-            NWItem oItem = NWScript.GetPCItemLastUnequipped();
+            NWItem oItem = GetPCItemLastUnequipped();
             if (!oPC.IsPlayer) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
@@ -259,9 +259,9 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnHitCastSpell()
         {
-            NWPlayer oPC = NWScript.OBJECT_SELF;
+            NWPlayer oPC = OBJECT_SELF;
             if (!oPC.IsValid || !oPC.IsPlayer) return;
-            NWItem oItem = NWScript.GetSpellCastItem();
+            NWItem oItem = GetSpellCastItem();
             var type = oItem.BaseItemType;
             var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID).Where(x =>
             {
@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 var perkFeatToGrant = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(perkID, pcPerk.PerkLevel);
 
                 // Add the feat(s) to the player if it doesn't exist yet.
-                if (perkFeatToGrant != null && NWScript.GetHasFeat((Feat)perkFeatToGrant.FeatID, oPC.Object) == false)
+                if (perkFeatToGrant != null && GetHasFeat((Feat)perkFeatToGrant.FeatID, oPC.Object) == false)
                 {
                     Creature.AddFeatByLevel(oPC, (Feat)perkFeatToGrant.FeatID, 1);
 

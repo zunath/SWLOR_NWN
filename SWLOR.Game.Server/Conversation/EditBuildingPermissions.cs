@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -150,7 +151,8 @@ namespace SWLOR.Game.Server.Conversation
             var canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
             var canFlyStarship = permission?.CanFlyStarship ?? false;
 
-            var isStarship = GetPC().Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship;
+            var area = GetArea(GetPC());
+            var isStarship = GetLocalInt(area, "BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship;
 
             var header = ColorTokenService.Green("Name: ") + player.CharacterName + "\n\n";
 

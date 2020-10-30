@@ -428,13 +428,16 @@ namespace SWLOR.Game.Server.Service.Legacy
             // Process each player skill registration.
             foreach (var preg in playerRegs)
             {
+                var playerAreaResref = GetResRef(GetArea(preg.Player));
+                var creatureAreaResref = GetResRef(GetArea(creature));
+
                 // Rules for acquiring skill XP:
                 // Player must be valid.
                 // Player must be in the same area as the creature that just died.
                 // Player must be within 30 meters of the creature that just died.
                 if (!preg.Player.IsValid ||
-                    preg.Player.Area.Resref != creature.Area.Resref ||
-                        GetDistanceBetween(preg.Player.Object, creature.Object) > 40.0f)
+                    playerAreaResref != creatureAreaResref ||
+                    GetDistanceBetween(preg.Player.Object, creature.Object) > 40.0f)
                     continue;
 
                 var skillRegs = preg.GetSkillRegistrationPoints();

@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nTrapDetected: if this is TRUE, the trap returned has to have been detected
         ///   by oTarget.
         /// </summary>
-        public static uint GetNearestTrapToObject(uint oTarget = Core.NWScript.NWScript.OBJECT_INVALID, bool nTrapDetected = true)
+        public static uint GetNearestTrapToObject(uint oTarget = OBJECT_INVALID, bool nTrapDetected = true)
         {
             Internal.NativeFunctions.StackPushInteger(nTrapDetected ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Get the last trap detected by oTarget.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetLastTrapDetected(uint oTarget = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static uint GetLastTrapDetected(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(486);

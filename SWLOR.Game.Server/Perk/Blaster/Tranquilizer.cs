@@ -103,20 +103,20 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
-            var effect = NWScript.EffectDazed();
-            effect = NWScript.EffectLinkEffects(effect, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
-            effect = NWScript.TagEffect(effect, "TRANQUILIZER_EFFECT");
+            var effect = EffectDazed();
+            effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
+            effect = TagEffect(effect, "TRANQUILIZER_EFFECT");
 
-            NWScript.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+            ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
         }
 
         private bool RemoveExistingEffect(NWObject target, float duration)
         {
-            var effect = target.Effects.FirstOrDefault(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
+            var effect = target.Effects.FirstOrDefault(x => GetEffectTag(x) == "TRANQUILIZER_EFFECT");
             if (effect == null) return false;
 
-            if (NWScript.GetEffectDurationRemaining(effect) >= duration) return true;
-            NWScript.RemoveEffect(target, effect);
+            if (GetEffectDurationRemaining(effect) >= duration) return true;
+            RemoveEffect(target, effect);
             return false;
         }
 

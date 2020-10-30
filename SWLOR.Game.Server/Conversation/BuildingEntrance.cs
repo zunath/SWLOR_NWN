@@ -1,9 +1,9 @@
 ﻿using System;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (string.IsNullOrWhiteSpace(pcBaseStructureID))
             {
-                NWScript.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, false);
+                FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, false);
                 return;
             }
             var structureID = new Guid(pcBaseStructureID);
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var instance = BaseService.GetAreaInstance(structureID, false);
 
-            if (instance == null)
+            if (!GetIsObjectValid(instance))
             {
                 instance = BaseService.CreateAreaInstance(oPC, structureID, false);
             }
@@ -111,19 +111,19 @@ namespace SWLOR.Game.Server.Conversation
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var instance = BaseService.GetAreaInstance(structureID, false);
 
-            NWScript.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, false);
+            FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, false);
 
-            if (instance != null)
+            if (GetIsObjectValid(instance))
             {
-                NWPlayer player = (NWScript.GetFirstPC());
+                NWPlayer player = (GetFirstPC());
                 while (player.IsValid)
                 {
                     if (Equals(player.Area, instance))
                     {
-                        NWScript.FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, false);
+                        FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, false);
                     }
 
-                    player = (NWScript.GetNextPC());
+                    player = (GetNextPC());
                 }
             }
 

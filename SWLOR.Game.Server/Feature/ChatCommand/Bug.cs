@@ -1,11 +1,11 @@
-﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.ChatCommand.Contracts;
+﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -27,15 +27,15 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            var position = NWScript.GetPositionFromLocation(user.Location);
-            var orientation = NWScript.GetFacingFromLocation(user.Location);
+            var position = GetPositionFromLocation(user.Location);
+            var orientation = GetFacingFromLocation(user.Location);
             var report = new BugReport
             {
                 SenderPlayerID = user.IsPlayer ? new Guid?(user.GlobalID): null,
-                CDKey = NWScript.GetPCPublicCDKey(user),
+                CDKey = GetPCPublicCDKey(user),
                 Text = message,
                 TargetName = target.IsValid ? target.Name : user.Name,
-                AreaResref = user.Area.Resref,
+                AreaResref = GetResRef(user.Area),
                 SenderLocationX = position.X,
                 SenderLocationY = position.Y,
                 SenderLocationZ = position.Z,

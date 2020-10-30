@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Get the weakest member of oFactionMember's faction.
         ///   * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
         /// </summary>
-        public static uint GetFactionWeakestMember(uint oFactionMember = Core.NWScript.NWScript.OBJECT_INVALID, bool bMustBeVisible = true)
+        public static uint GetFactionWeakestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             Internal.NativeFunctions.StackPushInteger(bMustBeVisible ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oFactionMember);
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Get the strongest member of oFactionMember's faction.
         ///   * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
         /// </summary>
-        public static uint GetFactionStrongestMember(uint oFactionMember = Core.NWScript.NWScript.OBJECT_INVALID, bool bMustBeVisible = true)
+        public static uint GetFactionStrongestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             Internal.NativeFunctions.StackPushInteger(bMustBeVisible ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oFactionMember);
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   of damage.
         ///   * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
         /// </summary>
-        public static uint GetFactionMostDamagedMember(uint oFactionMember = Core.NWScript.NWScript.OBJECT_INVALID, bool bMustBeVisible = true)
+        public static uint GetFactionMostDamagedMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             Internal.NativeFunctions.StackPushInteger(bMustBeVisible ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oFactionMember);
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   points of damage.
         ///   * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
         /// </summary>
-        public static uint GetFactionLeastDamagedMember(uint oFactionMember = Core.NWScript.NWScript.OBJECT_INVALID,
+        public static uint GetFactionLeastDamagedMember(uint oFactionMember = OBJECT_INVALID,
             bool bMustBeVisible = true)
         {
             Internal.NativeFunctions.StackPushInteger(bMustBeVisible ? 1 : 0);
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Get the object faction member with the lowest armour class.
         ///   * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
         /// </summary>
-        public static uint GetFactionWorstAC(uint oFactionMember = Core.NWScript.NWScript.OBJECT_INVALID, bool bMustBeVisible = true)
+        public static uint GetFactionWorstAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             Internal.NativeFunctions.StackPushInteger(bMustBeVisible ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oFactionMember);
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Get the object faction member with the highest armour class.
         ///   * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
         /// </summary>
-        public static uint GetFactionBestAC(uint oFactionMember = Core.NWScript.NWScript.OBJECT_INVALID, bool bMustBeVisible = true)
+        public static uint GetFactionBestAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             Internal.NativeFunctions.StackPushInteger(bMustBeVisible ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oFactionMember);
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   * Returns TRUE if oSource considers oTarget as an enemy.
         /// </summary>
-        public static bool GetIsEnemy(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetIsEnemy(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   * Returns TRUE if oSource considers oTarget as a friend.
         /// </summary>
-        public static bool GetIsFriend(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetIsFriend(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   * Returns TRUE if oSource considers oTarget as neutral.
         /// </summary>
-        public static bool GetIsNeutral(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetIsNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - oCreature
         /// </summary>
         public static void SetStandardFactionReputation(StandardFaction nStandardFaction, int nNewReputation,
-            uint oCreature = Core.NWScript.NWScript.OBJECT_INVALID)
+            uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger(nNewReputation);
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   11-89  :  Neutral.
         ///   90-100 :  Friendly.
         /// </summary>
-        public static int GetStandardFactionReputation(StandardFaction nStandardFaction, uint oCreature = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static int GetStandardFactionReputation(StandardFaction nStandardFaction, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nStandardFaction);
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   * Returns TRUE if the Faction Ids of the two objects are the same
         /// </summary>
-        public static bool GetFactionEqual(uint oFirstObject, uint oSecondObject = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetFactionEqual(uint oFirstObject, uint oSecondObject = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSecondObject);
             Internal.NativeFunctions.StackPushObject(oFirstObject);

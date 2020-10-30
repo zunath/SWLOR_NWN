@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.AI
         public virtual void OnHeartbeat(NWCreature self)
         {
             // No sense processing for empty and invalid (limbo) areas.
-            if (!self.Area.IsValid || Area.GetNumberOfPlayersInArea(self.Area) <= 0) return;
+            if (!GetIsObjectValid(self.Area) || Area.GetNumberOfPlayersInArea(self.Area) <= 0) return;
 
             var flags = GetAIFlags(self);
 
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.AI
                 // Remove invalid objects from the enmity table
                 if (target == null ||
                     !target.IsValid ||
-                    target.Area.Resref != self.Area.Resref ||
+                    GetResRef(target.Area) != GetResRef(self.Area) ||
                     target.CurrentHP <= -11 ||
                     target.IsDead ||
                     GetDistanceBetween(self, target) > 40.0f)
@@ -274,13 +274,13 @@ namespace SWLOR.Game.Server.AI
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
             var nth = 1;
-            NWCreature creature = NWScript.GetNearestObject(ObjectType.Creature, self, nth);
+            NWCreature creature = GetNearestObject(ObjectType.Creature, self, nth);
             while (creature.IsValid)
             {
                 var aggroRange = GetAggroRange(creature);
                 var linkRange = GetLinkRange(creature);
 
-                var distance = NWScript.GetDistanceBetween(creature, self);                  
+                var distance = GetDistanceBetween(creature, self);                  
                 if (distance > aggroRange && distance > linkRange) break;
 
                 if ((flags & AIFlags.AggroNearby) != 0)
@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.AI
                     Link(self, creature);
                 }
                 nth++;
-                creature = NWScript.GetNearestObject(ObjectType.Creature, self, nth);
+                creature = GetNearestObject(ObjectType.Creature, self, nth);
             }
         }
 
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.AI
             if (linkRange <= 0.0f) linkRange = 12.0f;
 
             // Check distance. If too far away stop processing.
-            if (NWScript.GetDistanceBetween(self, nearby) > linkRange) return;
+            if (GetDistanceBetween(self, nearby) > linkRange) return;
             
             // Is the nearby object an NPC?
             if (!nearby.IsNPC) return;
@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.AI
             if (nearby.IsDead) return;
 
             // Is the nearby creature an enemy?
-            if (NWScript.GetIsEnemy(nearby, self) == true) return;
+            if (GetIsEnemy(nearby, self) == true) return;
 
             // Does the calling creature have the same racial type as the nearby creature?
             if (self.RacialType != nearby.RacialType) return;
@@ -377,13 +377,13 @@ namespace SWLOR.Game.Server.AI
                 return;
             }
 
-            if (NWScript.GetCurrentAction(self.Object) == ActionType.Invalid &&
-                NWScript.IsInConversation(self.Object) == false &&
-                NWScript.GetCurrentAction(self.Object) != ActionType.RandomWalk &&
-                NWScript.GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
+            if (GetCurrentAction(self.Object) == ActionType.Invalid &&
+                IsInConversation(self.Object) == false &&
+                GetCurrentAction(self.Object) != ActionType.RandomWalk &&
+                GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
                 RandomService.Random(100) <= 25)
             {
-                self.AssignCommand(NWScript.ActionRandomWalk);
+                self.AssignCommand(ActionRandomWalk);
             }
         }
 
@@ -392,19 +392,19 @@ namespace SWLOR.Game.Server.AI
             if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
                 return;
 
-            if (NWScript.GetCurrentAction(self.Object) == ActionType.Invalid &&
-                NWScript.IsInConversation(self.Object) == false &&
-                NWScript.GetCurrentAction(self.Object) != ActionType.RandomWalk)
+            if (GetCurrentAction(self.Object) == ActionType.Invalid &&
+                IsInConversation(self.Object) == false &&
+                GetCurrentAction(self.Object) != ActionType.RandomWalk)
             {
                 var flags = GetAIFlags(self);
                 var spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
                 // If creature also has the RandomWalk flag, only send them back to the spawn point
                 // if they go outside the range (15 meters)
                 if ((flags & AIFlags.RandomWalk) != 0 &&
-                    NWScript.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
+                    GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
                     return;
 
-                self.AssignCommand(() => NWScript.ActionMoveToLocation(spawnLocation));
+                self.AssignCommand(() => ActionMoveToLocation(spawnLocation));
             }
         }
 
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.AI
             Dictionary<int, AIPerkDetails> cache = self.Data["PERK_FEATS"];
             if (cache.Count <= 0) return;
 
-            NWObject target = NWScript.GetAttackTarget(self);
+            NWObject target = GetAttackTarget(self);
             if (!target.IsValid) return;
 
 
@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.AI
             // target.Effects.Any(x => NWNXEffect.UnpackEffect(x).Type == (int)EffectTypeEngine.Knockdown) ||
             // Potential workaround: if (target.GetLocalBool("KNOCKDOWN")) return;
             if (target.GetLocalBool("KNOCKDOWN")) return;
-            if (target.Effects.Any(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
+            if (target.Effects.Any(x => GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
             {
                 return;
             }
@@ -452,7 +452,7 @@ namespace SWLOR.Game.Server.AI
                 
                 self.AssignCommand(() =>
                 {
-                    NWScript.ActionUseFeat((Feat)perkDetails.FeatID, target);
+                    ActionUseFeat((Feat)perkDetails.FeatID, target);
                 });
 
                 break;

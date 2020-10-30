@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         /// </summary>
         private static void OnCreatureDeath()
         {
-            NWCreature creature = NWScript.OBJECT_SELF;
+            NWCreature creature = OBJECT_SELF;
 
             var npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;
@@ -120,13 +120,14 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             if (!oKiller.IsPlayer) return;
 
-            var areaResref = creature.Area.Resref;
+            var creatureAreaResref = GetResRef(GetArea(creature));
 
             var playersToAdvance = new List<KeyValuePair<NWPlayer, int>>();
             NWPlayer oPC = GetFirstFactionMember(oKiller);
             while (oPC.IsValid)
             {
-                if (areaResref != oPC.Area.Resref)
+                var playerAreaResref = GetResRef(GetArea(oPC));
+                if (creatureAreaResref != playerAreaResref)
                 {
                     oPC = GetNextFactionMember(oKiller);
                     continue;

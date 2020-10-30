@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.Legacy
 {
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Service.Legacy
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
             var playerEntity = DataService.Player.GetByID(target.GlobalID);
-            var area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
-            var respawnAreaName = area.Name;
+            var area = NWModule.Get().Areas.Single(x => GetResRef(x) == playerEntity.RespawnAreaResref);
+            var respawnAreaName = GetName(area);
 
             var description =
                 new StringBuilder(
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             
             description.Append("\n\n").Append(ColorTokenService.Green("Description: \n\n")).Append(backupDescription).AppendLine();
             target.UnidentifiedDescription = description.ToString();            
-            NWScript.DelayCommand(0.1f, () => { NWScript.SetDescription(target, backupDescription, false); });
+            DelayCommand(0.1f, () => { SetDescription(target, backupDescription, false); });
             return true;
         }
 

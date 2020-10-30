@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.Legacy
 {
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleClientEnter()
         {
-            NWPlayer oPC = (NWScript.GetEnteringObject());
+            NWPlayer oPC = (GetEnteringObject());
 
             if (!oPC.IsPlayer) return;
             if (oPC.GetLocalInt("MAP_PINS_LOADED") == 1) return;
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             foreach (var pin in pins)
             {
-                NWArea area = (NWScript.GetObjectByTag(pin.AreaTag));
+                var area = (GetObjectByTag(pin.AreaTag));
                 SetMapPin(oPC, pin.NoteText, (float)pin.PositionX, (float)pin.PositionY, area);
             }
             
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleLeave()
         {
-            NWPlayer oPC = (NWScript.GetExitingObject());
+            NWPlayer oPC = (GetExitingObject());
 
             if (!oPC.IsPlayer) return;
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 var entity = new PCMapPin
                 {
-                    AreaTag = mapPin.Area.Tag,
+                    AreaTag = GetTag(mapPin.Area),
                     NoteText = mapPin.Text,
                     PlayerID = oPC.GlobalID,
                     PositionX = mapPin.PositionX,
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             return null; // Couldn't find a map pin by that tag.
         }
 
-        public static void SetMapPin(NWPlayer oPC, string text, float positionX, float positionY, NWArea area, string tag)
+        public static void SetMapPin(NWPlayer oPC, string text, float positionX, float positionY, uint area, string tag)
         {
             var numberOfMapPins = GetNumberOfMapPins(oPC);
             var storeAtIndex = -1;
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             oPC.SetLocalString("NW_MAP_PIN_NTRY_" + storeAtIndex, text);
             oPC.SetLocalFloat("NW_MAP_PIN_XPOS_" + storeAtIndex, positionX);
             oPC.SetLocalFloat("NW_MAP_PIN_YPOS_" + storeAtIndex, positionY);
-            oPC.SetLocalObject("NW_MAP_PIN_AREA_" + storeAtIndex, area.Object);
+            oPC.SetLocalObject("NW_MAP_PIN_AREA_" + storeAtIndex, area);
             oPC.SetLocalInt("NW_TOTAL_MAP_PINS", numberOfMapPins);
 
             if (tag != null)
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
-        public static void SetMapPin(NWPlayer oPC, string text, float positionX, float positionY, NWArea area)
+        public static void SetMapPin(NWPlayer oPC, string text, float positionX, float positionY, uint area)
         {
             SetMapPin(oPC, text, positionX, positionY, area, null);
         }
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         public static void AddWaypointMapPin(NWPlayer oPC, string waypointTag, string text, string mapPinTag)
         {
-            NWObject waypoint = (NWScript.GetWaypointByTag(waypointTag));
+            NWObject waypoint = (GetWaypointByTag(waypointTag));
             SetMapPin(oPC, text, waypoint.Position.X, waypoint.Position.Y, waypoint.Area, mapPinTag);
         }
 

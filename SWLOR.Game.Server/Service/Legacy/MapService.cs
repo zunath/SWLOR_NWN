@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Service.Legacy
         {
             using (new Profiler("MapService.OnAreaEnter"))
             {
-                NWArea area = OBJECT_SELF;
+                var area = OBJECT_SELF;
                 NWPlayer player = GetEnteringObject();
 
                 if (!player.IsPlayer) return;
 
                 if (GetLocalBool(area, "AUTO_EXPLORED"))
                 {
-                    ExploreAreaForPlayer(area.Object, player);
+                    ExploreAreaForPlayer(area, player);
                 }
 
                 LoadMapProgression(area, player);
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         {
             using(new Profiler("MapService.OnAreaExit"))
             {
-                NWArea area = OBJECT_SELF;
+                var area = OBJECT_SELF;
                 NWPlayer player = GetExitingObject();
                 if (!player.IsPlayer) return;
 
@@ -53,15 +53,16 @@ namespace SWLOR.Game.Server.Service.Legacy
         private static void OnModuleLeave()
         {
             NWPlayer player = GetExitingObject();
-            NWArea area = GetArea(player);
-            if (!player.IsPlayer || !area.IsValid) return;
+            var area = GetArea(player);
+            if (!player.IsPlayer || !GetIsObjectValid(area)) return;
 
             SaveMapProgression(area, player);
         }
 
-        private static void SaveMapProgression(NWArea area, NWPlayer player)
+        private static void SaveMapProgression(uint area, NWPlayer player)
         {
-            var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, area.Resref);
+            var areaResref = GetResRef(area);
+            var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, areaResref);
             var action = DatabaseActionType.Update;
 
             if (map == null)
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 map = new PCMapProgression
                 {
                     PlayerID = player.GlobalID,
-                    AreaResref = area.Resref,
+                    AreaResref = areaResref,
                     Progression = string.Empty
                 };
 
@@ -80,9 +81,10 @@ namespace SWLOR.Game.Server.Service.Legacy
             DataService.SubmitDataChange(map, action);
         }
 
-        private static void LoadMapProgression(NWArea area, NWPlayer player)
+        private static void LoadMapProgression(uint area, NWPlayer player)
         {
-            var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, area.Resref);
+            var areaResref = GetResRef(area);
+            var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, areaResref);
 
             // No progression set - do a save which will create the record.
             if (map == null)
@@ -97,7 +99,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnAreaHeartbeat()
         {
-            NWArea area = OBJECT_SELF;
+            var area = OBJECT_SELF;
             
             if (GetLocalBool(area, "HIDE_MINIMAP"))
             {

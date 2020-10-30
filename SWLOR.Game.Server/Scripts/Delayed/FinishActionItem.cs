@@ -44,20 +44,20 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                         // We are okay - we have targeted an item in our inventory (we can't target someone
                         // else's inventory, so no need to actually check distance).
                     }
-                    else if (data.Target.Object == NWScript.OBJECT_SELF)
+                    else if (data.Target.Object == OBJECT_SELF)
                     {
                         // Also okay.
                     }
                     else if(data.Target.IsValid &&
-                        (NWScript.GetDistanceBetween(data.Player, data.Target) > maxDistance ||
-                        data.Player.Area.Resref != data.Target.Area.Resref))
+                        (GetDistanceBetween(data.Player, data.Target) > maxDistance ||
+                        GetResRef(data.Player.Area) != GetResRef(data.Target.Area)))
                     {
                         data.Player.SendMessage("Your target is too far away.");
                         return;
                     }
                     else if (!data.Target.IsValid &&
-                             (NWScript.GetDistanceBetweenLocations(data.Player.Location, data.TargetLocation) > maxDistance ||
-                              data.Player.Area.Resref != ((NWArea)NWScript.GetAreaFromLocation(data.TargetLocation)).Resref))
+                             (GetDistanceBetweenLocations(data.Player.Location, data.TargetLocation) > maxDistance ||
+                              GetResRef(data.Player.Area) != GetResRef(GetAreaFromLocation(data.TargetLocation))))
                     {
                         data.Player.SendMessage("That location is too far away.");
                         return;

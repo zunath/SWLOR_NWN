@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 {
@@ -19,15 +19,15 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 
         public void Main()
         {
-            NWPlayer player = NWScript.GetLastOpenedBy();
+            NWPlayer player = GetLastOpenedBy();
             if (!player.IsPlayer) return;
 
-            NWPlaceable terminal = NWScript.OBJECT_SELF;
+            NWPlaceable terminal = OBJECT_SELF;
             var area = terminal.Area;
             var bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0)
             {
-                Console.WriteLine("WARNING: Bank ID is not set on bank in area: " + area.Name);
+                Console.WriteLine("WARNING: Bank ID is not set on bank in area: " + GetName(area));
                 return;
             }
 
@@ -37,9 +37,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
             {
                 entity = new Data.Entity.Bank
                 {
-                    AreaName = area.Name,
-                    AreaResref = area.Resref,
-                    AreaTag = area.Tag,
+                    AreaName = GetName(area),
+                    AreaResref = GetResRef(area),
+                    AreaTag = GetTag(area),
                     ID = bankID
                 };
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);

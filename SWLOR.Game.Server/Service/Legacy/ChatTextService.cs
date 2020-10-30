@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 if (channel == ChatChannel.PlayerShout)
                 {
-                    NWScript.SendMessageToPC(sender, "Out-of-character messages cannot be sent on the Holonet.");
+                    SendMessageToPC(sender, "Out-of-character messages cannot be sent on the Holonet.");
                     return;
                 }
 
@@ -188,8 +188,16 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             if (needsAreaCheck)
             {
-                recipients.AddRange(sender.Area.Objects.Where(obj => obj.IsPC && NWScript.GetDistanceBetween(sender, obj) <= distanceCheck));
-                recipients.AddRange(AppCache.ConnectedDMs.Where(dm => dm.Area == sender.Area && NWScript.GetDistanceBetween(sender, dm) <= distanceCheck));
+                var area = GetArea(sender);
+                for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+                {
+                    if (GetIsPC(obj) && GetDistanceBetween(sender, obj) <= distanceCheck)
+                    {
+                        recipients.Add(obj);
+                    }
+                }
+
+                recipients.AddRange(AppCache.ConnectedDMs.Where(dm => dm.Area == sender.Area && GetDistanceBetween(sender, dm) <= distanceCheck));
             }
 
             // Now we have a list of who is going to actually receive a message, we need to modify
@@ -251,7 +259,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                var race = (RacialType) NWScript.GetRacialType(sender);                
+                var race = (RacialType) GetRacialType(sender);                
                 if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
@@ -330,7 +338,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleEnter()
         {
-            NWPlayer player = NWScript.GetEnteringObject();
+            NWPlayer player = GetEnteringObject();
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);

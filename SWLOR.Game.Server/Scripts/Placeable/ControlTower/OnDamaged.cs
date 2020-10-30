@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.Legacy;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 {
@@ -23,10 +23,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
         public void Main()
         {
-            NWCreature attacker = (NWScript.GetLastDamager(NWScript.OBJECT_SELF));
-            NWPlaceable tower = (NWScript.OBJECT_SELF);
-            NWItem weapon = (NWScript.GetLastWeaponUsed(attacker.Object));
-            var damage = NWScript.GetTotalDamageDealt();
+            NWCreature attacker = GetLastDamager(OBJECT_SELF);
+            NWPlaceable tower = OBJECT_SELF;
+            NWItem weapon = GetLastWeaponUsed(attacker.Object);
+            var damage = GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
             var structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
             var maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             {
                 foreach (var player in toNotify)
                 {
-                    player.SendMessage("Your base in " + attacker.Area.Name + " " + sector + " is under attack!");
+                    player.SendMessage("Your base in " + GetName(attacker.Area) + " " + sector + " is under attack!");
                 }
             }
 
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             }
 
             // HP is tracked in the database. Heal the placeable so it doesn't get destroyed.
-            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(9999), tower.Object);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(9999), tower.Object);
 
             if(attacker.IsPlayer)
             {

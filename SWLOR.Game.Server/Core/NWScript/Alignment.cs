@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Clear all personal feelings that oSource has about oTarget.
         /// </summary>
-        public static void ClearPersonalReputation(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   over fDurationInSeconds. Friendship will only be in effect as long as
         ///   (faction reputation + total personal reputation) >= REPUTATION_TYPE_FRIEND.
         /// </summary>
-        public static void SetIsTemporaryFriend(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID, bool bDecays = false,
+        public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   over fDurationInSeconds. Enmity will only be in effect as long as
         ///   (faction reputation + total personal reputation) <= REPUTATION_TYPE_ENEMY.
         /// </summary>
-        public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID, bool bDecays = false,
+        public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   (faction reputation + total personal reputation) > REPUTATION_TYPE_ENEMY and
         ///   (faction reputation + total personal reputation) < REPUTATION_TYPE_FRIEND.
         /// </summary>
-        public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = Core.NWScript.NWScript.OBJECT_INVALID, bool bDecays = false,
+        public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);

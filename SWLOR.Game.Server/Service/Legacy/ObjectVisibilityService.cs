@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         {
             foreach (var area in NWModule.Get().Areas)
             {
-                NWObject obj = NWScript.GetFirstObjectInArea(area);
+                NWObject obj = GetFirstObjectInArea(area);
                 while (obj.IsValid)
                 {
                     var visibilityObjectID = obj.GetLocalString("VISIBILITY_OBJECT_ID");
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                         AppCache.VisibilityObjects.Add(visibilityObjectID, obj);
                     }
 
-                    obj = NWScript.GetNextObjectInArea(area);
+                    obj = GetNextObjectInArea(area);
                 }
             }
         }
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleEnter()
         {
-            NWPlayer player = NWScript.GetEnteringObject();
+            NWPlayer player = GetEnteringObject();
             if (!player.IsPlayer) return;
             
             var visibilities = DataService.PCObjectVisibility.GetAllByPlayerID(player.GlobalID).ToList();
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             {
                 target.AssignCommand(() =>
                 {
-                    NWScript.SpeakString("Unable to locate VISIBILITY_OBJECT_ID variable. Need this in order to adjust visibility. Notify an admin if you see this message.");
+                    SpeakString("Unable to locate VISIBILITY_OBJECT_ID variable. Need this in order to adjust visibility. Notify an admin if you see this message.");
                 });
                 return;
             }

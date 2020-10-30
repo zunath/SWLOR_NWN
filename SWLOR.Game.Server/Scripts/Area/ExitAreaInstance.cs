@@ -18,8 +18,9 @@ namespace SWLOR.Game.Server.Scripts.Area
         public void Main()
         {
             NWObject door = NWScript.OBJECT_SELF;
+            var area = NWScript.GetArea(door);
 
-            if (!door.Area.IsInstance) return;
+            if (!AreaService.IsAreaInstance(area)) return;
 
             NWObject target = NWScript.GetTransitionTarget(door);
             NWPlayer player = NWScript.GetClickingObject();

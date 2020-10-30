@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class AreaService
     {
-        private static readonly Dictionary<NWArea, List<AreaWalkmesh>> _walkmeshesByArea = new Dictionary<NWArea, List<AreaWalkmesh>>();
+        private static readonly Dictionary<uint, List<AreaWalkmesh>> _walkmeshesByArea = new Dictionary<uint, List<AreaWalkmesh>>();
         private const int AreaBakeStep = 5;
 
         public static void SubscribeEvents()
@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             foreach (var area in areas)
             {
-                var dbArea = dbAreas.SingleOrDefault(x => x.Resref == area.Resref);
+                var areaResref = GetResRef(area);
+                var dbArea = dbAreas.SingleOrDefault(x => x.Resref == areaResref);
                 var action = DatabaseActionType.Update;
 
                 if (dbArea == null)
@@ -50,17 +51,17 @@ namespace SWLOR.Game.Server.Service.Legacy
                     dbArea = new Area
                     {
                         ID = Guid.NewGuid(),
-                        Resref = area.Resref
+                        Resref = areaResref
                     };
                     action = DatabaseActionType.Insert;
                 }
 
-                var width = NWScript.GetAreaSize(Dimension.Width, area.Object);
-                var height = NWScript.GetAreaSize(Dimension.Height, area.Object);
-                var northwestLootTableID = area.GetLocalInt("RESOURCE_NORTHWEST_LOOT_TABLE_ID");
-                var northeastLootTableID = area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
-                var southwestLootTableID = area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
-                var southeastLootTableID = area.GetLocalInt("RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
+                var width = GetAreaSize(Dimension.Width, area);
+                var height = GetAreaSize(Dimension.Height, area);
+                var northwestLootTableID = GetLocalInt(area, "RESOURCE_NORTHWEST_LOOT_TABLE_ID");
+                var northeastLootTableID = GetLocalInt(area, "RESOURCE_NORTHEAST_LOOT_TABLE_ID");
+                var southwestLootTableID = GetLocalInt(area, "RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
+                var southeastLootTableID = GetLocalInt(area, "RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
 
                 // If the loot tables don't exist, don't assign them to this DB entry or we'll get foreign key reference errors.
                 if (DataService.LootTable.GetByIDOrDefault(northwestLootTableID) == null)
@@ -72,13 +73,13 @@ namespace SWLOR.Game.Server.Service.Legacy
                 if (DataService.LootTable.GetByIDOrDefault(southeastLootTableID) == null)
                     southeastLootTableID = 0;
 
-                dbArea.Name = area.Name;
-                dbArea.Tag = area.Tag;
-                dbArea.ResourceSpawnTableID = area.GetLocalInt("RESOURCE_SPAWN_TABLE_ID");
+                dbArea.Name = GetName(area);
+                dbArea.Tag = GetTag(area);
+                dbArea.ResourceSpawnTableID = GetLocalInt(area, "RESOURCE_SPAWN_TABLE_ID");
                 dbArea.Width = width;
                 dbArea.Height = height;
-                dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");
-                dbArea.DailyUpkeep = area.GetLocalInt("DAILY_UPKEEP");
+                dbArea.PurchasePrice = GetLocalInt(area, "PURCHASE_PRICE");
+                dbArea.DailyUpkeep = GetLocalInt(area, "DAILY_UPKEEP");
                 dbArea.NorthwestLootTableID = northwestLootTableID > 0 ? northwestLootTableID : new int?();
                 dbArea.NortheastLootTableID = northeastLootTableID > 0 ? northeastLootTableID : new int?();
                 dbArea.SouthwestLootTableID = southwestLootTableID > 0 ? southwestLootTableID : new int?();
@@ -96,8 +97,8 @@ namespace SWLOR.Game.Server.Service.Legacy
                     GetLocalBool(area, "IS_BUILDING");
                 dbArea.IsActive = true;
                 dbArea.AutoSpawnResources = GetLocalBool(area, "AUTO_SPAWN_RESOURCES") == true;
-                dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
-                dbArea.MaxResourceQuality = area.GetLocalInt("RESOURCE_MAX_QUALITY");
+                dbArea.ResourceQuality = GetLocalInt(area, "RESOURCE_QUALITY");
+                dbArea.MaxResourceQuality = GetLocalInt(area, "RESOURCE_MAX_QUALITY");
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
@@ -111,12 +112,13 @@ namespace SWLOR.Game.Server.Service.Legacy
         // Area baking process
         // Run through and look for valid locations for later use by the spawn system.
         // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
-        private static void BakeArea(NWArea area)
+        private static void BakeArea(uint area)
         {
             _walkmeshesByArea[area] = new List<AreaWalkmesh>();
 
             const float MinDistance = 6.0f;
-            var dbArea = DataService.Area.GetByResref(area.Resref);
+            var areaResref = GetResRef(area);
+            var dbArea = DataService.Area.GetByResref(areaResref);
 
             var arraySizeX = dbArea.Width * (10 / AreaBakeStep);
             var arraySizeY = dbArea.Height * (10 / AreaBakeStep);
@@ -125,13 +127,13 @@ namespace SWLOR.Game.Server.Service.Legacy
             {
                 for (var y = 0; y < arraySizeY; y++)
                 {
-                    var checkLocation = NWScript.Location(area.Object, NWScript.Vector3(x * AreaBakeStep, y * AreaBakeStep), 0.0f);
-                    var material = NWScript.GetSurfaceMaterial(checkLocation);
-                    var isWalkable = Convert.ToInt32(NWScript.Get2DAString("surfacemat", "Walk", material)) == 1;
+                    var checkLocation = Location(area, Vector3(x * AreaBakeStep, y * AreaBakeStep), 0.0f);
+                    var material = GetSurfaceMaterial(checkLocation);
+                    var isWalkable = Convert.ToInt32(Get2DAString("surfacemat", "Walk", material)) == 1;
 
                     // Location is not walkable if another object exists nearby.
-                    NWObject nearest = (NWScript.GetNearestObjectToLocation(checkLocation, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable | ObjectType.Trigger));
-                    var distance = NWScript.GetDistanceBetweenLocations(checkLocation, nearest.Location);
+                    NWObject nearest = (GetNearestObjectToLocation(checkLocation, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable | ObjectType.Trigger));
+                    var distance = GetDistanceBetweenLocations(checkLocation, nearest.Location);
                     if (nearest.IsValid && distance <= MinDistance)
                     {
                         isWalkable = false;
@@ -144,7 +146,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                             AreaID = dbArea.ID,
                             LocationX = x * AreaBakeStep,
                             LocationY = y * AreaBakeStep,
-                            LocationZ = NWScript.GetGroundHeight(checkLocation)
+                            LocationZ = GetGroundHeight(checkLocation)
                         };
 
                         _walkmeshesByArea[area].Add(mesh);
@@ -152,72 +154,82 @@ namespace SWLOR.Game.Server.Service.Legacy
                 }
             }
 
-            Console.WriteLine("Area walkmesh up to date: " + area.Name);
+            Console.WriteLine("Area walkmesh up to date: " + GetName(area));
         }
         
-        public static NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
+        public static uint CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
             var tag = Guid.NewGuid().ToString();
-            NWArea instance = NWScript.CreateArea(areaResref, tag, areaName);
+            var instance = CreateArea(areaResref, tag, areaName);
             
-            instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());
-            instance.SetLocalString("ORIGINAL_RESREF", areaResref);
+            SetLocalString(instance, "INSTANCE_OWNER", owner.GlobalID.ToString());
+            SetLocalString(instance, "ORIGINAL_RESREF", areaResref);
             SetLocalBool(instance, "IS_AREA_INSTANCE", true);
-            instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
+            BaseService.RegisterAreaStructures(instance);
 
-            NWObject searchByObject = NWScript.GetFirstObjectInArea(instance);
+            NWObject searchByObject = GetFirstObjectInArea(instance);
             NWObject entranceWP;
 
             if (searchByObject.Tag == entranceWaypointTag)
                 entranceWP = searchByObject;
             else
-                entranceWP = NWScript.GetNearestObjectByTag(entranceWaypointTag, searchByObject);
+                entranceWP = GetNearestObjectByTag(entranceWaypointTag, searchByObject);
             
             if (!entranceWP.IsValid)
             {
                 owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
-                return NWScript.OBJECT_INVALID;
+                return OBJECT_INVALID;
             }
 
-            instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
+            SetLocalLocation(instance, "INSTANCE_ENTRANCE", entranceWP.Location);
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
 
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(instance));
             return instance;
         }
 
-        public static void DestroyAreaInstance(NWArea area)
+        public static void DestroyAreaInstance(uint area)
         {
-            if (!area.IsInstance) return;
+            if (!IsAreaInstance(area)) return;
 
             MessageHub.Instance.Publish(new OnAreaInstanceDestroyed(area));
-            NWScript.DestroyArea(area);
+            DestroyArea(area);
 
         }
 
         private static void OnAreaEnter()
         {
-            NWArea area = NWScript.OBJECT_SELF;
+            var area = OBJECT_SELF;
             var playerCount = Core.NWNX.Area.GetNumberOfPlayersInArea(area);
             if (playerCount > 0)
-                NWScript.SetEventScript(area, EventScript.Area_OnHeartbeat, "area_on_hb");
+                SetEventScript(area, EventScript.Area_OnHeartbeat, "area_on_hb");
             else
-                NWScript.SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty);
+                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty);
         }
 
         private static void OnAreaExit()
         {
-            NWArea area = NWScript.OBJECT_SELF;
+            var area = OBJECT_SELF;
             var playerCount = Core.NWNX.Area.GetNumberOfPlayersInArea(area);
             if (playerCount > 0)
-                NWScript.SetEventScript(area, EventScript.Area_OnHeartbeat, "area_on_hb");
+                SetEventScript(area, EventScript.Area_OnHeartbeat, "area_on_hb");
             else
-                NWScript.SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty);
+                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty);
         }
 
-        public static List<AreaWalkmesh> GetAreaWalkmeshes(NWArea area)
+        public static List<AreaWalkmesh> GetAreaWalkmeshes(uint area)
         {
             return _walkmeshesByArea[area].ToList();
+        }
+
+        /// <summary>
+        /// Returns true if an area is an instance. Otherwise returns false.
+        /// </summary>
+        /// <param name="area">The area to check</param>
+        /// <returns>true if instance, false otherwise</returns>
+        public static bool IsAreaInstance(uint area)
+        {
+            return GetLocalBool(area, "IS_AREA_INSTANCE");
         }
     }
 }

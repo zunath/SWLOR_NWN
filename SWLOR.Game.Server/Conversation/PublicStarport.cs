@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -36,12 +36,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = NWScript.OBJECT_SELF;
+            NWPlaceable door = OBJECT_SELF;
             var starportID = door.GetLocalString("STARPORT_ID");
 
             if (string.IsNullOrWhiteSpace(starportID))
             {
-                NWScript.SpeakString("STARPORT_ID is not set. Please inform an admin.");
+                SpeakString("STARPORT_ID is not set. Please inform an admin.");
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var instance = BaseService.GetAreaInstance(ship.ID, false);
 
-            if (instance == null)
+            if (!GetIsObjectValid(instance))
             {
                 instance = BaseService.CreateAreaInstance(oPC, ship.ID, false);
             }

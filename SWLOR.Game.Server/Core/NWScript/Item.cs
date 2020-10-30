@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   * if it is possible to merge this item with any others in the target location,
         ///   then it will do so and return the merged object.
         /// </summary>
-        public static uint CopyItem(uint oItem, uint oTargetInventory = Core.NWScript.NWScript.OBJECT_INVALID, bool bCopyVars = false)
+        public static uint CopyItem(uint oItem, uint oTargetInventory = OBJECT_INVALID, bool bCopyVars = false)
         {
             Internal.NativeFunctions.StackPushInteger(bCopyVars ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oTargetInventory);
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   returns TRUE if the placeable object is usable
         /// </summary>
-        public static bool GetUseableFlag(uint oObject = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetUseableFlag(uint oObject = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(587);
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   * Returns OBJECT_INVALID if the caller is not a creature, item, placeable or store,
         ///   or if no item is found.
         /// </summary>
-        public static uint GetFirstItemInInventory(uint oTarget = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static uint GetFirstItemInInventory(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(339);
@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   * Returns OBJECT_INVALID if the caller is not a creature, item, placeable or store,
         ///   or if no item is found.
         /// </summary>
-        public static uint GetNextItemInInventory(uint oTarget = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static uint GetNextItemInInventory(uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(340);
@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   * Returns OBJECT_INVALID if oCreature is not a valid creature or there is no
         ///   item in nInventorySlot.
         /// </summary>
-        public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nInventorySlot);

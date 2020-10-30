@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             var command = args[0].ToLower();
             var effect = EffectVisualEffect((VisualEffect)Int32.Parse(args[0]));
-            NWScript.ApplyEffectAtLocation(DurationType.Instant, effect, targetLocation, 6.0f);
+            ApplyEffectAtLocation(DurationType.Instant, effect, targetLocation, 6.0f);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.SpawnRule.Contracts;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.SpawnRule
 {
@@ -14,13 +15,16 @@ namespace SWLOR.Game.Server.SpawnRule
             var quality = ResourceQuality.Low;
             var qualityName = "Low Quality";
 
-            var dbArea = DataService.Area.GetByResref(target.Area.Resref);
+            var area = GetArea(target);
+            var areaName = GetName(area);
+            var areaResref = GetResRef(area);
+            var dbArea = DataService.Area.GetByResref(areaResref);
             var tier = dbArea.ResourceQuality;
             var maxTier = dbArea.MaxResourceQuality;
 
             if (tier <= 0)
             {
-                Console.WriteLine("WARNING: Area '" + target.Area.Name + "' has resources but the RESOURCE_QUALITY variable is not set. Edit the area properties and add this value to set up resources.");
+                Console.WriteLine("WARNING: Area '" + areaName + "' has resources but the RESOURCE_QUALITY variable is not set. Edit the area properties and add this value to set up resources.");
                 return;
             }
 

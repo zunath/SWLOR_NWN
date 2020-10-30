@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             var weapon = creature.RightHand;
             var weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)weapon.BaseItemType));
             var strengthMod = creature.StrengthModifier;
-            var distance = NWScript.GetDistanceBetween(creature, oTarget);
+            var distance = GetDistanceBetween(creature, oTarget);
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     (weapon.IsRanged)
                  )
             {
-                NWObject droppedWeapon = NWScript.CopyObject(weapon, creature.Location);
+                NWObject droppedWeapon = CopyObject(weapon, creature.Location);
                 DestroyObject(weapon);
                 creature.ClearAllActions();
                 creature.AssignCommand(() =>
                 {
-                    NWScript.ActionPickUpItem(droppedWeapon);
+                    ActionPickUpItem(droppedWeapon);
                 });
                 return "You attempt to throw your the item in your hand. Due to your lack of strength, it falls to the ground in front of you and you try to pick it up quickly.";
             }
@@ -101,14 +101,14 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             NWObject oObject;
 
             // If player is in stealth mode, force them out of stealth mode.
-            if (NWScript.GetActionMode(player.Object, ActionMode.Stealth) == true)
-                NWScript.SetActionMode(player.Object, ActionMode.Stealth, false);
+            if (GetActionMode(player.Object, ActionMode.Stealth) == true)
+                SetActionMode(player.Object, ActionMode.Stealth, false);
 
             // Make the player face their target.
-            NWScript.ClearAllActions();
+            ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, player);
 
-            player.AssignCommand(() => NWScript.ActionPlayAnimation(Animation.LoopingCustom10, 2));
+            player.AssignCommand(() => ActionPlayAnimation(Animation.LoopingCustom10, 2));
 
             var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal);
             var delta = 0.01f * result.Delta;
@@ -133,11 +133,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iDamage = (int)(iDamage * 1.0);
                     iDamage = iDamage + (int)(iDamage * delta);
 
-                    fDelay = NWScript.GetDistanceBetween(player, target) / 10.0f;
+                    fDelay = GetDistanceBetween(player, target) / 10.0f;
 
                     player.DelayAssignCommand(() =>
                     {
-                        NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -150,11 +150,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iDamage = (int)(iDamage * 1.25);
                     iDamage = iDamage + (int)(iDamage * delta);
 
-                    fDelay = NWScript.GetDistanceBetween(player, target) / 10.0f;
+                    fDelay = GetDistanceBetween(player, target) / 10.0f;
 
                     player.DelayAssignCommand(() =>
                     {
-                        NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -167,11 +167,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iDamage = (int)(iDamage * 1.6);
                     iDamage = iDamage + (int)(iDamage * delta);
 
-                    fDelay = NWScript.GetDistanceBetween(player, target) / 10.0f;
+                    fDelay = GetDistanceBetween(player, target) / 10.0f;
 
                     player.DelayAssignCommand(() =>
                     {
-                        NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -185,11 +185,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iDamage = iDamage + (int)(iDamage * delta);
 
                     // apply to target
-                    fDelay = NWScript.GetDistanceBetween(player, target) / 10.0f;
+                    fDelay = GetDistanceBetween(player, target) / 10.0f;
 
                     player.DelayAssignCommand(() =>
                     {
-                        NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -200,16 +200,16 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
-                    oObject = NWScript.GetFirstObjectInShape(Shape.SpellCone, iRange, target.Location, true, ObjectType.Creature, NWScript.GetPosition(player));
+                    oObject = GetFirstObjectInShape(Shape.SpellCone, iRange, target.Location, true, ObjectType.Creature, GetPosition(player));
                     while (oObject.IsValid && iCount < 3)
                     {
                         if (oObject != target && oObject != player)
                         {
-                            fDelay = NWScript.GetDistanceBetween(player, oObject) / 10.0f;
+                            fDelay = GetDistanceBetween(player, oObject) / 10.0f;
                             var creature = oObject;
                             player.DelayAssignCommand(() =>
                             {
-                                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
+                                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
                             }, fDelay);
 
                             if (player.IsPlayer)
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             }
                             iCount += 1;
                         }
-                        oObject = NWScript.GetNextObjectInShape(Shape.SpellCone, iRange, target.Location, true, ObjectType.Creature, NWScript.GetPosition(player));
+                        oObject = GetNextObjectInShape(Shape.SpellCone, iRange, target.Location, true, ObjectType.Creature, GetPosition(player));
                     }
                     break;
                 case 5:
@@ -226,11 +226,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iDamage = iDamage + (int)(iDamage * delta);
 
                     // apply to target
-                    fDelay = NWScript.GetDistanceBetween(player, target) / 10.0f;
+                    fDelay = GetDistanceBetween(player, target) / 10.0f;
 
                     player.DelayAssignCommand(() =>
                     {
-                        NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -240,16 +240,16 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
-                    oObject = NWScript.GetFirstObjectInShape(Shape.SpellCylinder, iRange, target.Location, true, ObjectType.Creature, NWScript.GetPosition(player));
+                    oObject = GetFirstObjectInShape(Shape.SpellCylinder, iRange, target.Location, true, ObjectType.Creature, GetPosition(player));
                     while (oObject.IsValid && iCount < 4)
                     {
                         if (oObject != target && oObject != player)
                         {
-                            fDelay = NWScript.GetDistanceBetween(player, oObject) / 10.0f;
+                            fDelay = GetDistanceBetween(player, oObject) / 10.0f;
                             var creature = oObject;
                             player.DelayAssignCommand(() =>
                             {
-                                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectLinkEffects(NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), NWScript.EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
+                                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
                             }, fDelay);
 
                             if (player.IsPlayer)
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             }
                             iCount += 1;
                         }
-                        oObject = NWScript.GetNextObjectInShape(Shape.SpellCylinder, iRange, target.Location, true, ObjectType.Creature, NWScript.GetPosition(player));
+                        oObject = GetNextObjectInShape(Shape.SpellCylinder, iRange, target.Location, true, ObjectType.Creature, GetPosition(player));
                     }
                     break;
                 default:

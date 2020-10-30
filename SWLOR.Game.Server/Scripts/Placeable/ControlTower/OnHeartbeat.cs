@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.Legacy;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 {
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
         public void Main()
         {
-            NWPlaceable tower = NWScript.OBJECT_SELF;
+            NWPlaceable tower = OBJECT_SELF;
             var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                     var isStronidium = bay.GetLocalBool("CONTROL_TOWER_FUEL_TYPE") == true;
                     if (!isStronidium)
                     {
-                        NWItem fuel = NWScript.GetFirstItemInInventory(bay.Object);
+                        NWItem fuel = GetFirstItemInInventory(bay.Object);
 
                         if (fuel.IsValid)
                         {
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 var outOfPowerHasBeenApplied = false;
                 foreach (var effect in tower.Effects)
                 {
-                    if (NWScript.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
+                    if (GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
                     {
                         outOfPowerHasBeenApplied = true;
                         break;
@@ -84,11 +84,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
                 if (!outOfPowerHasBeenApplied)
                 {
-                    var outOfPowerEffect = NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
-                    outOfPowerEffect = NWScript.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
-                    NWScript.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
+                    var outOfPowerEffect = EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
+                    outOfPowerEffect = TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
+                    ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
 
-                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
+                    var instances = NWModule.Get().Areas.Where(x => GetLocalString(x, "PC_BASE_STRUCTURE_ID") == structureID.ToString());
 
                     foreach (var instance in instances)
                     {
@@ -101,9 +101,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 var outOfPowerWasRemoved = false;
                 foreach (var effect in tower.Effects)
                 {
-                    if (NWScript.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
+                    if (GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
                     {
-                        NWScript.RemoveEffect(tower.Object, effect);
+                        RemoveEffect(tower.Object, effect);
                         outOfPowerWasRemoved = true;
                         break;
                     }
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
                 if (outOfPowerWasRemoved)
                 {
-                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
+                    var instances = NWModule.Get().Areas.Where(x => GetLocalString(x, "PC_BASE_STRUCTURE_ID") == structureID.ToString());
                     foreach (var instance in instances)
                     {
                         BaseService.ToggleInstanceObjectPower(instance, true);

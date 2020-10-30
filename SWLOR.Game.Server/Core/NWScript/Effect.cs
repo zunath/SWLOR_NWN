@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   the function will return the merged stack object. If the merged stack
         ///   overflowed, the function will return the overflowed stack that was created.
         /// </summary>
-        public static uint CreateItemOnObject(string sTag, uint oTarget = Core.NWScript.NWScript.OBJECT_INVALID, int nStackSize = 1,
+        public static uint CreateItemOnObject(string sTag, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   cause the dispel effect to use the level of the creature that created the
         ///   effect.
         /// </summary>
-        public static Effect EffectDispelMagicBest(int nCasterLevel = Core.NWScript.NWScript.USE_CREATURE_LEVEL)
+        public static Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
         {
             Internal.NativeFunctions.StackPushInteger(nCasterLevel);
             Internal.NativeFunctions.CallBuiltIn(473);
@@ -835,7 +835,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   cause the dispel effect to use the level of the creature that created the
         ///   effect.
         /// </summary>
-        public static Effect EffectDispelMagicAll(int nCasterLevel = Core.NWScript.NWScript.USE_CREATURE_LEVEL)
+        public static Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
         {
             Internal.NativeFunctions.StackPushInteger(nCasterLevel);
             Internal.NativeFunctions.CallBuiltIn(460);
@@ -1053,7 +1053,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Activate oItem.
         /// </summary>
-        public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);

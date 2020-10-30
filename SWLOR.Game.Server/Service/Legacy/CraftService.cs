@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
             {
-                NWPlayer player = NWScript.OBJECT_SELF;
+                NWPlayer player = OBJECT_SELF;
                 DialogService.StartConversation(player, player, "ModifyItemAppearance");
             });
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
@@ -206,16 +206,16 @@ namespace SWLOR.Game.Server.Service.Legacy
             var modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
             oPC.AssignCommand(() =>
             {
-                NWScript.ClearAllActions();
-                NWScript.ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, modifiedCraftDelay);
+                ClearAllActions();
+                ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, modifiedCraftDelay);
             });
-            NWScript.DelayCommand(1.0f * (modifiedCraftDelay / 2.0f), () =>
+            DelayCommand(1.0f * (modifiedCraftDelay / 2.0f), () =>
             {
-                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), device.Object);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), device.Object);
             });
-            var immobilize = NWScript.EffectCutsceneImmobilize();
-            immobilize = NWScript.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
-            NWScript.ApplyEffectToObject(DurationType.Permanent, immobilize, oPC.Object);
+            var immobilize = EffectCutsceneImmobilize();
+            immobilize = TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
+            ApplyEffectToObject(DurationType.Permanent, immobilize, oPC.Object);
 
             Core.NWNX.Player.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
 
@@ -499,25 +499,25 @@ namespace SWLOR.Game.Server.Service.Legacy
             foreach (var item in model.MainComponents)
             {
                 if (!destroyComponents)
-                    NWScript.CopyItem(item.Object, player.Object, true);
+                    CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.SecondaryComponents)
             {
                 if (!destroyComponents)
-                    NWScript.CopyItem(item.Object, player.Object, true);
+                    CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.TertiaryComponents)
             {
                 if (!destroyComponents)
-                    NWScript.CopyItem(item.Object, player.Object, true);
+                    CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.EnhancementComponents)
             {
                 if (!destroyComponents)
-                    NWScript.CopyItem(item.Object, player.Object, true);
+                    CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
 
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = NWScript.OBJECT_SELF;
+            NWPlayer pc = OBJECT_SELF;
             var featID = Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
             if (featID != (int)Feat.RenameCraftedItem) return;
@@ -600,10 +600,10 @@ namespace SWLOR.Game.Server.Service.Legacy
             pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }
 
-        public static int CalculateAreaAtmosphereBonus(NWArea area)
+        public static int CalculateAreaAtmosphereBonus(uint area)
         {
             // Building IDs are stored on the instanced area's local variables.
-            var pcStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var pcStructureID = GetLocalString(area, "PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(pcStructureID)) return 0;
 
             // Pull the building structure from the database.
@@ -628,7 +628,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             return bonus;
         }
 
-        public static string GetAreaAtmosphereBonusText(NWArea area)
+        public static string GetAreaAtmosphereBonusText(uint area)
         {
             var bonus = CalculateAreaAtmosphereBonus(area);
 
@@ -679,11 +679,11 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnAreaEnter()
         {
-            NWArea area = NWScript.OBJECT_SELF;
+            var area = OBJECT_SELF;
             var bonuses = GetAreaAtmosphereBonusText(area);
 
             if (string.IsNullOrWhiteSpace(bonuses)) return;
-            NWCreature entering = NWScript.GetEnteringObject();
+            NWCreature entering = GetEnteringObject();
 
             entering.SendMessage(bonuses);
         }

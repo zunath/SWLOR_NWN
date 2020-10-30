@@ -13,12 +13,12 @@ namespace NWN.Scripts
         public static void Main()
         {
             NWObject oTarget;
-            oTarget = GetFirstInPersistentObject(NWScript.OBJECT_SELF);
+            oTarget = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(oTarget) == true)
             {
                 SWLOR.Game.Server.Item.Grenade.grenadeAoe(oTarget, "SMOKE");
                 //Get the next target in the AOE
-                oTarget = GetNextInPersistentObject(NWScript.OBJECT_SELF);
+                oTarget = GetNextInPersistentObject(OBJECT_SELF);
             }
         }
     }

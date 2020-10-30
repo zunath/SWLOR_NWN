@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Service.Legacy;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -25,10 +25,10 @@ namespace SWLOR.Game.Server.ChatCommand
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
             // DMs can use this command anywhere.
-            if (NWScript.GetIsDM(user)) return string.Empty;
+            if (GetIsDM(user)) return string.Empty;
 
             // Players can only do this in certain areas.
-            var areaResref = user.Area.Resref;
+            var areaResref = GetResRef(user.Area);
             if (areaResref != "ooc_area" && areaResref != "customize_char")
             {
                 return "Customization can only occur in the starting area or the DM customization area. You can't use this command any more.";

@@ -85,19 +85,19 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             }
 
             // Penalize the caster
-            var effect = NWScript.EffectACDecrease(0);
-            effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAttackDecrease(amount));
+            var effect = EffectACDecrease(0);
+            effect = EffectLinkEffects(effect, EffectAttackDecrease(amount));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
 
 
-            NWCreature targetCreature = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
+            NWCreature targetCreature = GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
             while (targetCreature.IsValid && GetDistanceBetween(creature, targetCreature) <= MaxDistance)
             {
                 // Skip the caster, if they get picked up.
                 if (targetCreature == creature)
                 {
                     nth++;
-                    targetCreature = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
+                    targetCreature = GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
                     continue;
                 }
 
@@ -107,20 +107,20 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     case 1:
                         amount = 5;
 
-                        if (NWScript.GetIsReactionTypeHostile(targetCreature, creature) == true)
+                        if (GetIsReactionTypeHostile(targetCreature, creature) == true)
                         {
                             nth++;
-                            targetCreature = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
+                            targetCreature = GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
                             continue;        
                         }                            
                         break;
                     case 2:
                         amount = 10;
 
-                        if (NWScript.GetIsReactionTypeHostile(targetCreature, creature) == true)
+                        if (GetIsReactionTypeHostile(targetCreature, creature) == true)
                         {
                             nth++;
-                            targetCreature = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
+                            targetCreature = GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
                             continue;
                         }
                         break;
@@ -131,22 +131,22 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                         throw new ArgumentOutOfRangeException(nameof(perkLevel));
                 }
 
-                if (NWScript.GetIsReactionTypeHostile(targetCreature, creature) == true)
+                if (GetIsReactionTypeHostile(targetCreature, creature) == true)
                 {
-                    effect = NWScript.EffectACDecrease(0);
-                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAttackDecrease(amount));
+                    effect = EffectACDecrease(0);
+                    effect = EffectLinkEffects(effect, EffectAttackDecrease(amount));
                 }
                 else
                 {
-                    effect = NWScript.EffectACIncrease(0);
-                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAttackIncrease(amount));
+                    effect = EffectACIncrease(0);
+                    effect = EffectLinkEffects(effect, EffectAttackIncrease(amount));
                 }
 
-                NWScript.ApplyEffectToObject(DurationType.Temporary, effect, targetCreature, 6.1f);
-                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Magic_Resistance), targetCreature);
+                ApplyEffectToObject(DurationType.Temporary, effect, targetCreature, 6.1f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Dur_Magic_Resistance), targetCreature);
                 
                 nth++;
-                targetCreature = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
+                targetCreature = GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
             }
             
         }

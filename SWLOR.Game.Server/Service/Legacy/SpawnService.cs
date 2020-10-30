@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service.Legacy
     public static class SpawnService
     {
         private static readonly Dictionary<string, ISpawnRule> _spawnRules;
-        private static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; } = new Dictionary<NWArea, AreaSpawn>();
+        private static Dictionary<uint, AreaSpawn> AreaSpawns { get; } = new Dictionary<uint, AreaSpawn>();
 
         static SpawnService()
         {
@@ -34,8 +35,8 @@ namespace SWLOR.Game.Server.Service.Legacy
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessSpawns());
 
-            MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents(NWScript.OBJECT_SELF));
-            MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents(NWScript.OBJECT_SELF));
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => ToggleCreatureEvents(OBJECT_SELF));
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => ToggleCreatureEvents(OBJECT_SELF));
 
             MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
             MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
@@ -88,12 +89,12 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
-        private static void InitializeAreaSpawns(NWArea area)
+        private static void InitializeAreaSpawns(uint area)
         {
             var areaSpawn = new AreaSpawn();
 
             // Check for manually placed spawns
-            NWObject obj = GetFirstObjectInArea(area.Object);
+            NWObject obj = GetFirstObjectInArea(area);
             while (obj.IsValid)
             {
                 var isSpawn = obj.ObjectType == ObjectType.Waypoint && obj.GetLocalBool("IS_SPAWN") == true;
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                     {
                         // Delay the creation so that the iteration through the area doesn't get thrown off by new entries.
                         var location = obj.Location;
-                        var isInstance = area.IsInstance;
+                        var isInstance = AreaService.IsAreaInstance(area);
                         
                         ObjectSpawn newSpawn;
                         if (useResref)
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                     }
                 }
 
-                obj = GetNextObjectInArea(area.Object);
+                obj = GetNextObjectInArea(area);
             }
 
             AreaSpawns.Add(area, areaSpawn);
@@ -216,14 +217,14 @@ namespace SWLOR.Game.Server.Service.Legacy
             });
         }
 
-        private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
+        private static void CopyAreaSpawns(string originalResref, uint copyArea)
         {
-            var originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalBool("IS_AREA_INSTANCE") == false);
+            var originalArea = NWModule.Get().Areas.Single(x => GetResRef(x) == originalResref && GetLocalBool(x, "IS_AREA_INSTANCE") == false);
             var copyAreaSpawn = AreaSpawns[originalArea].Clone();
             AreaSpawns.Add(copyArea, copyAreaSpawn);
         }
         
-        public static Location GetRandomSpawnPoint(NWArea area)
+        public static Location GetRandomSpawnPoint(uint area)
         {
             var walkmeshes = AreaService.GetAreaWalkmeshes(area);
             var count = walkmeshes.Count;
@@ -231,15 +232,18 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             var spawnPoint = walkmeshes[index];
             
-            return Location(area.Object,
+            return Location(area,
                 Vector3((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
                 RandomService.RandomFloat(0, 360));
 
         }
 
-        private static void SpawnResources(NWArea area, AreaSpawn areaSpawn)
+        private static void SpawnResources(uint area, AreaSpawn areaSpawn)
         {
-            var dbArea = DataService.Area.GetByResref(area.Resref);
+            var areaResref = GetResRef(area);
+            var dbArea = DataService.Area.GetByResref(areaResref);
+            var width = GetAreaSize(Dimension.Width, area);
+            var height = GetAreaSize(Dimension.Height, area);
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
@@ -248,7 +252,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             // 1024 size = 32x32
             // 256  size = 16x16
             // 64   size = 8x8
-            var size = area.Width * area.Height;
+            var size = width * height;
 
             var maxSpawns = 0;
             if (size <= 12)
@@ -373,7 +377,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
-        private static void ToggleCreatureEvents(NWArea area)
+        private static void ToggleCreatureEvents(uint area)
         {
             var areaSpawn = AreaSpawns[area];
             var playerCount = Area.GetNumberOfPlayersInArea(area);
@@ -418,7 +422,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 foreach (var spawn in AreaSpawns)
                 {
                     // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
-                    if (!spawn.Key.IsValid) continue;
+                    if (!GetIsObjectValid(spawn.Key)) continue;
 
                     // Ignore empty areas.
                     var playerCount = Area.GetNumberOfPlayersInArea(spawn.Key);
@@ -452,7 +456,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         }
 
 
-        private static void ProcessSpawn(ObjectSpawn spawn, ObjectType objectType, NWArea area, bool forceSpawn)
+        private static void ProcessSpawn(ObjectSpawn spawn, ObjectType objectType, uint area, bool forceSpawn)
         {
             // Don't process anything that's valid.
             if (spawn.Spawn.IsValid) return;
@@ -503,7 +507,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 if (!spawn.Spawn.IsValid)
                 {
-                    Console.WriteLine("SPAWN SERVICE ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
+                    Console.WriteLine("SPAWN SERVICE ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + GetName(area) + " (" + GetResRef(area) + ")");
                     return;
                 }
 
@@ -600,12 +604,13 @@ namespace SWLOR.Game.Server.Service.Legacy
             SetEventScript(creature, EventScript.Creature_OnBlockedByDoor, string.Empty);
         }
 
-        private static void OnAreaInstanceCreated(NWArea instance)
+        private static void OnAreaInstanceCreated(uint instance)
         {
-            CopyAreaSpawns(instance.Resref, instance);
+            var resref = GetResRef(instance);
+            CopyAreaSpawns(resref, instance);
         }
 
-        private static void OnAreaInstanceDestroyed(NWArea instance)
+        private static void OnAreaInstanceDestroyed(uint instance)
         {
             if(AreaSpawns.ContainsKey(instance))
                 AreaSpawns.Remove(instance);

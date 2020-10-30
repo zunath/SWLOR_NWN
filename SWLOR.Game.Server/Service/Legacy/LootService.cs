@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void ProcessLoot()
         {
-            NWCreature creature = NWScript.OBJECT_SELF;
+            NWCreature creature = OBJECT_SELF;
             
             // Single loot table (without an index)
             var singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         {
             SetIsDestroyable(false);
 
-            NWObject self = NWScript.OBJECT_SELF;
+            NWObject self = OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
             var lootPosition = Vector3(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);

@@ -43,13 +43,13 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable terminal = NWScript.OBJECT_SELF;
+            NWPlaceable terminal = OBJECT_SELF;
             var data = BaseService.GetPlayerTempData(GetPC());
             data.ApartmentBuildingID = terminal.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (data.ApartmentBuildingID <= 0)
             {
-                NWScript.SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
+                SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
                 return;
             }
 
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Conversation
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
             BasePermissionService.GrantBasePermissions(player, pcApartment.ID, allPermissions);
 
-            NWScript.TakeGoldFromCreature(purchasePrice, player, true);
+            TakeGoldFromCreature(purchasePrice, player, true);
             
             LoadMainPage();
             ClearNavigationStack();
@@ -374,7 +374,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.IsConfirming)
             {
-                NWScript.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), true);
+                TakeGoldFromCreature(dailyUpkeep * days, GetPC(), true);
                 data.IsConfirming = false;
                 SetResponseText("DetailsPage", responseID, optionText);
                 pcApartment.DateRentDue = pcApartment.DateRentDue.AddDays(days);

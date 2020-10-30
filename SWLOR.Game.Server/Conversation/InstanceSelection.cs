@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             player.DeleteLocalString("INSTANCE_RESREF");
             player.DeleteLocalLocation("INSTANCE_ORIGINAL_ENTRANCE_LOCATION");
 
-            var members = player.PartyMembers.Where(x => x.Area.GetLocalString("ORIGINAL_RESREF") == model.AreaResref).ToList();
+            var members = player.PartyMembers.Where(x => GetLocalString(x.Area, "ORIGINAL_RESREF") == model.AreaResref).ToList();
 
             ClearPageResponses("MainPage");
             AddResponseToPage("MainPage", "Enter new instance");
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
             if (responseID == 1) // Create new instance
             {
                 var instance = AreaService.CreateAreaInstance(player, model.AreaResref, string.Empty, model.DestinationTag);
-                location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
+                location = GetLocalLocation(instance, "INSTANCE_ENTRANCE");
             }
             else
             {
@@ -73,14 +73,14 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 var area = member.Area;
-                location = area.GetLocalLocation("INSTANCE_ENTRANCE");
+                location = GetLocalLocation(area, "INSTANCE_ENTRANCE");
             }
             
             PlayerService.SaveLocation(player);
 
             player.AssignCommand(() =>
             {
-                NWScript.ActionJumpToLocation(location);
+                ActionJumpToLocation(location);
             });
 
             EndConversation();

@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 maxFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
 
                 // For starships only: Add the ship's cargo bonus to the max stronidium amount.
-                if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
+                if (GetLocalInt(bay.Area, "BUILDING_TYPE") == (int)BuildingType.Starship)
                 {
                     maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, OBJECT_INVALID), ItemPropertyType.StarshipStronidiumBonus);
                 }
@@ -92,10 +92,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 firstFuel.StackSize = fuelCount;
                 pcBase.ReinforcedFuel = fuelCount;
 
-                if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
+                if (GetLocalInt(bay.Area, "BUILDING_TYPE") == (int)BuildingType.Starship)
                 {
                     // This is a starship. Update the creature object, if any, with the new fuel count. 
-                    NWCreature ship = bay.Area.GetLocalObject("CREATURE");
+                    NWCreature ship = GetLocalObject(bay.Area, "CREATURE");
 
                     if (ship.IsValid)
                     {
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
 
                 // For starships only: Add the ship's cargo bonus to the max fuel amount.
-                if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
+                if (GetLocalInt(bay.Area, "BUILDING_TYPE") == (int)BuildingType.Starship)
                 {
                     maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, OBJECT_INVALID), ItemPropertyType.StarshipFuelBonus);
                 }

@@ -31,14 +31,14 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleDeath()
         {
-            NWPlayer player = NWScript.GetLastPlayerDied();
-            if (HoloComService.IsInCall(player)) HoloComService.SetIsInCall(player, HoloComService.GetTargetForActiveCall(player), false);
+            NWPlayer player = GetLastPlayerDied();
+            if (IsInCall(player)) SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
         private static void OnModuleLeave()
         {
-            NWPlayer player = NWScript.GetExitingObject();
-            if (HoloComService.IsInCall(player)) HoloComService.SetIsInCall(player, HoloComService.GetTargetForActiveCall(player), false);
+            NWPlayer player = GetExitingObject();
+            if (IsInCall(player)) SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             var receiver = GetHoloGram(sender);
 
-            var text = NWScript.GetPCChatMessage().Trim();
+            var text = GetPCChatMessage().Trim();
 
             if (text.StartsWith("/")) return;
 
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             {
                 foreach (var effect in sender.Effects)
                 {
-                    if (NWScript.GetIsEffectValid(effect) == true)
+                    if (GetIsEffectValid(effect) == true)
                     {
                         var effectType = GetEffectType(effect);
                         if (effectType == EffectTypeScript.CutsceneImmobilize)
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 foreach (var effect in receiver.Effects)
                 {
-                    if (NWScript.GetIsEffectValid(effect) == true)
+                    if (GetIsEffectValid(effect) == true)
                     {
                         var effectType = GetEffectType(effect);
                         if (effectType == EffectTypeScript.CutsceneImmobilize)

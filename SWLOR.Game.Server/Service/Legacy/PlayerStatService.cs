@@ -33,8 +33,8 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleEquipItem()
         {
-            NWPlayer player = NWScript.GetPCItemLastEquippedBy();
-            NWItem item = NWScript.GetPCItemLastEquipped();
+            NWPlayer player = GetPCItemLastEquippedBy();
+            NWItem item = GetPCItemLastEquipped();
 
             CalculateEffectiveStats(player, item);
             ApplyStatChanges(player, null);
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer player = NWScript.GetPCItemLastUnequippedBy();
-            NWItem item = NWScript.GetPCItemLastUnequipped();
+            NWPlayer player = GetPCItemLastUnequippedBy();
+            NWItem item = GetPCItemLastUnequipped();
 
             RemoveCachedEffectiveStats(item);
             ApplyStatChanges(player, null);
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         {
             for (var itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = NWScript.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         {
             for (var itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = NWScript.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -191,8 +191,8 @@ namespace SWLOR.Game.Server.Service.Legacy
             if (player.CurrentHP > player.MaxHP)
             {
                 var amount = player.CurrentHP - player.MaxHP;
-                var damage = NWScript.EffectDamage(amount);
-                NWScript.ApplyEffectToObject(DurationType.Instant, damage, player.Object);
+                var damage = EffectDamage(amount);
+                ApplyEffectToObject(DurationType.Instant, damage, player.Object);
             }
 
             // Apply FP
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
 
             // Attempt a refresh of the character sheet UI in a second.
-            NWScript.DelayCommand(1.0f, () =>
+            DelayCommand(1.0f, () =>
             {
                 Core.NWNX.Player.UpdateCharacterSheet(player);
             });
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 baseAC += skillACBonus;
             }
 
-            var totalAC = NWScript.GetAC(player) - baseAC;
+            var totalAC = GetAC(player) - baseAC;
 
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
             var stance = CustomEffectService.GetCurrentStanceType(player);
@@ -415,7 +415,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             var processed = new HashSet<NWItem>();
             for (var itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = NWScript.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
 
                 if (!item.IsValid || item.Equals(ignoreItem)) continue;
 

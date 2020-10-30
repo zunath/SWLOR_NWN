@@ -116,9 +116,9 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnItemUsed()
         {
-            NWPlayer user = NWScript.OBJECT_SELF;
-            NWItem oItem = NWScript.StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
-            NWObject target = NWScript.StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
+            NWPlayer user = OBJECT_SELF;
+            NWItem oItem = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            NWObject target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
             var targetPositionX = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X"));
             var targetPositionY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
@@ -163,26 +163,30 @@ namespace SWLOR.Game.Server.Service.Legacy
             if (maxDistance > 0.0f)
             {
                 NWObject owner = GetItemPossessor(target);
+                var userArea = GetArea(user);
+                var targetArea = GetArea(target);
+                var userAreaResref = GetResRef(userArea);
+                var targetAreaResref = GetResRef(targetArea);
 
                 if (target.IsValid && owner.IsValid)
                 {
                     // We are okay - we have targeted an item in our inventory (we can't target someone
                     // else's inventory, so no need to actually check distance).
                 }
-                else if (target.Object == NWScript.OBJECT_SELF)
+                else if (target.Object == OBJECT_SELF)
                 {
                     // Also okay.
                 }
                 else if (target.IsValid && 
                          (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                          user.Area.Resref != target.Area.Resref))
+                          userAreaResref != targetAreaResref))
                 {
                     user.SendMessage("Your target is too far away.");
                     return;
                 }
                 else if (!target.IsValid &&
                          (GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                         user.Area.Resref != ((NWArea)GetAreaFromLocation(targetLocation)).Resref))
+                         userAreaResref != GetResRef(GetAreaFromLocation(targetLocation))))
                 {
                     user.SendMessage("That location is too far away.");
                     return;
@@ -865,7 +869,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnHitCastSpell()
         {
-            NWObject target = NWScript.OBJECT_SELF;
+            NWObject target = OBJECT_SELF;
             if (!target.IsValid) return;
 
             NWObject oSpellOrigin = (GetSpellCastItem());

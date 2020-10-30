@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Item
             // Ensure item isn't equipped.
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
-                if (NWScript.GetItemInSlot((InventorySlot)slot, user.Object) == targetItem.Object)
+                if (GetItemInSlot((InventorySlot)slot, user.Object) == targetItem.Object)
                 {
                     return "Targeted item must be unequipped before installing a mod.";
                 }

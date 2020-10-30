@@ -4,9 +4,9 @@ namespace SWLOR.Game.Server.Event.SWLOR
 {
     public class OnAreaInstanceCreated
     {
-        public NWArea Instance { get; set; }
+        public uint Instance { get; set; }
 
-        public OnAreaInstanceCreated(NWArea instance)
+        public OnAreaInstanceCreated(uint instance)
         {
             Instance = instance;
         }

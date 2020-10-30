@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // Starships have slightly different setups.  They only pay rent when in a public starport and
             // the cost is set by the starport.
-            if (pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
+            if (pcBase.PCBaseTypeID == (int)PCBaseType.Starship)
             {
                 canCancelLease = false;
 
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Conversation
             var dailyUpkeep = dbArea.DailyUpkeep + (int)(dbArea.DailyUpkeep * (owner.LeaseRate * 0.01f));
 
             // Starship override.
-            if (pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
+            if (pcBase.PCBaseTypeID == (int)PCBaseType.Starship)
             {
                 var shipLocationGuid = new Guid(pcBase.ShipLocation);
                 var starport = DataService.Starport.GetByStarportID(shipLocationGuid);

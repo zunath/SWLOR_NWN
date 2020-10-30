@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleEnter()
         {
-            NWPlayer player = NWScript.GetEnteringObject();
+            NWPlayer player = GetEnteringObject();
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 foreach (var resref in resrefs)
                 {
-                    NWItem item = NWScript.GetItemPossessedBy(player, resref);
+                    NWItem item = GetItemPossessedBy(player, resref);
                     if (item.IsValid)
                     {
                         item.IsPlot = false;
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         private static void ProcessVersion6_ComponentBonuses(NWItem item, ItemProperty ip)
         {
             // Component Bonuses
-            if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
+            if (GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
             {
                 // +AC Component Bonus
                 if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                         BiowareXP2.IPSafeAddItemProperty(item, packed, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
                     }
 
-                    NWScript.RemoveItemProperty(item, ip);
+                    RemoveItemProperty(item, ip);
                 }
             }
         }
@@ -264,9 +264,9 @@ namespace SWLOR.Game.Server.Service.Legacy
                 ItemPropertyType.DarkDefenseBonus
             };
 
-            if (ipsToRemove.Contains(NWScript.GetItemPropertyType(ip)))
+            if (ipsToRemove.Contains(GetItemPropertyType(ip)))
             {
-                NWScript.RemoveItemProperty(item, ip);
+                RemoveItemProperty(item, ip);
             }
 
         }
@@ -295,8 +295,8 @@ namespace SWLOR.Game.Server.Service.Legacy
             if (item.CustomItemType != CustomItemType.Lightsaber &&
                 item.CustomItemType != CustomItemType.Saberstaff) return new SerializedObjectData(null, null);
 
-            NWPlaceable storage = NWScript.GetObjectByTag("MIGRATION_STORAGE");
-            NWItem newVersion = NWScript.CreateItemOnObject(item.Resref, storage);
+            NWPlaceable storage = GetObjectByTag("MIGRATION_STORAGE");
+            NWItem newVersion = CreateItemOnObject(item.Resref, storage);
             var ipsToAdd = new List<ItemProperty>();
             
             // There's a quirk with NWN in how it handles removing of item properties.

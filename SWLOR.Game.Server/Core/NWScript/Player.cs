@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Returns FALSE if the player is not in cutscene mode, or on an error
         ///   (such as specifying a non creature object).
         /// </summary>
-        public static bool GetIsInCutsceneMode(uint oCreature = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetIsInCutsceneMode(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(781);

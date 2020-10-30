@@ -4,9 +4,9 @@ namespace SWLOR.Game.Server.Event.SWLOR
 {
     public class OnAreaInstanceDestroyed
     {
-        public NWArea Instance { get; set; }
+        public uint Instance { get; set; }
 
-        public OnAreaInstanceDestroyed(NWArea instance)
+        public OnAreaInstanceDestroyed(uint instance)
         {
             Instance = instance;
         }

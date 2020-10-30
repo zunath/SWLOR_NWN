@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             {
                 player.DestroyAllInventoryItems();
                 player.InitializePlayer();
-                AssignCommand(player, () => NWScript.TakeGoldFromCreature(GetGold(player), player, true));
+                AssignCommand(player, () => TakeGoldFromCreature(GetGold(player), player, true));
 
                 DelayCommand(0.5f, () =>
                 {
@@ -313,7 +313,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             // Handle item stats
             for (var itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = NWScript.GetItemInSlot((InventorySlot)itemSlot, player);
+                NWItem item = GetItemInSlot((InventorySlot)itemSlot, player);
                 PlayerStatService.CalculateEffectiveStats(player, item);
             }
             PlayerStatService.ApplyStatChanges(player, null);
@@ -407,13 +407,16 @@ namespace SWLOR.Game.Server.Service.Legacy
             if (!player.IsPlayer) return;
             if (player.GetLocalInt("IS_SHIP") == 1) return;
             if (player.GetLocalInt("IS_GUNNER") == 1) return;
-            
-            var area = player.Area;
-            if (area.IsValid && area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
+
+            var area = GetArea(player);
+            var areaTag = GetTag(area);
+            var areaResref = GetResRef(area);
+            var areaIsInstance = AreaService.IsAreaInstance(area);
+            if (GetIsObjectValid(area) && areaTag != "ooc_area" && areaTag != "tutorial" && !areaIsInstance)
             {
                 LoggingService.Trace(TraceComponent.Space, "Saving location in area " + GetName(area));
                 var entity = GetPlayerEntity(player.GlobalID);
-                entity.LocationAreaResref = area.Resref;
+                entity.LocationAreaResref = areaResref;
                 entity.LocationX = player.Position.X;
                 entity.LocationY = player.Position.Y;
                 entity.LocationZ = player.Position.Z;
@@ -423,7 +426,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
                 {
                     NWObject waypoint = GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT");
-                    entity.RespawnAreaResref = waypoint.Area.Resref;
+                    entity.RespawnAreaResref = GetResRef(waypoint.Area);
                     entity.RespawnLocationOrientation = waypoint.Facing;
                     entity.RespawnLocationX = waypoint.Position.X;
                     entity.RespawnLocationY = waypoint.Position.Y;
@@ -432,13 +435,13 @@ namespace SWLOR.Game.Server.Service.Legacy
 
                 DataService.SubmitDataChange(entity, DatabaseActionType.Update);
             }
-            else if (area.IsInstance)
+            else if (areaIsInstance)
             {
                 LoggingService.Trace(TraceComponent.Space, "Saving location in instance area " + GetName(area));
-                var instanceID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+                var instanceID = GetLocalString(area, "PC_BASE_STRUCTURE_ID");
                 if (string.IsNullOrWhiteSpace(instanceID))
                 {
-                    instanceID = area.GetLocalString("PC_BASE_ID");
+                    instanceID = GetLocalString(area, "PC_BASE_ID");
                 }
 
                 LoggingService.Trace(TraceComponent.Space, "Saving character in instance ID: " + instanceID);
@@ -446,7 +449,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 if (!string.IsNullOrWhiteSpace(instanceID))
                 {
                     var entity = GetPlayerEntity(player.GlobalID);
-                    entity.LocationAreaResref = area.Resref;
+                    entity.LocationAreaResref = areaResref;
                     entity.LocationX = player.Position.X;
                     entity.LocationY = player.Position.Y;
                     entity.LocationZ = player.Position.Z;

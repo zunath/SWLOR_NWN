@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
-            var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var pcBaseStructureID = new Guid(GetLocalString(data.TargetArea, "PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
             var mode = DataService.StructureMode.GetByID(structure.StructureModeID);
             var modeType = (StructureModeType) mode.ID;
@@ -126,7 +127,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
-            var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var pcBaseStructureID = new Guid(GetLocalString(data.TargetArea, "PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
             var modeType = (StructureModeType)structure.StructureModeID;
             string warning;
@@ -164,7 +165,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
-            var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var pcBaseStructureID = new Guid(GetLocalString(data.TargetArea, "PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
             var impoundedItems = 0;
 

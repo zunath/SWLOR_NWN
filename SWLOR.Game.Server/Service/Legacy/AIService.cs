@@ -17,12 +17,12 @@ namespace SWLOR.Game.Server.Service.Legacy
     public static class AIService
     {
         private static readonly Dictionary<string, IAIBehaviour> _aiBehaviours;
-        private static readonly Dictionary<NWArea, HashSet<NWCreature>> _areaAICreatures;
+        private static readonly Dictionary<uint, HashSet<NWCreature>> _areaAICreatures;
 
         static AIService()
         {
             _aiBehaviours = new Dictionary<string, IAIBehaviour>();
-            _areaAICreatures = new Dictionary<NWArea, HashSet<NWCreature>>();
+            _areaAICreatures = new Dictionary<uint, HashSet<NWCreature>>();
         }
 
         public static void SubscribeEvents()
@@ -250,9 +250,9 @@ namespace SWLOR.Game.Server.Service.Legacy
             {
                 foreach (var area in NWModule.Get().Areas)
                 {
-                    var lastTickPlayerCount = area.GetLocalInt("AI_PLAYER_COUNT");
+                    var lastTickPlayerCount = GetLocalInt(area, "AI_PLAYER_COUNT");
                     var thisTickPlayerCount = Area.GetNumberOfPlayersInArea(area);
-                    area.SetLocalInt("AI_PLAYER_COUNT", thisTickPlayerCount);
+                    SetLocalInt(area, "AI_PLAYER_COUNT", thisTickPlayerCount);
 
                     // AI gets processed one more time after an area becomes empty.
                     // We do this so that behaviours can clean up properly.
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                     // Safety check - If the area isn't in the cache, report it.
                     if (!_areaAICreatures.ContainsKey(area))
                     {
-                        Console.WriteLine("Area " + area.Name + " not registered with AI service. Tag: " + area.Tag + ", Resref = " + area.Resref);
+                        Console.WriteLine("Area " + GetName(area) + " not registered with AI service. Tag: " + GetTag(area) + ", Resref = " + GetResRef(area));
                         continue;
                     }
 
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
-        private static void ProcessCreatureAI(NWArea area, ref HashSet<NWCreature> creatures)
+        private static void ProcessCreatureAI(uint area, ref HashSet<NWCreature> creatures)
         {
             // Iterate backwards so we can remove the creature if it's no longer valid.
             for (var x = creatures.Count - 1; x >= 0; x--)
@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 var creature = creatures.ElementAt(x);
 
                 // Limbo check.
-                if (!area.IsValid) continue;
+                if (!GetIsObjectValid(area)) continue;
 
                 // Is this creature invalid or dead? If so, remove it and move to the next one.
                 if (!creature.IsValid ||
@@ -300,14 +300,14 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
-        private static void OnAreaInstanceCreated(NWArea instance)
+        private static void OnAreaInstanceCreated(uint instance)
         {
             if (_areaAICreatures.ContainsKey(instance)) return;
 
             _areaAICreatures.Add(instance, new HashSet<NWCreature>());
         }
 
-        private static void OnAreaInstanceDestroyed(NWArea instance)
+        private static void OnAreaInstanceDestroyed(uint instance)
         {
             if (!_areaAICreatures.ContainsKey(instance)) return;
 

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            NWScript.ApplyEffectAtLocation(DurationType.Temporary, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Paralyze_Hold), target.Location, Seconds(user, item, target, targetLocation, null));
+            ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Paralyze_Hold), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Item
                 return;
             }
 
-            NWScript.ApplyEffectAtLocation(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), effectLocation);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), effectLocation);
 
             if (user.IsPlayer && GetLocalBool(user, target.GlobalID.ToString()) == false)
             {

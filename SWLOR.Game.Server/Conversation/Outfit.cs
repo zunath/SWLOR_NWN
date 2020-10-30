@@ -406,56 +406,56 @@ namespace SWLOR.Game.Server.Conversation
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt), true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Belt, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Belt), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftFoot), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftFoot), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftForearm), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftForearm), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftHand), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftHand), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShin), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShin), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShoulder), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShoulder), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftThigh), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftThigh), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Neck, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Neck), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Neck, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Neck), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Pelvis, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Pelvis), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Pelvis, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Pelvis), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightBicep, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightBicep), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightBicep, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightBicep), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightFoot), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightFoot, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightFoot), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightForearm), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightForearm, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightForearm), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightHand), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightHand, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightHand), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Robe, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Robe), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Robe, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Robe), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShin), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShin, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShin), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShoulder), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShoulder, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShoulder), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightThigh), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightThigh, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightThigh), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Torso, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Torso), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Torso, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Torso), true);
 
             NWItem oFinal = (CopyItem(oCopy, oPC.Object, true));
             oFinal.DeleteLocalString("TEMP_OUTFIT_UUID");
@@ -509,7 +509,7 @@ namespace SWLOR.Game.Server.Conversation
             if (storedClothes == null) throw new Exception("Unable to locate stored helmet.");
 
             var oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.SimpleModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.SimpleModel, 0), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.SimpleModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.SimpleModel, 0), true);
 
             NWItem oFinal = (CopyItem(oCopy, oPC.Object, true));
             oFinal.DeleteLocalString("TEMP_OUTFIT_UUID");
@@ -566,16 +566,16 @@ namespace SWLOR.Game.Server.Conversation
 
             var baseItemType = GetBaseItemType(oCopy);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.SimpleModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.SimpleModel, 0), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.SimpleModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.SimpleModel, 0), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 0), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 0), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 0), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 0), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 1, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 1), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 1, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponColor, 1), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 1, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 1), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 1, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponColor, 1), true);
 
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 2, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 2), true);
-            oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 2, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponColor, 2), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 2, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponModel, 2), true);
+            oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 2, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.WeaponColor, 2), true);
 
             NWItem oFinal = (CopyItem(oCopy, oPC.Object, true));
             oFinal.DeleteLocalString("TEMP_OUTFIT_UUID");

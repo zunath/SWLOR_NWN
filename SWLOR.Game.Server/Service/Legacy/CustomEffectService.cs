@@ -384,14 +384,14 @@ namespace SWLOR.Game.Server.Service.Legacy
                 {
                     if (player.CurrentHP <= -11)
                     {
-                        CustomEffectService.RemovePCCustomEffect(player, effect.CustomEffectID);
+                        RemovePCCustomEffect(player, effect.CustomEffectID);
                         return;
                     }
 
                     var result = RunPCCustomEffectProcess(player, effect);
                     if (result == null)
                     {
-                        var handler = CustomEffectService.GetCustomEffectHandler(effect.CustomEffectID);
+                        var handler = GetCustomEffectHandler(effect.CustomEffectID);
                         var message = handler.WornOffMessage;
                         player.SendMessage(message);
                         player.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + effect.CustomEffectID);
@@ -415,7 +415,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 var casterModel = entry.Key;
                 AppCache.NPCEffects[entry.Key] = entry.Value - 1;
                 var entity = DataService.CustomEffect.GetByID(casterModel.CustomEffectID);
-                var handler = CustomEffectService.GetCustomEffectHandler(casterModel.CustomEffectID);
+                var handler = GetCustomEffectHandler(casterModel.CustomEffectID);
 
                 try
                 {
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Service.Legacy
                 effect.Ticks = effect.Ticks - 1;
 
             if (effect.Ticks == 0) return null;
-            var handler = CustomEffectService.GetCustomEffectHandler(effect.CustomEffectID);
+            var handler = GetCustomEffectHandler(effect.CustomEffectID);
 
             if (!string.IsNullOrWhiteSpace(handler.ContinueMessage) &&
                 effect.Ticks % 6 == 0) // Only show the message once every six seconds

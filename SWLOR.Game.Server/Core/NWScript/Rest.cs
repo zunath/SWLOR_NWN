@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   * Returns TRUE if oCreature is resting.
         /// </summary>
-        public static bool GetIsResting(uint oCreature = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(505);

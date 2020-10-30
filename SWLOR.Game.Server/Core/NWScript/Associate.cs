@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Removes oAssociate from the service of oMaster, returning them to their
         ///   original faction.
         /// </summary>
-        public static void RemoveSummonedAssociate(uint oMaster, uint oAssociate = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static void RemoveSummonedAssociate(uint oMaster, uint oAssociate = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oAssociate);
             Internal.NativeFunctions.StackPushObject(oMaster);
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nTh: Which associate of the specified type to return
         ///   * Returns OBJECT_INVALID if no such associate exists.
         /// </summary>
-        public static uint GetAssociate(Type nAssociateType, uint oMaster = Core.NWScript.NWScript.OBJECT_INVALID, int nTh = 1)
+        public static uint GetAssociate(Type nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nTh);
             Internal.NativeFunctions.StackPushObject(oMaster);
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Add oHenchman as a henchman to oMaster
         ///   If oHenchman is either a DM or a player character, this will have no effect.
         /// </summary>
-        public static void AddHenchman(uint oMaster, uint oHenchman = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static void AddHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oHenchman);
             Internal.NativeFunctions.StackPushObject(oMaster);
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Remove oHenchman from the service of oMaster, returning them to their original faction.
         /// </summary>
-        public static void RemoveHenchman(uint oMaster, uint oHenchman = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static void RemoveHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oHenchman);
             Internal.NativeFunctions.StackPushObject(oMaster);
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   * Return OBJECT_INVALID if oMaster does not have a henchman.
         ///   -nNth: Which henchman to return.
         /// </summary>
-        public static uint GetHenchman(uint oMaster = Core.NWScript.NWScript.OBJECT_INVALID, int nNth = 1)
+        public static uint GetHenchman(uint oMaster = OBJECT_INVALID, int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushObject(oMaster);
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Summon an Animal Companion
         /// </summary>
-        public static void SummonAnimalCompanion(uint oMaster = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static void SummonAnimalCompanion(uint oMaster = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oMaster);
             Internal.NativeFunctions.CallBuiltIn(334);
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Summon a Familiar
         /// </summary>
-        public static void SummonFamiliar(uint oMaster = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static void SummonFamiliar(uint oMaster = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oMaster);
             Internal.NativeFunctions.CallBuiltIn(335);
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Get the last command (ASSOCIATE_COMMAND_*) issued to oAssociate.
         /// </summary>
-        public static int GetLastAssociateCommand(uint oAssociate = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static int GetLastAssociateCommand(uint oAssociate = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oAssociate);
             Internal.NativeFunctions.CallBuiltIn(321);
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         ///   Get the master of oAssociate.
         /// </summary>
-        public static uint GetMaster(uint oAssociate = Core.NWScript.NWScript.OBJECT_INVALID)
+        public static uint GetMaster(uint oAssociate = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oAssociate);
             Internal.NativeFunctions.CallBuiltIn(319);

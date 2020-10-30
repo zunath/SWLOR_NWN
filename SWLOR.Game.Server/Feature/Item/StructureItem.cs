@@ -1,12 +1,12 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.Legacy;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            NWArea area = (NWScript.GetAreaFromLocation(targetLocation));
-            var parentStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            var pcBaseID = area.GetLocalString("PC_BASE_ID");
+            var area = (GetAreaFromLocation(targetLocation));
+            var parentStructureID = GetLocalString(area, "PC_BASE_STRUCTURE_ID");
+            var pcBaseID = GetLocalString(area, "PC_BASE_ID");
             var data = BaseService.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;
             data.TargetArea = area;
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Item
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureGuid;
 
-                if (area.GetLocalInt("BUILDING_TYPE") == (int) BuildingType.Starship)
+                if (GetLocalInt(area, "BUILDING_TYPE") == (int) BuildingType.Starship)
                 {
                     data.BuildingType = BuildingType.Starship;
                 }
@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Item
             else
             {
                 var sector = BaseService.GetSectorOfLocation(targetLocation);
-                var pcBase = DataService.PCBase.GetByAreaResrefAndSector(area.Resref, sector);
+                var areaResref = GetResRef(area);
+                var pcBase = DataService.PCBase.GetByAreaResrefAndSector(areaResref, sector);
                 data.PCBaseID = pcBase.ID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;

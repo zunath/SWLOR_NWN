@@ -109,11 +109,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 {
                     target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
-                    var effect = NWScript.EffectDazed();
-                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
-                    effect = NWScript.TagEffect(effect, "TRANQUILIZER_EFFECT");
+                    var effect = EffectDazed();
+                    effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
+                    effect = TagEffect(effect, "TRANQUILIZER_EFFECT");
 
-                    NWScript.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+                    ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
                 }
             }
 
@@ -121,45 +121,45 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
             var current = 1;
-            NWCreature nearest = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
+            NWCreature nearest = GetNearestCreature(CreatureType.IsAlive, 1, target, current);
             while (nearest.IsValid)
             {
-                var distance = NWScript.GetDistanceBetween(nearest, target);
+                var distance = GetDistanceBetween(nearest, target);
                 // Check distance. Exit loop if we're too far.
                 if (distance > range) break;
 
                 concentrationEffect = AbilityService.GetActiveConcentrationEffect(nearest);
 
                 // If this creature isn't hostile to the attacking player or if this creature is already tranquilized, move to the next one.
-                if (NWScript.GetIsReactionTypeHostile(nearest, creature) == false ||
+                if (GetIsReactionTypeHostile(nearest, creature) == false ||
                     nearest.Object == target.Object ||
                     RemoveExistingEffect(nearest, duration) ||
                     concentrationEffect.Type == PerkType.MindShield)
                 {
                     current++;
-                    nearest = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
+                    nearest = GetNearestCreature(CreatureType.IsAlive, 1, target, current);
                     continue;
                 }
 
                 target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
-                var effect = NWScript.EffectDazed();
-                effect = NWScript.EffectLinkEffects(effect, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
-                effect = NWScript.TagEffect(effect, "TRANQUILIZER_EFFECT");
-                NWScript.ApplyEffectToObject(DurationType.Temporary, effect, nearest, duration);
+                var effect = EffectDazed();
+                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
+                effect = TagEffect(effect, "TRANQUILIZER_EFFECT");
+                ApplyEffectToObject(DurationType.Temporary, effect, nearest, duration);
 
                 current++;
-                nearest = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
+                nearest = GetNearestCreature(CreatureType.IsAlive, 1, target, current);
             }
 
         }
 
         private bool RemoveExistingEffect(NWObject target, float duration)
         {
-            var effect = target.Effects.FirstOrDefault(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
+            var effect = target.Effects.FirstOrDefault(x => GetEffectTag(x) == "TRANQUILIZER_EFFECT");
             if (effect == null) return false;
 
-            if (NWScript.GetEffectDurationRemaining(effect) >= duration) return true;
-            NWScript.RemoveEffect(target, effect);
+            if (GetEffectDurationRemaining(effect) >= duration) return true;
+            RemoveEffect(target, effect);
             return false;
         }
 

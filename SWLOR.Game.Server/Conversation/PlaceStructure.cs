@@ -5,12 +5,13 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.Legacy;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -50,23 +51,25 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("StylePage", stylePage);
 
             // Setup placement grid                
-            NWArea area = NWScript.GetArea(player);            
+            var area = GetArea(player);
+            var width = GetAreaSize(Dimension.Width, area);
+            var height = GetAreaSize(Dimension.Height, area);
             Vector3 vPos;
             vPos.X = 5.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.1f;
-            for (var i = 0; i <= area.Height; i++)
+            for (var i = 0; i <= height; i++)
             {
                 vPos.Y = -5.0f;
-                for (var j = 0; j <= area.Width; j++)
+                for (var j = 0; j <= width; j++)
                 {
                     vPos.Y += 10.0f;
-                    NWObject oTile = NWScript.CreateObject(ObjectType.Placeable, "plc_invisobj",
-                                                        NWScript.Location(area, vPos, 0.0f), false,
+                    NWObject oTile = CreateObject(ObjectType.Placeable, "plc_invisobj",
+                                                        Location(area, vPos, 0.0f), false,
                                                         "x2_tmp_tile" + player.GlobalID.ToString());
-                    NWScript.SetPlotFlag(oTile, true);
-                    NWScript.ApplyEffectToObject(DurationType.Permanent, NWScript.EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), oTile);
-                    Visibility.SetVisibilityOverride(NWScript.OBJECT_INVALID, oTile, VisibilityType.Hidden);
+                    SetPlotFlag(oTile, true);
+                    ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), oTile);
+                    Visibility.SetVisibilityOverride(OBJECT_INVALID, oTile, VisibilityType.Hidden);
                     Visibility.SetVisibilityOverride(player, oTile, VisibilityType.Visible);                    
                     mainPage.CustomData.Add("PLACEMENT_GRID_" + i + "_" + j, oTile);
                 }
@@ -279,18 +282,18 @@ namespace SWLOR.Game.Server.Conversation
             var structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
             var resref = GetPlaceableResref(structure);
 
-            NWPlaceable plc = (NWScript.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
+            NWPlaceable plc = (CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
             plc.IsUseable = false;
             plc.Destroy(6.0f);
-            NWScript.DelayCommand(6.1f, () => { data.IsPreviewing = false; });
-            NWScript.ApplyEffectToObject(DurationType.Permanent, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Green), plc.Object);
+            DelayCommand(6.1f, () => { data.IsPreviewing = false; });
+            ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Green), plc.Object);
         }
 
         private void LoadRotatePage()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var facing = NWScript.GetFacingFromLocation(data.TargetLocation);
-            var position = NWScript.GetPositionFromLocation(data.TargetLocation);
+            var facing = GetFacingFromLocation(data.TargetLocation);
+            var position = GetPositionFromLocation(data.TargetLocation);
             var header = ColorTokenService.Green("Current Direction: ") + facing + "\n\n";
             header += ColorTokenService.Green("Current Height: ") + position.Z;
 
@@ -298,9 +301,9 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var structure = DataService.BaseStructure.GetByID(data.BaseStructureID);
                 var resref = GetPlaceableResref(structure);
-                data.StructurePreview = (NWScript.CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
+                data.StructurePreview = (CreateObject(ObjectType.Placeable, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
-                NWScript.ApplyEffectToObject(DurationType.Permanent, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Green), data.StructurePreview.Object);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Green), data.StructurePreview.Object);
             }
 
             SetPageHeader("RotatePage", header);
@@ -355,7 +358,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoRotate(float degrees, bool isSet)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var facing = NWScript.GetFacingFromLocation(data.TargetLocation);
+            var facing = GetFacingFromLocation(data.TargetLocation);
             if (isSet)
             {
                 facing = degrees;
@@ -375,8 +378,8 @@ namespace SWLOR.Game.Server.Conversation
                 data.StructurePreview.Facing = facing;
             }
 
-            data.TargetLocation = NWScript.Location(NWScript.GetAreaFromLocation(data.TargetLocation),
-                NWScript.GetPositionFromLocation(data.TargetLocation),
+            data.TargetLocation = Location(GetAreaFromLocation(data.TargetLocation),
+                GetPositionFromLocation(data.TargetLocation),
                 facing);
             LoadRotatePage();
         }
@@ -384,7 +387,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoMoveZ(float degrees, bool isSet)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            var position = NWScript.GetPositionFromLocation(data.TargetLocation);
+            var position = GetPositionFromLocation(data.TargetLocation);
             
             if (position.Z > 10.0f || 
                 position.Z < -10.0f)
@@ -398,9 +401,9 @@ namespace SWLOR.Game.Server.Conversation
 
             Preview();
 
-            data.TargetLocation = NWScript.Location(NWScript.GetAreaFromLocation(data.TargetLocation),
+            data.TargetLocation = Location(GetAreaFromLocation(data.TargetLocation),
                 position,
-                NWScript.GetFacingFromLocation(data.TargetLocation));
+                GetFacingFromLocation(data.TargetLocation));
             LoadRotatePage();
         }
 
@@ -416,7 +419,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var position = NWScript.GetPositionFromLocation(data.TargetLocation);
+            var position = GetPositionFromLocation(data.TargetLocation);
             int? interiorStyleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             int? exteriorStyleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
             interiorStyleID = interiorStyleID <= 0 ? null : interiorStyleID;
@@ -426,7 +429,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 BaseStructureID = data.BaseStructureID, 
                 Durability = DurabilityService.GetDurability(data.StructureItem),
-                LocationOrientation = NWScript.GetFacingFromLocation(data.TargetLocation),
+                LocationOrientation = GetFacingFromLocation(data.TargetLocation),
                 LocationX = position.X,
                 LocationY = position.Y,
                 LocationZ = position.Z,
@@ -518,7 +521,7 @@ namespace SWLOR.Game.Server.Conversation
             var styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             var style = DataService.BuildingStyle.GetByID(styleID);
             var area = AreaService.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
-            area.SetLocalBool("IS_BUILDING_PREVIEW", true);
+            SetLocalBool(area, "IS_BUILDING_PREVIEW", true);
             var player = GetPC();
 
             BaseService.JumpPCToBuildingInterior(player, area);
@@ -532,7 +535,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (placementGrid.Key.StartsWith("PLACEMENT_GRID_"))
                 {                    
-                    NWScript.DelayCommand(10.0f, () => { NWScript.DestroyObject(placementGrid.Value); });
+                    DelayCommand(10.0f, () => { DestroyObject(placementGrid.Value); });
                 }
             }
                 

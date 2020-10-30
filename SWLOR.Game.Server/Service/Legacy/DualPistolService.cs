@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Service.Legacy
         }
         private static void ToggleDualModeWeapon(NWPlayer oPC)
         {
-            NWItem oOriginalItem = NWScript.GetPCItemLastEquipped();
+            NWItem oOriginalItem = GetPCItemLastEquipped();
             NWItem oMainHandPistol;
 
             var pc = DataService.Player.GetByID(oPC.GlobalID);
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
             if (pc.ModeDualPistol)
             {
-                NWScript.DelayCommand(0.2f, () => { HandleOffhand(oPC, oMainHandPistol); });
+                DelayCommand(0.2f, () => { HandleOffhand(oPC, oMainHandPistol); });
             }
 
             oOriginalItem.Destroy();
@@ -148,8 +148,8 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleEquipItem()
         {
-            NWPlayer oPC = NWScript.GetPCItemLastEquippedBy();
-            NWItem oItem = NWScript.GetPCItemLastEquipped();
+            NWPlayer oPC = GetPCItemLastEquippedBy();
+            NWItem oItem = GetPCItemLastEquipped();
 
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
@@ -172,14 +172,14 @@ namespace SWLOR.Game.Server.Service.Legacy
             }            
             else if (oItem.BaseItemType == BaseItem.Sling && pc.ModeDualPistol)
             {
-                NWScript.DelayCommand(0.2f, () => { HandleOffhand(oPC, oItem); });
+                DelayCommand(0.2f, () => { HandleOffhand(oPC, oItem); });
             }
         }
 
         private static void OnModuleUnequipItem()
         {            
-            NWPlayer oPC = NWScript.GetPCItemLastUnequippedBy();            
-            NWItem oItem = NWScript.GetPCItemLastUnequipped();
+            NWPlayer oPC = GetPCItemLastUnequippedBy();            
+            NWItem oItem = GetPCItemLastUnequipped();
 
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
             if (!oPC.IsPlayer) return;
@@ -203,8 +203,8 @@ namespace SWLOR.Game.Server.Service.Legacy
         }
         private static void OnModuleUnaquireItem()
         {
-            NWPlayer oPC = NWScript.GetModuleItemLostBy();
-            NWItem oItem = NWScript.GetModuleItemLost();
+            NWPlayer oPC = GetModuleItemLostBy();
+            NWItem oItem = GetModuleItemLost();
 
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
             if (!oPC.IsPlayer) return;

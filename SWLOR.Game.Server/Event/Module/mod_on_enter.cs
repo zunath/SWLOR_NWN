@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 
 // ReSharper disable once CheckNamespace

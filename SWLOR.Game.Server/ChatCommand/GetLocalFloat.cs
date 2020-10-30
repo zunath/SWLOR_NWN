@@ -1,5 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             string variableName = Convert.ToString(args[0]);
-            float value = _.GetLocalFloat(target, variableName);
+            float value = NWScript.GetLocalFloat(target, variableName);
 
             user.SendMessage(variableName + " = " + value);
         }

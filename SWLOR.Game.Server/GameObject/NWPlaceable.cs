@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -11,14 +12,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsUseable
         {
-            get => _.GetUseableFlag(Object);
-            set => _.SetUseableFlag(Object, value);
+            get => NWScript.GetUseableFlag(Object);
+            set => NWScript.SetUseableFlag(Object, value);
         }
 
         public virtual bool IsLocked
         {
-            get => _.GetLocked(Object);
-            set => _.SetLocked(Object, value);
+            get => NWScript.GetLocked(Object);
+            set => NWScript.SetLocked(Object, value);
         }
 
         //

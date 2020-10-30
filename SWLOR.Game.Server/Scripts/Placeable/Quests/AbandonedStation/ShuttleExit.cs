@@ -1,8 +1,8 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 {
@@ -28,14 +28,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 
         private void AttemptCleanup()
         {
-            NWPlaceable exit = _.OBJECT_SELF;
+            NWPlaceable exit = NWScript.OBJECT_SELF;
             NWArea mainLevel = exit.Area.GetLocalObject("MAIN_LEVEL");
             NWArea restrictedLevel = exit.Area.GetLocalObject("RESTRICTED_LEVEL");
             NWArea directorsChambers = exit.Area.GetLocalObject("DIRECTORS_CHAMBERS");
 
-            int playersInAreas = NWNXArea.GetNumberOfPlayersInArea(mainLevel) +
-                                 NWNXArea.GetNumberOfPlayersInArea(restrictedLevel) +
-                                 NWNXArea.GetNumberOfPlayersInArea(directorsChambers);
+            int playersInAreas = Core.NWNX.Area.GetNumberOfPlayersInArea(mainLevel) +
+                                 Core.NWNX.Area.GetNumberOfPlayersInArea(restrictedLevel) +
+                                 Core.NWNX.Area.GetNumberOfPlayersInArea(directorsChambers);
 
             // There are still players in the areas. We can't clean up yet.
             if (playersInAreas > 0) return;

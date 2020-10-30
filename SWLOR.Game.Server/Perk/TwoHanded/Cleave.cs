@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.Cleave);
+            Creature.RemoveFeat(creature, Feat.Cleave);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -73,11 +73,11 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.HeavyVibroblade)
             {
-                NWNXCreature.RemoveFeat(creature, Feat.Cleave);
+                Creature.RemoveFeat(creature, Feat.Cleave);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, Feat.Cleave);
+            Creature.AddFeat(creature, Feat.Cleave);
         }
 
         public bool IsHostile()

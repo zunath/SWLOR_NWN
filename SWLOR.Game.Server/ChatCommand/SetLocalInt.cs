@@ -1,5 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.ChatCommand
             string variableName = args[0];
             int value = Convert.ToInt32(args[1]);
 
-            _.SetLocalInt(target, variableName, value);
+            NWScript.SetLocalInt(target, variableName, value);
 
             user.SendMessage("Local integer set: " + variableName + " = " + value);
         }

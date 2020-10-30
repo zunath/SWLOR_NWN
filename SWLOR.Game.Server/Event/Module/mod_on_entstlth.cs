@@ -1,8 +1,9 @@
-﻿using SWLOR.Game.Server.Event.Module;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -17,9 +18,9 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(mod_on_entstlth)))
             {
-                NWObject stealther = _.OBJECT_SELF;
-                _.SetActionMode(stealther, ActionMode.Stealth, false);
-                _.FloatingTextStringOnCreature("NWN stealth mode is disabled on this server.", stealther, false);
+                NWObject stealther = NWScript.OBJECT_SELF;
+                NWScript.SetActionMode(stealther, ActionMode.Stealth, false);
+                NWScript.FloatingTextStringOnCreature("NWN stealth mode is disabled on this server.", stealther, false);
             }
 
             MessageHub.Instance.Publish(new OnModuleEnterStealthAfter());

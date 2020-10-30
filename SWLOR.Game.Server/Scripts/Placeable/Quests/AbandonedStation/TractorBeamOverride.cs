@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -16,20 +17,20 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
 
         public void Main()
         {
-            NWPlaceable overridePlaceable = _.OBJECT_SELF;
-            NWObject door = _.GetNearestObjectByTag("aban_director_exit", overridePlaceable);
-            NWPlayer player = _.GetLastUsedBy();
-            door.AssignCommand(() =>_.SetLocked(door, false));
+            NWPlaceable overridePlaceable = NWScript.OBJECT_SELF;
+            NWObject door = NWScript.GetNearestObjectByTag("aban_director_exit", overridePlaceable);
+            NWPlayer player = NWScript.GetLastUsedBy();
+            door.AssignCommand(() =>NWScript.SetLocked(door, false));
             int questID = overridePlaceable.GetLocalInt("QUEST_ID_1");
 
-            _.SpeakString("The tractor beam has been disabled. A door in this room has unlocked.");
+            NWScript.SpeakString("The tractor beam has been disabled. A door in this room has unlocked.");
 
             NWArea mainLevel = overridePlaceable.Area.GetLocalObject("MAIN_LEVEL");
             NWArea restrictedLevel = overridePlaceable.Area.GetLocalObject("RESTRICTED_LEVEL");
             NWArea directorsChambers = overridePlaceable.Area.GetLocalObject("DIRECTORS_CHAMBERS");
 
             // Enable the shuttle back to Viscara object.
-            NWPlaceable teleportObject = _.GetNearestObjectByTag("aban_shuttle_exit", mainLevel);
+            NWPlaceable teleportObject = NWScript.GetNearestObjectByTag("aban_shuttle_exit", mainLevel);
             teleportObject.IsUseable = true;
 
             var quest = QuestService.GetQuestByID(questID);

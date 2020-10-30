@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -12,8 +13,8 @@ namespace SWLOR.Game.Server.Event.Conversation.KeyItem
         {
             using (new Profiler(nameof(KeyItemCheck)))
             {
-                NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = _.OBJECT_SELF;
+                NWPlayer player = NWScript.GetPCSpeaker();
+                NWObject talkingTo = NWScript.OBJECT_SELF;
 
                 int count = 1;
                 List<int> requiredKeyItemIDs = new List<int>();

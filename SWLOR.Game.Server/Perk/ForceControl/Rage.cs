@@ -1,10 +1,11 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -76,7 +77,6 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             int strBonus;
             int conBonus;
-            int acPenalty;
             int hpPenalty;
             int attacks;
 
@@ -86,35 +86,30 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 case 1:
                     strBonus = 2;
                     conBonus = 2;
-                    acPenalty = 0;
                     hpPenalty = 2;
                     attacks = 0;
                     break;
                 case 2:
                     strBonus = 4;
                     conBonus = 4;
-                    acPenalty = 0;
                     hpPenalty = 4;
                     attacks = 0;
                     break;
                 case 3:
                     strBonus = 6;
                     conBonus = 6;
-                    acPenalty = 0;
                     hpPenalty = 6;
                     attacks = 1;
                     break;
                 case 4:
                     strBonus = 8;
                     conBonus = 8;
-                    acPenalty = 0;
                     hpPenalty = 8;
                     attacks = 1;
                     break;
                 case 5:
                     strBonus = 10;
                     conBonus = 10;
-                    acPenalty = 0;
                     hpPenalty = 10;
                     attacks = 2;
                     break;
@@ -131,29 +126,29 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // Build a linked effect which handles applying these bonuses and penalties.
-            Effect visualEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
-            Effect strEffect = _.EffectAbilityIncrease(AbilityType.Strength, strBonus);
-            Effect conEffect = _.EffectAbilityIncrease(AbilityType.Constitution, conBonus);
-            Effect acEffect = _.EffectACDecrease(0);
-            Effect attackEffect = _.EffectModifyAttacks(attacks);
-            Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);
-            finalEffect = _.EffectLinkEffects(finalEffect, acEffect);
+            var visualEffect = NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
+            var strEffect = NWScript.EffectAbilityIncrease(AbilityType.Strength, strBonus);
+            var conEffect = NWScript.EffectAbilityIncrease(AbilityType.Constitution, conBonus);
+            var acEffect = NWScript.EffectACDecrease(0);
+            var attackEffect = NWScript.EffectModifyAttacks(attacks);
+            var finalEffect = NWScript.EffectLinkEffects(strEffect, conEffect);
+            finalEffect = NWScript.EffectLinkEffects(finalEffect, acEffect);
                        
             // Only apply the attack effect if this spell tier increases it.
             if (attacks > 0)
             {
-                finalEffect = _.EffectLinkEffects(finalEffect, attackEffect);
+                finalEffect = NWScript.EffectLinkEffects(finalEffect, attackEffect);
             }
-            finalEffect = _.TagEffect(finalEffect, "FORCE_ABILITY_RAGE");
+            finalEffect = NWScript.TagEffect(finalEffect, "FORCE_ABILITY_RAGE");
 
-            Effect damageEffect = _.EffectDamage(hpPenalty, DamageType.Divine);
+            var damageEffect = NWScript.EffectDamage(hpPenalty, DamageType.Divine);
 
             // Apply both effects.
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, damageEffect, creature.Object);
-                _.ApplyEffectToObject(DurationType.Temporary, finalEffect, creature.Object, 6.1f);
-                _.ApplyEffectToObject(DurationType.Temporary, visualEffect, creature.Object, 6.1f);
+                NWScript.ApplyEffectToObject(DurationType.Instant, damageEffect, creature.Object);
+                NWScript.ApplyEffectToObject(DurationType.Temporary, finalEffect, creature.Object, 6.1f);
+                NWScript.ApplyEffectToObject(DurationType.Temporary, visualEffect, creature.Object, 6.1f);
             });
         }
     }

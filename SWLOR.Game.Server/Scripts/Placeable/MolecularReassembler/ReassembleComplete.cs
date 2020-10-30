@@ -1,12 +1,14 @@
 ﻿using System;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Enum.Item;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
@@ -29,19 +31,19 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
         private void OnReassembleComplete(OnReassembleComplete data)
         {
             _player = data.Player;
-            int xp = 100; // Always grant at least this much XP to player.
+            var xp = 100; // Always grant at least this much XP to player.
 
             // Remove the immobilization effect
             foreach (var effect in _player.Effects)
             {
-                if (_.GetEffectTag(effect) == "CRAFTING_IMMOBILIZATION")
+                if (NWScript.GetEffectTag(effect) == "CRAFTING_IMMOBILIZATION")
                 {
-                    _.RemoveEffect(_player, effect);
+                    NWScript.RemoveEffect(_player, effect);
                 }
             }
 
             // Check for a fuel cell in the player's inventory again. If it doesn't exist, we exit early with an error message.
-            NWItem fuel = _.GetItemPossessedBy(_player, "ass_power");
+            NWItem fuel = NWScript.GetItemPossessedBy(_player, "ass_power");
             if (!fuel.IsValid)
             {
                 _player.SendMessage(ColorTokenService.Red("A 'Reassembly Fuel Cell' was not found in your inventory. Reassembly failed."));
@@ -52,14 +54,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
             fuel.Destroy();
 
             _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
-            string serializedSalvageItem = data.SerializedSalvageItem;
-            NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-            NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
-            int salvageComponentTypeID = data.SalvageComponentTypeID;
+            var serializedSalvageItem = data.SerializedSalvageItem;
+            NWPlaceable tempStorage = NWScript.GetObjectByTag("TEMP_ITEM_STORAGE");
+            var item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
+            var salvageComponentTypeID = data.SalvageComponentTypeID;
             _componentType = DataService.ComponentType.GetByID(salvageComponentTypeID);
 
             // Create an item with no bonuses every time.
-            _.CreateItemOnObject(_componentType.ReassembledResref, _player);
+            NWScript.CreateItemOnObject(_componentType.ReassembledResref, _player);
 
             // Now check specific custom properties which are stored as local variables on the item.
             xp += ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
@@ -111,12 +113,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
         private int ProcessProperty(int amount, int maxBonuses, ComponentBonusType bonus, float levelsPerBonus = 1.0f)
         {
-            string resref = _componentType.ReassembledResref;
-            int penalty = 0;
-            int luck = PerkService.GetCreaturePerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
-            int xp = 0;
+            var resref = _componentType.ReassembledResref;
+            var penalty = 0;
+            var luck = PerkService.GetCreaturePerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
+            var xp = 0;
 
-            ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked
+            var bonusIP = new ItemPropertyUnpacked
             {
                 Property = (int)ItemPropertyType.ComponentBonus,
                 SubType = (int)bonus,
@@ -132,9 +134,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
             while (amount > 0)
             {
-                int chanceToTransfer = CraftService.CalculateReassemblyChance(_player, penalty);
+                var chanceToTransfer = CraftService.CalculateReassemblyChance(_player, penalty);
                 // Roll to see if the item can be created.
-                bool success = RandomService.Random(0, 100) <= chanceToTransfer;
+                var success = RandomService.Random(0, 100) <= chanceToTransfer;
 
                 // Do a lucky roll if we failed the first time.
                 if (!success && luck > 0 && RandomService.Random(0, 100) <= luck)
@@ -147,11 +149,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
                 {
                     if (success)
                     {
-                        int levelIncrease = (int)(maxBonuses * levelsPerBonus);
+                        var levelIncrease = (int)(maxBonuses * levelsPerBonus);
                         // Roll succeeded. Create item.
                         bonusIP.CostTableValue = maxBonuses;
-                        ItemProperty bonusIPPacked = NWNXItemProperty.PackIP(bonusIP);
-                        NWItem item = _.CreateItemOnObject(resref, _player);
+                        var bonusIPPacked = Core.NWNX.ItemProperty.PackIP(bonusIP);
+                        NWItem item = NWScript.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
@@ -170,10 +172,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
                 {
                     if (success)
                     {
-                        int levelIncrease = (int)(amount * levelsPerBonus);
+                        var levelIncrease = (int)(amount * levelsPerBonus);
                         bonusIP.CostTableValue = amount;
-                        ItemProperty bonusIPPacked = NWNXItemProperty.PackIP(bonusIP);
-                        NWItem item = _.CreateItemOnObject(resref, _player);
+                        ItemProperty bonusIPPacked = Core.NWNX.ItemProperty.PackIP(bonusIP);
+                        NWItem item = NWScript.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 

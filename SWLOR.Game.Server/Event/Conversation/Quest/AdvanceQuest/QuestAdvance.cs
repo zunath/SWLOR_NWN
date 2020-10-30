@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Conversation.Quest.CanAcceptQuest;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -13,14 +14,14 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.AdvanceQuest
             using (new Profiler(nameof(QuestCanAccept)))
             {
                 int index = (int) args[0];
-                NWPlayer player = _.GetPCSpeaker();
-                NWObject talkTo = _.OBJECT_SELF;
+                NWPlayer player = NWScript.GetPCSpeaker();
+                NWObject talkTo = NWScript.OBJECT_SELF;
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
                 if (!QuestService.QuestExistsByID(questID))
                 {
-                    _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
+                    NWScript.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                     return false;
                 }
 

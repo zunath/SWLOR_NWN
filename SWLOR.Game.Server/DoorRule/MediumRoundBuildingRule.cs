@@ -1,7 +1,10 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System.Numerics;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.DoorRule
 {
@@ -12,20 +15,20 @@ namespace SWLOR.Game.Server.DoorRule
             float orientationAdjustment = orientationOverride != 0f ? orientationOverride : 200.31f;
             float sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 18.0f;
 
-            Vector position = _.GetPositionFromLocation(location);
-            float orientation = _.GetFacingFromLocation(location);
+            Vector3 position = NWScript.GetPositionFromLocation(location);
+            float orientation = NWScript.GetFacingFromLocation(location);
 
             orientation = orientation + orientationAdjustment;
             if (orientation > 360.0) orientation = orientation - 360.0f;
 
-            float mod = _.sqrt(sqrtAdjustment) * _.sin(orientation);
+            float mod = NWScript.sqrt(sqrtAdjustment) * NWScript.sin(orientation);
             position.X = position.X + mod;
 
-            mod = _.sqrt(sqrtAdjustment) * _.cos(orientation);
+            mod = NWScript.sqrt(sqrtAdjustment) * NWScript.cos(orientation);
             position.Y = position.Y - mod;
-            Location doorLocation = _.Location(area.Object, position, _.GetFacingFromLocation(location));
+            Location doorLocation = NWScript.Location(area.Object, position, NWScript.GetFacingFromLocation(location));
 
-            return _.CreateObject(ObjectType.Placeable, "building_ent1", doorLocation);
+            return NWScript.CreateObject(ObjectType.Placeable, "building_ent1", doorLocation);
         }
     }
 }

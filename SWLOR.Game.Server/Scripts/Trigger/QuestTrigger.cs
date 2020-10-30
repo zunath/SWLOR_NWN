@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Trigger
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Trigger
 
         public void Main()
         {
-            QuestService.OnQuestTriggerEntered(_.OBJECT_SELF);
+            QuestService.OnQuestTriggerEntered(NWScript.OBJECT_SELF);
         }
     }
 }

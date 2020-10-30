@@ -1,12 +1,14 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Get the base.
-            string starshipID = _.GetLocalString(_.GetArea(target), "PC_BASE_STRUCTURE_ID");
+            string starshipID = NWScript.GetLocalString(NWScript.GetArea(target), "PC_BASE_STRUCTURE_ID");
             Guid starshipGuid = new Guid(starshipID);
             PCBaseStructure starship = DataService.PCBaseStructure.GetByID(starshipGuid);
             PCBase starkillerBase = DataService.PCBase.GetByID(starship.PCBaseID);
@@ -43,8 +45,8 @@ namespace SWLOR.Game.Server.Item
             starkillerBase.Starcharts |= starcharts;
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
-            _.FloatingTextStringOnCreature("Starcharts loaded!", player);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
+            NWScript.FloatingTextStringOnCreature("Starcharts loaded!", player);
             item.Destroy();
         }
 

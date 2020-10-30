@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 

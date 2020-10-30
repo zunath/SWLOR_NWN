@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
@@ -13,13 +14,13 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(warp_to_wp)))
             {
-                NWPlayer player = _.GetPCSpeaker();
-                NWObject talkingTo = _.OBJECT_SELF;
+                NWPlayer player = NWScript.GetPCSpeaker();
+                NWObject talkingTo = NWScript.OBJECT_SELF;
 
                 string waypointTag = talkingTo.GetLocalString("DESTINATION");
-                NWObject waypoint = _.GetWaypointByTag(waypointTag);
+                NWObject waypoint = NWScript.GetWaypointByTag(waypointTag);
 
-                player.AssignCommand(() => { _.ActionJumpToLocation(waypoint.Location); });
+                player.AssignCommand(() => { NWScript.ActionJumpToLocation(waypoint.Location); });
             }
         }
     }

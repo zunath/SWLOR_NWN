@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Scripts.Placeable
 {
@@ -17,16 +18,16 @@ namespace SWLOR.Game.Server.Scripts.Placeable
 
         public void Main()
         {
-            NWPlaceable self = _.OBJECT_SELF;
+            NWPlaceable self = NWScript.OBJECT_SELF;
 
             var vfxID = (VisualEffect)self.GetLocalInt("PERMANENT_VFX_ID");
             
             if (vfxID > 0)
             {
-                _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(vfxID), self);
+                NWScript.ApplyEffectToObject(DurationType.Permanent, NWScript.EffectVisualEffect(vfxID), self);
             }
 
-            _.SetEventScript(self, EventScript.Placeable_OnHeartbeat, string.Empty);
+            NWScript.SetEventScript(self, EventScript.Placeable_OnHeartbeat, string.Empty);
         }
     }
 }

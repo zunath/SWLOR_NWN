@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable
@@ -15,10 +16,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable
 
         public void Main()
         {
-            NWObject user = _.GetLastUsedBy();
+            NWObject user = NWScript.GetLastUsedBy();
             user.AssignCommand(() =>
             {
-                _.ActionSit(_.OBJECT_SELF);
+                NWScript.ActionSit(NWScript.OBJECT_SELF);
             });
         }
     }

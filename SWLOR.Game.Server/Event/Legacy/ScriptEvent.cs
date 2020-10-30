@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Event.Legacy
     {
         public static void Run(string variableName)
         {
-            NWObject self = (_.OBJECT_SELF);
+            NWObject self = (NWScript.OBJECT_SELF);
             string script = self.GetLocalString(variableName);
 
             using (new Profiler("ScriptEvent." + script))

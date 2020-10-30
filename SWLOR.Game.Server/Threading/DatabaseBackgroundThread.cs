@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using Dapper.Contrib.Extensions;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace SWLOR.Game.Server.Threading
 {

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
@@ -47,7 +49,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
             for (int x = 1; x <= count; x++)
             {
-                var item = (_.CreateItemOnObject(ingotResref, player.Object));
+                var item = (NWScript.CreateItemOnObject(ingotResref, player.Object));
                 int chance;
 
                 switch (x)
@@ -84,7 +86,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.StronidiumRefining) + 1;
             int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
             stronidiumAmount *= perkBonus;
-            _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
+            NWScript.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
             int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);

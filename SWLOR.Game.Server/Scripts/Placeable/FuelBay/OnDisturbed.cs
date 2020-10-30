@@ -1,10 +1,10 @@
 ﻿using System;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay

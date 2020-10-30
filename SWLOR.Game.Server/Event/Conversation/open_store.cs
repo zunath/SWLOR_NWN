@@ -1,6 +1,7 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -14,26 +15,26 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(open_store)))
             {
-                NWPlayer player = _.GetPCSpeaker();
-                NWObject self = _.OBJECT_SELF;
+                NWPlayer player = NWScript.GetPCSpeaker();
+                NWObject self = NWScript.OBJECT_SELF;
                 string storeTag = self.GetLocalString("STORE_TAG");
                 NWObject store;
 
                 if (string.IsNullOrWhiteSpace(storeTag))
                 {
-                    store = _.GetNearestObject(self, ObjectType.Store);
+                    store = NWScript.GetNearestObject(ObjectType.Store, self);
                 }
                 else
                 {
-                    store = _.GetObjectByTag(storeTag);
+                    store = NWScript.GetObjectByTag(storeTag);
                 }
 
                 if (!store.IsValid)
                 {
-                    _.SpeakString("ERROR: Unable to locate store.");
+                    NWScript.SpeakString("ERROR: Unable to locate store.");
                 }
 
-                _.OpenStore(store, player);
+                NWScript.OpenStore(store, player);
             }
         }
     }

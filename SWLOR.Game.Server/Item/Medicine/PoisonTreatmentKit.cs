@@ -1,8 +1,10 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -25,12 +27,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == true)
+                if (NWScript.GetIsEffectValid(effect) == true)
                 {
-                    var effectType = _.GetEffectType(effect);
+                    var effectType = NWScript.GetEffectType(effect);
                     if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease || effectType == EffectTypeScript.AbilityDecrease)
                     {
-                        _.RemoveEffect(target.Object, effect);
+                        NWScript.RemoveEffect(target.Object, effect);
                     }
                 }
             }
@@ -90,9 +92,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             bool hasEffect = false;
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == true)
+                if (NWScript.GetIsEffectValid(effect) == true)
                 {
-                    var effectType = _.GetEffectType(effect);
+                    var effectType = NWScript.GetEffectType(effect);
                     if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease || effectType == EffectTypeScript.AbilityDecrease)
                     {
                         hasEffect = true;

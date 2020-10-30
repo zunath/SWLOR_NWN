@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
+            Creature.RemoveFeat(creature, Feat.WeaponFinesse);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -70,10 +70,10 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             NWItem equipped = oItem ?? creature.RightHand;
             if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalBool("LIGHTSABER") == false))
             {
-                NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
+                Creature.RemoveFeat(creature, Feat.WeaponFinesse);
                 return;
             }
-            NWNXCreature.AddFeat(creature, Feat.WeaponFinesse);
+            Creature.AddFeat(creature, Feat.WeaponFinesse);
         }
 
         public bool IsHostile()

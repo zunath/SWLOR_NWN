@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Drill
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
 
         public void Main()
         {
-            NWPlaceable drill = _.OBJECT_SELF;
+            NWPlaceable drill = NWScript.OBJECT_SELF;
             string structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(structureID))
@@ -51,21 +52,21 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
-            var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
+            var outOfPowerEffect = drill.Effects.SingleOrDefault(x => NWScript.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
             if (now >= pcBase.DateFuelEnds)
             {
                 if (outOfPowerEffect == null)
                 {
-                    outOfPowerEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
-                    outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
-                    _.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, drill);
+                    outOfPowerEffect = NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
+                    outOfPowerEffect = NWScript.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
+                    NWScript.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, drill);
                 }
 
                 return;
             }
             else if (now < pcBase.DateFuelEnds && outOfPowerEffect != null)
             {
-                _.RemoveEffect(drill, outOfPowerEffect);
+                NWScript.RemoveEffect(drill, outOfPowerEffect);
             }
 
             int minuteReduce = 2 * pcStructure.StructureBonus;
@@ -112,8 +113,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
 
             var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
 
-            var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-            NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
+            var tempStorage = NWScript.GetObjectByTag("TEMP_ITEM_STORAGE");
+            NWItem item = NWScript.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
 
             // Guard against invalid resrefs and missing items.
             if (!item.IsValid)

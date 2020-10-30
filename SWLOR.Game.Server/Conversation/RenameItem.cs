@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.Conversation
             NWItem item = player.GetLocalObject("ITEM_BEING_RENAMED");
 
             // Item isn't in player's inventory.
-            if (_.GetItemPossessor(item) != player.Object)
+            if (NWScript.GetItemPossessor(item) != player.Object)
             {
                 player.FloatingText("Item must be in your inventory in order to rename it.");
                 return;

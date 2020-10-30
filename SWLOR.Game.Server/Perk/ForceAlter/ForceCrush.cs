@@ -1,9 +1,10 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Bludgeoning), target);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectDamage(amount, DamageType.Bludgeoning), target);
             });
 
             if (creature.IsPlayer)
@@ -114,7 +115,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Bigbys_Crushing_Hand), target, 6.1f);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Bigbys_Crushing_Hand), target, 6.1f);
         }
     }
 }

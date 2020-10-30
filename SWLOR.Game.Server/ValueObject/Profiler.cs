@@ -1,5 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWNX;
 
 
 namespace SWLOR.Game.Server.ValueObject

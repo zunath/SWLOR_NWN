@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.DisabledStructure
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.DisabledStructure
 
         public void Main()
         {
-            NWPlayer user = (_.GetLastUsedBy());
+            NWPlayer user = (NWScript.GetLastUsedBy());
 
             user.SendMessage("The base is currently out of fuel and this object cannot be powered online.");
 

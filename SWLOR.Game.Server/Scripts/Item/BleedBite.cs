@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -17,11 +18,11 @@ namespace SWLOR.Game.Server.Scripts.Item
 
         public void Main()
         {
-            NWCreature oTarget = _.GetSpellTargetObject();
+            NWCreature oTarget = NWScript.GetSpellTargetObject();
 
             if (RandomService.D100(1) > 5) return;
 
-            CustomEffectService.ApplyCustomEffect(_.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
+            CustomEffectService.ApplyCustomEffect(NWScript.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
         }
     }
 }

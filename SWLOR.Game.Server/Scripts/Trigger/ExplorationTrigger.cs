@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -17,23 +18,23 @@ namespace SWLOR.Game.Server.Scripts.Trigger
 
         public void Main()
         {
-            NWCreature oPC = (_.GetEnteringObject());
+            NWCreature oPC = (NWScript.GetEnteringObject());
             if (!oPC.IsPlayer) return;
 
-            string triggerID = _.GetLocalString(_.OBJECT_SELF, "TRIGGER_ID");
+            string triggerID = NWScript.GetLocalString(NWScript.OBJECT_SELF, "TRIGGER_ID");
             if (string.IsNullOrWhiteSpace(triggerID))
             {
                 triggerID = Guid.NewGuid().ToString();
-                _.SetLocalString(_.OBJECT_SELF, "TRIGGER_ID", triggerID);
+                NWScript.SetLocalString(NWScript.OBJECT_SELF, "TRIGGER_ID", triggerID);
             }
 
-            if (_.GetLocalInt(oPC.Object, triggerID) == 1) return;
+            if (NWScript.GetLocalInt(oPC.Object, triggerID) == 1) return;
 
-            string message = _.GetLocalString(_.OBJECT_SELF, "DISPLAY_TEXT");
-            _.SendMessageToPC(oPC.Object, ColorTokenService.Cyan(message));
-            _.SetLocalInt(oPC.Object, triggerID, 1);
+            string message = NWScript.GetLocalString(NWScript.OBJECT_SELF, "DISPLAY_TEXT");
+            NWScript.SendMessageToPC(oPC.Object, ColorTokenService.Cyan(message));
+            NWScript.SetLocalInt(oPC.Object, triggerID, 1);
 
-            _.AssignCommand(oPC.Object, () => _.PlaySound("gui_prompt"));
+            NWScript.AssignCommand(oPC.Object, () => NWScript.PlaySound("gui_prompt"));
 
         }
     }

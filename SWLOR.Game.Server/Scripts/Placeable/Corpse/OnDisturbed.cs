@@ -1,6 +1,7 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
@@ -17,13 +18,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
 
         public void Main()
         {
-            NWCreature looter = _.GetLastDisturbed();
-            NWItem item = _.GetInventoryDisturbItem();
-            var type = _.GetInventoryDisturbType();
+            NWCreature looter = NWScript.GetLastDisturbed();
+            NWItem item = NWScript.GetInventoryDisturbItem();
+            var type = NWScript.GetInventoryDisturbType();
 
             looter.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 1.0f);
+                NWScript.ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 1.0f);
             });
 
             if (type == DisturbType.Added)

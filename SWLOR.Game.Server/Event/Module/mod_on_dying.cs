@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Event.Module;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
 
@@ -13,7 +14,7 @@ namespace NWN.Scripts
         public static void Main()
         {
             // Bioware Default
-            _.ExecuteScript("nw_o0_dying", _.OBJECT_SELF); 
+            NWScript.ExecuteScript("nw_o0_dying", NWScript.OBJECT_SELF); 
             MessageHub.Instance.Publish(new OnModuleDying());
         }
     }

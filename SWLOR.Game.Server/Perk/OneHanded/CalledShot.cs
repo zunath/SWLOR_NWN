@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.CalledShot);
+            Creature.RemoveFeat(creature, Feat.CalledShot);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -72,11 +72,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
-                NWNXCreature.RemoveFeat(creature, Feat.CalledShot);
+                Creature.RemoveFeat(creature, Feat.CalledShot);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, Feat.CalledShot);
+            Creature.AddFeat(creature, Feat.CalledShot);
         }
 
         public bool IsHostile()

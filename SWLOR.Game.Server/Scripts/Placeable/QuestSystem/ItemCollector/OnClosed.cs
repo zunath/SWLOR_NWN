@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
 
         public void Main()
         {
-            NWObject container = _.OBJECT_SELF;
+            NWObject container = NWScript.OBJECT_SELF;
             container.DestroyAllInventoryItems();
             container.Destroy();
         }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Conversation
 
             player.AssignCommand(() =>
             {
-                _.ActionJumpToLocation(location);
+                NWScript.ActionJumpToLocation(location);
             });
 
             EndConversation();

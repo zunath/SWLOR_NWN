@@ -5,8 +5,9 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWN.Enum.Creature;
-using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWObject table = _.OBJECT_SELF;
+            NWObject table = NWScript.OBJECT_SELF;
             NWPlayer pc = GetPC();
             game = PazaakService.GetCurrentGame(table);
 
@@ -182,7 +183,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            NWObject table = _.OBJECT_SELF;
+            NWObject table = NWScript.OBJECT_SELF;
             NWPlayer pc = GetPC();
             game = PazaakService.GetCurrentGame(table);
 

@@ -1,9 +1,11 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -25,8 +27,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                Effect effect = _.EffectDamage(damage, DamageType.Sonic);
-                _.ApplyEffectToObject(DurationType.Instant, effect, oTarget);
+                Effect effect = NWScript.EffectDamage(damage, DamageType.Sonic);
+                NWScript.ApplyEffectToObject(DurationType.Instant, effect, oTarget);
             });
         }
 

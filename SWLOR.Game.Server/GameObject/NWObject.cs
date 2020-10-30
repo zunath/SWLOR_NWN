@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Numerics;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -53,11 +55,11 @@ namespace SWLOR.Game.Server.GameObject
             }
             else
             {
-                globalID = _.GetLocalString(Object, "GLOBAL_ID");
+                globalID = NWScript.GetLocalString(Object, "GLOBAL_ID");
                 if (string.IsNullOrWhiteSpace(globalID))
                 {
                     globalID = Guid.NewGuid().ToString();
-                    _.SetLocalString(Object, "GLOBAL_ID", globalID);
+                    NWScript.SetLocalString(Object, "GLOBAL_ID", globalID);
                 }
             }
             
@@ -78,7 +80,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual string Resref => GetResRef(Object);
 
-        public virtual NWLocation Location
+        public virtual Location Location
         {
             get => GetLocation(Object);
             set
@@ -89,14 +91,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual NWArea Area => GetArea(Object);
 
-        public virtual Vector Position => GetPosition(Object);
+        public virtual Vector3 Position => GetPosition(Object);
 
         public virtual bool HasInventory => GetHasInventory(Object);
 
         public virtual bool IsPlot
         {
             get => GetPlotFlag(Object);
-            set => _.SetPlotFlag(Object, value);
+            set => NWScript.SetPlotFlag(Object, value);
         }
 
         public virtual float Facing
@@ -142,59 +144,59 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual int GetLocalInt(string name)
         {
-            return _.GetLocalInt(Object, name);
+            return NWScript.GetLocalInt(Object, name);
         }
 
         public virtual bool GetLocalBool(string name)
         {
-            return _.GetLocalBool(Object, name);
+            return NWScript.GetLocalBool(Object, name);
         }
 
         public virtual void SetLocalInt(string name, int value)
         {
-            _.SetLocalInt(Object, name, value);
+            NWScript.SetLocalInt(Object, name, value);
         }
 
         public virtual void SetLocalBool(string name, bool value)
         {
-            _.SetLocalBool(Object, name, value);
+            NWScript.SetLocalBool(Object, name, value);
         }
 
         public virtual void DeleteLocalInt(string name)
         {
-            _.DeleteLocalInt(Object, name);
+            NWScript.DeleteLocalInt(Object, name);
         }
 
         public virtual void DeleteLocalBool(string name)
         {
-            _.DeleteLocalBool(Object, name);
+            NWScript.DeleteLocalBool(Object, name);
         }
 
 
         public virtual string GetLocalString(string name)
         {
-            return _.GetLocalString(Object, name);
+            return NWScript.GetLocalString(Object, name);
         }
 
         public virtual void SetLocalString(string name, string value)
         {
-            _.SetLocalString(Object, name, value);
+            NWScript.SetLocalString(Object, name, value);
         }
 
         public virtual void DeleteLocalString(string name)
         {
-            _.DeleteLocalString(Object, name);
+            NWScript.DeleteLocalString(Object, name);
         }
 
 
         public virtual float GetLocalFloat(string name)
         {
-            return _.GetLocalFloat(Object, name);
+            return NWScript.GetLocalFloat(Object, name);
         }
 
         public virtual void SetLocalFloat(string name, float value)
         {
-            _.SetLocalFloat(Object, name, value);
+            NWScript.SetLocalFloat(Object, name, value);
         }
 
         public virtual void DestroyAllInventoryItems()
@@ -202,46 +204,46 @@ namespace SWLOR.Game.Server.GameObject
             NWItem item = GetFirstItemInInventory(Object);
             while (item.IsValid)
             {
-                DestroyObject(item.Object);
+                DestroyObject(item);
                 item = GetNextItemInInventory(Object);
             }
         }
 
         public virtual void DeleteLocalFloat(string name)
         {
-            _.DeleteLocalFloat(Object, name);
+            NWScript.DeleteLocalFloat(Object, name);
         }
 
 
         public virtual Location GetLocalLocation(string name)
         {
-            return _.GetLocalLocation(Object, name);
+            return NWScript.GetLocalLocation(Object, name);
         }
 
         public virtual void SetLocalLocation(string name, Location value)
         {
-            _.SetLocalLocation(Object, name, value);
+            NWScript.SetLocalLocation(Object, name, value);
         }
 
         public virtual void DeleteLocalLocation(string name)
         {
-            _.DeleteLocalLocation(Object, name);
+            NWScript.DeleteLocalLocation(Object, name);
         }
 
 
         public virtual uint GetLocalObject(string name)
         {
-            return _.GetLocalObject(Object, name);
+            return NWScript.GetLocalObject(Object, name);
         }
 
         public virtual void SetLocalObject(string name, uint value)
         {
-            _.SetLocalObject(Object, name, value);
+            NWScript.SetLocalObject(Object, name, value);
         }
 
         public virtual void DeleteLocalObject(string name)
         {
-            _.DeleteLocalObject(Object, name);
+            NWScript.DeleteLocalObject(Object, name);
         }
 
         public virtual void Destroy(float delay = 0.0f)
@@ -251,14 +253,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual void AssignCommand(ActionDelegate action)
         {
-            _.AssignCommand(Object, action);
+            NWScript.AssignCommand(Object, action);
         }
 
         public virtual void SpeakString(string message, TalkVolume talkVolume = TalkVolume.Talk)
         {
-            _.AssignCommand(Object, () =>
+            NWScript.AssignCommand(Object, () =>
             {
-                _.SpeakString(message);
+                NWScript.SpeakString(message);
             });
         }
 
@@ -325,7 +327,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 if (GetEffectType(effect) == effectTypeID)
                 {
-                    _.RemoveEffect(Object, effect);
+                    NWScript.RemoveEffect(Object, effect);
                 }
 
                 effect = GetNextEffect(Object);

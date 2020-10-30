@@ -1,8 +1,10 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -47,7 +49,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 {
                     blastHeal *= 2;
                 }
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(blastHeal), target.Object);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(blastHeal), target.Object);
             }
 
             float interval = 6.0f;
@@ -56,12 +58,12 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (background == BackgroundType.Medic)
                 interval *= 0.5f;
 
-            _.PlaySound("use_bacta");
-            Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
-            _.ApplyEffectToObject(DurationType.Temporary, regeneration, target.Object, duration);
+            NWScript.PlaySound("use_bacta");
+            Effect regeneration = NWScript.EffectRegenerate(restoreAmount, interval);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds. The healing kit will expire in " + duration + " seconds.");
             
-            _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The healing kit that you applied to " + target.Name + " has expired."); });
+            NWScript.DelayCommand(duration + 0.5f, () => { player.SendMessage("The healing kit that you applied to " + target.Name + " has expired."); });
 
             if(target.IsPlayer){
                 int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);

@@ -1,8 +1,9 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            creature.AssignCommand(() => _.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 9999));
+            creature.AssignCommand(() => NWScript.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 9999));
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -88,8 +89,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 amount = difference;
 
             // Apply the heal
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), target);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(amount), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
 
             // Give Control XP, if player.
             if (creature.IsPlayer)

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
@@ -22,7 +24,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
         public void Main()
         {
-            NWPlaceable tower = _.OBJECT_SELF;
+            NWPlaceable tower = NWScript.OBJECT_SELF;
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
             int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
@@ -60,7 +62,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                     bool isStronidium = bay.GetLocalBool("CONTROL_TOWER_FUEL_TYPE") == true;
                     if (!isStronidium)
                     {
-                        NWItem fuel = _.GetFirstItemInInventory(bay.Object);
+                        NWItem fuel = NWScript.GetFirstItemInInventory(bay.Object);
 
                         if (fuel.IsValid)
                         {
@@ -76,7 +78,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 bool outOfPowerHasBeenApplied = false;
                 foreach (var effect in tower.Effects)
                 {
-                    if (_.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
+                    if (NWScript.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
                     {
                         outOfPowerHasBeenApplied = true;
                         break;
@@ -85,9 +87,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
                 if (!outOfPowerHasBeenApplied)
                 {
-                    Effect outOfPowerEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
-                    outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
-                    _.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
+                    Effect outOfPowerEffect = NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
+                    outOfPowerEffect = NWScript.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
+                    NWScript.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
 
                     var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
 
@@ -102,9 +104,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 bool outOfPowerWasRemoved = false;
                 foreach (var effect in tower.Effects)
                 {
-                    if (_.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
+                    if (NWScript.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
                     {
-                        _.RemoveEffect(tower.Object, effect);
+                        NWScript.RemoveEffect(tower.Object, effect);
                         outOfPowerWasRemoved = true;
                         break;
                     }

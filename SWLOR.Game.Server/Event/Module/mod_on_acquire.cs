@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Event.Module;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
 
@@ -13,7 +14,7 @@ namespace NWN.Scripts
         public static void Main()
         {
             // Bioware Default
-            _.ExecuteScript("x2_mod_def_aqu", _.OBJECT_SELF);
+            NWScript.ExecuteScript("x2_mod_def_aqu", NWScript.OBJECT_SELF);
             MessageHub.Instance.Publish(new OnModuleAcquireItem());
         }
     }

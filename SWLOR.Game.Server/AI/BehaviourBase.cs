@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.AI.Contracts;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static SWLOR.Game.Server.NWN._;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Profiler = SWLOR.Game.Server.ValueObject.Profiler;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (GetIsDoorActionPossible(door.Object, DoorAction.Open) == true)
+            if (GetIsDoorActionPossible(door.Object, DoorAction.Open))
             {
                 DoDoorAction(door.Object, DoorAction.Open);
             }
@@ -70,9 +72,9 @@ namespace SWLOR.Game.Server.AI
                 NWPlayer player = (GetLastSpeaker());
                 DialogService.StartConversation(player, self, convo);
             }
-            else if (!string.IsNullOrWhiteSpace(NWNXObject.GetDialogResref(self)))
+            else if (!string.IsNullOrWhiteSpace(Object.GetDialogResref(self)))
             {
-                BeginConversation(NWNXObject.GetDialogResref(self));
+                BeginConversation(Object.GetDialogResref(self));
             }
         }
 
@@ -84,7 +86,7 @@ namespace SWLOR.Game.Server.AI
         public virtual void OnDeath(NWCreature self)
         {
             var vfx = (VisualEffect)self.GetLocalInt("DEATH_VFX");
-            if (vfx != VisualEffect.Invalid)
+            if (vfx != VisualEffect.None)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), self);
             }
@@ -97,7 +99,7 @@ namespace SWLOR.Game.Server.AI
         public virtual void OnHeartbeat(NWCreature self)
         {
             // No sense processing for empty and invalid (limbo) areas.
-            if (!self.Area.IsValid || NWNXArea.GetNumberOfPlayersInArea(self.Area) <= 0) return;
+            if (!self.Area.IsValid || Area.GetNumberOfPlayersInArea(self.Area) <= 0) return;
 
             var flags = GetAIFlags(self);
 
@@ -273,13 +275,13 @@ namespace SWLOR.Game.Server.AI
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
             int nth = 1;
-            NWCreature creature = _.GetNearestObject(self, ObjectType.Creature, nth);
+            NWCreature creature = NWScript.GetNearestObject(ObjectType.Creature, self, nth);
             while (creature.IsValid)
             {
                 float aggroRange = GetAggroRange(creature);
                 float linkRange = GetLinkRange(creature);
 
-                float distance = _.GetDistanceBetween(creature, self);                  
+                float distance = NWScript.GetDistanceBetween(creature, self);                  
                 if (distance > aggroRange && distance > linkRange) break;
 
                 if ((flags & AIFlags.AggroNearby) != 0)
@@ -292,7 +294,7 @@ namespace SWLOR.Game.Server.AI
                     Link(self, creature);
                 }
                 nth++;
-                creature = _.GetNearestObject(self, ObjectType.Creature, nth);
+                creature = NWScript.GetNearestObject(ObjectType.Creature, self, nth);
             }
         }
 
@@ -340,7 +342,7 @@ namespace SWLOR.Game.Server.AI
             if (linkRange <= 0.0f) linkRange = 12.0f;
 
             // Check distance. If too far away stop processing.
-            if (_.GetDistanceBetween(self, nearby) > linkRange) return;
+            if (NWScript.GetDistanceBetween(self, nearby) > linkRange) return;
             
             // Is the nearby object an NPC?
             if (!nearby.IsNPC) return;
@@ -349,7 +351,7 @@ namespace SWLOR.Game.Server.AI
             if (nearby.IsDead) return;
 
             // Is the nearby creature an enemy?
-            if (_.GetIsEnemy(nearby, self) == true) return;
+            if (NWScript.GetIsEnemy(nearby, self) == true) return;
 
             // Does the calling creature have the same racial type as the nearby creature?
             if (self.RacialType != nearby.RacialType) return;
@@ -376,13 +378,13 @@ namespace SWLOR.Game.Server.AI
                 return;
             }
 
-            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
-                _.IsInConversation(self.Object) == false &&
-                _.GetCurrentAction(self.Object) != ActionType.RandomWalk &&
-                _.GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
+            if (NWScript.GetCurrentAction(self.Object) == ActionType.Invalid &&
+                NWScript.IsInConversation(self.Object) == false &&
+                NWScript.GetCurrentAction(self.Object) != ActionType.RandomWalk &&
+                NWScript.GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
                 RandomService.Random(100) <= 25)
             {
-                self.AssignCommand(_.ActionRandomWalk);
+                self.AssignCommand(NWScript.ActionRandomWalk);
             }
         }
 
@@ -391,19 +393,19 @@ namespace SWLOR.Game.Server.AI
             if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
                 return;
 
-            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
-                _.IsInConversation(self.Object) == false &&
-                _.GetCurrentAction(self.Object) != ActionType.RandomWalk)
+            if (NWScript.GetCurrentAction(self.Object) == ActionType.Invalid &&
+                NWScript.IsInConversation(self.Object) == false &&
+                NWScript.GetCurrentAction(self.Object) != ActionType.RandomWalk)
             {
                 var flags = GetAIFlags(self);
                 Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
                 // If creature also has the RandomWalk flag, only send them back to the spawn point
                 // if they go outside the range (15 meters)
                 if ((flags & AIFlags.RandomWalk) != 0 &&
-                    _.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
+                    NWScript.GetDistanceBetweenLocations(self.Location, spawnLocation) <= 15.0f)
                     return;
 
-                self.AssignCommand(() => _.ActionMoveToLocation(spawnLocation));
+                self.AssignCommand(() => NWScript.ActionMoveToLocation(spawnLocation));
             }
         }
 
@@ -421,7 +423,7 @@ namespace SWLOR.Game.Server.AI
             Dictionary<int, AIPerkDetails> cache = self.Data["PERK_FEATS"];
             if (cache.Count <= 0) return;
 
-            NWObject target = _.GetAttackTarget(self);
+            NWObject target = NWScript.GetAttackTarget(self);
             if (!target.IsValid) return;
 
 
@@ -430,7 +432,7 @@ namespace SWLOR.Game.Server.AI
             // target.Effects.Any(x => NWNXEffect.UnpackEffect(x).Type == (int)EffectTypeEngine.Knockdown) ||
             // Potential workaround: if (target.GetLocalBool("KNOCKDOWN")) return;
             if (target.GetLocalBool("KNOCKDOWN")) return;
-            if (target.Effects.Any(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
+            if (target.Effects.Any(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
             {
                 return;
             }
@@ -451,7 +453,7 @@ namespace SWLOR.Game.Server.AI
                 
                 self.AssignCommand(() =>
                 {
-                    _.ActionUseFeat((Feat)perkDetails.FeatID, target);
+                    NWScript.ActionUseFeat((Feat)perkDetails.FeatID, target);
                 });
 
                 break;

@@ -1,4 +1,5 @@
 ﻿
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Conversation.RimerCards;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
@@ -14,7 +15,7 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(rimer_cpu_9)))
             {
-                RimerCPU.ConfigureGameSettings(_.OBJECT_SELF, RimerDeckType.Random, RimerAIDifficulty.Hard);
+                RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, RimerDeckType.Random, RimerAIDifficulty.Hard);
                 return 0;
             }
         }

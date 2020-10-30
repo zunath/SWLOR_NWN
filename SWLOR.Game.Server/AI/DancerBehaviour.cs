@@ -1,7 +1,7 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.AI
 {

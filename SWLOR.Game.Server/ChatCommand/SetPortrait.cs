@@ -1,8 +1,8 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            _.SetPortraitResRef(player, args[0]);
+            NWScript.SetPortraitResRef(player, args[0]);
             player.FloatingText("Your portrait has been changed.");
         }
 

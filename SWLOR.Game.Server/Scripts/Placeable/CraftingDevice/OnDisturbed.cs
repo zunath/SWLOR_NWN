@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         public void Main()
         {
-            var type = _.GetInventoryDisturbType();
+            var type = NWScript.GetInventoryDisturbType();
             
             if (type == DisturbType.Removed)
             {
@@ -36,8 +37,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         private void HandleAddItem()
         {
-            NWPlayer oPC = (_.GetLastDisturbed());
-            NWItem oItem = (_.GetInventoryDisturbItem());
+            NWPlayer oPC = (NWScript.GetLastDisturbed());
+            NWItem oItem = (NWScript.GetInventoryDisturbItem());
             if (oItem.Resref == "cft_confirm") return;
             if (oPC.IsBusy)
             {
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
             var secondaryComponent = DataService.ComponentType.GetByID(model.Blueprint.SecondaryComponentTypeID);
             var tertiaryComponent = DataService.ComponentType.GetByID(model.Blueprint.TertiaryComponentTypeID);
 
-            NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
+            NWPlaceable storage = NWScript.GetObjectByTag("craft_temp_store");
 
             List<NWItem> list = null;
             ComponentType allowedType = ComponentType.None;
@@ -115,9 +116,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentItemTypeRestriction)
+                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentItemTypeRestriction)
                 {
-                    int restrictionType = _.GetItemPropertyCostTableValue(ip);
+                    int restrictionType = NWScript.GetItemPropertyCostTableValue(ip);
                     allowedItemTypes.Add((CustomItemType)restrictionType);
                 }
             }
@@ -134,13 +135,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
+                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
-                    int compType = _.GetItemPropertyCostTableValue(ip);
+                    int compType = NWScript.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)
                     {
                         oItem.GetOrAssignGlobalID();
-                        NWItem copy = (_.CopyItem(oItem.Object, storage.Object, true));
+                        NWItem copy = (NWScript.CopyItem(oItem.Object, storage.Object, true));
                         list.Add(copy);
                         return;
                     }
@@ -153,10 +154,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
         private void HandleRemoveItem()
         {
-            NWPlayer oPC = (_.GetLastDisturbed());
-            NWItem oItem = (_.GetInventoryDisturbItem());
-            NWPlaceable device = (_.OBJECT_SELF);
-            NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
+            NWPlayer oPC = (NWScript.GetLastDisturbed());
+            NWItem oItem = (NWScript.GetInventoryDisturbItem());
+            NWPlaceable device = (NWScript.OBJECT_SELF);
+            NWPlaceable storage = (NWScript.GetObjectByTag("craft_temp_store"));
             var model = CraftService.GetPlayerCraftingData(oPC);
             if (oPC.IsBusy)
             {

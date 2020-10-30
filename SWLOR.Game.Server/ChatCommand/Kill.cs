@@ -1,8 +1,8 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            var damage = _.EffectDamage(target.MaxHP+11);
-            _.ApplyEffectToObject(DurationType.Instant, damage, target);
+            var damage = NWScript.EffectDamage(target.MaxHP+11);
+            NWScript.ApplyEffectToObject(DurationType.Instant, damage, target);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

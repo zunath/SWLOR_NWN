@@ -5,9 +5,11 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Item;
-using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -190,7 +192,7 @@ namespace SWLOR.Game.Server.Item
             // Ensure item isn't equipped.
             for (int slot = 0; slot < NumberOfInventorySlots; slot++)
             {
-                if (_.GetItemInSlot((InventorySlot)slot, user.Object) == targetItem.Object)
+                if (NWScript.GetItemInSlot((InventorySlot)slot, user.Object) == targetItem.Object)
                 {
                     return "Targeted item must be unequipped before installing a mod.";
                 }

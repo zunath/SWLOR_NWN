@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
@@ -15,8 +16,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
 
         public void Main()
         {
-            NWPlaceable chest = _.OBJECT_SELF;
-            NWPlayer player = _.GetLastOpenedBy();
+            NWPlaceable chest = NWScript.OBJECT_SELF;
+            NWPlayer player = NWScript.GetLastOpenedBy();
 
             player.SendMessage("Retrieve any resources from this container. When finished, use the control tower or walk away.");
 

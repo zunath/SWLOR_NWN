@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWPlayer player = GetPC();
-            NWPlaceable terminal = _.OBJECT_SELF;
+            NWPlaceable terminal = NWScript.OBJECT_SELF;
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
             bool isDM = player.IsDM;
@@ -146,7 +147,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             Model model = GetDialogCustomData<Model>();
-            NWPlaceable terminal = _.OBJECT_SELF;
+            NWPlaceable terminal = NWScript.OBJECT_SELF;
             int price = terminal.GetLocalInt("PRICE");
             string header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
             header += "Posting a message costs " + price + " credits. Posts last for 30 days (real world time) before they will expire.\n\n";
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Conversation
         private void CreatePostPageResponses(int responseID)
         {
             var player = GetPC();
-            NWPlaceable terminal = _.OBJECT_SELF;
+            NWPlaceable terminal = NWScript.OBJECT_SELF;
             var model = GetDialogCustomData<Model>();
             int price = terminal.GetLocalInt("PRICE");
             string text = player.GetLocalString("MESSAGE_BOARD_TEXT");
@@ -233,7 +234,7 @@ namespace SWLOR.Game.Server.Conversation
                             DateRemoved = null
                         };
                         DataService.SubmitDataChange(post, DatabaseActionType.Insert);
-                        _.TakeGoldFromCreature(price, player, true);
+                        NWScript.TakeGoldFromCreature(price, player, true);
 
                         player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
                         player.DeleteLocalString("MESSAGE_BOARD_TEXT");

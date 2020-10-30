@@ -1,9 +1,11 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -64,9 +66,9 @@ namespace SWLOR.Game.Server.Item.Medicine
                 int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
                 int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 
-                _.PlaySound("use_bacta");
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), target);
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(hpRecover), target);
+                NWScript.PlaySound("use_bacta");
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectResurrection(), target);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(hpRecover), target);
                 dbPlayer.CurrentFP = fpRecover;
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
@@ -78,8 +80,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             {
                 baseHeal = (int)(baseHeal * effectivenessPercent);
                 int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), target);
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(hpRecover), target);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectResurrection(), target);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(hpRecover), target);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
             }
         }

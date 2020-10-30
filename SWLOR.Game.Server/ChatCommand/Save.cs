@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -22,8 +22,8 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             PlayerService.SaveCharacter(user);
             PlayerService.SaveLocation(user);
-            _.ExportSingleCharacter(user.Object);
-            _.SendMessageToPC(user.Object, "Character saved successfully.");
+            NWScript.ExportSingleCharacter(user.Object);
+            NWScript.SendMessageToPC(user.Object, "Character saved successfully.");
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

@@ -1,14 +1,16 @@
 ﻿using System;
 using SWLOR.Game.Server.NWN;
 using System.Globalization;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -171,8 +173,8 @@ namespace SWLOR.Game.Server.Item
             float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
             delay += 0.4f; // added for animation
             user.ClearAllActions();
-            //user.AssignCommand(() => _.ActionPlayAnimation(32));
-            //user.DelayAssignCommand(() => _.ActionPlayAnimation(32), 0.0f);
+            //user.AssignCommand(() => NWScript.ActionPlayAnimation(32));
+            //user.DelayAssignCommand(() => NWScript.ActionPlayAnimation(32), 0.0f);
             user.AssignCommand(() =>
             {
                 ActionPlayAnimation(Animation.LoopingCustom12);
@@ -345,7 +347,7 @@ namespace SWLOR.Game.Server.Item
         public static void grenadeAoe(NWObject oTarget, string grenadeType)
         {
             if (oTarget.ObjectType != ObjectType.Creature) return;
-            NWCreature user = GetAreaOfEffectCreator(_.OBJECT_SELF);
+            NWCreature user = GetAreaOfEffectCreator(NWScript.OBJECT_SELF);
             int perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
             int duration = 1;
             Effect impactEffect = null;

@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -28,17 +28,19 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
+            var position = NWScript.GetPositionFromLocation(user.Location);
+            var orientation = NWScript.GetFacingFromLocation(user.Location);
             BugReport report = new BugReport
             {
                 SenderPlayerID = user.IsPlayer ? new Guid?(user.GlobalID): null,
-                CDKey = _.GetPCPublicCDKey(user),
+                CDKey = NWScript.GetPCPublicCDKey(user),
                 Text = message,
                 TargetName = target.IsValid ? target.Name : user.Name,
                 AreaResref = user.Area.Resref,
-                SenderLocationX = user.Location.X,
-                SenderLocationY = user.Location.Y,
-                SenderLocationZ = user.Location.Z,
-                SenderLocationOrientation = user.Location.Orientation,
+                SenderLocationX = position.X,
+                SenderLocationY = position.Y,
+                SenderLocationZ = position.Z,
+                SenderLocationOrientation = orientation,
                 DateSubmitted = DateTime.UtcNow
             };
 

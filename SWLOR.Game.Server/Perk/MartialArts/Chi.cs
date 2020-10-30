@@ -1,14 +1,15 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class Chi: IPerkHandler
+    public class Chi : IPerkHandler
     {
         public PerkType PerkType => PerkType.Chi;
 
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
         {
             return string.Empty;
         }
-        
+
         public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             if (perkLevel >= 7)
             {
                 var members = creature.PartyMembers.Where(x => Equals(x, creature) || 
-                                                             _.GetDistanceBetween(creature, x) <= 10.0f && x.CurrentHP < x.MaxHP);
+                                                               NWScript.GetDistanceBetween(creature, x) <= 10.0f && x.CurrentHP < x.MaxHP);
                 foreach (var member in members)
                 {
                     DoHeal(member, perkLevel, min);
@@ -66,8 +67,8 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             heal = RandomService.Random(minimum, heal);
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(heal), target);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(heal), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

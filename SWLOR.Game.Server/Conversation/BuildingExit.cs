@@ -1,7 +1,9 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -81,10 +83,10 @@ namespace SWLOR.Game.Server.Conversation
 
             int numberFound = 0;
             int nth = 1;
-            NWCreature nearest = (_.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
+            NWCreature nearest = (NWScript.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
             while (nearest.IsValid)
             {
-                if (_.GetDistanceBetweenLocations(location, nearest.Location) > MaxDistance) break;
+                if (NWScript.GetDistanceBetweenLocations(location, nearest.Location) > MaxDistance) break;
 
                 if (nearest.IsPlayer)
                 {
@@ -92,20 +94,20 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 nth++;
-                nearest = (_.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
+                nearest = (NWScript.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
             }
 
             if (numberFound <= 0)
             {
-                _.FloatingTextStringOnCreature("You don't see anyone outside.", GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature("You don't see anyone outside.", GetPC().Object, false);
             }
             else if (numberFound == 1)
             {
-                _.FloatingTextStringOnCreature("You see one person outside.", GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature("You see one person outside.", GetPC().Object, false);
             }
             else
             {
-                _.FloatingTextStringOnCreature("You see " + numberFound + " people outside.", GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature("You see " + numberFound + " people outside.", GetPC().Object, false);
             }
 
         }

@@ -1,9 +1,10 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.NWN.Enum;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Bioware
 {

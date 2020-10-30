@@ -1,9 +1,10 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -109,13 +110,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Negative), target);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectDamage(amount, DamageType.Negative), target);
             });
 
             // Only apply a heal if caster is not at max HP. Otherwise they'll get unnecessary spam.
             if (creature.CurrentHP < creature.MaxHP)
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), creature);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(amount), creature);
             }
 
             if(creature.IsPlayer)
@@ -123,7 +124,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Negative), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Negative), target);
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
@@ -89,9 +90,9 @@ namespace SWLOR.Game.Server.Perk.MartialArts
                 default: return;
             }
             
-            _.ApplyEffectToObject(DurationType.Temporary, _.EffectStunned(), target, duration);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Electrical), target);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Sunstrike), target);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectStunned(), target, duration);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectDamage(damage, DamageType.Electrical), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Sunstrike), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

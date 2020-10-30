@@ -1,9 +1,10 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Blaster
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             // This is later picked up in the OnApplyDamage event to reduce all damage to 0.
             creature.SetLocalInt("RECOVERY_BLAST_ACTIVE", 1);
 
-            var members = creature.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= 10.0f);
+            var members = creature.PartyMembers.Where(x => NWScript.GetDistanceBetween(x, target) <= 10.0f);
             int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
 
             foreach (var member in members)
@@ -87,8 +88,8 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 amount *= 2;
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), member);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), member);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(amount), member);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), member);
         }
 
 

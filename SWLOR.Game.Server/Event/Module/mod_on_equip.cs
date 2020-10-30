@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Event.Module;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
@@ -14,9 +15,9 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            NWObject equipper = _.OBJECT_SELF;
+            NWObject equipper = NWScript.OBJECT_SELF;
             // Bioware Default
-            _.ExecuteScript("x2_mod_def_equ", equipper);
+            NWScript.ExecuteScript("x2_mod_def_equ", equipper);
 
             MessageHub.Instance.Publish(new OnModuleEquipItem());
         }

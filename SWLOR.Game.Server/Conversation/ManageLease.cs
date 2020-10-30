@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -220,7 +221,7 @@ namespace SWLOR.Game.Server.Conversation
             
             if (data.IsConfirming)
             {
-                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), true);
+                NWScript.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), true);
                 data.IsConfirming = false;
                 SetResponseText("BaseDetailsPage", responseID, optionText);
                 pcBase.DateRentDue = pcBase.DateRentDue.AddDays(days);

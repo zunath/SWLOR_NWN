@@ -1,6 +1,6 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.AI
             // Set our current point and return
             SetLocalInt(oCreature, "WP_CUR", nCurWay);
             if (nCurWay == -1)
-                return _.OBJECT_INVALID;
+                return NWScript.OBJECT_INVALID;
 
             uint oRet = GetLocalObject(oCreature, sPrefix + IntToString(nCurWay));
             return oRet;
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.AI
                 }
             }
 
-            //int bIsFighting = GetIsFighting(_.OBJECT_SELF);
+            //int bIsFighting = GetIsFighting(NWScript.OBJECT_SELF);
             int bIsInConversation = IsInConversation(oCreature);
             int bMoving = GetCurrentAction(oCreature);
             int bWaiting = GetCurrentAction(oCreature);

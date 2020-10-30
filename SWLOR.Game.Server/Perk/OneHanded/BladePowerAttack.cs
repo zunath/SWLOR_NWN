@@ -1,9 +1,10 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
@@ -48,8 +49,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.PowerAttack);
-            NWNXCreature.RemoveFeat(creature, Feat.ImprovedPowerAttack);
+            Creature.RemoveFeat(creature, Feat.PowerAttack);
+            Creature.RemoveFeat(creature, Feat.ImprovedPowerAttack);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -76,25 +77,25 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Vibroblade)
             {
-                NWNXCreature.RemoveFeat(creature, Feat.PowerAttack);
-                NWNXCreature.RemoveFeat(creature, Feat.ImprovedPowerAttack);
-                if (_.GetActionMode(creature, ActionMode.PowerAttack) == true)
+                Creature.RemoveFeat(creature, Feat.PowerAttack);
+                Creature.RemoveFeat(creature, Feat.ImprovedPowerAttack);
+                if (NWScript.GetActionMode(creature, ActionMode.PowerAttack) == true)
                 {
-                    _.SetActionMode(creature, ActionMode.PowerAttack, false);
+                    NWScript.SetActionMode(creature, ActionMode.PowerAttack, false);
                 }
-                if (_.GetActionMode(creature, ActionMode.ImprovedPowerAttack) == true)
+                if (NWScript.GetActionMode(creature, ActionMode.ImprovedPowerAttack) == true)
                 {
-                    _.SetActionMode(creature, ActionMode.ImprovedPowerAttack, false);
+                    NWScript.SetActionMode(creature, ActionMode.ImprovedPowerAttack, false);
                 }
                 return;
             }
 
             int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.BladePowerAttack);
-            NWNXCreature.AddFeat(creature, Feat.PowerAttack);
+            Creature.AddFeat(creature, Feat.PowerAttack);
 
             if (perkLevel >= 2)
             {
-                NWNXCreature.AddFeat(creature, Feat.ImprovedPowerAttack);
+                Creature.AddFeat(creature, Feat.ImprovedPowerAttack);
             }
         }
 

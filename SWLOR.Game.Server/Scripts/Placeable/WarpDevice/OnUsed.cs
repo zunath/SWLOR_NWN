@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 {
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
 
             NWPlaceable self = OBJECT_SELF;
             string destination = self.GetLocalString("DESTINATION");
-            var visualEffectID = self.GetLocalInt("VISUAL_EFFECT") > 0 ? (VisualEffect)self.GetLocalInt("VISUAL_EFFECT") : VisualEffect.Invalid;
+            var visualEffectID = self.GetLocalInt("VISUAL_EFFECT") > 0 ? (VisualEffect)self.GetLocalInt("VISUAL_EFFECT") : VisualEffect.None;
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
             string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
             bool isInstance = GetLocalBool(self, "INSTANCE") == true;

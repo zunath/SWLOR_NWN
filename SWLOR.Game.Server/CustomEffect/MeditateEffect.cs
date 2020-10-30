@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using System;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using System.Numerics;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -21,7 +23,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 6.1f);
+                NWScript.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 6.1f);
             });
 
             player.IsBusy = true;
@@ -40,7 +42,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             // Pull original position from data
             string[] values = data.Split(',');
-            Vector originalPosition = _.Vector
+            Vector3 originalPosition = NWScript.Vector3
             (
                 Convert.ToSingle(values[0]),
                 Convert.ToSingle(values[1]),
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.CustomEffect
             );
 
             // Check position
-            Vector position = player.Position;
+            Vector3 position = player.Position;
 
             if ((Math.Abs(position.X - originalPosition.X) > 0.01f ||
                  Math.Abs(position.Y - originalPosition.Y) > 0.01f ||
@@ -65,7 +67,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 6.1f);
+                NWScript.ActionPlayAnimation(Animation.LoopingMeditate, 1.0f, 6.1f);
             });
             
             if (meditateTick >= 6)
@@ -73,8 +75,8 @@ namespace SWLOR.Game.Server.CustomEffect
                 int amount = CalculateAmount(player);
 
                 AbilityService.RestorePlayerFP(player, amount);
-                Effect vfx = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Mind);
-                _.ApplyEffectToObject(DurationType.Instant, vfx, player);
+                var vfx = NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Mind);
+                NWScript.ApplyEffectToObject(DurationType.Instant, vfx, player);
                 meditateTick = 0;
             }
 

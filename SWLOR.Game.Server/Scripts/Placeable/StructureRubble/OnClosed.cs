@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
@@ -15,8 +16,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
 
         public void Main()
         {
-            NWPlaceable self = _.OBJECT_SELF;
-            NWItem item = _.GetFirstItemInInventory(self);
+            NWPlaceable self = NWScript.OBJECT_SELF;
+            NWItem item = NWScript.GetFirstItemInInventory(self);
 
             if (!item.IsValid)
             {

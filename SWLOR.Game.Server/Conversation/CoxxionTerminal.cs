@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable device = _.OBJECT_SELF;
+            NWPlaceable device = NWScript.OBJECT_SELF;
             NWArea area = device.Area;
 
             int terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            NWPlaceable device = _.OBJECT_SELF;
+            NWPlaceable device = NWScript.OBJECT_SELF;
             NWArea area = device.Area;
             int terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
             string terminalColor = GetColorString(terminalColorID);
@@ -67,13 +68,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (door.GetLocalInt("DOOR_COLOR") == terminalColorID)
                 {
-                    _.SetLocked(door, false);
-                    door.AssignCommand(() => _.ActionOpenDoor(door));
+                    NWScript.SetLocked(door, false);
+                    door.AssignCommand(() => NWScript.ActionOpenDoor(door));
                 }
                 else
                 {
-                    door.AssignCommand(() => _.ActionCloseDoor(door));
-                    _.SetLocked(door, true);
+                    door.AssignCommand(() => NWScript.ActionCloseDoor(door));
+                    NWScript.SetLocked(door, true);
                 }
             }
 

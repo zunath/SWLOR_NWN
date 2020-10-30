@@ -1,8 +1,9 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
+            Creature.RemoveFeat(creature, Feat.WeaponFinesse);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -78,11 +79,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {
-                mainHand = _.OBJECT_INVALID;
+                mainHand = NWScript.OBJECT_INVALID;
             }
             else if (unequippingItem != null && Equals(unequippingItem, offHand))
             {
-                offHand = _.OBJECT_INVALID;
+                offHand = NWScript.OBJECT_INVALID;
             }
 
             // Main is Martial and off is invalid 
@@ -101,11 +102,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (receivesFeat)
             {
-                NWNXCreature.AddFeat(creature, Feat.WeaponFinesse);
+                Creature.AddFeat(creature, Feat.WeaponFinesse);
             }
             else
             {
-                NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
+                Creature.RemoveFeat(creature, Feat.WeaponFinesse);
             }
         }
 

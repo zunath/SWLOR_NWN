@@ -5,7 +5,9 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 
 
@@ -34,8 +36,8 @@ namespace SWLOR.Game.Server.Mod
             int newValue = existingAB + additionalAB;
             if (newValue > MaxValue) newValue = MaxValue;
 
-            ItemProperty ip = _.ItemPropertyAttackBonus(newValue);
-            ip = _.TagItemProperty(ip, "RUNE_IP");
+            ItemProperty ip = NWScript.ItemPropertyAttackBonus(newValue);
+            ip = NWScript.TagItemProperty(ip, "RUNE_IP");
 
             BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
         }
@@ -51,10 +53,10 @@ namespace SWLOR.Game.Server.Mod
             int currentAB = 0;
             foreach (var ip in item.ItemProperties)
             {
-                var type = _.GetItemPropertyType(ip);
+                var type = NWScript.GetItemPropertyType(ip);
                 if (type == ItemPropertyType.AttackBonus)
                 {
-                    int bonus =  _.GetItemPropertyCostTableValue(ip);
+                    int bonus =  NWScript.GetItemPropertyCostTableValue(ip);
                     currentAB += bonus;
                 }
             }

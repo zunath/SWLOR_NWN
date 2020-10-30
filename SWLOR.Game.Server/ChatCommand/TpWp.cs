@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             string tag = args[0];
-            NWObject wp = _.GetWaypointByTag(tag);
+            NWObject wp = NWScript.GetWaypointByTag(tag);
 
             if (!wp.IsValid)
             {
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             user.AssignCommand(() =>
             {
-                _.ActionJumpToLocation(wp.Location);
+                NWScript.ActionJumpToLocation(wp.Location);
             });
         }
 

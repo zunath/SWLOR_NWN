@@ -1,11 +1,13 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -29,7 +31,7 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            NWArea area = (_.GetAreaFromLocation(targetLocation));
+            NWArea area = (NWScript.GetAreaFromLocation(targetLocation));
             string parentStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
             var data = BaseService.GetPlayerTempData(player);

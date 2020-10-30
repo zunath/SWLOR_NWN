@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
@@ -18,10 +19,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureRubble
 
         public void Main()
         {
-            var disturbType = _.GetInventoryDisturbType();
-            NWItem item = (_.GetInventoryDisturbItem());
-            NWCreature creature = (_.GetLastDisturbed());
-            NWPlaceable container = (_.OBJECT_SELF);
+            var disturbType = NWScript.GetInventoryDisturbType();
+            NWItem item = (NWScript.GetInventoryDisturbItem());
+            NWCreature creature = (NWScript.GetLastDisturbed());
+            NWPlaceable container = (NWScript.OBJECT_SELF);
 
             if (disturbType == DisturbType.Added)
             {

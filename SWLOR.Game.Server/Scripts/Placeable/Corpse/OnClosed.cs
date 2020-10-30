@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
@@ -7,8 +8,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
     {
         public void Main()
         {
-            NWPlaceable container = _.OBJECT_SELF;
-            NWItem firstItem = _.GetFirstItemInInventory(container);
+            NWPlaceable container = NWScript.OBJECT_SELF;
+            NWItem firstItem = NWScript.GetFirstItemInInventory(container);
             NWCreature corpseOwner = container.GetLocalObject("CORPSE_BODY");
 
             if (!firstItem.IsValid)
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
 
             corpseOwner.AssignCommand(() =>
             {
-                _.SetIsDestroyable(true);
+                NWScript.SetIsDestroyable(true);
             });
         }
 

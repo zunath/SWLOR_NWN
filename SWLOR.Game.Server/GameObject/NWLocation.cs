@@ -1,4 +1,7 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System.Numerics;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -11,14 +14,14 @@ namespace SWLOR.Game.Server.GameObject
             Location = nwnLocation;
         }
 
-        public float X => _.GetPositionFromLocation(Location).X;
-        public float Y => _.GetPositionFromLocation(Location).Y;
-        public float Z => _.GetPositionFromLocation(Location).Z;
-        public float Orientation => _.GetFacingFromLocation(Location);
+        public float X => NWScript.GetPositionFromLocation(Location).X;
+        public float Y => NWScript.GetPositionFromLocation(Location).Y;
+        public float Z => NWScript.GetPositionFromLocation(Location).Z;
+        public float Orientation => NWScript.GetFacingFromLocation(Location);
 
-        public NWArea Area => _.GetAreaFromLocation(Location);
+        public NWArea Area => NWScript.GetAreaFromLocation(Location);
 
-        public Vector Position => _.GetPositionFromLocation(Location);
+        public Vector3 Position => NWScript.GetPositionFromLocation(Location);
 
         public static implicit operator Location(NWLocation l)
         {

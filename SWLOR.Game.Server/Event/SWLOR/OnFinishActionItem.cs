@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System.Numerics;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Event.SWLOR
         public NWItem Item { get; set; }
         public NWObject Target { get; set; }
         public NWLocation TargetLocation { get; set; }
-        public Vector UserPosition { get; set; }
+        public Vector3 UserPosition { get; set; }
         public CustomData CustomData { get; set; }
 
         public OnFinishActionItem(
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Event.SWLOR
             NWItem item, 
             NWObject target, 
             NWLocation targetLocation, 
-            Vector userPosition, 
+            Vector3 userPosition, 
             CustomData customData)
         {
             ClassName = className;

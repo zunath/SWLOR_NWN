@@ -1,9 +1,11 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -52,31 +54,31 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             switch (spellTier)
             {
                 case 1:
-                    effect = _.EffectMovementSpeedIncrease(10);
-                    effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(AbilityType.Dexterity, 2));
+                    effect = NWScript.EffectMovementSpeedIncrease(10);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAbilityIncrease(AbilityType.Dexterity, 2));
                     duration = 60f;
                     break;
                 case 2:
-                    effect = _.EffectMovementSpeedIncrease(20);
-                    effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(AbilityType.Dexterity, 4));
+                    effect = NWScript.EffectMovementSpeedIncrease(20);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAbilityIncrease(AbilityType.Dexterity, 4));
                     duration = 90f;
                     break;
                 case 3:
-                    effect = _.EffectMovementSpeedIncrease(30);
-                    effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(AbilityType.Dexterity, 6));
-                    effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
+                    effect = NWScript.EffectMovementSpeedIncrease(30);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAbilityIncrease(AbilityType.Dexterity, 6));
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectModifyAttacks(1));
                     duration = 120f;
                     break;
                 case 4:
-                    effect = _.EffectMovementSpeedIncrease(40);
-                    effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(AbilityType.Dexterity, 8));
-                    effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
+                    effect = NWScript.EffectMovementSpeedIncrease(40);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAbilityIncrease(AbilityType.Dexterity, 8));
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectModifyAttacks(1));
                     duration = 150f;
                     break;
                 case 5:
-                    effect = _.EffectMovementSpeedIncrease(50);
-                    effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(AbilityType.Dexterity, 10));
-                    effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
+                    effect = NWScript.EffectMovementSpeedIncrease(50);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAbilityIncrease(AbilityType.Dexterity, 10));
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectModifyAttacks(1));
                     duration = 180f;
                     break;
                 default:
@@ -91,8 +93,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 creature.SendMessage("Lucky Force Speed!");
             }
 
-            _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
             if (creature.IsPlayer)
             {

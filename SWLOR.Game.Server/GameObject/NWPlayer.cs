@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWPlayer member = _.GetFirstFactionMember(Object); member.IsValid; member = _.GetNextFactionMember(Object))
+                for (NWPlayer member = NWScript.GetFirstFactionMember(Object); member.IsValid; member = NWScript.GetNextFactionMember(Object))
                 {
                     yield return member;
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Conversation
             item.DateRetrieved = DateTime.UtcNow;
             DataService.SubmitDataChange(item, DatabaseActionType.Update);
             SerializationService.DeserializeItem(item.ItemObject, player);
-            _.TakeGoldFromCreature(50, player, true);
+            NWScript.TakeGoldFromCreature(50, player, true);
 
             LoadMainPage();
         }

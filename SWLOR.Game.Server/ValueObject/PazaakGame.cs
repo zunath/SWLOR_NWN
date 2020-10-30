@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using System.Linq;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 /**
  * Used in Pazaak games, mainly to keep track of the contents of the deck. 

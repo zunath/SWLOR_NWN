@@ -1,9 +1,10 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Creature;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public PerkType PerkType => PerkType.ForcePush;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            var size = _.GetCreatureSize(oTarget);
+            var size = NWScript.GetCreatureSize(oTarget);
             CreatureSize maxSize = CreatureSize.Invalid;
             switch (spellTier)
             {
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             // Resisted - Only apply slow for six seconds
             if (result.IsResisted)
             {
-                _.ApplyEffectToObject(DurationType.Temporary, _.EffectSlow(), target, 6.0f);
+                NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectSlow(), target, 6.0f);
             }
 
             // Not resisted - Apply knockdown for the specified duration
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     creature.SendMessage("Lucky Force Push!");
                 }
 
-                _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, duration), target, duration);
+                NWScript.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, duration), target, duration);
             }
 
             if (creature.IsPlayer)
@@ -113,7 +114,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceAlter, target.Object);
             }
             
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Small), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Small), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

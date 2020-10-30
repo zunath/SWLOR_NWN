@@ -1,4 +1,5 @@
 ﻿
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
@@ -14,10 +15,10 @@ namespace NWN.Scripts
         {
             using (new Profiler(nameof(credit_check)))
             {
-                NWPlayer oPC = _.GetPCSpeaker();
-                NWObject oNPC = _.OBJECT_SELF;
-                int nGold = _.GetGold(oPC);
-                int reqGold = _.GetLocalInt(oNPC, "gold");
+                NWPlayer oPC = NWScript.GetPCSpeaker();
+                NWObject oNPC = NWScript.OBJECT_SELF;
+                int nGold = NWScript.GetGold(oPC);
+                int reqGold = NWScript.GetLocalInt(oNPC, "gold");
                 if (nGold > reqGold)
                 {
                     return 1;

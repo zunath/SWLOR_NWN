@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -20,10 +21,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
 
         public void Main()
         {
-            NWPlayer player = _.GetLastOpenedBy();
+            NWPlayer player = NWScript.GetLastOpenedBy();
             if (!player.IsPlayer) return;
 
-            NWPlaceable terminal = _.OBJECT_SELF;
+            NWPlaceable terminal = NWScript.OBJECT_SELF;
             NWArea area = terminal.Area;
             int bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0)

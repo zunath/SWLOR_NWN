@@ -1,10 +1,10 @@
 ﻿//using System;
-//using SWLOR.Game.Server.NWN;
+//using SWLOR.Game.Server.Core.NWScript;
 //using SWLOR.Game.Server.ChatCommand.Contracts;
 //using SWLOR.Game.Server.DoorRule.Contracts;
 //using SWLOR.Game.Server.Enumeration;
 //using SWLOR.Game.Server.GameObject;
-//using static SWLOR.Game.Server.NWN._;
+//using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 //namespace SWLOR.Game.Server.ChatCommand
 //{
@@ -23,8 +23,8 @@
 //            float orientation = Convert.ToSingle(args[0]);
 //            float sqrtValue = Convert.ToSingle(args[1]);
 
-//            NWPlaceable house = _.GetObjectByTag("house_ext_3");
-//            NWPlaceable oldDoor = _.GetObjectByTag("building_ent1");
+//            NWPlaceable house = NWScript.GetObjectByTag("house_ext_3");
+//            NWPlaceable oldDoor = NWScript.GetObjectByTag("building_ent1");
 
 //            int pcBaseStructureID = oldDoor.GetLocalInt("PC_BASE_STRUCTURE_ID");
 

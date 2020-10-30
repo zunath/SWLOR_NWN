@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.Expertise);
+            Creature.RemoveFeat(creature, Feat.Expertise);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -73,11 +73,11 @@ namespace SWLOR.Game.Server.Perk.Armor
 
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {
-                NWNXCreature.RemoveFeat(creature, Feat.Expertise);
+                Creature.RemoveFeat(creature, Feat.Expertise);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, Feat.Expertise);
+            Creature.AddFeat(creature, Feat.Expertise);
         }
 
         public bool IsHostile()

@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.NWNX;
+﻿using SWLOR.Game.Server.Core.NWNX;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +11,7 @@ namespace NWN.Scripts
         public static void Main()
         {
             // Already handled in the item_use_before script. No need for anything else to run at this point.
-            NWNXEvents.SkipEvent();
+            Events.SkipEvent();
         }
     }
 }

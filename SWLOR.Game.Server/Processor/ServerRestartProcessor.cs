@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -65,14 +66,14 @@ namespace SWLOR.Game.Server.Processor
                 var now = DateTime.UtcNow;
                 if (now >= RestartTime)
                 {
-                    _.ExportAllCharacters();
+                    NWScript.ExportAllCharacters();
 
                     foreach (var player in NWModule.Get().Players)
                     {
-                        _.BootPC(player, "Server is automatically rebooting. This is a temporary solution until we can fix performance problems. Thank you for your patience and understanding.");
+                        NWScript.BootPC(player, "Server is automatically rebooting. This is a temporary solution until we can fix performance problems. Thank you for your patience and understanding.");
                     }
 
-                    NWNXAdmin.ShutdownServer();
+                    Administration.ShutdownServer();
                 }
                 else if (now >= _nextNotification)
                 {

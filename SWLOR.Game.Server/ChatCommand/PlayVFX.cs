@@ -2,10 +2,11 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
-using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             string command = args[0].ToLower();
             Effect effect = EffectVisualEffect((VisualEffect)Int32.Parse(args[0]));
-            _.ApplyEffectAtLocation(DurationType.Instant, effect, targetLocation, 6.0f);
+            NWScript.ApplyEffectAtLocation(DurationType.Instant, effect, targetLocation, 6.0f);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

@@ -1,7 +1,9 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Perk.General
 {
@@ -71,10 +73,10 @@ namespace SWLOR.Game.Server.Perk.General
                 duration = duration + creature.DexterityModifier * 5;
             }
 
-            Effect movement = _.EffectMovementSpeedIncrease(speed);
-            movement = _.TagEffect(movement, "DASH");
+            Effect movement = NWScript.EffectMovementSpeedIncrease(speed);
+            movement = NWScript.TagEffect(movement, "DASH");
 
-            _.ApplyEffectToObject(DurationType.Temporary, movement, target, duration);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, movement, target, duration);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

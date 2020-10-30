@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
@@ -21,14 +22,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
 
         public void Main()
         {
-            NWPlaceable container = (_.OBJECT_SELF);
-            NWPlayer oPC = (_.GetLastDisturbed());
-            NWItem oItem = (_.GetInventoryDisturbItem());
-            var type = _.GetInventoryDisturbType();
+            NWPlaceable container = (NWScript.OBJECT_SELF);
+            NWPlayer oPC = (NWScript.GetLastDisturbed());
+            NWItem oItem = (NWScript.GetInventoryDisturbItem());
+            var type = NWScript.GetInventoryDisturbType();
 
             if (type == DisturbType.Added)
             {
-                container.AssignCommand(() => _.ActionGiveItem(oItem.Object, oPC.Object));
+                container.AssignCommand(() => NWScript.ActionGiveItem(oItem.Object, oPC.Object));
                 return;
             }
             

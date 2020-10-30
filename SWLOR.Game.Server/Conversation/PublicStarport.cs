@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
@@ -38,12 +39,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = _.OBJECT_SELF;
+            NWPlaceable door = NWScript.OBJECT_SELF;
             string starportID = door.GetLocalString("STARPORT_ID");
 
             if (string.IsNullOrWhiteSpace(starportID))
             {
-                _.SpeakString("STARPORT_ID is not set. Please inform an admin.");
+                NWScript.SpeakString("STARPORT_ID is not set. Please inform an admin.");
                 return;
             }
 

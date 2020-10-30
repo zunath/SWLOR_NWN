@@ -1,9 +1,11 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -36,14 +38,14 @@ namespace SWLOR.Game.Server.Item.Medicine
             int perkLevel = player.IsPlayer ? PerkService.GetCreaturePerkLevel(player, PerkType.StimFiend) : 0;
             float percentIncrease = perkLevel * 0.25f;
             duration = duration + (duration * percentIncrease);
-            Effect effect = _.EffectAbilityIncrease(ability, amount);
-            effect = _.TagEffect(effect, "STIM_PACK_EFFECT");
+            Effect effect = NWScript.EffectAbilityIncrease(ability, amount);
+            effect = NWScript.TagEffect(effect, "STIM_PACK_EFFECT");
 
-            _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
 
             user.SendMessage("You inject " + target.Name + " with a stim pack. The stim pack will expire in " + duration + " seconds.");
 
-            _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The stim pack that you applied to " + target.Name + " has expired."); });
+            NWScript.DelayCommand(duration + 0.5f, () => { player.SendMessage("The stim pack that you applied to " + target.Name + " has expired."); });
 
             if (!Equals(user, target))
             {
@@ -82,9 +84,9 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
+            var existing = target.Effects.SingleOrDefault(x => NWScript.GetEffectTag(x) == "STIM_PACK_EFFECT");
 
-            if (existing != null && _.GetIsEffectValid(existing) == true)
+            if (existing != null && NWScript.GetIsEffectValid(existing) == true)
             {
                 return "Your target is already under the effects of another stimulant.";
             }

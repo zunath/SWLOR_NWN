@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX;
+﻿using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Event.SWLOR
 {

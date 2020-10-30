@@ -3,8 +3,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using System.Linq;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
@@ -90,19 +91,19 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     throw new ArgumentOutOfRangeException(nameof(perkLevel));
             }
 
-            var effect = _.EffectACIncrease(acamount);
-            effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(abamount));
-            effect = _.TagEffect(effect, "EFFECT_FORCE_INSIGHT");
+            var effect = NWScript.EffectACIncrease(acamount);
+            effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAttackIncrease(abamount));
+            effect = NWScript.TagEffect(effect, "EFFECT_FORCE_INSIGHT");
 
             // Remove any existing force insight effects.
-            foreach(var existing in creature.Effects.Where(x => _.GetEffectTag(x) == "EFFECT_FORCE_INSIGHT"))
+            foreach(var existing in creature.Effects.Where(x => NWScript.GetEffectTag(x) == "EFFECT_FORCE_INSIGHT"))
             {
-                _.RemoveEffect(creature, existing);
+                NWScript.RemoveEffect(creature, existing);
             }
             
             // Apply the new effect.
-            _.ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Magic_Resistance), target);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Magic_Resistance), target);
 
             // Register players to all combat targets for Force Sense.
             if (creature.IsPlayer)

@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
@@ -16,7 +17,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            NWPlayer pc = (_.GetExitingObject());
+            NWPlayer pc = (NWScript.GetExitingObject());
 
             using (new Profiler(nameof(mod_on_leave) + ":RemoveDMFromCache"))
             {
@@ -30,7 +31,7 @@ namespace NWN.Scripts
             {
                 if (pc.IsPlayer)
                 {
-                    _.ExportSingleCharacter(pc.Object);
+                    NWScript.ExportSingleCharacter(pc.Object);
                 }
             }
 

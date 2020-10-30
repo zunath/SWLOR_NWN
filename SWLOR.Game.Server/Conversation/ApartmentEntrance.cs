@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -44,12 +45,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = _.OBJECT_SELF;
+            NWPlaceable door = NWScript.OBJECT_SELF;
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (apartmentBuildingID <= 0)
             {
-                _.SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
+                NWScript.SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
                 return;
             }
 
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void EnterApartment(Guid pcBaseID)
         {
-            NWPlaceable door = _.OBJECT_SELF;
+            NWPlaceable door = NWScript.OBJECT_SELF;
             NWPlayer oPC = GetPC();
 
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
@@ -132,13 +133,13 @@ namespace SWLOR.Game.Server.Conversation
             // If we're swapping from one apartment to another (without going to an intermediary non-instance)
             // we'll run a check to see if we need to kill the current instance.
             var area = door.Area;
-            _.DelayCommand(1.0f, () =>
+            NWScript.DelayCommand(1.0f, () =>
             {
-                NWPlayer player = (_.GetFirstPC());
+                NWPlayer player = (NWScript.GetFirstPC());
                 while (player.IsValid)
                 {
                     if (Equals(player.Area, area)) return;
-                    player = (_.GetNextPC());
+                    player = (NWScript.GetNextPC());
                 }
 
                 AreaService.DestroyAreaInstance(area);

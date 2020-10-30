@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -30,10 +31,10 @@ namespace SWLOR.Game.Server.Conversation
                     SwitchConversation("CharacterCustomization");
                     break;
                 case 2: // Enter the game
-                    NWObject waypoint = _.GetObjectByTag("ENTRY_STARTING_WP");
+                    NWObject waypoint = NWScript.GetObjectByTag("ENTRY_STARTING_WP");
                     player.AssignCommand(() =>
                     {
-                        _.ActionJumpToLocation(waypoint.Location);
+                        NWScript.ActionJumpToLocation(waypoint.Location);
                     });
                     EndConversation();
                     break;

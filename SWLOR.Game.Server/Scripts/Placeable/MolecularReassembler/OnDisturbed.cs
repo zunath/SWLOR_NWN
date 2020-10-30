@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
@@ -19,12 +20,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
 
         public void Main()
         {
-            if (_.GetInventoryDisturbType() != DisturbType.Added)
+            if (NWScript.GetInventoryDisturbType() != DisturbType.Added)
                 return;
             
-            NWPlayer player = _.GetLastDisturbed();
-            NWPlaceable device = _.OBJECT_SELF;
-            NWItem item = _.GetInventoryDisturbItem();
+            NWPlayer player = NWScript.GetLastDisturbed();
+            NWPlaceable device = NWScript.OBJECT_SELF;
+            NWItem item = NWScript.GetInventoryDisturbItem();
 
             // Check the item type to see if it's valid.
             if (!IsValidItemType(item))

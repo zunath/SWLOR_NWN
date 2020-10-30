@@ -1,8 +1,9 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
@@ -19,10 +20,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ResourceBay
 
         public void Main()
         {
-            NWPlayer player = _.GetLastDisturbed();
-            NWPlaceable bay = _.OBJECT_SELF;
-            var disturbType = _.GetInventoryDisturbType();
-            NWItem item = _.GetInventoryDisturbItem();
+            NWPlayer player = NWScript.GetLastDisturbed();
+            NWPlaceable bay = NWScript.OBJECT_SELF;
+            var disturbType = NWScript.GetInventoryDisturbType();
+            NWItem item = NWScript.GetInventoryDisturbItem();
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             Guid structureGUID = new Guid(structureID);
             var structure = DataService.PCBaseStructure.GetByID(structureGUID);

@@ -1,9 +1,11 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -77,27 +79,27 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             switch (spellTier)
             {
                 case 1:
-                    effectMindShield =_.EffectImmunity(ImmunityType.Dazed);
+                    effectMindShield =NWScript.EffectImmunity(ImmunityType.Dazed);
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
+                        NWScript.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 case 2:
-                    effectMindShield = _.EffectImmunity(ImmunityType.Dazed);
-                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(ImmunityType.Confused));
-                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(ImmunityType.Dominate)); // Force Pursuade is DOMINATION effect
+                    effectMindShield = NWScript.EffectImmunity(ImmunityType.Dazed);
+                    effectMindShield = NWScript.EffectLinkEffects(effectMindShield, NWScript.EffectImmunity(ImmunityType.Confused));
+                    effectMindShield = NWScript.EffectLinkEffects(effectMindShield, NWScript.EffectImmunity(ImmunityType.Dominate)); // Force Pursuade is DOMINATION effect
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
+                        NWScript.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 case 3:
-                    effectMindShield = _.EffectImmunity(ImmunityType.Dazed);
-                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(ImmunityType.Confused));
-                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(ImmunityType.Dominate)); // Force Pursuade is DOMINATION effect
+                    effectMindShield = NWScript.EffectImmunity(ImmunityType.Dazed);
+                    effectMindShield = NWScript.EffectLinkEffects(effectMindShield, NWScript.EffectImmunity(ImmunityType.Confused));
+                    effectMindShield = NWScript.EffectLinkEffects(effectMindShield, NWScript.EffectImmunity(ImmunityType.Dominate)); // Force Pursuade is DOMINATION effect
 
                     if (target.GetLocalInt("FORCE_DRAIN_IMMUNITY") == 1)
                 
@@ -109,7 +111,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     creature.AssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
+                        NWScript.ApplyEffectToObject(DurationType.Temporary, effectMindShield, target, 6.1f);
                     });
                     break;
                 default:
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // Play VFX
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Dur_Mind_Affecting_Positive), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Dur_Mind_Affecting_Positive), target);
 
         }
     }

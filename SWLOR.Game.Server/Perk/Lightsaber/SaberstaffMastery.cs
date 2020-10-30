@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
@@ -67,9 +67,9 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         private void RemoveFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.TwoWeaponFighting);
-            NWNXCreature.RemoveFeat(creature, Feat.Ambidexterity);
-            NWNXCreature.RemoveFeat(creature, Feat.ImprovedTwoWeaponFighting);
+            Creature.RemoveFeat(creature, Feat.TwoWeaponFighting);
+            Creature.RemoveFeat(creature, Feat.Ambidexterity);
+            Creature.RemoveFeat(creature, Feat.ImprovedTwoWeaponFighting);
         }
 
         private void ApplyFeatChanges(NWCreature creature, NWItem unequippedItem)
@@ -83,15 +83,15 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             }
 
             int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.SaberstaffMastery);
-            NWNXCreature.AddFeat(creature, Feat.TwoWeaponFighting);
+            Creature.AddFeat(creature, Feat.TwoWeaponFighting);
 
             if (perkLevel >= 2)
             {
-                NWNXCreature.AddFeat(creature, Feat.Ambidexterity);
+                Creature.AddFeat(creature, Feat.Ambidexterity);
             }
             if (perkLevel >= 3)
             {
-                NWNXCreature.AddFeat(creature, Feat.ImprovedTwoWeaponFighting);
+                Creature.AddFeat(creature, Feat.ImprovedTwoWeaponFighting);
             }
         }
 

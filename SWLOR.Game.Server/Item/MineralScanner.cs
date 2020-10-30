@@ -1,9 +1,11 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -24,7 +26,7 @@ namespace SWLOR.Game.Server.Item
             int lootTableID = GetLootTable(targetLocation);
             if (lootTableID <= 0) return;
 
-            NWArea area = _.GetAreaFromLocation(targetLocation);
+            NWArea area = NWScript.GetAreaFromLocation(targetLocation);
             var items = DataService.LootTableItem.GetAllByLootTableID(lootTableID)
                 .OrderByDescending(o => o.Weight);
             string sector = BaseService.GetSectorOfLocation(targetLocation);
@@ -86,7 +88,7 @@ namespace SWLOR.Game.Server.Item
 
         private int GetLootTable(Location targetLocation)
         {
-            NWArea area = _.GetAreaFromLocation(targetLocation);
+            NWArea area = NWScript.GetAreaFromLocation(targetLocation);
             var dbArea = DataService.Area.GetByResref(area.Resref);
             var sector = BaseService.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;

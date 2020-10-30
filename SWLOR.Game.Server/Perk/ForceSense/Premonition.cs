@@ -2,8 +2,10 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 
@@ -78,19 +80,19 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
                 case 1:
                     hitpoints = 3;
-                    effect = _.EffectTemporaryHitpoints(hitpoints);
+                    effect = NWScript.EffectTemporaryHitpoints(hitpoints);
                     break;
                 case 2:
                     hitpoints = 3;
                     concealment = 5;
-                    effect = _.EffectConcealment(concealment);
-                    effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
+                    effect = NWScript.EffectConcealment(concealment);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectTemporaryHitpoints(hitpoints));
                     break;
                 case 3:
                     concealment = 10;
                     hitpoints = 5;
-                    effect = _.EffectConcealment(concealment);
-                    effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
+                    effect = NWScript.EffectConcealment(concealment);
+                    effect = NWScript.EffectLinkEffects(effect, NWScript.EffectTemporaryHitpoints(hitpoints));
                     break;
                 default:
                     throw new ArgumentException(nameof(perkLevel) + " invalid. Value " + perkLevel + " is unhandled.");
@@ -98,10 +100,10 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
             }
 
-            _.ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Purple), creature, duration);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Purple), creature, duration);
 
-            if (_.GetIsInCombat(creature))
+            if (NWScript.GetIsInCombat(creature))
             {
                 if (creature.IsPlayer)
                 {

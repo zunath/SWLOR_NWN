@@ -1,8 +1,9 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
@@ -88,9 +89,9 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                     break;
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Slashing), target);
-            _.ApplyEffectToObject(DurationType.Temporary, _.EffectACDecrease(3), target, duration);
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Evil), target);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectDamage(damage, DamageType.Slashing), target);
+            NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectACDecrease(3), target, duration);
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Evil), target);
 
             creature.SendMessage("Your target's armor has been breached.");
         }

@@ -1,11 +1,13 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -22,8 +24,8 @@ namespace NWN.Scripts
 
             using (new Profiler(nameof(mod_on_examine)))
             {
-                NWPlayer examiner = (_.OBJECT_SELF);
-                NWObject examinedObject = NWNXObject.StringToObject(NWNXEvents.GetEventData("EXAMINEE_OBJECT_ID"));
+                NWPlayer examiner = (OBJECT_SELF);
+                NWObject examinedObject = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
                 if (ExaminationService.OnModuleExamine(examiner, examinedObject))
                 {
                     MessageHub.Instance.Publish(new OnModuleExamine());
@@ -32,22 +34,22 @@ namespace NWN.Scripts
 
                 string description;
 
-                if (_.GetIsPC(examinedObject.Object) == true)
+                if (GetIsPC(examinedObject.Object) == true)
                 {
                     // https://github.com/zunath/SWLOR_NWN/issues/853
                     // safest probably to get the modified (non-original) description only for players
                     // may want to always get the modified description for later flexibility?
-                    description = _.GetDescription(examinedObject.Object, false) + "\n\n";
+                    description = GetDescription(examinedObject.Object, false) + "\n\n";
                 }
                 else
                 {
-                    description = _.GetDescription(examinedObject.Object, true) + "\n\n";
+                    description = GetDescription(examinedObject.Object, true) + "\n\n";
                 }                
 
                 if (examinedObject.IsCreature)
                 {
-                    var racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", (int)_.GetRacialType(examinedObject)));
-                    string racialtype = _.GetStringByStrRef(racialID);
+                    var racialID = Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(examinedObject)));
+                    string racialtype = GetStringByStrRef(racialID);
                     if (!description.Contains(ColorTokenService.Green("Racial Type: ") + racialtype))
                     {
                         description += ColorTokenService.Green("Racial Type: ") + racialtype;
@@ -60,8 +62,8 @@ namespace NWN.Scripts
 
                 if (!string.IsNullOrWhiteSpace(description))
                 {
-                    _.SetDescription(examinedObject.Object, description, false);
-                    _.SetDescription(examinedObject.Object, description);
+                    SetDescription(examinedObject.Object, description, false);
+                    SetDescription(examinedObject.Object, description);
                 }
             }
 

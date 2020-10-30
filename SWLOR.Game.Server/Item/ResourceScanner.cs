@@ -1,13 +1,15 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -17,7 +19,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            _.ApplyEffectAtLocation(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Paralyze_Hold), target.Location, Seconds(user, item, target, targetLocation, null));
+            NWScript.ApplyEffectAtLocation(DurationType.Temporary, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Paralyze_Hold), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 
@@ -37,7 +39,7 @@ namespace SWLOR.Game.Server.Item
                 return;
             }
 
-            _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), effectLocation);
+            NWScript.ApplyEffectAtLocation(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), effectLocation);
 
             if (user.IsPlayer && GetLocalBool(user, target.GlobalID.ToString()) == false)
             {

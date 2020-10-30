@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
@@ -83,13 +84,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 PVPSanctuaryService.SetPlayerPVPSanctuaryOverride(GetPC(), true);
                 dto.IsConfirmingDisableSanctuary = false;
-                _.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, false);
                 SetResponseText("MainPage", 1, "Disable PVP Protection");
             }
             else
             {
                 dto.IsConfirmingDisableSanctuary = true;
-                _.FloatingTextStringOnCreature(ColorTokenService.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature(ColorTokenService.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, false);
                 SetResponseText("MainPage", 1, "CONFIRM DISABLE PVP PROTECTION");
             }
 

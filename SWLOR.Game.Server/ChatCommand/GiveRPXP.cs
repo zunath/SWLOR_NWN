@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.ChatCommand
             Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
             dbPlayer.RoleplayXP += amount;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
-            _.SendMessageToPC(target, "A DM has awarded you with " + amount + " roleplay XP.");
+            NWScript.SendMessageToPC(target, "A DM has awarded you with " + amount + " roleplay XP.");
         }
 
         public bool RequiresTarget => true;

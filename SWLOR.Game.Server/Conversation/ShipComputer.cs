@@ -8,9 +8,12 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Collections;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Item;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using System.Numerics;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -22,7 +25,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
 
-            string structureID = _.GetLocalString(_.GetArea(player),"PC_BASE_STRUCTURE_ID");
+            string structureID = NWScript.GetLocalString(NWScript.GetArea(player),"PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(structureID))
             {
@@ -92,7 +95,7 @@ namespace SWLOR.Game.Server.Conversation
         
         public override void Initialize()
         {
-            Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
+            Guid structureID = new Guid(NWScript.GetLocalString(NWScript.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID); 
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
@@ -136,7 +139,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
             PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
-            Guid structureID = new Guid(_.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
+            Guid structureID = new Guid(NWScript.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
@@ -201,11 +204,11 @@ namespace SWLOR.Game.Server.Conversation
                         {
                             if (creature.IsPC || creature.IsDM)
                             {
-                                _.FloatingTextStringOnCreature("The ship is taking off", creature);
+                                NWScript.FloatingTextStringOnCreature("The ship is taking off", creature);
                             }
                         }
 
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), player);
+                        NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), player);
 
                         // Clean up the base structure, if we were in a PC dock not public starport.
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
@@ -214,11 +217,11 @@ namespace SWLOR.Game.Server.Conversation
                             PCBase dockBase = DataService.PCBase.GetByID(dock.PCBaseID);
 
                             IEnumerable<NWArea> areas = NWModule.Get().Areas;
-                            NWArea landingArea = new NWArea(_.GetFirstArea());
+                            NWArea landingArea = new NWArea(NWScript.GetFirstArea());
 
                             foreach (var area in areas)
                             {
-                                if (_.GetResRef(area) == dockBase.AreaResref)
+                                if (NWScript.GetResRef(area) == dockBase.AreaResref)
                                 {
                                     landingArea = area;
                                 }
@@ -232,7 +235,7 @@ namespace SWLOR.Game.Server.Conversation
                                     // Found our dock.  Clear its variable and play some VFX.
                                     plc.Structure.SetLocalInt("DOCKED_STARSHIP", 0);
                                     DoDustClouds(plc.Structure.Location);
-                                    _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), plc.Structure);
+                                    NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), plc.Structure);
                                 }
                                 else if (plc.PCBaseStructureID == structure.ID)
                                 {
@@ -257,12 +260,12 @@ namespace SWLOR.Game.Server.Conversation
                 else if (response.Text == "Access Resource Bay")
                 {
                     NWPlaceable bay = SpaceService.GetCargoBay(player.Area, GetPC());
-                    if (bay != null) GetPC().AssignCommand(() => _.ActionInteractObject(bay.Object));
+                    if (bay != null) GetPC().AssignCommand(() => NWScript.ActionInteractObject(bay.Object));
                     EndConversation();
                 }
                 else if (response.Text == "Export Starcharts")
                 {
-                    NWItem item = _.CreateItemOnObject("starcharts", player, 1, _.Random(10000).ToString());
+                    NWItem item = NWScript.CreateItemOnObject("starcharts", player, 1, NWScript.Random(10000).ToString());
 
                     // Initialise the list, in case it hasn't been populated yet.
                     SpaceService.GetHyperspaceDestinationList(pcBase);
@@ -308,9 +311,9 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         if (creature.IsPC || creature.IsDM)
                         {
-                            _.FloatingTextStringOnCreature("Making a hyperspace jump!", creature);
-                            _.FadeToBlack(creature, 0.5f);
-                            _.DelayCommand(1.0f, () => { _.FadeFromBlack(creature, 0.5f); });
+                            NWScript.FloatingTextStringOnCreature("Making a hyperspace jump!", creature);
+                            NWScript.FadeToBlack(creature, 0.5f);
+                            NWScript.DelayCommand(1.0f, () => { NWScript.FadeFromBlack(creature, 0.5f); });
                         }
                     }
                 }
@@ -344,7 +347,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                     else
                     {
-                        _.TakeGoldFromCreature(starport.Cost, player, true);
+                        NWScript.TakeGoldFromCreature(starport.Cost, player, true);
 
                         // Land.
                         pcBase.ShipLocation = starport.StarportID.ToString();
@@ -386,7 +389,7 @@ namespace SWLOR.Game.Server.Conversation
                     structure.LocationX = loc.X;
                     structure.LocationY = loc.Y;
                     structure.LocationZ = loc.Z;
-                    structure.LocationOrientation = _.GetFacingFromLocation(loc);
+                    structure.LocationOrientation = NWScript.GetFacingFromLocation(loc);
 
                     DataService.SubmitDataChange(structure, DatabaseActionType.Update);
 
@@ -405,12 +408,12 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         if (creature.IsPC || creature.IsDM)
                         {
-                            _.FloatingTextStringOnCreature("A ship has just landed!", creature);
+                            NWScript.FloatingTextStringOnCreature("A ship has just landed!", creature);
                         }
                     }
 
                     // And shake the screen, because stuff.
-                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), loc);
+                    NWScript.ApplyEffectAtLocation(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), loc);
                     DoDustClouds(loc);            
                 }
 
@@ -423,11 +426,11 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     if (creature.IsPC || creature.IsDM)
                     {
-                        _.FloatingTextStringOnCreature("The ship is landing.", creature);
+                        NWScript.FloatingTextStringOnCreature("The ship is landing.", creature);
                     }
                 }
 
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), player);
+                NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), player);
                 SpaceService.RemoveShipInSpace(player.Area);
 
                 EndConversation();
@@ -463,12 +466,12 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
 
-            Guid structureID = new Guid(_.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
+            Guid structureID = new Guid(NWScript.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
-            bay = _.CreateObject(ObjectType.Placeable, "fuel_bay", location);
-            bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
+            bay = NWScript.CreateObject(ObjectType.Placeable, "fuel_bay", location);
+            bay.AssignCommand(() => NWScript.SetFacingPoint(oPC.Position));
 
             area.SetLocalObject("FUEL_BAY", bay.Object);
             bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
@@ -476,34 +479,34 @@ namespace SWLOR.Game.Server.Conversation
             if (isStronidium)
             {
                 if(pcBase.ReinforcedFuel > 0)
-                    _.CreateItemOnObject("stronidium", bay.Object, pcBase.ReinforcedFuel);
+                    NWScript.CreateItemOnObject("stronidium", bay.Object, pcBase.ReinforcedFuel);
 
                 bay.SetLocalInt("CONTROL_TOWER_FUEL_TYPE", 1);
             }
             else
             {
                 if (pcBase.Fuel > 0)
-                    _.CreateItemOnObject("fuel_cell", bay.Object, pcBase.Fuel);
+                    NWScript.CreateItemOnObject("fuel_cell", bay.Object, pcBase.Fuel);
             }
 
-            oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));
+            oPC.AssignCommand(() => NWScript.ActionInteractObject(bay.Object));
         }
 
         void DoDustClouds(NWLocation loc)
         {
             // Utility method to throw some dust clouds up around a landing ship.
             float x, y;
-            Vector v;
+            Vector3 v;
 
             for (int i=0; i < 6; i++)
             {
-                x = loc.X + (5 - _.d10());
-                y = loc.Y + (5 - _.d10());
-                v = new Vector(x, y, loc.Z);
+                x = loc.X + (5 - NWScript.d10());
+                y = loc.Y + (5 - NWScript.d10());
+                v = new Vector3(x, y, loc.Z);
 
-                NWPlaceable cloud = _.CreateObject(ObjectType.Placeable, "plc_dustplume", _.Location(loc.Area, v, loc.Orientation));
+                NWPlaceable cloud = NWScript.CreateObject(ObjectType.Placeable, "plc_dustplume", NWScript.Location(loc.Area, v, loc.Orientation));
 
-                _.DelayCommand(10.0f, () => _.DestroyObject(cloud));
+                NWScript.DelayCommand(10.0f, () => NWScript.DestroyObject(cloud));
             }
         }
 

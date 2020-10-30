@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -149,8 +152,8 @@ namespace SWLOR.Game.Server.Conversation
             //Console.WriteLine("New Color Index: " + Int32.Parse(response.CustomData.ToString()));
 
             // Setup placement grid                
-            NWArea area = _.GetArea(GetPC());
-            Vector vPos;
+            NWArea area = NWScript.GetArea(GetPC());
+            Vector3 vPos;
             vPos.X = 0.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.0f;
@@ -161,27 +164,27 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     vPos.Y = (float)j;
                     
-                    Location location = _.Location(area, vPos, 0.0f);
+                    Location location = NWScript.Location(area, vPos, 0.0f);
 
                     //Console.WriteLine("Setting Tile Color: X = " + vPos.X + " Y = " + vPos.Y);
                     switch (lightType)
                     {
                         case 1: // Change Main Light 1
-                            _.SetTileMainLightColor(location, Int32.Parse(response.CustomData.ToString()), _.GetTileMainLight2Color(location));
+                            NWScript.SetTileMainLightColor(location, Int32.Parse(response.CustomData.ToString()), NWScript.GetTileMainLight2Color(location));
                             break;
                         case 2: // Change Main Light 2
-                            _.SetTileMainLightColor(location, _.GetTileMainLight1Color(location), Int32.Parse(response.CustomData.ToString()));
+                            NWScript.SetTileMainLightColor(location, NWScript.GetTileMainLight1Color(location), Int32.Parse(response.CustomData.ToString()));
                             break;
                         case 3: // Change Source Light 1
-                            _.SetTileSourceLightColor(location, Int32.Parse(response.CustomData.ToString()), _.GetTileSourceLight2Color(location));
+                            NWScript.SetTileSourceLightColor(location, Int32.Parse(response.CustomData.ToString()), NWScript.GetTileSourceLight2Color(location));
                             break;
                         case 4: // Change Source Light 2
-                            _.SetTileSourceLightColor(location, _.GetTileSourceLight1Color(location), Int32.Parse(response.CustomData.ToString()));
+                            NWScript.SetTileSourceLightColor(location, NWScript.GetTileSourceLight1Color(location), Int32.Parse(response.CustomData.ToString()));
                             break;
                     }
                 }
             }
-            _.RecomputeStaticLighting(area);
+            NWScript.RecomputeStaticLighting(area);
             var data = BaseService.GetPlayerTempData(GetPC());
             int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
             Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;

@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Contracts;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Quest.Reward
 {

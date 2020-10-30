@@ -4,11 +4,11 @@
 /// Dec. 31st, 2018 by Kenji
 ////////////////////////////////
 
-using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.ChatCommand
             if (!user.IsPlayer) return;
 
             //Checks if the player has Plasma Cell
-            if (!_.GetHasFeat(Feat.PlasmaCell, user))
+            if (!NWScript.GetHasFeat(Feat.PlasmaCell, user))
             {
                 user.SendMessage(ColorTokenService.Red("You do not have the perk: Plasma Cell."));
                 return;

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -17,14 +18,14 @@ namespace SWLOR.Game.Server.Scripts.Area
 
         public void Main()
         {
-            NWObject door = _.OBJECT_SELF;
+            NWObject door = NWScript.OBJECT_SELF;
 
             if (!door.Area.IsInstance) return;
 
-            NWObject target = _.GetTransitionTarget(door);
-            NWPlayer player = _.GetClickingObject();
+            NWObject target = NWScript.GetTransitionTarget(door);
+            NWPlayer player = NWScript.GetClickingObject();
 
-            _.DelayCommand(6.0f, () =>
+            NWScript.DelayCommand(6.0f, () =>
             {
                 int playerCount = NWModule.Get().Players.Count(x => !Equals(x, player) && Equals(x.Area, door.Area));
                 if (playerCount <= 0)
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Scripts.Area
 
             player.AssignCommand(() =>
             {
-                _.ActionJumpToLocation(target.Location);
+                NWScript.ActionJumpToLocation(target.Location);
             });
 
         }

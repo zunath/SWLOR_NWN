@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 

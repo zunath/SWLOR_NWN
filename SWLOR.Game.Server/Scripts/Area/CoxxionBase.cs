@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
@@ -39,17 +40,17 @@ namespace SWLOR.Game.Server.Scripts.Area
 
             var doors = new List<NWObject>();
 
-            var obj = _.GetFirstObjectInArea(area);
-            while (_.GetIsObjectValid(obj) == true)
+            var obj = NWScript.GetFirstObjectInArea(area);
+            while (NWScript.GetIsObjectValid(obj) == true)
             {
-                int colorID = _.GetLocalInt(obj, "DOOR_COLOR");
+                int colorID = NWScript.GetLocalInt(obj, "DOOR_COLOR");
 
                 if (colorID > 0)
                 {
                     doors.Add(obj);
                 }
 
-                obj = _.GetNextObjectInArea(area);
+                obj = NWScript.GetNextObjectInArea(area);
             }
 
             area.Data["DOORS"] = doors;

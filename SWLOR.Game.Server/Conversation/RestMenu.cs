@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -54,8 +55,8 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         // Open Overflow Inventory
                         case 1:
-                            NWObject storage = (_.CreateObject(ObjectType.Placeable, "overflow_storage", player.Location));
-                            player.AssignCommand(() => _.ActionInteractObject(storage.Object));
+                            NWObject storage = (NWScript.CreateObject(ObjectType.Placeable, "overflow_storage", player.Location));
+                            player.AssignCommand(() => NWScript.ActionInteractObject(storage.Object));
                             break;
                         // View Skills
                         case 2:
@@ -84,10 +85,10 @@ namespace SWLOR.Game.Server.Conversation
                         // Open Trash Can (Destroy Items)
                         case 8:
                             EndConversation();
-                            NWPlaceable trashCan = (_.CreateObject(ObjectType.Placeable, "reo_trash_can", player.Location));
+                            NWPlaceable trashCan = (NWScript.CreateObject(ObjectType.Placeable, "reo_trash_can", player.Location));
 
-                            player.AssignCommand(() => _.ActionInteractObject(trashCan.Object));
-                            _.DelayCommand(0.2f, () => trashCan.IsUseable = false);
+                            player.AssignCommand(() => NWScript.ActionInteractObject(trashCan.Object));
+                            NWScript.DelayCommand(0.2f, () => trashCan.IsUseable = false);
                             break;
                         // HoloCom
                         case 9:

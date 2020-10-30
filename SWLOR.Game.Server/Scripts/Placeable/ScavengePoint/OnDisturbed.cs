@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
@@ -19,12 +20,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
         public void Main()
         {
-            NWPlayer oPC = (_.GetLastDisturbed());
+            NWPlayer oPC = (NWScript.GetLastDisturbed());
             if (!oPC.IsPlayer) return;
 
-            NWItem oItem = (_.GetInventoryDisturbItem());
-            NWPlaceable point = (_.OBJECT_SELF);
-            var disturbType = _.GetInventoryDisturbType();
+            NWItem oItem = (NWScript.GetInventoryDisturbItem());
+            NWPlaceable point = (NWScript.OBJECT_SELF);
+            var disturbType = NWScript.GetInventoryDisturbType();
 
             if (disturbType == DisturbType.Added)
             {
@@ -37,12 +38,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
                     string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
                     if (!string.IsNullOrWhiteSpace(seed))
                     {
-                        _.CreateObject(ObjectType.Item, seed, point.Location);
+                        NWScript.CreateObject(ObjectType.Item, seed, point.Location);
 
                         int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.SeedPicker);
                         if (RandomService.Random(100) + 1 <= perkLevel * 10)
                         {
-                            _.CreateObject(ObjectType.Item, seed, point.Location);
+                            NWScript.CreateObject(ObjectType.Item, seed, point.Location);
                         }
                     }
 

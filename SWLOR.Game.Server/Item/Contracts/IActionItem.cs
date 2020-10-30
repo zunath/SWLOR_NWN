@@ -1,6 +1,7 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Item.Contracts

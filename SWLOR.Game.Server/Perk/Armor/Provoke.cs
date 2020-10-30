@@ -1,10 +1,11 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.VisualEffect;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             if (!oTarget.IsNPC) return "Only NPCs may be targeted with Provoke.";
 
-            float distance = _.GetDistanceBetween(oPC.Object, oTarget.Object);
+            float distance = NWScript.GetDistanceBetween(oPC.Object, oTarget.Object);
             if (distance > 9.0f) return "Target is too far away.";
 
             if (oPC.Chest.CustomItemType != CustomItemType.HeavyArmor)
@@ -55,12 +56,12 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             NWCreature npc = (target.Object);
-            var vfx = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Charm);
-            _.ApplyEffectToObject(DurationType.Instant, vfx, target.Object);
+            var vfx = NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Charm);
+            NWScript.ApplyEffectToObject(DurationType.Instant, vfx, target.Object);
             
             creature.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(Animation.FireForgetTaunt, 1f, 1f);
+                NWScript.ActionPlayAnimation(Animation.FireForgetTaunt, 1f, 1f);
             });
 
             EnmityService.AdjustEnmity(npc, creature, 120);
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, Feat.Provoke);
+            Creature.RemoveFeat(creature, Feat.Provoke);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -101,11 +102,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {
-                NWNXCreature.RemoveFeat(creature, Feat.Provoke);
+                Creature.RemoveFeat(creature, Feat.Provoke);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, Feat.Provoke);
+            Creature.AddFeat(creature, Feat.Provoke);
         }
 
         public bool IsHostile()

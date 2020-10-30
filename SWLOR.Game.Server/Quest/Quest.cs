@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Quest.Prerequisite;
 using SWLOR.Game.Server.Quest.Reward;
 using SWLOR.Game.Server.Service;
-using static SWLOR.Game.Server.NWN._;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Quest
 {

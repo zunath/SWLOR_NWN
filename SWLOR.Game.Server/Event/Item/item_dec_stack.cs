@@ -1,9 +1,10 @@
-﻿using SWLOR.Game.Server.Event.Item;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.NWN.Enum.Item;
-using SWLOR.Game.Server.NWNX;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -15,7 +16,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            NWItem item = _.OBJECT_SELF;
+            NWItem item = NWScript.OBJECT_SELF;
             if (!item.IsValid) return;
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
@@ -23,7 +24,7 @@ namespace NWN.Scripts
                item.BaseItemType == BaseItem.Dart ||
                item.BaseItemType == BaseItem.ThrowingAxe)
             {
-                NWNXEvents.SkipEvent();
+                Events.SkipEvent();
             }
 
             MessageHub.Instance.Publish(new OnItemDecrementStack(), false);

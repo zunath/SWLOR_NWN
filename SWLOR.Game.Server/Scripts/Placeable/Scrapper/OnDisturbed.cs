@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Enum;
-using SWLOR.Game.Server.NWN.Enum.Item;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
 {
@@ -22,12 +23,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
 
         public void Main()
         {
-            var type = _.GetInventoryDisturbType();
+            var type = NWScript.GetInventoryDisturbType();
             if (type != DisturbType.Added) return;
-            NWPlaceable device = _.OBJECT_SELF;
-            NWPlayer player = _.GetLastDisturbed();
-            NWItem item = _.GetInventoryDisturbItem();
-            var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == ItemPropertyType.ComponentType);
+            NWPlaceable device = NWScript.OBJECT_SELF;
+            NWPlayer player = NWScript.GetLastDisturbed();
+            NWItem item = NWScript.GetInventoryDisturbItem();
+            var componentIP = item.ItemProperties.FirstOrDefault(x => NWScript.GetItemPropertyType(x) == ItemPropertyType.ComponentType);
 
             // Not a component. Return the item.
             if (componentIP == null)
@@ -48,18 +49,18 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
             // Remove the item properties
             foreach (var ip in item.ItemProperties)
             {
-                var ipType = _.GetItemPropertyType(ip);
+                var ipType = NWScript.GetItemPropertyType(ip);
                 if (ipType != ItemPropertyType.ComponentType)
                 {
-                    _.RemoveItemProperty(item, ip);
+                    NWScript.RemoveItemProperty(item, ip);
                 }
             }
             
             // Remove local variables (except the global ID)
-            int varCount = NWNXObject.GetLocalVariableCount(item);
+            int varCount = Object.GetLocalVariableCount(item);
             for (int index = varCount-1; index >= 0; index--)
             {
-                var localVar = NWNXObject.GetLocalVariable(item, index);
+                var localVar = Object.GetLocalVariable(item, index);
 
                 if (localVar.Key != "GLOBAL_ID")
                 {
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
 
             device.AssignCommand(() =>
             {
-                _.ActionGiveItem(item, player);
+                NWScript.ActionGiveItem(item, player);
             });
 
             return;

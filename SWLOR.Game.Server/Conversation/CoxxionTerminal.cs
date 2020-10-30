@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service.Legacy;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -9,7 +11,12 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class CoxxionTerminal: ConversationBase
     {
-        private static Dictionary<uint, List<uint>> _areaDoors = new Dictionary<uint, List<uint>>();
+        private static readonly Dictionary<uint, List<uint>> _areaDoors = new Dictionary<uint, List<uint>>();
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(m => LoadDoors());
+        }
 
         public static void LoadDoors()
         {
